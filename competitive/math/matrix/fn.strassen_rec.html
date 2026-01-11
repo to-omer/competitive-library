@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `strassen_rec` fn in crate `competitive`."><title>strassen_rec in competitive::math::matrix - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.0-nightly (f57eac1bf 2026-01-10)" data-channel="nightly" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-7bab91a1.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector("#settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://github.com/search?q=repo%3Ato-omer%2Fcompetitive_archive+${itemName}&type=code">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">strassen_rec</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>matrix</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">matrix</a></div><h1>Function <span class="fn">strassen_<wbr>rec</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/matrix.rs.html#482-630">Source</a> </span></div><pre class="rust item-decl"><code>fn strassen_rec&lt;R: <a class="trait" href="../../algebra/trait.Ring.html" title="trait competitive::algebra::Ring">Ring</a>&gt;(
+    a: &amp;[R::<a class="associatedtype" href="../../algebra/trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a>],
+    b: &amp;[R::<a class="associatedtype" href="../../algebra/trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a>],
+    c: &amp;mut [R::<a class="associatedtype" href="../../algebra/trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a>],
+    n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    stride_a: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    stride_b: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[80,80],&#34;../../../src/competitive/math/matrix.rs.html#562&#34;,&#34;line 562&#34;],[[84,84],&#34;../../../src/competitive/math/matrix.rs.html#566&#34;,&#34;line 566&#34;],[[88,88],&#34;../../../src/competitive/math/matrix.rs.html#570&#34;,&#34;line 570&#34;],[[92,92],&#34;../../../src/competitive/math/matrix.rs.html#574&#34;,&#34;line 574&#34;],[[96,96],&#34;../../../src/competitive/math/matrix.rs.html#578&#34;,&#34;line 578&#34;],[[101,101],&#34;../../../src/competitive/math/matrix.rs.html#583&#34;,&#34;line 583&#34;],[[106,106],&#34;../../../src/competitive/math/matrix.rs.html#588&#34;,&#34;line 588&#34;],[[175,175],&#34;../../../src/competitive/math/matrix.rs.html#657&#34;,&#34;line 657&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/matrix.rs (<a href="../../../src/competitive/math/matrix.rs.html#562">line 562</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>482</span><span class="kw">fn </span>strassen_rec&lt;R: Ring&gt;(
+<span data-nosnippet>483</span>    a: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>484</span>    b: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>485</span>    c: <span class="kw-2">&amp;mut </span>[R::T],
+<span data-nosnippet>486</span>    n: usize,
+<span data-nosnippet>487</span>    stride_a: usize,
+<span data-nosnippet>488</span>    stride_b: usize,
+<span data-nosnippet>489</span>) {
+<span data-nosnippet>490</span>    <span class="kw">fn </span>add_block&lt;R: Ring&gt;(
+<span data-nosnippet>491</span>        a: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>492</span>        b: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>493</span>        out: <span class="kw-2">&amp;mut </span>[R::T],
+<span data-nosnippet>494</span>        n: usize,
+<span data-nosnippet>495</span>        stride_a: usize,
+<span data-nosnippet>496</span>        stride_b: usize,
+<span data-nosnippet>497</span>    ) {
+<span data-nosnippet>498</span>        <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a
+<span data-nosnippet>499</span>            .chunks(stride_a)
+<span data-nosnippet>500</span>            .zip(b.chunks(stride_b))
+<span data-nosnippet>501</span>            .zip(out.chunks_exact_mut(n))
+<span data-nosnippet>502</span>        {
+<span data-nosnippet>503</span>            <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a.iter().zip(b.iter()).zip(c.iter_mut()) {
+<span data-nosnippet>504</span>                <span class="kw-2">*</span>c = R::add(a, b);
+<span data-nosnippet>505</span>            }
+<span data-nosnippet>506</span>        }
+<span data-nosnippet>507</span>    }
+<span data-nosnippet>508</span>
+<span data-nosnippet>509</span>    <span class="kw">fn </span>sub_block&lt;R: Ring&gt;(
+<span data-nosnippet>510</span>        a: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>511</span>        <a href="#409">b</a>: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>512</span>        out: <span class="kw-2">&amp;mut </span>[R::T],
+<span data-nosnippet>513</span>        n: usize,
+<span data-nosnippet>514</span>        stride_a: usize,
+<span data-nosnippet>515</span>        stride_b: usize,
+<span data-nosnippet>516</span>    ) {
+<span data-nosnippet>517</span>        <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a
+<span data-nosnippet>518</span>            .chunks(stride_a)
+<span data-nosnippet>519</span>            .zip(b.chunks(stride_b))
+<span data-nosnippet>520</span>            .zip(out.chunks_exact_mut(n))
+<span data-nosnippet>521</span>        {
+<span data-nosnippet>522</span>            <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a.iter().zip(b.iter()).zip(c.iter_mut()) {
+<span data-nosnippet>523</span>                <span class="kw-2">*</span>c = R::sub(a, b);
+<span data-nosnippet>524</span>            }
+<span data-nosnippet>525</span>        }
+<span data-nosnippet>526</span>    }
+<span data-nosnippet>527</span>
+<span data-nosnippet>528</span>    <span class="kw">if </span>n &lt;= <span class="number">64 </span>{
+<span data-nosnippet>529</span>        <span class="kw">for </span>(a, c) <span class="kw">in </span>a.chunks(stride_a).zip(c.chunks_exact_mut(n)) {
+<span data-nosnippet>530</span>            <span class="kw">for </span>(a, b) <span class="kw">in </span>a.iter().zip(b.chunks(stride_b)).take(n) {
+<span data-nosnippet>531</span>                <span class="kw">for </span>(b, c) <span class="kw">in </span>b.iter().zip(c.iter_mut()) {
+<span data-nosnippet>532</span>                    R::add_assign(c, <span class="kw-2">&amp;</span>R::mul(a, b));
+<span data-nosnippet>533</span>                }
+<span data-nosnippet>534</span>            }
+<span data-nosnippet>535</span>        }
+<span data-nosnippet>536</span>        <span class="kw">return</span>;
+<span data-nosnippet>537</span>    }
+<span data-nosnippet>538</span>    <span class="kw">let </span>h = n / <span class="number">2</span>;
+<span data-nosnippet>539</span>    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">a11</a> = <span class="number">0</span>;
+<span data-nosnippet>540</span>    <span class="kw">let </span>a12 = h;
+<span data-nosnippet>541</span>    <span class="kw">let </span>a21 = h * stride_a;
+<span data-nosnippet>542</span>    <span class="kw">let </span>a22 = a21 + h;
+<span data-nosnippet>543</span>    <span class="kw">let </span>b11 = <span class="number">0</span>;
+<span data-nosnippet>544</span>    <span class="kw">let </span>b12 = h;
+<span data-nosnippet>545</span>    <span class="kw">let </span>b21 = h * stride_b;
+<span data-nosnippet>546</span>    <span class="kw">let </span>b22 = b21 + h;
+<span data-nosnippet>547</span>
+<span data-nosnippet>548</span>    <span class="kw">let </span>block = h * h;
+<span data-nosnippet>549</span>    <span class="kw">let </span><span class="kw-2">mut </span>buf = <span class="macro">vec!</span>[R::zero(); block * <span class="number">9</span>];
+<span data-nosnippet>550</span>    <span class="kw">let </span>(s_buf, m_buf) = buf.split_at_mut(block * <span class="number">2</span>);
+<span data-nosnippet>551</span>    <span class="kw">let </span>(s1, s2) = s_buf.split_at_mut(block);
+<span data-nosnippet>552</span>    <span class="kw">let </span>(m1, rest) = m_buf.split_at_mut(block);
+<span data-nosnippet>553</span>    <span class="kw">let </span>(m2, rest) = rest.split_at_mut(block);
+<span data-nosnippet>554</span>    <span class="kw">let </span>(m3, rest) = rest.split_at_mut(block);
+<span data-nosnippet>555</span>    <span class="kw">let </span>(m4, rest) = rest.split_at_mut(block);
+<span data-nosnippet>556</span>    <span class="kw">let </span>(m5, rest) = rest.split_at_mut(block);
+<span data-nosnippet>557</span>    <span class="kw">let </span>(m6, m7) = rest.split_at_mut(block);
+<span data-nosnippet>558</span>
+<span data-nosnippet>559</span>    <span class="comment">// (A11 + A22)(B11 + B22)
+<span data-nosnippet>560</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
+<span data-nosnippet>561</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
+<span data-nosnippet>562</span>    <span class="highlight focus">strassen_rec::&lt;R&gt;</span>(s1, s2, m1, h, h, h);
+<span data-nosnippet>563</span>
+<span data-nosnippet>564</span>    <span class="comment">// (A21 + A22) B11
+<span data-nosnippet>565</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
+<span data-nosnippet>566</span>    <span class="highlight">strassen_rec::&lt;R&gt;</span>(s1, <span class="kw-2">&amp;</span>b[b11..], m2, h, h, stride_b);
+<span data-nosnippet>567</span>
+<span data-nosnippet>568</span>    <span class="comment">// A11 (B12 - B22)
+<span data-nosnippet>569</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">b12</a>..], <span class="kw-2">&amp;</span>b[b22..], s1, h, stride_b, stride_b);
+<span data-nosnippet>570</span>    <span class="highlight">strassen_rec::&lt;R&gt;</span>(<span class="kw-2">&amp;</span>a[a11..], s1, m3, h, stride_a, h);
+<span data-nosnippet>571</span>
+<span data-nosnippet>572</span>    <span class="comment">// A22 (B21 - B11)
+<span data-nosnippet>573</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b11..], s1, h, stride_b, stride_b);
+<span data-nosnippet>574</span>    <span class="highlight">strassen_rec::&lt;R&gt;</span>(<span class="kw-2">&amp;</span>a[a22..], s1, m4, h, stride_a, h);
+<span data-nosnippet>575</span>
+<span data-nosnippet>576</span>    <span class="comment">// (A11 + A12) B22
+<span data-nosnippet>577</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a12..], s1, h, stride_a, stride_a);
+<span data-nosnippet>578</span>    <span class="highlight">strassen_rec::&lt;R&gt;</span>(s1, <span class="kw-2">&amp;</span>b[b22..], m5, h, h, stride_b);
+<span data-nosnippet>579</span>
+<span data-nosnippet>580</span>    <span class="comment">// (A21 - A11)(B11 + B12)
+<span data-nosnippet>581</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a11..], s1, h, stride_a, stride_a);
+<span data-nosnippet>582</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b12..], s2, h, stride_b, stride_b);
+<span data-nosnippet>583</span>    <span class="highlight">strassen_rec::&lt;R&gt;</span>(s1, s2, m6, h, h, h);
+<span data-nosnippet>584</span>
+<span data-nosnippet>585</span>    <span class="comment">// (A12 - A22)(B21 + B22)
+<span data-nosnippet>586</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
+<span data-nosnippet>587</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
+<span data-nosnippet>588</span>    <span class="highlight">strassen_rec::&lt;R&gt;</span>(s1, s2, m7, h, <a href="#533">h</a>, h);
+<span data-nosnippet>589</span>
+<span data-nosnippet>590</span>    <span class="kw">let </span>c11 = <span class="number">0</span>;
+<span data-nosnippet>591</span>    <span class="kw">let </span>c12 = h;
+<span data-nosnippet>592</span>    <span class="kw">let </span>c21 = h * n;
+<span data-nosnippet>593</span>    <span class="kw">let </span>c22 = c21 + h;
+<span data-nosnippet>594</span>    <span class="kw">for </span>((((m1, m4), m5), m7), c) <span class="kw">in </span>m1
+<span data-nosnippet>595</span>        .iter()
+<span data-nosnippet>596</span>        .zip(m4.iter())
+<span data-nosnippet>597</span>        .zip(m5.iter())
+<span data-nosnippet>598</span>        .zip(m7.iter())
+<span data-nosnippet>599</span>        .zip(c[c11..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+<span data-nosnippet>600</span>    {
+<span data-nosnippet>601</span>        <span class="kw-2">*</span><a href="#543">c</a> = R::add(m1, m4);
+<span data-nosnippet>602</span>        R::sub_assign(c, m5);
+<span data-nosnippet>603</span>        R::add_assign(c, m7);
+<span data-nosnippet>604</span>    }
+<span data-nosnippet>605</span>    <span class="kw">for </span>((m3, m5), c) <span class="kw">in </span>m3
+<span data-nosnippet>606</span>        .iter()
+<span data-nosnippet>607</span>        .zip(m5.iter())
+<span data-nosnippet>608</span>        .zip(c[c12..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+<span data-nosnippet>609</span>    {
+<span data-nosnippet>610</span>        <span class="kw-2">*</span>c = R::add(m3, m5);
+<span data-nosnippet>611</span>    }
+<span data-nosnippet>612</span>    <span class="kw">for </span>((m2, m4), c) <span class="kw">in </span>m2
+<span data-nosnippet>613</span>        .iter()
+<span data-nosnippet>614</span>        .zip(m4.iter())
+<span data-nosnippet>615</span>        .zip(c[c21..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+<span data-nosnippet>616</span>    {
+<span data-nosnippet>617</span>        <span class="kw-2">*</span>c = R::add(m2, m4);
+<span data-nosnippet>618</span>    }
+<span data-nosnippet>619</span>    <span class="kw">for </span>((((m1, m2), m3), m6), c) <span class="kw">in </span>m1
+<span data-nosnippet>620</span>        .iter()
+<span data-nosnippet>621</span>        .zip(m2.iter())
+<span data-nosnippet>622</span>        .zip(m3.iter())
+<span data-nosnippet>623</span>        .zip(m6.iter())
+<span data-nosnippet>624</span>        .zip(c[c22..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+<span data-nosnippet>625</span>    {
+<span data-nosnippet>626</span>        <span class="kw-2">*</span>c = R::sub(m1, m2);
+<span data-nosnippet>627</span>        R::add_assign(c, m3);
+<span data-nosnippet>628</span>        R::add_assign(c, m6);
+<span data-nosnippet>629</span>    }
+<span data-nosnippet>630</span>}
+<span data-nosnippet>631</span>
+<span data-nosnippet>632</span><span class="kw">impl</span>&lt;R&gt; Matrix&lt;<a href="magma.rs.html#15">R</a>&gt;
+<span data-nosnippet>633</span><span class="kw">where
+<span data-nosnippet>634</span>    </span>R: Ring,
+<span data-nosnippet>635</span>{
+<span data-nosnippet>636</span>    <span class="kw">pub fn </span>mul_strassen(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; Matrix&lt;R&gt; {
+<span data-nosnippet>637</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, rhs.<a href="magma.rs.html#4-18">shape</a>.<span class="number">0</span>);
+<span data-nosnippet>638</span>        <span class="kw">let </span>(n, m) = <span class="self">self</span>.shape;
+<span data-nosnippet>639</span>        <span class="kw">let </span>p = rhs.shape.<span class="number">1</span>;
+<span data-nosnippet>640</span>        <span class="kw">if </span>n == <span class="number">0 </span>|| m == <span class="number">0 </span>|| p == <span class="number">0 </span>{
+<span data-nosnippet>641</span>            <span class="kw">return </span>Matrix::zeros((n, p));
+<span data-nosnippet>642</span>        }
+<span data-nosnippet>643</span>        <span class="kw">let </span>max_dim = n.max(m).max(p);
+<span data-nosnippet>644</span>        <span class="kw">if </span>max_dim &lt;= <span class="number">64 </span>{
+<span data-nosnippet>645</span>            <span class="kw">return </span><span class="self">self </span>* rhs;
+<span data-nosnippet>646</span>        }
+<span data-nosnippet>647</span>        <span class="kw">let </span>size = max_dim.next_power_of_two();
+<span data-nosnippet>648</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[R::zero(); size * size];
+<span data-nosnippet>649</span>        <span class="kw">for </span>(a, data) <span class="kw">in </span>a.chunks_exact_mut(size).zip(<span class="kw-2">&amp;</span><span class="self">self</span>.data) {
+<span data-nosnippet>650</span>            a[..m].clone_from_slice(data);
+<span data-nosnippet>651</span>        }
+<span data-nosnippet>652</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = <span class="macro">vec!</span>[R::zero(); size * size];
+<span data-nosnippet>653</span>        <span class="kw">for </span>(b, data) <span class="kw">in </span>b.chunks_exact_mut(size).zip(<span class="kw-2">&amp;</span>rhs.data) {
+<span data-nosnippet>654</span>            b[..p].clone_from_slice(data);
+<span data-nosnippet>655</span>        }
+<span data-nosnippet>656</span>        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[R::zero(); size * size];
+<span data-nosnippet>657</span>        <span class="highlight">strassen_rec::&lt;R&gt;</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b, <span class="kw-2">&amp;mut </span>c, size, size, size);
+<span data-nosnippet>658</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = Matrix::zeros((n, p));
+<span data-nosnippet>659</span>        <span class="kw">for </span>(data, c) <span class="kw">in </span>res.data.iter_mut().zip(c.chunks_exact(size)) {
+<span data-nosnippet>660</span>            data.clone_from_slice(<span class="kw-2">&amp;</span>c[..p]);
+<span data-nosnippet>661</span>        }
+<span data-nosnippet>662</span>        res
+<span data-nosnippet>663</span>    }</code></pre></div></div></div></section></div></main></body></html>

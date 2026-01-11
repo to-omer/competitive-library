@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Doubling"]};
+window.SIDEBAR_ITEMS = {"struct":["Doubling","FunctionalGraphDoubling"]};

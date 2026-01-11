@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="✅  AC  477ms"><title>matrix_product_strassen in library_checker::linear_algebra::matrix_product - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="library_checker" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.0-nightly (f57eac1bf 2026-01-10)" data-channel="nightly" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-7bab91a1.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector("#settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://github.com/search?q=repo%3Ato-omer%2Fcompetitive_archive+${itemName}&type=code">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">matrix_product_strassen</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../library_checker/index.html">library_<wbr>checker</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">matrix_<wbr>product_<wbr>strassen</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#detail" title="Detail">Detail</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In library_<wbr>checker::<wbr>linear_<wbr>algebra::<wbr>matrix_<wbr>product</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">library_checker</a>::<wbr><a href="../index.html">linear_algebra</a>::<wbr><a href="index.html">matrix_product</a></div><h1>Function <span class="fn">matrix_<wbr>product_<wbr>strassen</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/library_checker/linear_algebra/matrix_product.rs.html#17-25">Source</a> </span></div><pre class="rust item-decl"><code>pub fn matrix_product_strassen(reader: impl <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a>, writer: impl <a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html" title="trait std::io::Write">Write</a>)</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>✅  AC  477ms</p>
+<p>problem <a href="https://judge.yosupo.jp/problem/matrix_product">here</a></p>
+<h2 id="detail"><a class="doc-anchor" href="#detail">§</a>Detail</h2><div><table><thead><tr><th style="text-align: center">Case Name</th><th style="text-align: center">Status</th><th style="text-align: right">Exec Time</th></tr></thead><tbody>
+<tr><td style="text-align: center">example_00</td><td style="text-align: center">AC</td><td style="text-align: right">0 ± 0 ms</td></tr>
+<tr><td style="text-align: center">example_01</td><td style="text-align: center">AC</td><td style="text-align: right">0 ± 0 ms</td></tr>
+<tr><td style="text-align: center">example_02</td><td style="text-align: center">AC</td><td style="text-align: right">0 ± 0 ms</td></tr>
+<tr><td style="text-align: center">random_00</td><td style="text-align: center">AC</td><td style="text-align: right">433 ± 2 ms</td></tr>
+<tr><td style="text-align: center">random_01</td><td style="text-align: center">AC</td><td style="text-align: right">430 ± 1 ms</td></tr>
+<tr><td style="text-align: center">random_02</td><td style="text-align: center">AC</td><td style="text-align: right">420 ± 0 ms</td></tr>
+<tr><td style="text-align: center">max_random_00</td><td style="text-align: center">AC</td><td style="text-align: right">477 ± 2 ms</td></tr>
+<tr><td style="text-align: center">max_random_01</td><td style="text-align: center">AC</td><td style="text-align: right">467 ± 2 ms</td></tr>
+<tr><td style="text-align: center">max_random_02</td><td style="text-align: center">AC</td><td style="text-align: right">467 ± 2 ms</td></tr>
+<tr><td style="text-align: center">small_00</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_01</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_02</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_03</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_04</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_05</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_06</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_07</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_08</td><td style="text-align: center">AC</td><td style="text-align: right">0 ± 0 ms</td></tr>
+<tr><td style="text-align: center">small_09</td><td style="text-align: center">AC</td><td style="text-align: right">1 ± 0 ms</td></tr>
+<tr><td style="text-align: center">signed_overflow_00</td><td style="text-align: center">AC</td><td style="text-align: right">0 ± 0 ms</td></tr>
+<tr><td style="text-align: center">unsigned_overflow_00</td><td style="text-align: center">AC</td><td style="text-align: right">0 ± 0 ms</td></tr>
+</tbody></table>
+</div><!-- 
+VERIFY_TARGET: linear_algebra::matrix_product::verify_matrix_product_strassen
+VERIFY_START: 2026-01-11T14:02:52.281+09:00
+VERIFY_END: 2026-01-11T14:03:36.284+09:00
+ --></div></details></section></div></main></body></html>

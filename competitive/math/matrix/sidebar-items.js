@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_matrix_pairwise_binop"],"struct":["Matrix","SystemOfLinearEquationsSolution"]};
+window.SIDEBAR_ITEMS = {"fn":["strassen_rec"],"macro":["impl_matrix_pairwise_binop"],"struct":["Matrix","SystemOfLinearEquationsSolution"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["pow_of_matrix","test_pow_of_matrix"]};
+window.SIDEBAR_ITEMS = {"fn":["pow_of_matrix","pow_of_matrix_strassen","test_pow_of_matrix","test_pow_of_matrix_strassen"]};

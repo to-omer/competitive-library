@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["matrix_product","test_matrix_product"]};
+window.SIDEBAR_ITEMS = {"fn":["matrix_product","matrix_product_strassen","test_matrix_product","test_matrix_product_strassen"]};
