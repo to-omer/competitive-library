@@ -14,6 +14,8 @@ use crate::tools::{
 
 #[codesnip::entry("ArbitraryModBinomial")]
 pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
+#[codesnip::entry("ArrayVec")]
+pub use self::array_vec::{ArrayVec, ToArrayVec, ToArrayVecScalar};
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
 #[codesnip::entry("bitwise_transform")]
@@ -100,6 +102,8 @@ pub use self::subset_convolve::SubsetConvolve;
     )
 )]
 mod arbitrary_mod_binomial;
+#[cfg_attr(nightly, codesnip::entry("ArrayVec"))]
+mod array_vec;
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
 #[cfg_attr(nightly, codesnip::entry("bitwise_transform"))]
