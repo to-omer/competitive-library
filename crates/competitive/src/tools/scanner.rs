@@ -238,7 +238,9 @@ macro_rules! define_enum_scan {
     (@field_ty @$tag:ident [$($args:tt)*])                                  => { ::std::compile_error!(::std::stringify!($($args)*)) };
     (@field_ty $($t:tt)*) => { $crate::define_enum_scan!(@field_ty @inner [] $($t)*) };
 
-    (@variant ([$($attr:tt)*] $vis:vis $T:ident $d:ty) [$($vars:tt)*]) => { $crate::define_enum_scan! { @def $($attr)* $vis enum $T : $d { $($vars)* } } };
+    (@tag_expr raw, $iter:ident) => { $iter.next()? };
+    (@tag_expr $d:ty, $iter:ident) => { <$d as IterScan>::scan($iter)? };
+    (@variant ([$($attr:tt)*] $vis:vis $T:ident $d:tt) [$($vars:tt)*]) => { $crate::define_enum_scan! { @def $($attr)* $vis enum $T : $d { $($vars)* } } };
     (@variant $ctx:tt [$($vars:tt)*] $p:pat => $v:ident { $($fs:tt)* } $($rest:tt)*) => { $crate::define_enum_scan! { @field   $ctx [$($vars)*] $p => $v [] $($fs)* ; $($rest)* } };
     (@variant $ctx:tt [$($vars:tt)*] $p:pat => $v:ident $($rest:tt)*)                    => { $crate::define_enum_scan! { @variant $ctx [$($vars)* $p => $v ,] $($rest)* } };
     (@variant $ctx:tt [$($vars:tt)*] , $($rest:tt)*)                                     => { $crate::define_enum_scan! { @variant $ctx [$($vars)*] $($rest)* } };
@@ -254,7 +256,7 @@ macro_rules! define_enum_scan {
     (
         @def
         $(#[$attr:meta])*
-        $vis:vis enum $T:ident : $d:ty {
+        $vis:vis enum $T:ident : $d:tt {
             $( $p:pat => $v:ident $( { $( [$f:ident : $($spec:tt)*] )* } )?, )*
         }
     ) => {
@@ -265,7 +267,7 @@ macro_rules! define_enum_scan {
         impl IterScan for $T {
             type Output = Self;
             fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
-                let tag = <$d as IterScan>::scan(iter)?;
+                let tag = $crate::define_enum_scan!(@tag_expr $d, iter);
                 match tag {
                     $(
                         $p => {
@@ -279,6 +281,14 @@ macro_rules! define_enum_scan {
                 }
             }
         }
+    };
+    (
+        $(#[$attr:meta])*
+        $vis:vis enum $T:ident : raw {
+            $($body:tt)*
+        }
+    ) => {
+        $crate::define_enum_scan! { @variant ([$(#[$attr])*] $vis $T raw) [] $($body)* }
     };
     (
         $(#[$attr:meta])*
