@@ -3,8 +3,8 @@
 use crate::algebra::{Field, Group, Invertible, Magma, Monoid, Unital};
 use crate::data_structure::{BitSet, UnionFindBase, union_find};
 use crate::graph::UndirectedSparseGraph;
-use crate::math::Matrix;
-use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero};
+use crate::math::{Convolve998244353, ConvolveSteps, Matrix};
+use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero, montgomery};
 use crate::tools::{RandomSpec, SerdeByteStr, Xorshift};
 use crate::tree::LevelAncestor;
 
@@ -32,6 +32,10 @@ pub use self::esper::{EsperEstimator, EsperSolver};
 pub use self::horn_satisfiability::HornSatisfiability;
 #[codesnip::entry("ImpartialGame")]
 pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGamer};
+#[codesnip::entry("number_of_increasing_sequences_between")]
+pub use self::number_of_increasing_sequences_between::{
+    number_of_increasing_sequences_between, number_of_increasing_sequences_between_998244353,
+};
 pub use self::other::*;
 #[codesnip::entry("PartisanGame")]
 pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
@@ -94,6 +98,14 @@ mod horn_satisfiability;
 mod impartial_game;
 #[cfg_attr(nightly, codesnip::entry)]
 mod mo_algorithm;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "number_of_increasing_sequences_between",
+        include("NumberTheoreticTransform")
+    )
+)]
+mod number_of_increasing_sequences_between;
 mod other;
 #[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
 mod partisan_game;

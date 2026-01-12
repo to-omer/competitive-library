@@ -1,3 +1,4 @@
 pub mod binomial_coefficient;
 pub mod binomial_coefficient_prime_mod;
+pub mod number_of_increasing_sequences_between_two_sequences;
 pub mod sharp_p_subset_sum;
