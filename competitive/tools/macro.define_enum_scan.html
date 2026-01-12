@@ -52,7 +52,7 @@
   });
 </script>
 
-</head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">define_enum_scan</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">define_<wbr>enum_<wbr>scan</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>tools</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">competitive</a>::<wbr><a href="index.html">tools</a></div><h1>Macro <span class="macro">define_<wbr>enum_<wbr>scan</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/competitive/tools/scanner.rs.html#221-291">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! define_enum_scan {
+</head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">define_enum_scan</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">define_<wbr>enum_<wbr>scan</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>tools</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">competitive</a>::<wbr><a href="index.html">tools</a></div><h1>Macro <span class="macro">define_<wbr>enum_<wbr>scan</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/competitive/tools/scanner.rs.html#221-301">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! define_enum_scan {
     (@field_ty @repeat [$($t:tt)*] $($len:expr)?) =&gt; { ... };
     (@field_ty @array [$($t:tt)*] $len:expr) =&gt; { ... };
     (@field_ty @tuple [$([$($args:tt)*])*]) =&gt; { ... };
@@ -71,7 +71,9 @@
     (@field_ty @$tag:ident [[$($args:tt)*]]) =&gt; { ... };
     (@field_ty @$tag:ident [$($args:tt)*]) =&gt; { ... };
     (@field_ty $($t:tt)*) =&gt; { ... };
-    (@variant ([$($attr:tt)*] $vis:vis $T:ident $d:ty) [$($vars:tt)*]) =&gt; { ... };
+    (@tag_expr raw, $iter:ident) =&gt; { ... };
+    (@tag_expr $d:ty, $iter:ident) =&gt; { ... };
+    (@variant ([$($attr:tt)*] $vis:vis $T:ident $d:tt) [$($vars:tt)*]) =&gt; { ... };
     (@variant $ctx:tt [$($vars:tt)*] $p:pat =&gt; $v:ident { $($fs:tt)* } $($rest:tt)*) =&gt; { ... };
     (@variant $ctx:tt [$($vars:tt)*] $p:pat =&gt; $v:ident $($rest:tt)*) =&gt; { ... };
     (@variant $ctx:tt [$($vars:tt)*] , $($rest:tt)*) =&gt; { ... };
@@ -87,8 +89,14 @@
     (
         @def
         $(#[$attr:meta])*
-        $vis:vis enum $T:ident : $d:ty {
+        $vis:vis enum $T:ident : $d:tt {
             $( $p:pat =&gt; $v:ident $( { $( [$f:ident : $($spec:tt)*] )* } )?, )*
+        }
+    ) =&gt; { ... };
+    (
+        $(#[$attr:meta])*
+        $vis:vis enum $T:ident : raw {
+            $($body:tt)*
         }
     ) =&gt; { ... };
     (

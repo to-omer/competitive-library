@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["stern_brocot_tree","test_stern_brocot_tree"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["stern_brocot_tree","test_stern_brocot_tree"]};
