@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["range_add_range_min","test_range_add_range_min"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_add_range_min","test_range_add_range_min"]};

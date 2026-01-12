@@ -56,19 +56,29 @@
 <a href=#2 id=2 data-nosnippet>2</a></span><span class="kw">pub use </span>competitive::data_structure::UnionFind;
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span>competitive::prelude::<span class="kw-2">*</span>;
 <a href=#4 id=4 data-nosnippet>4</a>
-<a href=#5 id=5 data-nosnippet>5</a><span class="attr">#[verify::aizu_online_judge(<span class="string">"DSL_1_A"</span>)]
-<a href=#6 id=6 data-nosnippet>6</a></span><span class="kw">pub fn </span><a href="../../../aizu_online_judge/dsl/dsl_1_a/fn.dsl_1_a.html">dsl_1_a</a>(reader: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html">Read</a>, <span class="kw-2">mut </span>writer: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html">Write</a>) {
-<a href=#7 id=7 data-nosnippet>7</a>    <span class="kw">let </span>s = read_all_unchecked(<a href="#6">reader</a>);
-<a href=#8 id=8 data-nosnippet>8</a>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span><a href="#7">s</a>);
-<a href=#9 id=9 data-nosnippet>9</a>    <span class="macro">scan!</span>(<a href="#8">scanner</a>, n, q);
-<a href=#10 id=10 data-nosnippet>10</a>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(<a href="#9">n</a>);
-<a href=#11 id=11 data-nosnippet>11</a>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<a href=#12 id=12 data-nosnippet>12</a>        <span class="macro">scan!</span>(scanner, ty, x, y);
-<a href=#13 id=13 data-nosnippet>13</a>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<a href=#14 id=14 data-nosnippet>14</a>            uf.unite(x, y);
-<a href=#15 id=15 data-nosnippet>15</a>        } <span class="kw">else </span>{
-<a href=#16 id=16 data-nosnippet>16</a>            <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, (uf.same(x, y) <span class="kw">as </span>usize)).ok();
-<a href=#17 id=17 data-nosnippet>17</a>        }
-<a href=#18 id=18 data-nosnippet>18</a>    }
-<a href=#19 id=19 data-nosnippet>19</a>}
+<a href=#5 id=5 data-nosnippet>5</a><span class="macro">competitive::define_enum_scan!</span> {
+<a href=#6 id=6 data-nosnippet>6</a>    <span class="kw">enum </span><a href="#5-10">Query</a>: usize {
+<a href=#7 id=7 data-nosnippet>7</a>        <span class="number">0 </span>=&gt; Unite { x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> }
+<a href=#8 id=8 data-nosnippet>8</a>        <span class="number">1 </span>=&gt; Same { x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> }
+<a href=#9 id=9 data-nosnippet>9</a>    }
+<a href=#10 id=10 data-nosnippet>10</a>}
+<a href=#11 id=11 data-nosnippet>11</a>
+<a href=#12 id=12 data-nosnippet>12</a><span class="attr">#[verify::aizu_online_judge(<span class="string">"DSL_1_A"</span>)]
+<a href=#13 id=13 data-nosnippet>13</a></span><span class="kw">pub fn </span><a href="../../../aizu_online_judge/dsl/dsl_1_a/fn.dsl_1_a.html">dsl_1_a</a>(reader: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html">Read</a>, <span class="kw-2">mut </span>writer: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html">Write</a>) {
+<a href=#14 id=14 data-nosnippet>14</a>    <span class="kw">let </span>s = read_all_unchecked(<a href="#13">reader</a>);
+<a href=#15 id=15 data-nosnippet>15</a>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span><a href="#14">s</a>);
+<a href=#16 id=16 data-nosnippet>16</a>    <span class="macro">scan!</span>(<a href="#15">scanner</a>, n, q);
+<a href=#17 id=17 data-nosnippet>17</a>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(<a href="#16">n</a>);
+<a href=#18 id=18 data-nosnippet>18</a>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<a href=#19 id=19 data-nosnippet>19</a>        <span class="macro">scan!</span>(scanner, query: Query);
+<a href=#20 id=20 data-nosnippet>20</a>        <span class="kw">match </span>query {
+<a href=#21 id=21 data-nosnippet>21</a>            Query::Unite { x, y } =&gt; {
+<a href=#22 id=22 data-nosnippet>22</a>                uf.unite(x, y);
+<a href=#23 id=23 data-nosnippet>23</a>            }
+<a href=#24 id=24 data-nosnippet>24</a>            Query::Same { x, y } =&gt; {
+<a href=#25 id=25 data-nosnippet>25</a>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, (uf.same(x, y) <span class="kw">as </span>usize)).ok();
+<a href=#26 id=26 data-nosnippet>26</a>            }
+<a href=#27 id=27 data-nosnippet>27</a>        }
+<a href=#28 id=28 data-nosnippet>28</a>    }
+<a href=#29 id=29 data-nosnippet>29</a>}
 </code></pre></div></section></main></body></html>

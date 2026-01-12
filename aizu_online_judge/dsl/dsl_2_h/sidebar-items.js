@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["dsl_2_h","test_dsl_2_h"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["dsl_2_h","test_dsl_2_h"]};

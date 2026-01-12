@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["test_unionfind_with_potential","unionfind_with_potential"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["test_unionfind_with_potential","unionfind_with_potential"]};

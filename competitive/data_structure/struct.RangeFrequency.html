@@ -58,191 +58,199 @@
     queries: <a class="struct" href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html" title="struct std::collections::hash::map::HashMap">HashMap</a>&lt;T, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="range_frequency/enum.RangeFrequencyQuery.html" title="enum competitive::data_structure::range_frequency::RangeFrequencyQuery">RangeFrequencyQuery</a>&gt;&gt;,
     output_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.array" class="structfield section-header"><a href="#structfield.array" class="anchor field">§</a><code>array: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</code></span><span id="structfield.queries" class="structfield section-header"><a href="#structfield.queries" class="anchor field">§</a><code>queries: <a class="struct" href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html" title="struct std::collections::hash::map::HashMap">HashMap</a>&lt;T, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="range_frequency/enum.RangeFrequencyQuery.html" title="enum competitive::data_structure::range_frequency::RangeFrequencyQuery">RangeFrequencyQuery</a>&gt;&gt;</code></span><span id="structfield.output_size" class="structfield section-header"><a href="#structfield.output_size" class="anchor field">§</a><code>output_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-RangeFrequency%3CT%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#29-108">Source</a><a href="#impl-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;<div class="where">where
-    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#33-46">Source</a><h4 class="code-header">pub fn <a href="#method.new" class="fn">new</a>(array: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = <span class="highlight focus">RangeFrequency::new</span>(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>13</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <span class="macro">scan!</span>(scanner, k, v: i32);
-<span data-nosnippet>15</span>            rf.set(k, v);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r, x: i32);
-<span data-nosnippet>18</span>            rf.query(l, r, x);
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>    <span class="kw">let </span>results = rf.execute();
-<span data-nosnippet>22</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
-<span data-nosnippet>23</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#16&#34;,&#34;line 16&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#16">line 16</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
-<span data-nosnippet>14</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
-<span data-nosnippet>15</span>    );
-<span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = <span class="highlight focus">RangeFrequency::new</span>(a);
-<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#33-46">Source</a><h4 class="code-header">pub fn <a href="#method.new" class="fn">new</a>(array: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = <span class="highlight focus">RangeFrequency::new</span>(a);
 <span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>20</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>21</span>            <span class="macro">scan!</span>(scanner, p, x: i32);
-<span data-nosnippet>22</span>            seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
-<span data-nosnippet>23</span>            rf.set(p, x);
-<span data-nosnippet>24</span>        } <span class="kw">else </span>{
-<span data-nosnippet>25</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>26</span>            <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
-<span data-nosnippet>27</span>            out.push((x, r - l));
-<span data-nosnippet>28</span>            rf.query(l, r, x);
-<span data-nosnippet>29</span>        }
-<span data-nosnippet>30</span>    }
-<span data-nosnippet>31</span>    rf.execute_with_callback(|i, v| {
-<span data-nosnippet>32</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
-<span data-nosnippet>33</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    });
-<span data-nosnippet>36</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
-<span data-nosnippet>37</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.set" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#48-58">Source</a><h4 class="code-header">pub fn <a href="#method.set" class="fn">set</a>(&amp;mut self, index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, value: T)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>13</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <span class="macro">scan!</span>(scanner, k, v: i32);
-<span data-nosnippet>15</span>            rf.<span class="highlight focus">set</span>(k, v);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r, x: i32);
-<span data-nosnippet>18</span>            rf.query(l, r, x);
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>    <span class="kw">let </span>results = rf.execute();
-<span data-nosnippet>22</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
-<span data-nosnippet>23</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
-<span data-nosnippet>14</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
-<span data-nosnippet>15</span>    );
-<span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
-<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Set { k, v } =&gt; {
+<span data-nosnippet>22</span>                rf.set(k, v);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Query { l, r, x } =&gt; {
+<span data-nosnippet>25</span>                rf.query(l, r, x);
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>    <span class="kw">let </span>results = rf.execute();
+<span data-nosnippet>30</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
+<span data-nosnippet>31</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
+<span data-nosnippet>21</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
+<span data-nosnippet>22</span>    );
+<span data-nosnippet>23</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = <span class="highlight focus">RangeFrequency::new</span>(a);
+<span data-nosnippet>24</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Update { p, x } =&gt; {
+<span data-nosnippet>29</span>                seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
+<span data-nosnippet>30</span>                rf.set(p, x);
+<span data-nosnippet>31</span>            }
+<span data-nosnippet>32</span>            Query::Query { l, r } =&gt; {
+<span data-nosnippet>33</span>                <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
+<span data-nosnippet>34</span>                out.push((x, r - l));
+<span data-nosnippet>35</span>                rf.query(l, r, x);
+<span data-nosnippet>36</span>            }
+<span data-nosnippet>37</span>        }
+<span data-nosnippet>38</span>    }
+<span data-nosnippet>39</span>    rf.execute_with_callback(|i, v| {
+<span data-nosnippet>40</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
+<span data-nosnippet>41</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    });
+<span data-nosnippet>44</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
+<span data-nosnippet>45</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.set" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#48-58">Source</a><h4 class="code-header">pub fn <a href="#method.set" class="fn">set</a>(&amp;mut self, index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, value: T)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
 <span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>20</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>21</span>            <span class="macro">scan!</span>(scanner, p, x: i32);
-<span data-nosnippet>22</span>            seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
-<span data-nosnippet>23</span>            rf.<span class="highlight focus">set</span>(p, x);
-<span data-nosnippet>24</span>        } <span class="kw">else </span>{
-<span data-nosnippet>25</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>26</span>            <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
-<span data-nosnippet>27</span>            out.push((x, r - l));
-<span data-nosnippet>28</span>            rf.query(l, r, x);
-<span data-nosnippet>29</span>        }
-<span data-nosnippet>30</span>    }
-<span data-nosnippet>31</span>    rf.execute_with_callback(|i, v| {
-<span data-nosnippet>32</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
-<span data-nosnippet>33</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    });
-<span data-nosnippet>36</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
-<span data-nosnippet>37</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.query" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#60-72">Source</a><h4 class="code-header">pub fn <a href="#method.query" class="fn">query</a>(&amp;mut self, left: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, value: T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#18&#34;,&#34;line 18&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#18">line 18</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>13</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <span class="macro">scan!</span>(scanner, k, v: i32);
-<span data-nosnippet>15</span>            rf.set(k, v);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r, x: i32);
-<span data-nosnippet>18</span>            rf.<span class="highlight focus">query</span>(l, r, x);
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>    <span class="kw">let </span>results = rf.execute();
-<span data-nosnippet>22</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
-<span data-nosnippet>23</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[19,19],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#28&#34;,&#34;line 28&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#28">line 28</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
-<span data-nosnippet>14</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
-<span data-nosnippet>15</span>    );
-<span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
-<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Set { k, v } =&gt; {
+<span data-nosnippet>22</span>                rf.<span class="highlight focus">set</span>(k, v);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Query { l, r, x } =&gt; {
+<span data-nosnippet>25</span>                rf.query(l, r, x);
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>    <span class="kw">let </span>results = rf.execute();
+<span data-nosnippet>30</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
+<span data-nosnippet>31</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#30&#34;,&#34;line 30&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#30">line 30</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
+<span data-nosnippet>21</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
+<span data-nosnippet>22</span>    );
+<span data-nosnippet>23</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
+<span data-nosnippet>24</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Update { p, x } =&gt; {
+<span data-nosnippet>29</span>                seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
+<span data-nosnippet>30</span>                rf.<span class="highlight focus">set</span>(p, x);
+<span data-nosnippet>31</span>            }
+<span data-nosnippet>32</span>            Query::Query { l, r } =&gt; {
+<span data-nosnippet>33</span>                <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
+<span data-nosnippet>34</span>                out.push((x, r - l));
+<span data-nosnippet>35</span>                rf.query(l, r, x);
+<span data-nosnippet>36</span>            }
+<span data-nosnippet>37</span>        }
+<span data-nosnippet>38</span>    }
+<span data-nosnippet>39</span>    rf.execute_with_callback(|i, v| {
+<span data-nosnippet>40</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
+<span data-nosnippet>41</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    });
+<span data-nosnippet>44</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
+<span data-nosnippet>45</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.query" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#60-72">Source</a><h4 class="code-header">pub fn <a href="#method.query" class="fn">query</a>(&amp;mut self, left: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, value: T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
 <span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>20</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>21</span>            <span class="macro">scan!</span>(scanner, p, x: i32);
-<span data-nosnippet>22</span>            seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
-<span data-nosnippet>23</span>            rf.set(p, x);
-<span data-nosnippet>24</span>        } <span class="kw">else </span>{
-<span data-nosnippet>25</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>26</span>            <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
-<span data-nosnippet>27</span>            out.push((x, r - l));
-<span data-nosnippet>28</span>            rf.<span class="highlight focus">query</span>(l, r, x);
-<span data-nosnippet>29</span>        }
-<span data-nosnippet>30</span>    }
-<span data-nosnippet>31</span>    rf.execute_with_callback(|i, v| {
-<span data-nosnippet>32</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
-<span data-nosnippet>33</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    });
-<span data-nosnippet>36</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
-<span data-nosnippet>37</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.execute_with_callback" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#74-101">Source</a><h4 class="code-header">pub fn <a href="#method.execute_with_callback" class="fn">execute_with_callback</a>(self, callback: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>))</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[2,2],&#34;../../src/competitive/data_structure/range_frequency.rs.html#105&#34;,&#34;line 105&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_frequency.rs (<a href="../../src/competitive/data_structure/range_frequency.rs.html#105">line 105</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>103</span>    <span class="kw">pub fn </span>execute(<span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Set { k, v } =&gt; {
+<span data-nosnippet>22</span>                rf.set(k, v);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Query { l, r, x } =&gt; {
+<span data-nosnippet>25</span>                rf.<span class="highlight focus">query</span>(l, r, x);
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>    <span class="kw">let </span>results = rf.execute();
+<span data-nosnippet>30</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
+<span data-nosnippet>31</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[19,19],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#35&#34;,&#34;line 35&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#35">line 35</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
+<span data-nosnippet>21</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
+<span data-nosnippet>22</span>    );
+<span data-nosnippet>23</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
+<span data-nosnippet>24</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Update { p, x } =&gt; {
+<span data-nosnippet>29</span>                seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
+<span data-nosnippet>30</span>                rf.set(p, x);
+<span data-nosnippet>31</span>            }
+<span data-nosnippet>32</span>            Query::Query { l, r } =&gt; {
+<span data-nosnippet>33</span>                <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
+<span data-nosnippet>34</span>                out.push((x, r - l));
+<span data-nosnippet>35</span>                rf.<span class="highlight focus">query</span>(l, r, x);
+<span data-nosnippet>36</span>            }
+<span data-nosnippet>37</span>        }
+<span data-nosnippet>38</span>    }
+<span data-nosnippet>39</span>    rf.execute_with_callback(|i, v| {
+<span data-nosnippet>40</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
+<span data-nosnippet>41</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    });
+<span data-nosnippet>44</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
+<span data-nosnippet>45</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.execute_with_callback" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#74-101">Source</a><h4 class="code-header">pub fn <a href="#method.execute_with_callback" class="fn">execute_with_callback</a>(self, callback: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>))</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[2,2],&#34;../../src/competitive/data_structure/range_frequency.rs.html#105&#34;,&#34;line 105&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_frequency.rs (<a href="../../src/competitive/data_structure/range_frequency.rs.html#105">line 105</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>103</span>    <span class="kw">pub fn </span>execute(<span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>104</span>        <span class="kw">let </span><span class="kw-2">mut </span>results = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.output_size];
 <span data-nosnippet>105</span>        <span class="self">self</span>.<span class="highlight focus">execute_with_callback</span>(|i, v| results[i] = v);
 <span data-nosnippet>106</span>        results
-<span data-nosnippet>107</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[22,26],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#31-35&#34;,&#34;lines 31-35&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#31-35">lines 31-35</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
-<span data-nosnippet>14</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
-<span data-nosnippet>15</span>    );
-<span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
-<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>107</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[23,27],&#34;../../src/library_checker/data_structure/majority_voting.rs.html#39-43&#34;,&#34;lines 39-43&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/majority_voting.rs (<a href="../../src/library_checker/data_structure/majority_voting.rs.html#39-43">lines 39-43</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>majority_voting(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;FindMajorityOperation&lt;i32&gt;&gt;::from_vec(
+<span data-nosnippet>21</span>        a.iter().map(|<span class="kw-2">&amp;</span>a| (<span class="prelude-val">Some</span>(a), <span class="number">1</span>)).collect(),
+<span data-nosnippet>22</span>    );
+<span data-nosnippet>23</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
+<span data-nosnippet>24</span>    <span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">vec!</span>[];
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Update { p, x } =&gt; {
+<span data-nosnippet>29</span>                seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
+<span data-nosnippet>30</span>                rf.set(p, x);
+<span data-nosnippet>31</span>            }
+<span data-nosnippet>32</span>            Query::Query { l, r } =&gt; {
+<span data-nosnippet>33</span>                <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
+<span data-nosnippet>34</span>                out.push((x, r - l));
+<span data-nosnippet>35</span>                rf.query(l, r, x);
+<span data-nosnippet>36</span>            }
+<span data-nosnippet>37</span>        }
+<span data-nosnippet>38</span>    }
+<span data-nosnippet>39</span>    rf.<span class="highlight focus">execute_with_callback</span>(|i, v| {
+<span data-nosnippet>40</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
+<span data-nosnippet>41</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    });
+<span data-nosnippet>44</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
+<span data-nosnippet>45</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.execute" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#103-107">Source</a><h4 class="code-header">pub fn <a href="#method.execute" class="fn">execute</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[16,16],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#29&#34;,&#34;line 29&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#29">line 29</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
 <span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>20</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>21</span>            <span class="macro">scan!</span>(scanner, p, x: i32);
-<span data-nosnippet>22</span>            seg.set(p, (<span class="prelude-val">Some</span>(x), <span class="number">1</span>));
-<span data-nosnippet>23</span>            rf.set(p, x);
-<span data-nosnippet>24</span>        } <span class="kw">else </span>{
-<span data-nosnippet>25</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>26</span>            <span class="kw">let </span>x = seg.fold(l..r).<span class="number">0</span>.unwrap_or(-<span class="number">1</span>);
-<span data-nosnippet>27</span>            out.push((x, r - l));
-<span data-nosnippet>28</span>            rf.query(l, r, x);
-<span data-nosnippet>29</span>        }
-<span data-nosnippet>30</span>    }
-<span data-nosnippet>31</span>    rf.<span class="highlight focus">execute_with_callback</span>(|i, v| {
-<span data-nosnippet>32</span>        <span class="kw">if </span>out[i].<span class="number">1 </span>&gt;= <span class="number">2 </span>* v {
-<span data-nosnippet>33</span>            out[i].<span class="number">0 </span>= -<span class="number">1</span>;
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    });
-<span data-nosnippet>36</span>    <span class="macro">iter_print!</span>(writer, @lf @it out.iter().map(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>)| x));
-<span data-nosnippet>37</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.execute" class="method"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#103-107">Source</a><h4 class="code-header">pub fn <a href="#method.execute" class="fn">execute</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[15,15],&#34;../../src/library_checker/data_structure/point_set_range_frequency.rs.html#21&#34;,&#34;line 21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_set_range_frequency.rs (<a href="../../src/library_checker/data_structure/point_set_range_frequency.rs.html#21">line 21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>point_set_range_frequency(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i32; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>rf = RangeFrequency::new(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, ty);
-<span data-nosnippet>13</span>        <span class="kw">if </span>ty == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <span class="macro">scan!</span>(scanner, k, v: i32);
-<span data-nosnippet>15</span>            rf.set(k, v);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r, x: i32);
-<span data-nosnippet>18</span>            rf.query(l, r, x);
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>    <span class="kw">let </span>results = rf.<span class="highlight focus">execute</span>();
-<span data-nosnippet>22</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
-<span data-nosnippet>23</span>}</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-RangeFrequency%3CT%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#19">Source</a><a href="#impl-Clone-for-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;<div class="where">where
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Set { k, v } =&gt; {
+<span data-nosnippet>22</span>                rf.set(k, v);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Query { l, r, x } =&gt; {
+<span data-nosnippet>25</span>                rf.query(l, r, x);
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>    <span class="kw">let </span>results = rf.<span class="highlight focus">execute</span>();
+<span data-nosnippet>30</span>    <span class="macro">iter_print!</span>(writer, @lf @it results);
+<span data-nosnippet>31</span>}</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-RangeFrequency%3CT%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#19">Source</a><a href="#impl-Clone-for-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;<div class="where">where
     T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#19">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-RangeFrequency%3CT%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#19">Source</a><a href="#impl-Debug-for-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;<div class="where">where
     T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../src/competitive/data_structure/range_frequency.rs.html#19">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-RangeFrequency%3CT%3E" class="impl"><a href="#impl-Freeze-for-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;</h3></section><section id="impl-RefUnwindSafe-for-RangeFrequency%3CT%3E" class="impl"><a href="#impl-RefUnwindSafe-for-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;<div class="where">where
     T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,</div></h3></section><section id="impl-Send-for-RangeFrequency%3CT%3E" class="impl"><a href="#impl-Send-for-RangeFrequency%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.RangeFrequency.html" title="struct competitive::data_structure::RangeFrequency">RangeFrequency</a>&lt;T&gt;<div class="where">where

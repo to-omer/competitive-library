@@ -60,36 +60,41 @@
 <a href=#6 id=6 data-nosnippet>6</a>    num::Saturating,
 <a href=#7 id=7 data-nosnippet>7</a>};
 <a href=#8 id=8 data-nosnippet>8</a>
-<a href=#9 id=9 data-nosnippet>9</a><span class="attr">#[verify::library_checker(<span class="string">"range_chmin_chmax_add_range_sum"</span>)]
-<a href=#10 id=10 data-nosnippet>10</a></span><span class="kw">pub fn </span><a href="../../../library_checker/data_structure/range_chmin_chmax_add_range_sum/fn.range_chmin_chmax_add_range_sum.html">range_chmin_chmax_add_range_sum</a>(reader: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html">Read</a>, <span class="kw-2">mut </span>writer: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html">Write</a>) {
-<a href=#11 id=11 data-nosnippet>11</a>    <span class="kw">let </span>s = read_all_unchecked(<a href="#10">reader</a>);
-<a href=#12 id=12 data-nosnippet>12</a>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span><a href="#11">s</a>);
-<a href=#13 id=13 data-nosnippet>13</a>    <span class="macro">scan!</span>(<a href="#12">scanner</a>, n, q, a: [Saturating&lt;i64&gt;; <a href="#13">n</a>]);
-<a href=#14 id=14 data-nosnippet>14</a>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeChminChmaxAdd&lt;Saturating&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;&gt;&gt;::from_vec(
-<a href=#15 id=15 data-nosnippet>15</a>        <a href="#13">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
-<a href=#16 id=16 data-nosnippet>16</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.map">map</a>(|<span class="kw-2">&amp;</span>a| RangeSumRangeChminChmaxAdd::single(<a href="#16">a</a>, Saturating(<span class="number">1</span>)))
-<a href=#17 id=17 data-nosnippet>17</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.collect">collect</a>(),
-<a href=#18 id=18 data-nosnippet>18</a>    );
-<a href=#19 id=19 data-nosnippet>19</a>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<a href=#20 id=20 data-nosnippet>20</a>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<a href=#21 id=21 data-nosnippet>21</a>            <span class="number">0 </span>=&gt; {
-<a href=#22 id=22 data-nosnippet>22</a>                <span class="macro">scan!</span>(scanner, l, r, b: Saturating&lt;i64&gt;);
-<a href=#23 id=23 data-nosnippet>23</a>                seg.update(l..r, RangeChminChmaxAdd::chmin(b));
-<a href=#24 id=24 data-nosnippet>24</a>            }
-<a href=#25 id=25 data-nosnippet>25</a>            <span class="number">1 </span>=&gt; {
-<a href=#26 id=26 data-nosnippet>26</a>                <span class="macro">scan!</span>(scanner, l, r, b: Saturating&lt;i64&gt;);
-<a href=#27 id=27 data-nosnippet>27</a>                seg.update(l..r, RangeChminChmaxAdd::chmax(b));
-<a href=#28 id=28 data-nosnippet>28</a>            }
-<a href=#29 id=29 data-nosnippet>29</a>            <span class="number">2 </span>=&gt; {
-<a href=#30 id=30 data-nosnippet>30</a>                <span class="macro">scan!</span>(scanner, l, r, b: Saturating&lt;i64&gt;);
-<a href=#31 id=31 data-nosnippet>31</a>                seg.update(l..r, RangeChminChmaxAdd::add(b));
-<a href=#32 id=32 data-nosnippet>32</a>            }
-<a href=#33 id=33 data-nosnippet>33</a>            <span class="number">3 </span>=&gt; {
-<a href=#34 id=34 data-nosnippet>34</a>                <span class="macro">scan!</span>(scanner, l, r);
-<a href=#35 id=35 data-nosnippet>35</a>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(l..r).sum).ok();
+<a href=#9 id=9 data-nosnippet>9</a><span class="macro">competitive::define_enum_scan!</span> {
+<a href=#10 id=10 data-nosnippet>10</a>    <span class="kw">enum </span><a href="#9-16">Query</a>: usize {
+<a href=#11 id=11 data-nosnippet>11</a>        <span class="number">0 </span>=&gt; Chmin { l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, b: Saturating&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; }
+<a href=#12 id=12 data-nosnippet>12</a>        <span class="number">1 </span>=&gt; Chmax { l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, b: Saturating&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; }
+<a href=#13 id=13 data-nosnippet>13</a>        <span class="number">2 </span>=&gt; Add { l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, b: Saturating&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; }
+<a href=#14 id=14 data-nosnippet>14</a>        <span class="number">3 </span>=&gt; Sum { l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> }
+<a href=#15 id=15 data-nosnippet>15</a>    }
+<a href=#16 id=16 data-nosnippet>16</a>}
+<a href=#17 id=17 data-nosnippet>17</a>
+<a href=#18 id=18 data-nosnippet>18</a><span class="attr">#[verify::library_checker(<span class="string">"range_chmin_chmax_add_range_sum"</span>)]
+<a href=#19 id=19 data-nosnippet>19</a></span><span class="kw">pub fn </span><a href="../../../library_checker/data_structure/range_chmin_chmax_add_range_sum/fn.range_chmin_chmax_add_range_sum.html">range_chmin_chmax_add_range_sum</a>(reader: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html">Read</a>, <span class="kw-2">mut </span>writer: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html">Write</a>) {
+<a href=#20 id=20 data-nosnippet>20</a>    <span class="kw">let </span>s = read_all_unchecked(<a href="#19">reader</a>);
+<a href=#21 id=21 data-nosnippet>21</a>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span><a href="#20">s</a>);
+<a href=#22 id=22 data-nosnippet>22</a>    <span class="macro">scan!</span>(<a href="#21">scanner</a>, n, q, a: [Saturating&lt;i64&gt;; <a href="#22">n</a>]);
+<a href=#23 id=23 data-nosnippet>23</a>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeChminChmaxAdd&lt;Saturating&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;&gt;&gt;::from_vec(
+<a href=#24 id=24 data-nosnippet>24</a>        <a href="#22">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+<a href=#25 id=25 data-nosnippet>25</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.map">map</a>(|<span class="kw-2">&amp;</span>a| RangeSumRangeChminChmaxAdd::single(<a href="#25">a</a>, Saturating(<span class="number">1</span>)))
+<a href=#26 id=26 data-nosnippet>26</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.collect">collect</a>(),
+<a href=#27 id=27 data-nosnippet>27</a>    );
+<a href=#28 id=28 data-nosnippet>28</a>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<a href=#29 id=29 data-nosnippet>29</a>        <span class="macro">scan!</span>(scanner, query: Query);
+<a href=#30 id=30 data-nosnippet>30</a>        <span class="kw">match </span>query {
+<a href=#31 id=31 data-nosnippet>31</a>            Query::Chmin { l, r, b } =&gt; {
+<a href=#32 id=32 data-nosnippet>32</a>                seg.update(l..r, RangeChminChmaxAdd::chmin(b));
+<a href=#33 id=33 data-nosnippet>33</a>            }
+<a href=#34 id=34 data-nosnippet>34</a>            Query::Chmax { l, r, b } =&gt; {
+<a href=#35 id=35 data-nosnippet>35</a>                seg.update(l..r, RangeChminChmaxAdd::chmax(b));
 <a href=#36 id=36 data-nosnippet>36</a>            }
-<a href=#37 id=37 data-nosnippet>37</a>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<a href=#38 id=38 data-nosnippet>38</a>        }
-<a href=#39 id=39 data-nosnippet>39</a>    }
-<a href=#40 id=40 data-nosnippet>40</a>}
+<a href=#37 id=37 data-nosnippet>37</a>            Query::Add { l, r, b } =&gt; {
+<a href=#38 id=38 data-nosnippet>38</a>                seg.update(l..r, RangeChminChmaxAdd::add(b));
+<a href=#39 id=39 data-nosnippet>39</a>            }
+<a href=#40 id=40 data-nosnippet>40</a>            Query::Sum { l, r } =&gt; {
+<a href=#41 id=41 data-nosnippet>41</a>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(l..r).sum).ok();
+<a href=#42 id=42 data-nosnippet>42</a>            }
+<a href=#43 id=43 data-nosnippet>43</a>        }
+<a href=#44 id=44 data-nosnippet>44</a>    }
+<a href=#45 id=45 data-nosnippet>45</a>}
 </code></pre></div></section></main></body></html>

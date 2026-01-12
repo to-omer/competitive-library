@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["test_vertex_set_path_composite","vertex_set_path_composite"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["test_vertex_set_path_composite","vertex_set_path_composite"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["deque_operate_all_composite","test_deque_operate_all_composite"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["deque_operate_all_composite","test_deque_operate_all_composite"]};

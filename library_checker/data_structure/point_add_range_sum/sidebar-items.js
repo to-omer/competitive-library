@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["point_add_range_sum_binary_indexed_tree","point_add_range_sum_segment_tree","test_point_add_range_sum_binary_indexed_tree","test_point_add_range_sum_segment_tree"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["point_add_range_sum_binary_indexed_tree","point_add_range_sum_segment_tree","test_point_add_range_sum_binary_indexed_tree","test_point_add_range_sum_segment_tree"]};

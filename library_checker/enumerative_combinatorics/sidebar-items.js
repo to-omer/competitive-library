@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["binomial_coefficient","binomial_coefficient_prime_mod","sharp_p_subset_sum"]};
+window.SIDEBAR_ITEMS = {"mod":["binomial_coefficient","binomial_coefficient_prime_mod","number_of_increasing_sequences_between_two_sequences","sharp_p_subset_sum"]};

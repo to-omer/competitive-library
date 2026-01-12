@@ -57,151 +57,138 @@
     n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     seg: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;(M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>, M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Act" title="type competitive::algebra::LazyMapMonoid::Act">Act</a>)&gt;,
 }</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.n" class="structfield section-header"><a href="#structfield.n" class="anchor field">§</a><code>n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.seg" class="structfield section-header"><a href="#structfield.seg" class="anchor field">§</a><code>seg: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;(M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>, M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Act" title="type competitive::algebra::LazyMapMonoid::Act">Act</a>)&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-LazySegmentTree%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#40-287">Source</a><a href="#impl-LazySegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="../struct.LazySegmentTree.html" title="struct competitive::data_structure::LazySegmentTree">LazySegmentTree</a>&lt;M&gt;<div class="where">where
-    M: <a class="trait" href="../../algebra/trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#44-47">Source</a><h4 class="code-header">pub fn <a href="#method.new" class="fn">new</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_d.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i32);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, i);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i..i + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_f.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_f(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i32);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.from_vec" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#48-58">Source</a><h4 class="code-header">pub fn <a href="#method.from_vec" class="fn">from_vec</a>(v: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/library_checker/data_structure/range_add_range_min.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_add_range_min.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>range_add_range_min(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeAdd&lt;i64&gt;&gt;::from_vec</span>(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, t: u8);
-<span data-nosnippet>13</span>        <span class="kw">if </span>t == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <a href="math/mod.rs.html#1-260">scan!</a>(scanner, l, r, x: i64);
-<span data-nosnippet>15</span>            seg.update(l..r, x);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>18</span>            <span class="kw">let </span>ans = seg.fold(l..r);
-<span data-nosnippet>19</span>            <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>20</span>        }
-<span data-nosnippet>21</span>    }
-<span data-nosnippet>22</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_h.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_h(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[<span class="number">0</span>; n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i64);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_e.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_e(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: u64);
-<span data-nosnippet>15</span>                seg.update(s - <span class="number">1</span>..t, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, i);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i - <span class="number">1</span>..i).<span class="number">0</span>).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_g.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_g(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: u64);
-<span data-nosnippet>15</span>                seg.update(s - <span class="number">1</span>..t, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s - <span class="number">1</span>..t).<span class="number">0</span>).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_i.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_i(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i64);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>).<span class="number">0</span>).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,6],&#34;../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#14-16&#34;,&#34;lines 14-16&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_affine_range_sum.rs (<a href="../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#14-16">lines 14-16</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>range_affine_range_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>11</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>12</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>13</span>    <span class="macro">scan!</span>(scanner, n, q, a: [MInt998244353]);
-<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeLinear&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(
-<span data-nosnippet>15</span>        a.take(n).map(|x| (x, MInt998244353::one())).collect::&lt;<span class="kw">_</span>&gt;(),
-<span data-nosnippet>16</span>    );
-<span data-nosnippet>17</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>18</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>19</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>20</span>                <span class="macro">scan!</span>(scanner, l, r, bc: (MInt998244353, MInt998244353));
-<span data-nosnippet>21</span>                seg.update(l..r, bc);
-<span data-nosnippet>22</span>            }
-<span data-nosnippet>23</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>24</span>                <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(l..r).<span class="number">0</span>).ok();
+    M: <a class="trait" href="../../algebra/trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#44-47">Source</a><h4 class="code-header">pub fn <a href="#method.new" class="fn">new</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_d.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Get { i } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i..i + <span class="number">1</span>)).ok();
 <span data-nosnippet>26</span>            }
-<span data-nosnippet>27</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_f.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_f(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Fold { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.from_vec" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#48-58">Source</a><h4 class="code-header">pub fn <a href="#method.from_vec" class="fn">from_vec</a>(v: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_h.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_h(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[<span class="number">0</span>; n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Min { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_e.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_e(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s - <span class="number">1</span>..t, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Get { i } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i - <span class="number">1</span>..i).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_g.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_g(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s - <span class="number">1</span>..t, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Sum { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s - <span class="number">1</span>..t).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_i.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_i(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Sum { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/library_checker/data_structure/range_add_range_min.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_add_range_min.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>range_add_range_min(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n]);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeMinRangeAdd&lt;i64&gt;&gt;::from_vec</span>(a);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { l, r, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(l..r, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Min { l, r } =&gt; {
+<span data-nosnippet>25</span>                <span class="kw">let </span>ans = seg.fold(l..r);
+<span data-nosnippet>26</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
+<span data-nosnippet>27</span>            }
 <span data-nosnippet>28</span>        }
 <span data-nosnippet>29</span>    }
-<span data-nosnippet>30</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/aizu_online_judge/grl/grl_5_e.rs.html#24">crates/aizu_online_judge/src/grl/grl_5_e.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_chmin_chmax_add_range_sum.rs.html#14-18">crates/library_checker/src/data_structure/range_chmin_chmax_add_range_sum.rs</a></li></ul></div></div></details></div></details><section id="method.from_keys" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#59-69">Source</a><h4 class="code-header">pub fn <a href="#method.from_keys" class="fn">from_keys</a>(keys: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html" title="trait core::iter::traits::exact_size::ExactSizeIterator">ExactSizeIterator</a>&lt;Item = M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Key" title="type competitive::algebra::LazyMapMonoid::Key">Key</a>&gt;) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.update_at" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#71-84">Source</a><h4 class="code-header">fn <a href="#method.update_at" class="fn">update_at</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: &amp;M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Act" title="type competitive::algebra::LazyMapMonoid::Act">Act</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#93&#34;,&#34;line 93&#34;],[[4,4],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#94&#34;,&#34;line 94&#34;],[[35,35],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#125&#34;,&#34;line 125&#34;],[[40,40],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#130&#34;,&#34;line 130&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#93">line 93</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>90</span>    <span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
+<span data-nosnippet>30</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,6],&#34;../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#21-23&#34;,&#34;lines 21-23&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_affine_range_sum.rs (<a href="../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#21-23">lines 21-23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>17</span><span class="kw">pub fn </span>range_affine_range_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>18</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>20</span>    <span class="macro">scan!</span>(scanner, n, q, a: [MInt998244353]);
+<span data-nosnippet>21</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="highlight focus">LazySegmentTree::&lt;RangeSumRangeLinear&lt;<span class="kw">_</span>&gt;&gt;::from_vec</span>(
+<span data-nosnippet>22</span>        a.take(n).map(|x| (x, MInt998244353::one())).collect::&lt;<span class="kw">_</span>&gt;(),
+<span data-nosnippet>23</span>    );
+<span data-nosnippet>24</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>25</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>26</span>        <span class="kw">match </span>query {
+<span data-nosnippet>27</span>            Query::Update { l, r, bc } =&gt; {
+<span data-nosnippet>28</span>                seg.update(l..r, bc);
+<span data-nosnippet>29</span>            }
+<span data-nosnippet>30</span>            Query::Fold { l, r } =&gt; {
+<span data-nosnippet>31</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(l..r).<span class="number">0</span>).ok();
+<span data-nosnippet>32</span>            }
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/data_structure/range_chmin_chmax_add_range_sum.rs.html#23-27">crates/library_checker/src/data_structure/range_chmin_chmax_add_range_sum.rs</a></li><li><a href="../../../src/aizu_online_judge/grl/grl_5_e.rs.html#31">crates/aizu_online_judge/src/grl/grl_5_e.rs</a></li></ul></div></div></details></div></details><section id="method.from_keys" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#59-69">Source</a><h4 class="code-header">pub fn <a href="#method.from_keys" class="fn">from_keys</a>(keys: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html" title="trait core::iter::traits::exact_size::ExactSizeIterator">ExactSizeIterator</a>&lt;Item = M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Key" title="type competitive::algebra::LazyMapMonoid::Key">Key</a>&gt;) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.update_at" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#71-84">Source</a><h4 class="code-header">fn <a href="#method.update_at" class="fn">update_at</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: &amp;M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Act" title="type competitive::algebra::LazyMapMonoid::Act">Act</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#93&#34;,&#34;line 93&#34;],[[4,4],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#94&#34;,&#34;line 94&#34;],[[35,35],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#125&#34;,&#34;line 125&#34;],[[40,40],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#130&#34;,&#34;line 130&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#93">line 93</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>90</span>    <span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
 <span data-nosnippet>91</span>        <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
 <span data-nosnippet>92</span>        <span class="kw">let </span>x = replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.seg[k].<span class="number">1</span>, M::act_unit());
 <span data-nosnippet>93</span>        <span class="self">self</span>.<span class="highlight focus">update_at</span>(<span class="number">2 </span>* k, <span class="kw-2">&amp;</span>x);
@@ -650,207 +637,189 @@
 <span data-nosnippet>166</span>        <span class="self">self</span>.seg[k] = (x, M::act_unit());
 <span data-nosnippet>167</span>        <span class="self">self</span>.<span class="highlight">recalc</span>(k, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
 <span data-nosnippet>168</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#114-137">Source</a><h4 class="code-header">pub fn <a href="#method.update" class="fn">update</a>&lt;R&gt;(&amp;mut self, range: R, x: M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Act" title="type competitive::algebra::LazyMapMonoid::Act">Act</a>)<div class="where">where
-    R: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html" title="trait core::ops::range::RangeBounds">RangeBounds</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/library_checker/data_structure/range_add_range_min.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_add_range_min.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>range_add_range_min(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeAdd&lt;i64&gt;&gt;::from_vec(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, t: u8);
-<span data-nosnippet>13</span>        <span class="kw">if </span>t == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <a href="math/mod.rs.html#1-260">scan!</a>(scanner, l, r, x: i64);
-<span data-nosnippet>15</span>            seg.<span class="highlight focus">update</span>(l..r, x);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>18</span>            <span class="kw">let </span>ans = seg.fold(l..r);
-<span data-nosnippet>19</span>            <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>20</span>        }
-<span data-nosnippet>21</span>    }
-<span data-nosnippet>22</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_d.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i32);
-<span data-nosnippet>15</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, i);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i..i + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_f.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_f(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i32);
-<span data-nosnippet>15</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_h.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_h(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[<span class="number">0</span>; n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i64);
-<span data-nosnippet>15</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_e.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_e(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: u64);
-<span data-nosnippet>15</span>                seg.<span class="highlight focus">update</span>(s - <span class="number">1</span>..t, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, i);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i - <span class="number">1</span>..i).<span class="number">0</span>).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_g.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_g(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: u64);
-<span data-nosnippet>15</span>                seg.<span class="highlight focus">update</span>(s - <span class="number">1</span>..t, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s - <span class="number">1</span>..t).<span class="number">0</span>).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#15">crates/aizu_online_judge/src/dsl/dsl_2_i.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#21">crates/library_checker/src/data_structure/range_affine_range_sum.rs</a></li><li><a href="../../../src/aizu_online_judge/grl/grl_5_e.rs.html#31">crates/aizu_online_judge/src/grl/grl_5_e.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_chmin_chmax_add_range_sum.rs.html#23">crates/library_checker/src/data_structure/range_chmin_chmax_add_range_sum.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#138-162">Source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>&lt;R&gt;(&amp;mut self, range: R) -&gt; M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a><div class="where">where
+    R: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html" title="trait core::ops::range::RangeBounds">RangeBounds</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_d.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Get { i } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i..i + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_f.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_f(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Fold { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_h.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_h(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[<span class="number">0</span>; n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Min { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_e.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_e(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.<span class="highlight focus">update</span>(s - <span class="number">1</span>..t, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Get { i } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(i - <span class="number">1</span>..i).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_g.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_g(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.<span class="highlight focus">update</span>(s - <span class="number">1</span>..t, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Sum { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s - <span class="number">1</span>..t).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_i.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_i(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.<span class="highlight focus">update</span>(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Sum { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.fold(s..t + <span class="number">1</span>).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/data_structure/range_add_range_min.rs.html#22">crates/library_checker/src/data_structure/range_add_range_min.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#28">crates/library_checker/src/data_structure/range_affine_range_sum.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_chmin_chmax_add_range_sum.rs.html#32">crates/library_checker/src/data_structure/range_chmin_chmax_add_range_sum.rs</a></li><li><a href="../../../src/aizu_online_judge/grl/grl_5_e.rs.html#38">crates/aizu_online_judge/src/grl/grl_5_e.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#138-162">Source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>&lt;R&gt;(&amp;mut self, range: R) -&gt; M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a><div class="where">where
     R: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html" title="trait core::ops::range::RangeBounds">RangeBounds</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#170&#34;,&#34;line 170&#34;],[[4,4],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#173&#34;,&#34;line 173&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#170">line 170</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>169</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) -&gt; M::Agg {
 <span data-nosnippet>170</span>        <span class="self">self</span>.<span class="highlight focus">fold</span>(k..k + <span class="number">1</span>)
 <span data-nosnippet>171</span>    }
 <span data-nosnippet>172</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; M::Agg {
 <span data-nosnippet>173</span>        <span class="self">self</span>.<span class="highlight">fold</span>(<span class="number">0</span>..<span class="self">self</span>.n)
-<span data-nosnippet>174</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/library_checker/data_structure/range_add_range_min.rs.html#18&#34;,&#34;line 18&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_add_range_min.rs.html#18">line 18</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>range_add_range_min(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n]);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeAdd&lt;i64&gt;&gt;::from_vec(a);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="macro">scan!</span>(scanner, t: u8);
-<span data-nosnippet>13</span>        <span class="kw">if </span>t == <span class="number">0 </span>{
-<span data-nosnippet>14</span>            <a href="math/mod.rs.html#1-260">scan!</a>(scanner, l, r, x: i64);
-<span data-nosnippet>15</span>            seg.update(l..r, x);
-<span data-nosnippet>16</span>        } <span class="kw">else </span>{
-<span data-nosnippet>17</span>            <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>18</span>            <span class="kw">let </span>ans = seg.<span class="highlight focus">fold</span>(l..r);
-<span data-nosnippet>19</span>            <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>20</span>        }
-<span data-nosnippet>21</span>    }
-<span data-nosnippet>22</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_d.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i32);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, i);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(i..i + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_f.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_f(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i32);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(s..t + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_h.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_h(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[<span class="number">0</span>; n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: i64);
-<span data-nosnippet>15</span>                seg.update(s..t + <span class="number">1</span>, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, s, t);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(s..t + <span class="number">1</span>)).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_e.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>dsl_2_e(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q);
-<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
-<span data-nosnippet>11</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>12</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>13</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>14</span>                <span class="macro">scan!</span>(scanner, s, t, x: u64);
-<span data-nosnippet>15</span>                seg.update(s - <span class="number">1</span>..t, x);
-<span data-nosnippet>16</span>            }
-<span data-nosnippet>17</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>18</span>                <span class="macro">scan!</span>(scanner, i);
-<span data-nosnippet>19</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(i - <span class="number">1</span>..i).<span class="number">0</span>).ok();
-<span data-nosnippet>20</span>            }
-<span data-nosnippet>21</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>22</span>        }
-<span data-nosnippet>23</span>    }
-<span data-nosnippet>24</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#19">crates/aizu_online_judge/src/dsl/dsl_2_g.rs</a></li><li><a href="../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#19">crates/aizu_online_judge/src/dsl/dsl_2_i.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#25">crates/library_checker/src/data_structure/range_affine_range_sum.rs</a></li><li><a href="../../../src/aizu_online_judge/grl/grl_5_e.rs.html#35">crates/aizu_online_judge/src/grl/grl_5_e.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_chmin_chmax_add_range_sum.rs.html#35">crates/library_checker/src/data_structure/range_chmin_chmax_add_range_sum.rs</a></li></ul></div></div></details></div></details><section id="method.set" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#163-168">Source</a><h4 class="code-header">pub fn <a href="#method.set" class="fn">set</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>)</h4></section><section id="method.get" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#169-171">Source</a><h4 class="code-header">pub fn <a href="#method.get" class="fn">get</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a></h4></section><section id="method.fold_all" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#172-174">Source</a><h4 class="code-header">pub fn <a href="#method.fold_all" class="fn">fold_all</a>(&amp;mut self) -&gt; M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a></h4></section><details class="toggle method-toggle" open><summary><section id="method.bisect_perfect" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#175-189">Source</a><h4 class="code-header">fn <a href="#method.bisect_perfect" class="fn">bisect_perfect</a>&lt;P&gt;(
+<span data-nosnippet>174</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_d.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_d.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Get { i } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(i..i + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_f.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_f.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_f(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Update { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, <span class="prelude-val">Some</span>(x));
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Fold { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(s..t + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_h.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_h.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_h(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMinRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[<span class="number">0</span>; n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s..t + <span class="number">1</span>, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Min { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(s..t + <span class="number">1</span>)).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_e.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_e.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_e(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s - <span class="number">1</span>..t, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Get { i } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(i - <span class="number">1</span>..i).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_2_g.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_2_g.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_2_g(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>14</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>16</span>    <span class="macro">scan!</span>(scanner, n, q);
+<span data-nosnippet>17</span>    <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>); n]);
+<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>19</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>20</span>        <span class="kw">match </span>query {
+<span data-nosnippet>21</span>            Query::Add { s, t, x } =&gt; {
+<span data-nosnippet>22</span>                seg.update(s - <span class="number">1</span>..t, x);
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>            Query::Sum { s, t } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, seg.<span class="highlight focus">fold</span>(s - <span class="number">1</span>..t).<span class="number">0</span>).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/aizu_online_judge/dsl/dsl_2_i.rs.html#25">crates/aizu_online_judge/src/dsl/dsl_2_i.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_add_range_min.rs.html#25">crates/library_checker/src/data_structure/range_add_range_min.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_affine_range_sum.rs.html#31">crates/library_checker/src/data_structure/range_affine_range_sum.rs</a></li><li><a href="../../../src/library_checker/data_structure/range_chmin_chmax_add_range_sum.rs.html#41">crates/library_checker/src/data_structure/range_chmin_chmax_add_range_sum.rs</a></li><li><a href="../../../src/aizu_online_judge/grl/grl_5_e.rs.html#41">crates/aizu_online_judge/src/grl/grl_5_e.rs</a></li></ul></div></div></details></div></details><section id="method.set" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#163-168">Source</a><h4 class="code-header">pub fn <a href="#method.set" class="fn">set</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>)</h4></section><section id="method.get" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#169-171">Source</a><h4 class="code-header">pub fn <a href="#method.get" class="fn">get</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a></h4></section><section id="method.fold_all" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#172-174">Source</a><h4 class="code-header">pub fn <a href="#method.fold_all" class="fn">fold_all</a>(&amp;mut self) -&gt; M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a></h4></section><details class="toggle method-toggle" open><summary><section id="method.bisect_perfect" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#175-189">Source</a><h4 class="code-header">fn <a href="#method.bisect_perfect" class="fn">bisect_perfect</a>&lt;P&gt;(
     &amp;mut self,
     pos: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     acc: M::<a class="associatedtype" href="../../algebra/trait.LazyMapMonoid.html#associatedtype.Agg" title="type competitive::algebra::LazyMapMonoid::Agg">Agg</a>,

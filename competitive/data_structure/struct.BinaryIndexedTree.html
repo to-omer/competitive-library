@@ -62,83 +62,77 @@
 <span data-nosnippet>119</span>            bit: <span class="highlight focus">BinaryIndexedTree::new</span>(size.div_ceil(<span class="number">64</span>)),
 <span data-nosnippet>120</span>            data: <span class="macro">vec!</span>[<span class="number">0</span>; size.div_ceil(<span class="number">64</span>)],
 <span data-nosnippet>121</span>        }
-<span data-nosnippet>122</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#13&#34;,&#34;line 13&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_range_sum.rs (<a href="../../src/library_checker/data_structure/point_add_range_sum.rs.html#13">line 13</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>point_add_range_sum_binary_indexed_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="highlight focus">BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
-<span data-nosnippet>14</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.take(n).enumerate() {
-<span data-nosnippet>15</span>        bit.update(i, a);
-<span data-nosnippet>16</span>    }
-<span data-nosnippet>17</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>18</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>19</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>20</span>                <span class="macro">scan!</span>(scanner, p, x: i64);
-<span data-nosnippet>21</span>                bit.update(p, x);
-<span data-nosnippet>22</span>            }
-<span data-nosnippet>23</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>24</span>                <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, bit.fold(l, r)).ok();
-<span data-nosnippet>26</span>            }
-<span data-nosnippet>27</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>28</span>        }
-<span data-nosnippet>29</span>    }
-<span data-nosnippet>30</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/aizu_online_judge/grl/grl_5_d.rs.html#20&#34;,&#34;line 20&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_5_d.rs (<a href="../../src/aizu_online_judge/grl/grl_5_d.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>grl_5_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, c: [SizedCollect&lt;usize&gt;]);
-<span data-nosnippet>13</span>    <span class="kw">let </span>edges = c
-<span data-nosnippet>14</span>        .take(n)
-<span data-nosnippet>15</span>        .enumerate()
-<span data-nosnippet>16</span>        .flat_map(|(u, it)| it.into_iter().map(<span class="kw">move </span>|v| (u, v)))
-<span data-nosnippet>17</span>        .<a href="prelude.rs.html#1-3">collect</a>();
-<span data-nosnippet>18</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
-<span data-nosnippet>19</span>    <span class="kw">let </span>et = graph.path_euler_tour_builder(<span class="number">0</span>).build();
-<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="highlight focus">BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new</span>(et.size);
-<span data-nosnippet>21</span>
-<span data-nosnippet>22</span>    <span class="macro">scan!</span>(scanner, q);
-<span data-nosnippet>23</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>24</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>25</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>26</span>                <span class="macro">scan!</span>(scanner, v, w: i64);
-<span data-nosnippet>27</span>                et.update(v, w, -w, |k, x| bit.update(k, x));
-<span data-nosnippet>28</span>            }
-<span data-nosnippet>29</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>30</span>                <span class="macro">scan!</span>(scanner, u);
-<span data-nosnippet>31</span>                <span class="kw">let </span>ans = et.fold(u, |k| bit.accumulate(k));
-<span data-nosnippet>32</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>33</span>            }
-<span data-nosnippet>34</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>35</span>        }
-<span data-nosnippet>36</span>    }
-<span data-nosnippet>37</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#14&#34;,&#34;line 14&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#14">line 14</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @TreeGraphScanner::&lt;usize, ()&gt;::new(n));
-<span data-nosnippet>13</span>    <span class="kw">let </span>hld = HeavyLightDecomposition::new(<span class="number">0</span>, <span class="kw-2">&amp;mut </span>graph);
-<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="highlight focus">BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
-<span data-nosnippet>15</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.iter().cloned().enumerate() {
-<span data-nosnippet>16</span>        bit.update(hld.vidx[i], a);
-<span data-nosnippet>17</span>    }
-<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>20</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>21</span>                <span class="macro">scan!</span>(scanner, p, x: i64);
-<span data-nosnippet>22</span>                bit.update(hld.vidx[p], x);
-<span data-nosnippet>23</span>            }
-<span data-nosnippet>24</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>25</span>                <span class="macro">scan!</span>(scanner, u, v);
-<span data-nosnippet>26</span>                <span class="macro">writeln!</span>(
-<span data-nosnippet>27</span>                    writer,
-<span data-nosnippet>28</span>                    <span class="string">"{}"</span>,
-<span data-nosnippet>29</span>                    hld.query::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;(u, v, <span class="bool-val">false</span>, |l, r| bit.fold(l, r))
-<span data-nosnippet>30</span>                )
-<span data-nosnippet>31</span>                .ok();
+<span data-nosnippet>122</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#20&#34;,&#34;line 20&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_range_sum.rs (<a href="../../src/library_checker/data_structure/point_add_range_sum.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>point_add_range_sum_binary_indexed_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="highlight focus">BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
+<span data-nosnippet>21</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.take(n).enumerate() {
+<span data-nosnippet>22</span>        bit.update(i, a);
+<span data-nosnippet>23</span>    }
+<span data-nosnippet>24</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>25</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>26</span>        <span class="kw">match </span>query {
+<span data-nosnippet>27</span>            Query::Add { p, x } =&gt; {
+<span data-nosnippet>28</span>                bit.update(p, x);
+<span data-nosnippet>29</span>            }
+<span data-nosnippet>30</span>            Query::Sum { l, r } =&gt; {
+<span data-nosnippet>31</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, bit.fold(l, r)).ok();
 <span data-nosnippet>32</span>            }
-<span data-nosnippet>33</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    }
-<span data-nosnippet>36</span>}</code></pre></div></div></div></details></div></details><section id="method.from_slice" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#46-58">Source</a><h4 class="code-header">pub fn <a href="#method.from_slice" class="fn">from_slice</a>(slice: &amp;[M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>]) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.accumulate0" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#61-69">Source</a><h4 class="code-header">pub fn <a href="#method.accumulate0" class="fn">accumulate0</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock"><p>fold [0, k)</p>
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/aizu_online_judge/grl/grl_5_d.rs.html#27&#34;,&#34;line 27&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_5_d.rs (<a href="../../src/aizu_online_judge/grl/grl_5_d.rs.html#27">line 27</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>grl_5_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, c: [SizedCollect&lt;usize&gt;]);
+<span data-nosnippet>20</span>    <span class="kw">let </span>edges = c
+<span data-nosnippet>21</span>        .take(n)
+<span data-nosnippet>22</span>        .enumerate()
+<span data-nosnippet>23</span>        .flat_map(|(u, it)| it.into_iter().map(<span class="kw">move </span>|v| (u, v)))
+<span data-nosnippet>24</span>        .collect();
+<span data-nosnippet>25</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
+<span data-nosnippet>26</span>    <span class="kw">let </span>et = graph.path_euler_tour_builder(<span class="number">0</span>).build();
+<span data-nosnippet>27</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="highlight focus">BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new</span>(et.size);
+<span data-nosnippet>28</span>
+<span data-nosnippet>29</span>    <span class="macro">scan!</span>(scanner, q);
+<span data-nosnippet>30</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>31</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>32</span>        <span class="kw">match </span>query {
+<span data-nosnippet>33</span>            Query::Add { v, w } =&gt; {
+<span data-nosnippet>34</span>                et.update(v, w, -w, |k, x| bit.update(k, x));
+<span data-nosnippet>35</span>            }
+<span data-nosnippet>36</span>            Query::Get { u } =&gt; {
+<span data-nosnippet>37</span>                <span class="kw">let </span>ans = et.fold(u, |k| bit.accumulate(k));
+<span data-nosnippet>38</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
+<span data-nosnippet>39</span>            }
+<span data-nosnippet>40</span>        }
+<span data-nosnippet>41</span>    }
+<span data-nosnippet>42</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#21&#34;,&#34;line 21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#21">line 21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @TreeGraphScanner::&lt;usize, ()&gt;::new(n));
+<span data-nosnippet>20</span>    <span class="kw">let </span>hld = HeavyLightDecomposition::new(<span class="number">0</span>, <span class="kw-2">&amp;mut </span>graph);
+<span data-nosnippet>21</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="highlight focus">BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new</span>(n);
+<span data-nosnippet>22</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.iter().cloned().enumerate() {
+<span data-nosnippet>23</span>        bit.update(hld.vidx[i], a);
+<span data-nosnippet>24</span>    }
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Add { p, x } =&gt; {
+<span data-nosnippet>29</span>                bit.update(hld.vidx[p], x);
+<span data-nosnippet>30</span>            }
+<span data-nosnippet>31</span>            Query::Sum { u, v } =&gt; {
+<span data-nosnippet>32</span>                <span class="macro">writeln!</span>(
+<span data-nosnippet>33</span>                    writer,
+<span data-nosnippet>34</span>                    <span class="string">"{}"</span>,
+<span data-nosnippet>35</span>                    hld.query::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;(u, v, <span class="bool-val">false</span>, |l, r| bit.fold(l, r))
+<span data-nosnippet>36</span>                )
+<span data-nosnippet>37</span>                .ok();
+<span data-nosnippet>38</span>            }
+<span data-nosnippet>39</span>        }
+<span data-nosnippet>40</span>    }
+<span data-nosnippet>41</span>}</code></pre></div></div></div></details></div></details><section id="method.from_slice" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#46-58">Source</a><h4 class="code-header">pub fn <a href="#method.from_slice" class="fn">from_slice</a>(slice: &amp;[M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>]) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.accumulate0" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#61-69">Source</a><h4 class="code-header">pub fn <a href="#method.accumulate0" class="fn">accumulate0</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock"><p>fold [0, k)</p>
 </div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#73&#34;,&#34;line 73&#34;],[[18,18],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#90&#34;,&#34;line 90&#34;],[[18,18],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#90&#34;,&#34;line 90&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#73">line 73</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>72</span>    <span class="kw">pub fn </span>accumulate(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
 <span data-nosnippet>73</span>        <span class="self">self</span>.<span class="highlight focus">accumulate0</span>(k + <span class="number">1</span>)
 <span data-nosnippet>74</span>    }
@@ -159,35 +153,33 @@
 <span data-nosnippet>89</span>        <span class="macro">debug_assert!</span>(l &lt;= <span class="self">self</span>.n &amp;&amp; r &lt;= <span class="self">self</span>.n);
 <span data-nosnippet>90</span>        G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="highlight">accumulate0</span>(l)), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="highlight">accumulate0</span>(r))
 <span data-nosnippet>91</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.accumulate" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#72-74">Source</a><h4 class="code-header">pub fn <a href="#method.accumulate" class="fn">accumulate</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock"><p>fold [0, k]</p>
-</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[22,22],&#34;../../src/aizu_online_judge/grl/grl_5_d.rs.html#31&#34;,&#34;line 31&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_5_d.rs (<a href="../../src/aizu_online_judge/grl/grl_5_d.rs.html#31">line 31</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>grl_5_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, c: [SizedCollect&lt;usize&gt;]);
-<span data-nosnippet>13</span>    <span class="kw">let </span>edges = c
-<span data-nosnippet>14</span>        .take(n)
-<span data-nosnippet>15</span>        .enumerate()
-<span data-nosnippet>16</span>        .flat_map(|(u, it)| it.into_iter().map(<span class="kw">move </span>|v| (u, v)))
-<span data-nosnippet>17</span>        .<a href="prelude.rs.html#1-3">collect</a>();
-<span data-nosnippet>18</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
-<span data-nosnippet>19</span>    <span class="kw">let </span>et = graph.path_euler_tour_builder(<span class="number">0</span>).build();
-<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(et.size);
-<span data-nosnippet>21</span>
-<span data-nosnippet>22</span>    <span class="macro">scan!</span>(scanner, q);
-<span data-nosnippet>23</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>24</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>25</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>26</span>                <span class="macro">scan!</span>(scanner, v, w: i64);
-<span data-nosnippet>27</span>                et.update(v, w, -w, |k, x| bit.update(k, x));
-<span data-nosnippet>28</span>            }
-<span data-nosnippet>29</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>30</span>                <span class="macro">scan!</span>(scanner, u);
-<span data-nosnippet>31</span>                <span class="kw">let </span>ans = et.fold(u, |k| bit.<span class="highlight focus">accumulate</span>(k));
-<span data-nosnippet>32</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>33</span>            }
-<span data-nosnippet>34</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>35</span>        }
-<span data-nosnippet>36</span>    }
-<span data-nosnippet>37</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#76-83">Source</a><h4 class="code-header">pub fn <a href="#method.update" class="fn">update</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#98&#34;,&#34;line 98&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>97</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: G::T) {
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[21,21],&#34;../../src/aizu_online_judge/grl/grl_5_d.rs.html#37&#34;,&#34;line 37&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_5_d.rs (<a href="../../src/aizu_online_judge/grl/grl_5_d.rs.html#37">line 37</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>grl_5_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, c: [SizedCollect&lt;usize&gt;]);
+<span data-nosnippet>20</span>    <span class="kw">let </span>edges = c
+<span data-nosnippet>21</span>        .take(n)
+<span data-nosnippet>22</span>        .enumerate()
+<span data-nosnippet>23</span>        .flat_map(|(u, it)| it.into_iter().map(<span class="kw">move </span>|v| (u, v)))
+<span data-nosnippet>24</span>        .collect();
+<span data-nosnippet>25</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
+<span data-nosnippet>26</span>    <span class="kw">let </span>et = graph.path_euler_tour_builder(<span class="number">0</span>).build();
+<span data-nosnippet>27</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(et.size);
+<span data-nosnippet>28</span>
+<span data-nosnippet>29</span>    <span class="macro">scan!</span>(scanner, q);
+<span data-nosnippet>30</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>31</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>32</span>        <span class="kw">match </span>query {
+<span data-nosnippet>33</span>            Query::Add { v, w } =&gt; {
+<span data-nosnippet>34</span>                et.update(v, w, -w, |k, x| bit.update(k, x));
+<span data-nosnippet>35</span>            }
+<span data-nosnippet>36</span>            Query::Get { u } =&gt; {
+<span data-nosnippet>37</span>                <span class="kw">let </span>ans = et.fold(u, |k| bit.<span class="highlight focus">accumulate</span>(k));
+<span data-nosnippet>38</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
+<span data-nosnippet>39</span>            }
+<span data-nosnippet>40</span>        }
+<span data-nosnippet>41</span>    }
+<span data-nosnippet>42</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#76-83">Source</a><h4 class="code-header">pub fn <a href="#method.update" class="fn">update</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#98&#34;,&#34;line 98&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>97</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: G::T) {
 <span data-nosnippet>98</span>        <span class="self">self</span>.<span class="highlight focus">update</span>(k, G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw-2">&amp;</span><span class="self">self</span>.get(k)), <span class="kw-2">&amp;</span>x));
 <span data-nosnippet>99</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../src/competitive/data_structure/range_frequency.rs.html#128&#34;,&#34;line 128&#34;],[[11,11],&#34;../../src/competitive/data_structure/range_frequency.rs.html#135&#34;,&#34;line 135&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_frequency.rs (<a href="../../src/competitive/data_structure/range_frequency.rs.html#128">line 128</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>124</span>    <span class="kw">fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) {
 <span data-nosnippet>125</span>        <span class="kw">let </span>(block, bit) = (index / <span class="number">64</span>, index % <span class="number">64</span>);
@@ -201,83 +193,77 @@
 <span data-nosnippet>133</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data[i] &amp; (<span class="number">1 </span>&lt;&lt; j) != <span class="number">0</span>);
 <span data-nosnippet>134</span>        <span class="self">self</span>.data[i] &amp;= !(<span class="number">1 </span>&lt;&lt; j);
 <span data-nosnippet>135</span>        <span class="self">self</span>.bit.<span class="highlight">update</span>(i, -<span class="number">1</span>);
-<span data-nosnippet>136</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#15&#34;,&#34;line 15&#34;],[[12,12],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#21&#34;,&#34;line 21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_range_sum.rs (<a href="../../src/library_checker/data_structure/point_add_range_sum.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>point_add_range_sum_binary_indexed_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>14</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.take(n).enumerate() {
-<span data-nosnippet>15</span>        bit.<span class="highlight focus">update</span>(i, a);
-<span data-nosnippet>16</span>    }
-<span data-nosnippet>17</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>18</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>19</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>20</span>                <span class="macro">scan!</span>(scanner, p, x: i64);
-<span data-nosnippet>21</span>                bit.<span class="highlight">update</span>(p, x);
-<span data-nosnippet>22</span>            }
-<span data-nosnippet>23</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>24</span>                <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, bit.fold(l, r)).ok();
-<span data-nosnippet>26</span>            }
-<span data-nosnippet>27</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>28</span>        }
-<span data-nosnippet>29</span>    }
-<span data-nosnippet>30</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[18,18],&#34;../../src/aizu_online_judge/grl/grl_5_d.rs.html#27&#34;,&#34;line 27&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_5_d.rs (<a href="../../src/aizu_online_judge/grl/grl_5_d.rs.html#27">line 27</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>grl_5_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, c: [SizedCollect&lt;usize&gt;]);
-<span data-nosnippet>13</span>    <span class="kw">let </span>edges = c
-<span data-nosnippet>14</span>        .take(n)
-<span data-nosnippet>15</span>        .enumerate()
-<span data-nosnippet>16</span>        .flat_map(|(u, it)| it.into_iter().map(<span class="kw">move </span>|v| (u, v)))
-<span data-nosnippet>17</span>        .<a href="prelude.rs.html#1-3">collect</a>();
-<span data-nosnippet>18</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
-<span data-nosnippet>19</span>    <span class="kw">let </span>et = graph.path_euler_tour_builder(<span class="number">0</span>).build();
-<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(et.size);
-<span data-nosnippet>21</span>
-<span data-nosnippet>22</span>    <span class="macro">scan!</span>(scanner, q);
-<span data-nosnippet>23</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>24</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>25</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>26</span>                <span class="macro">scan!</span>(scanner, v, w: i64);
-<span data-nosnippet>27</span>                et.update(v, w, -w, |k, x| bit.<span class="highlight focus">update</span>(k, x));
-<span data-nosnippet>28</span>            }
-<span data-nosnippet>29</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>30</span>                <span class="macro">scan!</span>(scanner, u);
-<span data-nosnippet>31</span>                <span class="kw">let </span>ans = et.fold(u, |k| bit.accumulate(k));
-<span data-nosnippet>32</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>33</span>            }
-<span data-nosnippet>34</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>35</span>        }
-<span data-nosnippet>36</span>    }
-<span data-nosnippet>37</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#16&#34;,&#34;line 16&#34;],[[13,13],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#16">line 16</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @TreeGraphScanner::&lt;usize, ()&gt;::new(n));
-<span data-nosnippet>13</span>    <span class="kw">let </span>hld = HeavyLightDecomposition::new(<span class="number">0</span>, <span class="kw-2">&amp;mut </span>graph);
-<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>15</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.iter().cloned().enumerate() {
-<span data-nosnippet>16</span>        bit.<span class="highlight focus">update</span>(hld.vidx[i], a);
-<span data-nosnippet>17</span>    }
-<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>20</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>21</span>                <span class="macro">scan!</span>(scanner, p, x: i64);
-<span data-nosnippet>22</span>                bit.<span class="highlight">update</span>(hld.vidx[p], x);
-<span data-nosnippet>23</span>            }
-<span data-nosnippet>24</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>25</span>                <span class="macro">scan!</span>(scanner, u, v);
-<span data-nosnippet>26</span>                <span class="macro">writeln!</span>(
-<span data-nosnippet>27</span>                    writer,
-<span data-nosnippet>28</span>                    <span class="string">"{}"</span>,
-<span data-nosnippet>29</span>                    hld.query::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;(u, v, <span class="bool-val">false</span>, |l, r| bit.fold(l, r))
-<span data-nosnippet>30</span>                )
-<span data-nosnippet>31</span>                .ok();
+<span data-nosnippet>136</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#22&#34;,&#34;line 22&#34;],[[12,12],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#28&#34;,&#34;line 28&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_range_sum.rs (<a href="../../src/library_checker/data_structure/point_add_range_sum.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>point_add_range_sum_binary_indexed_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>21</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.take(n).enumerate() {
+<span data-nosnippet>22</span>        bit.<span class="highlight focus">update</span>(i, a);
+<span data-nosnippet>23</span>    }
+<span data-nosnippet>24</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>25</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>26</span>        <span class="kw">match </span>query {
+<span data-nosnippet>27</span>            Query::Add { p, x } =&gt; {
+<span data-nosnippet>28</span>                bit.<span class="highlight">update</span>(p, x);
+<span data-nosnippet>29</span>            }
+<span data-nosnippet>30</span>            Query::Sum { l, r } =&gt; {
+<span data-nosnippet>31</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, bit.fold(l, r)).ok();
 <span data-nosnippet>32</span>            }
-<span data-nosnippet>33</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    }
-<span data-nosnippet>36</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-BinaryIndexedTree%3CG%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#86-100">Source</a><a href="#impl-BinaryIndexedTree%3CG%3E" class="anchor">§</a><h3 class="code-header">impl&lt;G: <a class="trait" href="../algebra/trait.Group.html" title="trait competitive::algebra::Group">Group</a>&gt; <a class="struct" href="struct.BinaryIndexedTree.html" title="struct competitive::data_structure::BinaryIndexedTree">BinaryIndexedTree</a>&lt;G&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#88-91">Source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>(&amp;self, l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#94&#34;,&#34;line 94&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#94">line 94</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>93</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; G::T {
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[18,18],&#34;../../src/aizu_online_judge/grl/grl_5_d.rs.html#34&#34;,&#34;line 34&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_5_d.rs (<a href="../../src/aizu_online_judge/grl/grl_5_d.rs.html#34">line 34</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>grl_5_d(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, c: [SizedCollect&lt;usize&gt;]);
+<span data-nosnippet>20</span>    <span class="kw">let </span>edges = c
+<span data-nosnippet>21</span>        .take(n)
+<span data-nosnippet>22</span>        .enumerate()
+<span data-nosnippet>23</span>        .flat_map(|(u, it)| it.into_iter().map(<span class="kw">move </span>|v| (u, v)))
+<span data-nosnippet>24</span>        .collect();
+<span data-nosnippet>25</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
+<span data-nosnippet>26</span>    <span class="kw">let </span>et = graph.path_euler_tour_builder(<span class="number">0</span>).build();
+<span data-nosnippet>27</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(et.size);
+<span data-nosnippet>28</span>
+<span data-nosnippet>29</span>    <span class="macro">scan!</span>(scanner, q);
+<span data-nosnippet>30</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>31</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>32</span>        <span class="kw">match </span>query {
+<span data-nosnippet>33</span>            Query::Add { v, w } =&gt; {
+<span data-nosnippet>34</span>                et.update(v, w, -w, |k, x| bit.<span class="highlight focus">update</span>(k, x));
+<span data-nosnippet>35</span>            }
+<span data-nosnippet>36</span>            Query::Get { u } =&gt; {
+<span data-nosnippet>37</span>                <span class="kw">let </span>ans = et.fold(u, |k| bit.accumulate(k));
+<span data-nosnippet>38</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
+<span data-nosnippet>39</span>            }
+<span data-nosnippet>40</span>        }
+<span data-nosnippet>41</span>    }
+<span data-nosnippet>42</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#23&#34;,&#34;line 23&#34;],[[13,13],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#29&#34;,&#34;line 29&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @TreeGraphScanner::&lt;usize, ()&gt;::new(n));
+<span data-nosnippet>20</span>    <span class="kw">let </span>hld = HeavyLightDecomposition::new(<span class="number">0</span>, <span class="kw-2">&amp;mut </span>graph);
+<span data-nosnippet>21</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>22</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.iter().cloned().enumerate() {
+<span data-nosnippet>23</span>        bit.<span class="highlight focus">update</span>(hld.vidx[i], a);
+<span data-nosnippet>24</span>    }
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Add { p, x } =&gt; {
+<span data-nosnippet>29</span>                bit.<span class="highlight">update</span>(hld.vidx[p], x);
+<span data-nosnippet>30</span>            }
+<span data-nosnippet>31</span>            Query::Sum { u, v } =&gt; {
+<span data-nosnippet>32</span>                <span class="macro">writeln!</span>(
+<span data-nosnippet>33</span>                    writer,
+<span data-nosnippet>34</span>                    <span class="string">"{}"</span>,
+<span data-nosnippet>35</span>                    hld.query::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;(u, v, <span class="bool-val">false</span>, |l, r| bit.fold(l, r))
+<span data-nosnippet>36</span>                )
+<span data-nosnippet>37</span>                .ok();
+<span data-nosnippet>38</span>            }
+<span data-nosnippet>39</span>        }
+<span data-nosnippet>40</span>    }
+<span data-nosnippet>41</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-BinaryIndexedTree%3CG%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#86-100">Source</a><a href="#impl-BinaryIndexedTree%3CG%3E" class="anchor">§</a><h3 class="code-header">impl&lt;G: <a class="trait" href="../algebra/trait.Group.html" title="trait competitive::algebra::Group">Group</a>&gt; <a class="struct" href="struct.BinaryIndexedTree.html" title="struct competitive::data_structure::BinaryIndexedTree">BinaryIndexedTree</a>&lt;G&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#88-91">Source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>(&amp;self, l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#94&#34;,&#34;line 94&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#94">line 94</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>93</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; G::T {
 <span data-nosnippet>94</span>        <span class="self">self</span>.<span class="highlight focus">fold</span>(k, k + <span class="number">1</span>)
 <span data-nosnippet>95</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/competitive/data_structure/range_frequency.rs.html#149&#34;,&#34;line 149&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_frequency.rs (<a href="../../src/competitive/data_structure/range_frequency.rs.html#149">line 149</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>138</span>    <span class="kw">fn </span>query(<span class="kw-2">&amp;</span><span class="self">self</span>, left: usize, right: usize) -&gt; usize {
 <span data-nosnippet>139</span>        <span class="kw">if </span>left &gt;= right {
@@ -295,55 +281,51 @@
 <span data-nosnippet>151</span>            ans += (<span class="self">self</span>.data[ri] &lt;&lt; rj_r).count_ones() <span class="kw">as </span>usize;
 <span data-nosnippet>152</span>            ans
 <span data-nosnippet>153</span>        }
-<span data-nosnippet>154</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[16,16],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_range_sum.rs (<a href="../../src/library_checker/data_structure/point_add_range_sum.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>point_add_range_sum_binary_indexed_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64]);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>14</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.take(n).enumerate() {
-<span data-nosnippet>15</span>        bit.update(i, a);
-<span data-nosnippet>16</span>    }
-<span data-nosnippet>17</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>18</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>19</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>20</span>                <span class="macro">scan!</span>(scanner, p, x: i64);
-<span data-nosnippet>21</span>                bit.update(p, x);
-<span data-nosnippet>22</span>            }
-<span data-nosnippet>23</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>24</span>                <span class="macro">scan!</span>(scanner, l, r);
-<span data-nosnippet>25</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, bit.<span class="highlight focus">fold</span>(l, r)).ok();
-<span data-nosnippet>26</span>            }
-<span data-nosnippet>27</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>28</span>        }
-<span data-nosnippet>29</span>    }
-<span data-nosnippet>30</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[20,20],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#29&#34;,&#34;line 29&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#29">line 29</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @TreeGraphScanner::&lt;usize, ()&gt;::new(n));
-<span data-nosnippet>13</span>    <span class="kw">let </span>hld = HeavyLightDecomposition::new(<span class="number">0</span>, <span class="kw-2">&amp;mut </span>graph);
-<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
-<span data-nosnippet>15</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.iter().cloned().enumerate() {
-<span data-nosnippet>16</span>        bit.update(hld.vidx[i], a);
-<span data-nosnippet>17</span>    }
-<span data-nosnippet>18</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>19</span>        <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
-<span data-nosnippet>20</span>            <span class="number">0 </span>=&gt; {
-<span data-nosnippet>21</span>                <span class="macro">scan!</span>(scanner, p, x: i64);
-<span data-nosnippet>22</span>                bit.update(hld.vidx[p], x);
-<span data-nosnippet>23</span>            }
-<span data-nosnippet>24</span>            <span class="number">1 </span>=&gt; {
-<span data-nosnippet>25</span>                <span class="macro">scan!</span>(scanner, u, v);
-<span data-nosnippet>26</span>                <span class="macro">writeln!</span>(
-<span data-nosnippet>27</span>                    writer,
-<span data-nosnippet>28</span>                    <span class="string">"{}"</span>,
-<span data-nosnippet>29</span>                    hld.query::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;(u, v, <span class="bool-val">false</span>, |l, r| bit.<span class="highlight focus">fold</span>(l, r))
-<span data-nosnippet>30</span>                )
-<span data-nosnippet>31</span>                .ok();
+<span data-nosnippet>154</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[15,15],&#34;../../src/library_checker/data_structure/point_add_range_sum.rs.html#31&#34;,&#34;line 31&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_range_sum.rs (<a href="../../src/library_checker/data_structure/point_add_range_sum.rs.html#31">line 31</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>point_add_range_sum_binary_indexed_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64]);
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>21</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.take(n).enumerate() {
+<span data-nosnippet>22</span>        bit.update(i, a);
+<span data-nosnippet>23</span>    }
+<span data-nosnippet>24</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>25</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>26</span>        <span class="kw">match </span>query {
+<span data-nosnippet>27</span>            Query::Add { p, x } =&gt; {
+<span data-nosnippet>28</span>                bit.update(p, x);
+<span data-nosnippet>29</span>            }
+<span data-nosnippet>30</span>            Query::Sum { l, r } =&gt; {
+<span data-nosnippet>31</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, bit.<span class="highlight focus">fold</span>(l, r)).ok();
 <span data-nosnippet>32</span>            }
-<span data-nosnippet>33</span>            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"unknown query"</span>),
-<span data-nosnippet>34</span>        }
-<span data-nosnippet>35</span>    }
-<span data-nosnippet>36</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.get" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#93-95">Source</a><h4 class="code-header">pub fn <a href="#method.get" class="fn">get</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#98&#34;,&#34;line 98&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>97</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: G::T) {
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[19,19],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#35&#34;,&#34;line 35&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#35">line 35</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>19</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @TreeGraphScanner::&lt;usize, ()&gt;::new(n));
+<span data-nosnippet>20</span>    <span class="kw">let </span>hld = HeavyLightDecomposition::new(<span class="number">0</span>, <span class="kw-2">&amp;mut </span>graph);
+<span data-nosnippet>21</span>    <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
+<span data-nosnippet>22</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.iter().cloned().enumerate() {
+<span data-nosnippet>23</span>        bit.update(hld.vidx[i], a);
+<span data-nosnippet>24</span>    }
+<span data-nosnippet>25</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>26</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>27</span>        <span class="kw">match </span>query {
+<span data-nosnippet>28</span>            Query::Add { p, x } =&gt; {
+<span data-nosnippet>29</span>                bit.update(hld.vidx[p], x);
+<span data-nosnippet>30</span>            }
+<span data-nosnippet>31</span>            Query::Sum { u, v } =&gt; {
+<span data-nosnippet>32</span>                <span class="macro">writeln!</span>(
+<span data-nosnippet>33</span>                    writer,
+<span data-nosnippet>34</span>                    <span class="string">"{}"</span>,
+<span data-nosnippet>35</span>                    hld.query::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;(u, v, <span class="bool-val">false</span>, |l, r| bit.<span class="highlight focus">fold</span>(l, r))
+<span data-nosnippet>36</span>                )
+<span data-nosnippet>37</span>                .ok();
+<span data-nosnippet>38</span>            }
+<span data-nosnippet>39</span>        }
+<span data-nosnippet>40</span>    }
+<span data-nosnippet>41</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.get" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#93-95">Source</a><h4 class="code-header">pub fn <a href="#method.get" class="fn">get</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#98&#34;,&#34;line 98&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>97</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: G::T) {
 <span data-nosnippet>98</span>        <span class="self">self</span>.update(k, G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="highlight focus">get</span>(k)), <span class="kw-2">&amp;</span>x));
 <span data-nosnippet>99</span>    }</code></pre></div></div></div></details><section id="method.set" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#97-99">Source</a><h4 class="code-header">pub fn <a href="#method.set" class="fn">set</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: G::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-BinaryIndexedTree%3CM%3E-1" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#102-121">Source</a><a href="#impl-BinaryIndexedTree%3CM%3E-1" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="struct.BinaryIndexedTree.html" title="struct competitive::data_structure::BinaryIndexedTree">BinaryIndexedTree</a>&lt;M&gt;<div class="where">where
     M: <a class="trait" href="../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>&gt;,</div></h3></section></summary><div class="impl-items"><section id="method.lower_bound" class="method"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#107-120">Source</a><h4 class="code-header">pub fn <a href="#method.lower_bound" class="fn">lower_bound</a>(&amp;self, x: M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-BinaryIndexedTree%3CM%3E" class="impl"><a class="src rightside" href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#12-22">Source</a><a href="#impl-Clone-for-BinaryIndexedTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.BinaryIndexedTree.html" title="struct competitive::data_structure::BinaryIndexedTree">BinaryIndexedTree</a>&lt;M&gt;<div class="where">where

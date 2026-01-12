@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["queue_operate_all_composite","test_queue_operate_all_composite"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["queue_operate_all_composite","test_queue_operate_all_composite"]};
