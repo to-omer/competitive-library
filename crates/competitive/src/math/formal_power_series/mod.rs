@@ -33,6 +33,7 @@ pub trait FormalPowerSeriesCoefficient:
     + PartialEq
     + One
     + From<usize>
+    + From<isize>
     + Add<Output = Self>
     + Sub<Output = Self>
     + Mul<Output = Self>
@@ -51,8 +52,15 @@ pub trait FormalPowerSeriesCoefficient:
     + for<'r> DivAssign<&'r Self>
     + Neg<Output = Self>
 {
-    type Base: MIntConvert<usize>;
+    type Base: MIntConvert<usize> + MIntConvert<isize>;
     fn pow(self, exp: usize) -> Self;
+    fn signed_pow(self, exp: isize) -> Self {
+        if exp >= 0 {
+            self.pow(exp as usize)
+        } else {
+            Self::one() / self.pow((-exp) as usize)
+        }
+    }
     fn memorized_factorial(n: usize) -> MemorizedFactorial<Self::Base> {
         MemorizedFactorial::new(n)
     }
@@ -63,7 +71,7 @@ pub trait FormalPowerSeriesCoefficient:
 
 impl<M> FormalPowerSeriesCoefficient for MInt<M>
 where
-    M: MIntConvert<usize>,
+    M: MIntConvert<usize> + MIntConvert<isize>,
 {
     type Base = M;
     fn pow(self, exp: usize) -> Self {
@@ -86,7 +94,7 @@ pub trait FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
 
 impl<M> FormalPowerSeriesCoefficientSqrt for MInt<M>
 where
-    M: MIntConvert<u32> + MIntConvert<usize>,
+    M: MIntConvert<u32> + MIntConvert<usize> + MIntConvert<isize>,
 {
     fn sqrt_coefficient(&self) -> Option<Self> {
         self.sqrt()

@@ -234,7 +234,7 @@ where
 
     fn apply_pow<C>(&self, mut b: Vec<MInt<M>>, k: usize) -> Vec<MInt<M>>
     where
-        M: MIntConvert<usize> + MIntConvert<u64>,
+        M: MIntConvert<usize> + MIntConvert<isize> + MIntConvert<u64>,
         C: ConvolveSteps<T = Vec<MInt<M>>>,
     {
         assert_eq!(self.shape().0, self.shape().1);

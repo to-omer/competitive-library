@@ -388,6 +388,160 @@ where
         }
         f
     }
+
+    fn sparse_fold(&self, sparse: impl IntoIterator<Item = (usize, T)>, deg: usize) -> T {
+        sparse
+            .into_iter()
+            .take_while(|&(i, _)| i <= deg)
+            .fold(T::zero(), |sum, (i, x)| sum + x * self.coeff(deg - i))
+    }
+
+    /// solve: $X(QF)'=\alpha P'(QF)+\beta P(Q'F)$ in $O(deg * max(nz(P), nz(Q), nz(X)))$
+    pub fn solve_sparse_differential2(
+        p: &Self,
+        q: &Self,
+        x: &Self,
+        alpha: T,
+        beta: T,
+        deg: usize,
+    ) -> Self {
+        if deg == 0 {
+            return Self::zero();
+        }
+        let collect_sparse = |p: &Self| -> Vec<(usize, T)> {
+            p.iter()
+                .enumerate()
+                .filter(|&(_, x)| !x.is_zero())
+                .map(|(i, x)| (i, x.clone()))
+                .collect()
+        };
+        assert!(q.coeff(0).is_one());
+        assert!(x.coeff(0).is_one());
+        let p = collect_sparse(p);
+        let q = collect_sparse(q);
+        let x = collect_sparse(x);
+        let diff = |p: &[(usize, T)]| -> Vec<(usize, T)> {
+            p.iter()
+                .filter(|&&(i, _)| i > 0)
+                .map(|&(i, ref x)| (i - 1, x.clone() * T::from(i)))
+                .collect()
+        };
+        let dp = diff(&p);
+        let dq = diff(&q);
+
+        let mf = T::memorized_factorial(deg);
+        let mut f = Self::zeros(deg);
+        let mut qf = Self::zeros(deg);
+        let mut dq_f = Self::zeros(deg);
+        let mut d_qf = Self::zeros(deg);
+        f[0] = T::one();
+        for i in 0..deg - 1 {
+            qf[i] = f.sparse_fold(q.iter().cloned(), i);
+            dq_f[i] = f.sparse_fold(dq.iter().cloned(), i);
+            let dp_qf_i = qf.sparse_fold(dp.iter().cloned(), i);
+            let p_dq_f_i = dq_f.sparse_fold(p.iter().cloned(), i);
+            let x_d_qf_i = d_qf.sparse_fold(
+                x.iter()
+                    .map(|&(i, ref x)| (i, x.clone() - T::from((i == 0) as usize))),
+                i,
+            );
+            d_qf[i] = alpha.clone() * dp_qf_i + beta.clone() * p_dq_f_i - x_d_qf_i;
+
+            let mut f_ip1 = d_qf[i].clone();
+            for &(j, ref q) in q.iter().take_while(|&&(j, _)| j <= i) {
+                if j > 0 {
+                    f_ip1 -= q.clone() * &f[i - (j - 1)] * T::from(i - (j - 1));
+                }
+            }
+            f[i + 1] = f_ip1 * T::memorized_inv(&mf, i + 1);
+        }
+        f
+    }
+
+    /// P^exp_p * Q^exp_q
+    pub fn mul_of_pow_sparse(&self, q: &Self, exp_p: isize, exp_q: isize, deg: usize) -> Self {
+        if deg == 0 {
+            return Self::zero();
+        }
+        if exp_p == 0 && exp_q == 0 {
+            return Self::from_vec(
+                once(T::one())
+                    .chain(repeat_with(T::zero))
+                    .take(deg)
+                    .collect(),
+            );
+        }
+        if exp_p != 0 && self.iter().all(|x| x.is_zero()) {
+            assert!(exp_p > 0);
+            return Self::zeros(deg);
+        }
+        if exp_q != 0 && q.iter().all(|x| x.is_zero()) {
+            assert!(exp_q > 0);
+            return Self::zeros(deg);
+        }
+
+        let normalize = |f: &Self, exp: isize| {
+            if exp == 0 {
+                return (0usize, T::one(), Self::from_vec(vec![T::one()]));
+            }
+            let k = f.iter().position(|value| !value.is_zero()).unwrap();
+            assert!(
+                exp >= 0 || k == 0,
+                "Negative exponent with zero constant term"
+            );
+            let c = f[k].clone();
+            let f = (f.clone() >> k) / &c;
+            (k, c, f)
+        };
+        let (sp, cp, mut p) = normalize(self, exp_p);
+        let (sq, cq, mut q) = normalize(q, exp_q);
+
+        let shift = exp_p
+            .saturating_mul(sp as _)
+            .saturating_add(exp_q.saturating_mul(sq as _)) as usize;
+        if shift >= deg {
+            return Self::zeros(deg);
+        }
+        p.truncate(deg - shift);
+        q.truncate(deg - shift);
+
+        let mut f = Self::solve_sparse_differential2(
+            &p,
+            &q,
+            &p,
+            T::from(exp_p),
+            T::from(exp_q),
+            deg - shift,
+        );
+        f *= cp.signed_pow(exp_p) * cq.signed_pow(exp_q);
+        if shift > 0 {
+            f <<= shift;
+        }
+        f.prefix(deg)
+    }
+
+    /// exp(P/Q)
+    pub fn exp_of_div_sparse(&self, q: &Self, deg: usize) -> Self {
+        if deg == 0 {
+            return Self::zero();
+        }
+        let shift_q = q
+            .iter()
+            .position(|value| !value.is_zero())
+            .expect("Zero denominator");
+        let shift_p = self.iter().position(|value| !value.is_zero()).unwrap_or(!0);
+        assert!(shift_p > shift_q);
+
+        let mut p = self >> shift_q;
+        let mut q = q >> shift_q;
+        assert!(!q.coeff(0).is_zero());
+
+        let c = q[0].clone();
+        p /= c.clone();
+        q /= c;
+
+        Self::solve_sparse_differential2(&p, &q, &q, T::one(), -T::one(), deg)
+    }
 }
 
 impl<T, C> FormalPowerSeries<T, C>
@@ -411,7 +565,7 @@ where
             {
                 let t = self[0].clone();
                 let mut f = self / t;
-                f = f.pow_sparse1(T::from(1) / T::from(2), deg);
+                f = f.pow_sparse1(T::one() / T::from(2usize), deg);
                 f *= s;
                 return Some(f);
             }
@@ -911,6 +1065,66 @@ mod tests {
                 }
                 assert_eq!(result[k], expected);
             }
+        }
+    }
+
+    #[test]
+    fn test_mul_of_pow_sparse() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n = rng.random(1usize..100);
+            let prob = rng.random(0u32..100) as f64 / 100.0;
+            let exp_p = rng.random(-5isize..5);
+            let exp_q = rng.random(-5isize..5);
+            let mut p = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            let mut q = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            for i in 0..n {
+                if exp_p >= 0 && rng.gen_bool(prob) {
+                    p[i] = MInt998244353::zero();
+                }
+                if exp_q >= 0 && rng.gen_bool(prob) {
+                    q[i] = MInt998244353::zero();
+                }
+            }
+            let mut expected = Fps998244353::one();
+            if exp_p >= 0 {
+                expected *= p.pow(exp_p as usize, n);
+            } else {
+                expected *= p.inv(n).pow((-exp_p) as usize, n);
+            }
+            if exp_q >= 0 {
+                expected *= q.pow(exp_q as usize, n);
+            } else {
+                expected *= q.inv(n).pow((-exp_q) as usize, n);
+            }
+            expected.truncate(n);
+            let result = p.mul_of_pow_sparse(&q, exp_p, exp_q, n);
+            assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn test_exp_of_div_sparse() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1usize..100);
+            let prob = rng.random(0u32..100) as f64 / 100.0;
+            let mut p = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            let mut q = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            for i in 0..n - 1 {
+                if rng.gen_bool(prob) {
+                    p[i] = MInt998244353::zero();
+                    q[i] = MInt998244353::zero();
+                }
+                if rng.gen_bool(prob) {
+                    p[i] = MInt998244353::zero();
+                }
+            }
+            let k = q.iter().position(|x| !x.is_zero()).unwrap();
+            p[k] = MInt998244353::zero();
+            let expected = ((&p >> k) * (&q >> k).inv(n)).prefix(n).exp(n);
+            let result = p.exp_of_div_sparse(&q, n);
+            assert_eq!(result, expected);
         }
     }
 }
