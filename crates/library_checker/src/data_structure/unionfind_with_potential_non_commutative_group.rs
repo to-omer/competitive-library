@@ -7,6 +7,13 @@ pub use competitive::{
     num::{One, Zero, montgomery::MInt998244353},
 };
 
+competitive::define_enum_scan! {
+    enum Query: u8 {
+        0 => Unite { u: usize, v: usize, x: [[MInt998244353; const 2]; const 2] }
+        1 => Diff { u: usize, v: usize }
+    }
+}
+
 define_monoid!(
     Sl2,
     [[MInt998244353; 2]; 2],
@@ -37,21 +44,22 @@ pub fn unionfind_with_potential_non_commutative_group(reader: impl Read, mut wri
     scan!(scanner, n, q);
     let mut uf = PotentializedUnionFind::<Sl2>::new(n);
     for _ in 0..q {
-        scan!(scanner, t: u8);
-        if t == 0 {
-            scan!(scanner, u, v, x: [[MInt998244353; const 2]; const 2]);
-            if let Some(diff) = uf.difference(v, u) {
-                writeln!(writer, "{}", (diff == x) as u8).ok();
-            } else {
-                uf.unite_with(v, u, x);
-                writeln!(writer, "1").ok();
+        scan!(scanner, query: Query);
+        match query {
+            Query::Unite { u, v, x } => {
+                if let Some(diff) = uf.difference(v, u) {
+                    writeln!(writer, "{}", (diff == x) as u8).ok();
+                } else {
+                    uf.unite_with(v, u, x);
+                    writeln!(writer, "1").ok();
+                }
             }
-        } else {
-            scan!(scanner, u, v);
-            if let Some(diff) = uf.difference(v, u) {
-                iter_print!(writer, @it diff.into_iter().flatten());
-            } else {
-                writeln!(writer, "-1").ok();
+            Query::Diff { u, v } => {
+                if let Some(diff) = uf.difference(v, u) {
+                    iter_print!(writer, @it diff.into_iter().flatten());
+                } else {
+                    writeln!(writer, "-1").ok();
+                }
             }
         }
     }

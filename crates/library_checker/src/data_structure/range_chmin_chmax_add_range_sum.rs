@@ -6,6 +6,15 @@ pub use competitive::{
     num::Saturating,
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Chmin { l: usize, r: usize, b: Saturating<i64> }
+        1 => Chmax { l: usize, r: usize, b: Saturating<i64> }
+        2 => Add { l: usize, r: usize, b: Saturating<i64> }
+        3 => Sum { l: usize, r: usize }
+    }
+}
+
 #[verify::library_checker("range_chmin_chmax_add_range_sum")]
 pub fn range_chmin_chmax_add_range_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -17,24 +26,20 @@ pub fn range_chmin_chmax_add_range_sum(reader: impl Read, mut writer: impl Write
             .collect(),
     );
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, l, r, b: Saturating<i64>);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Chmin { l, r, b } => {
                 seg.update(l..r, RangeChminChmaxAdd::chmin(b));
             }
-            1 => {
-                scan!(scanner, l, r, b: Saturating<i64>);
+            Query::Chmax { l, r, b } => {
                 seg.update(l..r, RangeChminChmaxAdd::chmax(b));
             }
-            2 => {
-                scan!(scanner, l, r, b: Saturating<i64>);
+            Query::Add { l, r, b } => {
                 seg.update(l..r, RangeChminChmaxAdd::add(b));
             }
-            3 => {
-                scan!(scanner, l, r);
+            Query::Sum { l, r } => {
                 writeln!(writer, "{}", seg.fold(l..r).sum).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

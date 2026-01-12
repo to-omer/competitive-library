@@ -5,6 +5,13 @@ pub use competitive::{
     data_structure::{BinaryIndexedTree, SegmentTree},
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Add { p: usize, x: i64 }
+        1 => Sum { l: usize, r: usize }
+    }
+}
+
 #[verify::library_checker("point_add_range_sum")]
 pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -15,16 +22,14 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: im
         bit.update(i, a);
     }
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, p, x: i64);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Add { p, x } => {
                 bit.update(p, x);
             }
-            1 => {
-                scan!(scanner, l, r);
+            Query::Sum { l, r } => {
                 writeln!(writer, "{}", bit.fold(l, r)).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }
@@ -36,16 +41,14 @@ pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Writ
     scan!(scanner, n, q, a: [i64; n]);
     let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(a);
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, p, x: i64);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Add { p, x } => {
                 seg.update(p, x);
             }
-            1 => {
-                scan!(scanner, l, r);
+            Query::Sum { l, r } => {
                 writeln!(writer, "{}", seg.fold(l..r)).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

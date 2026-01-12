@@ -8,6 +8,13 @@ pub use competitive::{
     tree::HeavyLightDecomposition,
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Set { p: usize, cd: (MInt998244353, MInt998244353) }
+        1 => Apply { u: usize, v: usize, x: MInt998244353 }
+    }
+}
+
 #[verify::library_checker("vertex_set_path_composite")]
 pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -21,14 +28,13 @@ pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
     let mut seg1 = SegmentTree::<LinearOperation<_>>::from_vec(nab.clone());
     let mut seg2 = SegmentTree::<ReverseOperation<LinearOperation<_>>>::from_vec(nab);
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, p, cd: (MInt998244353, MInt998244353));
+        scan!(scanner, query: Query);
+        match query {
+            Query::Set { p, cd } => {
                 seg1.set(hld.vidx[p], cd);
                 seg2.set(hld.vidx[p], cd);
             }
-            1 => {
-                scan!(scanner, u, v, x: MInt998244353);
+            Query::Apply { u, v, x } => {
                 let (a, b) = hld.query_noncom::<LinearOperation<_>, _, _>(
                     u,
                     v,
@@ -38,7 +44,6 @@ pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
                 );
                 writeln!(writer, "{}", a * x + b).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

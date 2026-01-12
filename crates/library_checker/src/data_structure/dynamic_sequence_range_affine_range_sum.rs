@@ -4,6 +4,16 @@ pub use competitive::{
     algebra::RangeSumRangeLinear, data_structure::SplaySequence, num::mint_basic::MInt998244353,
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Insert { i: usize, x: MInt998244353 }
+        1 => Remove { i: usize }
+        2 => Reverse { l: usize, r: usize }
+        3 => Update { l: usize, r: usize, bc: (MInt998244353, MInt998244353) }
+        4 => Fold { l: usize, r: usize }
+    }
+}
+
 #[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
 pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -13,28 +23,23 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: im
     let mut seq = SplaySequence::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
     seq.extend(a);
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, i, x: MInt998244353);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Insert { i, x } => {
                 seq.insert(i, x);
             }
-            1 => {
-                scan!(scanner, i);
+            Query::Remove { i } => {
                 seq.remove(i);
             }
-            2 => {
-                scan!(scanner, l, r);
+            Query::Reverse { l, r } => {
                 seq.reverse(l..r);
             }
-            3 => {
-                scan!(scanner, l, r, bc: (MInt998244353, MInt998244353));
+            Query::Update { l, r, bc } => {
                 seq.update(l..r, bc);
             }
-            4 => {
-                scan!(scanner, l, r);
+            Query::Fold { l, r } => {
                 writeln!(writer, "{}", seq.fold(l..r).0).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

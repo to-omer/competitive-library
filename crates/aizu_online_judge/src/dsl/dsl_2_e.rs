@@ -2,6 +2,13 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{algebra::RangeSumRangeAdd, data_structure::LazySegmentTree};
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Add { s: usize, t: usize, x: u64 }
+        1 => Get { i: usize }
+    }
+}
+
 #[verify::aizu_online_judge("DSL_2_E")]
 pub fn dsl_2_e(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -9,16 +16,14 @@ pub fn dsl_2_e(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, q);
     let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0, 1); n]);
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, s, t, x: u64);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Add { s, t, x } => {
                 seg.update(s - 1..t, x);
             }
-            1 => {
-                scan!(scanner, i);
+            Query::Get { i } => {
                 writeln!(writer, "{}", seg.fold(i - 1..i).0).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

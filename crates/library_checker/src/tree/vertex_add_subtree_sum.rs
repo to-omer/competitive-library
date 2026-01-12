@@ -4,6 +4,13 @@ pub use competitive::{
     algebra::AdditiveOperation, data_structure::SegmentTree, graph::UndirectedSparseGraph,
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Add { u: usize, x: u64 }
+        1 => Sum { u: usize }
+    }
+}
+
 #[verify::library_checker("vertex_add_subtree_sum")]
 pub fn vertex_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -14,16 +21,14 @@ pub fn vertex_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
     let (et, b) = tree.subtree_euler_tour_builder(0).build_with_rearrange(&a);
     let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(b);
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, u, x: u64);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Add { u, x } => {
                 et.update(u, x, |k, x| seg.update(k, x));
             }
-            1 => {
-                scan!(scanner, u);
+            Query::Sum { u } => {
                 writeln!(writer, "{}", et.fold(u, |r| seg.fold(r))).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

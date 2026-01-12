@@ -8,6 +8,13 @@ pub use competitive::{
     tree::HeavyLightDecomposition,
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Add { v: usize, w: u64 }
+        1 => Get { u: usize }
+    }
+}
+
 #[verify::aizu_online_judge("GRL_5_E")]
 pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -25,17 +32,15 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
 
     scan!(scanner, q);
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, v, w: u64);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Add { v, w } => {
                 hld.update(0, v, true, |l, r| seg.update(l..r, w));
             }
-            1 => {
-                scan!(scanner, u);
+            Query::Get { u } => {
                 let ans = hld.query::<M, _>(0, u, true, |l, r| seg.fold(l..r)).0;
                 writeln!(writer, "{}", ans).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

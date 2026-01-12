@@ -6,6 +6,14 @@ pub use competitive::{
     num::{MInt, mint_basic::MInt998244353},
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Push { ab: (MInt998244353, MInt998244353) }
+        1 => Pop
+        2 => Apply { x: MInt998244353 }
+    }
+}
+
 #[verify::library_checker("queue_operate_all_composite")]
 pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -13,20 +21,18 @@ pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, q);
     let mut que = QueueAggregation::<LinearOperation<_>>::new();
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, ab: (MInt998244353, MInt998244353));
+        scan!(scanner, query: Query);
+        match query {
+            Query::Push { ab } => {
                 que.push(ab);
             }
-            1 => {
+            Query::Pop => {
                 que.pop();
             }
-            2 => {
-                scan!(scanner, x: MInt998244353);
+            Query::Apply { x } => {
                 let (a, b) = que.fold_all();
                 writeln!(writer, "{}", a * x + b).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

@@ -6,6 +6,16 @@ pub use competitive::{
     num::{MInt, mint_basic::MInt998244353},
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => PushFront { ab: (MInt998244353, MInt998244353) }
+        1 => PushBack { ab: (MInt998244353, MInt998244353) }
+        2 => PopFront
+        3 => PopBack
+        4 => Apply { x: MInt998244353 }
+    }
+}
+
 #[verify::library_checker("deque_operate_all_composite")]
 pub fn deque_operate_all_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -13,27 +23,24 @@ pub fn deque_operate_all_composite(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, q);
     let mut deq = DequeAggregation::<LinearOperation<_>>::new();
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, ab: (MInt998244353, MInt998244353));
+        scan!(scanner, query: Query);
+        match query {
+            Query::PushFront { ab } => {
                 deq.push_front(ab);
             }
-            1 => {
-                scan!(scanner, ab: (MInt998244353, MInt998244353));
+            Query::PushBack { ab } => {
                 deq.push_back(ab);
             }
-            2 => {
+            Query::PopFront => {
                 deq.pop_front();
             }
-            3 => {
+            Query::PopBack => {
                 deq.pop_back();
             }
-            4 => {
-                scan!(scanner, x: MInt998244353);
+            Query::Apply { x } => {
                 let (a, b) = deq.fold_all();
                 writeln!(writer, "{}", a * x + b).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

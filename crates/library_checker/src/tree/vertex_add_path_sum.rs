@@ -5,6 +5,13 @@ pub use competitive::{
     tree::HeavyLightDecomposition,
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Add { p: usize, x: i64 }
+        1 => Sum { u: usize, v: usize }
+    }
+}
+
 #[verify::library_checker("vertex_add_path_sum")]
 pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -16,13 +23,12 @@ pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
         bit.update(hld.vidx[i], a);
     }
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, p, x: i64);
+        scan!(scanner, query: Query);
+        match query {
+            Query::Add { p, x } => {
                 bit.update(hld.vidx[p], x);
             }
-            1 => {
-                scan!(scanner, u, v);
+            Query::Sum { u, v } => {
                 writeln!(
                     writer,
                     "{}",
@@ -30,7 +36,6 @@ pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
                 )
                 .ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }

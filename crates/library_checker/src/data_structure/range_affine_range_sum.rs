@@ -6,6 +6,13 @@ pub use competitive::{
     num::{MInt, One, mint_basic::MInt998244353},
 };
 
+competitive::define_enum_scan! {
+    enum Query: usize {
+        0 => Update { l: usize, r: usize, bc: (MInt998244353, MInt998244353) }
+        1 => Fold { l: usize, r: usize }
+    }
+}
+
 #[verify::library_checker("range_affine_range_sum")]
 pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
@@ -15,16 +22,14 @@ pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
         a.take(n).map(|x| (x, MInt998244353::one())).collect::<_>(),
     );
     for _ in 0..q {
-        match scanner.scan::<usize>() {
-            0 => {
-                scan!(scanner, l, r, bc: (MInt998244353, MInt998244353));
+        scan!(scanner, query: Query);
+        match query {
+            Query::Update { l, r, bc } => {
                 seg.update(l..r, bc);
             }
-            1 => {
-                scan!(scanner, l, r);
+            Query::Fold { l, r } => {
                 writeln!(writer, "{}", seg.fold(l..r).0).ok();
             }
-            _ => unreachable!("unknown query"),
         }
     }
 }
