@@ -56,6 +56,8 @@ pub trait FormalPowerSeriesCoefficient:
     fn memorized_factorial(n: usize) -> MemorizedFactorial<Self::Base> {
         MemorizedFactorial::new(n)
     }
+    fn memorized_fact(mf: &MemorizedFactorial<Self::Base>) -> &[Self];
+    fn memorized_inv_fact(mf: &MemorizedFactorial<Self::Base>) -> &[Self];
     fn memorized_inv(mf: &MemorizedFactorial<Self::Base>, n: usize) -> Self;
 }
 
@@ -66,6 +68,12 @@ where
     type Base = M;
     fn pow(self, exp: usize) -> Self {
         Self::pow(self, exp)
+    }
+    fn memorized_fact(mf: &MemorizedFactorial<Self::Base>) -> &[Self] {
+        &mf.fact
+    }
+    fn memorized_inv_fact(mf: &MemorizedFactorial<Self::Base>) -> &[Self] {
+        &mf.inv_fact
     }
     fn memorized_inv(mf: &MemorizedFactorial<Self::Base>, n: usize) -> Self {
         mf.inv(n)

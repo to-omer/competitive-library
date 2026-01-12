@@ -812,31 +812,25 @@ where
         }
         g
     }
-}
-
-impl<M, C> FormalPowerSeries<MInt<M>, C>
-where
-    M: MIntConvert<usize>,
-    C: ConvolveSteps<T = Vec<MInt<M>>>,
-{
     /// f(x) <- f(x + a)
-    pub fn taylor_shift(mut self, a: MInt<M>, f: &MemorizedFactorial<M>) -> Self {
+    pub fn taylor_shift(mut self, a: T) -> Self {
+        let f = T::memorized_factorial(self.length());
         let n = self.length();
         for i in 0..n {
-            self.data[i] *= f.fact[i];
+            self.data[i] *= T::memorized_fact(&f)[i].clone();
         }
         self.data.reverse();
-        let mut b = a;
-        let mut g = Self::from_vec(f.inv_fact[..n].to_vec());
+        let mut b = a.clone();
+        let mut g = Self::from_vec(T::memorized_inv_fact(&f)[..n].to_vec());
         for i in 1..n {
-            g[i] *= b;
-            b *= a;
+            g[i] *= b.clone();
+            b *= a.clone();
         }
         self *= g;
         self.truncate(n);
         self.data.reverse();
         for i in 0..n {
-            self.data[i] *= f.inv_fact[i];
+            self.data[i] *= T::memorized_inv_fact(&f)[i].clone();
         }
         self
     }
