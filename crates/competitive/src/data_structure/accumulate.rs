@@ -50,6 +50,17 @@ impl<M> Accumulate<M>
 where
     M: Monoid,
 {
+    pub fn from_vec(mut data: Vec<M::T>) -> Self {
+        let mut acc = M::unit();
+        for x in &mut data {
+            let y = M::operate(&acc, x);
+            *x = acc;
+            acc = y;
+        }
+        data.push(acc);
+        Self { data }
+    }
+
     /// Return fold of \[0, k\)
     pub fn accumulate(&self, k: usize) -> M::T {
         assert!(
@@ -327,8 +338,12 @@ mod tests {
         const N: usize = 50;
         for n in 0..Q {
             let n = n % N;
-            rand!(rng, v: [(.., ..); n]);
-            let acc: Accumulate<M> = v.iter().cloned().collect();
+            rand!(rng, v: [(.., ..); n], t: 0..2);
+            let acc: Accumulate<M> = if t == 0 {
+                v.iter().cloned().collect()
+            } else {
+                Accumulate::from_vec(v.clone())
+            };
             for r in 0..=n {
                 assert_eq!(
                     v[..r].iter().fold(M::unit(), |x, y| M::operate(&x, y)),
