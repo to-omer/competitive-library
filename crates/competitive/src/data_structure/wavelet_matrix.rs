@@ -1,169 +1,274 @@
-use super::{BitVector, RankSelectDictionaries};
+use super::{BitVector, Compressor, RankSelectDictionaries, VecCompress};
 use std::ops::Range;
 
 #[derive(Debug, Clone)]
-pub struct WaveletMatrix {
+pub struct WaveletMatrix<T> {
     len: usize,
-    table: Vec<(usize, BitVector)>,
+    bit_length: usize,
+    zeros: Vec<usize>,
+    ones_prefix: Vec<usize>,
+    bit_vector: BitVector,
+    compress: VecCompress<T>,
 }
 
-impl WaveletMatrix {
-    pub fn new<T>(mut v: Vec<T>, bit_length: usize) -> Self
-    where
-        T: Clone + RankSelectDictionaries,
-    {
+impl<T> WaveletMatrix<T>
+where
+    T: Ord + Clone,
+{
+    pub fn new(v: Vec<T>) -> Self {
         let len = v.len();
-        let mut table = Vec::new();
+        let compress: VecCompress<T> = v.iter().cloned().collect();
+        let bit_length =
+            usize::BITS as usize - compress.size().saturating_sub(1).leading_zeros() as usize;
+        let mut indices: Vec<usize> = v
+            .iter()
+            .map(|value| compress.index_exact(value).unwrap())
+            .collect();
+        let mut bit_vector = BitVector::with_capacity(len * bit_length);
+        let mut zeros = Vec::with_capacity(bit_length);
         for d in (0..bit_length).rev() {
-            let b: BitVector = v.iter().map(|x| x.access(d)).collect();
-            table.push((b.rank0(len), b));
-            v = v
-                .iter()
-                .filter(|&x| !x.access(d))
-                .chain(v.iter().filter(|&x| x.access(d)))
-                .cloned()
-                .collect();
+            let mut zero_count = 0;
+            for &idx in &indices {
+                let bit = ((idx >> d) & 1) != 0;
+                bit_vector.push(bit);
+                if !bit {
+                    zero_count += 1;
+                }
+            }
+            zeros.push(zero_count);
+            let mut next = Vec::with_capacity(len);
+            next.extend(
+                indices
+                    .iter()
+                    .filter(|&&idx| ((idx >> d) & 1) == 0)
+                    .copied(),
+            );
+            next.extend(
+                indices
+                    .iter()
+                    .filter(|&&idx| ((idx >> d) & 1) == 1)
+                    .copied(),
+            );
+            indices = next;
         }
-        Self { len, table }
+        let mut ones_prefix = Vec::with_capacity(bit_length);
+        let mut prefix = 0;
+        for &zero in &zeros {
+            ones_prefix.push(prefix);
+            prefix += len - zero;
+        }
+        Self {
+            len,
+            bit_length,
+            zeros,
+            ones_prefix,
+            bit_vector,
+            compress,
+        }
     }
-    pub fn new_with_init<T, F>(v: Vec<T>, bit_length: usize, mut f: F) -> Self
+
+    pub fn new_with_init<F>(v: Vec<T>, mut f: F) -> Self
     where
-        T: Clone + RankSelectDictionaries,
         F: FnMut(usize, usize, T),
     {
-        let this = Self::new(v.clone(), bit_length);
-        for (mut k, v) in v.into_iter().enumerate() {
-            for (d, &(c, ref b)) in this.table.iter().rev().enumerate().rev() {
-                if v.access(d) {
-                    k = c + b.rank1(k);
+        let this = Self::new(v.clone());
+        let indices: Vec<usize> = v
+            .iter()
+            .map(|value| this.compress.index_exact(value).unwrap())
+            .collect();
+        for (mut k, value) in v.into_iter().enumerate() {
+            let idx = indices[k];
+            for d in (0..this.bit_length).rev() {
+                let level = this.level(d);
+                if ((idx >> d) & 1) != 0 {
+                    k = this.zeros[level] + this.rank1(level, k);
                 } else {
-                    k = b.rank0(k);
+                    k = this.rank0(level, k);
                 }
-                f(d, k, v.clone());
+                f(d, k, value.clone());
             }
         }
         this
     }
-    /// get k-th value
-    pub fn access(&self, mut k: usize) -> usize {
-        let mut val = 0;
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            if b.access(k) {
-                k = c + b.rank1(k);
-                val |= 1 << d;
-            } else {
-                k = b.rank0(k);
-            }
-        }
-        val
+
+    fn level(&self, d: usize) -> usize {
+        self.bit_length - 1 - d
     }
-    /// the number of val in range
-    pub fn rank(&self, val: usize, mut range: Range<usize>) -> usize {
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            if val.access(d) {
-                range.start = c + b.rank1(range.start);
-                range.end = c + b.rank1(range.end);
+
+    fn rank1(&self, level: usize, k: usize) -> usize {
+        let offset = level * self.len;
+        self.bit_vector.rank1(offset + k) - self.ones_prefix[level]
+    }
+
+    fn rank0(&self, level: usize, k: usize) -> usize {
+        k - self.rank1(level, k)
+    }
+
+    fn rank_by_index(&self, idx: usize, mut range: Range<usize>) -> usize {
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            if ((idx >> d) & 1) != 0 {
+                range.start = self.zeros[level] + self.rank1(level, range.start);
+                range.end = self.zeros[level] + self.rank1(level, range.end);
             } else {
-                range.start = b.rank0(range.start);
-                range.end = b.rank0(range.end);
+                range.start = self.rank0(level, range.start);
+                range.end = self.rank0(level, range.end);
             }
         }
         range.end - range.start
     }
+
+    /// get k-th value
+    pub fn access(&self, mut k: usize) -> T {
+        let mut idx = 0;
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            if self.bit_vector.access(level * self.len + k) {
+                idx |= 1 << d;
+                k = self.zeros[level] + self.rank1(level, k);
+            } else {
+                k = self.rank0(level, k);
+            }
+        }
+        self.compress.values()[idx].clone()
+    }
+
+    /// the number of val in range
+    pub fn rank(&self, val: T, range: Range<usize>) -> usize {
+        match self.compress.index_exact(&val) {
+            Some(idx) => self.rank_by_index(idx, range),
+            None => 0,
+        }
+    }
+
     /// index of k-th val
-    pub fn select(&self, val: usize, k: usize) -> Option<usize> {
-        if self.rank(val, 0..self.len) <= k {
+    pub fn select(&self, val: T, k: usize) -> Option<usize> {
+        let idx = self.compress.index_exact(&val)?;
+        if self.rank_by_index(idx, 0..self.len) <= k {
             return None;
         }
         let mut i = 0;
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            if val.access(d) {
-                i = c + b.rank1(i);
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            if ((idx >> d) & 1) != 0 {
+                i = self.zeros[level] + self.rank1(level, i);
             } else {
-                i = b.rank0(i);
+                i = self.rank0(level, i);
             }
         }
         i += k;
-        for &(c, ref b) in self.table.iter().rev() {
-            if i >= c {
-                i = b.select1(i - c).unwrap();
+        for level in (0..self.bit_length).rev() {
+            let offset = level * self.len;
+            if i >= self.zeros[level] {
+                let global_k = self.ones_prefix[level] + (i - self.zeros[level]);
+                let pos = self.bit_vector.select1(global_k).unwrap();
+                i = pos - offset;
             } else {
-                i = b.select0(i).unwrap();
+                let zeros_before = offset - self.ones_prefix[level];
+                let global_k = zeros_before + i;
+                let pos = self.bit_vector.select0(global_k).unwrap();
+                i = pos - offset;
             }
         }
         Some(i)
     }
+
     /// get k-th smallest value in range
-    pub fn quantile(&self, mut range: Range<usize>, mut k: usize) -> usize {
-        let mut val = 0;
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            let z = b.rank0(range.end) - b.rank0(range.start);
+    pub fn quantile(&self, mut range: Range<usize>, mut k: usize) -> T {
+        let mut idx = 0;
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            let z = self.rank0(level, range.end) - self.rank0(level, range.start);
             if z <= k {
                 k -= z;
-                val |= 1 << d;
-                range.start = c + b.rank1(range.start);
-                range.end = c + b.rank1(range.end);
+                idx |= 1 << d;
+                range.start = self.zeros[level] + self.rank1(level, range.start);
+                range.end = self.zeros[level] + self.rank1(level, range.end);
             } else {
-                range.start = b.rank0(range.start);
-                range.end = b.rank0(range.end);
+                range.start = self.rank0(level, range.start);
+                range.end = self.rank0(level, range.end);
             }
         }
-        val
+        self.compress.values()[idx].clone()
     }
+
     /// get k-th smallest value out of range
-    pub fn quantile_outer(&self, mut range: Range<usize>, mut k: usize) -> usize {
-        let mut val = 0;
+    pub fn quantile_outer(&self, mut range: Range<usize>, mut k: usize) -> T {
+        let mut idx = 0;
         let mut orange = 0..self.len;
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            let z = b.rank0(orange.end) - b.rank0(orange.start) + b.rank0(range.start)
-                - b.rank0(range.end);
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            let z = self.rank0(level, orange.end) - self.rank0(level, orange.start)
+                + self.rank0(level, range.start)
+                - self.rank0(level, range.end);
             if z <= k {
                 k -= z;
-                val |= 1 << d;
-                range.start = c + b.rank1(range.start);
-                range.end = c + b.rank1(range.end);
-                orange.start = c + b.rank1(orange.start);
-                orange.end = c + b.rank1(orange.end);
+                idx |= 1 << d;
+                range.start = self.zeros[level] + self.rank1(level, range.start);
+                range.end = self.zeros[level] + self.rank1(level, range.end);
+                orange.start = self.zeros[level] + self.rank1(level, orange.start);
+                orange.end = self.zeros[level] + self.rank1(level, orange.end);
             } else {
-                range.start = b.rank0(range.start);
-                range.end = b.rank0(range.end);
-                orange.start = b.rank0(orange.start);
-                orange.end = b.rank0(orange.end);
+                range.start = self.rank0(level, range.start);
+                range.end = self.rank0(level, range.end);
+                orange.start = self.rank0(level, orange.start);
+                orange.end = self.rank0(level, orange.end);
             }
         }
-        val
+        self.compress.values()[idx].clone()
     }
+
     /// the number of value less than val in range
-    pub fn rank_lessthan(&self, val: usize, mut range: Range<usize>) -> usize {
+    pub fn rank_lessthan(&self, val: T, mut range: Range<usize>) -> usize {
+        let idx = self.compress.index_lower_bound(&val);
+        let size = self.compress.size();
+        if size.is_power_of_two() && idx == size {
+            return range.end - range.start;
+        }
         let mut res = 0;
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            if val.access(d) {
-                res += b.rank0(range.end) - b.rank0(range.start);
-                range.start = c + b.rank1(range.start);
-                range.end = c + b.rank1(range.end);
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            if ((idx >> d) & 1) != 0 {
+                res += self.rank0(level, range.end) - self.rank0(level, range.start);
+                range.start = self.zeros[level] + self.rank1(level, range.start);
+                range.end = self.zeros[level] + self.rank1(level, range.end);
             } else {
-                range.start = b.rank0(range.start);
-                range.end = b.rank0(range.end);
+                range.start = self.rank0(level, range.start);
+                range.end = self.rank0(level, range.end);
             }
         }
         res
     }
+
     /// the number of valrange in range
-    pub fn rank_range(&self, valrange: Range<usize>, range: Range<usize>) -> usize {
+    pub fn rank_range(&self, valrange: Range<T>, range: Range<usize>) -> usize {
         self.rank_lessthan(valrange.end, range.clone()) - self.rank_lessthan(valrange.start, range)
     }
-    pub fn query_less_than<F>(&self, val: usize, mut range: Range<usize>, mut f: F)
+
+    pub fn query_less_than<F>(&self, val: T, mut range: Range<usize>, mut f: F)
     where
         F: FnMut(usize, Range<usize>),
     {
-        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
-            if val.access(d) {
-                f(d, b.rank0(range.start)..b.rank0(range.end));
-                range.start = c + b.rank1(range.start);
-                range.end = c + b.rank1(range.end);
+        let idx = self.compress.index_lower_bound(&val);
+        let size = self.compress.size();
+        if size.is_power_of_two() && idx == size {
+            if let Some(level) = self.bit_length.checked_sub(1) {
+                f(level, range);
+            }
+            return;
+        }
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            if ((idx >> d) & 1) != 0 {
+                f(
+                    d,
+                    self.rank0(level, range.start)..self.rank0(level, range.end),
+                );
+                range.start = self.zeros[level] + self.rank1(level, range.start);
+                range.end = self.zeros[level] + self.rank1(level, range.end);
             } else {
-                range.start = b.rank0(range.start);
-                range.end = b.rank0(range.end);
+                range.start = self.rank0(level, range.start);
+                range.end = self.rank0(level, range.end);
             }
         }
     }
@@ -184,7 +289,7 @@ mod tests {
         const A: usize = 1 << 8;
         let mut rng = Xorshift::default();
         crate::rand!(rng, v: [..A; N]);
-        let wm = WaveletMatrix::new(v.clone(), 8);
+        let wm = WaveletMatrix::new(v.clone());
         for (i, v) in v.iter().cloned().enumerate() {
             assert_eq!(wm.access(i), v);
         }

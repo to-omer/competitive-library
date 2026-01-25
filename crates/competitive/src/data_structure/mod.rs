@@ -223,5 +223,8 @@ mod trie;
 pub mod union_find;
 #[cfg_attr(nightly, codesnip::entry("VecMap", include("container")))]
 mod vec_map;
-#[cfg_attr(nightly, codesnip::entry("WaveletMatrix", include("BitVector")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("WaveletMatrix", include("BitVector", "compress"))
+)]
 mod wavelet_matrix;

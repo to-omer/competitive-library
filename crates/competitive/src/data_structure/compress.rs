@@ -21,6 +21,12 @@ pub struct VecCompress<T> {
     data: Vec<T>,
 }
 
+impl<T> VecCompress<T> {
+    pub fn values(&self) -> &[T] {
+        &self.data
+    }
+}
+
 impl<T> FromIterator<T> for VecCompress<T>
 where
     T: Ord,

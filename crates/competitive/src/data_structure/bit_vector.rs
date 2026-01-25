@@ -82,18 +82,46 @@ pub struct BitVector {
     /// [(bit, sum)]
     data: Vec<(usize, usize)>,
     sum: usize,
+    len: usize,
 }
 impl BitVector {
     const WORD_SIZE: usize = 0usize.count_zeros() as usize;
+
+    pub fn with_capacity(bits: usize) -> Self {
+        let words = bits.div_ceil(Self::WORD_SIZE) + 1;
+        let mut data = Vec::with_capacity(words);
+        data.push((0, 0));
+        Self {
+            data,
+            sum: 0,
+            len: 0,
+        }
+    }
+
+    pub fn push(&mut self, bit: bool) {
+        let word = self.len / Self::WORD_SIZE;
+        let offset = self.len % Self::WORD_SIZE;
+        if word == self.data.len() - 1 {
+            self.data.push((0, self.sum));
+        }
+        if bit {
+            self.data[word].0 |= 1 << offset;
+            self.sum += 1;
+        }
+        self.len += 1;
+        self.data.last_mut().unwrap().1 = self.sum;
+    }
 }
 impl RankSelectDictionaries for BitVector {
     fn bit_length(&self) -> usize {
-        self.data.len() * Self::WORD_SIZE
+        self.len
     }
     fn access(&self, k: usize) -> bool {
+        debug_assert!(k < self.len);
         self.data[k / Self::WORD_SIZE].0 & (1 << (k % Self::WORD_SIZE)) != 0
     }
     fn rank1(&self, k: usize) -> usize {
+        debug_assert!(k <= self.len);
         let (bit, sum) = self.data[k / Self::WORD_SIZE];
         sum + (bit & !(usize::MAX << (k % Self::WORD_SIZE))).count_ones() as usize
     }
@@ -116,7 +144,7 @@ impl RankSelectDictionaries for BitVector {
     }
     fn select0(&self, mut k: usize) -> Option<usize> {
         let (mut l, mut r) = (0, self.data.len());
-        if r * Self::WORD_SIZE - self.sum <= k {
+        if self.len - self.sum <= k {
             return None;
         }
         while r - l > 1 {
@@ -134,28 +162,16 @@ impl RankSelectDictionaries for BitVector {
 }
 impl FromIterator<bool> for BitVector {
     fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
-        let mut iter = iter.into_iter();
-        let mut data = Vec::new();
-        let mut sum = 0;
-        'outer: loop {
-            let mut bit = 0;
-            let mut nsum = sum;
-            for i in 0..Self::WORD_SIZE {
-                if let Some(b) = iter.next() {
-                    if b {
-                        bit |= 1 << i;
-                        nsum += 1;
-                    }
-                } else {
-                    data.push((bit, sum));
-                    sum = nsum;
-                    break 'outer;
-                }
-            }
-            data.push((bit, sum));
-            sum = nsum;
+        let iter = iter.into_iter();
+        let (lower, upper) = iter.size_hint();
+        let mut bit_vector = match upper {
+            Some(upper) => Self::with_capacity(upper),
+            None => Self::with_capacity(lower),
+        };
+        for b in iter {
+            bit_vector.push(b);
         }
-        Self { data, sum }
+        bit_vector
     }
 }
 
