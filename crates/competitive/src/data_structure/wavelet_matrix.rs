@@ -1,5 +1,8 @@
-use super::{BitVector, Compressor, RankSelectDictionaries, VecCompress};
-use std::ops::Range;
+use super::{AbelianGroup, BitVector, Compressor, RankSelectDictionaries, VecCompress};
+use std::{
+    mem::{self, MaybeUninit},
+    ops::Range,
+};
 
 #[derive(Debug, Clone)]
 pub struct WaveletMatrix<T> {
@@ -18,8 +21,7 @@ where
     pub fn new(v: Vec<T>) -> Self {
         let len = v.len();
         let compress: VecCompress<T> = v.iter().cloned().collect();
-        let bit_length =
-            usize::BITS as usize - compress.size().saturating_sub(1).leading_zeros() as usize;
+        let bit_length = usize::BITS as usize - compress.size().leading_zeros() as usize;
         let mut indices: Vec<usize> = v
             .iter()
             .map(|value| compress.index_exact(value).unwrap())
@@ -221,10 +223,6 @@ where
     /// the number of value less than val in range
     pub fn rank_lessthan(&self, val: T, mut range: Range<usize>) -> usize {
         let idx = self.compress.index_lower_bound(&val);
-        let size = self.compress.size();
-        if size.is_power_of_two() && idx == size {
-            return range.end - range.start;
-        }
         let mut res = 0;
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
@@ -250,13 +248,6 @@ where
         F: FnMut(usize, Range<usize>),
     {
         let idx = self.compress.index_lower_bound(&val);
-        let size = self.compress.size();
-        if size.is_power_of_two() && idx == size {
-            if let Some(level) = self.bit_length.checked_sub(1) {
-                f(level, range);
-            }
-            return;
-        }
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
             if ((idx >> d) & 1) != 0 {
@@ -272,12 +263,133 @@ where
             }
         }
     }
+
+    pub fn build_fold<M>(&self, weights: &[M::T]) -> WaveletMatrixFold<'_, T, M>
+    where
+        M: AbelianGroup,
+    {
+        let len = self.len;
+        assert_eq!(weights.len(), len);
+        let mut prefix = Vec::with_capacity((self.bit_length + 1) * (len + 1));
+        let mut current: Vec<M::T> = weights.to_vec();
+        for level in 0..self.bit_length {
+            let offset = level * len;
+            let zeros = self.zeros[level];
+            let mut next: Vec<MaybeUninit<M::T>> = Vec::with_capacity(len);
+            next.resize_with(len, MaybeUninit::uninit);
+            let mut zero_pos = 0;
+            let mut one_pos = zeros;
+            let mut acc = M::unit();
+            prefix.push(acc.clone());
+            for (i, w) in current.into_iter().enumerate() {
+                acc = M::operate(&acc, &w);
+                prefix.push(acc.clone());
+                if self.bit_vector.access(offset + i) {
+                    next[one_pos].write(w);
+                    one_pos += 1;
+                } else {
+                    next[zero_pos].write(w);
+                    zero_pos += 1;
+                }
+            }
+            debug_assert_eq!(zero_pos, zeros);
+            debug_assert_eq!(one_pos, len);
+            let next = unsafe {
+                let mut next = mem::ManuallyDrop::new(next);
+                let ptr = next.as_mut_ptr() as *mut M::T;
+                let len = next.len();
+                let cap = next.capacity();
+                Vec::from_raw_parts(ptr, len, cap)
+            };
+            current = next;
+        }
+        let mut acc = M::unit();
+        prefix.push(acc.clone());
+        for w in current.into_iter() {
+            acc = M::operate(&acc, &w);
+            prefix.push(acc.clone());
+        }
+        WaveletMatrixFold {
+            wavelet_matrix: self,
+            prefix,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct WaveletMatrixFold<'a, T, M>
+where
+    T: Ord + Clone,
+    M: AbelianGroup,
+{
+    wavelet_matrix: &'a WaveletMatrix<T>,
+    prefix: Vec<M::T>,
+}
+
+impl<'a, T, M> WaveletMatrixFold<'a, T, M>
+where
+    T: Ord + Clone,
+    M: AbelianGroup,
+{
+    #[inline]
+    fn range_sum(&self, level: usize, range: Range<usize>) -> M::T {
+        let offset = level * (self.wavelet_matrix.len + 1);
+        unsafe {
+            M::rinv_operate(
+                self.prefix.get_unchecked(offset + range.end),
+                self.prefix.get_unchecked(offset + range.start),
+            )
+        }
+    }
+
+    pub fn fold_lessthan(&self, val: T, range: Range<usize>) -> M::T {
+        self.fold_lessthan_with_count(val, range).1
+    }
+
+    pub fn fold_lessthan_with_count(&self, val: T, mut range: Range<usize>) -> (usize, M::T) {
+        debug_assert!(range.end <= self.wavelet_matrix.len);
+        let idx = self.wavelet_matrix.compress.index_lower_bound(&val);
+        let mut count = 0;
+        let mut sum = M::unit();
+        for d in (0..self.wavelet_matrix.bit_length).rev() {
+            let level = self.wavelet_matrix.level(d);
+            let start0 = self.wavelet_matrix.rank0(level, range.start);
+            let end0 = self.wavelet_matrix.rank0(level, range.end);
+            if ((idx >> d) & 1) != 0 {
+                count += end0 - start0;
+                sum = M::operate(&sum, &self.range_sum(level + 1, start0..end0));
+                range.start = self.wavelet_matrix.zeros[level] + (range.start - start0);
+                range.end = self.wavelet_matrix.zeros[level] + (range.end - end0);
+            } else {
+                range.start = start0;
+                range.end = end0;
+            }
+        }
+        (count, sum)
+    }
+
+    pub fn fold_range(&self, valrange: Range<T>, range: Range<usize>) -> M::T {
+        M::rinv_operate(
+            &self.fold_lessthan(valrange.end, range.clone()),
+            &self.fold_lessthan(valrange.start, range),
+        )
+    }
+
+    pub fn fold_range_with_count(&self, valrange: Range<T>, range: Range<usize>) -> (usize, M::T) {
+        let (count_upper, sum_upper) = self.fold_lessthan_with_count(valrange.end, range.clone());
+        let (count_lower, sum_lower) = self.fold_lessthan_with_count(valrange.start, range);
+        (
+            count_upper - count_lower,
+            M::rinv_operate(&sum_upper, &sum_lower),
+        )
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
+        algebra::AdditiveOperation,
         rand_value,
         tools::{NotEmptySegment as Nes, Xorshift},
     };
@@ -287,12 +399,16 @@ mod tests {
         const N: usize = 1_000;
         const Q: usize = 1_000;
         const A: usize = 1 << 8;
+        const B: i64 = 1_000_000_000;
         let mut rng = Xorshift::default();
         crate::rand!(rng, v: [..A; N]);
+        crate::rand!(rng, w: [-B..B; N]);
         let wm = WaveletMatrix::new(v.clone());
+        let fold = wm.build_fold::<AdditiveOperation<i64>>(&w);
         for (i, v) in v.iter().cloned().enumerate() {
             assert_eq!(wm.access(i), v);
         }
+        assert_eq!(fold.fold_lessthan(A, 0..N), w.iter().sum::<i64>());
         for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
             assert_eq!(
                 wm.rank(a, l..r),
@@ -335,10 +451,34 @@ mod tests {
                 v[l..r].iter().filter(|&&x| x < a).count()
             );
 
+            let mut count_lt = 0usize;
+            let mut sum_lt = 0i64;
+            for (&value, &weight) in v[l..r].iter().zip(w[l..r].iter()) {
+                if value < a {
+                    count_lt += 1;
+                    sum_lt += weight;
+                }
+            }
+            assert_eq!(fold.fold_lessthan_with_count(a, l..r), (count_lt, sum_lt));
+            assert_eq!(fold.fold_lessthan(A, l..r), w[l..r].iter().sum::<i64>());
+
             let (p, q) = rng.random(Nes(A - 1));
             assert_eq!(
                 wm.rank_range(p..q, l..r),
                 v[l..r].iter().filter(|&&x| p <= x && x < q).count()
+            );
+            let mut count_range = 0usize;
+            let mut sum_range = 0i64;
+            for (&value, &weight) in v[l..r].iter().zip(w[l..r].iter()) {
+                if p <= value && value < q {
+                    count_range += 1;
+                    sum_range += weight;
+                }
+            }
+            assert_eq!(fold.fold_range(p..q, l..r), sum_range);
+            assert_eq!(
+                fold.fold_range_with_count(p..q, l..r),
+                (count_range, sum_range)
             );
         }
     }

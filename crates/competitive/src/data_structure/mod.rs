@@ -225,6 +225,6 @@ pub mod union_find;
 mod vec_map;
 #[cfg_attr(
     nightly,
-    codesnip::entry("WaveletMatrix", include("BitVector", "compress"))
+    codesnip::entry("WaveletMatrix", include("BitVector", "compress", "algebra"))
 )]
 mod wavelet_matrix;

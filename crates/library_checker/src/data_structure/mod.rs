@@ -14,6 +14,7 @@ pub mod range_kth_smallest;
 pub mod range_reverse_range_sum;
 pub mod static_range_frequency;
 pub mod static_range_sum;
+pub mod static_range_sum_with_upper_bound;
 pub mod staticrmq;
 pub mod unionfind;
 pub mod unionfind_with_potential;
