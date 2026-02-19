@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/string/suffix_tree.rs`."><title>suffix_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b7b9f40b.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.95.0-nightly (7057231bd 2026-02-11)" data-channel="nightly" data-search-js="search-fb33671b.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-f9617a14.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-12f88f4f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/string/suffix_tree.rs`."><title>suffix_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b7b9f40b.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.95.0-nightly (838709580 2026-02-17)" data-channel="nightly" data-search-js="search-63369b7b.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -156,28 +156,28 @@
 <a href=#102 id=102 data-nosnippet>102</a>            new_index[node_id] = index;
 <a href=#103 id=103 data-nosnippet>103</a>            index += <span class="number">1</span>;
 <a href=#104 id=104 data-nosnippet>104</a>            <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">self</span>.links[node_id].last_child;
-<a href=#105 id=105 data-nosnippet>105</a>            <span class="kw">while </span><span class="macro">child !</span>= !<span class="number">0 </span>{
+<a href=#105 id=105 data-nosnippet>105</a>            <span class="kw">while </span>child != !<span class="number">0 </span>{
 <a href=#106 id=106 data-nosnippet>106</a>                stack.push(child);
 <a href=#107 id=107 data-nosnippet>107</a>                child = <span class="self">self</span>.links[child].prev_sibling;
 <a href=#108 id=108 data-nosnippet>108</a>            }
 <a href=#109 id=109 data-nosnippet>109</a>        }
 <a href=#110 id=110 data-nosnippet>110</a>
 <a href=#111 id=111 data-nosnippet>111</a>        <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.nodes {
-<a href=#112 id=112 data-nosnippet>112</a>            <span class="kw">if </span>node.<span class="macro">parent !</span>= !<span class="number">0 </span>{
+<a href=#112 id=112 data-nosnippet>112</a>            <span class="kw">if </span>node.parent != !<span class="number">0 </span>{
 <a href=#113 id=113 data-nosnippet>113</a>                node.parent = new_index[node.parent];
 <a href=#114 id=114 data-nosnippet>114</a>            }
 <a href=#115 id=115 data-nosnippet>115</a>        }
 <a href=#116 id=116 data-nosnippet>116</a>        <span class="kw">for </span>link <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.links {
-<a href=#117 id=117 data-nosnippet>117</a>            <span class="kw">if </span>link.<span class="macro">first_child !</span>= !<span class="number">0 </span>{
+<a href=#117 id=117 data-nosnippet>117</a>            <span class="kw">if </span>link.first_child != !<span class="number">0 </span>{
 <a href=#118 id=118 data-nosnippet>118</a>                link.first_child = new_index[link.first_child];
 <a href=#119 id=119 data-nosnippet>119</a>            }
-<a href=#120 id=120 data-nosnippet>120</a>            <span class="kw">if </span>link.<span class="macro">last_child !</span>= !<span class="number">0 </span>{
+<a href=#120 id=120 data-nosnippet>120</a>            <span class="kw">if </span>link.last_child != !<span class="number">0 </span>{
 <a href=#121 id=121 data-nosnippet>121</a>                link.last_child = new_index[link.last_child];
 <a href=#122 id=122 data-nosnippet>122</a>            }
-<a href=#123 id=123 data-nosnippet>123</a>            <span class="kw">if </span>link.<span class="macro">next_sibling !</span>= !<span class="number">0 </span>{
+<a href=#123 id=123 data-nosnippet>123</a>            <span class="kw">if </span>link.next_sibling != !<span class="number">0 </span>{
 <a href=#124 id=124 data-nosnippet>124</a>                link.next_sibling = new_index[link.next_sibling];
 <a href=#125 id=125 data-nosnippet>125</a>            }
-<a href=#126 id=126 data-nosnippet>126</a>            <span class="kw">if </span>link.<span class="macro">prev_sibling !</span>= !<span class="number">0 </span>{
+<a href=#126 id=126 data-nosnippet>126</a>            <span class="kw">if </span>link.prev_sibling != !<span class="number">0 </span>{
 <a href=#127 id=127 data-nosnippet>127</a>                link.prev_sibling = new_index[link.prev_sibling];
 <a href=#128 id=128 data-nosnippet>128</a>            }
 <a href=#129 id=129 data-nosnippet>129</a>        }
@@ -215,13 +215,13 @@
 <a href=#161 id=161 data-nosnippet>161</a>        <span class="kw">let </span><span class="kw-2">mut </span>stack = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(<span class="number">0usize</span>, <span class="number">0usize</span>)];
 <a href=#162 id=162 data-nosnippet>162</a>        <span class="kw">while let </span><span class="prelude-val">Some</span>((v, h)) = stack.pop() {
 <a href=#163 id=163 data-nosnippet>163</a>            <span class="kw">let </span><span class="kw-2">mut </span>u = v;
-<a href=#164 id=164 data-nosnippet>164</a>            <span class="kw">while </span><span class="macro">u !</span>= !<span class="number">0 </span>{
+<a href=#164 id=164 data-nosnippet>164</a>            <span class="kw">while </span>u != !<span class="number">0 </span>{
 <a href=#165 id=165 data-nosnippet>165</a>                <span class="self">self</span>.nodes[u].head = h;
 <a href=#166 id=166 data-nosnippet>166</a>                <span class="self">self</span>.nodes[u].pos = cur;
 <a href=#167 id=167 data-nosnippet>167</a>                inv[cur] = u;
 <a href=#168 id=168 data-nosnippet>168</a>                cur += <span class="number">1</span>;
 <a href=#169 id=169 data-nosnippet>169</a>                <span class="kw">for </span><span class="kw-2">&amp;</span>child <span class="kw">in </span><span class="kw-2">&amp;</span>children[<span class="self">self</span>.nodes[u].child_index.clone()] {
-<a href=#170 id=170 data-nosnippet>170</a>                    <span class="kw">if </span><span class="macro">child !</span>= heavy[u] {
+<a href=#170 id=170 data-nosnippet>170</a>                    <span class="kw">if </span>child != heavy[u] {
 <a href=#171 id=171 data-nosnippet>171</a>                        stack.push((child, child));
 <a href=#172 id=172 data-nosnippet>172</a>                    }
 <a href=#173 id=173 data-nosnippet>173</a>                }
@@ -237,7 +237,7 @@
 <a href=#183 id=183 data-nosnippet>183</a>        <span class="kw">for </span>node_id <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.nodes.len() {
 <a href=#184 id=184 data-nosnippet>184</a>            <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">self</span>.links[node_id].first_child;
 <a href=#185 id=185 data-nosnippet>185</a>            <span class="self">self</span>.nodes[node_id].child_index.start = index;
-<a href=#186 id=186 data-nosnippet>186</a>            <span class="kw">while </span><span class="macro">child !</span>= !<span class="number">0 </span>{
+<a href=#186 id=186 data-nosnippet>186</a>            <span class="kw">while </span>child != !<span class="number">0 </span>{
 <a href=#187 id=187 data-nosnippet>187</a>                children[index] = child;
 <a href=#188 id=188 data-nosnippet>188</a>                index += <span class="number">1</span>;
 <a href=#189 id=189 data-nosnippet>189</a>                child = <span class="self">self</span>.links[child].next_sibling;
@@ -671,7 +671,7 @@
 <a href=#617 id=617 data-nosnippet>617</a>            <span class="macro">assert_eq!</span>(st.node(<span class="number">0</span>).parent, !<span class="number">0</span>);
 <a href=#618 id=618 data-nosnippet>618</a>            <span class="kw">for </span>node_id <span class="kw">in </span><span class="number">0</span>..st.node_size() {
 <a href=#619 id=619 data-nosnippet>619</a>                <span class="kw">let </span>node = st.node(node_id);
-<a href=#620 id=620 data-nosnippet>620</a>                <span class="kw">if </span>node.<span class="macro">parent !</span>= !<span class="number">0 </span>{
+<a href=#620 id=620 data-nosnippet>620</a>                <span class="kw">if </span>node.parent != !<span class="number">0 </span>{
 <a href=#621 id=621 data-nosnippet>621</a>                    <span class="kw">let </span>parent_depth = st.node(node.parent).depth;
 <a href=#622 id=622 data-nosnippet>622</a>                    <span class="macro">assert!</span>(parent_depth &lt; node.depth);
 <a href=#623 id=623 data-nosnippet>623</a>                }
@@ -710,7 +710,7 @@
 <a href=#656 id=656 data-nosnippet>656</a>            <span class="macro">assert_eq!</span>(st.node(<span class="number">0</span>).parent, !<span class="number">0</span>);
 <a href=#657 id=657 data-nosnippet>657</a>            <span class="kw">for </span>node_id <span class="kw">in </span><span class="number">0</span>..st.node_size() {
 <a href=#658 id=658 data-nosnippet>658</a>                <span class="kw">let </span>node = st.node(node_id);
-<a href=#659 id=659 data-nosnippet>659</a>                <span class="kw">if </span>node.<span class="macro">parent !</span>= !<span class="number">0 </span>{
+<a href=#659 id=659 data-nosnippet>659</a>                <span class="kw">if </span>node.parent != !<span class="number">0 </span>{
 <a href=#660 id=660 data-nosnippet>660</a>                    <span class="kw">let </span>parent_depth = st.node(node.parent).depth;
 <a href=#661 id=661 data-nosnippet>661</a>                    <span class="macro">assert!</span>(parent_depth &lt; node.depth);
 <a href=#662 id=662 data-nosnippet>662</a>                }
@@ -821,7 +821,7 @@
 <a href=#767 id=767 data-nosnippet>767</a>            <span class="macro">assert_eq!</span>(st.node(<span class="number">0</span>).parent, !<span class="number">0</span>);
 <a href=#768 id=768 data-nosnippet>768</a>            <span class="kw">for </span>node_id <span class="kw">in </span><span class="number">0</span>..st.node_size() {
 <a href=#769 id=769 data-nosnippet>769</a>                <span class="kw">let </span>node = st.node(node_id);
-<a href=#770 id=770 data-nosnippet>770</a>                <span class="kw">if </span>node.<span class="macro">parent !</span>= !<span class="number">0 </span>{
+<a href=#770 id=770 data-nosnippet>770</a>                <span class="kw">if </span>node.parent != !<span class="number">0 </span>{
 <a href=#771 id=771 data-nosnippet>771</a>                    <span class="kw">let </span>parent_depth = st.node(node.parent).depth;
 <a href=#772 id=772 data-nosnippet>772</a>                    <span class="macro">assert!</span>(parent_depth &lt;= node.depth);
 <a href=#773 id=773 data-nosnippet>773</a>                }
@@ -875,7 +875,7 @@
 <a href=#821 id=821 data-nosnippet>821</a>            <span class="macro">assert_eq!</span>(st.node(<span class="number">0</span>).parent, !<span class="number">0</span>);
 <a href=#822 id=822 data-nosnippet>822</a>            <span class="kw">for </span>node_id <span class="kw">in </span><span class="number">0</span>..st.node_size() {
 <a href=#823 id=823 data-nosnippet>823</a>                <span class="kw">let </span>node = st.node(node_id);
-<a href=#824 id=824 data-nosnippet>824</a>                <span class="kw">if </span>node.<span class="macro">parent !</span>= !<span class="number">0 </span>{
+<a href=#824 id=824 data-nosnippet>824</a>                <span class="kw">if </span>node.parent != !<span class="number">0 </span>{
 <a href=#825 id=825 data-nosnippet>825</a>                    <span class="kw">let </span>parent_depth = st.node(node.parent).depth;
 <a href=#826 id=826 data-nosnippet>826</a>                    <span class="macro">assert!</span>(parent_depth &lt;= node.depth);
 <a href=#827 id=827 data-nosnippet>827</a>                }
