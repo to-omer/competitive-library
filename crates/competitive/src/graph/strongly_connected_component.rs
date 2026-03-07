@@ -84,7 +84,7 @@ impl StronglyConnectedComponent<'_> {
             counts[x] += 1;
         }
         let mut groups = vec![vec![]; self.size()];
-        for (g, c) in groups.iter_mut().zip(counts.into_iter()) {
+        for (g, c) in groups.iter_mut().zip(counts) {
             g.reserve(c);
         }
         for u in self.graph.vertices() {
