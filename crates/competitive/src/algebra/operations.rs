@@ -1373,6 +1373,449 @@ mod bottomk_operation_impl {
     }
 }
 
+#[codesnip::entry("DedupedTopkOperation")]
+pub use self::deduped_topk_operation_impl::DedupedTopkOperation;
+#[codesnip::entry("DedupedTopkOperation", include("algebra", "bounded", "array"))]
+mod deduped_topk_operation_impl {
+    use super::*;
+    use std::marker::PhantomData;
+
+    pub struct DedupedTopkOperation<const K: usize, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        _marker: PhantomData<fn() -> (T, U)>,
+    }
+    impl<const K: usize, T, U> Magma for DedupedTopkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        type T = [(T, Option<U>); K];
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            let mut i = 0;
+            let mut j = 0;
+            let mut k = 0;
+            let mut out = crate::array![|| (T::minimum(), None); K];
+            while k < K && (i < K || j < K) {
+                if j == K || (i < K && x[i].0 >= y[j].0) {
+                    if (0..j).all(|l| x[i].1 != y[l].1) {
+                        out[k] = x[i].clone();
+                        k += 1;
+                    }
+                    i += 1;
+                } else {
+                    if (0..i).all(|l| y[j].1 != x[l].1) {
+                        out[k] = y[j].clone();
+                        k += 1;
+                    }
+                    j += 1;
+                }
+            }
+            out
+        }
+    }
+    impl<const K: usize, T, U> Unital for DedupedTopkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        fn unit() -> Self::T {
+            crate::array![|| (T::minimum(), None); K]
+        }
+    }
+    impl<const K: usize, T, U> Associative for DedupedTopkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+    }
+    impl<const K: usize, T, U> DedupedTopkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        pub fn insert(x: &mut <Self as Magma>::T, item: (T, U)) {
+            for i in 0..K {
+                if x[i].0 < item.0 {
+                    let j = (i..K)
+                        .find(|&j| x[j].1.as_ref() == Some(&item.1))
+                        .unwrap_or(K - 1);
+                    for k in (i..j).rev() {
+                        x[k + 1] = x[k].clone();
+                    }
+                    x[i] = (item.0, Some(item.1));
+                    break;
+                } else if x[i].1.as_ref() == Some(&item.1) {
+                    break;
+                }
+            }
+        }
+        pub fn topn<const N: usize, const M: usize>(
+            x: &<Self as Magma>::T,
+            excludes: &[U; M],
+        ) -> [(T, Option<U>); N] {
+            let mut out = crate::array![|| (T::minimum(), None); N];
+            let mut i = 0;
+            let mut j = 0;
+            while i < K && j < N {
+                if excludes.iter().all(|e| x[i].1.as_ref() != Some(e)) {
+                    out[j] = x[i].clone();
+                    j += 1;
+                }
+                i += 1;
+            }
+            out
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::{array, tools::Xorshift};
+        use std::collections::HashSet;
+
+        fn normalize(x: impl IntoIterator<Item = (i64, Option<i32>)>) -> [(i64, Option<i32>); 4] {
+            let mut x: Vec<_> = x.into_iter().collect();
+            x.sort_unstable();
+            x.reverse();
+            let mut used = HashSet::new();
+            x.retain(|(_, u)| {
+                if let Some(u) = u {
+                    if used.contains(u) {
+                        return false;
+                    }
+                    used.insert(*u);
+                }
+                true
+            });
+            x.resize_with(4, || (i64::MIN, None));
+            x.try_into().unwrap()
+        }
+
+        #[test]
+        fn test_deduped_topk_operation() {
+            type M = DedupedTopkOperation<4, i64, i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut x = [(i64::MIN, None); 4];
+                for _ in 0..100 {
+                    let mut y = [(i64::MIN, None); 4];
+                    for y in &mut y {
+                        *y = (rng.random(0..1000), Some(rng.random(0i32..10)));
+                    }
+                    y = normalize(y);
+                    let z = normalize(x.iter().cloned().chain(y.iter().cloned()));
+                    let zz = M::operate(&x, &y);
+                    for (z, zz) in z.iter().zip(&zz) {
+                        assert_eq!(z.0, zz.0);
+                    }
+                    assert_eq!(
+                        zz.iter()
+                            .filter_map(|(_, u)| u.as_ref())
+                            .collect::<HashSet<_>>()
+                            .len(),
+                        zz.iter().filter_map(|(_, u)| u.as_ref()).count()
+                    );
+                    x = zz;
+                }
+
+                let mut g = || {
+                    if rng.random(0..3) == 0 {
+                        (i64::MIN, None)
+                    } else {
+                        (rng.random(0..10), Some(rng.random(0i32..10)))
+                    }
+                };
+                let mut a = array![|| g(); 4];
+                a = normalize(a);
+                assert!(M::check_unital(&a));
+                let mut b = array![|| g(); 4];
+                b = normalize(b);
+                let mut c = array![|| g(); 4];
+                c = normalize(c);
+                assert!(M::check_associative(&a, &b, &c));
+            }
+        }
+
+        #[test]
+        fn test_deduped_topk_insert() {
+            type M = DedupedTopkOperation<4, i64, i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut x = [(i64::MIN, None); 4];
+                for _ in 0..100 {
+                    let t = (rng.random(0..1000), rng.random(0i32..10));
+                    let z = normalize(x.iter().cloned().chain([(t.0, Some(t.1))]));
+                    M::insert(&mut x, t);
+                    for (z, zz) in z.iter().zip(&x) {
+                        assert_eq!(z.0, zz.0);
+                    }
+                    assert_eq!(
+                        x.iter()
+                            .filter_map(|(_, u)| u.as_ref())
+                            .collect::<HashSet<_>>()
+                            .len(),
+                        x.iter().filter_map(|(_, u)| u.as_ref()).count()
+                    );
+                }
+            }
+        }
+
+        #[test]
+        fn test_deduped_topk_topn() {
+            type M = DedupedTopkOperation<4, i64, i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut x = [(i64::MIN, None); 4];
+                for x in &mut x {
+                    *x = (rng.random(0..1000), Some(rng.random(0i32..10)));
+                }
+                x = normalize(x.iter().cloned());
+                for _ in 0..100 {
+                    let mut excludes = [0i32; 3];
+                    for e in &mut excludes {
+                        *e = rng.random(0i32..10);
+                    }
+                    let topn: [_; 3] = M::topn(&x, &excludes);
+                    let mut expected: Vec<_> = x
+                        .iter()
+                        .filter(|(_, u)| excludes.iter().all(|e| u.as_ref() != Some(e)))
+                        .cloned()
+                        .take(3)
+                        .collect();
+                    expected.resize_with(3, || (i64::MIN, None));
+                    for (expected, topn) in expected.iter().zip(&topn) {
+                        assert_eq!(expected.0, topn.0);
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[codesnip::entry("DedupedBottomkOperation")]
+pub use self::deduped_bottomk_operation_impl::DedupedBottomkOperation;
+#[codesnip::entry("DedupedBottomkOperation", include("algebra", "bounded", "array"))]
+mod deduped_bottomk_operation_impl {
+    use super::*;
+    use std::marker::PhantomData;
+
+    pub struct DedupedBottomkOperation<const K: usize, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        _marker: PhantomData<fn() -> (T, U)>,
+    }
+    impl<const K: usize, T, U> Magma for DedupedBottomkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        type T = [(T, Option<U>); K];
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            let mut i = 0;
+            let mut j = 0;
+            let mut k = 0;
+            let mut out = crate::array![|| (T::maximum(), None); K];
+            while k < K && (i < K || j < K) {
+                if j == K || (i < K && x[i].0 <= y[j].0) {
+                    if (0..j).all(|l| x[i].1 != y[l].1) {
+                        out[k] = x[i].clone();
+                        k += 1;
+                    }
+                    i += 1;
+                } else {
+                    if (0..i).all(|l| y[j].1 != x[l].1) {
+                        out[k] = y[j].clone();
+                        k += 1;
+                    }
+                    j += 1;
+                }
+            }
+            out
+        }
+    }
+    impl<const K: usize, T, U> Unital for DedupedBottomkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        fn unit() -> Self::T {
+            crate::array![|| (T::maximum(), None); K]
+        }
+    }
+    impl<const K: usize, T, U> Associative for DedupedBottomkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+    }
+    impl<const K: usize, T, U> DedupedBottomkOperation<K, T, U>
+    where
+        T: Clone + Ord + Bounded,
+        U: Clone + Eq,
+    {
+        pub fn insert(x: &mut <Self as Magma>::T, item: (T, U)) {
+            for i in 0..K {
+                if x[i].0 > item.0 {
+                    let j = (i..K)
+                        .find(|&j| x[j].1.as_ref() == Some(&item.1))
+                        .unwrap_or(K - 1);
+                    for k in (i..j).rev() {
+                        x[k + 1] = x[k].clone();
+                    }
+                    x[i] = (item.0, Some(item.1));
+                    break;
+                } else if x[i].1.as_ref() == Some(&item.1) {
+                    break;
+                }
+            }
+        }
+        pub fn bottomn<const N: usize, const M: usize>(
+            x: &<Self as Magma>::T,
+            excludes: &[U; M],
+        ) -> [(T, Option<U>); N] {
+            let mut out = crate::array![|| (T::maximum(), None); N];
+            let mut i = 0;
+            let mut j = 0;
+            while i < K && j < N {
+                if excludes.iter().all(|e| x[i].1.as_ref() != Some(e)) {
+                    out[j] = x[i].clone();
+                    j += 1;
+                }
+                i += 1;
+            }
+            out
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::{array, tools::Xorshift};
+        use std::collections::HashSet;
+
+        fn normalize(x: impl IntoIterator<Item = (i64, Option<i32>)>) -> [(i64, Option<i32>); 4] {
+            let mut x: Vec<_> = x.into_iter().collect();
+            x.sort_unstable();
+            let mut used = HashSet::new();
+            x.retain(|(_, u)| {
+                if let Some(u) = u {
+                    if used.contains(u) {
+                        return false;
+                    }
+                    used.insert(*u);
+                }
+                true
+            });
+            x.resize_with(4, || (i64::MAX, None));
+            x.try_into().unwrap()
+        }
+
+        #[test]
+        fn test_deduped_bottomk_operation() {
+            type M = DedupedBottomkOperation<4, i64, i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut x = [(i64::MAX, None); 4];
+                for _ in 0..100 {
+                    let mut y = [(i64::MAX, None); 4];
+                    for y in &mut y {
+                        *y = (rng.random(0..1000), Some(rng.random(0i32..10)));
+                    }
+                    y = normalize(y);
+                    let z = normalize(x.iter().cloned().chain(y.iter().cloned()));
+                    let zz = M::operate(&x, &y);
+                    for (z, zz) in z.iter().zip(&zz) {
+                        assert_eq!(z.0, zz.0);
+                    }
+                    assert_eq!(
+                        zz.iter()
+                            .filter_map(|(_, u)| u.as_ref())
+                            .collect::<HashSet<_>>()
+                            .len(),
+                        zz.iter().filter_map(|(_, u)| u.as_ref()).count()
+                    );
+                    x = zz;
+                }
+
+                let mut g = || {
+                    if rng.random(0..3) == 0 {
+                        (i64::MAX, None)
+                    } else {
+                        (rng.random(0..10), Some(rng.random(0i32..10)))
+                    }
+                };
+                let mut a = array![|| g(); 4];
+                a = normalize(a);
+                assert!(M::check_unital(&a));
+                let mut b = array![|| g(); 4];
+                b = normalize(b);
+                let mut c = array![|| g(); 4];
+                c = normalize(c);
+                assert!(M::check_associative(&a, &b, &c));
+            }
+        }
+
+        #[test]
+        fn test_deduped_bottomk_insert() {
+            type M = DedupedBottomkOperation<4, i64, i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut x = [(i64::MAX, None); 4];
+                for _ in 0..100 {
+                    let t = (rng.random(0..1000), rng.random(0i32..10));
+                    let z = normalize(x.iter().cloned().chain([(t.0, Some(t.1))]));
+                    M::insert(&mut x, t);
+                    for (z, zz) in z.iter().zip(&x) {
+                        assert_eq!(z.0, zz.0);
+                    }
+                    assert_eq!(
+                        x.iter()
+                            .filter_map(|(_, u)| u.as_ref())
+                            .collect::<HashSet<_>>()
+                            .len(),
+                        x.iter().filter_map(|(_, u)| u.as_ref()).count()
+                    );
+                }
+            }
+        }
+
+        #[test]
+        fn test_deduped_bottomk_bottomn() {
+            type M = DedupedBottomkOperation<4, i64, i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut x = [(i64::MAX, None); 4];
+                for x in &mut x {
+                    *x = (rng.random(0..1000), Some(rng.random(0i32..10)));
+                }
+                x = normalize(x.iter().cloned());
+                for _ in 0..100 {
+                    let mut excludes = [0i32; 3];
+                    for e in &mut excludes {
+                        *e = rng.random(0i32..10);
+                    }
+                    let bottomn: [_; 3] = M::bottomn(&x, &excludes);
+                    let mut expected: Vec<_> = x
+                        .iter()
+                        .filter(|(_, u)| excludes.iter().all(|e| u.as_ref() != Some(e)))
+                        .cloned()
+                        .take(3)
+                        .collect();
+                    expected.resize_with(3, || (i64::MAX, None));
+                    for (expected, bottomn) in expected.iter().zip(&bottomn) {
+                        assert_eq!(expected.0, bottomn.0);
+                    }
+                }
+            }
+        }
+    }
+}
+
 #[codesnip::entry("PermutationOperation")]
 pub use self::permutation_operation_impl::PermutationOperation;
 #[codesnip::entry("PermutationOperation", include("algebra"))]
