@@ -12,31 +12,35 @@ mod gf2_63 {
     impl Magma for Gf2_63 {
         type T = u64;
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            use core::arch::x86_64::{_mm_clmulepi64_si128, _mm_extract_epi64, _mm_set_epi64x};
-            unsafe {
-                let a = _mm_set_epi64x(0, *x as i64);
-                let b = _mm_set_epi64x(0, *y as i64);
-                let c = _mm_clmulepi64_si128(a, b, 0);
-                let lo = _mm_extract_epi64(c, 0) as u64;
-                let hi = _mm_extract_epi64(c, 1) as u64;
+            #[cfg(target_arch = "x86_64")]
+            {
+                use core::arch::x86_64::{_mm_clmulepi64_si128, _mm_extract_epi64, _mm_set_epi64x};
+                unsafe {
+                    let a = _mm_set_epi64x(0, *x as i64);
+                    let b = _mm_set_epi64x(0, *y as i64);
+                    let c = _mm_clmulepi64_si128(a, b, 0);
+                    let lo = _mm_extract_epi64(c, 0) as u64;
+                    let hi = _mm_extract_epi64(c, 1) as u64;
+                    let hi = (hi << 1) | (lo >> 63);
+                    let lo = lo & !(!(0u64) << 63);
+                    lo ^ hi ^ (hi << 1)
+                }
+            }
+            #[cfg(not(target_arch = "x86_64"))]
+            {
+                let x = *x as u128;
+                let mut bit = 0u128;
+                for i in 0u32..63 {
+                    if y >> i & 1 != 0 {
+                        bit ^= x << i;
+                    }
+                }
+                let hi = (bit >> 64) as u64;
+                let lo = (bit & ((1 << 64) - 1)) as u64;
                 let hi = (hi << 1) | (lo >> 63);
                 let lo = lo & !(!(0u64) << 63);
                 lo ^ hi ^ (hi << 1)
             }
-            // {
-            //     let x = *x as u128;
-            //     let mut bit = 0u128;
-            //     for i in 0u32..63 {
-            //         if y >> i & 1 != 0 {
-            //             bit ^= x << i;
-            //         }
-            //     }
-            //     let hi = (bit >> 64) as u64;
-            //     let lo = (bit & ((1 << 64) - 1)) as u64;
-            //     let hi = hi << 1 | lo >> 63;
-            //     let lo = lo & !(!(0u64) << 63);
-            //     lo ^ hi ^ (hi << 1)
-            // }
         }
     }
     impl Unital for Gf2_63 {

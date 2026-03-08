@@ -2,7 +2,7 @@
 
 # Rust toolchain (set via --build-arg RUST_VERSION, e.g. 1.89.0)
 ARG RUST_VERSION=1.89.0
-FROM rust:${RUST_VERSION}-bookworm
+FROM rust:${RUST_VERSION}-trixie
 
 # Runtime UID/GID to avoid root-owned artifacts on host
 ARG UID=1000
@@ -11,8 +11,9 @@ ARG GID=1000
 # Toolchain & deps in one layer (for verify/library-checker builds).
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    python3 python3-pip make g++ git ca-certificates \
-    && cargo install --locked cargo-make codesnip \
+    python3 python3-pip make g++ git curl ca-certificates \
+    && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
+    && cargo binstall --no-confirm cargo-make codesnip \
     && rustup component add rustfmt clippy \
     && rm -rf /var/lib/apt/lists/*
 
