@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["centroid_decomposition_dfs"]};
+window.SIDEBAR_ITEMS = {"struct":["CentroidSplit","ContourInfo","ContourQueryRange","RootedTree"]};
