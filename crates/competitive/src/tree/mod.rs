@@ -8,6 +8,8 @@ use crate::{
     tools::{RandomSpec, Xorshift},
 };
 
+#[codesnip::entry("centroid_decomposition")]
+pub use self::centroid_decomposition::ContourQueryRange;
 #[codesnip::entry("tree_generator")]
 pub use self::generator::*;
 #[codesnip::entry("HeavyLightDecomposition")]
