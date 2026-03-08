@@ -8,7 +8,15 @@ use std::{
     fs::{File, create_dir, read_dir, read_to_string, remove_dir_all},
     path::{Path, PathBuf},
     process::Command,
+    time::{Duration, SystemTime},
 };
+
+const LIBRARY_CHECKER_PROBLEMS_REPO: &str = "library-checker-problems";
+const LIBRARY_CHECKER_PROBLEMS_REPO_LOCK: &str = "library-checker-problems-file-lock";
+const LIBRARY_CHECKER_PROBLEMS_REPO_URL: &str =
+    "https://github.com/yosupo06/library-checker-problems";
+const LIBRARY_CHECKER_PROBLEMS_PULL_STAMP: &str = "library-checker-problems-pull.stamp";
+const LIBRARY_CHECKER_PROBLEMS_PULL_TTL: Duration = Duration::from_secs(60 * 60);
 
 #[derive(Debug)]
 struct LibraryCheckerProblem {
@@ -49,6 +57,30 @@ impl Error for CheckerBinaryNotFound {}
 impl Display for CheckerBinaryNotFound {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("checker binary not found")
+    }
+}
+
+#[derive(Debug)]
+struct LibraryCheckerProblemsPrepareFailed {
+    status: Option<i32>,
+    stderr: String,
+}
+
+impl Error for LibraryCheckerProblemsPrepareFailed {}
+impl Display for LibraryCheckerProblemsPrepareFailed {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.status {
+            Some(code) => write!(
+                f,
+                "library-checker-problems update failed with exit code {}",
+                code
+            )?,
+            None => f.write_str("library-checker-problems update failed with signal")?,
+        }
+        if !self.stderr.is_empty() {
+            write!(f, ": {}", self.stderr.trim_end())?;
+        }
+        Ok(())
     }
 }
 
@@ -134,33 +166,69 @@ fn find_problem(rootdir: &PathBuf, problem: &str) -> BoxResult<LibraryCheckerPro
 }
 
 fn prepare_library_checker_problems() -> BoxResult<PathBuf> {
-    let rootdir = app_cache_directory().join("library-checker-problems");
+    let lock_file = File::create(app_cache_directory().join(LIBRARY_CHECKER_PROBLEMS_REPO_LOCK))?;
+    let mut lock = RwLock::new(lock_file);
+    let _lock_guard = lock.write()?;
 
-    if rootdir.exists() {
+    let rootdir = app_cache_directory().join(LIBRARY_CHECKER_PROBLEMS_REPO);
+    let stamp_path = app_cache_directory().join(LIBRARY_CHECKER_PROBLEMS_PULL_STAMP);
+    let last_prepared_at = stamp_path
+        .metadata()
+        .ok()
+        .and_then(|metadata| metadata.modified().ok());
+    if rootdir.exists()
+        && last_prepared_at.is_some_and(|last_prepared_at| {
+            SystemTime::now()
+                .duration_since(last_prepared_at)
+                .unwrap_or_default()
+                < LIBRARY_CHECKER_PROBLEMS_PULL_TTL
+        })
+    {
+        return Ok(rootdir);
+    }
+
+    let output = if rootdir.exists() {
         Command::new("git")
             .arg("-C")
             .arg(rootdir.as_os_str())
             .arg("pull")
-            .output()?;
+            .output()?
     } else {
         Command::new("git")
-            .args([
-                "clone",
-                "https://github.com/yosupo06/library-checker-problems",
-            ])
+            .args(["clone", LIBRARY_CHECKER_PROBLEMS_REPO_URL])
             .arg(rootdir.as_os_str())
-            .output()?;
+            .output()?
+    };
+    if !output.status.success() {
+        Err(LibraryCheckerProblemsPrepareFailed {
+            status: output.status.code(),
+            stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+        })?;
     }
-
+    File::create(stamp_path)?;
     Ok(rootdir)
 }
 
 pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, CheckerBinary)> {
-    let lock_file = File::create(app_cache_directory().join("library-checker-problems-file-lock"))?;
-    let mut lock = RwLock::new(lock_file);
-    let _lock_guard = lock.write()?;
-
     let rootdir = prepare_library_checker_problems()?;
+
+    let problem_lock_file = File::create(app_cache_directory().join(format!(
+        "library-checker-problem-{}.lock",
+        problem_id
+            .chars()
+            .map(|c| match c {
+                'a'..='z' | 'A'..='Z' | '0'..='9' | '-' | '_' => c,
+                _ => '_',
+            })
+            .collect::<String>()
+    )))?;
+    let mut problem_lock = RwLock::new(problem_lock_file);
+    let _problem_lock_guard = problem_lock.write()?;
+
+    let repo_lock_file =
+        File::create(app_cache_directory().join(LIBRARY_CHECKER_PROBLEMS_REPO_LOCK))?;
+    let repo_lock = RwLock::new(repo_lock_file);
+    let _repo_lock_guard = repo_lock.read()?;
 
     let problem = find_problem(&rootdir, problem_id)?;
 
@@ -241,12 +309,15 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         Err(CheckerBinaryNotFound)?;
     }
 
-    let _ = _lock_guard;
     Ok((cases, CheckerBinary { checker }))
 }
 
 pub fn get_problem_list() -> BoxResult<Vec<(String, Vec<String>)>> {
     let rootdir = prepare_library_checker_problems()?;
+    let repo_lock_file =
+        File::create(app_cache_directory().join(LIBRARY_CHECKER_PROBLEMS_REPO_LOCK))?;
+    let repo_lock = RwLock::new(repo_lock_file);
+    let _repo_lock_guard = repo_lock.read()?;
     // find . -name "info.toml" -not -path "./test/*"
     // ./category/problem/info.toml
     let mut problems = vec![];
