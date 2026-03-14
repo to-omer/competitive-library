@@ -1,7 +1,7 @@
 //! tree algorithms
 
 use crate::{
-    algebra::Monoid,
+    algebra::{Magma, Monoid, Unital},
     data_structure::RangeMinimumQuery,
     graph::UndirectedSparseGraph,
     math::{ConvolveSteps, U64Convolve},
@@ -17,6 +17,8 @@ pub use self::heavy_light_decomposition::HeavyLightDecomposition;
 #[codesnip::entry("LevelAncestor")]
 pub use self::level_ancestor::LevelAncestor;
 pub use self::rerooting::ReRooting;
+#[codesnip::entry("StaticTopTree")]
+pub use self::static_top_tree::{Cluster, MonoidCluster, StaticTopTree, StaticTopTreeDp};
 pub use self::tree_center::*;
 pub use self::tree_hash::TreeHasher;
 
@@ -47,6 +49,11 @@ mod heavy_light_decomposition;
 #[cfg_attr(nightly, codesnip::entry("LevelAncestor", include("SparseGraph")))]
 mod level_ancestor;
 mod rerooting;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("StaticTopTree", include("algebra", "SparseGraph"))
+)]
+mod static_top_tree;
 mod tree_center;
 #[cfg_attr(nightly, codesnip::entry("tree_centroid", include("SparseGraph")))]
 mod tree_centroid;
