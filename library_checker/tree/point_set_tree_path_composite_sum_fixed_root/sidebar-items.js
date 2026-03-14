@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["point_set_tree_path_composite_sum_fixed_root","test_point_set_tree_path_composite_sum_fixed_root"],"struct":["Dp","Path","PathMonoid","Point","PointMonoid"],"type":["MInt"]};

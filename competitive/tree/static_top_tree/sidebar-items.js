@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Slot"],"fn":["assume_init_vec","bit_ceil","pop_bucket","rooted_children"],"struct":["InnerNode","InnerValue","Node","RootedInfo","StaticTopTree","StaticTopTreeDataBuilder","StaticTopTreeDp","VertexLinks"],"trait":["Cluster","MonoidCluster"]};
