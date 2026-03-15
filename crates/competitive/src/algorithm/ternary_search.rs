@@ -149,6 +149,40 @@ where
         .unwrap_or_else(|| (piece[0].clone(), f(piece[0].clone())))
 }
 
+pub fn golden_ternary_search<T>(
+    range: RangeInclusive<f64>,
+    count: usize,
+    mut f: impl FnMut(f64) -> T,
+) -> (f64, T)
+where
+    T: PartialOrd,
+{
+    let (mut l, mut r) = range.into_inner();
+    // FIXME: 1.94.0: std::f64::consts::GOLDEN_RATIO;
+    const GOLDEN_RATIO_INV: f64 = 1f64 / 1.618_033_988_749_895_f64;
+    let mut v0 = None;
+    let mut v1 = None;
+    let mut v2 = None;
+    let mut v3 = None;
+    for _ in 0..count {
+        let w = (r - l) * GOLDEN_RATIO_INV;
+        if v1.get_or_insert_with(|| f(r - w)) <= v2.get_or_insert_with(|| f(l + w)) {
+            v3 = v2;
+            v2 = v1;
+            v1 = None;
+            r = l + w;
+        } else {
+            v0 = v1;
+            v1 = v2;
+            v2 = None;
+            l = r - w;
+        }
+    }
+    let kv = (l, v0.unwrap_or_else(|| f(l)));
+    let kv2 = (r, v3.unwrap_or_else(|| f(r)));
+    if kv2.1 < kv.1 { kv2 } else { kv }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -229,5 +263,16 @@ mod tests {
                 piecewise_ternary_search([0.0, 1e-9, 1.0], |x| (x - (a as f64) / 1000.0).powi(2)).1,
             )
         }
+    }
+
+    #[test]
+    fn test_golden_ternary_search_float() {
+        assert_eq!(
+            std::f64::consts::PI,
+            golden_ternary_search(-1e100..=1e100, 1000, |x| (DoubleDouble::from(x)
+                - DoubleDouble::from(std::f64::consts::PI))
+            .abs())
+            .0,
+        );
     }
 }
