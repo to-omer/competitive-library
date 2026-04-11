@@ -1,0 +1,851 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `PersistentSegmentTree` struct in crate `competitive`."><title>PersistentSegmentTree in competitive::data_structure::persistent_segment_tree - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0-nightly (02c7f9bec 2026-04-10)" data-channel="nightly" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector("#settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://github.com/search?q=repo%3Ato-omer%2Fcompetitive_archive+${itemName}&type=code">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">PersistentSegmentTree</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Persistent<wbr>Segment<wbr>Tree</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.allocator" title="allocator">allocator</a></li><li><a href="#structfield.n" title="n">n</a></li><li><a href="#structfield.root" title="root">root</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.new" title="new">new</a></li><li><a href="#method.from_vec" title="from_vec">from_vec</a></li><li><a href="#method.with_root" title="with_root">with_root</a></li><li><a href="#method.build_dfs" title="build_dfs">build_dfs</a></li><li><a href="#method.leaf_node" title="leaf_node">leaf_node</a></li><li><a href="#method.merge_nodes" title="merge_nodes">merge_nodes</a></li><li><a href="#method.node_value" title="node_value">node_value</a></li><li><a href="#method.node_children" title="node_children">node_children</a></li><li><a href="#method.point_get_dfs" title="point_get_dfs">point_get_dfs</a></li><li><a href="#method.fold_dfs" title="fold_dfs">fold_dfs</a></li><li><a href="#method.set_dfs" title="set_dfs">set_dfs</a></li><li><a href="#method.update_dfs" title="update_dfs">update_dfs</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.fold" title="fold">fold</a></li><li><a href="#method.fold_all" title="fold_all">fold_all</a></li><li><a href="#method.get" title="get">get</a></li><li><a href="#method.set" title="set">set</a></li><li><a href="#method.update" title="update">update</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-PersistentSegmentTree%3CM%3E" title="Clone">Clone</a></li><li><a href="#impl-Debug-for-PersistentSegmentTree%3CM%3E" title="Debug">Debug</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-RefUnwindSafe-for-PersistentSegmentTree%3CM%3E" title="!RefUnwindSafe">!RefUnwindSafe</a></li><li><a href="#impl-Send-for-PersistentSegmentTree%3CM%3E" title="!Send">!Send</a></li><li><a href="#impl-Sync-for-PersistentSegmentTree%3CM%3E" title="!Sync">!Sync</a></li><li><a href="#impl-UnwindSafe-for-PersistentSegmentTree%3CM%3E" title="!UnwindSafe">!UnwindSafe</a></li><li><a href="#impl-Freeze-for-PersistentSegmentTree%3CM%3E" title="Freeze">Freeze</a></li><li><a href="#impl-Unpin-for-PersistentSegmentTree%3CM%3E" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-PersistentSegmentTree%3CM%3E" title="UnsafeUnpin">UnsafeUnpin</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>persistent_<wbr>segment_<wbr>tree</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">data_structure</a>::<wbr><a href="index.html">persistent_segment_tree</a></div><h1>Struct <span class="struct">Persistent<wbr>Segment<wbr>Tree</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#58-65">Source</a> </span></div><pre class="rust item-decl"><code>pub struct PersistentSegmentTree&lt;M&gt;<div class="where">where
+    M: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>&gt;,</div>{
+    n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    root: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    allocator: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html" title="struct alloc::rc::Rc">Rc</a>&lt;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;,
+}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.n" class="structfield section-header"><a href="#structfield.n" class="anchor field">§</a><code>n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.root" class="structfield section-header"><a href="#structfield.root" class="anchor field">§</a><code>root: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;</code></span><span id="structfield.allocator" class="structfield section-header"><a href="#structfield.allocator" class="anchor field">§</a><code>allocator: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html" title="struct alloc::rc::Rc">Rc</a>&lt;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-PersistentSegmentTree%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#92-283">Source</a><a href="#impl-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;<div class="where">where
+    M: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>&gt;,</div></h3></section></summary><div class="impl-items"><section id="method.new" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#96-102">Source</a><h4 class="code-header">pub fn <a href="#method.new" class="fn">new</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</h4></section><section id="method.from_vec" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#104-115">Source</a><h4 class="code-header">pub fn <a href="#method.from_vec" class="fn">from_vec</a>(v: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.with_root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#117-123">Source</a><h4 class="code-header">fn <a href="#method.with_root" class="fn">with_root</a>(
+    n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    root: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    allocator: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html" title="struct alloc::rc::Rc">Rc</a>&lt;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;,
+) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#251&#34;,&#34;line 251&#34;],[[12,12],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#260&#34;,&#34;line 260&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#251">line 251</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>248</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>249</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>250</span>        <span class="kw">let </span>root = <span class="self">Self</span>::set_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>251</span>        <span class="highlight focus"><span class="self">Self</span>::with_root</span>(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>255</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>256</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>257</span>            <span class="kw">return </span><span class="self">self</span>.clone();
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        <span class="kw">let </span>root = <span class="self">Self</span>::update_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>260</span>        <span class="highlight"><span class="self">Self</span>::with_root</span>(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>261</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.build_dfs" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#125-138">Source</a><h4 class="code-header">fn <a href="#method.build_dfs" class="fn">build_dfs</a>(
+    allocator: &amp;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;,
+    l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    values: &amp;[M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>],
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#112&#34;,&#34;line 112&#34;],[[31,31],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#135&#34;,&#34;line 135&#34;],[[32,32],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#136&#34;,&#34;line 136&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#112">line 112</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>104</span>    <span class="kw">pub fn </span>from_vec(v: Vec&lt;M::T&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>105</span>        <span class="kw">let </span>n = v.len();
+<span data-nosnippet>106</span>        <span class="kw">let </span>allocator = Rc::new(PersistentSegmentTreeAllocator::with_capacity(
+<span data-nosnippet>107</span>            n.saturating_mul(<span class="number">2</span>).max(<span class="number">1</span>),
+<span data-nosnippet>108</span>        ));
+<span data-nosnippet>109</span>        <span class="kw">let </span>root = <span class="kw">if </span>n == <span class="number">0 </span>{
+<span data-nosnippet>110</span>            <span class="prelude-val">None
+<span data-nosnippet>111</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>112</span>            <span class="highlight focus"><span class="self">Self</span>::build_dfs</span>(<span class="kw-2">&amp;</span>allocator, <span class="number">0</span>, n, <span class="kw-2">&amp;</span>v)
+<span data-nosnippet>113</span>        };
+<span data-nosnippet>114</span>        <span class="self">Self </span>{ n, root, allocator }
+<span data-nosnippet>115</span>    }
+<span data-nosnippet>116</span>
+<span data-nosnippet>117</span>    <span class="kw">fn </span>with_root(
+<span data-nosnippet>118</span>        n: usize,
+<span data-nosnippet>119</span>        root: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>120</span>        allocator: Rc&lt;PersistentSegmentTreeAllocator&lt;M::T&gt;&gt;,
+<span data-nosnippet>121</span>    ) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>122</span>        <span class="self">Self </span>{ n, root, allocator }
+<span data-nosnippet>123</span>    }
+<span data-nosnippet>124</span>
+<span data-nosnippet>125</span>    <span class="kw">fn </span>build_dfs(
+<span data-nosnippet>126</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>127</span>        l: usize,
+<span data-nosnippet>128</span>        r: usize,
+<span data-nosnippet>129</span>        values: <span class="kw-2">&amp;</span>[M::T],
+<span data-nosnippet>130</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>131</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>132</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, values[l].clone());
+<span data-nosnippet>133</span>        }
+<span data-nosnippet>134</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>135</span>        <span class="kw">let </span>left = <span class="highlight"><span class="self">Self</span>::build_dfs</span>(allocator, l, m, values);
+<span data-nosnippet>136</span>        <span class="kw">let </span>right = <span class="highlight"><span class="self">Self</span>::build_dfs</span>(allocator, m, r, values);
+<span data-nosnippet>137</span>        <span class="self">Self</span>::merge_nodes(allocator, left, right)
+<span data-nosnippet>138</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.leaf_node" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#140-146">Source</a><h4 class="code-header">fn <a href="#method.leaf_node" class="fn">leaf_node</a>(
+    allocator: &amp;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;,
+    value: M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>,
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[7,7],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#132&#34;,&#34;line 132&#34;],[[90,90],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#215&#34;,&#34;line 215&#34;],[[111,111],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#236&#34;,&#34;line 236&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#132">line 132</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>125</span>    <span class="kw">fn </span>build_dfs(
+<span data-nosnippet>126</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>127</span>        l: usize,
+<span data-nosnippet>128</span>        r: usize,
+<span data-nosnippet>129</span>        values: <span class="kw-2">&amp;</span>[M::T],
+<span data-nosnippet>130</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>131</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>132</span>            <span class="kw">return </span><span class="highlight focus"><span class="self">Self</span>::leaf_node</span>(allocator, values[l].clone());
+<span data-nosnippet>133</span>        }
+<span data-nosnippet>134</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>135</span>        <span class="kw">let </span>left = <span class="self">Self</span>::build_dfs(allocator, l, m, values);
+<span data-nosnippet>136</span>        <span class="kw">let </span>right = <span class="self">Self</span>::build_dfs(allocator, m, r, values);
+<span data-nosnippet>137</span>        <span class="self">Self</span>::merge_nodes(allocator, left, right)
+<span data-nosnippet>138</span>    }
+<span data-nosnippet>139</span>
+<span data-nosnippet>140</span>    <span class="kw">fn </span>leaf_node(allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;, value: M::T) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>141</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>142</span>            <span class="prelude-val">None
+<span data-nosnippet>143</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>144</span>            <span class="prelude-val">Some</span>(allocator.allocate(Node::new([<span class="prelude-val">None</span>, <span class="prelude-val">None</span>], value)))
+<span data-nosnippet>145</span>        }
+<span data-nosnippet>146</span>    }
+<span data-nosnippet>147</span>
+<span data-nosnippet>148</span>    <span class="kw">fn </span>merge_nodes(
+<span data-nosnippet>149</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>150</span>        left: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>151</span>        right: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>152</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>153</span>        <span class="kw">if </span>left.is_none() &amp;&amp; right.is_none() {
+<span data-nosnippet>154</span>            <span class="prelude-val">None
+<span data-nosnippet>155</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>156</span>            <span class="kw">let </span>value = M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(left), <span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(right));
+<span data-nosnippet>157</span>            <span class="prelude-val">Some</span>(allocator.allocate(Node::new([left, right], value)))
+<span data-nosnippet>158</span>        }
+<span data-nosnippet>159</span>    }
+<span data-nosnippet>160</span>
+<span data-nosnippet>161</span>    <span class="kw">fn </span>node_value(node: NodePtr&lt;M::T&gt;) -&gt; M::T {
+<span data-nosnippet>162</span>        node.map(|node| <span class="kw">unsafe </span>{ node.as_ref().value.clone() })
+<span data-nosnippet>163</span>            .unwrap_or_else(M::unit)
+<span data-nosnippet>164</span>    }
+<span data-nosnippet>165</span>
+<span data-nosnippet>166</span>    <span class="kw">fn </span>node_children(node: NodePtr&lt;M::T&gt;) -&gt; [NodePtr&lt;M::T&gt;; <span class="number">2</span>] {
+<span data-nosnippet>167</span>        node.map(|node| <span class="kw">unsafe </span>{ node.as_ref().child })
+<span data-nosnippet>168</span>            .unwrap_or([<span class="prelude-val">None</span>, <span class="prelude-val">None</span>])
+<span data-nosnippet>169</span>    }
+<span data-nosnippet>170</span>
+<span data-nosnippet>171</span>    <span class="kw">fn </span>point_get_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, k: usize) -&gt; M::T {
+<span data-nosnippet>172</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>173</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>174</span>        };
+<span data-nosnippet>175</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>176</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>177</span>            node.value.clone()
+<span data-nosnippet>178</span>        } <span class="kw">else </span>{
+<span data-nosnippet>179</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>180</span>            <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>181</span>                <span class="self">Self</span>::point_get_dfs(node.child[<span class="number">0</span>], l, m, k)
+<span data-nosnippet>182</span>            } <span class="kw">else </span>{
+<span data-nosnippet>183</span>                <span class="self">Self</span>::point_get_dfs(node.child[<span class="number">1</span>], m, r, k)
+<span data-nosnippet>184</span>            }
+<span data-nosnippet>185</span>        }
+<span data-nosnippet>186</span>    }
+<span data-nosnippet>187</span>
+<span data-nosnippet>188</span>    <span class="kw">fn </span>fold_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, range: <span class="kw-2">&amp;</span>Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>189</span>        <span class="kw">if </span>range.end &lt;= l || r &lt;= range.start {
+<span data-nosnippet>190</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>193</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>194</span>        };
+<span data-nosnippet>195</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>196</span>        <span class="kw">if </span>range.start &lt;= l &amp;&amp; r &lt;= range.end {
+<span data-nosnippet>197</span>            node.value.clone()
+<span data-nosnippet>198</span>        } <span class="kw">else </span>{
+<span data-nosnippet>199</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>200</span>            <span class="kw">let </span>left = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">0</span>], l, m, range);
+<span data-nosnippet>201</span>            <span class="kw">let </span>right = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">1</span>], m, r, range);
+<span data-nosnippet>202</span>            M::operate(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right)
+<span data-nosnippet>203</span>        }
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="highlight"><span class="self">Self</span>::leaf_node</span>(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="highlight"><span class="self">Self</span>::leaf_node</span>(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.merge_nodes" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#148-159">Source</a><h4 class="code-header">fn <a href="#method.merge_nodes" class="fn">merge_nodes</a>(
+    allocator: &amp;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;,
+    left: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    right: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#137&#34;,&#34;line 137&#34;],[[99,99],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#224&#34;,&#34;line 224&#34;],[[120,120],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#245&#34;,&#34;line 245&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#137">line 137</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>125</span>    <span class="kw">fn </span>build_dfs(
+<span data-nosnippet>126</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>127</span>        l: usize,
+<span data-nosnippet>128</span>        r: usize,
+<span data-nosnippet>129</span>        values: <span class="kw-2">&amp;</span>[M::T],
+<span data-nosnippet>130</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>131</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>132</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, values[l].clone());
+<span data-nosnippet>133</span>        }
+<span data-nosnippet>134</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>135</span>        <span class="kw">let </span>left = <span class="self">Self</span>::build_dfs(allocator, l, m, values);
+<span data-nosnippet>136</span>        <span class="kw">let </span>right = <span class="self">Self</span>::build_dfs(allocator, m, r, values);
+<span data-nosnippet>137</span>        <span class="highlight focus"><span class="self">Self</span>::merge_nodes</span>(allocator, left, right)
+<span data-nosnippet>138</span>    }
+<span data-nosnippet>139</span>
+<span data-nosnippet>140</span>    <span class="kw">fn </span>leaf_node(allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;, value: M::T) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>141</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>142</span>            <span class="prelude-val">None
+<span data-nosnippet>143</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>144</span>            <span class="prelude-val">Some</span>(allocator.allocate(Node::new([<span class="prelude-val">None</span>, <span class="prelude-val">None</span>], value)))
+<span data-nosnippet>145</span>        }
+<span data-nosnippet>146</span>    }
+<span data-nosnippet>147</span>
+<span data-nosnippet>148</span>    <span class="kw">fn </span>merge_nodes(
+<span data-nosnippet>149</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>150</span>        left: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>151</span>        right: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>152</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>153</span>        <span class="kw">if </span>left.is_none() &amp;&amp; right.is_none() {
+<span data-nosnippet>154</span>            <span class="prelude-val">None
+<span data-nosnippet>155</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>156</span>            <span class="kw">let </span>value = M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(left), <span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(right));
+<span data-nosnippet>157</span>            <span class="prelude-val">Some</span>(allocator.allocate(Node::new([left, right], value)))
+<span data-nosnippet>158</span>        }
+<span data-nosnippet>159</span>    }
+<span data-nosnippet>160</span>
+<span data-nosnippet>161</span>    <span class="kw">fn </span>node_value(node: NodePtr&lt;M::T&gt;) -&gt; M::T {
+<span data-nosnippet>162</span>        node.map(|node| <span class="kw">unsafe </span>{ node.as_ref().value.clone() })
+<span data-nosnippet>163</span>            .unwrap_or_else(M::unit)
+<span data-nosnippet>164</span>    }
+<span data-nosnippet>165</span>
+<span data-nosnippet>166</span>    <span class="kw">fn </span>node_children(node: NodePtr&lt;M::T&gt;) -&gt; [NodePtr&lt;M::T&gt;; <span class="number">2</span>] {
+<span data-nosnippet>167</span>        node.map(|node| <span class="kw">unsafe </span>{ node.as_ref().child })
+<span data-nosnippet>168</span>            .unwrap_or([<span class="prelude-val">None</span>, <span class="prelude-val">None</span>])
+<span data-nosnippet>169</span>    }
+<span data-nosnippet>170</span>
+<span data-nosnippet>171</span>    <span class="kw">fn </span>point_get_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, k: usize) -&gt; M::T {
+<span data-nosnippet>172</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>173</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>174</span>        };
+<span data-nosnippet>175</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>176</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>177</span>            node.value.clone()
+<span data-nosnippet>178</span>        } <span class="kw">else </span>{
+<span data-nosnippet>179</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>180</span>            <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>181</span>                <span class="self">Self</span>::point_get_dfs(node.child[<span class="number">0</span>], l, m, k)
+<span data-nosnippet>182</span>            } <span class="kw">else </span>{
+<span data-nosnippet>183</span>                <span class="self">Self</span>::point_get_dfs(node.child[<span class="number">1</span>], m, r, k)
+<span data-nosnippet>184</span>            }
+<span data-nosnippet>185</span>        }
+<span data-nosnippet>186</span>    }
+<span data-nosnippet>187</span>
+<span data-nosnippet>188</span>    <span class="kw">fn </span>fold_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, range: <span class="kw-2">&amp;</span>Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>189</span>        <span class="kw">if </span>range.end &lt;= l || r &lt;= range.start {
+<span data-nosnippet>190</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>193</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>194</span>        };
+<span data-nosnippet>195</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>196</span>        <span class="kw">if </span>range.start &lt;= l &amp;&amp; r &lt;= range.end {
+<span data-nosnippet>197</span>            node.value.clone()
+<span data-nosnippet>198</span>        } <span class="kw">else </span>{
+<span data-nosnippet>199</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>200</span>            <span class="kw">let </span>left = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">0</span>], l, m, range);
+<span data-nosnippet>201</span>            <span class="kw">let </span>right = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">1</span>], m, r, range);
+<span data-nosnippet>202</span>            M::operate(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right)
+<span data-nosnippet>203</span>        }
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="highlight"><span class="self">Self</span>::merge_nodes</span>(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="highlight"><span class="self">Self</span>::merge_nodes</span>(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.node_value" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#161-164">Source</a><h4 class="code-header">fn <a href="#method.node_value" class="fn">node_value</a>(node: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;) -&gt; M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#156&#34;,&#34;line 156&#34;],[[8,8],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#156&#34;,&#34;line 156&#34;],[[88,88],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#236&#34;,&#34;line 236&#34;],[[133,133],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#281&#34;,&#34;line 281&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#156">line 156</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>148</span>    <span class="kw">fn </span>merge_nodes(
+<span data-nosnippet>149</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>150</span>        left: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>151</span>        right: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>152</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>153</span>        <span class="kw">if </span>left.is_none() &amp;&amp; right.is_none() {
+<span data-nosnippet>154</span>            <span class="prelude-val">None
+<span data-nosnippet>155</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>156</span>            <span class="kw">let </span>value = M::operate(<span class="kw-2">&amp;</span><span class="highlight focus"><span class="self">Self</span>::node_value</span>(left), <span class="kw-2">&amp;</span><span class="highlight"><span class="self">Self</span>::node_value</span>(right));
+<span data-nosnippet>157</span>            <span class="prelude-val">Some</span>(allocator.allocate(Node::new([left, right], value)))
+<span data-nosnippet>158</span>        }
+<span data-nosnippet>159</span>    }
+<span data-nosnippet>160</span>
+<span data-nosnippet>161</span>    <span class="kw">fn </span>node_value(node: NodePtr&lt;M::T&gt;) -&gt; M::T {
+<span data-nosnippet>162</span>        node.map(|node| <span class="kw">unsafe </span>{ node.as_ref().value.clone() })
+<span data-nosnippet>163</span>            .unwrap_or_else(M::unit)
+<span data-nosnippet>164</span>    }
+<span data-nosnippet>165</span>
+<span data-nosnippet>166</span>    <span class="kw">fn </span>node_children(node: NodePtr&lt;M::T&gt;) -&gt; [NodePtr&lt;M::T&gt;; <span class="number">2</span>] {
+<span data-nosnippet>167</span>        node.map(|node| <span class="kw">unsafe </span>{ node.as_ref().child })
+<span data-nosnippet>168</span>            .unwrap_or([<span class="prelude-val">None</span>, <span class="prelude-val">None</span>])
+<span data-nosnippet>169</span>    }
+<span data-nosnippet>170</span>
+<span data-nosnippet>171</span>    <span class="kw">fn </span>point_get_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, k: usize) -&gt; M::T {
+<span data-nosnippet>172</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>173</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>174</span>        };
+<span data-nosnippet>175</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>176</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>177</span>            node.value.clone()
+<span data-nosnippet>178</span>        } <span class="kw">else </span>{
+<span data-nosnippet>179</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>180</span>            <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>181</span>                <span class="self">Self</span>::point_get_dfs(node.child[<span class="number">0</span>], l, m, k)
+<span data-nosnippet>182</span>            } <span class="kw">else </span>{
+<span data-nosnippet>183</span>                <span class="self">Self</span>::point_get_dfs(node.child[<span class="number">1</span>], m, r, k)
+<span data-nosnippet>184</span>            }
+<span data-nosnippet>185</span>        }
+<span data-nosnippet>186</span>    }
+<span data-nosnippet>187</span>
+<span data-nosnippet>188</span>    <span class="kw">fn </span>fold_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, range: <span class="kw-2">&amp;</span>Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>189</span>        <span class="kw">if </span>range.end &lt;= l || r &lt;= range.start {
+<span data-nosnippet>190</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>193</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>194</span>        };
+<span data-nosnippet>195</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>196</span>        <span class="kw">if </span>range.start &lt;= l &amp;&amp; r &lt;= range.end {
+<span data-nosnippet>197</span>            node.value.clone()
+<span data-nosnippet>198</span>        } <span class="kw">else </span>{
+<span data-nosnippet>199</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>200</span>            <span class="kw">let </span>left = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">0</span>], l, m, range);
+<span data-nosnippet>201</span>            <span class="kw">let </span>right = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">1</span>], m, r, range);
+<span data-nosnippet>202</span>            M::operate(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right)
+<span data-nosnippet>203</span>        }
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="highlight"><span class="self">Self</span>::node_value</span>(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>249</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>250</span>        <span class="kw">let </span>root = <span class="self">Self</span>::set_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>251</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>255</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>256</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>257</span>            <span class="kw">return </span><span class="self">self</span>.clone();
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        <span class="kw">let </span>root = <span class="self">Self</span>::update_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>260</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>261</span>    }
+<span data-nosnippet>262</span>
+<span data-nosnippet>263</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
+<span data-nosnippet>264</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>265</span>        <span class="self">Self</span>::point_get_dfs(<span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k)
+<span data-nosnippet>266</span>    }
+<span data-nosnippet>267</span>
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; M::T
+<span data-nosnippet>269</span>    <span class="kw">where
+<span data-nosnippet>270</span>        </span>R: RangeBounds&lt;usize&gt;,
+<span data-nosnippet>271</span>    {
+<span data-nosnippet>272</span>        <span class="kw">let </span>range = range.to_range_bounded(<span class="number">0</span>, <span class="self">self</span>.n).expect(<span class="string">"invalid range"</span>);
+<span data-nosnippet>273</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>274</span>            M::unit()
+<span data-nosnippet>275</span>        } <span class="kw">else </span>{
+<span data-nosnippet>276</span>            <span class="self">Self</span>::fold_dfs(<span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, <span class="kw-2">&amp;</span>range)
+<span data-nosnippet>277</span>        }
+<span data-nosnippet>278</span>    }
+<span data-nosnippet>279</span>
+<span data-nosnippet>280</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
+<span data-nosnippet>281</span>        <span class="highlight"><span class="self">Self</span>::node_value</span>(<span class="self">self</span>.root)
+<span data-nosnippet>282</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.node_children" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#166-169">Source</a><h4 class="code-header">fn <a href="#method.node_children" class="fn">node_children</a>(
+    node: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+) -&gt; [<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">2</a>]</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#218&#34;,&#34;line 218&#34;],[[33,33],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#239&#34;,&#34;line 239&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#218">line 218</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="highlight focus"><span class="self">Self</span>::node_children</span>(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="highlight"><span class="self">Self</span>::node_children</span>(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.point_get_dfs" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#171-186">Source</a><h4 class="code-header">fn <a href="#method.point_get_dfs" class="fn">point_get_dfs</a>(
+    node: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+) -&gt; M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#181&#34;,&#34;line 181&#34;],[[12,12],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#183&#34;,&#34;line 183&#34;],[[94,94],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#265&#34;,&#34;line 265&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#181">line 181</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>171</span>    <span class="kw">fn </span>point_get_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, k: usize) -&gt; M::T {
+<span data-nosnippet>172</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>173</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>174</span>        };
+<span data-nosnippet>175</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>176</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>177</span>            node.value.clone()
+<span data-nosnippet>178</span>        } <span class="kw">else </span>{
+<span data-nosnippet>179</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>180</span>            <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>181</span>                <span class="highlight focus"><span class="self">Self</span>::point_get_dfs</span>(node.child[<span class="number">0</span>], l, m, k)
+<span data-nosnippet>182</span>            } <span class="kw">else </span>{
+<span data-nosnippet>183</span>                <span class="highlight"><span class="self">Self</span>::point_get_dfs</span>(node.child[<span class="number">1</span>], m, r, k)
+<span data-nosnippet>184</span>            }
+<span data-nosnippet>185</span>        }
+<span data-nosnippet>186</span>    }
+<span data-nosnippet>187</span>
+<span data-nosnippet>188</span>    <span class="kw">fn </span>fold_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, range: <span class="kw-2">&amp;</span>Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>189</span>        <span class="kw">if </span>range.end &lt;= l || r &lt;= range.start {
+<span data-nosnippet>190</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>193</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>194</span>        };
+<span data-nosnippet>195</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>196</span>        <span class="kw">if </span>range.start &lt;= l &amp;&amp; r &lt;= range.end {
+<span data-nosnippet>197</span>            node.value.clone()
+<span data-nosnippet>198</span>        } <span class="kw">else </span>{
+<span data-nosnippet>199</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>200</span>            <span class="kw">let </span>left = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">0</span>], l, m, range);
+<span data-nosnippet>201</span>            <span class="kw">let </span>right = <span class="self">Self</span>::fold_dfs(node.child[<span class="number">1</span>], m, r, range);
+<span data-nosnippet>202</span>            M::operate(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right)
+<span data-nosnippet>203</span>        }
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>249</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>250</span>        <span class="kw">let </span>root = <span class="self">Self</span>::set_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>251</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>255</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>256</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>257</span>            <span class="kw">return </span><span class="self">self</span>.clone();
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        <span class="kw">let </span>root = <span class="self">Self</span>::update_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>260</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>261</span>    }
+<span data-nosnippet>262</span>
+<span data-nosnippet>263</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
+<span data-nosnippet>264</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>265</span>        <span class="highlight"><span class="self">Self</span>::point_get_dfs</span>(<span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k)
+<span data-nosnippet>266</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.fold_dfs" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#188-204">Source</a><h4 class="code-header">fn <a href="#method.fold_dfs" class="fn">fold_dfs</a>(
+    node: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    range: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html" title="struct core::ops::range::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+) -&gt; M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#200&#34;,&#34;line 200&#34;],[[13,13],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#201&#34;,&#34;line 201&#34;],[[88,88],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#276&#34;,&#34;line 276&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#200">line 200</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>188</span>    <span class="kw">fn </span>fold_dfs(node: NodePtr&lt;M::T&gt;, l: usize, r: usize, range: <span class="kw-2">&amp;</span>Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>189</span>        <span class="kw">if </span>range.end &lt;= l || r &lt;= range.start {
+<span data-nosnippet>190</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span><span class="prelude-val">Some</span>(node) = node <span class="kw">else </span>{
+<span data-nosnippet>193</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>194</span>        };
+<span data-nosnippet>195</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ node.as_ref() };
+<span data-nosnippet>196</span>        <span class="kw">if </span>range.start &lt;= l &amp;&amp; r &lt;= range.end {
+<span data-nosnippet>197</span>            node.value.clone()
+<span data-nosnippet>198</span>        } <span class="kw">else </span>{
+<span data-nosnippet>199</span>            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>200</span>            <span class="kw">let </span>left = <span class="highlight focus"><span class="self">Self</span>::fold_dfs</span>(node.child[<span class="number">0</span>], l, m, range);
+<span data-nosnippet>201</span>            <span class="kw">let </span>right = <span class="highlight"><span class="self">Self</span>::fold_dfs</span>(node.child[<span class="number">1</span>], m, r, range);
+<span data-nosnippet>202</span>            M::operate(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right)
+<span data-nosnippet>203</span>        }
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::set_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>249</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>250</span>        <span class="kw">let </span>root = <span class="self">Self</span>::set_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>251</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>255</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>256</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>257</span>            <span class="kw">return </span><span class="self">self</span>.clone();
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        <span class="kw">let </span>root = <span class="self">Self</span>::update_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>260</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>261</span>    }
+<span data-nosnippet>262</span>
+<span data-nosnippet>263</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
+<span data-nosnippet>264</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>265</span>        <span class="self">Self</span>::point_get_dfs(<span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k)
+<span data-nosnippet>266</span>    }
+<span data-nosnippet>267</span>
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; M::T
+<span data-nosnippet>269</span>    <span class="kw">where
+<span data-nosnippet>270</span>        </span>R: RangeBounds&lt;usize&gt;,
+<span data-nosnippet>271</span>    {
+<span data-nosnippet>272</span>        <span class="kw">let </span>range = range.to_range_bounded(<span class="number">0</span>, <span class="self">self</span>.n).expect(<span class="string">"invalid range"</span>);
+<span data-nosnippet>273</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>274</span>            M::unit()
+<span data-nosnippet>275</span>        } <span class="kw">else </span>{
+<span data-nosnippet>276</span>            <span class="highlight"><span class="self">Self</span>::fold_dfs</span>(<span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, <span class="kw-2">&amp;</span>range)
+<span data-nosnippet>277</span>        }
+<span data-nosnippet>278</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.set_dfs" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#206-225">Source</a><h4 class="code-header">fn <a href="#method.set_dfs" class="fn">set_dfs</a>(
+    allocator: &amp;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;,
+    node: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    value: &amp;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>,
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#220&#34;,&#34;line 220&#34;],[[16,16],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#222&#34;,&#34;line 222&#34;],[[44,44],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#250&#34;,&#34;line 250&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#220">line 220</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>206</span>    <span class="kw">fn </span>set_dfs(
+<span data-nosnippet>207</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>208</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>209</span>        l: usize,
+<span data-nosnippet>210</span>        r: usize,
+<span data-nosnippet>211</span>        k: usize,
+<span data-nosnippet>212</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>213</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>214</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>215</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, value.clone());
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>219</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>220</span>            child[<span class="number">0</span>] = <span class="highlight focus"><span class="self">Self</span>::set_dfs</span>(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>221</span>        } <span class="kw">else </span>{
+<span data-nosnippet>222</span>            child[<span class="number">1</span>] = <span class="highlight"><span class="self">Self</span>::set_dfs</span>(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>225</span>    }
+<span data-nosnippet>226</span>
+<span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="self">Self</span>::update_dfs(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>249</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>250</span>        <span class="kw">let </span>root = <span class="highlight"><span class="self">Self</span>::set_dfs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>251</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>252</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update_dfs" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#227-246">Source</a><h4 class="code-header">fn <a href="#method.update_dfs" class="fn">update_dfs</a>(
+    allocator: &amp;<a class="struct" href="struct.PersistentSegmentTreeAllocator.html" title="struct competitive::data_structure::persistent_segment_tree::PersistentSegmentTreeAllocator">PersistentSegmentTreeAllocator</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;,
+    node: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;,
+    l: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    value: &amp;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>,
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="struct.Node.html" title="struct competitive::data_structure::persistent_segment_tree::Node">Node</a>&lt;M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-9"><a href="#scraped-examples-9">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#241&#34;,&#34;line 241&#34;],[[16,16],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#243&#34;,&#34;line 243&#34;],[[32,32],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#259&#34;,&#34;line 259&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#241">line 241</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>227</span>    <span class="kw">fn </span>update_dfs(
+<span data-nosnippet>228</span>        allocator: <span class="kw-2">&amp;</span>PersistentSegmentTreeAllocator&lt;M::T&gt;,
+<span data-nosnippet>229</span>        node: NodePtr&lt;M::T&gt;,
+<span data-nosnippet>230</span>        l: usize,
+<span data-nosnippet>231</span>        r: usize,
+<span data-nosnippet>232</span>        k: usize,
+<span data-nosnippet>233</span>        value: <span class="kw-2">&amp;</span>M::T,
+<span data-nosnippet>234</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>235</span>        <span class="kw">if </span>r - l == <span class="number">1 </span>{
+<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>::leaf_node(allocator, M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::node_value(node), value));
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self</span>::node_children(node);
+<span data-nosnippet>240</span>        <span class="kw">if </span>k &lt; m {
+<span data-nosnippet>241</span>            child[<span class="number">0</span>] = <span class="highlight focus"><span class="self">Self</span>::update_dfs</span>(allocator, child[<span class="number">0</span>], l, m, k, value);
+<span data-nosnippet>242</span>        } <span class="kw">else </span>{
+<span data-nosnippet>243</span>            child[<span class="number">1</span>] = <span class="highlight"><span class="self">Self</span>::update_dfs</span>(allocator, child[<span class="number">1</span>], m, r, k, value);
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="self">Self</span>::merge_nodes(allocator, child[<span class="number">0</span>], child[<span class="number">1</span>])
+<span data-nosnippet>246</span>    }
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>249</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>250</span>        <span class="kw">let </span>root = <span class="self">Self</span>::set_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>251</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize, value: M::T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>255</span>        <span class="macro">assert!</span>(k &lt; <span class="self">self</span>.n);
+<span data-nosnippet>256</span>        <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>value) {
+<span data-nosnippet>257</span>            <span class="kw">return </span><span class="self">self</span>.clone();
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        <span class="kw">let </span>root = <span class="highlight"><span class="self">Self</span>::update_dfs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator, <span class="self">self</span>.root, <span class="number">0</span>, <span class="self">self</span>.n, k, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>260</span>        <span class="self">Self</span>::with_root(<span class="self">self</span>.n, root, Rc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.allocator))
+<span data-nosnippet>261</span>    }</code></pre></div></div></div></details><section id="method.set" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#248-252">Source</a><h4 class="code-header">pub fn <a href="#method.set" class="fn">set</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, value: M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>) -&gt; Self</h4></section><section id="method.update" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#254-261">Source</a><h4 class="code-header">pub fn <a href="#method.update" class="fn">update</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, value: M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>) -&gt; Self</h4></section><section id="method.get" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#263-266">Source</a><h4 class="code-header">pub fn <a href="#method.get" class="fn">get</a>(&amp;self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section><section id="method.fold" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#268-278">Source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>&lt;R&gt;(&amp;self, range: R) -&gt; M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a><div class="where">where
+    R: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html" title="trait core::ops::range::RangeBounds">RangeBounds</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,</div></h4></section><details class="toggle method-toggle" open><summary><section id="method.fold_all" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#280-282">Source</a><h4 class="code-header">pub fn <a href="#method.fold_all" class="fn">fold_all</a>(&amp;self) -&gt; M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../../src/competitive/data_structure/persistent_segment_tree.rs.html#87&#34;,&#34;line 87&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/persistent_segment_tree.rs (<a href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#87">line 87</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>84</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<span data-nosnippet>85</span>        f.debug_struct(<span class="string">"PersistentSegmentTree"</span>)
+<span data-nosnippet>86</span>            .field(<span class="string">"n"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.n)
+<span data-nosnippet>87</span>            .field(<span class="string">"fold_all"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="highlight focus">fold_all</span>())
+<span data-nosnippet>88</span>            .finish()
+<span data-nosnippet>89</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-PersistentSegmentTree%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#67-78">Source</a><a href="#impl-Clone-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;<div class="where">where
+    M: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#71-77">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; Self</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-PersistentSegmentTree%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#80-90">Source</a><a href="#impl-Debug-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;<div class="where">where
+    M: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/persistent_segment_tree.rs.html#84-89">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-Freeze-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section><section id="impl-RefUnwindSafe-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-RefUnwindSafe-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section><section id="impl-Send-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-Send-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section><section id="impl-Sync-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-Sync-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section><section id="impl-Unpin-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-Unpin-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section><section id="impl-UnsafeUnpin-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-UnsafeUnpin-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section><section id="impl-UnwindSafe-for-PersistentSegmentTree%3CM%3E" class="impl"><a href="#impl-UnwindSafe-for-PersistentSegmentTree%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="../struct.PersistentSegmentTree.html" title="struct competitive::data_structure::PersistentSegmentTree">PersistentSegmentTree</a>&lt;M&gt;</h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#141">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#142">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#222">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-CloneToUninit-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#547">Source</a><a href="#impl-CloneToUninit-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html" title="trait core::clone::CloneToUninit">CloneToUninit</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone_to_uninit" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#549">Source</a><a href="#method.clone_to_uninit" class="anchor">§</a><h4 class="code-header">unsafe fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit" class="fn">clone_to_uninit</a>(&amp;self, dest: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>clone_to_uninit</code>)</span></div></span><div class='docblock'>Performs copy-assignment from <code>self</code> to <code>dest</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#785">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#788">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#767-769">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#777">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToArrayVecScalar-for-T" class="impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#20-24">Source</a><a href="#impl-ToArrayVecScalar-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../../math/trait.ToArrayVecScalar.html" title="trait competitive::math::ToArrayVecScalar">ToArrayVecScalar</a> for T</h3></section></summary><div class="impl-items"><section id="method.to_array_vec_scalar" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#21-23">Source</a><a href="#method.to_array_vec_scalar" class="anchor">§</a><h4 class="code-header">fn <a href="../../math/trait.ToArrayVecScalar.html#tymethod.to_array_vec_scalar" class="fn">to_array_vec_scalar</a>(self) -&gt; <a class="struct" href="../../math/array_vec/struct.ArrayVecScalar.html" title="struct competitive::math::array_vec::ArrayVecScalar">ArrayVecScalar</a>&lt;T&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToOwned-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#72-74">Source</a><a href="#impl-ToOwned-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Owned" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#76">Source</a><a href="#associatedtype.Owned" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'>The resulting type after obtaining ownership.</div></details><details class="toggle method-toggle" open><summary><section id="method.to_owned" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#77">Source</a><a href="#method.to_owned" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned" class="fn">to_owned</a>(&amp;self) -&gt; T</h4></section></summary><div class='docblock'>Creates owned data from borrowed data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#81">Source</a><a href="#method.clone_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into" class="fn">clone_into</a>(&amp;self, target: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a>)</h4></section></summary><div class='docblock'>Uses borrowed data to replace owned data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#827-829">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#831">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#834">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#811-813">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#815">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#818">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details></div></section></div></main></body></html>
