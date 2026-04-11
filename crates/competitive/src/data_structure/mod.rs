@@ -57,6 +57,8 @@ pub use self::line_set::LineSet;
 pub use self::pairing_heap::PairingHeap;
 #[codesnip::entry("PartiallyRetroactivePriorityQueue")]
 pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriorityQueue;
+#[codesnip::entry("PersistentSegmentTree")]
+pub use self::persistent_segment_tree::PersistentSegmentTree;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 #[codesnip::entry("RangeFrequency")]
@@ -161,6 +163,14 @@ mod pairing_heap;
     )
 )]
 pub mod partially_retroactive_priority_queue;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "PersistentSegmentTree",
+        include("Allocator", "algebra", "discrete_steps")
+    )
+)]
+mod persistent_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
 mod range_ap_add;
 #[cfg_attr(
