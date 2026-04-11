@@ -295,23 +295,23 @@ mod tests {
     const SIGMA: u8 = 6;
 
     fn rand_word(rng: &mut Xorshift) -> Vec<u8> {
-        let len = rng.rand(4) as usize;
-        (0..len).map(|_| rng.rand(SIGMA as u64) as u8).collect()
+        let len = rng.random(0..4usize);
+        (0..len).map(|_| rng.random(0..SIGMA)).collect()
     }
 
     #[test]
     fn test_persistent_segment_tree_random_non_commutative() {
         let mut rng = Xorshift::default();
-        let initial = (0..N).map(|_| rand_word(&mut rng)).collect::<Vec<_>>();
-        let mut segs = vec![
-            PersistentSegmentTree::<ConcatenateOperation<u8>>::new(N),
-            PersistentSegmentTree::<ConcatenateOperation<u8>>::from_vec(initial.clone()),
+        let initial: Vec<_> = (0..N).map(|_| rand_word(&mut rng)).collect();
+        let mut segs: Vec<PersistentSegmentTree<ConcatenateOperation<u8>>> = vec![
+            PersistentSegmentTree::new(N),
+            PersistentSegmentTree::from_vec(initial.clone()),
         ];
         let mut arrs = vec![vec![Vec::new(); N], initial];
 
         for _ in 0..Q {
-            let base = rng.rand(segs.len() as u64) as usize;
-            let k = rng.rand(N as u64) as usize;
+            let base = rng.random(0..segs.len());
+            let k = rng.random(0..N);
             let mut arr = arrs[base].clone();
 
             if rng.gen_bool(0.5) {
@@ -325,17 +325,17 @@ mod tests {
             }
             arrs.push(arr);
 
-            let version = rng.rand(segs.len() as u64) as usize;
-            let index = rng.rand(N as u64) as usize;
+            let version = rng.random(0..segs.len());
+            let index = rng.random(0..N);
             let (l, r) = rng.random(Wes(N));
-            let expected = arrs[version][l..r]
+            let expected: Vec<_> = arrs[version][l..r]
                 .iter()
                 .flat_map(|word| word.iter().copied())
-                .collect::<Vec<_>>();
-            let expected_all = arrs[version]
+                .collect();
+            let expected_all: Vec<_> = arrs[version]
                 .iter()
                 .flat_map(|word| word.iter().copied())
-                .collect::<Vec<_>>();
+                .collect();
 
             assert_eq!(segs[version].get(index), arrs[version][index]);
             assert_eq!(segs[version].fold(l..r), expected);
