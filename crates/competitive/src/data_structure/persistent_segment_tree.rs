@@ -25,7 +25,6 @@ struct PersistentSegmentTreeAllocator<T, A = MemoryPool<Node<T>>>
 where
     A: Allocator<Node<T>>,
 {
-    // The allocator is append-only, and allocated nodes stay immutable afterwards.
     alloc: UnsafeCell<A>,
     _marker: PhantomData<fn() -> T>,
 }
@@ -57,7 +56,7 @@ where
 
 pub struct PersistentSegmentTree<M>
 where
-    M: Monoid<T: PartialEq>,
+    M: Monoid,
 {
     n: usize,
     root: NodePtr<M::T>,
@@ -66,7 +65,7 @@ where
 
 impl<M> Clone for PersistentSegmentTree<M>
 where
-    M: Monoid<T: PartialEq>,
+    M: Monoid,
 {
     fn clone(&self) -> Self {
         Self {
@@ -79,7 +78,7 @@ where
 
 impl<M> Debug for PersistentSegmentTree<M>
 where
-    M: Monoid<T: PartialEq + Debug>,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("PersistentSegmentTree")
@@ -91,7 +90,7 @@ where
 
 impl<M> PersistentSegmentTree<M>
 where
-    M: Monoid<T: PartialEq>,
+    M: Monoid,
 {
     pub fn new(n: usize) -> Self {
         Self {
@@ -138,11 +137,7 @@ where
     }
 
     fn leaf_node(allocator: &PersistentSegmentTreeAllocator<M::T>, value: M::T) -> NodePtr<M::T> {
-        if M::is_unit(&value) {
-            None
-        } else {
-            Some(allocator.allocate(Node::new([None, None], value)))
-        }
+        Some(allocator.allocate(Node::new([None, None], value)))
     }
 
     fn merge_nodes(
@@ -253,9 +248,6 @@ where
 
     pub fn update(&self, k: usize, value: M::T) -> Self {
         assert!(k < self.n);
-        if M::is_unit(&value) {
-            return self.clone();
-        }
         let root = Self::update_dfs(&self.allocator, self.root, 0, self.n, k, &value);
         Self::with_root(self.n, root, Rc::clone(&self.allocator))
     }
