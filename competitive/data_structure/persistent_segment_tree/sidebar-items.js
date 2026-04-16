@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Node","PersistentSegmentTree","PersistentSegmentTreeAllocator"],"type":["NodePtr"]};
+window.SIDEBAR_ITEMS = {"struct":["Node","PersistentSegmentTree","PersistentSegmentTreeVersion"],"type":["NodePtr"]};
