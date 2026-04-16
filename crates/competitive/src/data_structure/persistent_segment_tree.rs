@@ -1,56 +1,38 @@
 use super::{Allocator, MemoryPool, Monoid, RangeBoundsExt};
 use std::{
-    cell::UnsafeCell,
     fmt::{self, Debug, Formatter},
-    marker::PhantomData,
     ops::{Range, RangeBounds},
     ptr::NonNull,
-    rc::Rc,
 };
 
 type NodePtr<T> = Option<NonNull<Node<T>>>;
 
 struct Node<T> {
-    child: [NodePtr<T>; 2],
+    children: [NodePtr<T>; 2],
     value: T,
 }
 
 impl<T> Node<T> {
-    fn new(child: [NodePtr<T>; 2], value: T) -> Self {
-        Self { child, value }
+    fn new(children: [NodePtr<T>; 2], value: T) -> Self {
+        Self { children, value }
     }
 }
 
-struct PersistentSegmentTreeAllocator<T, A = MemoryPool<Node<T>>>
-where
-    A: Allocator<Node<T>>,
-{
-    alloc: UnsafeCell<A>,
-    _marker: PhantomData<fn() -> T>,
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[must_use]
+pub struct PersistentSegmentTreeVersion(usize);
 
-impl<T> PersistentSegmentTreeAllocator<T> {
-    fn new() -> Self {
-        Self {
-            alloc: UnsafeCell::new(MemoryPool::new()),
-            _marker: PhantomData,
-        }
+impl PersistentSegmentTreeVersion {
+    fn base() -> Self {
+        Self(0)
     }
 
-    fn with_capacity(capacity: usize) -> Self {
-        Self {
-            alloc: UnsafeCell::new(MemoryPool::with_capacity(capacity.max(1))),
-            _marker: PhantomData,
-        }
+    fn new(version_id: usize) -> Self {
+        Self(version_id)
     }
-}
 
-impl<T, A> PersistentSegmentTreeAllocator<T, A>
-where
-    A: Allocator<Node<T>>,
-{
-    fn allocate(&self, node: Node<T>) -> NonNull<Node<T>> {
-        unsafe { (&mut *self.alloc.get()).allocate(node) }
+    fn index(self) -> usize {
+        self.0
     }
 }
 
@@ -58,32 +40,19 @@ pub struct PersistentSegmentTree<M>
 where
     M: Monoid,
 {
-    n: usize,
-    root: NodePtr<M::T>,
-    allocator: Rc<PersistentSegmentTreeAllocator<M::T>>,
-}
-
-impl<M> Clone for PersistentSegmentTree<M>
-where
-    M: Monoid,
-{
-    fn clone(&self) -> Self {
-        Self {
-            n: self.n,
-            root: self.root,
-            allocator: Rc::clone(&self.allocator),
-        }
-    }
+    len: usize,
+    version_roots: Vec<NodePtr<M::T>>,
+    allocator: MemoryPool<Node<M::T>>,
 }
 
 impl<M> Debug for PersistentSegmentTree<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("PersistentSegmentTree")
-            .field("n", &self.n)
-            .field("fold_all", &self.fold_all())
+            .field("len", &self.len)
+            .field("versions", &self.version_roots.len())
             .finish()
     }
 }
@@ -92,185 +61,208 @@ impl<M> PersistentSegmentTree<M>
 where
     M: Monoid,
 {
-    pub fn new(n: usize) -> Self {
+    #[must_use]
+    pub fn new(len: usize) -> Self {
         Self {
-            n,
-            root: None,
-            allocator: Rc::new(PersistentSegmentTreeAllocator::new()),
+            len,
+            version_roots: vec![None],
+            allocator: MemoryPool::new(),
         }
     }
 
-    pub fn from_vec(v: Vec<M::T>) -> Self {
-        let n = v.len();
-        let allocator = Rc::new(PersistentSegmentTreeAllocator::with_capacity(
-            n.saturating_mul(2).max(1),
-        ));
-        let root = if n == 0 {
-            None
-        } else {
-            Self::build_dfs(&allocator, 0, n, &v)
-        };
-        Self { n, root, allocator }
+    pub fn base(&self) -> PersistentSegmentTreeVersion {
+        PersistentSegmentTreeVersion::base()
     }
 
-    fn with_root(
-        n: usize,
-        root: NodePtr<M::T>,
-        allocator: Rc<PersistentSegmentTreeAllocator<M::T>>,
-    ) -> Self {
-        Self { n, root, allocator }
+    pub fn len(&self) -> usize {
+        self.len
     }
 
-    fn build_dfs(
-        allocator: &PersistentSegmentTreeAllocator<M::T>,
-        l: usize,
-        r: usize,
-        values: &[M::T],
-    ) -> NodePtr<M::T> {
-        if r - l == 1 {
-            return Self::leaf_node(allocator, values[l].clone());
+    pub fn is_empty(&self) -> bool {
+        self.len == 0
+    }
+
+    fn version_root(&self, version: PersistentSegmentTreeVersion) -> NodePtr<M::T> {
+        *self
+            .version_roots
+            .get(version.index())
+            .expect("invalid version")
+    }
+
+    fn push_version_root(&mut self, root: NodePtr<M::T>) -> PersistentSegmentTreeVersion {
+        let version_id = self.version_roots.len();
+        self.version_roots.push(root);
+        PersistentSegmentTreeVersion::new(version_id)
+    }
+
+    fn allocate_node(&mut self, children: [NodePtr<M::T>; 2], value: M::T) -> NonNull<Node<M::T>> {
+        self.allocator.allocate(Node::new(children, value))
+    }
+
+    fn build_dfs(&mut self, start: usize, end: usize, values: &[M::T]) -> NodePtr<M::T> {
+        if end - start == 1 {
+            return self.leaf_node(values[start].clone());
         }
-        let m = (l + r) / 2;
-        let left = Self::build_dfs(allocator, l, m, values);
-        let right = Self::build_dfs(allocator, m, r, values);
-        Self::merge_nodes(allocator, left, right)
+        let mid = (start + end) / 2;
+        let left = self.build_dfs(start, mid, values);
+        let right = self.build_dfs(mid, end, values);
+        self.merge_nodes(left, right)
     }
 
-    fn leaf_node(allocator: &PersistentSegmentTreeAllocator<M::T>, value: M::T) -> NodePtr<M::T> {
-        Some(allocator.allocate(Node::new([None, None], value)))
+    fn leaf_node(&mut self, value: M::T) -> NodePtr<M::T> {
+        Some(self.allocate_node([None, None], value))
     }
 
-    fn merge_nodes(
-        allocator: &PersistentSegmentTreeAllocator<M::T>,
-        left: NodePtr<M::T>,
-        right: NodePtr<M::T>,
-    ) -> NodePtr<M::T> {
+    fn merge_nodes(&mut self, left: NodePtr<M::T>, right: NodePtr<M::T>) -> NodePtr<M::T> {
         if left.is_none() && right.is_none() {
             None
         } else {
-            let value = M::operate(&Self::node_value(left), &Self::node_value(right));
-            Some(allocator.allocate(Node::new([left, right], value)))
+            let value = M::operate(&Self::subtree_value(left), &Self::subtree_value(right));
+            Some(self.allocate_node([left, right], value))
         }
     }
 
-    fn node_value(node: NodePtr<M::T>) -> M::T {
+    fn subtree_value(node: NodePtr<M::T>) -> M::T {
         node.map(|node| unsafe { node.as_ref().value.clone() })
             .unwrap_or_else(M::unit)
     }
 
-    fn node_children(node: NodePtr<M::T>) -> [NodePtr<M::T>; 2] {
-        node.map(|node| unsafe { node.as_ref().child })
+    fn children(node: NodePtr<M::T>) -> [NodePtr<M::T>; 2] {
+        node.map(|node| unsafe { node.as_ref().children })
             .unwrap_or([None, None])
     }
 
-    fn point_get_dfs(node: NodePtr<M::T>, l: usize, r: usize, k: usize) -> M::T {
+    fn point_get_dfs(node: NodePtr<M::T>, start: usize, end: usize, index: usize) -> M::T {
         let Some(node) = node else {
             return M::unit();
         };
         let node = unsafe { node.as_ref() };
-        if r - l == 1 {
+        if end - start == 1 {
             node.value.clone()
         } else {
-            let m = (l + r) / 2;
-            if k < m {
-                Self::point_get_dfs(node.child[0], l, m, k)
+            let mid = (start + end) / 2;
+            if index < mid {
+                Self::point_get_dfs(node.children[0], start, mid, index)
             } else {
-                Self::point_get_dfs(node.child[1], m, r, k)
+                Self::point_get_dfs(node.children[1], mid, end, index)
             }
         }
     }
 
-    fn fold_dfs(node: NodePtr<M::T>, l: usize, r: usize, range: &Range<usize>) -> M::T {
-        if range.end <= l || r <= range.start {
+    fn fold_dfs(node: NodePtr<M::T>, start: usize, end: usize, range: &Range<usize>) -> M::T {
+        if range.end <= start || end <= range.start {
             return M::unit();
         }
         let Some(node) = node else {
             return M::unit();
         };
         let node = unsafe { node.as_ref() };
-        if range.start <= l && r <= range.end {
+        if range.start <= start && end <= range.end {
             node.value.clone()
         } else {
-            let m = (l + r) / 2;
-            let left = Self::fold_dfs(node.child[0], l, m, range);
-            let right = Self::fold_dfs(node.child[1], m, r, range);
+            let mid = (start + end) / 2;
+            let left = Self::fold_dfs(node.children[0], start, mid, range);
+            let right = Self::fold_dfs(node.children[1], mid, end, range);
             M::operate(&left, &right)
         }
     }
 
     fn set_dfs(
-        allocator: &PersistentSegmentTreeAllocator<M::T>,
+        &mut self,
         node: NodePtr<M::T>,
-        l: usize,
-        r: usize,
-        k: usize,
+        start: usize,
+        end: usize,
+        index: usize,
         value: &M::T,
     ) -> NodePtr<M::T> {
-        if r - l == 1 {
-            return Self::leaf_node(allocator, value.clone());
+        if end - start == 1 {
+            return self.leaf_node(value.clone());
         }
-        let m = (l + r) / 2;
-        let mut child = Self::node_children(node);
-        if k < m {
-            child[0] = Self::set_dfs(allocator, child[0], l, m, k, value);
+        let mid = (start + end) / 2;
+        let mut children = Self::children(node);
+        if index < mid {
+            children[0] = self.set_dfs(children[0], start, mid, index, value);
         } else {
-            child[1] = Self::set_dfs(allocator, child[1], m, r, k, value);
+            children[1] = self.set_dfs(children[1], mid, end, index, value);
         }
-        Self::merge_nodes(allocator, child[0], child[1])
+        self.merge_nodes(children[0], children[1])
     }
 
     fn update_dfs(
-        allocator: &PersistentSegmentTreeAllocator<M::T>,
+        &mut self,
         node: NodePtr<M::T>,
-        l: usize,
-        r: usize,
-        k: usize,
+        start: usize,
+        end: usize,
+        index: usize,
         value: &M::T,
     ) -> NodePtr<M::T> {
-        if r - l == 1 {
-            return Self::leaf_node(allocator, M::operate(&Self::node_value(node), value));
+        if end - start == 1 {
+            return self.leaf_node(M::operate(&Self::subtree_value(node), value));
         }
-        let m = (l + r) / 2;
-        let mut child = Self::node_children(node);
-        if k < m {
-            child[0] = Self::update_dfs(allocator, child[0], l, m, k, value);
+        let mid = (start + end) / 2;
+        let mut children = Self::children(node);
+        if index < mid {
+            children[0] = self.update_dfs(children[0], start, mid, index, value);
         } else {
-            child[1] = Self::update_dfs(allocator, child[1], m, r, k, value);
+            children[1] = self.update_dfs(children[1], mid, end, index, value);
         }
-        Self::merge_nodes(allocator, child[0], child[1])
+        self.merge_nodes(children[0], children[1])
     }
 
-    pub fn set(&self, k: usize, value: M::T) -> Self {
-        assert!(k < self.n);
-        let root = Self::set_dfs(&self.allocator, self.root, 0, self.n, k, &value);
-        Self::with_root(self.n, root, Rc::clone(&self.allocator))
+    pub fn from_vec(&mut self, v: Vec<M::T>) -> PersistentSegmentTreeVersion {
+        assert_eq!(v.len(), self.len);
+        let root = if self.len == 0 {
+            None
+        } else {
+            self.build_dfs(0, self.len, &v)
+        };
+        self.push_version_root(root)
     }
 
-    pub fn update(&self, k: usize, value: M::T) -> Self {
-        assert!(k < self.n);
-        let root = Self::update_dfs(&self.allocator, self.root, 0, self.n, k, &value);
-        Self::with_root(self.n, root, Rc::clone(&self.allocator))
+    pub fn set(
+        &mut self,
+        version: PersistentSegmentTreeVersion,
+        index: usize,
+        value: M::T,
+    ) -> PersistentSegmentTreeVersion {
+        assert!(index < self.len);
+        let root = self.set_dfs(self.version_root(version), 0, self.len, index, &value);
+        self.push_version_root(root)
     }
 
-    pub fn get(&self, k: usize) -> M::T {
-        assert!(k < self.n);
-        Self::point_get_dfs(self.root, 0, self.n, k)
+    pub fn update(
+        &mut self,
+        version: PersistentSegmentTreeVersion,
+        index: usize,
+        value: M::T,
+    ) -> PersistentSegmentTreeVersion {
+        assert!(index < self.len);
+        let root = self.update_dfs(self.version_root(version), 0, self.len, index, &value);
+        self.push_version_root(root)
     }
 
-    pub fn fold<R>(&self, range: R) -> M::T
+    #[must_use]
+    pub fn get(&self, version: PersistentSegmentTreeVersion, index: usize) -> M::T {
+        assert!(index < self.len);
+        Self::point_get_dfs(self.version_root(version), 0, self.len, index)
+    }
+
+    #[must_use]
+    pub fn fold<R>(&self, version: PersistentSegmentTreeVersion, range: R) -> M::T
     where
         R: RangeBounds<usize>,
     {
-        let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        let range = range.to_range_bounded(0, self.len).expect("invalid range");
         if range.is_empty() {
             M::unit()
         } else {
-            Self::fold_dfs(self.root, 0, self.n, &range)
+            Self::fold_dfs(self.version_root(version), 0, self.len, &range)
         }
     }
 
-    pub fn fold_all(&self) -> M::T {
-        Self::node_value(self.root)
+    #[must_use]
+    pub fn fold_all(&self, version: PersistentSegmentTreeVersion) -> M::T {
+        Self::subtree_value(self.version_root(version))
     }
 }
 
@@ -294,44 +286,46 @@ mod tests {
     #[test]
     fn test_persistent_segment_tree_random_non_commutative() {
         let mut rng = Xorshift::default();
+        let mut segtree: PersistentSegmentTree<ConcatenateOperation<u8>> =
+            PersistentSegmentTree::new(N);
         let initial: Vec<_> = (0..N).map(|_| rand_word(&mut rng)).collect();
-        let mut segs: Vec<PersistentSegmentTree<ConcatenateOperation<u8>>> = vec![
-            PersistentSegmentTree::new(N),
-            PersistentSegmentTree::from_vec(initial.clone()),
-        ];
-        let mut arrs = vec![vec![Vec::new(); N], initial];
+        let mut versions = vec![segtree.base(), segtree.from_vec(initial.clone())];
+        let mut states = vec![vec![Vec::new(); N], initial];
 
         for _ in 0..Q {
-            let base = rng.random(0..segs.len());
-            let k = rng.random(0..N);
-            let mut arr = arrs[base].clone();
+            let base_version = rng.random(0..versions.len());
+            let index = rng.random(0..N);
+            let mut state = states[base_version].clone();
 
             if rng.gen_bool(0.5) {
-                let x = rand_word(&mut rng);
-                arr[k] = x.clone();
-                segs.push(segs[base].set(k, x));
+                let value = rand_word(&mut rng);
+                state[index] = value.clone();
+                versions.push(segtree.set(versions[base_version], index, value));
             } else {
-                let x = rand_word(&mut rng);
-                arr[k].extend_from_slice(&x);
-                segs.push(segs[base].update(k, x));
+                let value = rand_word(&mut rng);
+                state[index].extend_from_slice(&value);
+                versions.push(segtree.update(versions[base_version], index, value));
             }
-            arrs.push(arr);
+            states.push(state);
 
-            let version = rng.random(0..segs.len());
+            let version = rng.random(0..versions.len());
             let index = rng.random(0..N);
-            let (l, r) = rng.random(Wes(N));
-            let expected: Vec<_> = arrs[version][l..r]
+            let (start, end) = rng.random(Wes(N));
+            let expected: Vec<_> = states[version][start..end]
                 .iter()
                 .flat_map(|word| word.iter().copied())
                 .collect();
-            let expected_all: Vec<_> = arrs[version]
+            let expected_all: Vec<_> = states[version]
                 .iter()
                 .flat_map(|word| word.iter().copied())
                 .collect();
 
-            assert_eq!(segs[version].get(index), arrs[version][index]);
-            assert_eq!(segs[version].fold(l..r), expected);
-            assert_eq!(segs[version].fold_all(), expected_all);
+            assert_eq!(
+                segtree.get(versions[version], index),
+                states[version][index]
+            );
+            assert_eq!(segtree.fold(versions[version], start..end), expected);
+            assert_eq!(segtree.fold_all(versions[version]), expected_all);
         }
     }
 }
