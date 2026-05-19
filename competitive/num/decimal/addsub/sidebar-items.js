@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["add_absolute_parts","add_carry","sub_absolute_parts_gte","sub_borrow"],"macro":["add","impl_binop","impl_binop_assign","sub"]};
+window.SIDEBAR_ITEMS = {"fn":["add_absolute_parts","add_carry","sub_absolute_parts_gte","sub_borrow"],"macro":[["add",1],["impl_binop",1],["impl_binop_assign",1],["sub",1]]};

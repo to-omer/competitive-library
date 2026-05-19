@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_fps_binop_addsub","impl_fps_binop_conv","impl_fps_single_binop"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_fps_binop_addsub",1],["impl_fps_binop_conv",1],["impl_fps_single_binop",1]]};

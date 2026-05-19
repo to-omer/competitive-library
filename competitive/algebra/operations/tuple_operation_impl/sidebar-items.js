@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_tuple_operation"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_tuple_operation",1]]};

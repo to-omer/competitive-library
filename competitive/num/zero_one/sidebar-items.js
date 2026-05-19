@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_zero_one"],"trait":["One","Zero"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_zero_one",1]],"trait":["One","Zero"]};

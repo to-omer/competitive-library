@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["HuffmanTree"],"fn":["from_bytestring","huffman_coding","huffman_decoding","to_bytestring","unescape"],"macro":["impl_serdebytestr_num","impl_serdebytestr_seq","impl_serdebytestr_tuple"],"struct":["BitReader","BitWriter"],"trait":["SerdeByteStr"]};
+window.SIDEBAR_ITEMS = {"enum":["HuffmanTree"],"fn":["from_bytestring","huffman_coding","huffman_decoding","to_bytestring","unescape"],"macro":[["impl_serdebytestr_num",1],["impl_serdebytestr_seq",1],["impl_serdebytestr_tuple",1]],"struct":["BitReader","BitWriter"],"trait":["SerdeByteStr"]};

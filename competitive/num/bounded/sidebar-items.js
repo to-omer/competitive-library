@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_bounded_num","impl_bounded_tuple"],"trait":["Bounded"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_bounded_num",1],["impl_bounded_tuple",1]],"trait":["Bounded"]};

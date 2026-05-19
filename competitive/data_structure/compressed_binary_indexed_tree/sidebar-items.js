@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_compressed_binary_indexed_tree"],"struct":["CompressedBinaryIndexedTree","Tag"],"type":["CompressedBinaryIndexedTree1d","CompressedBinaryIndexedTree2d","CompressedBinaryIndexedTree3d","CompressedBinaryIndexedTree4d"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_compressed_binary_indexed_tree",1]],"struct":["CompressedBinaryIndexedTree","Tag"],"type":["CompressedBinaryIndexedTree1d","CompressedBinaryIndexedTree2d","CompressedBinaryIndexedTree3d","CompressedBinaryIndexedTree4d"]};

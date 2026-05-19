@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_iter_print_tuple"],"trait":["IterPrint"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_iter_print_tuple",1]],"trait":["IterPrint"]};

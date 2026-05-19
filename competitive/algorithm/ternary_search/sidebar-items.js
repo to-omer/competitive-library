@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["golden_ternary_search","piecewise_ternary_search","ternary_search"],"macro":["impl_fibonacci_search_unsigned","impl_trisect_float","impl_trisect_signed","impl_trisect_unsigned"],"trait":["FibonacciSearch","Trisect"]};
+window.SIDEBAR_ITEMS = {"fn":["golden_ternary_search","piecewise_ternary_search","ternary_search"],"macro":[["impl_fibonacci_search_unsigned",1],["impl_trisect_float",1],["impl_trisect_signed",1],["impl_trisect_unsigned",1]],"trait":["FibonacciSearch","Trisect"]};

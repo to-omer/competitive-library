@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_dual_number_fold","impl_dual_number_op_assign","impl_dual_number_ref_binop","impl_dual_number_ref_unop"],"struct":["DualNumber"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_dual_number_fold",1],["impl_dual_number_op_assign",1],["impl_dual_number_ref_binop",1],["impl_dual_number_ref_unop",1]],"struct":["DualNumber"]};

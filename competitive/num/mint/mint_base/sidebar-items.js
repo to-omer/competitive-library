@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_mint_from","impl_mint_ref_binop","impl_mint_ref_op_assign","impl_mint_ref_unop"],"struct":["MInt"],"trait":["MIntBase","MIntConvert"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_mint_from",1],["impl_mint_ref_binop",1],["impl_mint_ref_op_assign",1],["impl_mint_ref_unop",1]],"struct":["MInt"],"trait":["MIntBase","MIntConvert"]};

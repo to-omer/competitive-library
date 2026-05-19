@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_complex_fold","impl_complex_op_assign","impl_complex_ref_binop","impl_complex_ref_unop"],"struct":["Complex"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_complex_fold",1],["impl_complex_op_assign",1],["impl_complex_ref_binop",1],["impl_complex_ref_unop",1]],"struct":["Complex"]};

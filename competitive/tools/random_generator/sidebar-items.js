@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["randint_uniform"],"macro":["impl_random_spec_primitive","impl_random_spec_range_full","impl_random_spec_ranges","impl_random_spec_tuple"],"struct":["NotEmptySegment","RandIter","RandRange","WeightedSampler","WithEmptySegment"],"trait":["RandomSpec"]};
+window.SIDEBAR_ITEMS = {"fn":["randint_uniform"],"macro":[["impl_random_spec_primitive",1],["impl_random_spec_range_full",1],["impl_random_spec_ranges",1],["impl_random_spec_tuple",1]],"struct":["NotEmptySegment","RandIter","RandRange","WeightedSampler","WithEmptySegment"],"trait":["RandomSpec"]};

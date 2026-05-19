@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_discrete_steps_integer","impl_range_bounds_ext"],"trait":["DiscreteSteps","RangeBoundsExt"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_discrete_steps_integer",1],["impl_range_bounds_ext",1]],"trait":["DiscreteSteps","RangeBoundsExt"]};

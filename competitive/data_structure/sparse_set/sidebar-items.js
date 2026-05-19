@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_sparse_set"],"struct":["SparseSet"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_sparse_set",1]],"struct":["SparseSet"]};
