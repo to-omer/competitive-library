@@ -384,7 +384,7 @@
 <span data-nosnippet>58</span>            }
 <span data-nosnippet>59</span>        }
 <span data-nosnippet>60</span>        used
-<span data-nosnippet>61</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/tree/static_top_tree.rs.html#159&#34;,&#34;line 159&#34;],[[506,506],&#34;../../../src/competitive/tree/static_top_tree.rs.html#661&#34;,&#34;line 661&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/static_top_tree.rs (<a href="../../../src/competitive/tree/static_top_tree.rs.html#159">line 159</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>155</span>    <span class="kw">pub fn </span>new(root: usize, graph: <span class="kw-2">&amp;</span>UndirectedSparseGraph) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>61</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/tree/static_top_tree.rs.html#159&#34;,&#34;line 159&#34;],[[514,514],&#34;../../../src/competitive/tree/static_top_tree.rs.html#669&#34;,&#34;line 669&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/static_top_tree.rs (<a href="../../../src/competitive/tree/static_top_tree.rs.html#159">line 159</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>155</span>    <span class="kw">pub fn </span>new(root: usize, graph: <span class="kw-2">&amp;</span>UndirectedSparseGraph) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>156</span>        <span class="kw">let </span>n = graph.vertices_size();
 <span data-nosnippet>157</span>        <span class="macro">assert!</span>(n &gt; <span class="number">0</span>);
 <span data-nosnippet>158</span>        <span class="macro">assert!</span>(root &lt; n);
@@ -713,220 +713,228 @@
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>    }
 <span data-nosnippet>483</span>
-<span data-nosnippet>484</span>    <span class="kw">pub fn </span>apply_vertex&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, vertex: usize, f: F)
-<span data-nosnippet>485</span>    <span class="kw">where
-<span data-nosnippet>486</span>        </span>F: FnOnce(<span class="kw-2">&amp;mut </span>&lt;C <span class="kw">as </span>Cluster&gt;::Vertex),
-<span data-nosnippet>487</span>    {
-<span data-nosnippet>488</span>        <span class="macro">assert!</span>(vertex &lt; <span class="self">self</span>.vertices.len());
-<span data-nosnippet>489</span>        f(<span class="kw-2">&amp;mut </span><span class="self">self</span>.vertices[vertex]);
-<span data-nosnippet>490</span>        <span class="self">self</span>.update_from_vertex(vertex);
-<span data-nosnippet>491</span>    }
-<span data-nosnippet>492</span>
-<span data-nosnippet>493</span>    <span class="kw">pub fn </span>set_vertex(<span class="kw-2">&amp;mut </span><span class="self">self</span>, vertex: usize, value: &lt;C <span class="kw">as </span>Cluster&gt;::Vertex) {
-<span data-nosnippet>494</span>        <span class="self">self</span>.apply_vertex(vertex, |x| <span class="kw-2">*</span>x = value);
+<span data-nosnippet>484</span>    <span class="kw">pub fn </span>get_vertex(<span class="kw-2">&amp;</span><span class="self">self</span>, vertex: usize) -&gt; <span class="kw-2">&amp;</span>&lt;C <span class="kw">as </span>Cluster&gt;::Vertex {
+<span data-nosnippet>485</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex]
+<span data-nosnippet>486</span>    }
+<span data-nosnippet>487</span>
+<span data-nosnippet>488</span>    <span class="kw">pub fn </span>apply_vertex&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, vertex: usize, f: F)
+<span data-nosnippet>489</span>    <span class="kw">where
+<span data-nosnippet>490</span>        </span>F: FnOnce(<span class="kw-2">&amp;mut </span>&lt;<a href="../algebra/lazy_map.rs.html#176">C</a> <span class="kw">as </span>Cluster&gt;::Vertex),
+<span data-nosnippet>491</span>    {
+<span data-nosnippet>492</span>        <span class="macro">assert!</span>(vertex &lt; <span class="self">self</span>.vertices.len());
+<span data-nosnippet>493</span>        f(<span class="kw-2">&amp;mut </span><span class="self">self</span>.vertices[vertex]);
+<span data-nosnippet>494</span>        <span class="self">self</span>.update_from_vertex(vertex);
 <span data-nosnippet>495</span>    }
 <span data-nosnippet>496</span>
-<span data-nosnippet>497</span>    <span class="kw">pub fn </span>apply_edge&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, edge: usize, f: F)
-<span data-nosnippet>498</span>    <span class="kw">where
-<span data-nosnippet>499</span>        </span>F: FnOnce(<span class="kw-2">&amp;mut </span>&lt;C <span class="kw">as </span>Cluster&gt;::Edge),
-<span data-nosnippet>500</span>    {
-<span data-nosnippet>501</span>        <span class="macro">assert!</span>(edge &lt; <span class="self">self</span>.edges.len());
-<span data-nosnippet>502</span>        f(<span class="kw-2">&amp;mut </span><span class="self">self</span>.edges[edge]);
-<span data-nosnippet>503</span>        <span class="self">self</span>.update_from_vertex(<span class="self">self</span>.tree.edge_child[edge]);
-<span data-nosnippet>504</span>    }
-<span data-nosnippet>505</span>
-<span data-nosnippet>506</span>    <span class="kw">pub fn </span>set_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, edge: usize, value: &lt;C <span class="kw">as </span>Cluster&gt;::Edge) {
-<span data-nosnippet>507</span>        <span class="self">self</span>.apply_edge(edge, |x| <span class="kw-2">*</span>x = value);
-<span data-nosnippet>508</span>    }
-<span data-nosnippet>509</span>
-<span data-nosnippet>510</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>&lt;C <span class="kw">as </span>Cluster&gt;::Point {
-<span data-nosnippet>511</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.all_point
+<span data-nosnippet>497</span>    <span class="kw">pub fn </span>set_vertex(<span class="kw-2">&amp;mut </span><span class="self">self</span>, vertex: usize, value: &lt;C <span class="kw">as </span>Cluster&gt;::Vertex) {
+<span data-nosnippet>498</span>        <span class="self">self</span>.apply_vertex(vertex, |x| <span class="kw-2">*</span>x = value);
+<span data-nosnippet>499</span>    }
+<span data-nosnippet>500</span>
+<span data-nosnippet>501</span>    <span class="kw">pub fn </span>get_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, edge: usize) -&gt; <span class="kw-2">&amp;</span>&lt;C <span class="kw">as </span>Cluster&gt;::Edge {
+<span data-nosnippet>502</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.edges[edge]
+<span data-nosnippet>503</span>    }
+<span data-nosnippet>504</span>
+<span data-nosnippet>505</span>    <span class="kw">pub fn </span>apply_edge&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, edge: usize, f: F)
+<span data-nosnippet>506</span>    <span class="kw">where
+<span data-nosnippet>507</span>        </span>F: FnOnce(<span class="kw-2">&amp;mut </span>&lt;C <span class="kw">as </span>Cluster&gt;::Edge),
+<span data-nosnippet>508</span>    {
+<span data-nosnippet>509</span>        <span class="macro">assert!</span>(edge &lt; <span class="self">self</span>.edges.len());
+<span data-nosnippet>510</span>        f(<span class="kw-2">&amp;mut </span><span class="self">self</span>.edges[edge]);
+<span data-nosnippet>511</span>        <span class="self">self</span>.update_from_vertex(<span class="self">self</span>.tree.edge_child[edge]);
 <span data-nosnippet>512</span>    }
 <span data-nosnippet>513</span>
-<span data-nosnippet>514</span>    <span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>vertex: usize) -&gt; &lt;C <span class="kw">as </span>Cluster&gt;::Path {
-<span data-nosnippet>515</span>        <span class="macro">assert!</span>(vertex &lt; <span class="self">self</span>.tree.n);
-<span data-nosnippet>516</span>        <span class="kw">let </span><span class="kw-2">mut </span>path = C::unit_path();
-<span data-nosnippet>517</span>        <span class="kw">let </span><span class="kw-2">mut </span>point = <span class="self">self</span>.light_points[vertex].clone();
-<span data-nosnippet>518</span>        <span class="kw">loop </span>{
-<span data-nosnippet>519</span>            <span class="kw">let </span>links = <span class="self">self</span>.tree.vertex_links[vertex];
-<span data-nosnippet>520</span>            <span class="kw">let </span><span class="kw-2">mut </span>left = C::unit_path();
-<span data-nosnippet>521</span>            <span class="kw">let </span><span class="kw-2">mut </span>right = C::unit_path();
-<span data-nosnippet>522</span>            <span class="kw">let </span><span class="kw-2">mut </span>compress_parent = links.compress_parent;
-<span data-nosnippet>523</span>            <span class="kw">while </span>compress_parent != usize::MAX {
-<span data-nosnippet>524</span>                <span class="kw">let </span>inner = <span class="kw-2">&amp;</span><span class="self">self</span>.compressed[compress_parent / <span class="number">2</span>];
-<span data-nosnippet>525</span>                <span class="kw">if </span>compress_parent &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>526</span>                    right = C::compress(<span class="kw-2">&amp;</span>right, <span class="kw-2">&amp;</span>inner.right);
-<span data-nosnippet>527</span>                } <span class="kw">else </span>{
-<span data-nosnippet>528</span>                    left = C::compress(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>left);
-<span data-nosnippet>529</span>                }
-<span data-nosnippet>530</span>                compress_parent = <span class="self">self</span>.tree.compressed[compress_parent / <span class="number">2</span>].parent;
-<span data-nosnippet>531</span>            }
-<span data-nosnippet>532</span>            <span class="kw">let </span>right_point = C::add_edge(<span class="kw-2">&amp;</span>right);
-<span data-nosnippet>533</span>            point = C::rake(<span class="kw-2">&amp;</span>point, <span class="kw-2">&amp;</span>right_point);
-<span data-nosnippet>534</span>            <span class="kw">let </span>mid = C::add_vertex(
-<span data-nosnippet>535</span>                <span class="kw-2">&amp;</span>point,
-<span data-nosnippet>536</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex],
-<span data-nosnippet>537</span>                <span class="self">self</span>.tree.parent_edge_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.edges, vertex),
-<span data-nosnippet>538</span>            );
-<span data-nosnippet>539</span>            <span class="kw">let </span>mid = C::compress(<span class="kw-2">&amp;</span>mid, <span class="kw-2">&amp;</span>path);
-<span data-nosnippet>540</span>            path = C::compress(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>mid);
-<span data-nosnippet>541</span>            <span class="kw">if </span>links.heavy_parent == usize::MAX {
-<span data-nosnippet>542</span>                <span class="kw">return </span>path;
-<span data-nosnippet>543</span>            }
-<span data-nosnippet>544</span>
-<span data-nosnippet>545</span>            point = C::unit_point();
-<span data-nosnippet>546</span>            <span class="kw">let </span><span class="kw-2">mut </span>rake_parent = links.rake_parent;
-<span data-nosnippet>547</span>            <span class="kw">while </span>rake_parent != usize::MAX {
-<span data-nosnippet>548</span>                <span class="kw">let </span>inner = <span class="kw-2">&amp;</span><span class="self">self</span>.raked[rake_parent / <span class="number">2</span>];
-<span data-nosnippet>549</span>                <span class="kw">if </span>rake_parent &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>550</span>                    point = C::rake(<span class="kw-2">&amp;</span>point, <span class="kw-2">&amp;</span>inner.right);
-<span data-nosnippet>551</span>                } <span class="kw">else </span>{
-<span data-nosnippet>552</span>                    point = C::rake(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>point);
-<span data-nosnippet>553</span>                }
-<span data-nosnippet>554</span>                rake_parent = <span class="self">self</span>.tree.raked[rake_parent / <span class="number">2</span>].parent;
-<span data-nosnippet>555</span>            }
-<span data-nosnippet>556</span>            vertex = links.heavy_parent;
-<span data-nosnippet>557</span>        }
-<span data-nosnippet>558</span>    }
-<span data-nosnippet>559</span>
-<span data-nosnippet>560</span>    <span class="kw">fn </span>update_from_vertex(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>vertex: usize) {
-<span data-nosnippet>561</span>        <span class="macro">assert!</span>(vertex &lt; <span class="self">self</span>.tree.n);
-<span data-nosnippet>562</span>        <span class="kw">while </span>vertex != usize::MAX {
-<span data-nosnippet>563</span>            <span class="kw">let </span>links = <span class="self">self</span>.tree.vertex_links[vertex];
-<span data-nosnippet>564</span>            <span class="kw">let </span>base = C::add_vertex(
-<span data-nosnippet>565</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.light_points[vertex],
-<span data-nosnippet>566</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex],
-<span data-nosnippet>567</span>                <span class="self">self</span>.tree.parent_edge_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.edges, vertex),
-<span data-nosnippet>568</span>            );
-<span data-nosnippet>569</span>            <span class="kw">let </span>path = <span class="self">self</span>.update_compress(links.compress_parent, base);
-<span data-nosnippet>570</span>            <span class="kw">let </span>point = C::add_edge(<span class="kw-2">&amp;</span>path);
-<span data-nosnippet>571</span>            <span class="kw">let </span>point = <span class="self">self</span>.update_rake(links.rake_parent, point);
-<span data-nosnippet>572</span>            <span class="kw">if </span>links.heavy_parent == usize::MAX {
-<span data-nosnippet>573</span>                <span class="self">self</span>.all_point = point;
-<span data-nosnippet>574</span>            } <span class="kw">else </span>{
-<span data-nosnippet>575</span>                <span class="self">self</span>.light_points[links.heavy_parent] = point;
-<span data-nosnippet>576</span>            }
-<span data-nosnippet>577</span>            vertex = links.heavy_parent;
-<span data-nosnippet>578</span>        }
-<span data-nosnippet>579</span>    }
-<span data-nosnippet>580</span>
-<span data-nosnippet>581</span>    <span class="kw">fn </span>update_compress(
-<span data-nosnippet>582</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-<span data-nosnippet>583</span>        <span class="kw-2">mut </span>id: usize,
-<span data-nosnippet>584</span>        <span class="kw-2">mut </span>path: &lt;C <span class="kw">as </span>Cluster&gt;::Path,
-<span data-nosnippet>585</span>    ) -&gt; &lt;<a href="../algebra/lazy_map.rs.html#318">C</a> <span class="kw">as </span>Cluster&gt;::Path {
-<span data-nosnippet>586</span>        <span class="kw">while </span>id != usize::MAX {
-<span data-nosnippet>587</span>            <span class="kw">let </span>inner = <span class="kw-2">&amp;mut </span><span class="self">self</span>.compressed[id / <span class="number">2</span>];
-<span data-nosnippet>588</span>            <span class="kw">if </span>id &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>589</span>                inner.left = path;
-<span data-nosnippet>590</span>            } <span class="kw">else </span>{
-<span data-nosnippet>591</span>                inner.right = path;
-<span data-nosnippet>592</span>            }
-<span data-nosnippet>593</span>            path = C::compress(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>inner.right);
-<span data-nosnippet>594</span>            id = <span class="self">self</span>.tree.compressed[id / <span class="number">2</span>].parent;
-<span data-nosnippet>595</span>        }
-<span data-nosnippet>596</span>        path
-<span data-nosnippet>597</span>    }
-<span data-nosnippet>598</span>
-<span data-nosnippet>599</span>    <span class="kw">fn </span>update_rake(
-<span data-nosnippet>600</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-<span data-nosnippet>601</span>        <span class="kw-2">mut </span>id: usize,
-<span data-nosnippet>602</span>        <span class="kw-2">mut </span>point: &lt;C <span class="kw">as </span>Cluster&gt;::Point,
-<span data-nosnippet>603</span>    ) -&gt; &lt;C <span class="kw">as </span>Cluster&gt;::Point {
-<span data-nosnippet>604</span>        <span class="kw">while </span>id != usize::MAX {
-<span data-nosnippet>605</span>            <span class="kw">let </span>inner = <span class="kw-2">&amp;mut </span><span class="self">self</span>.raked[id / <span class="number">2</span>];
-<span data-nosnippet>606</span>            <span class="kw">if </span>id &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>607</span>                inner.left = point;
-<span data-nosnippet>608</span>            } <span class="kw">else </span>{
-<span data-nosnippet>609</span>                inner.right = point;
-<span data-nosnippet>610</span>            }
-<span data-nosnippet>611</span>            point = C::rake(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>inner.right);
-<span data-nosnippet>612</span>            id = <span class="self">self</span>.tree.raked[id / <span class="number">2</span>].parent;
-<span data-nosnippet>613</span>        }
-<span data-nosnippet>614</span>        point
-<span data-nosnippet>615</span>    }
-<span data-nosnippet>616</span>}
-<span data-nosnippet>617</span>
-<span data-nosnippet>618</span><span class="kw">struct </span>StaticTopTreeDataBuilder&lt;C&gt;
-<span data-nosnippet>619</span><span class="kw">where
-<span data-nosnippet>620</span>    </span>C: Cluster,
-<span data-nosnippet>621</span>{
-<span data-nosnippet>622</span>    compressed: Vec&lt;MaybeUninit&lt;InnerValue&lt;&lt;C <span class="kw">as </span>Cluster&gt;::Path&gt;&gt;&gt;,
-<span data-nosnippet>623</span>    raked: Vec&lt;MaybeUninit&lt;InnerValue&lt;&lt;C <span class="kw">as </span>Cluster&gt;::Point&gt;&gt;&gt;,
-<span data-nosnippet>624</span>    light_points: Vec&lt;&lt;C <span class="kw">as </span>Cluster&gt;::Point&gt;,
-<span data-nosnippet>625</span>}
-<span data-nosnippet>626</span>
-<span data-nosnippet>627</span><span class="kw">impl</span>&lt;C&gt; StaticTopTreeDataBuilder&lt;C&gt;
-<span data-nosnippet>628</span><span class="kw">where
-<span data-nosnippet>629</span>    </span>C: Cluster,
-<span data-nosnippet>630</span>{
-<span data-nosnippet>631</span>    <span class="kw">fn </span>new(tree: <span class="kw-2">&amp;</span>StaticTopTree) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>632</span>        <span class="kw">let </span><span class="kw-2">mut </span>compressed = Vec::with_capacity(tree.compressed.len());
-<span data-nosnippet>633</span>        compressed.resize_with(tree.compressed.len(), MaybeUninit::uninit);
-<span data-nosnippet>634</span>        <span class="kw">let </span><span class="kw-2">mut </span>raked = Vec::with_capacity(tree.raked.len());
-<span data-nosnippet>635</span>        raked.resize_with(tree.raked.len(), MaybeUninit::uninit);
-<span data-nosnippet>636</span>        <span class="self">Self </span>{
-<span data-nosnippet>637</span>            compressed,
-<span data-nosnippet>638</span>            raked,
-<span data-nosnippet>639</span>            light_points: <span class="macro">vec!</span>[C::unit_point(); tree.n],
-<span data-nosnippet>640</span>        }
-<span data-nosnippet>641</span>    }
-<span data-nosnippet>642</span>}
-<span data-nosnippet>643</span>
-<span data-nosnippet>644</span><span class="kw">unsafe fn </span>assume_init_vec&lt;T&gt;(<span class="kw-2">mut </span>vec: Vec&lt;MaybeUninit&lt;T&gt;&gt;) -&gt; Vec&lt;T&gt; {
-<span data-nosnippet>645</span>    <span class="kw">let </span>len = vec.len();
-<span data-nosnippet>646</span>    <span class="kw">let </span>cap = vec.capacity();
-<span data-nosnippet>647</span>    <span class="kw">let </span>ptr = vec.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>T;
-<span data-nosnippet>648</span>    std::mem::forget(vec);
-<span data-nosnippet>649</span>    <span class="kw">unsafe </span>{ Vec::from_raw_parts(ptr, len, cap) }
+<span data-nosnippet>514</span>    <span class="kw">pub fn </span>set_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, edge: usize, value: &lt;C <span class="kw">as </span>Cluster&gt;::Edge) {
+<span data-nosnippet>515</span>        <span class="self">self</span>.apply_edge(edge, |x| <span class="kw-2">*</span>x = value);
+<span data-nosnippet>516</span>    }
+<span data-nosnippet>517</span>
+<span data-nosnippet>518</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>&lt;C <span class="kw">as </span>Cluster&gt;::Point {
+<span data-nosnippet>519</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.all_point
+<span data-nosnippet>520</span>    }
+<span data-nosnippet>521</span>
+<span data-nosnippet>522</span>    <span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>vertex: usize) -&gt; &lt;C <span class="kw">as </span>Cluster&gt;::Path {
+<span data-nosnippet>523</span>        <span class="macro">assert!</span>(vertex &lt; <span class="self">self</span>.tree.n);
+<span data-nosnippet>524</span>        <span class="kw">let </span><span class="kw-2">mut </span>path = C::unit_path();
+<span data-nosnippet>525</span>        <span class="kw">let </span><span class="kw-2">mut </span>point = <span class="self">self</span>.light_points[vertex].clone();
+<span data-nosnippet>526</span>        <span class="kw">loop </span>{
+<span data-nosnippet>527</span>            <span class="kw">let </span>links = <span class="self">self</span>.tree.vertex_links[vertex];
+<span data-nosnippet>528</span>            <span class="kw">let </span><span class="kw-2">mut </span>left = C::unit_path();
+<span data-nosnippet>529</span>            <span class="kw">let </span><span class="kw-2">mut </span>right = C::unit_path();
+<span data-nosnippet>530</span>            <span class="kw">let </span><span class="kw-2">mut </span>compress_parent = links.compress_parent;
+<span data-nosnippet>531</span>            <span class="kw">while </span>compress_parent != usize::MAX {
+<span data-nosnippet>532</span>                <span class="kw">let </span>inner = <span class="kw-2">&amp;</span><span class="self">self</span>.compressed[compress_parent / <span class="number">2</span>];
+<span data-nosnippet>533</span>                <span class="kw">if </span>compress_parent &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>534</span>                    right = C::compress(<span class="kw-2">&amp;</span>right, <span class="kw-2">&amp;</span>inner.right);
+<span data-nosnippet>535</span>                } <span class="kw">else </span>{
+<span data-nosnippet>536</span>                    left = C::compress(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>left);
+<span data-nosnippet>537</span>                }
+<span data-nosnippet>538</span>                compress_parent = <span class="self">self</span>.tree.compressed[compress_parent / <span class="number">2</span>].parent;
+<span data-nosnippet>539</span>            }
+<span data-nosnippet>540</span>            <span class="kw">let </span>right_point = C::add_edge(<span class="kw-2">&amp;</span>right);
+<span data-nosnippet>541</span>            point = C::rake(<span class="kw-2">&amp;</span>point, <span class="kw-2">&amp;</span>right_point);
+<span data-nosnippet>542</span>            <span class="kw">let </span>mid = C::add_vertex(
+<span data-nosnippet>543</span>                <span class="kw-2">&amp;</span>point,
+<span data-nosnippet>544</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex],
+<span data-nosnippet>545</span>                <span class="self">self</span>.tree.parent_edge_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.edges, vertex),
+<span data-nosnippet>546</span>            );
+<span data-nosnippet>547</span>            <span class="kw">let </span>mid = C::compress(<span class="kw-2">&amp;</span>mid, <span class="kw-2">&amp;</span>path);
+<span data-nosnippet>548</span>            path = C::compress(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>mid);
+<span data-nosnippet>549</span>            <span class="kw">if </span>links.heavy_parent == usize::MAX {
+<span data-nosnippet>550</span>                <span class="kw">return </span>path;
+<span data-nosnippet>551</span>            }
+<span data-nosnippet>552</span>
+<span data-nosnippet>553</span>            point = C::unit_point();
+<span data-nosnippet>554</span>            <span class="kw">let </span><span class="kw-2">mut </span>rake_parent = links.rake_parent;
+<span data-nosnippet>555</span>            <span class="kw">while </span>rake_parent != usize::MAX {
+<span data-nosnippet>556</span>                <span class="kw">let </span>inner = <span class="kw-2">&amp;</span><span class="self">self</span>.raked[rake_parent / <span class="number">2</span>];
+<span data-nosnippet>557</span>                <span class="kw">if </span>rake_parent &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>558</span>                    point = C::<a href="https://doc.rust-lang.org/nightly/core/marker/derive.Copy.html">rake</a>(<span class="kw-2">&amp;</span>point, <span class="kw-2">&amp;</span>inner.right);
+<span data-nosnippet>559</span>                } <span class="kw">else </span>{
+<span data-nosnippet>560</span>                    point = C::rake(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>point);
+<span data-nosnippet>561</span>                }
+<span data-nosnippet>562</span>                rake_parent = <span class="self">self</span>.tree.raked[rake_parent / <span class="number">2</span>].parent;
+<span data-nosnippet>563</span>            }
+<span data-nosnippet>564</span>            vertex = links.heavy_parent;
+<span data-nosnippet>565</span>        }
+<span data-nosnippet>566</span>    }
+<span data-nosnippet>567</span>
+<span data-nosnippet>568</span>    <span class="kw">fn </span>update_from_vertex(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>vertex: usize) {
+<span data-nosnippet>569</span>        <span class="macro">assert!</span>(vertex &lt; <span class="self">self</span>.tree.n);
+<span data-nosnippet>570</span>        <span class="kw">while </span>vertex != usize::MAX {
+<span data-nosnippet>571</span>            <span class="kw">let </span>links = <span class="self">self</span>.tree.vertex_links[vertex];
+<span data-nosnippet>572</span>            <span class="kw">let </span>base = C::add_vertex(
+<span data-nosnippet>573</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.light_points[vertex],
+<span data-nosnippet>574</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex],
+<span data-nosnippet>575</span>                <span class="self">self</span>.tree.parent_edge_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.edges, vertex),
+<span data-nosnippet>576</span>            );
+<span data-nosnippet>577</span>            <span class="kw">let </span>path = <span class="self">self</span>.update_compress(links.compress_parent, base);
+<span data-nosnippet>578</span>            <span class="kw">let </span>point = C::add_edge(<span class="kw-2">&amp;</span>path);
+<span data-nosnippet>579</span>            <span class="kw">let </span>point = <span class="self">self</span>.update_rake(links.rake_parent, point);
+<span data-nosnippet>580</span>            <span class="kw">if </span>links.heavy_parent == usize::MAX {
+<span data-nosnippet>581</span>                <span class="self">self</span>.all_point = point;
+<span data-nosnippet>582</span>            } <span class="kw">else </span>{
+<span data-nosnippet>583</span>                <span class="self">self</span>.light_points[links.heavy_parent] = point;
+<span data-nosnippet>584</span>            }
+<span data-nosnippet>585</span>            vertex = links.heavy_parent;
+<span data-nosnippet>586</span>        }
+<span data-nosnippet>587</span>    }
+<span data-nosnippet>588</span>
+<span data-nosnippet>589</span>    <span class="kw">fn </span>update_compress(
+<span data-nosnippet>590</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>591</span>        <span class="kw-2">mut </span>id: usize,
+<span data-nosnippet>592</span>        <span class="kw-2">mut </span>path: &lt;C <span class="kw">as </span>Cluster&gt;::Path,
+<span data-nosnippet>593</span>    ) -&gt; &lt;C <span class="kw">as </span>Cluster&gt;::Path {
+<span data-nosnippet>594</span>        <span class="kw">while </span>id != usize::MAX {
+<span data-nosnippet>595</span>            <span class="kw">let </span>inner = <span class="kw-2">&amp;mut </span><span class="self">self</span>.compressed[id / <span class="number">2</span>];
+<span data-nosnippet>596</span>            <span class="kw">if </span>id &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>597</span>                inner.left = path;
+<span data-nosnippet>598</span>            } <span class="kw">else </span>{
+<span data-nosnippet>599</span>                inner.right = path;
+<span data-nosnippet>600</span>            }
+<span data-nosnippet>601</span>            path = C::compress(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>inner.right);
+<span data-nosnippet>602</span>            id = <span class="self">self</span>.tree.compressed[id / <span class="number">2</span>].parent;
+<span data-nosnippet>603</span>        }
+<span data-nosnippet>604</span>        path
+<span data-nosnippet>605</span>    }
+<span data-nosnippet>606</span>
+<span data-nosnippet>607</span>    <span class="kw">fn </span>update_rake(
+<span data-nosnippet>608</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>609</span>        <span class="kw-2">mut </span>id: usize,
+<span data-nosnippet>610</span>        <span class="kw-2">mut </span>point: &lt;C <span class="kw">as </span>Cluster&gt;::Point,
+<span data-nosnippet>611</span>    ) -&gt; &lt;C <span class="kw">as </span>Cluster&gt;::Point {
+<span data-nosnippet>612</span>        <span class="kw">while </span>id != usize::MAX {
+<span data-nosnippet>613</span>            <span class="kw">let </span>inner = <span class="kw-2">&amp;mut </span><span class="self">self</span>.raked[id / <span class="number">2</span>];
+<span data-nosnippet>614</span>            <span class="kw">if </span>id &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>615</span>                inner.left = point;
+<span data-nosnippet>616</span>            } <span class="kw">else </span>{
+<span data-nosnippet>617</span>                inner.right = point;
+<span data-nosnippet>618</span>            }
+<span data-nosnippet>619</span>            point = C::rake(<span class="kw-2">&amp;</span>inner.left, <span class="kw-2">&amp;</span>inner.right);
+<span data-nosnippet>620</span>            id = <span class="self">self</span>.tree.raked[id / <span class="number">2</span>].parent;
+<span data-nosnippet>621</span>        }
+<span data-nosnippet>622</span>        point
+<span data-nosnippet>623</span>    }
+<span data-nosnippet>624</span>}
+<span data-nosnippet>625</span>
+<span data-nosnippet>626</span><span class="kw">struct </span>StaticTopTreeDataBuilder&lt;C&gt;
+<span data-nosnippet>627</span><span class="kw">where
+<span data-nosnippet>628</span>    </span>C: Cluster,
+<span data-nosnippet>629</span>{
+<span data-nosnippet>630</span>    compressed: Vec&lt;MaybeUninit&lt;InnerValue&lt;&lt;C <span class="kw">as </span>Cluster&gt;::Path&gt;&gt;&gt;,
+<span data-nosnippet>631</span>    raked: Vec&lt;MaybeUninit&lt;InnerValue&lt;&lt;C <span class="kw">as </span>Cluster&gt;::Point&gt;&gt;&gt;,
+<span data-nosnippet>632</span>    light_points: Vec&lt;&lt;C <span class="kw">as </span>Cluster&gt;::Point&gt;,
+<span data-nosnippet>633</span>}
+<span data-nosnippet>634</span>
+<span data-nosnippet>635</span><span class="kw">impl</span>&lt;C&gt; StaticTopTreeDataBuilder&lt;C&gt;
+<span data-nosnippet>636</span><span class="kw">where
+<span data-nosnippet>637</span>    </span>C: Cluster,
+<span data-nosnippet>638</span>{
+<span data-nosnippet>639</span>    <span class="kw">fn </span>new(tree: <span class="kw-2">&amp;</span>StaticTopTree) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>640</span>        <span class="kw">let </span><span class="kw-2">mut </span>compressed = Vec::with_capacity(tree.compressed.len());
+<span data-nosnippet>641</span>        compressed.resize_with(tree.compressed.len(), MaybeUninit::uninit);
+<span data-nosnippet>642</span>        <span class="kw">let </span><span class="kw-2">mut </span>raked = Vec::with_capacity(tree.raked.len());
+<span data-nosnippet>643</span>        raked.resize_with(tree.raked.len(), MaybeUninit::uninit);
+<span data-nosnippet>644</span>        <span class="self">Self </span>{
+<span data-nosnippet>645</span>            compressed,
+<span data-nosnippet>646</span>            raked,
+<span data-nosnippet>647</span>            light_points: <span class="macro">vec!</span>[<a href="../algebra/lazy_map.rs.html#409">C</a>::unit_point(); tree.n],
+<span data-nosnippet>648</span>        }
+<span data-nosnippet>649</span>    }
 <span data-nosnippet>650</span>}
 <span data-nosnippet>651</span>
-<span data-nosnippet>652</span><span class="kw">fn </span>bit_ceil(x: u64) -&gt; u64 {
-<span data-nosnippet>653</span>    <span class="kw">if </span>x &lt;= <span class="number">1 </span>{ <span class="number">1 </span>} <span class="kw">else </span>{ <a href="../algebra/lazy_map.rs.html#409">x</a>.next_power_of_two() }
-<span data-nosnippet>654</span>}
-<span data-nosnippet>655</span>
-<span data-nosnippet>656</span><span class="kw">fn </span>rooted_children(graph: <span class="kw-2">&amp;</span>UndirectedSparseGraph, root: usize) -&gt; RootedInfo {
-<span data-nosnippet>657</span>    <span class="kw">let </span>n = graph.vertices_size();
-<span data-nosnippet>658</span>    <span class="kw">let </span><span class="kw-2">mut </span>order = Vec::with_capacity(n);
-<span data-nosnippet>659</span>    <span class="kw">let </span><span class="kw-2">mut </span>parent = <span class="macro">vec!</span>[usize::MAX; n];
-<span data-nosnippet>660</span>    <span class="kw">let </span><span class="kw-2">mut </span>parent_edge = <span class="macro">vec!</span>[usize::MAX; n];
-<span data-nosnippet>661</span>    <span class="kw">let </span><span class="kw-2">mut </span>edge_child = <span class="macro">vec!</span>[<span class="number">0</span>; graph.<span class="highlight">edges_size</span>()];
-<span data-nosnippet>662</span>    order.push(root);
-<span data-nosnippet>663</span>    parent[root] = usize::MAX;
-<span data-nosnippet>664</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
-<span data-nosnippet>665</span>        <span class="kw">let </span>u = order[i];
-<span data-nosnippet>666</span>        <span class="kw">for </span>a <span class="kw">in </span>graph.adjacencies(u) {
-<span data-nosnippet>667</span>            <span class="kw">if </span>a.to == parent[u] {
-<span data-nosnippet>668</span>                <span class="kw">continue</span>;
-<span data-nosnippet>669</span>            }
-<span data-nosnippet>670</span>            parent[a.to] = u;
-<span data-nosnippet>671</span>            parent_edge[a.to] = a.id;
-<span data-nosnippet>672</span>            edge_child[a.id] = a.to;
-<span data-nosnippet>673</span>            order.push(a.to);
-<span data-nosnippet>674</span>        }
-<span data-nosnippet>675</span>    }
-<span data-nosnippet>676</span>    <span class="kw">let </span><span class="kw-2">mut </span>children_start = <span class="macro">vec!</span>[<span class="number">0usize</span>; n + <span class="number">1</span>];
-<span data-nosnippet>677</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>v <span class="kw">in </span>order.iter().skip(<span class="number">1</span>) {
-<span data-nosnippet>678</span>        children_start[parent[v] + <span class="number">1</span>] += <span class="number">1</span>;
-<span data-nosnippet>679</span>    }
-<span data-nosnippet>680</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
-<span data-nosnippet>681</span>        children_start[i] += children_start[i - <span class="number">1</span>];
-<span data-nosnippet>682</span>    }
-<span data-nosnippet>683</span>    <span class="kw">let </span><span class="kw-2">mut </span>children = <span class="macro">vec!</span>[<span class="number">0</span>; n.saturating_sub(<span class="number">1</span>)];
-<span data-nosnippet>684</span>    <span class="kw">let </span><span class="kw-2">mut </span>child_pos = children_start.clone();
+<span data-nosnippet>652</span><span class="kw">unsafe fn </span>assume_init_vec&lt;T&gt;(<span class="kw-2">mut </span>vec: Vec&lt;MaybeUninit&lt;T&gt;&gt;) -&gt; Vec&lt;T&gt; {
+<span data-nosnippet>653</span>    <span class="kw">let </span>len = vec.len();
+<span data-nosnippet>654</span>    <span class="kw">let </span>cap = vec.capacity();
+<span data-nosnippet>655</span>    <span class="kw">let </span>ptr = vec.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>T;
+<span data-nosnippet>656</span>    std::mem::forget(vec);
+<span data-nosnippet>657</span>    <span class="kw">unsafe </span>{ Vec::from_raw_parts(ptr, len, cap) }
+<span data-nosnippet>658</span>}
+<span data-nosnippet>659</span>
+<span data-nosnippet>660</span><span class="kw">fn </span>bit_ceil(x: u64) -&gt; u64 {
+<span data-nosnippet>661</span>    <span class="kw">if </span>x &lt;= <span class="number">1 </span>{ <span class="number">1 </span>} <span class="kw">else </span>{ x.next_power_of_two() }
+<span data-nosnippet>662</span>}
+<span data-nosnippet>663</span>
+<span data-nosnippet>664</span><span class="kw">fn </span>rooted_children(graph: <span class="kw-2">&amp;</span>UndirectedSparseGraph, root: usize) -&gt; RootedInfo {
+<span data-nosnippet>665</span>    <span class="kw">let </span>n = graph.vertices_size();
+<span data-nosnippet>666</span>    <span class="kw">let </span><span class="kw-2">mut </span>order = Vec::with_capacity(n);
+<span data-nosnippet>667</span>    <span class="kw">let </span><span class="kw-2">mut </span>parent = <span class="macro">vec!</span>[usize::MAX; n];
+<span data-nosnippet>668</span>    <span class="kw">let </span><span class="kw-2">mut </span>parent_edge = <span class="macro">vec!</span>[usize::MAX; n];
+<span data-nosnippet>669</span>    <span class="kw">let </span><span class="kw-2">mut </span>edge_child = <span class="macro">vec!</span>[<span class="number">0</span>; graph.<span class="highlight">edges_size</span>()];
+<span data-nosnippet>670</span>    order.push(root);
+<span data-nosnippet>671</span>    parent[root] = usize::MAX;
+<span data-nosnippet>672</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>673</span>        <span class="kw">let </span>u = order[i];
+<span data-nosnippet>674</span>        <span class="kw">for </span>a <span class="kw">in </span>graph.adjacencies(u) {
+<span data-nosnippet>675</span>            <span class="kw">if </span>a.to == parent[u] {
+<span data-nosnippet>676</span>                <span class="kw">continue</span>;
+<span data-nosnippet>677</span>            }
+<span data-nosnippet>678</span>            parent[a.to] = u;
+<span data-nosnippet>679</span>            parent_edge[a.to] = a.id;
+<span data-nosnippet>680</span>            edge_child[a.id] = a.to;
+<span data-nosnippet>681</span>            order.push(a.to);
+<span data-nosnippet>682</span>        }
+<span data-nosnippet>683</span>    }
+<span data-nosnippet>684</span>    <span class="kw">let </span><span class="kw-2">mut </span>children_start = <a href="../num/zero_one.rs.html#15-28">vec!</a>[<span class="number">0usize</span>; n + <span class="number">1</span>];
 <span data-nosnippet>685</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>v <span class="kw">in </span>order.iter().skip(<span class="number">1</span>) {
-<span data-nosnippet>686</span>        <span class="kw">let </span>pos = child_pos[parent[v]];
-<span data-nosnippet>687</span>        children[pos] = v;
-<span data-nosnippet>688</span>        child_pos[parent[v]] += <span class="number">1</span>;
-<span data-nosnippet>689</span>    }
-<span data-nosnippet>690</span>    RootedInfo {
-<span data-nosnippet>691</span>        order,
-<span data-nosnippet>692</span>        children_start,
-<span data-nosnippet>693</span>        children,
-<span data-nosnippet>694</span>        edge_child,
-<span data-nosnippet>695</span>        parent_edge,
-<span data-nosnippet>696</span>    }
-<span data-nosnippet>697</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.vertices" class="method"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#47-49">Source</a><h4 class="code-header">pub fn <a href="#method.vertices" class="fn">vertices</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html" title="struct core::ops::range::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock"><p>Return an iterator over graph vertices.</p>
+<span data-nosnippet>686</span>        children_start[parent[v] + <span class="number">1</span>] += <span class="number">1</span>;
+<span data-nosnippet>687</span>    }
+<span data-nosnippet>688</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
+<span data-nosnippet>689</span>        children_start[i] += children_start[i - <span class="number">1</span>];
+<span data-nosnippet>690</span>    }
+<span data-nosnippet>691</span>    <span class="kw">let </span><span class="kw-2">mut </span>children = <span class="macro">vec!</span>[<span class="number">0</span>; n.saturating_sub(<span class="number">1</span>)];
+<span data-nosnippet>692</span>    <span class="kw">let </span><span class="kw-2">mut </span>child_pos = children_start.clone();
+<span data-nosnippet>693</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>v <span class="kw">in </span>order.iter().skip(<span class="number">1</span>) {
+<span data-nosnippet>694</span>        <span class="kw">let </span>pos = child_pos[parent[v]];
+<span data-nosnippet>695</span>        children[pos] = v;
+<span data-nosnippet>696</span>        child_pos[parent[v]] += <span class="number">1</span>;
+<span data-nosnippet>697</span>    }
+<span data-nosnippet>698</span>    RootedInfo {
+<span data-nosnippet>699</span>        order,
+<span data-nosnippet>700</span>        children_start,
+<span data-nosnippet>701</span>        children,
+<span data-nosnippet>702</span>        edge_child,
+<span data-nosnippet>703</span>        parent_edge,
+<span data-nosnippet>704</span>    }
+<span data-nosnippet>705</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.vertices" class="method"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#47-49">Source</a><h4 class="code-header">pub fn <a href="#method.vertices" class="fn">vertices</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html" title="struct core::ops::range::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock"><p>Return an iterator over graph vertices.</p>
 </div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/graph/low_link.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/low_link.rs (<a href="../../../src/competitive/graph/low_link.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>11</span>    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>UndirectedSparseGraph) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>12</span>        <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
 <span data-nosnippet>13</span>            graph,
@@ -1311,7 +1319,7 @@
 <span data-nosnippet>18</span>            }
 <span data-nosnippet>19</span>            ok &amp;= (n - size) * <span class="number">2 </span>&lt;= n;
 <span data-nosnippet>20</span>            (size, <span class="kw">if </span>ok { u } <span class="kw">else </span>{ !<span class="number">0 </span>})
-<span data-nosnippet>21</span>        }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/graph/order.rs.html#13">crates/competitive/src/graph/order.rs</a></li><li><a href="../../../src/competitive/tree/euler_tour.rs.html#98">crates/competitive/src/tree/euler_tour.rs</a></li><li><a href="../../../src/competitive/graph/graphvis.rs.html#18">crates/competitive/src/graph/graphvis.rs</a></li><li><a href="../../../src/competitive/graph/topological_sort.rs.html#7">crates/competitive/src/graph/topological_sort.rs</a></li><li><a href="../../../src/competitive/tree/heavy_light_decomposition.rs.html#26">crates/competitive/src/tree/heavy_light_decomposition.rs</a></li><li><a href="../../../src/competitive/graph/maximum_flow.rs.html#80">crates/competitive/src/graph/maximum_flow.rs</a></li><li><a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#83">crates/competitive/src/graph/minimum_cost_flow.rs</a></li><li><a href="../../../src/competitive/tree/centroid_decomposition.rs.html#238">crates/competitive/src/tree/centroid_decomposition.rs</a></li><li><a href="../../../src/competitive/graph/strongly_connected_component.rs.html#46">crates/competitive/src/graph/strongly_connected_component.rs</a></li><li><a href="../../../src/competitive/graph/low_link.rs.html#32">crates/competitive/src/graph/low_link.rs</a></li><li><a href="../../../src/competitive/tree/level_ancestor.rs.html#35">crates/competitive/src/tree/level_ancestor.rs</a></li><li><a href="../../../src/competitive/tree/static_top_tree.rs.html#666">crates/competitive/src/tree/static_top_tree.rs</a></li><li><a href="../../../src/competitive/tree/tree_center.rs.html#16">crates/competitive/src/tree/tree_center.rs</a></li><li><a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#31">crates/competitive/src/graph/dulmage_mendelsohn_decomposition.rs</a></li></ul></div></div></details></div></details><section id="method.builder" class="method"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#54-56">Source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>&lt;T&gt;(vsize: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../struct.SparseGraphBuilder.html" title="struct competitive::graph::SparseGraphBuilder">SparseGraphBuilder</a>&lt;T, D&gt;</h4></section><section id="method.builder_with_esize" class="method"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#57-59">Source</a><h4 class="code-header">pub fn <a href="#method.builder_with_esize" class="fn">builder_with_esize</a>&lt;T&gt;(
+<span data-nosnippet>21</span>        }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/graph/order.rs.html#13">crates/competitive/src/graph/order.rs</a></li><li><a href="../../../src/competitive/tree/euler_tour.rs.html#98">crates/competitive/src/tree/euler_tour.rs</a></li><li><a href="../../../src/competitive/graph/graphvis.rs.html#18">crates/competitive/src/graph/graphvis.rs</a></li><li><a href="../../../src/competitive/graph/topological_sort.rs.html#7">crates/competitive/src/graph/topological_sort.rs</a></li><li><a href="../../../src/competitive/tree/heavy_light_decomposition.rs.html#26">crates/competitive/src/tree/heavy_light_decomposition.rs</a></li><li><a href="../../../src/competitive/graph/maximum_flow.rs.html#80">crates/competitive/src/graph/maximum_flow.rs</a></li><li><a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#83">crates/competitive/src/graph/minimum_cost_flow.rs</a></li><li><a href="../../../src/competitive/tree/centroid_decomposition.rs.html#238">crates/competitive/src/tree/centroid_decomposition.rs</a></li><li><a href="../../../src/competitive/graph/strongly_connected_component.rs.html#46">crates/competitive/src/graph/strongly_connected_component.rs</a></li><li><a href="../../../src/competitive/graph/low_link.rs.html#32">crates/competitive/src/graph/low_link.rs</a></li><li><a href="../../../src/competitive/tree/level_ancestor.rs.html#35">crates/competitive/src/tree/level_ancestor.rs</a></li><li><a href="../../../src/competitive/tree/static_top_tree.rs.html#674">crates/competitive/src/tree/static_top_tree.rs</a></li><li><a href="../../../src/competitive/tree/tree_center.rs.html#16">crates/competitive/src/tree/tree_center.rs</a></li><li><a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#31">crates/competitive/src/graph/dulmage_mendelsohn_decomposition.rs</a></li></ul></div></div></details></div></details><section id="method.builder" class="method"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#54-56">Source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>&lt;T&gt;(vsize: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../struct.SparseGraphBuilder.html" title="struct competitive::graph::SparseGraphBuilder">SparseGraphBuilder</a>&lt;T, D&gt;</h4></section><section id="method.builder_with_esize" class="method"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#57-59">Source</a><h4 class="code-header">pub fn <a href="#method.builder_with_esize" class="fn">builder_with_esize</a>&lt;T&gt;(
     vsize: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     esize: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 ) -&gt; <a class="struct" href="../struct.SparseGraphBuilder.html" title="struct competitive::graph::SparseGraphBuilder">SparseGraphBuilder</a>&lt;T, D&gt;</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-SparseGraph%3CD%3E-5" class="impl"><a class="src rightside" href="../../../src/competitive/graph/sparse_graph.rs.html#66-78">Source</a><a href="#impl-SparseGraph%3CD%3E-5" class="anchor">§</a><h3 class="code-header">impl&lt;D&gt; <a class="struct" href="../struct.SparseGraph.html" title="struct competitive::graph::SparseGraph">SparseGraph</a>&lt;D&gt;<div class="where">where
