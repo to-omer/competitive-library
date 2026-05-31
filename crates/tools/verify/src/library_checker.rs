@@ -262,10 +262,19 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         }
     }
 
-    let output = Command::new(option_env!("PYTHON").unwrap_or("python3"))
+    let mut command = Command::new(option_env!("PYTHON").unwrap_or("python3"));
+    command
         .arg(rootdir.join("generate.py"))
-        .arg(problem.problemdir.join("info.toml"))
-        .output()?;
+        .arg(problem.problemdir.join("info.toml"));
+    if OS == "macos" {
+        // FIXME: Remove this when library-checker-problems accepts Apple clang 21's
+        // -Wmisleading-indentation warning in sharp_p_subset_sum/correct.cpp.
+        command.env(
+            "CXXFLAGS",
+            "-O2 -std=c++17 -Wall -Wextra -Werror -Wno-error=misleading-indentation -Wno-unused-result -Wl,-stack_size,0x10000000",
+        );
+    }
+    let output = command.output()?;
     if !output.status.success() {
         log::error!(
             "Testcase generation failed:\n{}",
