@@ -115,7 +115,7 @@ where
                 if coeff.is_none() {
                     eprintln!(
                         "failed to solve linear equations: key={:?} A={:?} b={:?}",
-                        key, &mat.data, &b
+                        key, mat.data, b
                     );
                 }
                 (key, coeff)
