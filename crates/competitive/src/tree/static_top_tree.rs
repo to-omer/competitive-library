@@ -481,6 +481,10 @@ where
         }
     }
 
+    pub fn get_vertex(&self, vertex: usize) -> &<C as Cluster>::Vertex {
+        &self.vertices[vertex]
+    }
+
     pub fn apply_vertex<F>(&mut self, vertex: usize, f: F)
     where
         F: FnOnce(&mut <C as Cluster>::Vertex),
@@ -492,6 +496,10 @@ where
 
     pub fn set_vertex(&mut self, vertex: usize, value: <C as Cluster>::Vertex) {
         self.apply_vertex(vertex, |x| *x = value);
+    }
+
+    pub fn get_edge(&self, edge: usize) -> &<C as Cluster>::Edge {
+        &self.edges[edge]
     }
 
     pub fn apply_edge<F>(&mut self, edge: usize, f: F)
@@ -931,6 +939,12 @@ mod tests {
         let tree = graph.static_top_tree(0);
         let mut dp = tree.dp::<FixedCluster>(vertices.clone(), edges.clone());
         assert_eq!(*dp.fold_all(), naive_rooted(graph, &vertices, &edges, 0));
+        for (v, &vertex) in vertices.iter().enumerate() {
+            assert_eq!(*dp.get_vertex(v), vertex);
+        }
+        for (eid, &edge) in edges.iter().enumerate() {
+            assert_eq!(*dp.get_edge(eid), edge);
+        }
 
         for _ in 0..rounds {
             if rng.random(0u32..2) == 0 {
@@ -938,6 +952,7 @@ mod tests {
                 let x = MInt::from(rng.random(0u32..20));
                 vertices[v] += x;
                 dp.apply_vertex(v, |value| *value += x);
+                assert_eq!(*dp.get_vertex(v), vertices[v]);
             } else if m > 0 {
                 let eid = rng.random(0..m);
                 let edge = (
@@ -950,6 +965,7 @@ mod tests {
                     value.0 += edge.0;
                     value.1 += edge.1;
                 });
+                assert_eq!(*dp.get_edge(eid), edges[eid]);
             }
             assert_eq!(*dp.fold_all(), naive_rooted(graph, &vertices, &edges, 0));
         }
