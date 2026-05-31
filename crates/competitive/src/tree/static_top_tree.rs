@@ -481,16 +481,30 @@ where
         }
     }
 
-    pub fn set_vertex(&mut self, vertex: usize, value: <C as Cluster>::Vertex) {
+    pub fn apply_vertex<F>(&mut self, vertex: usize, f: F)
+    where
+        F: FnOnce(&mut <C as Cluster>::Vertex),
+    {
         assert!(vertex < self.vertices.len());
-        self.vertices[vertex] = value;
+        f(&mut self.vertices[vertex]);
         self.update_from_vertex(vertex);
     }
 
-    pub fn set_edge(&mut self, edge: usize, value: <C as Cluster>::Edge) {
+    pub fn set_vertex(&mut self, vertex: usize, value: <C as Cluster>::Vertex) {
+        self.apply_vertex(vertex, |x| *x = value);
+    }
+
+    pub fn apply_edge<F>(&mut self, edge: usize, f: F)
+    where
+        F: FnOnce(&mut <C as Cluster>::Edge),
+    {
         assert!(edge < self.edges.len());
-        self.edges[edge] = value;
+        f(&mut self.edges[edge]);
         self.update_from_vertex(self.tree.edge_child[edge]);
+    }
+
+    pub fn set_edge(&mut self, edge: usize, value: <C as Cluster>::Edge) {
+        self.apply_edge(edge, |x| *x = value);
     }
 
     pub fn fold_all(&self) -> &<C as Cluster>::Point {
@@ -922,16 +936,20 @@ mod tests {
             if rng.random(0u32..2) == 0 {
                 let v = rng.random(0..n);
                 let x = MInt::from(rng.random(0u32..20));
-                vertices[v] = x;
-                dp.set_vertex(v, x);
+                vertices[v] += x;
+                dp.apply_vertex(v, |value| *value += x);
             } else if m > 0 {
                 let eid = rng.random(0..m);
                 let edge = (
                     MInt::from(rng.random(0u32..20)),
                     MInt::from(rng.random(0u32..20)),
                 );
-                edges[eid] = edge;
-                dp.set_edge(eid, edge);
+                edges[eid].0 += edge.0;
+                edges[eid].1 += edge.1;
+                dp.apply_edge(eid, |value| {
+                    value.0 += edge.0;
+                    value.1 += edge.1;
+                });
             }
             assert_eq!(*dp.fold_all(), naive_rooted(graph, &vertices, &edges, 0));
         }
