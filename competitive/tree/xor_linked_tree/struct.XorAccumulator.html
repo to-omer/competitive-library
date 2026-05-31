@@ -1,0 +1,1305 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `XorAccumulator` struct in crate `competitive`."><title>XorAccumulator in competitive::tree::xor_linked_tree - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0-nightly (f8a08b688 2026-05-30)" data-channel="nightly" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-fcd733ba.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">XorAccumulator</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">XorAccumulator</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.deg" title="deg">deg</a></li><li><a href="#structfield.xor" title="xor">xor</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.new" title="new">new</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.add_edge" title="add_edge">add_edge</a></li><li><a href="#method.finish" title="finish">finish</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Freeze-for-XorAccumulator" title="Freeze">Freeze</a></li><li><a href="#impl-RefUnwindSafe-for-XorAccumulator" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-XorAccumulator" title="Send">Send</a></li><li><a href="#impl-Sync-for-XorAccumulator" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-XorAccumulator" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-XorAccumulator" title="UnsafeUnpin">UnsafeUnpin</a></li><li><a href="#impl-UnwindSafe-for-XorAccumulator" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>tree::<wbr>xor_<wbr>linked_<wbr>tree</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">tree</a>::<wbr><a href="index.html">xor_linked_tree</a></div><h1>Struct <span class="struct">XorAccumulator</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/tree/xor_linked_tree.rs.html#848-851">Source</a> </span></div><pre class="rust item-decl"><code>struct XorAccumulator {
+    deg: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>&gt;,
+    xor: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.deg" class="structfield section-header"><a href="#structfield.deg" class="anchor field">§</a><code>deg: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>&gt;</code></span><span id="structfield.xor" class="structfield section-header"><a href="#structfield.xor" class="anchor field">§</a><code>xor: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-XorAccumulator" class="impl"><a class="src rightside" href="../../../src/competitive/tree/xor_linked_tree.rs.html#853-887">Source</a><a href="#impl-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../../src/competitive/tree/xor_linked_tree.rs.html#854-859">Source</a><h4 class="code-header">fn <a href="#method.new" class="fn">new</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#352&#34;,&#34;line 352&#34;],[[44,44],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#388&#34;,&#34;line 388&#34;],[[391,391],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#735&#34;,&#34;line 735&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/xor_linked_tree.rs (<a href="../../../src/competitive/tree/xor_linked_tree.rs.html#352">line 352</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>344</span>    <span class="kw">pub fn </span>build&lt;I&gt;(
+<span data-nosnippet>345</span>        <span class="self">self</span>,
+<span data-nosnippet>346</span>        root: usize,
+<span data-nosnippet>347</span>        edges: I,
+<span data-nosnippet>348</span>    ) -&gt; XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;
+<span data-nosnippet>349</span>    <span class="kw">where
+<span data-nosnippet>350</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>351</span>    {
+<span data-nosnippet>352</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="highlight focus">XorAccumulator::new</span>(<span class="self">self</span>.n);
+<span data-nosnippet>353</span>        <span class="kw">for </span>(u, v) <span class="kw">in </span>edges {
+<span data-nosnippet>354</span>            acc.add_edge(u, v);
+<span data-nosnippet>355</span>        }
+<span data-nosnippet>356</span>        finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.n, root, acc)
+<span data-nosnippet>357</span>    }
+<span data-nosnippet>358</span>}
+<span data-nosnippet>359</span>
+<span data-nosnippet>360</span><span class="kw">impl</span>&lt;P, D, H, PE, EC, X, B&gt; XorLinkedRootedTreeBuilder&lt;P, D, H, PE, EC, X, B, EIndexed&gt;
+<span data-nosnippet>361</span><span class="kw">where
+<span data-nosnippet>362</span>    </span>P: ParentComponent,
+<span data-nosnippet>363</span>    D: DfsPreorderComponent,
+<span data-nosnippet>364</span>    H: DepthComponent,
+<span data-nosnippet>365</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>366</span>    EC: EdgeChildComponent,
+<span data-nosnippet>367</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>368</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>369</span>{
+<span data-nosnippet>370</span>    <span class="kw">pub fn </span>build&lt;I&gt;(<span class="self">self</span>, root: usize, edges: I) -&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, X&gt;
+<span data-nosnippet>371</span>    <span class="kw">where
+<span data-nosnippet>372</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>373</span>    {
+<span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorEIndexedAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>375</span>        <span class="kw">for </span>(eid, (u, v)) <span class="kw">in </span>edges.into_iter().enumerate() {
+<span data-nosnippet>376</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>377</span>        }
+<span data-nosnippet>378</span>        finish_eindexed_accumulator::&lt;P, D, H, PE, EC, X, B&gt;(<span class="self">self</span>.n, root, acc)
+<span data-nosnippet>379</span>    }
+<span data-nosnippet>380</span>}
+<span data-nosnippet>381</span>
+<span data-nosnippet>382</span><span class="kw">impl </span>XorLinkedRootedTreeBuilder {
+<span data-nosnippet>383</span>    <span class="kw">pub fn </span>run&lt;I, F&gt;(<span class="self">self</span>, root: usize, edges: I, f: F)
+<span data-nosnippet>384</span>    <span class="kw">where
+<span data-nosnippet>385</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>386</span>        F: FnMut(usize, usize),
+<span data-nosnippet>387</span>    {
+<span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="highlight">XorAccumulator::new</span>(<span class="self">self</span>.n);
+<span data-nosnippet>389</span>        <span class="kw">for </span>(u, v) <span class="kw">in </span>edges {
+<span data-nosnippet>390</span>            acc.add_edge(u, v);
+<span data-nosnippet>391</span>        }
+<span data-nosnippet>392</span>        <span class="kw">let </span><span class="kw-2">mut </span>order = ();
+<span data-nosnippet>393</span>        acc.finish::&lt;NoXorBottomUpOrder, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>order, f);
+<span data-nosnippet>394</span>    }
+<span data-nosnippet>395</span>}
+<span data-nosnippet>396</span>
+<span data-nosnippet>397</span><span class="kw">impl
+<span data-nosnippet>398</span>    </span>XorLinkedRootedTreeBuilder&lt;
+<span data-nosnippet>399</span>        NoParent,
+<span data-nosnippet>400</span>        NoDfsPreorder,
+<span data-nosnippet>401</span>        NoDepth,
+<span data-nosnippet>402</span>        NoParentEdge,
+<span data-nosnippet>403</span>        NoEdgeChild,
+<span data-nosnippet>404</span>        NoXorBottomUpOrder,
+<span data-nosnippet>405</span>        NoXorBottomUpOrder,
+<span data-nosnippet>406</span>        EIndexed,
+<span data-nosnippet>407</span>    &gt;
+<span data-nosnippet>408</span>{
+<span data-nosnippet>409</span>    <span class="kw">pub fn </span>run&lt;I, F&gt;(<span class="self">self</span>, root: usize, edges: I, f: F)
+<span data-nosnippet>410</span>    <span class="kw">where
+<span data-nosnippet>411</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>412</span>        F: FnMut(usize, usize, usize),
+<span data-nosnippet>413</span>    {
+<span data-nosnippet>414</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorEIndexedAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>415</span>        <span class="kw">for </span>(eid, (u, v)) <span class="kw">in </span>edges.into_iter().enumerate() {
+<span data-nosnippet>416</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>417</span>        }
+<span data-nosnippet>418</span>        <span class="kw">let </span><span class="kw-2">mut </span>order = ();
+<span data-nosnippet>419</span>        <span class="kw">let </span><span class="kw-2">mut </span>edge_child = ();
+<span data-nosnippet>420</span>        acc.finish::&lt;NoXorBottomUpOrder, NoEdgeChild, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>order, <span class="kw-2">&amp;mut </span>edge_child, f);
+<span data-nosnippet>421</span>    }
+<span data-nosnippet>422</span>}
+<span data-nosnippet>423</span>
+<span data-nosnippet>424</span><span class="kw">impl</span>&lt;P, D, H, PE, EC, O&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, O&gt;
+<span data-nosnippet>425</span><span class="kw">where
+<span data-nosnippet>426</span>    </span>P: ParentComponent,
+<span data-nosnippet>427</span>    D: DfsPreorderComponent,
+<span data-nosnippet>428</span>    H: DepthComponent,
+<span data-nosnippet>429</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>430</span>    EC: EdgeChildComponent,
+<span data-nosnippet>431</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>432</span>{
+<span data-nosnippet>433</span>    <span class="kw">pub fn </span>vertices_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>434</span>        <span class="self">self</span>.n
+<span data-nosnippet>435</span>    }
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>edges_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>437</span>        <span class="self">self</span>.n.saturating_sub(<span class="number">1</span>)
+<span data-nosnippet>438</span>    }
+<span data-nosnippet>439</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>440</span>        <span class="self">self</span>.root
+<span data-nosnippet>441</span>    }
+<span data-nosnippet>442</span>}
+<span data-nosnippet>443</span>
+<span data-nosnippet>444</span><span class="kw">impl</span>&lt;D, H, PE, EC, O&gt; XorLinkedRootedTree&lt;RecordParent, D, H, PE, EC, O&gt;
+<span data-nosnippet>445</span><span class="kw">where
+<span data-nosnippet>446</span>    </span>D: DfsPreorderComponent,
+<span data-nosnippet>447</span>    H: DepthComponent,
+<span data-nosnippet>448</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>449</span>    EC: EdgeChildComponent,
+<span data-nosnippet>450</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>451</span>{
+<span data-nosnippet>452</span>    <span class="kw">pub fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>453</span>        <span class="self">self</span>.parent[v]
+<span data-nosnippet>454</span>    }
+<span data-nosnippet>455</span>    <span class="kw">pub fn </span>parents(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>456</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.parent
+<span data-nosnippet>457</span>    }
+<span data-nosnippet>458</span>}
+<span data-nosnippet>459</span>
+<span data-nosnippet>460</span><span class="kw">impl</span>&lt;P, D, H, PE, EC&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, RecordXorBottomUpOrder&gt;
+<span data-nosnippet>461</span><span class="kw">where
+<span data-nosnippet>462</span>    </span>P: ParentComponent,
+<span data-nosnippet>463</span>    D: DfsPreorderComponent,
+<span data-nosnippet>464</span>    H: DepthComponent,
+<span data-nosnippet>465</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>466</span>    EC: EdgeChildComponent,
+<span data-nosnippet>467</span>{
+<span data-nosnippet>468</span>    <span class="doccomment">/// Returns the bottom-up XOR order, excluding the root.
+<span data-nosnippet>469</span>    </span><span class="kw">pub fn </span>xor_bottom_up_order(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>470</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.xor_order
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    <span class="doccomment">/// Returns the top-down XOR order, excluding the root.
+<span data-nosnippet>473</span>    </span><span class="kw">pub fn </span>xor_top_down_order(
+<span data-nosnippet>474</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>475</span>    ) -&gt; <span class="kw">impl </span>DoubleEndedIterator&lt;Item = usize&gt; + ExactSizeIterator + <span class="lifetime">'_ </span>{
+<span data-nosnippet>476</span>        <span class="self">self</span>.xor_order.iter().rev().copied()
+<span data-nosnippet>477</span>    }
+<span data-nosnippet>478</span>}
+<span data-nosnippet>479</span>
+<span data-nosnippet>480</span><span class="kw">impl</span>&lt;P, H, PE, EC, O&gt; XorLinkedRootedTree&lt;P, RecordDfsPreorder, H, PE, EC, O&gt;
+<span data-nosnippet>481</span><span class="kw">where
+<span data-nosnippet>482</span>    </span>P: ParentComponent,
+<span data-nosnippet>483</span>    H: DepthComponent,
+<span data-nosnippet>484</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>485</span>    EC: EdgeChildComponent,
+<span data-nosnippet>486</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>487</span>{
+<span data-nosnippet>488</span>    <span class="kw">pub fn </span>dfs_order(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>489</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.dfs.order
+<span data-nosnippet>490</span>    }
+<span data-nosnippet>491</span>    <span class="kw">pub fn </span>dfs_index(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>492</span>        <span class="self">self</span>.dfs.preorder_index[v]
+<span data-nosnippet>493</span>    }
+<span data-nosnippet>494</span>    <span class="kw">pub fn </span>subtree_size(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>495</span>        <span class="self">self</span>.dfs.subtree_end[v] - <span class="self">self</span>.dfs.preorder_index[v]
+<span data-nosnippet>496</span>    }
+<span data-nosnippet>497</span>    <span class="kw">pub fn </span>subtree_range(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; Range&lt;usize&gt; {
+<span data-nosnippet>498</span>        <span class="self">self</span>.dfs.preorder_index[v]..<span class="self">self</span>.dfs.subtree_end[v]
+<span data-nosnippet>499</span>    }
+<span data-nosnippet>500</span>    <span class="kw">pub fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; Children&lt;<span class="lifetime">'_</span>&gt; {
+<span data-nosnippet>501</span>        Children {
+<span data-nosnippet>502</span>            dfs: <span class="kw-2">&amp;</span><span class="self">self</span>.dfs,
+<span data-nosnippet>503</span>            next: <span class="self">self</span>.dfs.preorder_index[v] + <span class="number">1</span>,
+<span data-nosnippet>504</span>            end: <span class="self">self</span>.dfs.subtree_end[v],
+<span data-nosnippet>505</span>        }
+<span data-nosnippet>506</span>    }
+<span data-nosnippet>507</span>}
+<span data-nosnippet>508</span>
+<span data-nosnippet>509</span><span class="kw">impl</span>&lt;P, D, PE, EC, O&gt; XorLinkedRootedTree&lt;P, D, RecordDepth, PE, EC, O&gt;
+<span data-nosnippet>510</span><span class="kw">where
+<span data-nosnippet>511</span>    </span>P: ParentComponent,
+<span data-nosnippet>512</span>    D: DfsPreorderComponent,
+<span data-nosnippet>513</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>514</span>    EC: EdgeChildComponent,
+<span data-nosnippet>515</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>516</span>{
+<span data-nosnippet>517</span>    <span class="kw">pub fn </span>depth(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>518</span>        <span class="self">self</span>.depth[v]
+<span data-nosnippet>519</span>    }
+<span data-nosnippet>520</span>    <span class="kw">pub fn </span>depths(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>521</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.depth
+<span data-nosnippet>522</span>    }
+<span data-nosnippet>523</span>}
+<span data-nosnippet>524</span>
+<span data-nosnippet>525</span><span class="kw">impl</span>&lt;P, D, H, EC, O&gt; XorLinkedRootedTree&lt;P, D, H, RecordParentEdge, EC, O&gt;
+<span data-nosnippet>526</span><span class="kw">where
+<span data-nosnippet>527</span>    </span>P: ParentComponent,
+<span data-nosnippet>528</span>    D: DfsPreorderComponent,
+<span data-nosnippet>529</span>    H: DepthComponent,
+<span data-nosnippet>530</span>    EC: EdgeChildComponent,
+<span data-nosnippet>531</span>    <a href="../algebra/action.rs.html#20">O</a>: XorBottomUpOrderComponent,
+<span data-nosnippet>532</span>{
+<span data-nosnippet>533</span>    <span class="kw">pub fn </span>parent_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>534</span>        <span class="self">self</span>.parent_edge[v]
+<span data-nosnippet>535</span>    }
+<span data-nosnippet>536</span>    <span class="kw">pub fn </span>parent_edges(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>537</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.parent_edge
+<span data-nosnippet>538</span>    }
+<span data-nosnippet>539</span>}
+<span data-nosnippet>540</span>
+<span data-nosnippet>541</span><span class="kw">impl</span>&lt;P, D, H, PE, O&gt; XorLinkedRootedTree&lt;P, D, H, PE, RecordEdgeChild, O&gt;
+<span data-nosnippet>542</span><span class="kw">where
+<span data-nosnippet>543</span>    </span>P: ParentComponent,
+<span data-nosnippet>544</span>    D: DfsPreorderComponent,
+<span data-nosnippet>545</span>    H: DepthComponent,
+<span data-nosnippet>546</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>547</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>548</span>{
+<span data-nosnippet>549</span>    <span class="kw">pub fn </span>edge_child(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: usize) -&gt; usize {
+<span data-nosnippet>550</span>        <span class="self">self</span>.edge_child[eid]
+<span data-nosnippet>551</span>    }
+<span data-nosnippet>552</span>    <span class="kw">pub fn </span>edge_children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>553</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.edge_child
+<span data-nosnippet>554</span>    }
+<span data-nosnippet>555</span>}
+<span data-nosnippet>556</span>
+<span data-nosnippet>557</span><span class="kw">pub struct </span>Children&lt;<span class="lifetime">'a</span>&gt; {
+<span data-nosnippet>558</span>    dfs: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>DfsPreorder,
+<span data-nosnippet>559</span>    next: usize,
+<span data-nosnippet>560</span>    end: usize,
+<span data-nosnippet>561</span>}
+<span data-nosnippet>562</span>
+<span data-nosnippet>563</span><span class="kw">impl </span>Iterator <span class="kw">for </span>Children&lt;<span class="lifetime">'_</span>&gt; {
+<span data-nosnippet>564</span>    <span class="kw">type </span>Item = usize;
+<span data-nosnippet>565</span>    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>566</span>        <span class="kw">if </span><span class="self">self</span>.next == <span class="self">self</span>.end {
+<span data-nosnippet>567</span>            <span class="prelude-val">None
+<span data-nosnippet>568</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>569</span>            <span class="kw">let </span>v = <span class="self">self</span>.dfs.order[<span class="self">self</span>.next];
+<span data-nosnippet>570</span>            <span class="self">self</span>.next = <span class="self">self</span>.dfs.subtree_end[v];
+<span data-nosnippet>571</span>            <span class="prelude-val">Some</span>(v)
+<span data-nosnippet>572</span>        }
+<span data-nosnippet>573</span>    }
+<span data-nosnippet>574</span>}
+<span data-nosnippet>575</span>
+<span data-nosnippet>576</span><span class="kw">pub struct </span>XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>577</span>    <a href="../algebra/action.rs.html#70">U</a>,
+<span data-nosnippet>578</span>    T = (),
+<span data-nosnippet>579</span>    P = NoParent,
+<span data-nosnippet>580</span>    D = NoDfsPreorder,
+<span data-nosnippet>581</span>    H = NoDepth,
+<span data-nosnippet>582</span>    PE = NoParentEdge,
+<span data-nosnippet>583</span>    EC = NoEdgeChild,
+<span data-nosnippet>584</span>    X = NoXorBottomUpOrder,
+<span data-nosnippet>585</span>    B = NoXorBottomUpOrder,
+<span data-nosnippet>586</span>    E = NoEIndexed,
+<span data-nosnippet>587</span>&gt; <span class="kw">where
+<span data-nosnippet>588</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>589</span>    T: IterScan,
+<span data-nosnippet>590</span>{
+<span data-nosnippet>591</span>    n: usize,
+<span data-nosnippet>592</span>    root: usize,
+<span data-nosnippet>593</span>    _marker: ScannerMarker&lt;U, T, P, D, H, PE, EC, X, B, E&gt;,
+<span data-nosnippet>594</span>}
+<span data-nosnippet>595</span>
+<span data-nosnippet>596</span><span class="kw">impl</span>&lt;U, T&gt; XorLinkedRootedTreeScanner&lt;U, T&gt;
+<span data-nosnippet>597</span><span class="kw">where
+<span data-nosnippet>598</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>599</span>    T: IterScan,
+<span data-nosnippet>600</span>{
+<span data-nosnippet>601</span>    <span class="kw">pub fn </span>new(n: usize, root: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>602</span>        <span class="self">Self </span>{
+<span data-nosnippet>603</span>            n,
+<span data-nosnippet>604</span>            root,
+<span data-nosnippet>605</span>            _marker: PhantomData,
+<span data-nosnippet>606</span>        }
+<span data-nosnippet>607</span>    }
+<span data-nosnippet>608</span>}
+<span data-nosnippet>609</span>
+<span data-nosnippet>610</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B, E&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, E&gt;
+<span data-nosnippet>611</span><span class="kw">where
+<span data-nosnippet>612</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>613</span>    T: IterScan,
+<span data-nosnippet>614</span>{
+<span data-nosnippet>615</span>    <span class="kw">pub fn </span>with_parent(
+<span data-nosnippet>616</span>        <span class="self">self</span>,
+<span data-nosnippet>617</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, RecordParent, D, H, PE, EC, X, B, E&gt; {
+<span data-nosnippet>618</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>619</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>620</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>621</span>            _marker: PhantomData,
+<span data-nosnippet>622</span>        }
+<span data-nosnippet>623</span>    }
+<span data-nosnippet>624</span>    <span class="kw">pub fn </span>with_dfs_preorder(
+<span data-nosnippet>625</span>        <span class="self">self</span>,
+<span data-nosnippet>626</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>627</span>        U,
+<span data-nosnippet>628</span>        T,
+<span data-nosnippet>629</span>        P,
+<span data-nosnippet>630</span>        RecordDfsPreorder,
+<span data-nosnippet>631</span>        H,
+<span data-nosnippet>632</span>        PE,
+<span data-nosnippet>633</span>        EC,
+<span data-nosnippet>634</span>        X,
+<span data-nosnippet>635</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>636</span>        E,
+<span data-nosnippet>637</span>    &gt; {
+<span data-nosnippet>638</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>639</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>640</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>641</span>            _marker: PhantomData,
+<span data-nosnippet>642</span>        }
+<span data-nosnippet>643</span>    }
+<span data-nosnippet>644</span>    <span class="kw">pub fn </span>with_depth(
+<span data-nosnippet>645</span>        <span class="self">self</span>,
+<span data-nosnippet>646</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, RecordDepth, PE, EC, X, RecordXorBottomUpOrder, E&gt;
+<span data-nosnippet>647</span>    {
+<span data-nosnippet>648</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>649</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>650</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>651</span>            _marker: PhantomData,
+<span data-nosnippet>652</span>        }
+<span data-nosnippet>653</span>    }
+<span data-nosnippet>654</span>    <span class="kw">pub fn </span>with_xor_bottom_up_order(
+<span data-nosnippet>655</span>        <span class="self">self</span>,
+<span data-nosnippet>656</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>657</span>        U,
+<span data-nosnippet>658</span>        T,
+<span data-nosnippet>659</span>        P,
+<span data-nosnippet>660</span>        D,
+<span data-nosnippet>661</span>        H,
+<span data-nosnippet>662</span>        PE,
+<span data-nosnippet>663</span>        EC,
+<span data-nosnippet>664</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>665</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>666</span>        E,
+<span data-nosnippet>667</span>    &gt; {
+<span data-nosnippet>668</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>669</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>670</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>671</span>            _marker: PhantomData,
+<span data-nosnippet>672</span>        }
+<span data-nosnippet>673</span>    }
+<span data-nosnippet>674</span>}
+<span data-nosnippet>675</span>
+<span data-nosnippet>676</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt;
+<span data-nosnippet>677</span>    XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>678</span><span class="kw">where
+<span data-nosnippet>679</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>680</span>    T: IterScan,
+<span data-nosnippet>681</span>{
+<span data-nosnippet>682</span>    <span class="kw">pub fn </span>with_eindexed(
+<span data-nosnippet>683</span>        <span class="self">self</span>,
+<span data-nosnippet>684</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, EIndexed&gt; {
+<span data-nosnippet>685</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>686</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>687</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>688</span>            _marker: PhantomData,
+<span data-nosnippet>689</span>        }
+<span data-nosnippet>690</span>    }
+<span data-nosnippet>691</span>}
+<span data-nosnippet>692</span>
+<span data-nosnippet>693</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, EIndexed&gt;
+<span data-nosnippet>694</span><span class="kw">where
+<span data-nosnippet>695</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>696</span>    T: IterScan,
+<span data-nosnippet>697</span>{
+<span data-nosnippet>698</span>    <span class="kw">pub fn </span>with_parent_edge(
+<span data-nosnippet>699</span>        <span class="self">self</span>,
+<span data-nosnippet>700</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, RecordParentEdge, EC, X, B, EIndexed&gt; {
+<span data-nosnippet>701</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>702</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>703</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>704</span>            _marker: PhantomData,
+<span data-nosnippet>705</span>        }
+<span data-nosnippet>706</span>    }
+<span data-nosnippet>707</span>    <span class="kw">pub fn </span>with_edge_child(
+<span data-nosnippet>708</span>        <span class="self">self</span>,
+<span data-nosnippet>709</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, RecordEdgeChild, X, B, EIndexed&gt; {
+<span data-nosnippet>710</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>711</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>712</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>713</span>            _marker: PhantomData,
+<span data-nosnippet>714</span>        }
+<span data-nosnippet>715</span>    }
+<span data-nosnippet>716</span>}
+<span data-nosnippet>717</span>
+<span data-nosnippet>718</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt; MarkedIterScan
+<span data-nosnippet>719</span>    <span class="kw">for </span>XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>720</span><span class="kw">where
+<span data-nosnippet>721</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>722</span>    T: IterScan,
+<span data-nosnippet>723</span>    P: ParentComponent,
+<span data-nosnippet>724</span>    D: DfsPreorderComponent,
+<span data-nosnippet>725</span>    H: DepthComponent,
+<span data-nosnippet>726</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>727</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>728</span>{
+<span data-nosnippet>729</span>    <span class="kw">type </span>Output = (
+<span data-nosnippet>730</span>        XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;,
+<span data-nosnippet>731</span>        Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
+<span data-nosnippet>732</span>    );
+<span data-nosnippet>733</span>
+<span data-nosnippet>734</span>    <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+<span data-nosnippet>735</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="highlight">XorAccumulator::new</span>(<span class="self">self</span>.n);
+<span data-nosnippet>736</span>        <span class="kw">let </span><span class="kw-2">mut </span>weights = Vec::with_capacity(<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>));
+<span data-nosnippet>737</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
+<span data-nosnippet>738</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>739</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>740</span>            acc.add_edge(u, v);
+<span data-nosnippet>741</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
+<span data-nosnippet>742</span>        }
+<span data-nosnippet>743</span>        <span class="prelude-val">Some</span>((
+<span data-nosnippet>744</span>            finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.n, <span class="self">self</span>.root, acc),
+<span data-nosnippet>745</span>            weights,
+<span data-nosnippet>746</span>        ))
+<span data-nosnippet>747</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.add_edge" class="method"><a class="src rightside" href="../../../src/competitive/tree/xor_linked_tree.rs.html#860-865">Source</a><h4 class="code-header">fn <a href="#method.add_edge" class="fn">add_edge</a>(&amp;mut self, u: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#354&#34;,&#34;line 354&#34;],[[46,46],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#390&#34;,&#34;line 390&#34;],[[396,396],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#740&#34;,&#34;line 740&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/xor_linked_tree.rs (<a href="../../../src/competitive/tree/xor_linked_tree.rs.html#354">line 354</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>344</span>    <span class="kw">pub fn </span>build&lt;I&gt;(
+<span data-nosnippet>345</span>        <span class="self">self</span>,
+<span data-nosnippet>346</span>        root: usize,
+<span data-nosnippet>347</span>        edges: I,
+<span data-nosnippet>348</span>    ) -&gt; XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;
+<span data-nosnippet>349</span>    <span class="kw">where
+<span data-nosnippet>350</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>351</span>    {
+<span data-nosnippet>352</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>353</span>        <span class="kw">for </span>(u, v) <span class="kw">in </span>edges {
+<span data-nosnippet>354</span>            acc.<span class="highlight focus">add_edge</span>(u, v);
+<span data-nosnippet>355</span>        }
+<span data-nosnippet>356</span>        finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.n, root, acc)
+<span data-nosnippet>357</span>    }
+<span data-nosnippet>358</span>}
+<span data-nosnippet>359</span>
+<span data-nosnippet>360</span><span class="kw">impl</span>&lt;P, D, H, PE, EC, X, B&gt; XorLinkedRootedTreeBuilder&lt;P, D, H, PE, EC, X, B, EIndexed&gt;
+<span data-nosnippet>361</span><span class="kw">where
+<span data-nosnippet>362</span>    </span>P: ParentComponent,
+<span data-nosnippet>363</span>    D: DfsPreorderComponent,
+<span data-nosnippet>364</span>    H: DepthComponent,
+<span data-nosnippet>365</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>366</span>    EC: EdgeChildComponent,
+<span data-nosnippet>367</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>368</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>369</span>{
+<span data-nosnippet>370</span>    <span class="kw">pub fn </span>build&lt;I&gt;(<span class="self">self</span>, root: usize, edges: I) -&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, X&gt;
+<span data-nosnippet>371</span>    <span class="kw">where
+<span data-nosnippet>372</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>373</span>    {
+<span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorEIndexedAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>375</span>        <span class="kw">for </span>(eid, (u, v)) <span class="kw">in </span>edges.into_iter().enumerate() {
+<span data-nosnippet>376</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>377</span>        }
+<span data-nosnippet>378</span>        finish_eindexed_accumulator::&lt;P, D, H, PE, EC, X, B&gt;(<span class="self">self</span>.n, root, acc)
+<span data-nosnippet>379</span>    }
+<span data-nosnippet>380</span>}
+<span data-nosnippet>381</span>
+<span data-nosnippet>382</span><span class="kw">impl </span>XorLinkedRootedTreeBuilder {
+<span data-nosnippet>383</span>    <span class="kw">pub fn </span>run&lt;I, F&gt;(<span class="self">self</span>, root: usize, edges: I, f: F)
+<span data-nosnippet>384</span>    <span class="kw">where
+<span data-nosnippet>385</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>386</span>        F: FnMut(usize, usize),
+<span data-nosnippet>387</span>    {
+<span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>389</span>        <span class="kw">for </span>(u, v) <span class="kw">in </span>edges {
+<span data-nosnippet>390</span>            acc.<span class="highlight">add_edge</span>(u, v);
+<span data-nosnippet>391</span>        }
+<span data-nosnippet>392</span>        <span class="kw">let </span><span class="kw-2">mut </span>order = ();
+<span data-nosnippet>393</span>        acc.finish::&lt;NoXorBottomUpOrder, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>order, f);
+<span data-nosnippet>394</span>    }
+<span data-nosnippet>395</span>}
+<span data-nosnippet>396</span>
+<span data-nosnippet>397</span><span class="kw">impl
+<span data-nosnippet>398</span>    </span>XorLinkedRootedTreeBuilder&lt;
+<span data-nosnippet>399</span>        NoParent,
+<span data-nosnippet>400</span>        NoDfsPreorder,
+<span data-nosnippet>401</span>        NoDepth,
+<span data-nosnippet>402</span>        NoParentEdge,
+<span data-nosnippet>403</span>        NoEdgeChild,
+<span data-nosnippet>404</span>        NoXorBottomUpOrder,
+<span data-nosnippet>405</span>        NoXorBottomUpOrder,
+<span data-nosnippet>406</span>        EIndexed,
+<span data-nosnippet>407</span>    &gt;
+<span data-nosnippet>408</span>{
+<span data-nosnippet>409</span>    <span class="kw">pub fn </span>run&lt;I, F&gt;(<span class="self">self</span>, root: usize, edges: I, f: F)
+<span data-nosnippet>410</span>    <span class="kw">where
+<span data-nosnippet>411</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>412</span>        F: FnMut(usize, usize, usize),
+<span data-nosnippet>413</span>    {
+<span data-nosnippet>414</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorEIndexedAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>415</span>        <span class="kw">for </span>(eid, (u, v)) <span class="kw">in </span>edges.into_iter().enumerate() {
+<span data-nosnippet>416</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>417</span>        }
+<span data-nosnippet>418</span>        <span class="kw">let </span><span class="kw-2">mut </span>order = ();
+<span data-nosnippet>419</span>        <span class="kw">let </span><span class="kw-2">mut </span>edge_child = ();
+<span data-nosnippet>420</span>        acc.finish::&lt;NoXorBottomUpOrder, NoEdgeChild, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>order, <span class="kw-2">&amp;mut </span>edge_child, f);
+<span data-nosnippet>421</span>    }
+<span data-nosnippet>422</span>}
+<span data-nosnippet>423</span>
+<span data-nosnippet>424</span><span class="kw">impl</span>&lt;P, D, H, PE, EC, O&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, O&gt;
+<span data-nosnippet>425</span><span class="kw">where
+<span data-nosnippet>426</span>    </span>P: ParentComponent,
+<span data-nosnippet>427</span>    D: DfsPreorderComponent,
+<span data-nosnippet>428</span>    H: DepthComponent,
+<span data-nosnippet>429</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>430</span>    EC: EdgeChildComponent,
+<span data-nosnippet>431</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>432</span>{
+<span data-nosnippet>433</span>    <span class="kw">pub fn </span>vertices_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>434</span>        <span class="self">self</span>.n
+<span data-nosnippet>435</span>    }
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>edges_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>437</span>        <span class="self">self</span>.n.saturating_sub(<span class="number">1</span>)
+<span data-nosnippet>438</span>    }
+<span data-nosnippet>439</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>440</span>        <span class="self">self</span>.root
+<span data-nosnippet>441</span>    }
+<span data-nosnippet>442</span>}
+<span data-nosnippet>443</span>
+<span data-nosnippet>444</span><span class="kw">impl</span>&lt;D, H, PE, EC, O&gt; XorLinkedRootedTree&lt;RecordParent, D, H, PE, EC, O&gt;
+<span data-nosnippet>445</span><span class="kw">where
+<span data-nosnippet>446</span>    </span>D: DfsPreorderComponent,
+<span data-nosnippet>447</span>    H: DepthComponent,
+<span data-nosnippet>448</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>449</span>    EC: EdgeChildComponent,
+<span data-nosnippet>450</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>451</span>{
+<span data-nosnippet>452</span>    <span class="kw">pub fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>453</span>        <span class="self">self</span>.parent[v]
+<span data-nosnippet>454</span>    }
+<span data-nosnippet>455</span>    <span class="kw">pub fn </span>parents(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>456</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.parent
+<span data-nosnippet>457</span>    }
+<span data-nosnippet>458</span>}
+<span data-nosnippet>459</span>
+<span data-nosnippet>460</span><span class="kw">impl</span>&lt;P, D, H, PE, EC&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, RecordXorBottomUpOrder&gt;
+<span data-nosnippet>461</span><span class="kw">where
+<span data-nosnippet>462</span>    </span>P: ParentComponent,
+<span data-nosnippet>463</span>    D: DfsPreorderComponent,
+<span data-nosnippet>464</span>    H: DepthComponent,
+<span data-nosnippet>465</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>466</span>    EC: EdgeChildComponent,
+<span data-nosnippet>467</span>{
+<span data-nosnippet>468</span>    <span class="doccomment">/// Returns the bottom-up XOR order, excluding the root.
+<span data-nosnippet>469</span>    </span><span class="kw">pub fn </span>xor_bottom_up_order(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>470</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.xor_order
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    <span class="doccomment">/// Returns the top-down XOR order, excluding the root.
+<span data-nosnippet>473</span>    </span><span class="kw">pub fn </span>xor_top_down_order(
+<span data-nosnippet>474</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>475</span>    ) -&gt; <span class="kw">impl </span>DoubleEndedIterator&lt;Item = usize&gt; + ExactSizeIterator + <span class="lifetime">'_ </span>{
+<span data-nosnippet>476</span>        <span class="self">self</span>.xor_order.iter().rev().copied()
+<span data-nosnippet>477</span>    }
+<span data-nosnippet>478</span>}
+<span data-nosnippet>479</span>
+<span data-nosnippet>480</span><span class="kw">impl</span>&lt;P, H, PE, EC, O&gt; XorLinkedRootedTree&lt;P, RecordDfsPreorder, H, PE, EC, O&gt;
+<span data-nosnippet>481</span><span class="kw">where
+<span data-nosnippet>482</span>    </span>P: ParentComponent,
+<span data-nosnippet>483</span>    H: DepthComponent,
+<span data-nosnippet>484</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>485</span>    EC: EdgeChildComponent,
+<span data-nosnippet>486</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>487</span>{
+<span data-nosnippet>488</span>    <span class="kw">pub fn </span>dfs_order(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>489</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.dfs.order
+<span data-nosnippet>490</span>    }
+<span data-nosnippet>491</span>    <span class="kw">pub fn </span>dfs_index(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>492</span>        <span class="self">self</span>.dfs.preorder_index[v]
+<span data-nosnippet>493</span>    }
+<span data-nosnippet>494</span>    <span class="kw">pub fn </span>subtree_size(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>495</span>        <span class="self">self</span>.dfs.subtree_end[v] - <span class="self">self</span>.dfs.preorder_index[v]
+<span data-nosnippet>496</span>    }
+<span data-nosnippet>497</span>    <span class="kw">pub fn </span>subtree_range(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; Range&lt;usize&gt; {
+<span data-nosnippet>498</span>        <span class="self">self</span>.dfs.preorder_index[v]..<span class="self">self</span>.dfs.subtree_end[v]
+<span data-nosnippet>499</span>    }
+<span data-nosnippet>500</span>    <span class="kw">pub fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; Children&lt;<span class="lifetime">'_</span>&gt; {
+<span data-nosnippet>501</span>        Children {
+<span data-nosnippet>502</span>            dfs: <span class="kw-2">&amp;</span><span class="self">self</span>.dfs,
+<span data-nosnippet>503</span>            next: <span class="self">self</span>.dfs.preorder_index[v] + <span class="number">1</span>,
+<span data-nosnippet>504</span>            end: <span class="self">self</span>.dfs.subtree_end[v],
+<span data-nosnippet>505</span>        }
+<span data-nosnippet>506</span>    }
+<span data-nosnippet>507</span>}
+<span data-nosnippet>508</span>
+<span data-nosnippet>509</span><span class="kw">impl</span>&lt;P, D, PE, EC, O&gt; XorLinkedRootedTree&lt;P, D, RecordDepth, PE, EC, O&gt;
+<span data-nosnippet>510</span><span class="kw">where
+<span data-nosnippet>511</span>    </span>P: ParentComponent,
+<span data-nosnippet>512</span>    D: DfsPreorderComponent,
+<span data-nosnippet>513</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>514</span>    EC: EdgeChildComponent,
+<span data-nosnippet>515</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>516</span>{
+<span data-nosnippet>517</span>    <span class="kw">pub fn </span>depth(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>518</span>        <span class="self">self</span>.depth[v]
+<span data-nosnippet>519</span>    }
+<span data-nosnippet>520</span>    <span class="kw">pub fn </span>depths(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>521</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.depth
+<span data-nosnippet>522</span>    }
+<span data-nosnippet>523</span>}
+<span data-nosnippet>524</span>
+<span data-nosnippet>525</span><span class="kw">impl</span>&lt;P, D, H, EC, O&gt; XorLinkedRootedTree&lt;P, D, H, RecordParentEdge, EC, O&gt;
+<span data-nosnippet>526</span><span class="kw">where
+<span data-nosnippet>527</span>    </span>P: ParentComponent,
+<span data-nosnippet>528</span>    D: DfsPreorderComponent,
+<span data-nosnippet>529</span>    H: DepthComponent,
+<span data-nosnippet>530</span>    EC: EdgeChildComponent,
+<span data-nosnippet>531</span>    <a href="../algebra/action.rs.html#20">O</a>: XorBottomUpOrderComponent,
+<span data-nosnippet>532</span>{
+<span data-nosnippet>533</span>    <span class="kw">pub fn </span>parent_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>534</span>        <span class="self">self</span>.parent_edge[v]
+<span data-nosnippet>535</span>    }
+<span data-nosnippet>536</span>    <span class="kw">pub fn </span>parent_edges(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>537</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.parent_edge
+<span data-nosnippet>538</span>    }
+<span data-nosnippet>539</span>}
+<span data-nosnippet>540</span>
+<span data-nosnippet>541</span><span class="kw">impl</span>&lt;P, D, H, PE, O&gt; XorLinkedRootedTree&lt;P, D, H, PE, RecordEdgeChild, O&gt;
+<span data-nosnippet>542</span><span class="kw">where
+<span data-nosnippet>543</span>    </span>P: ParentComponent,
+<span data-nosnippet>544</span>    D: DfsPreorderComponent,
+<span data-nosnippet>545</span>    H: DepthComponent,
+<span data-nosnippet>546</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>547</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>548</span>{
+<span data-nosnippet>549</span>    <span class="kw">pub fn </span>edge_child(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: usize) -&gt; usize {
+<span data-nosnippet>550</span>        <span class="self">self</span>.edge_child[eid]
+<span data-nosnippet>551</span>    }
+<span data-nosnippet>552</span>    <span class="kw">pub fn </span>edge_children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>553</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.edge_child
+<span data-nosnippet>554</span>    }
+<span data-nosnippet>555</span>}
+<span data-nosnippet>556</span>
+<span data-nosnippet>557</span><span class="kw">pub struct </span>Children&lt;<span class="lifetime">'a</span>&gt; {
+<span data-nosnippet>558</span>    dfs: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>DfsPreorder,
+<span data-nosnippet>559</span>    next: usize,
+<span data-nosnippet>560</span>    end: usize,
+<span data-nosnippet>561</span>}
+<span data-nosnippet>562</span>
+<span data-nosnippet>563</span><span class="kw">impl </span>Iterator <span class="kw">for </span>Children&lt;<span class="lifetime">'_</span>&gt; {
+<span data-nosnippet>564</span>    <span class="kw">type </span>Item = usize;
+<span data-nosnippet>565</span>    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>566</span>        <span class="kw">if </span><span class="self">self</span>.next == <span class="self">self</span>.end {
+<span data-nosnippet>567</span>            <span class="prelude-val">None
+<span data-nosnippet>568</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>569</span>            <span class="kw">let </span>v = <span class="self">self</span>.dfs.order[<span class="self">self</span>.next];
+<span data-nosnippet>570</span>            <span class="self">self</span>.next = <span class="self">self</span>.dfs.subtree_end[v];
+<span data-nosnippet>571</span>            <span class="prelude-val">Some</span>(v)
+<span data-nosnippet>572</span>        }
+<span data-nosnippet>573</span>    }
+<span data-nosnippet>574</span>}
+<span data-nosnippet>575</span>
+<span data-nosnippet>576</span><span class="kw">pub struct </span>XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>577</span>    <a href="../algebra/action.rs.html#70">U</a>,
+<span data-nosnippet>578</span>    T = (),
+<span data-nosnippet>579</span>    P = NoParent,
+<span data-nosnippet>580</span>    D = NoDfsPreorder,
+<span data-nosnippet>581</span>    H = NoDepth,
+<span data-nosnippet>582</span>    PE = NoParentEdge,
+<span data-nosnippet>583</span>    EC = NoEdgeChild,
+<span data-nosnippet>584</span>    X = NoXorBottomUpOrder,
+<span data-nosnippet>585</span>    B = NoXorBottomUpOrder,
+<span data-nosnippet>586</span>    E = NoEIndexed,
+<span data-nosnippet>587</span>&gt; <span class="kw">where
+<span data-nosnippet>588</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>589</span>    T: IterScan,
+<span data-nosnippet>590</span>{
+<span data-nosnippet>591</span>    n: usize,
+<span data-nosnippet>592</span>    root: usize,
+<span data-nosnippet>593</span>    _marker: ScannerMarker&lt;U, T, P, D, H, PE, EC, X, B, E&gt;,
+<span data-nosnippet>594</span>}
+<span data-nosnippet>595</span>
+<span data-nosnippet>596</span><span class="kw">impl</span>&lt;U, T&gt; XorLinkedRootedTreeScanner&lt;U, T&gt;
+<span data-nosnippet>597</span><span class="kw">where
+<span data-nosnippet>598</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>599</span>    T: IterScan,
+<span data-nosnippet>600</span>{
+<span data-nosnippet>601</span>    <span class="kw">pub fn </span>new(n: usize, root: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>602</span>        <span class="self">Self </span>{
+<span data-nosnippet>603</span>            n,
+<span data-nosnippet>604</span>            root,
+<span data-nosnippet>605</span>            _marker: PhantomData,
+<span data-nosnippet>606</span>        }
+<span data-nosnippet>607</span>    }
+<span data-nosnippet>608</span>}
+<span data-nosnippet>609</span>
+<span data-nosnippet>610</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B, E&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, E&gt;
+<span data-nosnippet>611</span><span class="kw">where
+<span data-nosnippet>612</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>613</span>    T: IterScan,
+<span data-nosnippet>614</span>{
+<span data-nosnippet>615</span>    <span class="kw">pub fn </span>with_parent(
+<span data-nosnippet>616</span>        <span class="self">self</span>,
+<span data-nosnippet>617</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, RecordParent, D, H, PE, EC, X, B, E&gt; {
+<span data-nosnippet>618</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>619</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>620</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>621</span>            _marker: PhantomData,
+<span data-nosnippet>622</span>        }
+<span data-nosnippet>623</span>    }
+<span data-nosnippet>624</span>    <span class="kw">pub fn </span>with_dfs_preorder(
+<span data-nosnippet>625</span>        <span class="self">self</span>,
+<span data-nosnippet>626</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>627</span>        U,
+<span data-nosnippet>628</span>        T,
+<span data-nosnippet>629</span>        P,
+<span data-nosnippet>630</span>        RecordDfsPreorder,
+<span data-nosnippet>631</span>        H,
+<span data-nosnippet>632</span>        PE,
+<span data-nosnippet>633</span>        EC,
+<span data-nosnippet>634</span>        X,
+<span data-nosnippet>635</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>636</span>        E,
+<span data-nosnippet>637</span>    &gt; {
+<span data-nosnippet>638</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>639</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>640</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>641</span>            _marker: PhantomData,
+<span data-nosnippet>642</span>        }
+<span data-nosnippet>643</span>    }
+<span data-nosnippet>644</span>    <span class="kw">pub fn </span>with_depth(
+<span data-nosnippet>645</span>        <span class="self">self</span>,
+<span data-nosnippet>646</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, RecordDepth, PE, EC, X, RecordXorBottomUpOrder, E&gt;
+<span data-nosnippet>647</span>    {
+<span data-nosnippet>648</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>649</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>650</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>651</span>            _marker: PhantomData,
+<span data-nosnippet>652</span>        }
+<span data-nosnippet>653</span>    }
+<span data-nosnippet>654</span>    <span class="kw">pub fn </span>with_xor_bottom_up_order(
+<span data-nosnippet>655</span>        <span class="self">self</span>,
+<span data-nosnippet>656</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>657</span>        U,
+<span data-nosnippet>658</span>        T,
+<span data-nosnippet>659</span>        P,
+<span data-nosnippet>660</span>        D,
+<span data-nosnippet>661</span>        H,
+<span data-nosnippet>662</span>        PE,
+<span data-nosnippet>663</span>        EC,
+<span data-nosnippet>664</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>665</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>666</span>        E,
+<span data-nosnippet>667</span>    &gt; {
+<span data-nosnippet>668</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>669</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>670</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>671</span>            _marker: PhantomData,
+<span data-nosnippet>672</span>        }
+<span data-nosnippet>673</span>    }
+<span data-nosnippet>674</span>}
+<span data-nosnippet>675</span>
+<span data-nosnippet>676</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt;
+<span data-nosnippet>677</span>    XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>678</span><span class="kw">where
+<span data-nosnippet>679</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>680</span>    T: IterScan,
+<span data-nosnippet>681</span>{
+<span data-nosnippet>682</span>    <span class="kw">pub fn </span>with_eindexed(
+<span data-nosnippet>683</span>        <span class="self">self</span>,
+<span data-nosnippet>684</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, EIndexed&gt; {
+<span data-nosnippet>685</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>686</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>687</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>688</span>            _marker: PhantomData,
+<span data-nosnippet>689</span>        }
+<span data-nosnippet>690</span>    }
+<span data-nosnippet>691</span>}
+<span data-nosnippet>692</span>
+<span data-nosnippet>693</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, EIndexed&gt;
+<span data-nosnippet>694</span><span class="kw">where
+<span data-nosnippet>695</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>696</span>    T: IterScan,
+<span data-nosnippet>697</span>{
+<span data-nosnippet>698</span>    <span class="kw">pub fn </span>with_parent_edge(
+<span data-nosnippet>699</span>        <span class="self">self</span>,
+<span data-nosnippet>700</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, RecordParentEdge, EC, X, B, EIndexed&gt; {
+<span data-nosnippet>701</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>702</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>703</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>704</span>            _marker: PhantomData,
+<span data-nosnippet>705</span>        }
+<span data-nosnippet>706</span>    }
+<span data-nosnippet>707</span>    <span class="kw">pub fn </span>with_edge_child(
+<span data-nosnippet>708</span>        <span class="self">self</span>,
+<span data-nosnippet>709</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, RecordEdgeChild, X, B, EIndexed&gt; {
+<span data-nosnippet>710</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>711</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>712</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>713</span>            _marker: PhantomData,
+<span data-nosnippet>714</span>        }
+<span data-nosnippet>715</span>    }
+<span data-nosnippet>716</span>}
+<span data-nosnippet>717</span>
+<span data-nosnippet>718</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt; MarkedIterScan
+<span data-nosnippet>719</span>    <span class="kw">for </span>XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>720</span><span class="kw">where
+<span data-nosnippet>721</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>722</span>    T: IterScan,
+<span data-nosnippet>723</span>    P: ParentComponent,
+<span data-nosnippet>724</span>    D: DfsPreorderComponent,
+<span data-nosnippet>725</span>    H: DepthComponent,
+<span data-nosnippet>726</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>727</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>728</span>{
+<span data-nosnippet>729</span>    <span class="kw">type </span>Output = (
+<span data-nosnippet>730</span>        XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;,
+<span data-nosnippet>731</span>        Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
+<span data-nosnippet>732</span>    );
+<span data-nosnippet>733</span>
+<span data-nosnippet>734</span>    <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+<span data-nosnippet>735</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>736</span>        <span class="kw">let </span><span class="kw-2">mut </span>weights = Vec::with_capacity(<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>));
+<span data-nosnippet>737</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
+<span data-nosnippet>738</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>739</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>740</span>            acc.<span class="highlight">add_edge</span>(u, v);
+<span data-nosnippet>741</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
+<span data-nosnippet>742</span>        }
+<span data-nosnippet>743</span>        <span class="prelude-val">Some</span>((
+<span data-nosnippet>744</span>            finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.n, <span class="self">self</span>.root, acc),
+<span data-nosnippet>745</span>            weights,
+<span data-nosnippet>746</span>        ))
+<span data-nosnippet>747</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.finish" class="method"><a class="src rightside" href="../../../src/competitive/tree/xor_linked_tree.rs.html#866-886">Source</a><h4 class="code-header">fn <a href="#method.finish" class="fn">finish</a>&lt;O, F&gt;(self, root: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, xor_order: &amp;mut O::<a class="associatedtype" href="../trait.XorBottomUpOrderBuffer.html#associatedtype.Data" title="type competitive::tree::XorBottomUpOrderBuffer::Data">Data</a>, f: F) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;<div class="where">where
+    O: <a class="trait" href="../trait.XorBottomUpOrderBuffer.html" title="trait competitive::tree::XorBottomUpOrderBuffer">XorBottomUpOrderBuffer</a>,
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#393&#34;,&#34;line 393&#34;],[[414,414],&#34;../../../src/competitive/tree/xor_linked_tree.rs.html#797&#34;,&#34;line 797&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/xor_linked_tree.rs (<a href="../../../src/competitive/tree/xor_linked_tree.rs.html#393">line 393</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>383</span>    <span class="kw">pub fn </span>run&lt;I, F&gt;(<span class="self">self</span>, root: usize, edges: I, f: F)
+<span data-nosnippet>384</span>    <span class="kw">where
+<span data-nosnippet>385</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>386</span>        F: FnMut(usize, usize),
+<span data-nosnippet>387</span>    {
+<span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>389</span>        <span class="kw">for </span>(u, v) <span class="kw">in </span>edges {
+<span data-nosnippet>390</span>            acc.add_edge(u, v);
+<span data-nosnippet>391</span>        }
+<span data-nosnippet>392</span>        <span class="kw">let </span><span class="kw-2">mut </span>order = ();
+<span data-nosnippet>393</span>        acc.<span class="highlight focus">finish</span>::&lt;NoXorBottomUpOrder, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>order, f);
+<span data-nosnippet>394</span>    }
+<span data-nosnippet>395</span>}
+<span data-nosnippet>396</span>
+<span data-nosnippet>397</span><span class="kw">impl
+<span data-nosnippet>398</span>    </span>XorLinkedRootedTreeBuilder&lt;
+<span data-nosnippet>399</span>        NoParent,
+<span data-nosnippet>400</span>        NoDfsPreorder,
+<span data-nosnippet>401</span>        NoDepth,
+<span data-nosnippet>402</span>        NoParentEdge,
+<span data-nosnippet>403</span>        NoEdgeChild,
+<span data-nosnippet>404</span>        NoXorBottomUpOrder,
+<span data-nosnippet>405</span>        NoXorBottomUpOrder,
+<span data-nosnippet>406</span>        EIndexed,
+<span data-nosnippet>407</span>    &gt;
+<span data-nosnippet>408</span>{
+<span data-nosnippet>409</span>    <span class="kw">pub fn </span>run&lt;I, F&gt;(<span class="self">self</span>, root: usize, edges: I, f: F)
+<span data-nosnippet>410</span>    <span class="kw">where
+<span data-nosnippet>411</span>        </span>I: IntoIterator&lt;Item = (usize, usize)&gt;,
+<span data-nosnippet>412</span>        F: FnMut(usize, usize, usize),
+<span data-nosnippet>413</span>    {
+<span data-nosnippet>414</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorEIndexedAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>415</span>        <span class="kw">for </span>(eid, (u, v)) <span class="kw">in </span>edges.into_iter().enumerate() {
+<span data-nosnippet>416</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>417</span>        }
+<span data-nosnippet>418</span>        <span class="kw">let </span><span class="kw-2">mut </span>order = ();
+<span data-nosnippet>419</span>        <span class="kw">let </span><span class="kw-2">mut </span>edge_child = ();
+<span data-nosnippet>420</span>        acc.finish::&lt;NoXorBottomUpOrder, NoEdgeChild, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>order, <span class="kw-2">&amp;mut </span>edge_child, f);
+<span data-nosnippet>421</span>    }
+<span data-nosnippet>422</span>}
+<span data-nosnippet>423</span>
+<span data-nosnippet>424</span><span class="kw">impl</span>&lt;P, D, H, PE, EC, O&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, O&gt;
+<span data-nosnippet>425</span><span class="kw">where
+<span data-nosnippet>426</span>    </span>P: ParentComponent,
+<span data-nosnippet>427</span>    D: DfsPreorderComponent,
+<span data-nosnippet>428</span>    H: DepthComponent,
+<span data-nosnippet>429</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>430</span>    EC: EdgeChildComponent,
+<span data-nosnippet>431</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>432</span>{
+<span data-nosnippet>433</span>    <span class="kw">pub fn </span>vertices_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>434</span>        <span class="self">self</span>.n
+<span data-nosnippet>435</span>    }
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>edges_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>437</span>        <span class="self">self</span>.n.saturating_sub(<span class="number">1</span>)
+<span data-nosnippet>438</span>    }
+<span data-nosnippet>439</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>440</span>        <span class="self">self</span>.root
+<span data-nosnippet>441</span>    }
+<span data-nosnippet>442</span>}
+<span data-nosnippet>443</span>
+<span data-nosnippet>444</span><span class="kw">impl</span>&lt;D, H, PE, EC, O&gt; XorLinkedRootedTree&lt;RecordParent, D, H, PE, EC, O&gt;
+<span data-nosnippet>445</span><span class="kw">where
+<span data-nosnippet>446</span>    </span>D: DfsPreorderComponent,
+<span data-nosnippet>447</span>    H: DepthComponent,
+<span data-nosnippet>448</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>449</span>    EC: EdgeChildComponent,
+<span data-nosnippet>450</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>451</span>{
+<span data-nosnippet>452</span>    <span class="kw">pub fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>453</span>        <span class="self">self</span>.parent[v]
+<span data-nosnippet>454</span>    }
+<span data-nosnippet>455</span>    <span class="kw">pub fn </span>parents(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>456</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.parent
+<span data-nosnippet>457</span>    }
+<span data-nosnippet>458</span>}
+<span data-nosnippet>459</span>
+<span data-nosnippet>460</span><span class="kw">impl</span>&lt;P, D, H, PE, EC&gt; XorLinkedRootedTree&lt;P, D, H, PE, EC, RecordXorBottomUpOrder&gt;
+<span data-nosnippet>461</span><span class="kw">where
+<span data-nosnippet>462</span>    </span>P: ParentComponent,
+<span data-nosnippet>463</span>    D: DfsPreorderComponent,
+<span data-nosnippet>464</span>    H: DepthComponent,
+<span data-nosnippet>465</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>466</span>    EC: EdgeChildComponent,
+<span data-nosnippet>467</span>{
+<span data-nosnippet>468</span>    <span class="doccomment">/// Returns the bottom-up XOR order, excluding the root.
+<span data-nosnippet>469</span>    </span><span class="kw">pub fn </span>xor_bottom_up_order(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>470</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.xor_order
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    <span class="doccomment">/// Returns the top-down XOR order, excluding the root.
+<span data-nosnippet>473</span>    </span><span class="kw">pub fn </span>xor_top_down_order(
+<span data-nosnippet>474</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>475</span>    ) -&gt; <span class="kw">impl </span>DoubleEndedIterator&lt;Item = usize&gt; + ExactSizeIterator + <span class="lifetime">'_ </span>{
+<span data-nosnippet>476</span>        <span class="self">self</span>.xor_order.iter().rev().copied()
+<span data-nosnippet>477</span>    }
+<span data-nosnippet>478</span>}
+<span data-nosnippet>479</span>
+<span data-nosnippet>480</span><span class="kw">impl</span>&lt;P, H, PE, EC, O&gt; XorLinkedRootedTree&lt;P, RecordDfsPreorder, H, PE, EC, O&gt;
+<span data-nosnippet>481</span><span class="kw">where
+<span data-nosnippet>482</span>    </span>P: ParentComponent,
+<span data-nosnippet>483</span>    H: DepthComponent,
+<span data-nosnippet>484</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>485</span>    EC: EdgeChildComponent,
+<span data-nosnippet>486</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>487</span>{
+<span data-nosnippet>488</span>    <span class="kw">pub fn </span>dfs_order(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>489</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.dfs.order
+<span data-nosnippet>490</span>    }
+<span data-nosnippet>491</span>    <span class="kw">pub fn </span>dfs_index(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>492</span>        <span class="self">self</span>.dfs.preorder_index[v]
+<span data-nosnippet>493</span>    }
+<span data-nosnippet>494</span>    <span class="kw">pub fn </span>subtree_size(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>495</span>        <span class="self">self</span>.dfs.subtree_end[v] - <span class="self">self</span>.dfs.preorder_index[v]
+<span data-nosnippet>496</span>    }
+<span data-nosnippet>497</span>    <span class="kw">pub fn </span>subtree_range(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; Range&lt;usize&gt; {
+<span data-nosnippet>498</span>        <span class="self">self</span>.dfs.preorder_index[v]..<span class="self">self</span>.dfs.subtree_end[v]
+<span data-nosnippet>499</span>    }
+<span data-nosnippet>500</span>    <span class="kw">pub fn </span>children(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; Children&lt;<span class="lifetime">'_</span>&gt; {
+<span data-nosnippet>501</span>        Children {
+<span data-nosnippet>502</span>            dfs: <span class="kw-2">&amp;</span><span class="self">self</span>.dfs,
+<span data-nosnippet>503</span>            next: <span class="self">self</span>.dfs.preorder_index[v] + <span class="number">1</span>,
+<span data-nosnippet>504</span>            end: <span class="self">self</span>.dfs.subtree_end[v],
+<span data-nosnippet>505</span>        }
+<span data-nosnippet>506</span>    }
+<span data-nosnippet>507</span>}
+<span data-nosnippet>508</span>
+<span data-nosnippet>509</span><span class="kw">impl</span>&lt;P, D, PE, EC, O&gt; XorLinkedRootedTree&lt;P, D, RecordDepth, PE, EC, O&gt;
+<span data-nosnippet>510</span><span class="kw">where
+<span data-nosnippet>511</span>    </span>P: ParentComponent,
+<span data-nosnippet>512</span>    D: DfsPreorderComponent,
+<span data-nosnippet>513</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>514</span>    EC: EdgeChildComponent,
+<span data-nosnippet>515</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>516</span>{
+<span data-nosnippet>517</span>    <span class="kw">pub fn </span>depth(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>518</span>        <span class="self">self</span>.depth[v]
+<span data-nosnippet>519</span>    }
+<span data-nosnippet>520</span>    <span class="kw">pub fn </span>depths(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>521</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.depth
+<span data-nosnippet>522</span>    }
+<span data-nosnippet>523</span>}
+<span data-nosnippet>524</span>
+<span data-nosnippet>525</span><span class="kw">impl</span>&lt;P, D, H, EC, O&gt; XorLinkedRootedTree&lt;P, D, H, RecordParentEdge, EC, O&gt;
+<span data-nosnippet>526</span><span class="kw">where
+<span data-nosnippet>527</span>    </span>P: ParentComponent,
+<span data-nosnippet>528</span>    D: DfsPreorderComponent,
+<span data-nosnippet>529</span>    H: DepthComponent,
+<span data-nosnippet>530</span>    EC: EdgeChildComponent,
+<span data-nosnippet>531</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>532</span>{
+<span data-nosnippet>533</span>    <span class="kw">pub fn </span>parent_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, v: usize) -&gt; usize {
+<span data-nosnippet>534</span>        <span class="self">self</span>.parent_edge[v]
+<span data-nosnippet>535</span>    }
+<span data-nosnippet>536</span>    <span class="kw">pub fn </span>parent_edges(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>537</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.parent_edge
+<span data-nosnippet>538</span>    }
+<span data-nosnippet>539</span>}
+<span data-nosnippet>540</span>
+<span data-nosnippet>541</span><span class="kw">impl</span>&lt;P, D, H, PE, O&gt; XorLinkedRootedTree&lt;P, D, H, PE, RecordEdgeChild, O&gt;
+<span data-nosnippet>542</span><span class="kw">where
+<span data-nosnippet>543</span>    </span>P: ParentComponent,
+<span data-nosnippet>544</span>    D: DfsPreorderComponent,
+<span data-nosnippet>545</span>    H: DepthComponent,
+<span data-nosnippet>546</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>547</span>    O: XorBottomUpOrderComponent,
+<span data-nosnippet>548</span>{
+<span data-nosnippet>549</span>    <span class="kw">pub fn </span>edge_child(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: usize) -&gt; usize {
+<span data-nosnippet>550</span>        <span class="self">self</span>.edge_child[eid]
+<span data-nosnippet>551</span>    }
+<span data-nosnippet>552</span>    <span class="kw">pub fn </span>edge_children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+<span data-nosnippet>553</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.edge_child
+<span data-nosnippet>554</span>    }
+<span data-nosnippet>555</span>}
+<span data-nosnippet>556</span>
+<span data-nosnippet>557</span><span class="kw">pub struct </span>Children&lt;<span class="lifetime">'a</span>&gt; {
+<span data-nosnippet>558</span>    dfs: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>DfsPreorder,
+<span data-nosnippet>559</span>    next: usize,
+<span data-nosnippet>560</span>    end: usize,
+<span data-nosnippet>561</span>}
+<span data-nosnippet>562</span>
+<span data-nosnippet>563</span><span class="kw">impl </span>Iterator <span class="kw">for </span>Children&lt;<span class="lifetime">'_</span>&gt; {
+<span data-nosnippet>564</span>    <span class="kw">type </span>Item = usize;
+<span data-nosnippet>565</span>    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>566</span>        <span class="kw">if </span><span class="self">self</span>.next == <span class="self">self</span>.end {
+<span data-nosnippet>567</span>            <span class="prelude-val">None
+<span data-nosnippet>568</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>569</span>            <span class="kw">let </span>v = <span class="self">self</span>.dfs.order[<span class="self">self</span>.next];
+<span data-nosnippet>570</span>            <span class="self">self</span>.next = <span class="self">self</span>.dfs.subtree_end[v];
+<span data-nosnippet>571</span>            <span class="prelude-val">Some</span>(v)
+<span data-nosnippet>572</span>        }
+<span data-nosnippet>573</span>    }
+<span data-nosnippet>574</span>}
+<span data-nosnippet>575</span>
+<span data-nosnippet>576</span><span class="kw">pub struct </span>XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>577</span>    U,
+<span data-nosnippet>578</span>    T = (),
+<span data-nosnippet>579</span>    P = NoParent,
+<span data-nosnippet>580</span>    D = NoDfsPreorder,
+<span data-nosnippet>581</span>    H = NoDepth,
+<span data-nosnippet>582</span>    PE = NoParentEdge,
+<span data-nosnippet>583</span>    EC = NoEdgeChild,
+<span data-nosnippet>584</span>    <a href="../algebra/action.rs.html#20">X</a> = NoXorBottomUpOrder,
+<span data-nosnippet>585</span>    B = NoXorBottomUpOrder,
+<span data-nosnippet>586</span>    E = NoEIndexed,
+<span data-nosnippet>587</span>&gt; <span class="kw">where
+<span data-nosnippet>588</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>589</span>    T: IterScan,
+<span data-nosnippet>590</span>{
+<span data-nosnippet>591</span>    n: usize,
+<span data-nosnippet>592</span>    root: usize,
+<span data-nosnippet>593</span>    _marker: ScannerMarker&lt;U, T, P, D, H, PE, EC, X, B, E&gt;,
+<span data-nosnippet>594</span>}
+<span data-nosnippet>595</span>
+<span data-nosnippet>596</span><span class="kw">impl</span>&lt;U, T&gt; XorLinkedRootedTreeScanner&lt;U, T&gt;
+<span data-nosnippet>597</span><span class="kw">where
+<span data-nosnippet>598</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>599</span>    T: IterScan,
+<span data-nosnippet>600</span>{
+<span data-nosnippet>601</span>    <span class="kw">pub fn </span>new(n: usize, root: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>602</span>        <span class="self">Self </span>{
+<span data-nosnippet>603</span>            n,
+<span data-nosnippet>604</span>            root,
+<span data-nosnippet>605</span>            _marker: PhantomData,
+<span data-nosnippet>606</span>        }
+<span data-nosnippet>607</span>    }
+<span data-nosnippet>608</span>}
+<span data-nosnippet>609</span>
+<span data-nosnippet>610</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B, E&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, E&gt;
+<span data-nosnippet>611</span><span class="kw">where
+<span data-nosnippet>612</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>613</span>    T: IterScan,
+<span data-nosnippet>614</span>{
+<span data-nosnippet>615</span>    <span class="kw">pub fn </span>with_parent(
+<span data-nosnippet>616</span>        <span class="self">self</span>,
+<span data-nosnippet>617</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, RecordParent, D, H, PE, EC, X, B, E&gt; {
+<span data-nosnippet>618</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>619</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>620</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>621</span>            _marker: PhantomData,
+<span data-nosnippet>622</span>        }
+<span data-nosnippet>623</span>    }
+<span data-nosnippet>624</span>    <span class="kw">pub fn </span>with_dfs_preorder(
+<span data-nosnippet>625</span>        <span class="self">self</span>,
+<span data-nosnippet>626</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>627</span>        U,
+<span data-nosnippet>628</span>        T,
+<span data-nosnippet>629</span>        P,
+<span data-nosnippet>630</span>        RecordDfsPreorder,
+<span data-nosnippet>631</span>        H,
+<span data-nosnippet>632</span>        PE,
+<span data-nosnippet>633</span>        EC,
+<span data-nosnippet>634</span>        X,
+<span data-nosnippet>635</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>636</span>        E,
+<span data-nosnippet>637</span>    &gt; {
+<span data-nosnippet>638</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>639</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>640</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>641</span>            _marker: PhantomData,
+<span data-nosnippet>642</span>        }
+<span data-nosnippet>643</span>    }
+<span data-nosnippet>644</span>    <span class="kw">pub fn </span>with_depth(
+<span data-nosnippet>645</span>        <span class="self">self</span>,
+<span data-nosnippet>646</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, RecordDepth, PE, EC, X, RecordXorBottomUpOrder, E&gt;
+<span data-nosnippet>647</span>    {
+<span data-nosnippet>648</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>649</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>650</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>651</span>            _marker: PhantomData,
+<span data-nosnippet>652</span>        }
+<span data-nosnippet>653</span>    }
+<span data-nosnippet>654</span>    <span class="kw">pub fn </span>with_xor_bottom_up_order(
+<span data-nosnippet>655</span>        <span class="self">self</span>,
+<span data-nosnippet>656</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;
+<span data-nosnippet>657</span>        U,
+<span data-nosnippet>658</span>        T,
+<span data-nosnippet>659</span>        P,
+<span data-nosnippet>660</span>        D,
+<span data-nosnippet>661</span>        H,
+<span data-nosnippet>662</span>        PE,
+<span data-nosnippet>663</span>        EC,
+<span data-nosnippet>664</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>665</span>        RecordXorBottomUpOrder,
+<span data-nosnippet>666</span>        E,
+<span data-nosnippet>667</span>    &gt; {
+<span data-nosnippet>668</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>669</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>670</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>671</span>            _marker: PhantomData,
+<span data-nosnippet>672</span>        }
+<span data-nosnippet>673</span>    }
+<span data-nosnippet>674</span>}
+<span data-nosnippet>675</span>
+<span data-nosnippet>676</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt;
+<span data-nosnippet>677</span>    XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>678</span><span class="kw">where
+<span data-nosnippet>679</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>680</span>    T: IterScan,
+<span data-nosnippet>681</span>{
+<span data-nosnippet>682</span>    <span class="kw">pub fn </span>with_eindexed(
+<span data-nosnippet>683</span>        <span class="self">self</span>,
+<span data-nosnippet>684</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, EIndexed&gt; {
+<span data-nosnippet>685</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>686</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>687</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>688</span>            _marker: PhantomData,
+<span data-nosnippet>689</span>        }
+<span data-nosnippet>690</span>    }
+<span data-nosnippet>691</span>}
+<span data-nosnippet>692</span>
+<span data-nosnippet>693</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, EIndexed&gt;
+<span data-nosnippet>694</span><span class="kw">where
+<span data-nosnippet>695</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>696</span>    T: IterScan,
+<span data-nosnippet>697</span>{
+<span data-nosnippet>698</span>    <span class="kw">pub fn </span>with_parent_edge(
+<span data-nosnippet>699</span>        <span class="self">self</span>,
+<span data-nosnippet>700</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, RecordParentEdge, EC, X, B, EIndexed&gt; {
+<span data-nosnippet>701</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>702</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>703</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>704</span>            _marker: PhantomData,
+<span data-nosnippet>705</span>        }
+<span data-nosnippet>706</span>    }
+<span data-nosnippet>707</span>    <span class="kw">pub fn </span>with_edge_child(
+<span data-nosnippet>708</span>        <span class="self">self</span>,
+<span data-nosnippet>709</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, RecordEdgeChild, X, B, EIndexed&gt; {
+<span data-nosnippet>710</span>        XorLinkedRootedTreeScanner {
+<span data-nosnippet>711</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>712</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>713</span>            _marker: PhantomData,
+<span data-nosnippet>714</span>        }
+<span data-nosnippet>715</span>    }
+<span data-nosnippet>716</span>}
+<span data-nosnippet>717</span>
+<span data-nosnippet>718</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt; MarkedIterScan
+<span data-nosnippet>719</span>    <span class="kw">for </span>XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>720</span><span class="kw">where
+<span data-nosnippet>721</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>722</span>    T: IterScan,
+<span data-nosnippet>723</span>    P: ParentComponent,
+<span data-nosnippet>724</span>    D: DfsPreorderComponent,
+<span data-nosnippet>725</span>    H: DepthComponent,
+<span data-nosnippet>726</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>727</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>728</span>{
+<span data-nosnippet>729</span>    <span class="kw">type </span>Output = (
+<span data-nosnippet>730</span>        XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;,
+<span data-nosnippet>731</span>        Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
+<span data-nosnippet>732</span>    );
+<span data-nosnippet>733</span>
+<span data-nosnippet>734</span>    <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+<span data-nosnippet>735</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
+<span data-nosnippet>736</span>        <span class="kw">let </span><span class="kw-2">mut </span>weights = Vec::with_capacity(<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>));
+<span data-nosnippet>737</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
+<span data-nosnippet>738</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>739</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>740</span>            acc.add_edge(u, v);
+<span data-nosnippet>741</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
+<span data-nosnippet>742</span>        }
+<span data-nosnippet>743</span>        <span class="prelude-val">Some</span>((
+<span data-nosnippet>744</span>            finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.<a href="../algebra/lazy_map.rs.html#105">n</a>, <span class="self">self</span>.root, acc),
+<span data-nosnippet>745</span>            weights,
+<span data-nosnippet>746</span>        ))
+<span data-nosnippet>747</span>    }
+<span data-nosnippet>748</span>}
+<span data-nosnippet>749</span>
+<span data-nosnippet>750</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B&gt; MarkedIterScan
+<span data-nosnippet>751</span>    <span class="kw">for </span>XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, EIndexed&gt;
+<span data-nosnippet>752</span><span class="kw">where
+<span data-nosnippet>753</span>    </span>U: IterScan&lt;Output = usize&gt;,
+<span data-nosnippet>754</span>    T: IterScan,
+<span data-nosnippet>755</span>    P: ParentComponent,
+<span data-nosnippet>756</span>    D: DfsPreorderComponent,
+<span data-nosnippet>757</span>    H: DepthComponent,
+<span data-nosnippet>758</span>    PE: ParentEdgeComponent,
+<span data-nosnippet>759</span>    EC: EdgeChildComponent,
+<span data-nosnippet>760</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>761</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>762</span>{
+<span data-nosnippet>763</span>    <span class="kw">type </span>Output = (
+<span data-nosnippet>764</span>        XorLinkedRootedTree&lt;P, D, H, PE, EC, X&gt;,
+<span data-nosnippet>765</span>        Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
+<span data-nosnippet>766</span>    );
+<span data-nosnippet>767</span>
+<span data-nosnippet>768</span>    <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+<span data-nosnippet>769</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorEIndexedAccumulator::new(<span class="self">self</span>.<a href="../algebra/lazy_map.rs.html#126">n</a>);
+<span data-nosnippet>770</span>        <span class="kw">let </span><span class="kw-2">mut </span>weights = Vec::with_capacity(<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>));
+<span data-nosnippet>771</span>        <span class="kw">for </span>eid <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
+<span data-nosnippet>772</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>773</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
+<span data-nosnippet>774</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>775</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
+<span data-nosnippet>776</span>        }
+<span data-nosnippet>777</span>        <span class="prelude-val">Some</span>((
+<span data-nosnippet>778</span>            finish_eindexed_accumulator::&lt;P, D, H, PE, EC, X, B&gt;(<span class="self">self</span>.n, <span class="self">self</span>.root, acc),
+<span data-nosnippet>779</span>            weights,
+<span data-nosnippet>780</span>        ))
+<span data-nosnippet>781</span>    }
+<span data-nosnippet>782</span>}
+<span data-nosnippet>783</span>
+<span data-nosnippet>784</span><span class="kw">fn </span>finish_accumulator&lt;P, D, H, X, B&gt;(
+<span data-nosnippet>785</span>    n: usize,
+<span data-nosnippet>786</span>    root: usize,
+<span data-nosnippet>787</span>    acc: XorAccumulator,
+<span data-nosnippet>788</span>) -&gt; XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;
+<span data-nosnippet>789</span><span class="kw">where
+<span data-nosnippet>790</span>    </span>P: ParentComponent,
+<span data-nosnippet>791</span>    D: DfsPreorderComponent,
+<span data-nosnippet>792</span>    H: DepthComponent,
+<span data-nosnippet>793</span>    X: BuildXorBottomUpOrder&lt;B&gt;,
+<span data-nosnippet>794</span>    B: XorBottomUpOrderBuffer,
+<span data-nosnippet>795</span>{
+<span data-nosnippet>796</span>    <span class="kw">let </span><span class="kw-2">mut </span>xor_order = B::new(n);
+<span data-nosnippet>797</span>    <span class="kw">let </span>parent = acc.<span class="highlight">finish</span>::&lt;B, <span class="kw">_</span>&gt;(root, <span class="kw-2">&amp;mut </span>xor_order, |<span class="kw">_</span>, <span class="kw">_</span>| {});
+<span data-nosnippet>798</span>    <span class="kw">let </span>order = B::as_slice(<span class="kw-2">&amp;</span>xor_order);
+<span data-nosnippet>799</span>    <span class="kw">let </span>dfs = D::build(n, root, <span class="kw-2">&amp;</span>parent, order);
+<span data-nosnippet>800</span>    <span class="kw">let </span>depth = H::build(n, root, <span class="kw-2">&amp;</span>parent, order);
+<span data-nosnippet>801</span>    XorLinkedRootedTree {
+<span data-nosnippet>802</span>        n,
+<span data-nosnippet>803</span>        root,
+<span data-nosnippet>804</span>        parent: P::build(parent),
+<span data-nosnippet>805</span>        dfs,
+<span data-nosnippet>806</span>        depth,
+<span data-nosnippet>807</span>        parent_edge: (),
+<span data-nosnippet>808</span>        edge_child: (),
+<span data-nosnippet>809</span>        xor_order: X::build(xor_order),
+<span data-nosnippet>810</span>        _marker: PhantomData,
+<span data-nosnippet>811</span>    }
+<span data-nosnippet>812</span>}</code></pre></div></div></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-XorAccumulator" class="impl"><a href="#impl-Freeze-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section><section id="impl-RefUnwindSafe-for-XorAccumulator" class="impl"><a href="#impl-RefUnwindSafe-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section><section id="impl-Send-for-XorAccumulator" class="impl"><a href="#impl-Send-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section><section id="impl-Sync-for-XorAccumulator" class="impl"><a href="#impl-Sync-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section><section id="impl-Unpin-for-XorAccumulator" class="impl"><a href="#impl-Unpin-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section><section id="impl-UnsafeUnpin-for-XorAccumulator" class="impl"><a href="#impl-UnsafeUnpin-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section><section id="impl-UnwindSafe-for-XorAccumulator" class="impl"><a href="#impl-UnwindSafe-for-XorAccumulator" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.XorAccumulator.html" title="struct competitive::tree::xor_linked_tree::XorAccumulator">XorAccumulator</a></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#141">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#142">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#222">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#785">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#788">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#767-769">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#777">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToArrayVecScalar-for-T" class="impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#20-24">Source</a><a href="#impl-ToArrayVecScalar-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../../math/trait.ToArrayVecScalar.html" title="trait competitive::math::ToArrayVecScalar">ToArrayVecScalar</a> for T</h3></section></summary><div class="impl-items"><section id="method.to_array_vec_scalar" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#21-23">Source</a><a href="#method.to_array_vec_scalar" class="anchor">§</a><h4 class="code-header">fn <a href="../../math/trait.ToArrayVecScalar.html#tymethod.to_array_vec_scalar" class="fn">to_array_vec_scalar</a>(self) -&gt; <a class="struct" href="../../math/array_vec/struct.ArrayVecScalar.html" title="struct competitive::math::array_vec::ArrayVecScalar">ArrayVecScalar</a>&lt;T&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#827-829">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#831">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#834">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#811-813">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#815">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#818">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details></div></section></div></main></body></html>
