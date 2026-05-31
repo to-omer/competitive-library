@@ -6,6 +6,7 @@ mod fast_io;
 mod gcd;
 mod mint;
 mod special_ring;
+mod xor_linked_tree;
 
 criterion_group!(
     name = small_benches;
@@ -25,6 +26,7 @@ criterion_group!(
         fast_io::bench_fast_input_u64,
         fast_io::bench_fast_output_u32,
         fast_io::bench_fast_output_u64,
+        xor_linked_tree::bench_xor_linked_tree,
 );
 
 criterion_main!(small_benches);

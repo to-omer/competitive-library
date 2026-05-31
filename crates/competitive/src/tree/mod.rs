@@ -5,7 +5,7 @@ use crate::{
     data_structure::RangeMinimumQuery,
     graph::UndirectedSparseGraph,
     math::{ConvolveSteps, U64Convolve},
-    tools::{RandomSpec, Xorshift},
+    tools::{IterScan, MarkedIterScan, RandomSpec, Xorshift},
 };
 
 #[codesnip::entry("centroid_decomposition")]
@@ -21,6 +21,8 @@ pub use self::rerooting::ReRooting;
 pub use self::static_top_tree::{Cluster, MonoidCluster, StaticTopTree, StaticTopTreeDp};
 pub use self::tree_center::*;
 pub use self::tree_hash::TreeHasher;
+#[codesnip::entry("XorLinkedRootedTree")]
+pub use self::xor_linked_tree::*;
 
 #[cfg_attr(
     nightly,
@@ -60,3 +62,5 @@ mod tree_centroid;
 mod tree_dp;
 mod tree_hash;
 mod tree_order;
+#[cfg_attr(nightly, codesnip::entry("XorLinkedRootedTree", include("scanner")))]
+mod xor_linked_tree;
