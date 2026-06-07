@@ -57,6 +57,7 @@ pub fn bench_extgcd(c: &mut Criterion) {
 pub fn bench_modinv(c: &mut Criterion) {
     const M: u64 = 1_000_000_007;
     let spec = 1..M;
+    let fast = FastPrimeMod::<1_000_000_007, true, false>::new();
     let mut group = c.benchmark_group("modinv");
     group.bench_function("modinv_recurse", |b| {
         let mut rng = Xorshift::default();
@@ -79,6 +80,14 @@ pub fn bench_modinv(c: &mut Criterion) {
         b.iter_batched(
             || rng.random(&spec),
             |a| modinv_extgcd_binary(a, M),
+            BatchSize::SmallInput,
+        )
+    });
+    group.bench_function("fast_prime_mod_inverse", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.random(&spec),
+            |a| fast.inverse(a as u32),
             BatchSize::SmallInput,
         )
     });

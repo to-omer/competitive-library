@@ -42,6 +42,8 @@ pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_
 pub use self::factorial::MemorizedFactorial;
 #[codesnip::entry("fast_fourier_transform")]
 pub use self::fast_fourier_transform::ConvolveRealFft;
+#[codesnip::entry("FastPrimeMod")]
+pub use self::fast_prime_mod::FastPrimeMod;
 #[codesnip::entry("floor_sum")]
 pub use self::floor_sum::{
     floor_power_sum, floor_sum, floor_sum_i64, floor_sum_polynomial, floor_sum_polynomial_i64,
@@ -155,6 +157,14 @@ mod factorial;
     )
 )]
 mod fast_fourier_transform;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "FastPrimeMod",
+        include("BarrettReduction", "miller_rabin", "primitive_root", "Xorshift")
+    )
+)]
+mod fast_prime_mod;
 #[cfg_attr(
     nightly,
     codesnip::entry("floor_sum", include("algebra", "ring", "integer", "BarrettReduction"))

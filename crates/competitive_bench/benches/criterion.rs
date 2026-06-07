@@ -21,6 +21,7 @@ criterion_group!(
         gcd::bench_extgcd,
         gcd::bench_modinv,
         mint::bench_mod_mul,
+        mint::bench_mod_pow,
         special_ring::bench_special_ring,
         fast_io::bench_fast_input_u32,
         fast_io::bench_fast_input_u64,
