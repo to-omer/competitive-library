@@ -61,4 +61,50 @@
 <span data-nosnippet>12</span>        <span class="kw">let </span>ans = <span class="kw">if </span><span class="highlight focus">miller_rabin</span>(n) { <span class="string">"Yes" </span>} <span class="kw">else </span>{ <span class="string">"No" </span>};
 <span data-nosnippet>13</span>        <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
 <span data-nosnippet>14</span>    }
-<span data-nosnippet>15</span>}</code></pre></div></div></div></section></div></main></body></html>
+<span data-nosnippet>15</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../src/competitive/math/fast_prime_mod.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_prime_mod.rs (<a href="../../src/competitive/math/fast_prime_mod.rs.html#52">line 52</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+<span data-nosnippet>46</span>        <span class="macro">assert!</span>(
+<span data-nosnippet>47</span>            BUILD_INV || BUILD_POW,
+<span data-nosnippet>48</span>            <span class="string">"at least one of BUILD_INV or BUILD_POW must be true"
+<span data-nosnippet>49</span>        </span>);
+<span data-nosnippet>50</span>        <span class="macro">assert!</span>(P &lt; <span class="number">1 </span>&lt;&lt; <span class="number">30</span>, <span class="string">"P must be less than 2^30"</span>);
+<span data-nosnippet>51</span>        <span class="macro">assert!</span>(
+<span data-nosnippet>52</span>            P % <span class="number">2 </span>== <span class="number">1 </span>&amp;&amp; <span class="highlight focus">miller_rabin</span>(P <span class="kw">as </span>u64),
+<span data-nosnippet>53</span>            <span class="string">"P must be an odd prime"
+<span data-nosnippet>54</span>        </span>);
+<span data-nosnippet>55</span>
+<span data-nosnippet>56</span>        <span class="kw">let </span>(root, pow_lo, pow_hi, log) = <span class="kw">if </span>BUILD_POW {
+<span data-nosnippet>57</span>            <span class="kw">let </span>root = <span class="kw">if </span>P == <span class="number">998_244_353 </span>{
+<span data-nosnippet>58</span>                <span class="number">3
+<span data-nosnippet>59</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>60</span>                primitive_root(P <span class="kw">as </span>u64) <span class="kw">as </span>u32
+<span data-nosnippet>61</span>            };
+<span data-nosnippet>62</span>            <span class="kw">let </span>(pow_lo, pow_hi) = build_pow::&lt;P&gt;(root);
+<span data-nosnippet>63</span>            <span class="kw">let </span>log = build_log::&lt;P&gt;(root, <span class="kw-2">&amp;</span>pow_lo, <span class="kw-2">&amp;</span>pow_hi);
+<span data-nosnippet>64</span>            (root, pow_lo, pow_hi, log)
+<span data-nosnippet>65</span>        } <span class="kw">else </span>{
+<span data-nosnippet>66</span>            (
+<span data-nosnippet>67</span>                <span class="number">0</span>,
+<span data-nosnippet>68</span>                Vec::new().into_boxed_slice(),
+<span data-nosnippet>69</span>                Vec::new().into_boxed_slice(),
+<span data-nosnippet>70</span>                Vec::new().into_boxed_slice(),
+<span data-nosnippet>71</span>            )
+<span data-nosnippet>72</span>        };
+<span data-nosnippet>73</span>        <span class="kw">let </span>inv = <span class="kw">if </span>BUILD_INV {
+<span data-nosnippet>74</span>            build_inv::&lt;P&gt;()
+<span data-nosnippet>75</span>        } <span class="kw">else </span>{
+<span data-nosnippet>76</span>            Vec::new().into_boxed_slice()
+<span data-nosnippet>77</span>        };
+<span data-nosnippet>78</span>        <span class="kw">let </span>frac = <span class="kw">if </span>is_direct_table_mod::&lt;P&gt;() {
+<span data-nosnippet>79</span>            Vec::new().into_boxed_slice()
+<span data-nosnippet>80</span>        } <span class="kw">else </span>{
+<span data-nosnippet>81</span>            build_frac::&lt;P&gt;()
+<span data-nosnippet>82</span>        };
+<span data-nosnippet>83</span>        <span class="self">Self </span>{
+<span data-nosnippet>84</span>            root,
+<span data-nosnippet>85</span>            pow_lo,
+<span data-nosnippet>86</span>            pow_hi,
+<span data-nosnippet>87</span>            frac,
+<span data-nosnippet>88</span>            log,
+<span data-nosnippet>89</span>            inv,
+<span data-nosnippet>90</span>        }
+<span data-nosnippet>91</span>    }</code></pre></div></div></div></details></div></section></div></main></body></html>

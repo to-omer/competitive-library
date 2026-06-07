@@ -1215,7 +1215,95 @@
 <span data-nosnippet>309</span>                gk = br.rem(gkk <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>310</span>            }
 <span data-nosnippet>311</span>        }
-<span data-nosnippet>312</span>    }</code></pre></div></div></div></details></div></details><section id="method.rands" class="method"><a class="src rightside" href="../../../src/competitive/tools/xorshift.rs.html#32-34">Source</a><h4 class="code-header">pub fn <a href="#method.rands" class="fn">rands</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.randf" class="method"><a class="src rightside" href="../../../src/competitive/tools/xorshift.rs.html#36-43">Source</a><h4 class="code-header">pub fn <a href="#method.randf" class="fn">randf</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/tools/xorshift.rs.html#46&#34;,&#34;line 46&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/xorshift.rs (<a href="../../../src/competitive/tools/xorshift.rs.html#46">line 46</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>gen_bool(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p: f64) -&gt; bool {
+<span data-nosnippet>312</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[56,56],&#34;../../../src/competitive/math/fast_prime_mod.rs.html#283&#34;,&#34;line 283&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_prime_mod.rs (<a href="../../../src/competitive/math/fast_prime_mod.rs.html#283">line 283</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>227</span><span class="kw">fn </span>build_log&lt;<span class="kw">const </span>P: u32&gt;(root: u32, pow_lo: <span class="kw-2">&amp;</span>[u32], pow_hi: <span class="kw-2">&amp;</span>[u32]) -&gt; Box&lt;[u32]&gt; {
+<span data-nosnippet>228</span>    <span class="kw">let </span>k = table_k::&lt;P&gt;();
+<span data-nosnippet>229</span>    <span class="kw">let </span>ord = P - <span class="number">1</span>;
+<span data-nosnippet>230</span>    <span class="kw">let </span><span class="kw-2">mut </span>lpf = <span class="macro">vec!</span>[<span class="number">0</span>; k + <span class="number">1</span>].into_boxed_slice();
+<span data-nosnippet>231</span>    <span class="kw">let </span><span class="kw-2">mut </span>primes = <span class="macro">vec!</span>[];
+<span data-nosnippet>232</span>    lpf[<span class="number">1</span>] = <span class="number">1</span>;
+<span data-nosnippet>233</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..=k {
+<span data-nosnippet>234</span>        <span class="kw">if </span>lpf[i] == <span class="number">0 </span>{
+<span data-nosnippet>235</span>            lpf[i] = i <span class="kw">as </span>u32;
+<span data-nosnippet>236</span>            primes.push(i <span class="kw">as </span>u32);
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span>primes.iter() {
+<span data-nosnippet>239</span>            <span class="kw">let </span>p = p <span class="kw">as </span>usize;
+<span data-nosnippet>240</span>            <span class="kw">if </span>p &gt; lpf[i] <span class="kw">as </span>usize || p &gt; k / i {
+<span data-nosnippet>241</span>                <span class="kw">break</span>;
+<span data-nosnippet>242</span>            }
+<span data-nosnippet>243</span>            lpf[i * p] = p <span class="kw">as </span>u32;
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>    }
+<span data-nosnippet>246</span>
+<span data-nosnippet>247</span>    <span class="kw">let </span>baby_size = (BSGS_SIZE <span class="kw">as </span>u32).min(ord);
+<span data-nosnippet>248</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = U32Map::new(baby_size <span class="kw">as </span>usize);
+<span data-nosnippet>249</span>    <span class="kw">let </span><span class="kw-2">mut </span>pw = <span class="number">1</span>;
+<span data-nosnippet>250</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..baby_size {
+<span data-nosnippet>251</span>        baby.insert(pw, i);
+<span data-nosnippet>252</span>        pw = mul_mod_raw::&lt;P&gt;(pw, root);
+<span data-nosnippet>253</span>    }
+<span data-nosnippet>254</span>    <span class="kw">let </span>q = pow_root_raw::&lt;P&gt;(ord - baby_size, pow_lo, pow_hi);
+<span data-nosnippet>255</span>
+<span data-nosnippet>256</span>    <span class="kw">let </span><span class="kw-2">mut </span>log = <span class="macro">vec!</span>[<span class="number">0</span>; table_len::&lt;P&gt;()].into_boxed_slice();
+<span data-nosnippet>257</span>    log[k + <span class="number">1</span>] = <span class="number">0</span>;
+<span data-nosnippet>258</span>    <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<span data-nosnippet>259</span>    <span class="kw">let </span>small_primes = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">17</span>, <span class="number">19</span>];
+<span data-nosnippet>260</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..=k {
+<span data-nosnippet>261</span>        <span class="kw">let </span>p = lpf[i] <span class="kw">as </span>usize;
+<span data-nosnippet>262</span>        <span class="kw">if </span>p &lt; i {
+<span data-nosnippet>263</span>            log[k + i] = add_mod(log[k + p], log[k + i / p], ord);
+<span data-nosnippet>264</span>        } <span class="kw">else if </span>i &lt; <span class="number">100 </span>{
+<span data-nosnippet>265</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = i <span class="kw">as </span>u32;
+<span data-nosnippet>266</span>            <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="number">0</span>;
+<span data-nosnippet>267</span>            <span class="kw">loop </span>{
+<span data-nosnippet>268</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = baby.get(x) {
+<span data-nosnippet>269</span>                    log[k + i] = ans + v;
+<span data-nosnippet>270</span>                    <span class="kw">break</span>;
+<span data-nosnippet>271</span>                }
+<span data-nosnippet>272</span>                ans += baby_size;
+<span data-nosnippet>273</span>                x = mul_mod_raw::&lt;P&gt;(x, q);
+<span data-nosnippet>274</span>            }
+<span data-nosnippet>275</span>        } <span class="kw">else if </span>i &gt; P <span class="kw">as </span>usize / i {
+<span data-nosnippet>276</span>            <span class="kw">let </span>j = (P <span class="kw">as </span>usize) / i;
+<span data-nosnippet>277</span>            <span class="kw">let </span>r = (P <span class="kw">as </span>usize) % i;
+<span data-nosnippet>278</span>            <span class="kw">let </span>x = add_mod(log[k + r], ord / <span class="number">2</span>, ord);
+<span data-nosnippet>279</span>            <span class="kw">let </span>y = log[k + j];
+<span data-nosnippet>280</span>            log[k + i] = <span class="kw">if </span>x &gt;= y { x - y } <span class="kw">else </span>{ x + ord - y };
+<span data-nosnippet>281</span>        } <span class="kw">else </span>{
+<span data-nosnippet>282</span>            <span class="kw">loop </span>{
+<span data-nosnippet>283</span>                <span class="kw">let </span>exp = rng.<span class="highlight focus">rand</span>(ord <span class="kw">as </span>u64) <span class="kw">as </span>u32;
+<span data-nosnippet>284</span>                <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="kw">if </span>exp == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ ord - exp };
+<span data-nosnippet>285</span>                <span class="kw">let </span><span class="kw-2">mut </span>x = mul_mod_raw::&lt;P&gt;(i <span class="kw">as </span>u32, pow_root_raw::&lt;P&gt;(exp, pow_lo, pow_hi));
+<span data-nosnippet>286</span>                <span class="kw">for </span>q <span class="kw">in </span>small_primes {
+<span data-nosnippet>287</span>                    <span class="kw">while </span>x.is_multiple_of(q) {
+<span data-nosnippet>288</span>                        x /= q;
+<span data-nosnippet>289</span>                        ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
+<span data-nosnippet>290</span>                    }
+<span data-nosnippet>291</span>                }
+<span data-nosnippet>292</span>                <span class="kw">if </span>x <span class="kw">as </span>usize &gt;= k {
+<span data-nosnippet>293</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>294</span>                }
+<span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span>u32) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span>u32 {
+<span data-nosnippet>296</span>                    <span class="kw">let </span>q = lpf[x <span class="kw">as </span>usize];
+<span data-nosnippet>297</span>                    x /= q;
+<span data-nosnippet>298</span>                    ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
+<span data-nosnippet>299</span>                }
+<span data-nosnippet>300</span>                <span class="kw">if </span><span class="number">1 </span>&lt; x &amp;&amp; x &lt; i <span class="kw">as </span>u32 {
+<span data-nosnippet>301</span>                    ans = add_mod(ans, log[k + x <span class="kw">as </span>usize], ord);
+<span data-nosnippet>302</span>                    x = <span class="number">1</span>;
+<span data-nosnippet>303</span>                }
+<span data-nosnippet>304</span>                <span class="kw">if </span>x == <span class="number">1 </span>{
+<span data-nosnippet>305</span>                    log[k + i] = ans;
+<span data-nosnippet>306</span>                    <span class="kw">break</span>;
+<span data-nosnippet>307</span>                }
+<span data-nosnippet>308</span>            }
+<span data-nosnippet>309</span>        }
+<span data-nosnippet>310</span>    }
+<span data-nosnippet>311</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=k {
+<span data-nosnippet>312</span>        log[k - i] = add_mod(log[k + i], ord / <span class="number">2</span>, ord);
+<span data-nosnippet>313</span>    }
+<span data-nosnippet>314</span>    log
+<span data-nosnippet>315</span>}</code></pre></div></div></div></details></div></details><section id="method.rands" class="method"><a class="src rightside" href="../../../src/competitive/tools/xorshift.rs.html#32-34">Source</a><h4 class="code-header">pub fn <a href="#method.rands" class="fn">rands</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.randf" class="method"><a class="src rightside" href="../../../src/competitive/tools/xorshift.rs.html#36-43">Source</a><h4 class="code-header">pub fn <a href="#method.randf" class="fn">randf</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/tools/xorshift.rs.html#46&#34;,&#34;line 46&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/xorshift.rs (<a href="../../../src/competitive/tools/xorshift.rs.html#46">line 46</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>gen_bool(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p: f64) -&gt; bool {
 <span data-nosnippet>46</span>        <span class="self">self</span>.<span class="highlight focus">randf</span>() &lt; p
 <span data-nosnippet>47</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[2,2],&#34;../../../src/competitive/tools/random_generator.rs.html#339&#34;,&#34;line 339&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/random_generator.rs (<a href="../../../src/competitive/tools/random_generator.rs.html#339">line 339</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>337</span>    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; usize {
 <span data-nosnippet>338</span>        <span class="kw">let </span>i = rng.rand(<span class="self">self</span>.n <span class="kw">as </span>u64) <span class="kw">as </span>usize;
