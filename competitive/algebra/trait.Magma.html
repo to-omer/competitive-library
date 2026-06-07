@@ -109,69 +109,69 @@
 <span data-nosnippet>159</span>        } <span class="kw">else </span>{
 <span data-nosnippet>160</span>            <span class="prelude-val">None
 <span data-nosnippet>161</span>        </span>}
-<span data-nosnippet>162</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/competitive/data_structure/transducer.rs.html#194&#34;,&#34;line 194&#34;],[[32,32],&#34;../../src/competitive/data_structure/transducer.rs.html#215&#34;,&#34;line 215&#34;],[[44,44],&#34;../../src/competitive/data_structure/transducer.rs.html#227&#34;,&#34;line 227&#34;],[[57,57],&#34;../../src/competitive/data_structure/transducer.rs.html#240&#34;,&#34;line 240&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/transducer.rs (<a href="../../src/competitive/data_structure/transducer.rs.html#194">line 194</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>183</span>    <span class="kw">pub fn </span>step&lt;S, I, B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S)
-<span data-nosnippet>184</span>    <span class="kw">where
-<span data-nosnippet>185</span>        </span>S: FnMut() -&gt; I,
-<span data-nosnippet>186</span>        I: IntoIterator&lt;Item = B&gt;,
-<span data-nosnippet>187</span>        B: Borrow&lt;T::Input&gt;,
-<span data-nosnippet>188</span>    {
-<span data-nosnippet>189</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.drain() {
-<span data-nosnippet>190</span>            <span class="kw">for </span>input <span class="kw">in </span>sigma() {
-<span data-nosnippet>191</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>((nstate, <span class="kw">_</span>)) = <span class="self">self</span>.fst.relation(<span class="kw-2">&amp;</span>state, input.borrow()) {
-<span data-nosnippet>192</span>                    <span class="self">self</span>.ndp
-<span data-nosnippet>193</span>                        .entry(nstate)
-<span data-nosnippet>194</span>                        .and_modify(|acc| <span class="highlight focus">M::operate_assign</span>(acc, <span class="kw-2">&amp;</span>value))
-<span data-nosnippet>195</span>                        .or_insert_with(|| value.clone());
-<span data-nosnippet>196</span>                }
-<span data-nosnippet>197</span>            }
-<span data-nosnippet>198</span>        }
-<span data-nosnippet>199</span>        swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.dp, <span class="kw-2">&amp;mut </span><span class="self">self</span>.ndp);
-<span data-nosnippet>200</span>        <span class="self">self</span>.fst.stepout();
-<span data-nosnippet>201</span>    }
-<span data-nosnippet>202</span>    <span class="kw">pub fn </span>step_effect&lt;S, I, B, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S, <span class="kw-2">mut </span>effect: F)
-<span data-nosnippet>203</span>    <span class="kw">where
-<span data-nosnippet>204</span>        </span>S: FnMut() -&gt; I,
-<span data-nosnippet>205</span>        I: IntoIterator&lt;Item = B&gt;,
-<span data-nosnippet>206</span>        B: Borrow&lt;T::Input&gt;,
-<span data-nosnippet>207</span>        F: FnMut(<span class="kw-2">&amp;</span>M::T, <span class="kw-2">&amp;</span>T::Output) -&gt; M::T,
-<span data-nosnippet>208</span>    {
-<span data-nosnippet>209</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.drain() {
-<span data-nosnippet>210</span>            <span class="kw">for </span>input <span class="kw">in </span>sigma() {
-<span data-nosnippet>211</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>((nstate, output)) = <span class="self">self</span>.fst.relation(<span class="kw-2">&amp;</span>state, input.borrow()) {
-<span data-nosnippet>212</span>                    <span class="kw">let </span>nvalue = effect(<span class="kw-2">&amp;</span>value, <span class="kw-2">&amp;</span>output);
-<span data-nosnippet>213</span>                    <span class="self">self</span>.ndp
-<span data-nosnippet>214</span>                        .entry(nstate)
-<span data-nosnippet>215</span>                        .and_modify(|acc| <span class="highlight">M::operate_assign</span>(acc, <span class="kw-2">&amp;</span>nvalue))
-<span data-nosnippet>216</span>                        .or_insert(nvalue);
-<span data-nosnippet>217</span>                }
-<span data-nosnippet>218</span>            }
-<span data-nosnippet>219</span>        }
-<span data-nosnippet>220</span>        swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.dp, <span class="kw-2">&amp;mut </span><span class="self">self</span>.ndp);
-<span data-nosnippet>221</span>        <span class="self">self</span>.fst.stepout();
-<span data-nosnippet>222</span>    }
-<span data-nosnippet>223</span>    <span class="kw">pub fn </span>fold_accept(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
-<span data-nosnippet>224</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
-<span data-nosnippet>225</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.iter() {
-<span data-nosnippet>226</span>            <span class="kw">if </span><span class="self">self</span>.fst.accept(state) {
-<span data-nosnippet>227</span>                <span class="highlight">M::operate_assign</span>(<span class="kw-2">&amp;mut </span>acc, value);
-<span data-nosnippet>228</span>            }
-<span data-nosnippet>229</span>        }
-<span data-nosnippet>230</span>        acc
-<span data-nosnippet>231</span>    }
-<span data-nosnippet>232</span>    <span class="kw">pub fn </span>map_fold_accept&lt;U, F, D&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: F, <span class="kw-2">mut </span>map: D) -&gt; D
-<span data-nosnippet>233</span>    <span class="kw">where
-<span data-nosnippet>234</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>T::State) -&gt; U,
-<span data-nosnippet>235</span>        D: Container&lt;Key = U, Value = M::T&gt;,
+<span data-nosnippet>162</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/competitive/data_structure/transducer.rs.html#222&#34;,&#34;line 222&#34;],[[32,32],&#34;../../src/competitive/data_structure/transducer.rs.html#243&#34;,&#34;line 243&#34;],[[44,44],&#34;../../src/competitive/data_structure/transducer.rs.html#255&#34;,&#34;line 255&#34;],[[57,57],&#34;../../src/competitive/data_structure/transducer.rs.html#268&#34;,&#34;line 268&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/transducer.rs (<a href="../../src/competitive/data_structure/transducer.rs.html#222">line 222</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>211</span>    <span class="kw">pub fn </span>step&lt;S, I, B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S)
+<span data-nosnippet>212</span>    <span class="kw">where
+<span data-nosnippet>213</span>        </span>S: FnMut() -&gt; I,
+<span data-nosnippet>214</span>        I: IntoIterator&lt;Item = B&gt;,
+<span data-nosnippet>215</span>        B: Borrow&lt;T::Input&gt;,
+<span data-nosnippet>216</span>    {
+<span data-nosnippet>217</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.drain() {
+<span data-nosnippet>218</span>            <span class="kw">for </span>input <span class="kw">in </span>sigma() {
+<span data-nosnippet>219</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>((nstate, <span class="kw">_</span>)) = <span class="self">self</span>.fst.relation(<span class="kw-2">&amp;</span>state, input.borrow()) {
+<span data-nosnippet>220</span>                    <span class="self">self</span>.ndp
+<span data-nosnippet>221</span>                        .entry(nstate)
+<span data-nosnippet>222</span>                        .and_modify(|acc| <span class="highlight focus">M::operate_assign</span>(acc, <span class="kw-2">&amp;</span>value))
+<span data-nosnippet>223</span>                        .or_insert_with(|| value.clone());
+<span data-nosnippet>224</span>                }
+<span data-nosnippet>225</span>            }
+<span data-nosnippet>226</span>        }
+<span data-nosnippet>227</span>        swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.dp, <span class="kw-2">&amp;mut </span><span class="self">self</span>.ndp);
+<span data-nosnippet>228</span>        <span class="self">self</span>.fst.stepout();
+<span data-nosnippet>229</span>    }
+<span data-nosnippet>230</span>    <span class="kw">pub fn </span>step_effect&lt;S, I, B, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S, <span class="kw-2">mut </span>effect: F)
+<span data-nosnippet>231</span>    <span class="kw">where
+<span data-nosnippet>232</span>        </span>S: FnMut() -&gt; I,
+<span data-nosnippet>233</span>        I: IntoIterator&lt;Item = B&gt;,
+<span data-nosnippet>234</span>        B: Borrow&lt;T::Input&gt;,
+<span data-nosnippet>235</span>        F: FnMut(<span class="kw-2">&amp;</span>M::T, <span class="kw-2">&amp;</span>T::Output) -&gt; M::T,
 <span data-nosnippet>236</span>    {
-<span data-nosnippet>237</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.iter() {
-<span data-nosnippet>238</span>            <span class="kw">if </span><span class="self">self</span>.fst.accept(state) {
-<span data-nosnippet>239</span>                map.entry(f(state))
-<span data-nosnippet>240</span>                    .and_modify(|acc| <span class="highlight">M::operate_assign</span>(acc, value))
-<span data-nosnippet>241</span>                    .or_insert_with(|| value.clone());
-<span data-nosnippet>242</span>            }
-<span data-nosnippet>243</span>        }
-<span data-nosnippet>244</span>        map
-<span data-nosnippet>245</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#95&#34;,&#34;line 95&#34;],[[14,14],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#98&#34;,&#34;line 98&#34;],[[40,40],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#124&#34;,&#34;line 124&#34;],[[47,47],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#131&#34;,&#34;line 131&#34;],[[48,48],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#132&#34;,&#34;line 132&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/sqrt_decomposition.rs (<a href="../../src/competitive/algorithm/sqrt_decomposition.rs.html#95">line 95</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>84</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; &lt;S::M <span class="kw">as </span>Magma&gt;::T
+<span data-nosnippet>237</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.drain() {
+<span data-nosnippet>238</span>            <span class="kw">for </span>input <span class="kw">in </span>sigma() {
+<span data-nosnippet>239</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>((nstate, output)) = <span class="self">self</span>.fst.relation(<span class="kw-2">&amp;</span>state, input.borrow()) {
+<span data-nosnippet>240</span>                    <span class="kw">let </span>nvalue = effect(<span class="kw-2">&amp;</span>value, <span class="kw-2">&amp;</span>output);
+<span data-nosnippet>241</span>                    <span class="self">self</span>.ndp
+<span data-nosnippet>242</span>                        .entry(nstate)
+<span data-nosnippet>243</span>                        .and_modify(|acc| <span class="highlight">M::operate_assign</span>(acc, <span class="kw-2">&amp;</span>nvalue))
+<span data-nosnippet>244</span>                        .or_insert(nvalue);
+<span data-nosnippet>245</span>                }
+<span data-nosnippet>246</span>            }
+<span data-nosnippet>247</span>        }
+<span data-nosnippet>248</span>        swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.dp, <span class="kw-2">&amp;mut </span><span class="self">self</span>.ndp);
+<span data-nosnippet>249</span>        <span class="self">self</span>.fst.stepout();
+<span data-nosnippet>250</span>    }
+<span data-nosnippet>251</span>    <span class="kw">pub fn </span>fold_accept(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
+<span data-nosnippet>252</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+<span data-nosnippet>253</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.iter() {
+<span data-nosnippet>254</span>            <span class="kw">if </span><span class="self">self</span>.fst.accept(state) {
+<span data-nosnippet>255</span>                <span class="highlight">M::operate_assign</span>(<span class="kw-2">&amp;mut </span>acc, value);
+<span data-nosnippet>256</span>            }
+<span data-nosnippet>257</span>        }
+<span data-nosnippet>258</span>        acc
+<span data-nosnippet>259</span>    }
+<span data-nosnippet>260</span>    <span class="kw">pub fn </span>map_fold_accept&lt;U, F, D&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: F, <span class="kw-2">mut </span>map: D) -&gt; D
+<span data-nosnippet>261</span>    <span class="kw">where
+<span data-nosnippet>262</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>T::State) -&gt; U,
+<span data-nosnippet>263</span>        D: Container&lt;Key = U, Value = M::T&gt;,
+<span data-nosnippet>264</span>    {
+<span data-nosnippet>265</span>        <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.iter() {
+<span data-nosnippet>266</span>            <span class="kw">if </span><span class="self">self</span>.fst.accept(state) {
+<span data-nosnippet>267</span>                map.entry(f(state))
+<span data-nosnippet>268</span>                    .and_modify(|acc| <span class="highlight">M::operate_assign</span>(acc, value))
+<span data-nosnippet>269</span>                    .or_insert_with(|| value.clone());
+<span data-nosnippet>270</span>            }
+<span data-nosnippet>271</span>        }
+<span data-nosnippet>272</span>        map
+<span data-nosnippet>273</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#95&#34;,&#34;line 95&#34;],[[14,14],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#98&#34;,&#34;line 98&#34;],[[40,40],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#124&#34;,&#34;line 124&#34;],[[47,47],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#131&#34;,&#34;line 131&#34;],[[48,48],&#34;../../src/competitive/algorithm/sqrt_decomposition.rs.html#132&#34;,&#34;line 132&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/sqrt_decomposition.rs (<a href="../../src/competitive/algorithm/sqrt_decomposition.rs.html#95">line 95</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>84</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; &lt;S::M <span class="kw">as </span>Magma&gt;::T
 <span data-nosnippet>85</span>    <span class="kw">where
 <span data-nosnippet>86</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>87</span>    {

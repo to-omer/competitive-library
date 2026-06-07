@@ -52,7 +52,7 @@
   });
 </script>
 
-</head><body class="rustdoc macro"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">transducer</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">competitive</a></div><h1>Macro <span class="macro">transducer</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/competitive/data_structure/transducer.rs.html#1018-1081">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! transducer {
+</head><body class="rustdoc macro"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">transducer</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">competitive</a></div><h1>Macro <span class="macro">transducer</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/competitive/data_structure/transducer.rs.html#1212-1281">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! transducer {
     (@check $e:expr) =&gt; { ... };
     (@inner ($($t:tt)*)) =&gt; { ... };
     (@inner =&gt; $f:expr, $g:expr, $h:expr $(,)?) =&gt; { ... };
@@ -86,7 +86,7 @@
     (@inner @id) =&gt; { ... };
     (@inner @it $e:expr) =&gt; { ... };
     (@inner @map $f:expr) =&gt; { ... };
-    (@inner @fmap $f:expr) =&gt; { ... };
+    (@inner @try_map $f:expr) =&gt; { ... };
     (@inner @seq $e:expr) =&gt; { ... };
     (@inner @rseq $e:expr) =&gt; { ... };
     (@inner @&lt;$t:ty&gt;) =&gt; { ... };
@@ -107,10 +107,16 @@
     (@chain [$($a:tt)*] [$($b:tt)*]) =&gt; { ... };
     (@chain [$($a:tt)*] [$($b:tt)*] . $($t:tt)*) =&gt; { ... };
     (@chain [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*) =&gt; { ... };
+    (@wrap [$($b:tt)*]) =&gt; { ... };
+    (@wrap [$($b:tt)*] |&gt; $($t:tt)*) =&gt; { ... };
+    (@wrap [$($b:tt)*] $op:tt $($t:tt)*) =&gt; { ... };
+    (@wrapped [$e:expr]) =&gt; { ... };
+    (@wrapped [$e:expr] |&gt; $($t:tt)*) =&gt; { ... };
+    (@wrap_apply [$e:expr] $method:ident($($args:expr),* $(,)?) $($t:tt)*) =&gt; { ... };
     (@id $($t:tt)*) =&gt; { ... };
     (@it $($t:tt)*) =&gt; { ... };
     (@map $($t:tt)*) =&gt; { ... };
-    (@fmap $($t:tt)*) =&gt; { ... };
+    (@try_map $($t:tt)*) =&gt; { ... };
     (@seq $($t:tt)*) =&gt; { ... };
     (@rseq $($t:tt)*) =&gt; { ... };
     (@$tag:ident $($t:tt)*) =&gt; { ... };
@@ -137,11 +143,18 @@
 <li><code>=&gt; f g h</code>: <a href="data_structure/struct.FunctionalTransducer.html" title="struct competitive::data_structure::FunctionalTransducer"><code>FunctionalTransducer::new(f, g, h)</code></a></li>
 <li><code>@id</code>: <a href="data_structure/struct.IdentityTransducer.html" title="struct competitive::data_structure::IdentityTransducer"><code>IdentityTransducer::new()</code></a></li>
 <li><code>@it e</code>: <a href="data_structure/struct.IteratorTransducer.html" title="struct competitive::data_structure::IteratorTransducer"><code>IteratorTransducer::new(e)</code></a></li>
-<li><code>@map f</code>: <a href="data_structure/struct.MapTransducer.html" title="struct competitive::data_structure::MapTransducer"><code>MapTransducer::new(f)</code></a></li>
-<li><code>@fmap f</code>: <a href="data_structure/struct.FilterMapTransducer.html" title="struct competitive::data_structure::FilterMapTransducer"><code>FilterMapTransducer::new(f)</code></a></li>
+<li><code>@map f</code>: <code>@id |&gt; map(f)</code></li>
+<li><code>@try_map f</code>: <code>@id |&gt; try_map(f)</code></li>
 <li><code>@seq e</code>: <a href="data_structure/struct.SequenceTransducer.html" title="struct competitive::data_structure::SequenceTransducer"><code>SequenceTransducer::new(e)</code></a></li>
 <li><code>@rseq e</code>: <a href="data_structure/struct.RevSequenceTransducer.html" title="struct competitive::data_structure::RevSequenceTransducer"><code>RevSequenceTransducer::new(e)</code></a></li>
 <li><code>@</code>: <a href="data_structure/struct.AlwaysAcceptingTransducer.html" title="struct competitive::data_structure::AlwaysAcceptingTransducer"><code>AlwaysAcceptingTransducer::new()</code></a></li>
+<li><code>A |&gt; method(args...)</code>: <code>Transducer::method(A, args...)</code></li>
+<li><code>A |&gt; map(f)</code>: <code>Transducer::map(A, f)</code></li>
+<li><code>A |&gt; try_map(f)</code>: <code>Transducer::try_map(A, f)</code></li>
+<li><code>A |&gt; retain(f)</code>: <code>Transducer::retain(A, f)</code></li>
+<li><code>A |&gt; with_fold(init, f)</code>: <code>Transducer::with_fold(A, init, f)</code></li>
+<li><code>A |&gt; with_try_fold(init, f)</code>: <code>Transducer::with_try_fold(A, init, f)</code></li>
+<li><code>A |&gt; accepting(f)</code>: <code>Transducer::accepting(A, f)</code></li>
 <li><code>A . B</code>: <a href="data_structure/struct.ChainTransducer.html" title="struct competitive::data_structure::ChainTransducer"><code>ChainTransducer((A, B))</code></a></li>
 <li><code>A * B</code>: <a href="data_structure/struct.ProductTransducer.html" title="struct competitive::data_structure::ProductTransducer"><code>ProductTransducer((A, B))</code></a></li>
 <li><code>A &amp; B</code>: <a href="data_structure/struct.IntersectionTransducer.html" title="struct competitive::data_structure::IntersectionTransducer"><code>IntersectionTransducer((A, B))</code></a></li>
