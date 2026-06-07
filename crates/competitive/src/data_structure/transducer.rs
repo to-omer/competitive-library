@@ -15,8 +15,6 @@ use std::{
 };
 
 type Marker<T> = PhantomData<fn() -> T>;
-type ChainMapTrasducer<S, T, U, F> = ChainTransducer<(S, MapTransducer<T, U, F>)>;
-type ChainFilterMapTrasducer<S, T, U, F> = ChainTransducer<(S, FilterMapTransducer<T, U, F>)>;
 
 pub trait Transducer {
     type Input;
@@ -65,19 +63,49 @@ pub trait Transducer {
     {
         IntersectionTransducer((self, IdentityTransducer::new()))
     }
-    fn map<U, F>(self, f: F) -> ChainMapTrasducer<Self, Self::Output, U, F>
+    fn map<U, F>(self, f: F) -> MapTransducer<Self, U, F>
     where
         Self: Sized,
         F: Fn(&Self::Output) -> U,
     {
-        ChainTransducer((self, MapTransducer::new(f)))
+        MapTransducer::new(self, f)
     }
-    fn filter_map<U, F>(self, f: F) -> ChainFilterMapTrasducer<Self, Self::Output, U, F>
+    fn try_map<U, F>(self, f: F) -> TryMapTransducer<Self, U, F>
     where
         Self: Sized,
         F: Fn(&Self::Output) -> Option<U>,
     {
-        ChainTransducer((self, FilterMapTransducer::new(f)))
+        TryMapTransducer::new(self, f)
+    }
+    fn retain<F>(self, pred: F) -> RetainTransducer<Self, F>
+    where
+        Self: Sized,
+        F: Fn(&Self::Output) -> bool,
+    {
+        RetainTransducer::new(self, pred)
+    }
+    fn with_fold<A, F>(self, init: A, f: F) -> FoldTransducer<Self, A, F>
+    where
+        Self: Sized,
+        A: Clone,
+        F: Fn(&A, &Self::Output) -> A,
+    {
+        FoldTransducer::new(self, init, f)
+    }
+    fn with_try_fold<A, F>(self, init: A, f: F) -> TryFoldTransducer<Self, A, F>
+    where
+        Self: Sized,
+        A: Clone,
+        F: Fn(&A, &Self::Output) -> Option<A>,
+    {
+        TryFoldTransducer::new(self, init, f)
+    }
+    fn accepting<F>(self, pred: F) -> AcceptTransducer<Self, F>
+    where
+        Self: Sized,
+        F: Fn(&Self::State) -> bool,
+    {
+        AcceptTransducer::new(self, pred)
     }
 }
 
@@ -500,19 +528,15 @@ where
 }
 
 #[derive(Debug, Clone)]
-pub struct MapTransducer<T, U, F>
-where
-    F: Fn(&T) -> U,
-{
+pub struct MapTransducer<T, U, F> {
+    inner: T,
     f: F,
-    _marker: PhantomData<fn() -> (T, U)>,
+    _marker: Marker<U>,
 }
-impl<T, U, F> MapTransducer<T, U, F>
-where
-    F: Fn(&T) -> U,
-{
-    pub fn new(f: F) -> Self {
+impl<T, U, F> MapTransducer<T, U, F> {
+    pub fn new(inner: T, f: F) -> Self {
         Self {
+            inner,
             f,
             _marker: PhantomData,
         }
@@ -520,60 +544,223 @@ where
 }
 impl<T, U, F> Transducer for MapTransducer<T, U, F>
 where
-    F: Fn(&T) -> U,
+    T: Transducer,
+    F: Fn(&T::Output) -> U,
 {
-    type Input = T;
+    type Input = T::Input;
     type Output = U;
-    type State = ();
-    fn start(&self) -> Self::State {}
+    type State = T::State;
+    fn start(&self) -> Self::State {
+        self.inner.start()
+    }
     fn relation(
         &self,
-        _state: &Self::State,
+        state: &Self::State,
         input: &Self::Input,
     ) -> Option<(Self::State, Self::Output)> {
-        Some(((), (self.f)(input)))
+        let (next_state, output) = self.inner.relation(state, input)?;
+        Some((next_state, (self.f)(&output)))
     }
-    fn accept(&self, _state: &Self::State) -> bool {
-        true
+    fn accept(&self, state: &Self::State) -> bool {
+        self.inner.accept(state)
+    }
+    fn stepout(&mut self) {
+        self.inner.stepout();
     }
 }
 
 #[derive(Debug, Clone)]
-pub struct FilterMapTransducer<T, U, F>
-where
-    F: Fn(&T) -> Option<U>,
-{
+pub struct TryMapTransducer<T, U, F> {
+    inner: T,
     f: F,
-    _marker: PhantomData<fn() -> (T, U)>,
+    _marker: Marker<U>,
 }
-impl<T, U, F> FilterMapTransducer<T, U, F>
-where
-    F: Fn(&T) -> Option<U>,
-{
-    pub fn new(f: F) -> Self {
+impl<T, U, F> TryMapTransducer<T, U, F> {
+    pub fn new(inner: T, f: F) -> Self {
         Self {
+            inner,
             f,
             _marker: PhantomData,
         }
     }
 }
-impl<T, U, F> Transducer for FilterMapTransducer<T, U, F>
+impl<T, U, F> Transducer for TryMapTransducer<T, U, F>
 where
-    F: Fn(&T) -> Option<U>,
+    T: Transducer,
+    F: Fn(&T::Output) -> Option<U>,
 {
-    type Input = T;
+    type Input = T::Input;
     type Output = U;
-    type State = ();
-    fn start(&self) -> Self::State {}
+    type State = T::State;
+    fn start(&self) -> Self::State {
+        self.inner.start()
+    }
     fn relation(
         &self,
-        _state: &Self::State,
+        state: &Self::State,
         input: &Self::Input,
     ) -> Option<(Self::State, Self::Output)> {
-        (self.f)(input).map(|output| ((), output))
+        let (next_state, output) = self.inner.relation(state, input)?;
+        (self.f)(&output).map(|output| (next_state, output))
     }
-    fn accept(&self, _state: &Self::State) -> bool {
-        true
+    fn accept(&self, state: &Self::State) -> bool {
+        self.inner.accept(state)
+    }
+    fn stepout(&mut self) {
+        self.inner.stepout();
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct RetainTransducer<T, F> {
+    inner: T,
+    pred: F,
+}
+impl<T, F> RetainTransducer<T, F> {
+    pub fn new(inner: T, pred: F) -> Self {
+        Self { inner, pred }
+    }
+}
+impl<T, F> Transducer for RetainTransducer<T, F>
+where
+    T: Transducer,
+    F: Fn(&T::Output) -> bool,
+{
+    type Input = T::Input;
+    type Output = T::Output;
+    type State = T::State;
+    fn start(&self) -> Self::State {
+        self.inner.start()
+    }
+    fn relation(
+        &self,
+        state: &Self::State,
+        input: &Self::Input,
+    ) -> Option<(Self::State, Self::Output)> {
+        let (next_state, output) = self.inner.relation(state, input)?;
+        (self.pred)(&output).then_some((next_state, output))
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        self.inner.accept(state)
+    }
+    fn stepout(&mut self) {
+        self.inner.stepout();
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct FoldTransducer<T, A, F> {
+    inner: T,
+    init: A,
+    f: F,
+}
+impl<T, A, F> FoldTransducer<T, A, F> {
+    pub fn new(inner: T, init: A, f: F) -> Self {
+        Self { inner, init, f }
+    }
+}
+impl<T, A, F> Transducer for FoldTransducer<T, A, F>
+where
+    T: Transducer,
+    A: Clone,
+    F: Fn(&A, &T::Output) -> A,
+{
+    type Input = T::Input;
+    type Output = T::Output;
+    type State = (T::State, A);
+    fn start(&self) -> Self::State {
+        (self.inner.start(), self.init.clone())
+    }
+    fn relation(
+        &self,
+        (state, acc): &Self::State,
+        input: &Self::Input,
+    ) -> Option<(Self::State, Self::Output)> {
+        let (next_state, output) = self.inner.relation(state, input)?;
+        let next_acc = (self.f)(acc, &output);
+        Some(((next_state, next_acc), output))
+    }
+    fn accept(&self, (state, _): &Self::State) -> bool {
+        self.inner.accept(state)
+    }
+    fn stepout(&mut self) {
+        self.inner.stepout();
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TryFoldTransducer<T, A, F> {
+    inner: T,
+    init: A,
+    f: F,
+}
+impl<T, A, F> TryFoldTransducer<T, A, F> {
+    pub fn new(inner: T, init: A, f: F) -> Self {
+        Self { inner, init, f }
+    }
+}
+impl<T, A, F> Transducer for TryFoldTransducer<T, A, F>
+where
+    T: Transducer,
+    A: Clone,
+    F: Fn(&A, &T::Output) -> Option<A>,
+{
+    type Input = T::Input;
+    type Output = T::Output;
+    type State = (T::State, A);
+    fn start(&self) -> Self::State {
+        (self.inner.start(), self.init.clone())
+    }
+    fn relation(
+        &self,
+        (state, acc): &Self::State,
+        input: &Self::Input,
+    ) -> Option<(Self::State, Self::Output)> {
+        let (next_state, output) = self.inner.relation(state, input)?;
+        let next_acc = (self.f)(acc, &output)?;
+        Some(((next_state, next_acc), output))
+    }
+    fn accept(&self, (state, _): &Self::State) -> bool {
+        self.inner.accept(state)
+    }
+    fn stepout(&mut self) {
+        self.inner.stepout();
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct AcceptTransducer<T, F> {
+    inner: T,
+    pred: F,
+}
+impl<T, F> AcceptTransducer<T, F> {
+    pub fn new(inner: T, pred: F) -> Self {
+        Self { inner, pred }
+    }
+}
+impl<T, F> Transducer for AcceptTransducer<T, F>
+where
+    T: Transducer,
+    F: Fn(&T::State) -> bool,
+{
+    type Input = T::Input;
+    type Output = T::Output;
+    type State = T::State;
+    fn start(&self) -> Self::State {
+        self.inner.start()
+    }
+    fn relation(
+        &self,
+        state: &Self::State,
+        input: &Self::Input,
+    ) -> Option<(Self::State, Self::Output)> {
+        self.inner.relation(state, input)
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        self.inner.accept(state) && (self.pred)(state)
+    }
+    fn stepout(&mut self) {
+        self.inner.stepout();
     }
 }
 
@@ -1006,11 +1193,18 @@ impl<A> Transducer for AlwaysAcceptingTransducer<A> {
 /// - `=> f g h`: [`FunctionalTransducer::new(f, g, h)`](`FunctionalTransducer`)
 /// - `@id`: [`IdentityTransducer::new()`](`IdentityTransducer`)
 /// - `@it e`: [`IteratorTransducer::new(e)`](`IteratorTransducer`)
-/// - `@map f`: [`MapTransducer::new(f)`](`MapTransducer`)
-/// - `@fmap f`: [`FilterMapTransducer::new(f)`](`FilterMapTransducer`)
+/// - `@map f`: `@id |> map(f)`
+/// - `@try_map f`: `@id |> try_map(f)`
 /// - `@seq e`: [`SequenceTransducer::new(e)`](`SequenceTransducer`)
 /// - `@rseq e`: [`RevSequenceTransducer::new(e)`](`RevSequenceTransducer`)
 /// - `@`: [`AlwaysAcceptingTransducer::new()`](`AlwaysAcceptingTransducer`)
+/// - `A |> method(args...)`: `Transducer::method(A, args...)`
+/// - `A |> map(f)`: `Transducer::map(A, f)`
+/// - `A |> try_map(f)`: `Transducer::try_map(A, f)`
+/// - `A |> retain(f)`: `Transducer::retain(A, f)`
+/// - `A |> with_fold(init, f)`: `Transducer::with_fold(A, init, f)`
+/// - `A |> with_try_fold(init, f)`: `Transducer::with_try_fold(A, init, f)`
+/// - `A |> accepting(f)`: `Transducer::accepting(A, f)`
 /// - `A . B`: [`ChainTransducer((A, B))`](`ChainTransducer`)
 /// - `A * B`: [`ProductTransducer((A, B))`](`ProductTransducer`)
 /// - `A & B`: [`IntersectionTransducer((A, B))`](`IntersectionTransducer`)
@@ -1048,8 +1242,8 @@ macro_rules! transducer {
     (@inner !>)                                              => { $crate::transducer!(@check RevLexicographicalTransducer::greater_than()) };
     (@inner @id)                                             => { $crate::transducer!(@check IdentityTransducer::new()) };
     (@inner @it $e:expr)                                     => { $crate::transducer!(@check IteratorTransducer::new($e)) };
-    (@inner @map $f:expr)                                    => { $crate::transducer!(@check MapTransducer::new($f)) };
-    (@inner @fmap $f:expr)                                   => { $crate::transducer!(@check FilterMapTransducer::new($f)) };
+    (@inner @map $f:expr)                                    => { $crate::transducer!(@check Transducer::map(IdentityTransducer::new(), $f)) };
+    (@inner @try_map $f:expr)                                => { $crate::transducer!(@check Transducer::try_map(IdentityTransducer::new(), $f)) };
     (@inner @seq $e:expr)                                    => { $crate::transducer!(@check SequenceTransducer::new($e)) };
     (@inner @rseq $e:expr)                                   => { $crate::transducer!(@check RevSequenceTransducer::new($e)) };
     (@inner @<$t:ty>)                                        => { $crate::transducer!(@check AlwaysAcceptingTransducer::<$t>::new()) };
@@ -1065,15 +1259,21 @@ macro_rules! transducer {
     (@prod [$($a:tt)*] [$($b:tt)*])                          => { $crate::transducer!(@prod [$($a)* [$($b)*]]) };
     (@prod [$($a:tt)*] [$($b:tt)*] * $($t:tt)*)              => { $crate::transducer!(@prod [$($a)* [$($b)*]] [] $($t)*) };
     (@prod [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*)         => { $crate::transducer!(@prod [$($a)*] [$($b)* $op] $($t)*) };
-    (@chain [$([$($a:tt)*])*])                               => { $crate::transducer!(@check ChainTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
-    (@chain [] [$($b:tt)*])                                  => { $crate::transducer!(@check $($b)*) };
+    (@chain [$([$($a:tt)*])*])                               => { $crate::transducer!(@check ChainTransducer(($($crate::transducer!(@wrap [] $($a)*),)*))) };
+    (@chain [] [$($b:tt)*])                                  => { $crate::transducer!(@wrap [] $($b)*) };
     (@chain [$($a:tt)*] [$($b:tt)*])                         => { $crate::transducer!(@chain [$($a)* [$($b)*]]) };
     (@chain [$($a:tt)*] [$($b:tt)*] . $($t:tt)*)             => { $crate::transducer!(@chain [$($a)* [$($b)*]] [] $($t)*) };
     (@chain [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*)        => { $crate::transducer!(@chain [$($a)*] [$($b)* $op] $($t)*) };
+    (@wrap [$($b:tt)*])                                      => { $crate::transducer!(@inner $($b)*) };
+    (@wrap [$($b:tt)*] |> $($t:tt)*)                         => { $crate::transducer!(@wrap_apply [$crate::transducer!(@inner $($b)*)] $($t)*) };
+    (@wrap [$($b:tt)*] $op:tt $($t:tt)*)                     => { $crate::transducer!(@wrap [$($b)* $op] $($t)*) };
+    (@wrapped [$e:expr])                                     => { $crate::transducer!(@check $e) };
+    (@wrapped [$e:expr] |> $($t:tt)*)                        => { $crate::transducer!(@wrap_apply [$e] $($t)*) };
+    (@wrap_apply [$e:expr] $method:ident($($args:expr),* $(,)?) $($t:tt)*) => { $crate::transducer!(@wrapped [Transducer::$method($e $(, $args)*)] $($t)*) };
     (@id $($t:tt)*)                                          => { $crate::transducer!(@inner @id $($t)*) };
     (@it $($t:tt)*)                                          => { $crate::transducer!(@inner @it $($t)*) };
     (@map $($t:tt)*)                                         => { $crate::transducer!(@inner @map $($t)*) };
-    (@fmap $($t:tt)*)                                        => { $crate::transducer!(@inner @fmap $($t)*) };
+    (@try_map $($t:tt)*)                                     => { $crate::transducer!(@inner @try_map $($t)*) };
     (@seq $($t:tt)*)                                         => { $crate::transducer!(@inner @seq $($t)*) };
     (@rseq $($t:tt)*)                                        => { $crate::transducer!(@inner @rseq $($t)*) };
     (@$tag:ident $($t:tt)*)                                  => { ::std::compile_error!(::std::stringify!($tag, $($t)*)) };
@@ -1344,9 +1544,9 @@ mod tests {
                     (
                         (
                             ((@rseq &aa) & (@id))
-                            . (@map |&(a, (x, _y))| x + a)
+                            |> map(|&(a, (x, _y))| x + a)
                             . (=> || 0usize, |s, i| Some(((s + i) / 2, (s + i) % 2)), |s| *s == 0)
-                        ) & (@map |&(_x, y)| y)
+                        ) & (@id |> map(|&(_x, y)| y))
                     ) . (!<=)
                 )
             );
@@ -1385,10 +1585,12 @@ mod tests {
 
     #[test]
     fn test_transducer_with_input() {
-        let mut with_input = transducer!(=> || 0usize,
-            |state: &usize, input: &usize| Some((state + *input, state + *input)),
-            |_: &usize| true)
-        .with_input();
+        let mut with_input = transducer!(
+            (=> || 0usize,
+                |state: &usize, input: &usize| Some((state + *input, state + *input)),
+                |_: &usize| true)
+            |> with_input()
+        );
         let start = with_input.start();
         assert_eq!(start, (0usize, ()));
         let log = trace(&mut with_input, [1usize]);
@@ -1424,39 +1626,125 @@ mod tests {
         let mut chain = transducer!(=> || 0usize,
             |state: &usize, input: &usize| Some((state + *input, state + *input)),
             |_: &usize| true)
-        .chain(MapTransducer::new(|x: &usize| x + 1usize));
+        .chain(IdentityTransducer::<usize>::new());
         let start = chain.start();
         assert_eq!(start, (0usize, ()));
         let log = trace(&mut chain, [2usize]);
-        assert_eq!(log, vec![((2usize, ()), 3usize)]);
+        assert_eq!(log, vec![((2usize, ()), 2usize)]);
+
+        let mut chain = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .chain(transducer!(@map |x: &usize| *x + 1usize));
+        assert_eq!(chain.start(), (0usize, ()));
+        assert_eq!(trace(&mut chain, [2usize]), vec![((2usize, ()), 3usize)]);
     }
 
     #[test]
     fn test_transducer_map() {
-        let mut mapped = transducer!(=> || 0usize,
-            |state: &usize, input: &usize| Some((state + *input, state + *input)),
-            |_: &usize| true)
-        .map(|output| output * 2usize);
+        let mut mapped = transducer!(
+            (=> || 0usize,
+                |state: &usize, input: &usize| Some((state + *input, state + *input)),
+                |_: &usize| true)
+            |> map(|output: &usize| *output * 2usize)
+        );
         let start = mapped.start();
-        assert_eq!(start, (0usize, ()));
+        assert_eq!(start, 0usize);
         let log = trace(&mut mapped, [3usize]);
-        assert_eq!(log, vec![((3usize, ()), 6usize)]);
+        assert_eq!(log, vec![(3usize, 6usize)]);
+
+        let mut mapped = transducer!(@map |input: &usize| *input + 10);
+        assert_eq!(mapped.start(), ());
+        assert_eq!(trace(&mut mapped, [1usize]), vec![((), 11usize)]);
     }
 
     #[test]
-    fn test_transducer_filter_map() {
-        let mut filtered = transducer!(=> || 0usize,
-            |state: &usize, input: &usize| Some((state + *input, state + *input)),
-            |_: &usize| true)
-        .filter_map(|output| {
-            if *output % 2 == 0 {
-                Some(output / 2)
-            } else {
-                None
-            }
-        });
+    fn test_transducer_try_map() {
+        let mut filtered = transducer!(
+            (=> || 0usize,
+                |state: &usize, input: &usize| Some((state + *input, state + *input)),
+                |_: &usize| true)
+            |> try_map(|output: &usize| {
+                if *output % 2 == 0 {
+                    Some(*output / 2)
+                } else {
+                    None
+                }
+            })
+        );
+        assert_eq!(filtered.start(), 0usize);
         assert!(trace(&mut filtered, [1usize]).is_empty());
-        assert_eq!(trace(&mut filtered, [2usize]), vec![((2usize, ()), 1usize)]);
+        assert_eq!(trace(&mut filtered, [2usize]), vec![(2usize, 1usize)]);
+
+        let mut mapped = transducer!(@try_map |input: &usize| {
+            (*input != 0).then_some(*input + 10)
+        });
+        assert_eq!(mapped.start(), ());
+        assert!(trace(&mut mapped, [0usize]).is_empty());
+        assert_eq!(trace(&mut mapped, [1usize]), vec![((), 11usize)]);
+    }
+
+    #[test]
+    fn test_transducer_retain() {
+        let mut retained = transducer!(
+            (=> || 0usize,
+                |state: &usize, input: &usize| Some((state + 1, *input)),
+                |_: &usize| true)
+            |> retain(|output: &usize| output % 2 == 0)
+        );
+        assert!(trace(&mut retained, [1usize]).is_empty());
+        assert_eq!(trace(&mut retained, [2usize]), vec![(1usize, 2usize)]);
+    }
+
+    #[test]
+    fn test_transducer_with_fold() {
+        let mut folded = transducer!(
+            @id |> with_fold(0usize, |acc: &usize, output: &usize| *acc + *output)
+        );
+        assert_eq!(folded.start(), ((), 0usize));
+        assert_eq!(
+            trace(&mut folded, [2usize, 3usize]),
+            vec![(((), 2usize), 2usize), (((), 5usize), 3usize)]
+        );
+    }
+
+    #[test]
+    fn test_transducer_with_try_fold() {
+        let mut folded = transducer!(@id |> with_try_fold(
+            0usize,
+            |acc: &usize, output: &usize| {
+                let next = *acc + *output;
+                (next <= 4).then_some(next)
+            }
+        ));
+        assert_eq!(
+            trace(&mut folded, [2usize, 1usize]),
+            vec![(((), 2usize), 2usize), (((), 3usize), 1usize)]
+        );
+        assert_eq!(
+            trace(&mut folded, [2usize, 3usize]),
+            vec![(((), 2usize), 2usize)]
+        );
+    }
+
+    #[test]
+    fn test_transducer_accepting() {
+        let accepting = transducer!(
+            (=> || 0usize,
+                |state: &usize, input: &usize| Some((state + *input, state + *input)),
+                |_: &usize| true)
+            |> accepting(|state: &usize| *state >= 3)
+        );
+
+        assert!(!accepting.accept(&0usize));
+
+        let (state, output) = accepting.relation(&0usize, &1usize).unwrap();
+        assert_eq!((state, output), (1usize, 1usize));
+        assert!(!accepting.accept(&state));
+
+        let (state, output) = accepting.relation(&state, &2usize).unwrap();
+        assert_eq!((state, output), (3usize, 3usize));
+        assert!(accepting.accept(&state));
     }
 
     #[test]
