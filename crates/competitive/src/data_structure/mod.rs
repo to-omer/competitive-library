@@ -16,6 +16,8 @@ pub use self::allocator::{Allocator, BoxAllocator, MemoryPool};
 pub use self::binary_indexed_tree::BinaryIndexedTree;
 #[codesnip::entry("BinaryIndexedTree2D")]
 pub use self::binary_indexed_tree_2d::BinaryIndexedTree2D;
+#[codesnip::entry("BinaryTrie")]
+pub use self::binary_trie::BinaryTrie;
 #[codesnip::entry("BitVector")]
 pub use self::bit_vector::{BitVector, RankSelectDictionaries};
 #[codesnip::entry("BitSet")]
@@ -112,6 +114,11 @@ mod binary_indexed_tree_2d;
     codesnip::entry("binary_search_tree", include("Allocator", "LazyMapMonoid"))
 )]
 pub mod binary_search_tree;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("BinaryTrie", include("algebra", "LazyMapMonoid"))
+)]
+mod binary_trie;
 #[cfg_attr(nightly, codesnip::entry("BitVector"))]
 mod bit_vector;
 #[cfg_attr(nightly, codesnip::entry("BitSet"))]

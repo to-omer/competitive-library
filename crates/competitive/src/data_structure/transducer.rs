@@ -1665,7 +1665,7 @@ mod tests {
                 |state: &usize, input: &usize| Some((state + *input, state + *input)),
                 |_: &usize| true)
             |> try_map(|output: &usize| {
-                if *output % 2 == 0 {
+                if (*output).is_multiple_of(2) {
                     Some(*output / 2)
                 } else {
                     None
@@ -1690,7 +1690,7 @@ mod tests {
             (=> || 0usize,
                 |state: &usize, input: &usize| Some((state + 1, *input)),
                 |_: &usize| true)
-            |> retain(|output: &usize| output % 2 == 0)
+            |> retain(|output: &usize| output.is_multiple_of(2))
         );
         assert!(trace(&mut retained, [1usize]).is_empty());
         assert_eq!(trace(&mut retained, [2usize]), vec![(1usize, 2usize)]);
