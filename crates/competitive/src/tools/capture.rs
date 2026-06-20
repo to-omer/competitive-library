@@ -117,6 +117,7 @@ macro_rules! crecurse {
         }
         |$($args: $argsty,)*| -> $ret {
             call(
+                #[allow(unused_variables)]
                 &|$func, $($args: $argsty,)* $($cargs: &mut $cargsty,)*| -> $ret {
                     $crate::crecurse!(@macro_def ($) $func $($cargs)*);
                     $body
