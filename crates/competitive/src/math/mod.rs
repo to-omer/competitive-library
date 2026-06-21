@@ -18,6 +18,8 @@ pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
 pub use self::array_vec::{ArrayVec, ToArrayVec, ToArrayVecScalar};
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
+#[codesnip::entry("BinomialPrefixSum")]
+pub use self::binomial_prefix_sum::{BinomialPolynomialPrefixSum, BinomialPrefixSum};
 #[codesnip::entry("bitwise_transform")]
 pub use self::bitwise_transform::bitwise_transform;
 #[codesnip::entry("BitwiseandConvolve")]
@@ -108,6 +110,11 @@ mod arbitrary_mod_binomial;
 mod array_vec;
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("BinomialPrefixSum", include("factorial", "MIntBase", "mo_algorithm"))
+)]
+mod binomial_prefix_sum;
 #[cfg_attr(nightly, codesnip::entry("bitwise_transform"))]
 mod bitwise_transform;
 #[cfg_attr(
