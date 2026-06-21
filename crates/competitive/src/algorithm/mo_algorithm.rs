@@ -54,38 +54,53 @@ macro_rules! mo_algorithm {
         |$dr:tt| $decr:expr,
         |$a:tt| $answer:expr $(,)?
     ) => {{
-        fn hilbert_curve_order(mut x: usize, mut y: usize, m: usize) -> usize {
-            let n = 1usize << m;
-            let mut ord = 0usize;
-            for k in (0..m).rev() {
-                let rx = x >> k & 1;
-                let ry = y >> k & 1;
-                ord += (1 << k * 2) * (3 * rx ^ ry);
-                if ry == 0 {
-                    if rx == 1 {
-                        x = n - x - 1;
-                        y = n - y - 1;
-                    }
-                    ::std::mem::swap(&mut x, &mut y);
-                }
+        fn mo_order<const SHIFTED: bool>(
+            lr: &[(usize, usize)],
+            maxv: usize,
+            width: usize,
+        ) -> (usize, Vec<usize>) {
+            let shift = usize::from(SHIFTED) * (width / 2);
+            let bucket = |x: usize| (x + shift) / width;
+            let buckets = bucket(maxv) + 1;
+            let mut pos = vec![0usize; buckets + 1];
+            for &(l, _) in lr {
+                pos[bucket(l) + 1] += 1;
             }
-            ord
+            for i in 1..=buckets {
+                pos[i] += pos[i - 1];
+            }
+            let mut idx = vec![0usize; lr.len()];
+            for (i, &(l, _)) in lr.iter().enumerate() {
+                let p = &mut pos[bucket(l)];
+                idx[*p] = i;
+                *p += 1;
+            }
+            idx[..pos[0]].sort_unstable_by_key(|&i| lr[i].1);
+            for b in (2..buckets).step_by(2) {
+                idx[pos[b - 1]..pos[b]].sort_unstable_by_key(|&i| lr[i].1);
+            }
+            for b in (1..buckets).step_by(2) {
+                idx[pos[b - 1]..pos[b]].sort_unstable_by_key(|&i| ::std::cmp::Reverse(lr[i].1));
+            }
+            let (mut l, mut r, mut len) = (0usize, 0usize, 0usize);
+            for &i in &idx {
+                let (nl, nr) = lr[i];
+                len += l.abs_diff(nl) + r.abs_diff(nr);
+                l = nl;
+                r = nr;
+            }
+            (len, idx)
         }
         let lr: &[(usize, usize)] = $lr;
-        let q = lr.len();
         let maxv = lr.iter().map(|&(l, r)| l.max(r)).max().unwrap_or_default();
-        let mut m = 0usize;
-        while maxv >= 1 << m {
-            m += 1;
-        }
-        let mut idx: Vec<usize> = (0..q).collect();
-        let ord: Vec<_> = lr
-            .iter()
-            .map(|&(l, r)| hilbert_curve_order(l, r, m))
-            .collect();
-        idx.sort_unstable_by_key(|&i| ord[i]);
+        let width = ((maxv as f64) / (lr.len().max(1) as f64).sqrt())
+            .round()
+            .max(1.0) as usize;
+        let (len0, idx0) = mo_order::<false>(lr, maxv, width);
+        let (len1, idx1) = mo_order::<true>(lr, maxv, width);
+        let idx = if len0 <= len1 { idx0 } else { idx1 };
         let (mut $l, mut $r) = (0usize, 0usize);
-        for &$a in idx.iter() {
+        for &$a in &idx {
             let (nl, nr) = lr[$a];
             while $l > nl {
                 $l -= 1;
