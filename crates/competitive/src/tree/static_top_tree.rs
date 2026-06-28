@@ -275,6 +275,24 @@ impl StaticTopTree {
         StaticTopTreeDp::new(self, vertices, edges)
     }
 
+    pub fn fold_all<C>(
+        &self,
+        vertices: &[<C as Cluster>::Vertex],
+        edges: &[<C as Cluster>::Edge],
+    ) -> <C as Cluster>::Point
+    where
+        C: Cluster,
+    {
+        assert_eq!(vertices.len(), self.vertices_size());
+        assert_eq!(edges.len(), self.edges_size());
+        let path = self.fold_compress::<C>(
+            vertices,
+            edges,
+            self.compress_roots[self.root].expect("root compress tree must exist"),
+        );
+        C::add_edge(&path)
+    }
+
     fn build_compress(&mut self, mut vertex: usize, heavy_child: &[usize], mask: &[u64]) -> Node {
         let start = vertex;
         let mut stack = Vec::new();
@@ -387,6 +405,34 @@ impl StaticTopTree {
         }
     }
 
+    fn fold_compress<C>(
+        &self,
+        vertices: &[<C as Cluster>::Vertex],
+        edges: &[<C as Cluster>::Edge],
+        slot: Slot,
+    ) -> <C as Cluster>::Path
+    where
+        C: Cluster,
+    {
+        match slot {
+            Slot::CompressLeaf(vertex) => {
+                let point = self.fold_point::<C>(vertices, edges, vertex);
+                C::add_vertex(
+                    &point,
+                    &vertices[vertex],
+                    self.parent_edge_ref(edges, vertex),
+                )
+            }
+            Slot::CompressInner(id) => {
+                let node = &self.compressed[id];
+                let left = self.fold_compress::<C>(vertices, edges, node.left);
+                let right = self.fold_compress::<C>(vertices, edges, node.right);
+                C::compress(&left, &right)
+            }
+            Slot::RakeLeaf(_) | Slot::RakeInner(_) => unreachable!(),
+        }
+    }
+
     fn init_point<C>(
         &self,
         data: &mut StaticTopTreeDataBuilder<C>,
@@ -404,6 +450,22 @@ impl StaticTopTree {
         };
         data.light_points[vertex] = point.clone();
         point
+    }
+
+    fn fold_point<C>(
+        &self,
+        vertices: &[<C as Cluster>::Vertex],
+        edges: &[<C as Cluster>::Edge],
+        vertex: usize,
+    ) -> <C as Cluster>::Point
+    where
+        C: Cluster,
+    {
+        if let Some(slot) = self.rake_roots[vertex] {
+            self.fold_rake::<C>(vertices, edges, slot)
+        } else {
+            C::unit_point()
+        }
     }
 
     fn init_rake<C>(
@@ -434,6 +496,34 @@ impl StaticTopTree {
                     left: left.clone(),
                     right: right.clone(),
                 });
+                C::rake(&left, &right)
+            }
+            Slot::CompressLeaf(_) | Slot::CompressInner(_) => unreachable!(),
+        }
+    }
+
+    fn fold_rake<C>(
+        &self,
+        vertices: &[<C as Cluster>::Vertex],
+        edges: &[<C as Cluster>::Edge],
+        slot: Slot,
+    ) -> <C as Cluster>::Point
+    where
+        C: Cluster,
+    {
+        match slot {
+            Slot::RakeLeaf(vertex) => {
+                let path = self.fold_compress::<C>(
+                    vertices,
+                    edges,
+                    self.compress_roots[vertex].expect("light child path must exist"),
+                );
+                C::add_edge(&path)
+            }
+            Slot::RakeInner(id) => {
+                let node = &self.raked[id];
+                let left = self.fold_rake::<C>(vertices, edges, node.left);
+                let right = self.fold_rake::<C>(vertices, edges, node.right);
                 C::rake(&left, &right)
             }
             Slot::CompressLeaf(_) | Slot::CompressInner(_) => unreachable!(),
@@ -876,6 +966,127 @@ mod tests {
         }
     }
 
+    const MATCHING_NEG_INF: i64 = i64::MIN / 4;
+
+    struct MatchingCluster;
+
+    impl MatchingCluster {
+        fn point() -> [Vec<i64>; 2] {
+            std::array::from_fn(|_| Vec::new())
+        }
+
+        fn path() -> [[Vec<i64>; 2]; 2] {
+            std::array::from_fn(|_| Self::point())
+        }
+
+        fn relax(dst: &mut Vec<i64>, src: &[i64], shift: usize, add: i64) {
+            for (i, &x) in src.iter().enumerate() {
+                if x == MATCHING_NEG_INF {
+                    continue;
+                }
+                let j = i + shift;
+                if dst.len() <= j {
+                    dst.resize(j + 1, MATCHING_NEG_INF);
+                }
+                dst[j] = dst[j].max(x + add);
+            }
+        }
+
+        fn convolve(dst: &mut Vec<i64>, a: &[i64], b: &[i64]) {
+            if a.is_empty() || b.is_empty() {
+                return;
+            }
+            let len = a.len() + b.len() - 1;
+            if dst.len() < len {
+                dst.resize(len, MATCHING_NEG_INF);
+            }
+            for (i, &x) in a.iter().enumerate() {
+                if x == MATCHING_NEG_INF {
+                    continue;
+                }
+                for (j, &y) in b.iter().enumerate() {
+                    if y != MATCHING_NEG_INF {
+                        dst[i + j] = dst[i + j].max(x + y);
+                    }
+                }
+            }
+        }
+    }
+
+    impl Cluster for MatchingCluster {
+        type Vertex = ();
+        type Edge = i64;
+        type Path = [[Vec<i64>; 2]; 2];
+        type Point = [Vec<i64>; 2];
+
+        fn unit_path() -> Self::Path {
+            let mut path = Self::path();
+            path[0][0] = vec![0];
+            path
+        }
+
+        fn unit_point() -> Self::Point {
+            let mut point = Self::point();
+            point[0] = vec![0];
+            point
+        }
+
+        fn compress(left: &Self::Path, right: &Self::Path) -> Self::Path {
+            let mut path = Self::path();
+            for (lt, left_row) in left.iter().enumerate() {
+                for (lb, left_seq) in left_row.iter().enumerate() {
+                    for (rt, right_row) in right.iter().enumerate() {
+                        if lb == 1 && rt == 1 {
+                            continue;
+                        }
+                        for (rb, right_seq) in right_row.iter().enumerate() {
+                            Self::convolve(&mut path[lt][rb], left_seq, right_seq);
+                        }
+                    }
+                }
+            }
+            path
+        }
+
+        fn rake(left: &Self::Point, right: &Self::Point) -> Self::Point {
+            let mut point = Self::point();
+            for (lu, left_seq) in left.iter().enumerate() {
+                for (ru, right_seq) in right.iter().enumerate() {
+                    if lu == 1 && ru == 1 {
+                        continue;
+                    }
+                    Self::convolve(&mut point[lu | ru], left_seq, right_seq);
+                }
+            }
+            point
+        }
+
+        fn add_edge(path: &Self::Path) -> Self::Point {
+            let mut point = Self::point();
+            for (top, row) in path.iter().enumerate() {
+                for seq in row {
+                    Self::relax(&mut point[top], seq, 0, 0);
+                }
+            }
+            point
+        }
+
+        fn add_vertex(
+            point: &Self::Point,
+            _vertex: &Self::Vertex,
+            parent_edge: Option<&Self::Edge>,
+        ) -> Self::Path {
+            let mut path = Self::path();
+            for (used, seq) in point.iter().enumerate() {
+                Self::relax(&mut path[0][used], seq, 0, 0);
+            }
+            if let Some(&w) = parent_edge {
+                Self::relax(&mut path[1][1], &point[0], 1, w);
+            }
+            path
+        }
+    }
+
     fn naive_rooted(
         graph: &UndirectedSparseGraph,
         vertices: &[MInt],
@@ -937,6 +1148,10 @@ mod tests {
         let m = graph.edges_size();
         let (mut vertices, mut edges) = gen_weights(rng, n, m);
         let tree = graph.static_top_tree(0);
+        assert_eq!(
+            tree.fold_all::<FixedCluster>(&vertices, &edges),
+            naive_rooted(graph, &vertices, &edges, 0)
+        );
         let mut dp = tree.dp::<FixedCluster>(vertices.clone(), edges.clone());
         assert_eq!(*dp.fold_all(), naive_rooted(graph, &vertices, &edges, 0));
         for (v, &vertex) in vertices.iter().enumerate() {
@@ -1039,6 +1254,65 @@ mod tests {
         ] {
             run_fixed_case(&graph, 30, &mut rng);
             run_reroot_case(&graph, 20, &mut rng);
+        }
+    }
+
+    #[test]
+    fn static_top_tree_matching_matches_bruteforce() {
+        fn brute_matching(graph: &UndirectedSparseGraph, weights: &[i64]) -> Vec<i64> {
+            let mut best = vec![MATCHING_NEG_INF; graph.vertices_size()];
+            best[0] = 0;
+            for mask in 0usize..1usize << graph.edges_size() {
+                let mut used = vec![false; graph.vertices_size()];
+                let mut count = 0usize;
+                let mut sum = 0i64;
+                let mut ok = true;
+                for (eid, &(u, v)) in graph.edges.iter().enumerate() {
+                    if mask >> eid & 1 == 0 {
+                        continue;
+                    }
+                    if used[u] || used[v] {
+                        ok = false;
+                        break;
+                    }
+                    used[u] = true;
+                    used[v] = true;
+                    count += 1;
+                    sum += weights[eid];
+                }
+                if ok {
+                    best[count] = best[count].max(sum);
+                }
+            }
+            best
+        }
+
+        let mut rng = Xorshift::default();
+        let mut graphs = vec![
+            UndirectedSparseGraph::from_edges(1, vec![]),
+            rng.random(PathTree(2..=11usize)),
+            rng.random(StarTree(2..=11usize)),
+            balanced_tree(11),
+        ];
+        for _ in 0..80 {
+            graphs.push(rng.random(PruferSequence(1..=11usize)));
+        }
+        for (case, graph) in graphs.into_iter().enumerate() {
+            let weights = (0..graph.edges_size())
+                .map(|eid| {
+                    if case < 4 {
+                        eid as i64 % 7 - 3
+                    } else {
+                        rng.random(-20i64..21)
+                    }
+                })
+                .collect::<Vec<_>>();
+            let tree = graph.static_top_tree(0);
+            let mut got = tree
+                .fold_all::<MatchingCluster>(&vec![(); graph.vertices_size()], &weights)[0]
+                .clone();
+            got.resize(graph.vertices_size(), MATCHING_NEG_INF);
+            assert_eq!(got, brute_matching(&graph, &weights), "case={case}");
         }
     }
 }
