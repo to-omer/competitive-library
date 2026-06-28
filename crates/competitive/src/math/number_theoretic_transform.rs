@@ -181,16 +181,11 @@ where
     }
     if v == 1 {
         let mut w1 = MInt::<M>::one();
-        for (s, a) in a.chunks_exact_mut(2).enumerate() {
-            unsafe {
-                let (l, r) = a.split_at_mut(1);
-                let x0 = l.get_unchecked_mut(0);
-                let x1 = r.get_unchecked_mut(0);
-                let a0 = *x0;
-                let a1 = *x1 * w1;
-                *x0 = a0 + a1;
-                *x1 = a0 - a1;
-            }
+        for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+            let a0 = *x0;
+            let a1 = *x1 * w1;
+            *x0 = a0 + a1;
+            *x1 = a0 - a1;
             w1 *= MInt::<M>::new_unchecked(M::INFO.rate2[s.trailing_ones() as usize]);
         }
     }
@@ -204,16 +199,11 @@ where
     let mut v = 1;
     if n.trailing_zeros() & 1 == 1 {
         let mut w1 = MInt::<M>::one();
-        for (s, a) in a.chunks_exact_mut(2).enumerate() {
-            unsafe {
-                let (l, r) = a.split_at_mut(1);
-                let x0 = l.get_unchecked_mut(0);
-                let x1 = r.get_unchecked_mut(0);
-                let a0 = *x0;
-                let a1 = *x1;
-                *x0 = a0 + a1;
-                *x1 = (a0 - a1) * w1;
-            }
+        for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+            let a0 = *x0;
+            let a1 = *x1;
+            *x0 = a0 + a1;
+            *x1 = (a0 - a1) * w1;
             w1 *= MInt::<M>::new_unchecked(M::INFO.inv_rate2[s.trailing_ones() as usize]);
         }
         v <<= 1;
@@ -518,11 +508,11 @@ mod ntt_simd {
         }
         if v == 1 {
             let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(2).enumerate() {
-                let a0 = *block.get_unchecked(0);
-                let a1 = M::mod_mul(*block.get_unchecked(1), w1);
-                *block.get_unchecked_mut(0) = M::mod_add(a0, a1);
-                *block.get_unchecked_mut(1) = M::mod_sub(a0, a1);
+            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+                let a0 = *x0;
+                let a1 = M::mod_mul(*x1, w1);
+                *x0 = M::mod_add(a0, a1);
+                *x1 = M::mod_sub(a0, a1);
                 w1 = M::mod_mul(w1, M::INFO.rate2[s.trailing_ones() as usize]);
             }
         }
@@ -550,11 +540,11 @@ mod ntt_simd {
         let mut v = 1;
         if n.trailing_zeros() & 1 == 1 {
             let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(2).enumerate() {
-                let a0 = *block.get_unchecked(0);
-                let a1 = *block.get_unchecked(1);
-                *block.get_unchecked_mut(0) = M::mod_add(a0, a1);
-                *block.get_unchecked_mut(1) = M::mod_mul(M::mod_sub(a0, a1), w1);
+            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+                let a0 = *x0;
+                let a1 = *x1;
+                *x0 = M::mod_add(a0, a1);
+                *x1 = M::mod_mul(M::mod_sub(a0, a1), w1);
                 w1 = M::mod_mul(w1, M::INFO.inv_rate2[s.trailing_ones() as usize]);
             }
             v <<= 1;
@@ -707,11 +697,11 @@ mod ntt_simd {
         }
         if v == 1 {
             let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(2).enumerate() {
-                let a0 = *block.get_unchecked(0);
-                let a1 = M::mod_mul(*block.get_unchecked(1), w1);
-                *block.get_unchecked_mut(0) = M::mod_add(a0, a1);
-                *block.get_unchecked_mut(1) = M::mod_sub(a0, a1);
+            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+                let a0 = *x0;
+                let a1 = M::mod_mul(*x1, w1);
+                *x0 = M::mod_add(a0, a1);
+                *x1 = M::mod_sub(a0, a1);
                 w1 = M::mod_mul(w1, M::INFO.rate2[s.trailing_ones() as usize]);
             }
         }
@@ -738,11 +728,11 @@ mod ntt_simd {
         let mut v = 1;
         if n.trailing_zeros() & 1 == 1 {
             let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(2).enumerate() {
-                let a0 = *block.get_unchecked(0);
-                let a1 = *block.get_unchecked(1);
-                *block.get_unchecked_mut(0) = M::mod_add(a0, a1);
-                *block.get_unchecked_mut(1) = M::mod_mul(M::mod_sub(a0, a1), w1);
+            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+                let a0 = *x0;
+                let a1 = *x1;
+                *x0 = M::mod_add(a0, a1);
+                *x1 = M::mod_mul(M::mod_sub(a0, a1), w1);
                 w1 = M::mod_mul(w1, M::INFO.inv_rate2[s.trailing_ones() as usize]);
             }
             v <<= 1;
