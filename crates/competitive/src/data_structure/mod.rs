@@ -43,6 +43,8 @@ pub use self::container::{
 pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
 pub use self::disjoint_sparse_table::DisjointSparseTable;
+#[codesnip::entry("DoublyLinkedList")]
+pub use self::doubly_linked_list::DoublyLinkedList;
 #[codesnip::entry("FibonacciHash")]
 pub use self::fibonacci_hash::{
     FibHashMap, FibHashSet, FibonacciHasher, FibonacciHasheru32, FibonacciHasheru64,
@@ -141,6 +143,8 @@ mod container;
 mod counter;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
 mod disjoint_sparse_table;
+#[cfg_attr(nightly, codesnip::entry("DoublyLinkedList"))]
+mod doubly_linked_list;
 #[cfg_attr(nightly, codesnip::entry("FibonacciHash"))]
 mod fibonacci_hash;
 #[cfg_attr(nightly, codesnip::entry("Static2DTree"))]
