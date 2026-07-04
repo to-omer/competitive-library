@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BLOCK_SCALE","DIRECT_SIZE"],"enum":["FixedRangeProduct"],"fn":["alpha_k","block_products","fold_slice","inverse_ackermann","scaled_block_shift"],"struct":["BlockProducts","StaticRangeProduct"]};
