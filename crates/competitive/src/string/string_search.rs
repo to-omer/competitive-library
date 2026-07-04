@@ -1,4 +1,4 @@
-use super::{RangeMinimumQuery, SuffixArray};
+use super::{MinOperation, StaticRangeProduct, SuffixArray};
 use std::{cmp::Ordering, ops::Range};
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -60,7 +60,7 @@ pub struct StringSearch<T> {
     suffix_array: SuffixArray,
     lcp_array: Vec<usize>,
     rank: Vec<usize>,
-    rmq: RangeMinimumQuery<usize>,
+    rmq: StaticRangeProduct<MinOperation<usize>>,
 }
 
 impl<T> StringSearch<T>
@@ -71,7 +71,7 @@ where
         let suffix_array = SuffixArray::new(&text);
 
         let (lcp_array, rank) = suffix_array.lcp_array_with_rank(&text);
-        let rmq = RangeMinimumQuery::new(lcp_array.clone());
+        let rmq = StaticRangeProduct::<MinOperation<_>>::new(lcp_array.clone());
 
         Self {
             text,
