@@ -83,6 +83,8 @@ pub use self::slope_trick::SlopeTrick;
 pub use self::sparse_set::SparseSet;
 #[codesnip::entry("SplayTree")]
 pub use self::splay_tree::{SplayMap, SplaySequence};
+#[codesnip::entry("StaticRangeProduct")]
+pub use self::static_range_product::StaticRangeProduct;
 #[codesnip::entry("SubmaskRangeQuery")]
 pub use self::submask_range_query::SubmaskRangeQuery;
 #[codesnip::entry("transducer")]
@@ -217,6 +219,11 @@ mod sparse_set;
     codesnip::entry("SplayTree", include("Allocator", "LazyMapMonoid"))
 )]
 pub mod splay_tree;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))
+)]
+mod static_range_product;
 #[cfg_attr(
     nightly,
     codesnip::entry("SubmaskRangeQuery", include("algebra", "BitDp", "Xorshift"))
