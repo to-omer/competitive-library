@@ -473,8 +473,8 @@ where
     where
         A: Allocator<BstNode<Spec::Data, Spec::Parent>>,
     {
-        assert!(self.reborrow().left().descend().is_err());
-        assert!(self.reborrow().right().descend().is_err());
+        debug_assert!(self.reborrow().left().descend().is_err());
+        debug_assert!(self.reborrow().right().descend().is_err());
         allocator.deallocate(self.node).data
     }
 

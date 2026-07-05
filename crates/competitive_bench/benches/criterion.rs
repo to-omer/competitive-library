@@ -2,6 +2,7 @@ use criterion::{Criterion, criterion_group, criterion_main};
 use std::time::Duration;
 
 mod barrett_reduction;
+mod dynamic_sequence;
 mod fast_io;
 mod gcd;
 mod mint;
@@ -17,6 +18,7 @@ criterion_group!(
         barrett_reduction::bench_barrett_reduction_u32,
         barrett_reduction::bench_barrett_reduction_u64,
         barrett_reduction::bench_barrett_reduction_u128,
+        dynamic_sequence::bench_dynamic_sequence,
         gcd::bench_gcd,
         gcd::bench_extgcd,
         gcd::bench_modinv,

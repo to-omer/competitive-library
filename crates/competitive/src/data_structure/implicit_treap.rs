@@ -83,6 +83,9 @@ where
     T: LazyMapMonoid,
 {
     fn update_act(mut node: BstDataMutRef<'_, Self>, act: &T::Act) {
+        if T::is_act_unit(act) {
+            return;
+        }
         T::act_operate_assign(&mut node.data_mut().value.act, act);
         node.data_mut().value.key = T::act_key(&node.reborrow().into_data().value.key, act);
         if let Some(agg) = T::act_agg(&node.reborrow().into_data().value.agg, act) {
@@ -111,14 +114,17 @@ where
     type Data = ImplicitTreapData<T>;
 
     fn top_down(mut node: BstDataMutRef<'_, Self>) {
-        let act = replace(&mut node.data_mut().value.act, T::act_unit());
-        if let Ok(left) = node.reborrow_datamut().left().descend() {
-            Self::update_act(left, &act);
+        if !T::is_act_unit(&node.reborrow().into_data().value.act) {
+            let act = replace(&mut node.data_mut().value.act, T::act_unit());
+            if let Ok(left) = node.reborrow_datamut().left().descend() {
+                Self::update_act(left, &act);
+            }
+            if let Ok(right) = node.reborrow_datamut().right().descend() {
+                Self::update_act(right, &act);
+            }
         }
-        if let Ok(right) = node.reborrow_datamut().right().descend() {
-            Self::update_act(right, &act);
-        }
-        if replace(&mut node.data_mut().rev, false) {
+        if node.reborrow().into_data().rev {
+            node.data_mut().rev = false;
             if let Ok(left) = node.reborrow_datamut().left().descend() {
                 Self::reverse(left);
             }

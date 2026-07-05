@@ -8,12 +8,16 @@ use std::{
 pub trait LazyMapMonoid {
     type Key;
     type Agg: Clone;
-    type Act: Clone;
+    type Act: Clone + PartialEq;
     type AggMonoid: Monoid<T = Self::Agg>;
     type ActMonoid: Monoid<T = Self::Act>;
     type KeyAct: MonoidAct<Key = Self::Key, Act = Self::Act, ActMonoid = Self::ActMonoid>;
     fn single_agg(key: &Self::Key) -> Self::Agg;
     fn toggle(_x: &mut Self::Agg) {}
+    #[inline]
+    fn is_act_unit(act: &Self::Act) -> bool {
+        <Self::ActMonoid as Unital>::is_unit(act)
+    }
     fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg>;
 
     fn act_key(x: &Self::Key, a: &Self::Act) -> Self::Key {
@@ -92,6 +96,7 @@ pub struct FlattenLazy<M> {
 impl<M> LazyMapMonoid for FlattenLazy<M>
 where
     M: Monoid,
+    M::T: PartialEq,
 {
     type Key = M::T;
     type Agg = M::T;
@@ -123,10 +128,11 @@ where
     fn single_agg(key: &Self::Key) -> Self::Agg {
         (*key, T::one())
     }
-    fn act_agg(&(x, y): &Self::Agg, &a: &Self::Act) -> Option<Self::Agg> {
-        Some(if <Self::ActMonoid as Unital>::is_unit(&a) {
+    fn act_agg(&(x, y): &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+        Some(if Self::is_act_unit(a) {
             (x, y)
         } else {
+            let a = *a;
             (x + a * y, y)
         })
     }
@@ -148,10 +154,11 @@ where
     fn single_agg(key: &Self::Key) -> Self::Agg {
         (*key, T::one())
     }
-    fn act_agg(&(x, y): &Self::Agg, &(a, b): &Self::Act) -> Option<Self::Agg> {
-        Some(if <Self::ActMonoid as Unital>::is_unit(&(a, b)) {
+    fn act_agg(&(x, y): &Self::Agg, act: &Self::Act) -> Option<Self::Agg> {
+        Some(if Self::is_act_unit(act) {
             (x, y)
         } else {
+            let &(a, b) = act;
             (a * x + b * y, y)
         })
     }
@@ -237,7 +244,7 @@ where
         key.clone()
     }
     fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
-        Some(if <Self::ActMonoid as Unital>::is_unit(a) {
+        Some(if Self::is_act_unit(a) {
             x.clone()
         } else {
             x.clone() + a.clone()
@@ -262,7 +269,7 @@ where
         key.clone()
     }
     fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
-        Some(if <Self::ActMonoid as Unital>::is_unit(a) {
+        Some(if Self::is_act_unit(a) {
             x.clone()
         } else {
             x.clone() + a.clone()
@@ -523,7 +530,7 @@ where
         Self::single(key, T::one())
     }
     fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
-        Some(if <Self::ActMonoid as Unital>::is_unit(a) {
+        Some(if Self::is_act_unit(a) {
             x.clone()
         } else if x.size.is_zero() {
             Self::unit()

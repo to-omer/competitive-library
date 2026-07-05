@@ -69,6 +69,9 @@ where
     }
     #[inline]
     fn update_at(&mut self, k: usize, x: &M::Act) {
+        if M::is_act_unit(x) {
+            return;
+        }
         let nx = M::act_agg(&self.seg[k].0, x);
         if k < self.n {
             self.seg[k].1 = M::act_operate(&self.seg[k].1, x);
@@ -90,6 +93,9 @@ where
     fn propagate_at(&mut self, k: usize) {
         debug_assert!(k < self.n);
         let x = replace(&mut self.seg[k].1, M::act_unit());
+        if M::is_act_unit(&x) {
+            return;
+        }
         self.update_at(2 * k, &x);
         self.update_at(2 * k + 1, &x);
     }
@@ -116,6 +122,9 @@ where
         R: RangeBounds<usize>,
     {
         let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        if M::is_act_unit(&x) {
+            return;
+        }
         let mut a = range.start + self.n;
         let mut b = range.end + self.n;
         self.propagate(a, false, false);

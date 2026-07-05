@@ -228,6 +228,9 @@ where
     }
 
     fn apply_at(&mut self, node: usize, depth: usize, act: &M::Act) {
+        if M::is_act_unit(act) {
+            return;
+        }
         if let Some(agg) = M::act_agg(&self.nodes[node].agg, act) {
             self.nodes[node].agg = agg;
             if depth > 0 {
@@ -248,6 +251,9 @@ where
 
     fn push_at(&mut self, node: usize, depth: usize) {
         let act = replace(&mut self.nodes[node].lazy, M::act_unit());
+        if M::is_act_unit(&act) {
+            return;
+        }
         let child = self.nodes[node].child;
         for child in child {
             if child != usize::MAX {
@@ -502,7 +508,7 @@ mod tests {
         }
 
         fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
-            (*a == 0)
+            Self::is_act_unit(a)
                 .then_some(x.clone())
                 .or_else(|| (x.len() <= 1).then(|| x.iter().map(|x| x + a).collect()))
         }

@@ -144,6 +144,9 @@ where
     where
         Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
+        if L::is_act_unit(act) {
+            return;
+        }
         L::act_operate_assign(&mut node.data_mut().bst_data_mut().act, act);
         node.data_mut().bst_data_mut().key =
             L::act_key(&node.reborrow().into_data().bst_data().key, act);
@@ -159,6 +162,9 @@ where
     where
         Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
+        if L::is_act_unit(&node.reborrow().into_data().bst_data().act) {
+            return;
+        }
         let act = replace(&mut node.data_mut().bst_data_mut().act, L::act_unit());
         if let Ok(left) = node.reborrow_datamut().left().descend() {
             Self::update_act(left, &act);

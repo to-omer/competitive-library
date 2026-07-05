@@ -44,6 +44,9 @@ where
     T: LazyMapMonoid,
 {
     pub fn update_lazy(mut node: NodeRef<marker::DataMut<'_>, Self>, lazy: &T::Act) {
+        if T::is_act_unit(lazy) {
+            return;
+        }
         T::act_operate_assign(&mut node.data_mut().lazy, lazy);
         node.data_mut().key = T::act_key(&node.data().key, lazy);
         if let Some(nxlazy) = T::act_agg(&node.data().agg, lazy) {
@@ -59,14 +62,17 @@ where
         node.data_mut().rev ^= true;
     }
     fn propagate(node: NodeRef<marker::DataMut<'_>, Self>) -> NodeRef<marker::DataMut<'_>, Self> {
-        let lazy = replace(&mut node.data_mut().lazy, T::act_unit());
-        if let Some(left) = node.left() {
-            Self::update_lazy(left, &lazy);
+        if !T::is_act_unit(&node.data().lazy) {
+            let lazy = replace(&mut node.data_mut().lazy, T::act_unit());
+            if let Some(left) = node.left() {
+                Self::update_lazy(left, &lazy);
+            }
+            if let Some(right) = node.right() {
+                Self::update_lazy(right, &lazy);
+            }
         }
-        if let Some(right) = node.right() {
-            Self::update_lazy(right, &lazy);
-        }
-        if replace(&mut node.data_mut().rev, false) {
+        if node.data().rev {
+            node.data_mut().rev = false;
             if let Some(left) = node.left() {
                 Self::reverse(left);
             }

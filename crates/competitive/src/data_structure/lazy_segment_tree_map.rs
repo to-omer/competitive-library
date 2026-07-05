@@ -8,7 +8,7 @@ use std::{
 
 pub struct LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Act: PartialEq>,
+    M: LazyMapMonoid,
 {
     n: usize,
     seg: HashMap<usize, (M::Agg, M::Act)>,
@@ -16,7 +16,7 @@ where
 
 impl<M> Clone for LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Act: PartialEq>,
+    M: LazyMapMonoid,
 {
     fn clone(&self) -> Self {
         Self {
@@ -28,7 +28,7 @@ where
 
 impl<M> Debug for LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Agg: Debug, Act: PartialEq + Debug>,
+    M: LazyMapMonoid<Agg: Debug, Act: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTreeMap")
@@ -40,7 +40,7 @@ where
 
 impl<M> LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Act: PartialEq>,
+    M: LazyMapMonoid,
 {
     pub fn new(n: usize) -> Self {
         Self {
@@ -54,6 +54,9 @@ where
     }
     #[inline]
     fn update_at(&mut self, k: usize, x: &M::Act) {
+        if M::is_act_unit(x) {
+            return;
+        }
         let n = self.n;
         let a = self.get_mut(k);
         let nx = M::act_agg(&a.0, x);
@@ -86,6 +89,9 @@ where
             Some((_, x)) => replace(x, M::act_unit()),
             None => M::act_unit(),
         };
+        if M::is_act_unit(&x) {
+            return;
+        }
         self.update_at(2 * k, &x);
         self.update_at(2 * k + 1, &x);
     }
@@ -112,6 +118,9 @@ where
         R: RangeBounds<usize>,
     {
         let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        if M::is_act_unit(&x) {
+            return;
+        }
         let mut a = range.start + self.n;
         let mut b = range.end + self.n;
         self.propagate(a, false, false);
