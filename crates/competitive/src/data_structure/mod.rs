@@ -49,6 +49,8 @@ pub use self::doubly_linked_list::DoublyLinkedList;
 pub use self::fibonacci_hash::{
     FibHashMap, FibHashSet, FibonacciHasher, FibonacciHasheru32, FibonacciHasheru64,
 };
+#[codesnip::entry("ImplicitTreap")]
+pub use self::implicit_treap::ImplicitTreap;
 #[codesnip::entry("Static2DTree")]
 pub use self::kdtree::Static2DTree;
 #[codesnip::entry("LazySegmentTree")]
@@ -149,6 +151,11 @@ mod disjoint_sparse_table;
 mod doubly_linked_list;
 #[cfg_attr(nightly, codesnip::entry("FibonacciHash"))]
 mod fibonacci_hash;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("ImplicitTreap", include("binary_search_tree", "Xorshift"))
+)]
+mod implicit_treap;
 #[cfg_attr(nightly, codesnip::entry("Static2DTree"))]
 mod kdtree;
 #[cfg_attr(

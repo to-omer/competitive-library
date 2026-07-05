@@ -131,6 +131,13 @@ where
         self.right.as_mut().map(|node| node.borrow_datamut())
     }
 
+    pub fn split_mid<Seek>(&mut self, seeker: Seek, eq_left: bool) -> Split<'_, Spec>
+    where
+        Seek: BstSeeker<Spec = Spec>,
+    {
+        Split::new(&mut self.mid, seeker, eq_left)
+    }
+
     pub fn manually_merge<F>(&mut self, mut f: F)
     where
         F: FnMut(Option<BstRoot<Spec>>, Option<BstRoot<Spec>>) -> Option<BstRoot<Spec>>,
