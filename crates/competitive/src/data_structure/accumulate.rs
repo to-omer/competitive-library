@@ -301,18 +301,33 @@ where
             assert!(l <= r, "bad range [{}, {})", l, r);
             [l, r]
         });
+        let mut p: usize = ranges
+            .iter()
+            .zip(&self.offset)
+            .map(|(range, offset)| range[1] * offset)
+            .sum();
+        let delta: [_; K] = std::array::from_fn(|d| (ranges[d][1] - ranges[d][0]) * self.offset[d]);
         let mut acc = M::unit();
-        for bit in 0..1 << K {
-            let p: usize = ranges
-                .iter()
-                .zip(&self.offset)
-                .enumerate()
-                .map(|(d, (range, offset))| range[(bit >> d) & 1 ^ 1] * offset)
-                .sum();
-            if bit.count_ones() & 1 == 0 {
-                acc = M::operate(&acc, unsafe { self.data.get_unchecked(p) });
-            } else {
+        let len = 1usize << K;
+        let mut gray = 0usize;
+        let mut inv = false;
+        for i in 0..len {
+            if inv {
                 acc = M::rinv_operate(&acc, unsafe { self.data.get_unchecked(p) });
+            } else {
+                acc = M::operate(&acc, unsafe { self.data.get_unchecked(p) });
+            }
+            if i + 1 < len {
+                let next_gray = (i + 1) ^ ((i + 1) >> 1);
+                let changed = gray ^ next_gray;
+                let d = changed.trailing_zeros() as usize;
+                if (next_gray >> d) & 1 == 1 {
+                    p -= delta[d];
+                } else {
+                    p += delta[d];
+                }
+                gray = next_gray;
+                inv = !inv;
             }
         }
         acc
