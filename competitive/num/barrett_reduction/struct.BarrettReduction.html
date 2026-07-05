@@ -362,7 +362,7 @@
 <span data-nosnippet>314</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>315</span>        a: u64,
 <span data-nosnippet>316</span>        b: u64,
-<span data-nosnippet>317</span>        br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;<a href="../algebra/lazy_map.rs.html#62">u64</a>&gt;],
+<span data-nosnippet>317</span>        br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;],
 <span data-nosnippet>318</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
 <span data-nosnippet>319</span>        <span class="kw">let </span>p = <span class="self">self</span>.p;
 <span data-nosnippet>320</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
@@ -394,7 +394,7 @@
 <span data-nosnippet>346</span><span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
 <span data-nosnippet>347</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
 <span data-nosnippet>348</span>    <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(n <span class="kw">as </span>u128);
-<span data-nosnippet>349</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>349</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.<a href="../algebra/lazy_map.rs.html#107">rem</a>(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>350</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
 <span data-nosnippet>351</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;u64, u64&gt;::new();
 <span data-nosnippet>352</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
@@ -488,9 +488,9 @@
 <span data-nosnippet>440</span>            <span class="kw">let </span>m = q.pow(c);
 <span data-nosnippet>441</span>            <span class="kw">let </span>d = ord / m;
 <span data-nosnippet>442</span>            <span class="kw">let </span>gg = pow(g, d, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>443</span>            <span class="kw">let </span>aa = <a href="../algebra/lazy_map.rs.html#215">pow</a>(a, d, <span class="kw-2">&amp;</span>br);
+<span data-nosnippet>443</span>            <span class="kw">let </span>aa = pow(a, d, <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>444</span>            <span class="kw">let </span>bb = pow(b, d, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>445</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(gg, aa, n, q, <a href="../algebra/lazy_map.rs.html#218">c</a>)<span class="question-mark">?</span>;
+<span data-nosnippet>445</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(gg, aa, n, q, c)<span class="question-mark">?</span>;
 <span data-nosnippet>446</span>            <span class="kw">let </span>y = pohlig_hellman_prime_power_order(gg, bb, n, q, c)<span class="question-mark">?</span>;
 <span data-nosnippet>447</span>            abm.push((x, y, m));
 <span data-nosnippet>448</span>        }
@@ -1126,7 +1126,7 @@
 <span data-nosnippet>257</span><span class="kw">impl </span>IndexCalculusWithPrimitiveRoot {
 <span data-nosnippet>258</span>    <span class="kw">fn </span>new(p: u64, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>259</span>        <span class="kw">let </span>ord = p - <span class="number">1</span>;
-<span data-nosnippet>260</span>        <span class="kw">let </span>g = primitive_root(<a href="../algebra/lazy_map.rs.html#44">p</a>);
+<span data-nosnippet>260</span>        <span class="kw">let </span>g = primitive_root(p);
 <span data-nosnippet>261</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
 <span data-nosnippet>262</span>        <span class="kw">let </span>prec = QdrtPowPrec::new(g, ord, <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>263</span>        <span class="kw">let </span>coeff = index_calculus_for_primitive_root(p, ord, br_primes, <span class="kw-2">&amp;</span>prec);
@@ -1143,7 +1143,7 @@
 <span data-nosnippet>274</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
 <span data-nosnippet>275</span>        <span class="kw">let </span>a = br.<span class="highlight">rem</span>(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
 <span data-nosnippet>276</span>        <span class="kw">if </span>a == <span class="number">1 </span>{
-<span data-nosnippet>277</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="number">0</span>);
+<span data-nosnippet>277</span>            <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<span class="number">0</span>);
 <span data-nosnippet>278</span>        }
 <span data-nosnippet>279</span>        <span class="kw">if </span>p == <span class="number">2 </span>{
 <span data-nosnippet>280</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
@@ -1162,7 +1162,7 @@
 <span data-nosnippet>293</span>                    <span class="kw">for _ in </span><span class="number">0</span>..r {
 <span data-nosnippet>294</span>                        res += c;
 <span data-nosnippet>295</span>                        <span class="kw">if </span>res &gt;= ord {
-<span data-nosnippet>296</span>                            <a href="../algebra/lazy_map.rs.html#102">res</a> -= ord;
+<span data-nosnippet>296</span>                            res -= ord;
 <span data-nosnippet>297</span>                        }
 <span data-nosnippet>298</span>                    }
 <span data-nosnippet>299</span>                }
@@ -1175,7 +1175,7 @@
 <span data-nosnippet>306</span>                kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
 <span data-nosnippet>307</span>                gkk = <span class="self">self</span>.prec.pow(kk, <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>308</span>                k = kk;
-<span data-nosnippet>309</span>                gk = br.<span class="highlight">rem</span>(gkk <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>309</span>                gk = br.<span class="highlight">rem</span>(gkk <span class="kw">as </span><a href="../num/zero_one.rs.html#1-14">u128</a> * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>310</span>            }
 <span data-nosnippet>311</span>        }
 <span data-nosnippet>312</span>    }
@@ -1184,11 +1184,11 @@
 <span data-nosnippet>315</span>        a: u64,
 <span data-nosnippet>316</span>        b: u64,
 <span data-nosnippet>317</span>        br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;],
-<span data-nosnippet>318</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, <a href="../num/zero_one.rs.html#16">u64</a>)&gt; {
+<span data-nosnippet>318</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
 <span data-nosnippet>319</span>        <span class="kw">let </span>p = <span class="self">self</span>.p;
 <span data-nosnippet>320</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
-<span data-nosnippet>321</span>        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">u128</a>&gt;::new(p <span class="kw">as </span>u128);
-<span data-nosnippet>322</span>        <span class="kw">let </span>a = br.<span class="highlight">rem</span>(<a href="../algebra/lazy_map.rs.html#126">a</a> <span class="kw">as _</span>) <span class="kw">as </span>u64;
+<span data-nosnippet>321</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
+<span data-nosnippet>322</span>        <span class="kw">let </span>a = br.<span class="highlight">rem</span>(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
 <span data-nosnippet>323</span>        <span class="kw">let </span>b = br.<span class="highlight">rem</span>(b <span class="kw">as _</span>) <span class="kw">as </span>u64;
 <span data-nosnippet>324</span>        <span class="kw">if </span>a == <span class="number">0 </span>{
 <span data-nosnippet>325</span>            <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
@@ -1197,7 +1197,7 @@
 <span data-nosnippet>328</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>329</span>        }
 <span data-nosnippet>330</span>
-<span data-nosnippet>331</span>        <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
+<span data-nosnippet>331</span>        <span class="kw">let </span><a href="../algebra/lazy_map.rs.html#131">x</a> = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
 <span data-nosnippet>332</span>        <span class="kw">let </span>y = <span class="self">self</span>.index_calculus(b, br_primes)<span class="question-mark">?</span>;
 <span data-nosnippet>333</span>        solve_linear_congruence(x, y, ord)
 <span data-nosnippet>334</span>    }
@@ -1235,7 +1235,7 @@
 <span data-nosnippet>366</span>                ok = <span class="bool-val">true</span>;
 <span data-nosnippet>367</span>                <span class="kw">break</span>;
 <span data-nosnippet>368</span>            }
-<span data-nosnippet>369</span>            h = mul(h, xi);
+<span data-nosnippet>369</span>            h = mul(<a href="../algebra/lazy_map.rs.html#183">h</a>, xi);
 <span data-nosnippet>370</span>        }
 <span data-nosnippet>371</span>        <span class="kw">if </span>!ok {
 <span data-nosnippet>372</span>            <span class="kw">return </span><span class="prelude-val">None</span>;

@@ -493,7 +493,49 @@
 <span data-nosnippet>40</span>            rv: Vec::new(),
 <span data-nosnippet>41</span>            rng: <span class="highlight focus">Xorshift::new</span>(),
 <span data-nosnippet>42</span>        }
-<span data-nosnippet>43</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../src/competitive/data_structure/treap.rs.html#257&#34;,&#34;line 257&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../src/competitive/data_structure/treap.rs.html#257">line 257</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>253</span>    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+<span data-nosnippet>43</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../src/competitive/data_structure/implicit_treap.rs.html#246&#34;,&#34;line 246&#34;],[[38,38],&#34;../../src/competitive/data_structure/implicit_treap.rs.html#280&#34;,&#34;line 280&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../src/competitive/data_structure/implicit_treap.rs.html#246">line 246</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>242</span>    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+<span data-nosnippet>243</span>        <span class="self">Self </span>{
+<span data-nosnippet>244</span>            root: <span class="prelude-val">None</span>,
+<span data-nosnippet>245</span>            length: <span class="number">0</span>,
+<span data-nosnippet>246</span>            rng: <span class="highlight focus">Xorshift::new</span>(),
+<span data-nosnippet>247</span>            allocator: ManuallyDrop::new(A::default()),
+<span data-nosnippet>248</span>            _marker: PhantomData,
+<span data-nosnippet>249</span>        }
+<span data-nosnippet>250</span>    }
+<span data-nosnippet>251</span>}
+<span data-nosnippet>252</span>
+<span data-nosnippet>253</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;T, A&gt;
+<span data-nosnippet>254</span><span class="kw">where
+<span data-nosnippet>255</span>    </span>T: LazyMapMonoid,
+<span data-nosnippet>256</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
+<span data-nosnippet>257</span>{
+<span data-nosnippet>258</span>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>259</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>260</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <span class="self">self</span>.root.take() {
+<span data-nosnippet>261</span>                root.into_dying().drop_all(<span class="self">self</span>.allocator.deref_mut());
+<span data-nosnippet>262</span>            }
+<span data-nosnippet>263</span>            ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>.allocator);
+<span data-nosnippet>264</span>        }
+<span data-nosnippet>265</span>    }
+<span data-nosnippet>266</span>}
+<span data-nosnippet>267</span>
+<span data-nosnippet>268</span><span class="kw">impl</span>&lt;T&gt; ImplicitTreap&lt;T&gt;
+<span data-nosnippet>269</span><span class="kw">where
+<span data-nosnippet>270</span>    </span>T: LazyMapMonoid,
+<span data-nosnippet>271</span>{
+<span data-nosnippet>272</span>    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+<span data-nosnippet>273</span>        <span class="self">Self</span>::default()
+<span data-nosnippet>274</span>    }
+<span data-nosnippet>275</span>
+<span data-nosnippet>276</span>    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>277</span>        <span class="self">Self </span>{
+<span data-nosnippet>278</span>            root: <span class="prelude-val">None</span>,
+<span data-nosnippet>279</span>            length: <span class="number">0</span>,
+<span data-nosnippet>280</span>            rng: <span class="highlight">Xorshift::new</span>(),
+<span data-nosnippet>281</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
+<span data-nosnippet>282</span>            _marker: PhantomData,
+<span data-nosnippet>283</span>        }
+<span data-nosnippet>284</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../src/competitive/data_structure/treap.rs.html#257&#34;,&#34;line 257&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../src/competitive/data_structure/treap.rs.html#257">line 257</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>253</span>    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
 <span data-nosnippet>254</span>        <span class="self">Self </span>{
 <span data-nosnippet>255</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>256</span>            node_id_manager: Default::default(),
@@ -532,70 +574,7 @@
 <span data-nosnippet>31</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = other.determinant_linear_non_singular(<span class="self">self</span>)<span class="question-mark">?</span>;
 <span data-nosnippet>32</span>        f.reverse();
 <span data-nosnippet>33</span>        <span class="prelude-val">Some</span>(taylor_shift::&lt;M&gt;(f, -a))
-<span data-nosnippet>34</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/competitive/math/black_box_matrix.rs.html#220&#34;,&#34;line 220&#34;],[[47,47],&#34;../../src/competitive/math/black_box_matrix.rs.html#261&#34;,&#34;line 261&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/black_box_matrix.rs (<a href="../../src/competitive/math/black_box_matrix.rs.html#220">line 220</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>214</span>    <span class="kw">fn </span>minimal_polynomial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
-<span data-nosnippet>215</span>    <span class="kw">where
-<span data-nosnippet>216</span>        </span>M: MIntConvert&lt;u64&gt;,
-<span data-nosnippet>217</span>    {
-<span data-nosnippet>218</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">0</span>, <span class="self">self</span>.shape().<span class="number">1</span>);
-<span data-nosnippet>219</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape().<span class="number">0</span>;
-<span data-nosnippet>220</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = <span class="highlight focus">Xorshift::new</span>();
-<span data-nosnippet>221</span>        <span class="kw">let </span>b: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
-<span data-nosnippet>222</span>        <span class="kw">let </span>u: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
-<span data-nosnippet>223</span>        <span class="kw">let </span>a: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..<span class="number">2 </span>* n)
-<span data-nosnippet>224</span>            .scan(b, |b, <span class="kw">_</span>| {
-<span data-nosnippet>225</span>                <span class="kw">let </span>a = b.iter().zip(<span class="kw-2">&amp;</span>u).fold(MInt::zero(), |s, (x, y)| s + x * y);
-<span data-nosnippet>226</span>                <span class="kw-2">*</span>b = <span class="self">self</span>.apply(b);
-<span data-nosnippet>227</span>                <span class="prelude-val">Some</span>(a)
-<span data-nosnippet>228</span>            })
-<span data-nosnippet>229</span>            .collect();
-<span data-nosnippet>230</span>        <span class="kw">let </span><span class="kw-2">mut </span>p = berlekamp_massey(<span class="kw-2">&amp;</span>a);
-<span data-nosnippet>231</span>        p.reverse();
-<span data-nosnippet>232</span>        p
-<span data-nosnippet>233</span>    }
-<span data-nosnippet>234</span>
-<span data-nosnippet>235</span>    <span class="kw">fn </span>apply_pow&lt;C&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>b: Vec&lt;MInt&lt;M&gt;&gt;, k: usize) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
-<span data-nosnippet>236</span>    <span class="kw">where
-<span data-nosnippet>237</span>        </span>M: MIntConvert&lt;usize&gt; + MIntConvert&lt;isize&gt; + MIntConvert&lt;u64&gt;,
-<span data-nosnippet>238</span>        C: ConvolveSteps&lt;T = Vec&lt;MInt&lt;M&gt;&gt;&gt;,
-<span data-nosnippet>239</span>    {
-<span data-nosnippet>240</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">0</span>, <span class="self">self</span>.shape().<span class="number">1</span>);
-<span data-nosnippet>241</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">1</span>, b.len());
-<span data-nosnippet>242</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape().<span class="number">0</span>;
-<span data-nosnippet>243</span>        <span class="kw">let </span>p = <span class="self">self</span>.minimal_polynomial();
-<span data-nosnippet>244</span>        <span class="kw">let </span>f = FormalPowerSeries::&lt;MInt&lt;M&gt;, C&gt;::from_vec(p).pow_mod(k);
-<span data-nosnippet>245</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[MInt::zero(); n];
-<span data-nosnippet>246</span>        <span class="kw">for </span>f <span class="kw">in </span>f {
-<span data-nosnippet>247</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..n {
-<span data-nosnippet>248</span>                res[j] += f * b[j];
-<span data-nosnippet>249</span>            }
-<span data-nosnippet>250</span>            b = <span class="self">self</span>.apply(<span class="kw-2">&amp;</span>b);
-<span data-nosnippet>251</span>        }
-<span data-nosnippet>252</span>        res
-<span data-nosnippet>253</span>    }
-<span data-nosnippet>254</span>
-<span data-nosnippet>255</span>    <span class="kw">fn </span>black_box_determinant(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MInt&lt;M&gt;
-<span data-nosnippet>256</span>    <span class="kw">where
-<span data-nosnippet>257</span>        </span>M: MIntConvert&lt;u64&gt;,
-<span data-nosnippet>258</span>    {
-<span data-nosnippet>259</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">0</span>, <span class="self">self</span>.shape().<span class="number">1</span>);
-<span data-nosnippet>260</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape().<span class="number">0</span>;
-<span data-nosnippet>261</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = <span class="highlight">Xorshift::new</span>();
-<span data-nosnippet>262</span>        <span class="kw">let </span>d: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
-<span data-nosnippet>263</span>        <span class="kw">let </span>det_d = d.iter().fold(MInt::one(), |s, x| s * x);
-<span data-nosnippet>264</span>        <span class="kw">let </span>ad = BlackBoxMatrixImpl::&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;, <span class="kw">_</span>&gt;::new(
-<span data-nosnippet>265</span>            <span class="self">self</span>.shape(),
-<span data-nosnippet>266</span>            |v: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]| {
-<span data-nosnippet>267</span>                <span class="kw">let </span><span class="kw-2">mut </span>w = <span class="self">self</span>.apply(v);
-<span data-nosnippet>268</span>                <span class="kw">for </span>(w, d) <span class="kw">in </span>w.iter_mut().zip(<span class="kw-2">&amp;</span>d) {
-<span data-nosnippet>269</span>                    <span class="kw-2">*</span>w <span class="kw-2">*</span>= d;
-<span data-nosnippet>270</span>                }
-<span data-nosnippet>271</span>                w
-<span data-nosnippet>272</span>            },
-<span data-nosnippet>273</span>        );
-<span data-nosnippet>274</span>        <span class="kw">let </span>p = ad.minimal_polynomial();
-<span data-nosnippet>275</span>        <span class="kw">let </span>det_ad = <span class="kw">if </span>n % <span class="number">2 </span>== <span class="number">0 </span>{ p[<span class="number">0</span>] } <span class="kw">else </span>{ -p[<span class="number">0</span>] };
-<span data-nosnippet>276</span>        det_ad / det_d
-<span data-nosnippet>277</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../src/competitive/math/discrete_logarithm.rs.html#283">crates/competitive/src/math/discrete_logarithm.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.rand64" class="method"><a class="src rightside" href="../../src/competitive/tools/xorshift.rs.html#21-26">Source</a><h4 class="code-header">pub fn <a href="#method.rand64" class="fn">rand64</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/tools/xorshift.rs.html#29&#34;,&#34;line 29&#34;],[[11,11],&#34;../../src/competitive/tools/xorshift.rs.html#39&#34;,&#34;line 39&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/xorshift.rs (<a href="../../src/competitive/tools/xorshift.rs.html#29">line 29</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>28</span>    <span class="kw">pub fn </span>rand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64) -&gt; u64 {
+<span data-nosnippet>34</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../src/competitive/math/black_box_matrix.rs.html#220">crates/competitive/src/math/black_box_matrix.rs</a></li><li><a href="../../src/competitive/math/discrete_logarithm.rs.html#283">crates/competitive/src/math/discrete_logarithm.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.rand64" class="method"><a class="src rightside" href="../../src/competitive/tools/xorshift.rs.html#21-26">Source</a><h4 class="code-header">pub fn <a href="#method.rand64" class="fn">rand64</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/tools/xorshift.rs.html#29&#34;,&#34;line 29&#34;],[[11,11],&#34;../../src/competitive/tools/xorshift.rs.html#39&#34;,&#34;line 39&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/xorshift.rs (<a href="../../src/competitive/tools/xorshift.rs.html#29">line 29</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>28</span>    <span class="kw">pub fn </span>rand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64) -&gt; u64 {
 <span data-nosnippet>29</span>        <span class="self">self</span>.<span class="highlight focus">rand64</span>() % k
 <span data-nosnippet>30</span>    }
 <span data-nosnippet>31</span>
@@ -826,7 +805,17 @@
 <span data-nosnippet>282</span>        v %= k;
 <span data-nosnippet>283</span>    }
 <span data-nosnippet>284</span>    v
-<span data-nosnippet>285</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/tree/tree_hash.rs.html#64&#34;,&#34;line 64&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/tree_hash.rs (<a href="../../src/competitive/tree/tree_hash.rs.html#64">line 64</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>61</span>    <span class="kw">fn </span>hash_rec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span>UndirectedSparseGraph, u: usize, p: usize, d: usize) -&gt; u64 {
+<span data-nosnippet>285</span>}</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../src/competitive/data_structure/implicit_treap.rs.html#295&#34;,&#34;line 295&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../src/competitive/data_structure/implicit_treap.rs.html#295">line 295</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>292</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: T::Key) -&gt; ImplicitTreapRoot&lt;T&gt; {
+<span data-nosnippet>293</span>        BstRoot::from_data(
+<span data-nosnippet>294</span>            ImplicitTreapData {
+<span data-nosnippet>295</span>                priority: <span class="self">self</span>.rng.<span class="highlight focus">rand64</span>(),
+<span data-nosnippet>296</span>                value: LazyMapElement::from_key(key),
+<span data-nosnippet>297</span>                size: <span class="number">1</span>,
+<span data-nosnippet>298</span>                rev: <span class="bool-val">false</span>,
+<span data-nosnippet>299</span>            },
+<span data-nosnippet>300</span>            <span class="self">self</span>.allocator.deref_mut(),
+<span data-nosnippet>301</span>        )
+<span data-nosnippet>302</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/tree/tree_hash.rs.html#64&#34;,&#34;line 64&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/tree_hash.rs (<a href="../../src/competitive/tree/tree_hash.rs.html#64">line 64</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>61</span>    <span class="kw">fn </span>hash_rec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span>UndirectedSparseGraph, u: usize, p: usize, d: usize) -&gt; u64 {
 <span data-nosnippet>62</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="number">1u64</span>;
 <span data-nosnippet>63</span>        <span class="kw">if </span><span class="self">self</span>.rv.len() &lt;= d {
 <span data-nosnippet>64</span>            <span class="self">self</span>.rv.push(<span class="self">Self</span>::mersenne_mod(<span class="self">self</span>.rng.<span class="highlight focus">rand64</span>()));
@@ -867,70 +856,7 @@
 <span data-nosnippet>379</span>        <span class="kw">let </span>node_id = <span class="self">self</span>.node_id_manager.register(<span class="kw-2">&amp;</span>node);
 <span data-nosnippet>380</span>        <span class="self">self</span>.root = TreapSpec::merge(TreapSpec::merge(left, <span class="prelude-val">Some</span>(node)), right);
 <span data-nosnippet>381</span>        node_id
-<span data-nosnippet>382</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../src/competitive/math/black_box_matrix.rs.html#221&#34;,&#34;line 221&#34;],[[8,8],&#34;../../src/competitive/math/black_box_matrix.rs.html#222&#34;,&#34;line 222&#34;],[[48,48],&#34;../../src/competitive/math/black_box_matrix.rs.html#262&#34;,&#34;line 262&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/black_box_matrix.rs (<a href="../../src/competitive/math/black_box_matrix.rs.html#221">line 221</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>214</span>    <span class="kw">fn </span>minimal_polynomial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
-<span data-nosnippet>215</span>    <span class="kw">where
-<span data-nosnippet>216</span>        </span>M: MIntConvert&lt;u64&gt;,
-<span data-nosnippet>217</span>    {
-<span data-nosnippet>218</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">0</span>, <span class="self">self</span>.shape().<span class="number">1</span>);
-<span data-nosnippet>219</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape().<span class="number">0</span>;
-<span data-nosnippet>220</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::new();
-<span data-nosnippet>221</span>        <span class="kw">let </span>b: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.<span class="highlight focus">rand64</span>())).collect();
-<span data-nosnippet>222</span>        <span class="kw">let </span>u: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.<span class="highlight">rand64</span>())).collect();
-<span data-nosnippet>223</span>        <span class="kw">let </span>a: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..<span class="number">2 </span>* n)
-<span data-nosnippet>224</span>            .scan(b, |b, <span class="kw">_</span>| {
-<span data-nosnippet>225</span>                <span class="kw">let </span>a = b.iter().zip(<span class="kw-2">&amp;</span>u).fold(MInt::zero(), |s, (x, y)| s + x * y);
-<span data-nosnippet>226</span>                <span class="kw-2">*</span>b = <span class="self">self</span>.apply(b);
-<span data-nosnippet>227</span>                <span class="prelude-val">Some</span>(a)
-<span data-nosnippet>228</span>            })
-<span data-nosnippet>229</span>            .collect();
-<span data-nosnippet>230</span>        <span class="kw">let </span><span class="kw-2">mut </span>p = berlekamp_massey(<span class="kw-2">&amp;</span>a);
-<span data-nosnippet>231</span>        p.reverse();
-<span data-nosnippet>232</span>        p
-<span data-nosnippet>233</span>    }
-<span data-nosnippet>234</span>
-<span data-nosnippet>235</span>    <span class="kw">fn </span>apply_pow&lt;C&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>b: Vec&lt;MInt&lt;M&gt;&gt;, k: usize) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
-<span data-nosnippet>236</span>    <span class="kw">where
-<span data-nosnippet>237</span>        </span>M: MIntConvert&lt;usize&gt; + MIntConvert&lt;isize&gt; + MIntConvert&lt;u64&gt;,
-<span data-nosnippet>238</span>        C: ConvolveSteps&lt;T = Vec&lt;MInt&lt;M&gt;&gt;&gt;,
-<span data-nosnippet>239</span>    {
-<span data-nosnippet>240</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">0</span>, <span class="self">self</span>.shape().<span class="number">1</span>);
-<span data-nosnippet>241</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">1</span>, b.len());
-<span data-nosnippet>242</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape().<span class="number">0</span>;
-<span data-nosnippet>243</span>        <span class="kw">let </span>p = <span class="self">self</span>.minimal_polynomial();
-<span data-nosnippet>244</span>        <span class="kw">let </span>f = FormalPowerSeries::&lt;MInt&lt;M&gt;, C&gt;::from_vec(p).pow_mod(k);
-<span data-nosnippet>245</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[MInt::zero(); n];
-<span data-nosnippet>246</span>        <span class="kw">for </span>f <span class="kw">in </span>f {
-<span data-nosnippet>247</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..n {
-<span data-nosnippet>248</span>                res[j] += f * b[j];
-<span data-nosnippet>249</span>            }
-<span data-nosnippet>250</span>            b = <span class="self">self</span>.apply(<span class="kw-2">&amp;</span>b);
-<span data-nosnippet>251</span>        }
-<span data-nosnippet>252</span>        res
-<span data-nosnippet>253</span>    }
-<span data-nosnippet>254</span>
-<span data-nosnippet>255</span>    <span class="kw">fn </span>black_box_determinant(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MInt&lt;M&gt;
-<span data-nosnippet>256</span>    <span class="kw">where
-<span data-nosnippet>257</span>        </span>M: MIntConvert&lt;u64&gt;,
-<span data-nosnippet>258</span>    {
-<span data-nosnippet>259</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape().<span class="number">0</span>, <span class="self">self</span>.shape().<span class="number">1</span>);
-<span data-nosnippet>260</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape().<span class="number">0</span>;
-<span data-nosnippet>261</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::new();
-<span data-nosnippet>262</span>        <span class="kw">let </span>d: Vec&lt;MInt&lt;M&gt;&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.<span class="highlight">rand64</span>())).collect();
-<span data-nosnippet>263</span>        <span class="kw">let </span>det_d = d.iter().fold(MInt::one(), |s, x| s * x);
-<span data-nosnippet>264</span>        <span class="kw">let </span>ad = BlackBoxMatrixImpl::&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;, <span class="kw">_</span>&gt;::new(
-<span data-nosnippet>265</span>            <span class="self">self</span>.shape(),
-<span data-nosnippet>266</span>            |v: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]| {
-<span data-nosnippet>267</span>                <span class="kw">let </span><span class="kw-2">mut </span>w = <span class="self">self</span>.apply(v);
-<span data-nosnippet>268</span>                <span class="kw">for </span>(w, d) <span class="kw">in </span>w.iter_mut().zip(<span class="kw-2">&amp;</span>d) {
-<span data-nosnippet>269</span>                    <span class="kw-2">*</span>w <span class="kw-2">*</span>= d;
-<span data-nosnippet>270</span>                }
-<span data-nosnippet>271</span>                w
-<span data-nosnippet>272</span>            },
-<span data-nosnippet>273</span>        );
-<span data-nosnippet>274</span>        <span class="kw">let </span>p = ad.minimal_polynomial();
-<span data-nosnippet>275</span>        <span class="kw">let </span>det_ad = <span class="kw">if </span>n % <span class="number">2 </span>== <span class="number">0 </span>{ p[<span class="number">0</span>] } <span class="kw">else </span>{ -p[<span class="number">0</span>] };
-<span data-nosnippet>276</span>        det_ad / det_d
-<span data-nosnippet>277</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.rand" class="method"><a class="src rightside" href="../../src/competitive/tools/xorshift.rs.html#28-30">Source</a><h4 class="code-header">pub fn <a href="#method.rand" class="fn">rand</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/tools/xorshift.rs.html#33&#34;,&#34;line 33&#34;],[[20,20],&#34;../../src/competitive/tools/xorshift.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/xorshift.rs (<a href="../../src/competitive/tools/xorshift.rs.html#33">line 33</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>32</span>    <span class="kw">pub fn </span>rands(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64, n: usize) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>382</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../src/competitive/math/black_box_matrix.rs.html#221">crates/competitive/src/math/black_box_matrix.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.rand" class="method"><a class="src rightside" href="../../src/competitive/tools/xorshift.rs.html#28-30">Source</a><h4 class="code-header">pub fn <a href="#method.rand" class="fn">rand</a>(&amp;mut self, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/tools/xorshift.rs.html#33&#34;,&#34;line 33&#34;],[[20,20],&#34;../../src/competitive/tools/xorshift.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/xorshift.rs (<a href="../../src/competitive/tools/xorshift.rs.html#33">line 33</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>32</span>    <span class="kw">pub fn </span>rands(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64, n: usize) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>33</span>        repeat_with(|| <span class="self">self</span>.<span class="highlight focus">rand</span>(k)).take(n).collect()
 <span data-nosnippet>34</span>    }
 <span data-nosnippet>35</span>
