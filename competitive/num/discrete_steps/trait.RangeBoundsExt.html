@@ -453,22 +453,37 @@
 <span data-nosnippet>301</span>            <span class="macro">assert!</span>(l &lt;= r, <span class="string">"bad range [{}, {})"</span>, l, r);
 <span data-nosnippet>302</span>            [l, r]
 <span data-nosnippet>303</span>        });
-<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
-<span data-nosnippet>305</span>        <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; K {
-<span data-nosnippet>306</span>            <span class="kw">let </span>p: usize = ranges
-<span data-nosnippet>307</span>                .iter()
-<span data-nosnippet>308</span>                .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.offset)
-<span data-nosnippet>309</span>                .enumerate()
-<span data-nosnippet>310</span>                .map(|(d, (range, offset))| range[(bit &gt;&gt; d) &amp; <span class="number">1 </span>^ <span class="number">1</span>] * offset)
-<span data-nosnippet>311</span>                .sum();
-<span data-nosnippet>312</span>            <span class="kw">if </span>bit.count_ones() &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>313</span>                acc = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(p) });
-<span data-nosnippet>314</span>            } <span class="kw">else </span>{
-<span data-nosnippet>315</span>                acc = M::rinv_operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(p) });
-<span data-nosnippet>316</span>            }
-<span data-nosnippet>317</span>        }
-<span data-nosnippet>318</span>        acc
-<span data-nosnippet>319</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/data_structure/segment_tree.rs.html#89&#34;,&#34;line 89&#34;],[[57,57],&#34;../../../src/competitive/data_structure/segment_tree.rs.html#142&#34;,&#34;line 142&#34;],[[92,92],&#34;../../../src/competitive/data_structure/segment_tree.rs.html#177&#34;,&#34;line 177&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/segment_tree.rs (<a href="../../../src/competitive/data_structure/segment_tree.rs.html#89">line 89</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>85</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; M::T
+<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span>p: usize = ranges
+<span data-nosnippet>305</span>            .iter()
+<span data-nosnippet>306</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.offset)
+<span data-nosnippet>307</span>            .map(|(range, offset)| range[<span class="number">1</span>] * offset)
+<span data-nosnippet>308</span>            .sum();
+<span data-nosnippet>309</span>        <span class="kw">let </span>delta: [<span class="kw">_</span>; K] = std::array::from_fn(|d| (ranges[d][<span class="number">1</span>] - ranges[d][<span class="number">0</span>]) * <span class="self">self</span>.offset[d]);
+<span data-nosnippet>310</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+<span data-nosnippet>311</span>        <span class="kw">let </span>len = <span class="number">1usize </span>&lt;&lt; K;
+<span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>gray = <span class="number">0usize</span>;
+<span data-nosnippet>313</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv = <span class="bool-val">false</span>;
+<span data-nosnippet>314</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..len {
+<span data-nosnippet>315</span>            <span class="kw">if </span>inv {
+<span data-nosnippet>316</span>                acc = M::rinv_operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(p) });
+<span data-nosnippet>317</span>            } <span class="kw">else </span>{
+<span data-nosnippet>318</span>                acc = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(p) });
+<span data-nosnippet>319</span>            }
+<span data-nosnippet>320</span>            <span class="kw">if </span>i + <span class="number">1 </span>&lt; len {
+<span data-nosnippet>321</span>                <span class="kw">let </span>next_gray = (i + <span class="number">1</span>) ^ ((i + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>);
+<span data-nosnippet>322</span>                <span class="kw">let </span>changed = gray ^ next_gray;
+<span data-nosnippet>323</span>                <span class="kw">let </span>d = changed.trailing_zeros() <span class="kw">as </span>usize;
+<span data-nosnippet>324</span>                <span class="kw">if </span>(next_gray &gt;&gt; d) &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>325</span>                    p -= delta[d];
+<span data-nosnippet>326</span>                } <span class="kw">else </span>{
+<span data-nosnippet>327</span>                    p += delta[d];
+<span data-nosnippet>328</span>                }
+<span data-nosnippet>329</span>                gray = next_gray;
+<span data-nosnippet>330</span>                inv = !inv;
+<span data-nosnippet>331</span>            }
+<span data-nosnippet>332</span>        }
+<span data-nosnippet>333</span>        acc
+<span data-nosnippet>334</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/data_structure/segment_tree.rs.html#89&#34;,&#34;line 89&#34;],[[57,57],&#34;../../../src/competitive/data_structure/segment_tree.rs.html#142&#34;,&#34;line 142&#34;],[[92,92],&#34;../../../src/competitive/data_structure/segment_tree.rs.html#177&#34;,&#34;line 177&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/segment_tree.rs (<a href="../../../src/competitive/data_structure/segment_tree.rs.html#89">line 89</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>85</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; M::T
 <span data-nosnippet>86</span>    <span class="kw">where
 <span data-nosnippet>87</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>88</span>    {
