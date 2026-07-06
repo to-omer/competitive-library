@@ -5,5 +5,6 @@ pub mod directedmst;
 pub mod general_matching;
 pub mod general_weighted_matching;
 pub mod min_cost_b_flow;
+pub mod minimum_spanning_tree;
 pub mod scc;
 pub mod shortest_path;
