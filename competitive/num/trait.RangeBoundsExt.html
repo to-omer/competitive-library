@@ -392,7 +392,7 @@
 <span data-nosnippet>240</span>            dim: <span class="kw-2">&amp;</span>[usize; K],
 <span data-nosnippet>241</span>            offset: <span class="kw-2">&amp;</span>[usize; K],
 <span data-nosnippet>242</span>            data: <span class="kw-2">&amp;mut </span>[T],
-<span data-nosnippet>243</span>            f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut([usize; K]) -&gt; T,
+<span data-nosnippet>243</span>            f: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut([<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a>; K]) -&gt; T,
 <span data-nosnippet>244</span>            <span class="kw-2">mut </span>index: [usize; K],
 <span data-nosnippet>245</span>            pos: usize,
 <span data-nosnippet>246</span>        ) {
@@ -402,7 +402,7 @@
 <span data-nosnippet>250</span>                    fill(dim, offset, data, f, index, pos + <span class="number">1</span>);
 <span data-nosnippet>251</span>                }
 <span data-nosnippet>252</span>            } <span class="kw">else </span>{
-<span data-nosnippet>253</span>                <span class="kw">let </span><a href="../algebra/action.rs.html#20">i</a>: usize = index.iter().zip(offset).map(|(x, y)| (x + <span class="number">1</span>) * y).sum();
+<span data-nosnippet>253</span>                <span class="kw">let </span>i: usize = index.iter().zip(offset).map(|(x, y)| (x + <span class="number">1</span>) * y).sum();
 <span data-nosnippet>254</span>                data[i] = f(index);
 <span data-nosnippet>255</span>            }
 <span data-nosnippet>256</span>        }
@@ -446,10 +446,10 @@
 <span data-nosnippet>294</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>295</span>    {
 <span data-nosnippet>296</span>        <span class="kw">let </span>ranges: [<span class="kw">_</span>; K] = std::array::from_fn(|i| {
-<span data-nosnippet>297</span>            <span class="kw">let </span><a href="../lib.rs.html#18">range</a> = ranges[i]
+<span data-nosnippet>297</span>            <span class="kw">let </span>range = ranges[i]
 <span data-nosnippet>298</span>                .<span class="highlight">to_range_bounded</span>(<span class="number">0</span>, <span class="self">self</span>.dim[i])
 <span data-nosnippet>299</span>                .expect(<span class="string">"invalid range"</span>);
-<span data-nosnippet>300</span>            <span class="kw">let </span>(l, r) = (range.start, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">range</a>.end);
+<span data-nosnippet>300</span>            <span class="kw">let </span>(l, r) = (range.start, range.end);
 <span data-nosnippet>301</span>            <span class="macro">assert!</span>(l &lt;= r, <span class="string">"bad range [{}, {})"</span>, l, r);
 <span data-nosnippet>302</span>            [l, r]
 <span data-nosnippet>303</span>        });
@@ -816,10 +816,10 @@
 <span data-nosnippet>280</span>            k += <span class="number">1</span>;
 <span data-nosnippet>281</span>        }
 <span data-nosnippet>282</span>        <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">0</span>..k).rev() {
-<span data-nosnippet>283</span>            <span class="kw">if </span>c &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+<span data-nosnippet>283</span>            <span class="kw">if </span><a href="../algebra/action.rs.html#20">c</a> &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>284</span>                l -= <span class="number">1 </span>&lt;&lt; k;
 <span data-nosnippet>285</span>                <span class="kw">let </span>l = l &gt;&gt; k;
-<span data-nosnippet>286</span>                <span class="kw">let </span>nacc = M::<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">agg_operate</a>(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[l].<span class="number">0</span>, <span class="kw-2">&amp;</span>acc);
+<span data-nosnippet>286</span>                <span class="kw">let </span>nacc = M::agg_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[l].<span class="number">0</span>, <span class="kw-2">&amp;</span>acc);
 <span data-nosnippet>287</span>                <span class="kw">if </span>p(<span class="kw-2">&amp;</span>nacc) {
 <span data-nosnippet>288</span>                    <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.rbisect_perfect(l, acc, p).<span class="number">0</span>);
 <span data-nosnippet>289</span>                }
@@ -998,7 +998,7 @@
 <span data-nosnippet>283</span>            <span class="kw">if </span>r &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>284</span>                r -= <span class="number">1</span>;
 <span data-nosnippet>285</span>                <span class="kw">let </span>nacc = <span class="kw">match </span><span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>r) {
-<span data-nosnippet>286</span>                    <span class="prelude-val">Some</span>((x, <span class="kw">_</span>)) =&gt; <a href="../algebra/action.rs.html#39">M</a>::agg_operate(x, <span class="kw-2">&amp;</span>acc),
+<span data-nosnippet>286</span>                    <span class="prelude-val">Some</span>((x, <span class="kw">_</span>)) =&gt; M::agg_operate(x, <span class="kw-2">&amp;</span>acc),
 <span data-nosnippet>287</span>                    <span class="prelude-val">None </span>=&gt; acc.clone(),
 <span data-nosnippet>288</span>                };
 <span data-nosnippet>289</span>                <span class="kw">if </span>p(<span class="kw-2">&amp;</span>nacc) {

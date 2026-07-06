@@ -212,14 +212,14 @@
 <span data-nosnippet>282</span>            <span class="kw">loop </span>{
 <span data-nosnippet>283</span>                <span class="kw">let </span>exp = rng.rand(ord <span class="kw">as </span>u64) <span class="kw">as </span>u32;
 <span data-nosnippet>284</span>                <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="kw">if </span>exp == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ ord - exp };
-<span data-nosnippet>285</span>                <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="highlight">mul_mod_raw::&lt;P&gt;</span>(i <span class="kw">as </span>u32, pow_root_raw::&lt;<a href="../algebra/action.rs.html#14">P</a>&gt;(exp, pow_lo, pow_hi));
+<span data-nosnippet>285</span>                <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="highlight">mul_mod_raw::&lt;P&gt;</span>(i <span class="kw">as </span>u32, pow_root_raw::&lt;P&gt;(exp, pow_lo, pow_hi));
 <span data-nosnippet>286</span>                <span class="kw">for </span>q <span class="kw">in </span>small_primes {
 <span data-nosnippet>287</span>                    <span class="kw">while </span>x.is_multiple_of(q) {
 <span data-nosnippet>288</span>                        x /= q;
 <span data-nosnippet>289</span>                        ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
 <span data-nosnippet>290</span>                    }
 <span data-nosnippet>291</span>                }
-<span data-nosnippet>292</span>                <span class="kw">if </span>x <span class="kw">as </span>usize &gt;= <a href="../algebra/action.rs.html#23">k</a> {
+<span data-nosnippet>292</span>                <span class="kw">if </span>x <span class="kw">as </span>usize &gt;= k {
 <span data-nosnippet>293</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>294</span>                }
 <span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span>u32) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span>u32 {
@@ -245,7 +245,7 @@
 <span data-nosnippet>315</span>}
 <span data-nosnippet>316</span>
 <span data-nosnippet>317</span><span class="kw">fn </span>build_frac&lt;<span class="kw">const </span>P: u32&gt;() -&gt; Box&lt;[u32]&gt; {
-<span data-nosnippet>318</span>    <span class="kw">let </span><span class="kw-2">mut </span><a href="../num/zero_one.rs.html#1-14">frac</a> = <a href="../num/zero_one.rs.html#15-28">vec!</a>[<span class="number">0</span>; FRAC_LEN].into_boxed_slice();
+<span data-nosnippet>318</span>    <span class="kw">let </span><span class="kw-2">mut </span>frac = <span class="macro">vec!</span>[<span class="number">0</span>; FRAC_LEN].into_boxed_slice();
 <span data-nosnippet>319</span>    <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(<span class="number">0u16</span>, <span class="number">1u16</span>, <span class="number">1u16</span>, <span class="number">1u16</span>)];
 <span data-nosnippet>320</span>    <span class="kw">while let </span><span class="prelude-val">Some</span>((a, b, c, d)) = stack.pop() {
 <span data-nosnippet>321</span>        <span class="kw">let </span>nb = b + d;

@@ -803,7 +803,7 @@
 <span data-nosnippet>571</span>        }
 <span data-nosnippet>572</span>    }
 <span data-nosnippet>573</span>
-<span data-nosnippet>574</span>    <span class="kw">pub fn </span>get_vertex(<span class="kw-2">&amp;</span><span class="self">self</span>, vertex: usize) -&gt; <span class="kw-2">&amp;</span>&lt;C <span class="kw">as </span>Cluster&gt;::Vertex {
+<span data-nosnippet>574</span>    <span class="kw">pub fn </span>get_vertex(<span class="kw-2">&amp;</span><span class="self">self</span>, vertex: usize) -&gt; <span class="kw-2">&amp;</span>&lt;<a href="../algebra/lazy_map.rs.html#271">C</a> <span class="kw">as </span>Cluster&gt;::Vertex {
 <span data-nosnippet>575</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex]
 <span data-nosnippet>576</span>    }
 <span data-nosnippet>577</span>
@@ -828,7 +828,7 @@
 <span data-nosnippet>596</span>    <span class="kw">where
 <span data-nosnippet>597</span>        </span>F: FnOnce(<span class="kw-2">&amp;mut </span>&lt;C <span class="kw">as </span>Cluster&gt;::Edge),
 <span data-nosnippet>598</span>    {
-<span data-nosnippet>599</span>        <span class="macro">assert!</span>(edge &lt; <span class="self">self</span>.edges.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">len</a>());
+<span data-nosnippet>599</span>        <span class="macro">assert!</span>(edge &lt; <span class="self">self</span>.edges.len());
 <span data-nosnippet>600</span>        f(<span class="kw-2">&amp;mut </span><span class="self">self</span>.edges[edge]);
 <span data-nosnippet>601</span>        <span class="self">self</span>.update_from_vertex(<span class="self">self</span>.tree.edge_child[edge]);
 <span data-nosnippet>602</span>    }
@@ -861,7 +861,7 @@
 <span data-nosnippet>629</span>            }
 <span data-nosnippet>630</span>            <span class="kw">let </span>right_point = C::add_edge(<span class="kw-2">&amp;</span>right);
 <span data-nosnippet>631</span>            point = C::rake(<span class="kw-2">&amp;</span>point, <span class="kw-2">&amp;</span>right_point);
-<span data-nosnippet>632</span>            <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">mid</a> = C::add_vertex(
+<span data-nosnippet>632</span>            <span class="kw">let </span>mid = C::add_vertex(
 <span data-nosnippet>633</span>                <span class="kw-2">&amp;</span>point,
 <span data-nosnippet>634</span>                <span class="kw-2">&amp;</span><span class="self">self</span>.vertices[vertex],
 <span data-nosnippet>635</span>                <span class="self">self</span>.tree.parent_edge_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.edges, vertex),
@@ -984,14 +984,14 @@
 <span data-nosnippet>752</span>}
 <span data-nosnippet>753</span>
 <span data-nosnippet>754</span><span class="kw">fn </span>rooted_children(graph: <span class="kw-2">&amp;</span>UndirectedSparseGraph, root: usize) -&gt; RootedInfo {
-<span data-nosnippet>755</span>    <span class="kw">let </span>n = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">graph</a>.vertices_size();
+<span data-nosnippet>755</span>    <span class="kw">let </span>n = graph.vertices_size();
 <span data-nosnippet>756</span>    <span class="kw">let </span><span class="kw-2">mut </span>order = Vec::with_capacity(n);
 <span data-nosnippet>757</span>    <span class="kw">let </span><span class="kw-2">mut </span>parent = <span class="macro">vec!</span>[usize::MAX; n];
 <span data-nosnippet>758</span>    <span class="kw">let </span><span class="kw-2">mut </span>parent_edge = <span class="macro">vec!</span>[usize::MAX; n];
 <span data-nosnippet>759</span>    <span class="kw">let </span><span class="kw-2">mut </span>edge_child = <span class="macro">vec!</span>[<span class="number">0</span>; graph.<span class="highlight">edges_size</span>()];
 <span data-nosnippet>760</span>    order.push(root);
 <span data-nosnippet>761</span>    parent[root] = usize::MAX;
-<span data-nosnippet>762</span>    <span class="kw">for </span><a href="../algebra/lazy_map.rs.html#540">i</a> <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>762</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
 <span data-nosnippet>763</span>        <span class="kw">let </span>u = order[i];
 <span data-nosnippet>764</span>        <span class="kw">for </span>a <span class="kw">in </span>graph.adjacencies(u) {
 <span data-nosnippet>765</span>            <span class="kw">if </span>a.to == parent[u] {
@@ -1005,7 +1005,7 @@
 <span data-nosnippet>773</span>    }
 <span data-nosnippet>774</span>    <span class="kw">let </span><span class="kw-2">mut </span>children_start = <span class="macro">vec!</span>[<span class="number">0usize</span>; n + <span class="number">1</span>];
 <span data-nosnippet>775</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>v <span class="kw">in </span>order.iter().skip(<span class="number">1</span>) {
-<span data-nosnippet>776</span>        children_start[parent[v] + <span class="number">1</span>] += <span class="number">1</span>;
+<span data-nosnippet>776</span>        children_start[parent[<a href="../algebra/lazy_map.rs.html#550">v</a>] + <span class="number">1</span>] += <span class="number">1</span>;
 <span data-nosnippet>777</span>    }
 <span data-nosnippet>778</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
 <span data-nosnippet>779</span>        children_start[i] += children_start[i - <span class="number">1</span>];
