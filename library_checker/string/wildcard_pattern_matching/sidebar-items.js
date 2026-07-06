@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["test_wildcard_pattern_matching","wildcard_pattern_matching"]};

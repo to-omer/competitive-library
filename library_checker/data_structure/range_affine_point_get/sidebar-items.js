@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_affine_point_get","test_range_affine_point_get"]};

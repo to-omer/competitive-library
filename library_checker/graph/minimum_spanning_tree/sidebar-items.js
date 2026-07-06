@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["minimum_spanning_tree","test_minimum_spanning_tree"]};
