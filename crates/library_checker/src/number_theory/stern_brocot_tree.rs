@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algorithm::{SbtNode, SbtPath, SternBrocotTree},
     num::URational,
 };

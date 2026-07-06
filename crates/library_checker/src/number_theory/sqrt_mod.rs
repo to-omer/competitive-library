@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::num::mint_basic::DynMIntU32;
+use competitive::num::mint_basic::DynMIntU32;
 use competitive::prelude::*;
 
 #[verify::library_checker("sqrt_mod")]

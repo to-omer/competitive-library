@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::combinatorial_optimization::largest_rectangle_in_grid;
+use competitive::combinatorial_optimization::largest_rectangle_in_grid;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DPL_3_B")]

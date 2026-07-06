@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::string::{StringSearch, SuffixAutomaton};
+use competitive::string::{StringSearch, SuffixAutomaton};
 
 #[verify::library_checker("number_of_substrings")]
 pub fn number_of_substrings(reader: impl Read, mut writer: impl Write) {

@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::TwoSatisfiability;
+use competitive::graph::TwoSatisfiability;
 use competitive::prelude::*;
 
 #[verify::library_checker("two_sat")]

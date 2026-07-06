@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::{DirectedGraphScanner, ShortestPathExt};
+use competitive::graph::{DirectedGraphScanner, ShortestPathExt};
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("GRL_1_B")]

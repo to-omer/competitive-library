@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::{LowLink, UndirectedGraphScanner};
+use competitive::graph::{LowLink, UndirectedGraphScanner};
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("GRL_3_A")]

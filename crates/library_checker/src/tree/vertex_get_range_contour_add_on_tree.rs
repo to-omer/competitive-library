@@ -1,8 +1,6 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::AdditiveOperation, data_structure::BinaryIndexedTree, graph::TreeGraphScanner,
-    tree::ContourQueryRange,
 };
 
 competitive::define_enum_scan! {

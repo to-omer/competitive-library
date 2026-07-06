@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::{RangeChminChmaxAdd, RangeSumRangeChminChmaxAdd},
     data_structure::LazySegmentTree,
     num::Saturating,

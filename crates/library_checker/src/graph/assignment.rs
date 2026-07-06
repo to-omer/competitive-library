@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::NetworkSimplex;
+use competitive::graph::NetworkSimplex;
 use competitive::prelude::*;
 
 #[verify::library_checker("assignment")]

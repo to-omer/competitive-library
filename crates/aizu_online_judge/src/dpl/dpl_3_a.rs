@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::combinatorial_optimization::largest_square;
+use competitive::combinatorial_optimization::largest_square;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DPL_3_A")]

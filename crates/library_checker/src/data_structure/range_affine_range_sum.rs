@@ -1,9 +1,8 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::RangeSumRangeLinear,
     data_structure::LazySegmentTree,
-    num::{MInt, One, mint_basic::MInt998244353},
+    num::{One, mint_basic::MInt998244353},
 };
 
 competitive::define_enum_scan! {

@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::prime_factors_flatten;
+use competitive::math::prime_factors_flatten;
 use competitive::prelude::*;
 
 #[verify::library_checker("factorize")]

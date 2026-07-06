@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::{TreeGraphScanner, UndirectedSparseGraph};
+use competitive::graph::TreeGraphScanner;
 use competitive::prelude::*;
 
 #[verify::library_checker("jump_on_tree")]

@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::{Associative, Magma, Unital},
     graph::TreeGraphScanner,
     num::{One, Zero, mint_basic::MInt998244353},

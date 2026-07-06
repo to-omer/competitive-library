@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353};
+use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353};
 
 #[verify::library_checker("characteristic_polynomial")]
 pub fn characteristic_polynomial(reader: impl Read, mut writer: impl Write) {

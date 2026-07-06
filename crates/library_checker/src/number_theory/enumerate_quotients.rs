@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::algorithm::FloorQuotientIndex;
+use competitive::algorithm::FloorQuotientIndex;
 use competitive::prelude::*;
 
 #[verify::library_checker("enumerate_quotients")]

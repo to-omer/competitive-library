@@ -1,9 +1,6 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
-    algebra::LinearOperation,
-    data_structure::SegmentTree,
-    num::{MInt, mint_basic::MInt998244353},
+use competitive::{
+    algebra::LinearOperation, data_structure::SegmentTree, num::mint_basic::MInt998244353,
 };
 
 competitive::define_enum_scan! {

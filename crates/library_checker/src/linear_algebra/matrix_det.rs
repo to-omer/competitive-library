@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AddMulOperation, math::Matrix, num::montgomery::MInt998244353};
+use competitive::{algebra::AddMulOperation, math::Matrix, num::montgomery::MInt998244353};
 
 #[verify::library_checker("matrix_det")]
 pub fn matrix_det(reader: impl Read, mut writer: impl Write) {

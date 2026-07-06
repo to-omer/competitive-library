@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, math::QuotientArray};
+use competitive::{algebra::AdditiveOperation, math::QuotientArray};
 
 #[verify::library_checker("counting_primes")]
 pub fn counting_primes(reader: impl Read, mut writer: impl Write) {

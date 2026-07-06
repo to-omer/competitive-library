@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::algorithm::solve_01_on_tree;
+use competitive::algorithm::solve_01_on_tree;
 use competitive::prelude::*;
 
 #[verify::library_checker("rooted_tree_topological_order_with_minimum_inversions")]

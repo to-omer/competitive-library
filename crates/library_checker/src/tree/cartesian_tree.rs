@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::algorithm::CartesianTree;
+use competitive::algorithm::CartesianTree;
 use competitive::prelude::*;
 
 #[verify::library_checker("cartesian_tree")]

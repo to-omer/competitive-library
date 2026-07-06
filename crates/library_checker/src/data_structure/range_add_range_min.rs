@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::RangeMinRangeAdd, data_structure::LazySegmentTree};
+use competitive::{algebra::RangeMinRangeAdd, data_structure::LazySegmentTree};
 
 competitive::define_enum_scan! {
     enum Query: u8 {

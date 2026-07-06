@@ -1,6 +1,5 @@
+use competitive::graph::PrimalDualBuilder;
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, graph::PrimalDualBuilder};
 
 #[verify::aizu_online_judge("GRL_6_B")]
 pub fn grl_6_b(reader: impl Read, mut writer: impl Write) {

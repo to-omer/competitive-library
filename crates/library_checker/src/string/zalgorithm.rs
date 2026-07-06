@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::string::{Mersenne61x1, RollingHasher, Zarray};
+use competitive::string::{Mersenne61x1, RollingHasher, Zarray};
 
 #[verify::library_checker("zalgorithm")]
 pub fn zalgorithm(reader: impl Read, mut writer: impl Write) {

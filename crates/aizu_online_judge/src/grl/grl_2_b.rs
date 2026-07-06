@@ -1,9 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
-    algebra::AdditiveOperation,
-    graph::{EdgeListGraph, EdgeListGraphScanner},
-};
+use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 
 #[verify::aizu_online_judge("GRL_2_B")]
 pub fn grl_2_b(reader: impl Read, mut writer: impl Write) {

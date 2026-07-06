@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::MaxOperation, graph::TreeGraphScanner, tree::ReRooting};
+use competitive::{algebra::MaxOperation, graph::TreeGraphScanner, tree::ReRooting};
 
 #[verify::aizu_online_judge("GRL_5_B")]
 pub fn grl_5_b(reader: impl Read, mut writer: impl Write) {

@@ -1,10 +1,9 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::{LinearOperation, ReverseOperation},
     data_structure::SegmentTree,
     graph::TreeGraphScanner,
-    num::{MInt, mint_basic::MInt998244353},
+    num::mint_basic::MInt998244353,
     tree::HeavyLightDecomposition,
 };
 

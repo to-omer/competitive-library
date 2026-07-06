@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::MinOperation, data_structure::SegmentTree};
+use competitive::{algebra::MinOperation, data_structure::SegmentTree};
 
 competitive::define_enum_scan! {
     enum Query: usize {

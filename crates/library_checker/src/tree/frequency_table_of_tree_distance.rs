@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::TreeGraphScanner;
+use competitive::graph::TreeGraphScanner;
 use competitive::prelude::*;
 
 #[verify::library_checker("frequency_table_of_tree_distance")]

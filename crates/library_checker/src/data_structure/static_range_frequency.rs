@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::data_structure::WaveletMatrix;
+use competitive::data_structure::WaveletMatrix;
 use competitive::prelude::*;
 
 #[verify::library_checker("static_range_frequency")]

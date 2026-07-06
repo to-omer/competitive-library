@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::RangeSumRangeLinear, data_structure::LazySegmentTree, num::mint_basic::MInt998244353,
 };
 

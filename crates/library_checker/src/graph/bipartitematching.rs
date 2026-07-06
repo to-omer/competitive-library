@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::{BipartiteMatching, DinicBuilder};
+use competitive::graph::{BipartiteMatching, DinicBuilder};
 use competitive::prelude::*;
 
 #[verify::library_checker("bipartitematching")]

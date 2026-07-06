@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::MinOperation,
     data_structure::{DisjointSparseTable, RangeMinimumQuery, SegmentTree, StaticRangeProduct},
 };

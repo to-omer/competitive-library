@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algorithm::rational_binary_search, num::URational};
+use competitive::{algorithm::rational_binary_search, num::URational};
 use std::cmp::Ordering;
 
 #[verify::library_checker("rational_approximation")]

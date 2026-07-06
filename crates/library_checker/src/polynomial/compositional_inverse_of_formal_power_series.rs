@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
+use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
 
 #[verify::library_checker("compositional_inverse_of_formal_power_series")]
 pub fn compositional_inverse_of_formal_power_series(reader: impl Read, mut writer: impl Write) {

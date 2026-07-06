@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, data_structure::WaveletMatrix};
+use competitive::{algebra::AdditiveOperation, data_structure::WaveletMatrix};
 
 #[verify::library_checker("static_range_sum_with_upper_bound")]
 pub fn static_range_sum_with_upper_bound(reader: impl Read, mut writer: impl Write) {

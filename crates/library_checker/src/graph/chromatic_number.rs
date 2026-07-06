@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algorithm::IndependentSubSet, num::mint_basic::Modulo998244353};
+use competitive::{algorithm::IndependentSubSet, num::mint_basic::Modulo998244353};
 
 #[verify::library_checker("chromatic_number")]
 pub fn chromatic_number(reader: impl Read, mut writer: impl Write) {

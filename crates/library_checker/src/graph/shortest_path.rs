@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::{DirectedGraphScanner, DirectedSparseGraph, ShortestPathExt};
+use competitive::graph::{DirectedGraphScanner, ShortestPathExt};
 use competitive::prelude::*;
 
 #[verify::library_checker("shortest_path")]

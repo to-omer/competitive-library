@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::MinOperation, data_structure::QueueAggregation};
+use competitive::{algebra::MinOperation, data_structure::QueueAggregation};
 
 #[verify::aizu_online_judge("DSL_3_D")]
 pub fn dsl_3_d(reader: impl Read, mut writer: impl Write) {

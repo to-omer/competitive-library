@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{graph::UndirectedSparseGraph, tree::HeavyLightDecomposition};
+use competitive::{graph::UndirectedSparseGraph, tree::HeavyLightDecomposition};
 
 #[verify::library_checker("lca")]
 pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {

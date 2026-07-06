@@ -1,7 +1,6 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
-    math::{Convolve, ConvolveSteps, MIntConvolve},
+use competitive::{
+    math::{ConvolveSteps, MIntConvolve},
     num::mint_basic::{MInt1000000007, Modulo1000000007},
 };
 

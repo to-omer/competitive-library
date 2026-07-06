@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
+use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
 
 #[verify::library_checker("polynomial_taylor_shift")]
 pub fn polynomial_taylor_shift(reader: impl Read, mut writer: impl Write) {

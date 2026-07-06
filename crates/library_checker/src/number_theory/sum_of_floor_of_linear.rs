@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::floor_sum;
+use competitive::math::floor_sum;
 use competitive::prelude::*;
 
 #[verify::library_checker("sum_of_floor_of_linear")]

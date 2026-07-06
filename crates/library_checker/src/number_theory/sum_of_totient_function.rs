@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::{AddMulOperation, AdditiveOperation, ArrayOperation},
     math::QuotientArray,
     num::mint_basic::MInt998244353,

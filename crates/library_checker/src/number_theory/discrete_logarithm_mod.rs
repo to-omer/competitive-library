@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::discrete_logarithm;
+use competitive::math::discrete_logarithm;
 use competitive::prelude::*;
 
 #[verify::library_checker("discrete_logarithm_mod")]

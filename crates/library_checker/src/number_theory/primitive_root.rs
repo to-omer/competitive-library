@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::primitive_root as primitive_root_library;
+use competitive::math::primitive_root as primitive_root_library;
 use competitive::prelude::*;
 
 #[verify::library_checker("primitive_root")]

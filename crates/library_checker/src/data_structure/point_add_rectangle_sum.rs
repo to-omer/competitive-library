@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, data_structure::CompressedSegmentTree2d};
+use competitive::{algebra::AdditiveOperation, data_structure::CompressedSegmentTree2d};
 
 competitive::define_enum_scan! {
     #[derive(Clone, Copy)]

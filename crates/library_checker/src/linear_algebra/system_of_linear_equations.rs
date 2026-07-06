@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353};
+use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353};
 
 #[verify::library_checker("system_of_linear_equations")]
 pub fn system_of_linear_equations(reader: impl Read, mut writer: impl Write) {

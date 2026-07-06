@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::tools::{FastInput, FastOutput};
+use competitive::tools::{FastInput, FastOutput};
 
 #[verify::library_checker("many_aplusb")]
 pub fn many_aplusb(reader: impl Read, mut writer: impl Write) {

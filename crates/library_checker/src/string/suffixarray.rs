@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::string::SuffixArray;
+use competitive::string::SuffixArray;
 
 #[verify::library_checker("suffixarray")]
 pub fn suffixarray(reader: impl Read, mut writer: impl Write) {

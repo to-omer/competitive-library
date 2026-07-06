@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     math::Fps998244353,
     num::{One, montgomery::MInt998244353},
 };

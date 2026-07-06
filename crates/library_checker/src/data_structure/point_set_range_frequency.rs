@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::data_structure::RangeFrequency;
+use competitive::data_structure::RangeFrequency;
 use competitive::prelude::*;
 
 competitive::define_enum_scan! {

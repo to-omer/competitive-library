@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{
+use competitive::{
     algebra::AdditiveOperation, data_structure::SegmentTree, graph::UndirectedSparseGraph,
 };
 

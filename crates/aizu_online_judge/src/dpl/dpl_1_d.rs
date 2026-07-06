@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::combinatorial_optimization::LongestIncreasingSubsequence;
+use competitive::combinatorial_optimization::LongestIncreasingSubsequence;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DPL_1_D")]

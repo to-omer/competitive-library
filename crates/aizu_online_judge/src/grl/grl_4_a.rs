@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::DirectedGraphScanner;
+use competitive::graph::DirectedGraphScanner;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("GRL_4_A")]

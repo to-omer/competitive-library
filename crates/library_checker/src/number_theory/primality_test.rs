@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::miller_rabin;
+use competitive::math::miller_rabin;
 use competitive::prelude::*;
 
 #[verify::library_checker("primality_test")]

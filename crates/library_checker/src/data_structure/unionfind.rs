@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::data_structure::UnionFind;
+use competitive::data_structure::UnionFind;
 use competitive::prelude::*;
 
 competitive::define_enum_scan! {

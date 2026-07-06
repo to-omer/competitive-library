@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::EdgeListGraphScanner;
+use competitive::graph::EdgeListGraphScanner;
 use competitive::prelude::*;
 
 #[verify::library_checker("minimum_spanning_tree")]

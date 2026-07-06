@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::ArbitraryModBinomial;
+use competitive::math::ArbitraryModBinomial;
 use competitive::prelude::*;
 
 #[verify::library_checker("binomial_coefficient")]

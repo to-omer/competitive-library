@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, data_structure::Accumulate};
+use competitive::{algebra::AdditiveOperation, data_structure::Accumulate};
 
 #[verify::library_checker("static_range_sum")]
 pub fn static_range_sum(reader: impl Read, mut writer: impl Write) {

@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algorithm::binary_search, math::floor_sum_range_freq};
+use competitive::{algorithm::binary_search, math::floor_sum_range_freq};
 
 #[verify::library_checker("min_of_mod_of_linear")]
 pub fn min_of_mod_of_linear(reader: impl Read, mut writer: impl Write) {

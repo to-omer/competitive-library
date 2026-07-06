@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::math::PrimeList;
+use competitive::math::PrimeList;
 use competitive::prelude::*;
 
 #[verify::library_checker("enumerate_primes")]

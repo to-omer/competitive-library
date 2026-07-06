@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, graph::TreeGraphScanner};
+use competitive::{algebra::AdditiveOperation, graph::TreeGraphScanner};
 
 #[verify::aizu_online_judge("GRL_5_A")]
 pub fn grl_5_a(reader: impl Read, mut writer: impl Write) {

@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::string::wildcard_pattern_matching as wildcard_pattern_matching_library;
+use competitive::string::wildcard_pattern_matching as wildcard_pattern_matching_library;
 
 #[verify::library_checker("wildcard_pattern_matching")]
 pub fn wildcard_pattern_matching(reader: impl Read, mut writer: impl Write) {

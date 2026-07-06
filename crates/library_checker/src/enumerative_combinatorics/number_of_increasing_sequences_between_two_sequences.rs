@@ -1,4 +1,3 @@
-#[doc(no_inline)]
 use competitive::algorithm::number_of_increasing_sequences_between_998244353;
 use competitive::prelude::*;
 

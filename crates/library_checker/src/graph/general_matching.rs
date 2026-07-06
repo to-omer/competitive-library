@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::GeneralMatching;
+use competitive::graph::GeneralMatching;
 use competitive::prelude::*;
 
 #[verify::library_checker("general_matching")]

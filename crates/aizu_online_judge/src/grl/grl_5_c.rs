@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{graph::UndirectedSparseGraph, tools::SizedCollect};
+use competitive::{graph::UndirectedSparseGraph, tools::SizedCollect};
 
 #[verify::aizu_online_judge("GRL_5_C")]
 pub fn grl_5_c(reader: impl Read, mut writer: impl Write) {

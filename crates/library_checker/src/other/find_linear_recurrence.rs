@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{math::berlekamp_massey, num::montgomery::MInt998244353};
+use competitive::{math::berlekamp_massey, num::montgomery::MInt998244353};
 
 #[verify::library_checker("find_linear_recurrence")]
 pub fn find_linear_recurrence(reader: impl Read, mut writer: impl Write) {

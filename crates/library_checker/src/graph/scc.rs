@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::graph::{DirectedSparseGraph, StronglyConnectedComponent};
+use competitive::graph::{DirectedSparseGraph, StronglyConnectedComponent};
 use competitive::prelude::*;
 
 #[verify::library_checker("scc")]

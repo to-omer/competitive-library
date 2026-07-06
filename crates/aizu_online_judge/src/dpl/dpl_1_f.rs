@@ -1,5 +1,4 @@
-#[doc(no_inline)]
-pub use competitive::combinatorial_optimization::KnapsackProblemSmallValue;
+use competitive::combinatorial_optimization::KnapsackProblemSmallValue;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DPL_1_F")]

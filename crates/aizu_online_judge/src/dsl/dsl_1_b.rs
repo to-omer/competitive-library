@@ -1,6 +1,5 @@
 use competitive::prelude::*;
-#[doc(no_inline)]
-pub use competitive::{algebra::AdditiveOperation, data_structure::PotentializedUnionFind};
+use competitive::{algebra::AdditiveOperation, data_structure::PotentializedUnionFind};
 
 competitive::define_enum_scan! {
     enum Query: usize {
