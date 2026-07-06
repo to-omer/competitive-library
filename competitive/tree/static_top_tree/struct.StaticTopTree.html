@@ -657,61 +657,61 @@
     vertices: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;&lt;C as <a class="trait" href="../trait.Cluster.html" title="trait competitive::tree::Cluster">Cluster</a>&gt;::<a class="associatedtype" href="../trait.Cluster.html#associatedtype.Vertex" title="type competitive::tree::Cluster::Vertex">Vertex</a>&gt;,
     edges: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;&lt;C as <a class="trait" href="../trait.Cluster.html" title="trait competitive::tree::Cluster">Cluster</a>&gt;::<a class="associatedtype" href="../trait.Cluster.html#associatedtype.Edge" title="type competitive::tree::Cluster::Edge">Edge</a>&gt;,
 ) -&gt; <a class="struct" href="../struct.StaticTopTreeDp.html" title="struct competitive::tree::StaticTopTreeDp">StaticTopTreeDp</a>&lt;'_, C&gt;<div class="where">where
-    C: <a class="trait" href="../trait.Cluster.html" title="trait competitive::tree::Cluster">Cluster</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/library_checker/tree/point_set_tree_path_composite_sum_fixed_root.rs.html#118&#34;,&#34;line 118&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/point_set_tree_path_composite_sum_fixed_root.rs (<a href="../../../src/library_checker/tree/point_set_tree_path_composite_sum_fixed_root.rs.html#118">line 118</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>106</span><span class="kw">pub fn </span>point_set_tree_path_composite_sum_fixed_root(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>107</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>108</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>109</span>    <span class="macro">scan!</span>(
-<span data-nosnippet>110</span>        scanner,
-<span data-nosnippet>111</span>        n,
-<span data-nosnippet>112</span>        q,
-<span data-nosnippet>113</span>        value: [MInt; n],
-<span data-nosnippet>114</span>        (graph, edges): @TreeGraphScanner::&lt;usize, (MInt, MInt)&gt;::new(n)
-<span data-nosnippet>115</span>    );
-<span data-nosnippet>116</span>
-<span data-nosnippet>117</span>    <span class="kw">let </span>top_tree = graph.static_top_tree(<span class="number">0</span>);
-<span data-nosnippet>118</span>    <span class="kw">let </span><span class="kw-2">mut </span>dp = top_tree.<span class="highlight focus">dp</span>::&lt;Dp&gt;(value, edges);
-<span data-nosnippet>119</span>
-<span data-nosnippet>120</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>121</span>        <span class="macro">scan!</span>(scanner, query: Query);
-<span data-nosnippet>122</span>        <span class="kw">match </span>query {
-<span data-nosnippet>123</span>            Query::SetVertex { v, x } =&gt; {
-<span data-nosnippet>124</span>                dp.set_vertex(v, x);
-<span data-nosnippet>125</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_all().sum).ok();
-<span data-nosnippet>126</span>            }
-<span data-nosnippet>127</span>            Query::SetEdge { e, a, b } =&gt; {
-<span data-nosnippet>128</span>                dp.set_edge(e, (a, b));
-<span data-nosnippet>129</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_all().sum).ok();
-<span data-nosnippet>130</span>            }
-<span data-nosnippet>131</span>        }
-<span data-nosnippet>132</span>    }
-<span data-nosnippet>133</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/library_checker/tree/point_set_tree_path_composite_sum.rs.html#152&#34;,&#34;line 152&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/point_set_tree_path_composite_sum.rs (<a href="../../../src/library_checker/tree/point_set_tree_path_composite_sum.rs.html#152">line 152</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>140</span><span class="kw">pub fn </span>point_set_tree_path_composite_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>141</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>142</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>143</span>    <span class="macro">scan!</span>(
-<span data-nosnippet>144</span>        scanner,
-<span data-nosnippet>145</span>        n,
-<span data-nosnippet>146</span>        q,
-<span data-nosnippet>147</span>        value: [MInt; n],
-<span data-nosnippet>148</span>        (graph, edges): @TreeGraphScanner::&lt;usize, (MInt, MInt)&gt;::new(n)
-<span data-nosnippet>149</span>    );
-<span data-nosnippet>150</span>
-<span data-nosnippet>151</span>    <span class="kw">let </span>top_tree = graph.static_top_tree(<span class="number">0</span>);
-<span data-nosnippet>152</span>    <span class="kw">let </span><span class="kw-2">mut </span>dp = top_tree.<span class="highlight focus">dp</span>::&lt;Dp&gt;(value, edges);
-<span data-nosnippet>153</span>
-<span data-nosnippet>154</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>155</span>        <span class="macro">scan!</span>(scanner, query: Query);
-<span data-nosnippet>156</span>        <span class="kw">match </span>query {
-<span data-nosnippet>157</span>            Query::SetVertex { v, x, r } =&gt; {
-<span data-nosnippet>158</span>                dp.set_vertex(v, x);
-<span data-nosnippet>159</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_path(r).reverse.sum).ok();
-<span data-nosnippet>160</span>            }
-<span data-nosnippet>161</span>            Query::SetEdge { e, a, b, r } =&gt; {
-<span data-nosnippet>162</span>                dp.set_edge(e, (a, b));
-<span data-nosnippet>163</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_path(r).reverse.sum).ok();
-<span data-nosnippet>164</span>            }
-<span data-nosnippet>165</span>        }
-<span data-nosnippet>166</span>    }
-<span data-nosnippet>167</span>}</code></pre></div></div></div></details></div></details><section id="method.fold_all" class="method"><a class="src rightside" href="../../../src/competitive/tree/static_top_tree.rs.html#278-294">Source</a><h4 class="code-header">pub fn <a href="#method.fold_all" class="fn">fold_all</a>&lt;C&gt;(
+    C: <a class="trait" href="../trait.Cluster.html" title="trait competitive::tree::Cluster">Cluster</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/library_checker/tree/point_set_tree_path_composite_sum_fixed_root.rs.html#117&#34;,&#34;line 117&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/point_set_tree_path_composite_sum_fixed_root.rs (<a href="../../../src/library_checker/tree/point_set_tree_path_composite_sum_fixed_root.rs.html#117">line 117</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>105</span><span class="kw">pub fn </span>point_set_tree_path_composite_sum_fixed_root(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>106</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>107</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>108</span>    <span class="macro">scan!</span>(
+<span data-nosnippet>109</span>        scanner,
+<span data-nosnippet>110</span>        n,
+<span data-nosnippet>111</span>        q,
+<span data-nosnippet>112</span>        value: [MInt; n],
+<span data-nosnippet>113</span>        (graph, edges): @TreeGraphScanner::&lt;usize, (MInt, MInt)&gt;::new(n)
+<span data-nosnippet>114</span>    );
+<span data-nosnippet>115</span>
+<span data-nosnippet>116</span>    <span class="kw">let </span>top_tree = graph.static_top_tree(<span class="number">0</span>);
+<span data-nosnippet>117</span>    <span class="kw">let </span><span class="kw-2">mut </span>dp = top_tree.<span class="highlight focus">dp</span>::&lt;Dp&gt;(value, edges);
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>120</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>121</span>        <span class="kw">match </span>query {
+<span data-nosnippet>122</span>            Query::SetVertex { v, x } =&gt; {
+<span data-nosnippet>123</span>                dp.set_vertex(v, x);
+<span data-nosnippet>124</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_all().sum).ok();
+<span data-nosnippet>125</span>            }
+<span data-nosnippet>126</span>            Query::SetEdge { e, a, b } =&gt; {
+<span data-nosnippet>127</span>                dp.set_edge(e, (a, b));
+<span data-nosnippet>128</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_all().sum).ok();
+<span data-nosnippet>129</span>            }
+<span data-nosnippet>130</span>        }
+<span data-nosnippet>131</span>    }
+<span data-nosnippet>132</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/library_checker/tree/point_set_tree_path_composite_sum.rs.html#151&#34;,&#34;line 151&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/point_set_tree_path_composite_sum.rs (<a href="../../../src/library_checker/tree/point_set_tree_path_composite_sum.rs.html#151">line 151</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>139</span><span class="kw">pub fn </span>point_set_tree_path_composite_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>140</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>141</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>142</span>    <span class="macro">scan!</span>(
+<span data-nosnippet>143</span>        scanner,
+<span data-nosnippet>144</span>        n,
+<span data-nosnippet>145</span>        q,
+<span data-nosnippet>146</span>        value: [MInt; n],
+<span data-nosnippet>147</span>        (graph, edges): @TreeGraphScanner::&lt;usize, (MInt, MInt)&gt;::new(n)
+<span data-nosnippet>148</span>    );
+<span data-nosnippet>149</span>
+<span data-nosnippet>150</span>    <span class="kw">let </span>top_tree = graph.static_top_tree(<span class="number">0</span>);
+<span data-nosnippet>151</span>    <span class="kw">let </span><span class="kw-2">mut </span>dp = top_tree.<span class="highlight focus">dp</span>::&lt;Dp&gt;(value, edges);
+<span data-nosnippet>152</span>
+<span data-nosnippet>153</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>154</span>        <span class="macro">scan!</span>(scanner, query: Query);
+<span data-nosnippet>155</span>        <span class="kw">match </span>query {
+<span data-nosnippet>156</span>            Query::SetVertex { v, x, r } =&gt; {
+<span data-nosnippet>157</span>                dp.set_vertex(v, x);
+<span data-nosnippet>158</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_path(r).reverse.sum).ok();
+<span data-nosnippet>159</span>            }
+<span data-nosnippet>160</span>            Query::SetEdge { e, a, b, r } =&gt; {
+<span data-nosnippet>161</span>                dp.set_edge(e, (a, b));
+<span data-nosnippet>162</span>                <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, dp.fold_path(r).reverse.sum).ok();
+<span data-nosnippet>163</span>            }
+<span data-nosnippet>164</span>        }
+<span data-nosnippet>165</span>    }
+<span data-nosnippet>166</span>}</code></pre></div></div></div></details></div></details><section id="method.fold_all" class="method"><a class="src rightside" href="../../../src/competitive/tree/static_top_tree.rs.html#278-294">Source</a><h4 class="code-header">pub fn <a href="#method.fold_all" class="fn">fold_all</a>&lt;C&gt;(
     &amp;self,
     vertices: &amp;[&lt;C as <a class="trait" href="../trait.Cluster.html" title="trait competitive::tree::Cluster">Cluster</a>&gt;::<a class="associatedtype" href="../trait.Cluster.html#associatedtype.Vertex" title="type competitive::tree::Cluster::Vertex">Vertex</a>],
     edges: &amp;[&lt;C as <a class="trait" href="../trait.Cluster.html" title="trait competitive::tree::Cluster">Cluster</a>&gt;::<a class="associatedtype" href="../trait.Cluster.html#associatedtype.Edge" title="type competitive::tree::Cluster::Edge">Edge</a>],

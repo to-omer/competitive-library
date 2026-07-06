@@ -90,86 +90,86 @@
     &amp;'a self,
 ) -&gt; <a class="struct" href="struct.ShortestPathBuilder.html" title="struct competitive::graph::shortest_path::ShortestPathBuilder">ShortestPathBuilder</a>&lt;'a, Self, <a class="struct" href="struct.StandardSp.html" title="struct competitive::graph::shortest_path::StandardSp">StandardSp</a>&lt;<a class="struct" href="../../algebra/struct.AdditiveOperation.html" title="struct competitive::algebra::AdditiveOperation">AdditiveOperation</a>&lt;T&gt;&gt;&gt;<div class="where">where
     Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="../trait.GraphBase.html" title="trait competitive::graph::GraphBase">GraphBase</a>,
-    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&lt;Output = T&gt; + <a class="trait" href="../../num/trait.Bounded.html" title="trait competitive::num::Bounded">Bounded</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../../src/library_checker/graph/shortest_path.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/shortest_path.rs (<a href="../../../src/library_checker/graph/shortest_path.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>shortest_path(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, m, s, t, (g, c): @DirectedGraphScanner::&lt;usize, u64&gt;::new(n, m));
-<span data-nosnippet>10</span>    <span class="kw">let </span>sp = g.<span class="highlight focus">standard_sp_additive</span>().with_parent().dijkstra([s], <span class="kw-2">&amp;</span>c);
-<span data-nosnippet>11</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = sp.path_to(<span class="kw-2">&amp;</span>g, t) {
-<span data-nosnippet>12</span>        <span class="macro">iter_print!</span>(writer, sp.dist[t], path.len() - <span class="number">1</span>; @it2d path.windows(<span class="number">2</span>));
-<span data-nosnippet>13</span>    } <span class="kw">else </span>{
-<span data-nosnippet>14</span>        <span class="macro">iter_print!</span>(writer, -<span class="number">1</span>);
-<span data-nosnippet>15</span>    }
-<span data-nosnippet>16</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/grl/grl_1_a.rs.html#13&#34;,&#34;line 13&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_a.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_a.rs.html#13">line 13</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>grl_1_a(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::&lt;usize, u64&gt;::new(vs, es));
-<span data-nosnippet>13</span>    <span class="kw">let </span>cost = graph.<span class="highlight focus">standard_sp_additive</span>().dijkstra([r], <span class="kw-2">&amp;</span>d);
-<span data-nosnippet>14</span>    <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
-<span data-nosnippet>15</span>        <span class="kw">if </span>cost[u].is_maximum() {
-<span data-nosnippet>16</span>            <span class="macro">writeln!</span>(writer, <span class="string">"INF"</span>).ok();
-<span data-nosnippet>17</span>        } <span class="kw">else </span>{
-<span data-nosnippet>18</span>            <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, cost[u]).ok();
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>}</code></pre></div></div></div></details></div></details><section id="method.option_sp" class="method"><a class="src rightside" href="../../../src/competitive/graph/shortest_path.rs.html#199-208">Source</a><h4 class="code-header">fn <a href="#method.option_sp" class="fn">option_sp</a>&lt;'a, M&gt;(&amp;'a self) -&gt; <a class="struct" href="struct.ShortestPathBuilder.html" title="struct competitive::graph::shortest_path::ShortestPathBuilder">ShortestPathBuilder</a>&lt;'a, Self, <a class="struct" href="struct.OptionSp.html" title="struct competitive::graph::shortest_path::OptionSp">OptionSp</a>&lt;M&gt;&gt;<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&lt;Output = T&gt; + <a class="trait" href="../../num/trait.Bounded.html" title="trait competitive::num::Bounded">Bounded</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../../src/library_checker/graph/shortest_path.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/shortest_path.rs (<a href="../../../src/library_checker/graph/shortest_path.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>shortest_path(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>6</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>7</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>8</span>    <span class="macro">scan!</span>(scanner, n, m, s, t, (g, c): @DirectedGraphScanner::&lt;usize, u64&gt;::new(n, m));
+<span data-nosnippet>9</span>    <span class="kw">let </span>sp = g.<span class="highlight focus">standard_sp_additive</span>().with_parent().dijkstra([s], <span class="kw-2">&amp;</span>c);
+<span data-nosnippet>10</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = sp.path_to(<span class="kw-2">&amp;</span>g, t) {
+<span data-nosnippet>11</span>        <span class="macro">iter_print!</span>(writer, sp.dist[t], path.len() - <span class="number">1</span>; @it2d path.windows(<span class="number">2</span>));
+<span data-nosnippet>12</span>    } <span class="kw">else </span>{
+<span data-nosnippet>13</span>        <span class="macro">iter_print!</span>(writer, -<span class="number">1</span>);
+<span data-nosnippet>14</span>    }
+<span data-nosnippet>15</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/aizu_online_judge/grl/grl_1_a.rs.html#12&#34;,&#34;line 12&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_a.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_a.rs.html#12">line 12</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>grl_1_a(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>9</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>11</span>    <span class="macro">scan!</span>(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::&lt;usize, u64&gt;::new(vs, es));
+<span data-nosnippet>12</span>    <span class="kw">let </span>cost = graph.<span class="highlight focus">standard_sp_additive</span>().dijkstra([r], <span class="kw-2">&amp;</span>d);
+<span data-nosnippet>13</span>    <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
+<span data-nosnippet>14</span>        <span class="kw">if </span>cost[u].is_maximum() {
+<span data-nosnippet>15</span>            <span class="macro">writeln!</span>(writer, <span class="string">"INF"</span>).ok();
+<span data-nosnippet>16</span>        } <span class="kw">else </span>{
+<span data-nosnippet>17</span>            <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, cost[u]).ok();
+<span data-nosnippet>18</span>        }
+<span data-nosnippet>19</span>    }
+<span data-nosnippet>20</span>}</code></pre></div></div></div></details></div></details><section id="method.option_sp" class="method"><a class="src rightside" href="../../../src/competitive/graph/shortest_path.rs.html#199-208">Source</a><h4 class="code-header">fn <a href="#method.option_sp" class="fn">option_sp</a>&lt;'a, M&gt;(&amp;'a self) -&gt; <a class="struct" href="struct.ShortestPathBuilder.html" title="struct competitive::graph::shortest_path::ShortestPathBuilder">ShortestPathBuilder</a>&lt;'a, Self, <a class="struct" href="struct.OptionSp.html" title="struct competitive::graph::shortest_path::OptionSp">OptionSp</a>&lt;M&gt;&gt;<div class="where">where
     Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="../trait.GraphBase.html" title="trait competitive::graph::GraphBase">GraphBase</a>,
     M: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>&gt;,</div></h4></section><details class="toggle method-toggle" open><summary><section id="method.option_sp_additive" class="method"><a class="src rightside" href="../../../src/competitive/graph/shortest_path.rs.html#210-221">Source</a><h4 class="code-header">fn <a href="#method.option_sp_additive" class="fn">option_sp_additive</a>&lt;'a, T&gt;(
     &amp;'a self,
 ) -&gt; <a class="struct" href="struct.ShortestPathBuilder.html" title="struct competitive::graph::shortest_path::ShortestPathBuilder">ShortestPathBuilder</a>&lt;'a, Self, <a class="struct" href="struct.OptionSp.html" title="struct competitive::graph::shortest_path::OptionSp">OptionSp</a>&lt;<a class="struct" href="../../algebra/struct.AdditiveOperation.html" title="struct competitive::algebra::AdditiveOperation">AdditiveOperation</a>&lt;T&gt;&gt;&gt;<div class="where">where
     Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="../trait.GraphBase.html" title="trait competitive::graph::GraphBase">GraphBase</a>,
-    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&lt;Output = T&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/aizu_online_judge/grl/grl_1_a.rs.html#29&#34;,&#34;line 29&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_a.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_a.rs.html#29">line 29</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>24</span><span class="kw">pub fn </span>grl_1_a_option(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>25</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>26</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>27</span>    <span class="macro">scan!</span>(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::&lt;usize, u64&gt;::new(vs, es));
-<span data-nosnippet>28</span>    <span class="kw">let </span>cost = graph
-<span data-nosnippet>29</span>        .<span class="highlight focus">option_sp_additive</span>()
-<span data-nosnippet>30</span>        .dijkstra([r], <span class="kw-2">&amp;</span>|eid| <span class="prelude-val">Some</span>(d[eid]));
-<span data-nosnippet>31</span>    <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
-<span data-nosnippet>32</span>        <span class="kw">match </span>cost[u] {
-<span data-nosnippet>33</span>            <span class="prelude-val">Some</span>(d) =&gt; <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, d).ok(),
-<span data-nosnippet>34</span>            <span class="prelude-val">None </span>=&gt; <span class="macro">writeln!</span>(writer, <span class="string">"INF"</span>).ok(),
-<span data-nosnippet>35</span>        };
-<span data-nosnippet>36</span>    }
-<span data-nosnippet>37</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/aizu_online_judge/grl/grl_1_b.rs.html#11&#34;,&#34;line 11&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_b.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_b.rs.html#11">line 11</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>grl_1_b(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::&lt;usize, i64&gt;::new(vs, es));
-<span data-nosnippet>10</span>    <span class="kw">let </span>cost = graph
-<span data-nosnippet>11</span>        .<span class="highlight focus">option_sp_additive</span>()
-<span data-nosnippet>12</span>        .bellman_ford([r], <span class="kw-2">&amp;</span>|eid| <span class="prelude-val">Some</span>(d[eid]), <span class="bool-val">true</span>);
-<span data-nosnippet>13</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>(cost) = cost {
-<span data-nosnippet>14</span>        <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
-<span data-nosnippet>15</span>            <span class="kw">match </span>cost[u] {
-<span data-nosnippet>16</span>                <span class="prelude-val">Some</span>(d) =&gt; <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, d).ok(),
-<span data-nosnippet>17</span>                <span class="prelude-val">None </span>=&gt; <span class="macro">writeln!</span>(writer, <span class="string">"INF"</span>).ok(),
-<span data-nosnippet>18</span>            };
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    } <span class="kw">else </span>{
-<span data-nosnippet>21</span>        <span class="macro">writeln!</span>(writer, <span class="string">"NEGATIVE CYCLE"</span>).ok();
-<span data-nosnippet>22</span>    }
-<span data-nosnippet>23</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/aizu_online_judge/grl/grl_1_c.rs.html#14&#34;,&#34;line 14&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_c.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_c.rs.html#14">line 14</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>grl_1_c(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
-<span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-<span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, vs, es, (graph, d): @DirectedGraphScanner::&lt;usize, i64&gt;::new(vs, es));
-<span data-nosnippet>13</span>    <span class="kw">let </span>cost = graph
-<span data-nosnippet>14</span>        .<span class="highlight focus">option_sp_additive</span>()
-<span data-nosnippet>15</span>        .warshall_floyd_ap(<span class="kw-2">&amp;</span>|eid| <span class="prelude-val">Some</span>(Saturating(d[eid])));
-<span data-nosnippet>16</span>    <span class="kw">if </span>graph.vertices().any(|u| cost[u][u].unwrap().<span class="number">0 </span>&lt; <span class="number">0</span>) {
-<span data-nosnippet>17</span>        <span class="macro">writeln!</span>(writer, <span class="string">"NEGATIVE CYCLE"</span>).ok();
-<span data-nosnippet>18</span>    } <span class="kw">else </span>{
-<span data-nosnippet>19</span>        <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
-<span data-nosnippet>20</span>            <span class="kw">for </span>v <span class="kw">in </span>graph.vertices() {
-<span data-nosnippet>21</span>                <span class="kw">match </span>cost[u][v] {
-<span data-nosnippet>22</span>                    <span class="prelude-val">Some</span>(d) =&gt; <span class="macro">write!</span>(writer, <span class="string">"{}"</span>, d.<span class="number">0</span>),
-<span data-nosnippet>23</span>                    <span class="prelude-val">None </span>=&gt; <span class="macro">write!</span>(writer, <span class="string">"INF"</span>),
-<span data-nosnippet>24</span>                }
-<span data-nosnippet>25</span>                .ok();
-<span data-nosnippet>26</span>                <span class="macro">write!</span>(writer, <span class="string">"{}"</span>, <span class="kw">if </span>v + <span class="number">1 </span>== vs { <span class="string">'\n' </span>} <span class="kw">else </span>{ <span class="string">' ' </span>}).ok();
-<span data-nosnippet>27</span>            }
-<span data-nosnippet>28</span>        }
-<span data-nosnippet>29</span>    }
-<span data-nosnippet>30</span>}</code></pre></div></div></div></details></div></details><section id="method.path_folding_sp" class="method"><a class="src rightside" href="../../../src/competitive/graph/shortest_path.rs.html#223-233">Source</a><h4 class="code-header">fn <a href="#method.path_folding_sp" class="fn">path_folding_sp</a>&lt;'a, M, S&gt;(
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&lt;Output = T&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/aizu_online_judge/grl/grl_1_a.rs.html#28&#34;,&#34;line 28&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_a.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_a.rs.html#28">line 28</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>23</span><span class="kw">pub fn </span>grl_1_a_option(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>24</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>25</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>26</span>    <span class="macro">scan!</span>(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::&lt;usize, u64&gt;::new(vs, es));
+<span data-nosnippet>27</span>    <span class="kw">let </span>cost = graph
+<span data-nosnippet>28</span>        .<span class="highlight focus">option_sp_additive</span>()
+<span data-nosnippet>29</span>        .dijkstra([r], <span class="kw-2">&amp;</span>|eid| <span class="prelude-val">Some</span>(d[eid]));
+<span data-nosnippet>30</span>    <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
+<span data-nosnippet>31</span>        <span class="kw">match </span>cost[u] {
+<span data-nosnippet>32</span>            <span class="prelude-val">Some</span>(d) =&gt; <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, d).ok(),
+<span data-nosnippet>33</span>            <span class="prelude-val">None </span>=&gt; <span class="macro">writeln!</span>(writer, <span class="string">"INF"</span>).ok(),
+<span data-nosnippet>34</span>        };
+<span data-nosnippet>35</span>    }
+<span data-nosnippet>36</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/aizu_online_judge/grl/grl_1_b.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_b.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_b.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>grl_1_b(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>6</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>7</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>8</span>    <span class="macro">scan!</span>(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::&lt;usize, i64&gt;::new(vs, es));
+<span data-nosnippet>9</span>    <span class="kw">let </span>cost = graph
+<span data-nosnippet>10</span>        .<span class="highlight focus">option_sp_additive</span>()
+<span data-nosnippet>11</span>        .bellman_ford([r], <span class="kw-2">&amp;</span>|eid| <span class="prelude-val">Some</span>(d[eid]), <span class="bool-val">true</span>);
+<span data-nosnippet>12</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>(cost) = cost {
+<span data-nosnippet>13</span>        <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
+<span data-nosnippet>14</span>            <span class="kw">match </span>cost[u] {
+<span data-nosnippet>15</span>                <span class="prelude-val">Some</span>(d) =&gt; <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, d).ok(),
+<span data-nosnippet>16</span>                <span class="prelude-val">None </span>=&gt; <span class="macro">writeln!</span>(writer, <span class="string">"INF"</span>).ok(),
+<span data-nosnippet>17</span>            };
+<span data-nosnippet>18</span>        }
+<span data-nosnippet>19</span>    } <span class="kw">else </span>{
+<span data-nosnippet>20</span>        <span class="macro">writeln!</span>(writer, <span class="string">"NEGATIVE CYCLE"</span>).ok();
+<span data-nosnippet>21</span>    }
+<span data-nosnippet>22</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/aizu_online_judge/grl/grl_1_c.rs.html#13&#34;,&#34;line 13&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/grl/grl_1_c.rs (<a href="../../../src/aizu_online_judge/grl/grl_1_c.rs.html#13">line 13</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>grl_1_c(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>9</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>11</span>    <span class="macro">scan!</span>(scanner, vs, es, (graph, d): @DirectedGraphScanner::&lt;usize, i64&gt;::new(vs, es));
+<span data-nosnippet>12</span>    <span class="kw">let </span>cost = graph
+<span data-nosnippet>13</span>        .<span class="highlight focus">option_sp_additive</span>()
+<span data-nosnippet>14</span>        .warshall_floyd_ap(<span class="kw-2">&amp;</span>|eid| <span class="prelude-val">Some</span>(Saturating(d[eid])));
+<span data-nosnippet>15</span>    <span class="kw">if </span>graph.vertices().any(|u| cost[u][u].unwrap().<span class="number">0 </span>&lt; <span class="number">0</span>) {
+<span data-nosnippet>16</span>        <span class="macro">writeln!</span>(writer, <span class="string">"NEGATIVE CYCLE"</span>).ok();
+<span data-nosnippet>17</span>    } <span class="kw">else </span>{
+<span data-nosnippet>18</span>        <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
+<span data-nosnippet>19</span>            <span class="kw">for </span>v <span class="kw">in </span>graph.vertices() {
+<span data-nosnippet>20</span>                <span class="kw">match </span>cost[u][v] {
+<span data-nosnippet>21</span>                    <span class="prelude-val">Some</span>(d) =&gt; <span class="macro">write!</span>(writer, <span class="string">"{}"</span>, d.<span class="number">0</span>),
+<span data-nosnippet>22</span>                    <span class="prelude-val">None </span>=&gt; <span class="macro">write!</span>(writer, <span class="string">"INF"</span>),
+<span data-nosnippet>23</span>                }
+<span data-nosnippet>24</span>                .ok();
+<span data-nosnippet>25</span>                <span class="macro">write!</span>(writer, <span class="string">"{}"</span>, <span class="kw">if </span>v + <span class="number">1 </span>== vs { <span class="string">'\n' </span>} <span class="kw">else </span>{ <span class="string">' ' </span>}).ok();
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div></div></details></div></details><section id="method.path_folding_sp" class="method"><a class="src rightside" href="../../../src/competitive/graph/shortest_path.rs.html#223-233">Source</a><h4 class="code-header">fn <a href="#method.path_folding_sp" class="fn">path_folding_sp</a>&lt;'a, M, S&gt;(
     &amp;'a self,
 ) -&gt; <a class="struct" href="struct.ShortestPathBuilder.html" title="struct competitive::graph::shortest_path::ShortestPathBuilder">ShortestPathBuilder</a>&lt;'a, Self, <a class="struct" href="struct.PathFoldingSp.html" title="struct competitive::graph::shortest_path::PathFoldingSp">PathFoldingSp</a>&lt;M, S&gt;&gt;<div class="where">where
     Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="../trait.GraphBase.html" title="trait competitive::graph::GraphBase">GraphBase</a>,
