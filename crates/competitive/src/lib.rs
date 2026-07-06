@@ -1,6 +1,7 @@
 // #![warn(missing_docs)]
 #![allow(unknown_lints)]
 #![allow(clippy::missing_safety_doc)]
+#![allow(deprecated)] // FIXME: Remove this (supported since 1.95.0)
 
 //! [github]
 //!
