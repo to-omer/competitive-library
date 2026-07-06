@@ -1174,40 +1174,40 @@ impl<A> Transducer for AlwaysAcceptingTransducer<A> {
 /// build transducer
 ///
 /// - `transducer!(A)`
-/// - `<= seq`, `seq >=`: [`LexicographicalTransducer::less_than_or_equal()`](`LexicographicalTransducer::less_than_or_equal`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `>= seq`, `seq <=`: [`LexicographicalTransducer::greater_than_or_equal()`](`LexicographicalTransducer::greater_than_or_equal`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `< seq`, `seq >`: [`LexicographicalTransducer::less_than()`](`LexicographicalTransducer::less_than`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `> seq`, `seq <`: [`LexicographicalTransducer::greater_than()`](`LexicographicalTransducer::greater_than`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `!<= seq`, `seq !>=`: [`RevLexicographicalTransducer::less_than_or_equal()`](`RevLexicographicalTransducer::less_than_or_equal`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `!>= seq`, `seq !<=`: [`RevLexicographicalTransducer::greater_than_or_equal()`](`RevLexicographicalTransducer::greater_than_or_equal`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `!< seq`, `seq !>`: [`RevLexicographicalTransducer::less_than()`](`RevLexicographicalTransducer::less_than`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `!> seq`, `seq !<`: [`RevLexicographicalTransducer::greater_than()`](`RevLexicographicalTransducer::greater_than`) with [`SequenceTransducer`](`SequenceTransducer`)
-/// - `<=`: [`LexicographicalTransducer::less_than_or_equal()`](`LexicographicalTransducer::less_than_or_equal`)
-/// - `>=`: [`LexicographicalTransducer::greater_than_or_equal()`](`LexicographicalTransducer::greater_than_or_equal`)
-/// - `<`: [`LexicographicalTransducer::less_than()`](`LexicographicalTransducer::less_than`)
-/// - `>`: [`LexicographicalTransducer::greater_than()`](`LexicographicalTransducer::greater_than`)
-/// - `!<=`: [`RevLexicographicalTransducer::less_than_or_equal()`](`RevLexicographicalTransducer::less_than_or_equal`)
-/// - `!>=`: [`RevLexicographicalTransducer::greater_than_or_equal()`](`RevLexicographicalTransducer::greater_than_or_equal`)
-/// - `!<`: [`RevLexicographicalTransducer::less_than()`](`RevLexicographicalTransducer::less_than`)
-/// - `!>`: [`RevLexicographicalTransducer::greater_than()`](`RevLexicographicalTransducer::greater_than`)
-/// - `=> f g h`: [`FunctionalTransducer::new(f, g, h)`](`FunctionalTransducer`)
-/// - `@id`: [`IdentityTransducer::new()`](`IdentityTransducer`)
-/// - `@it e`: [`IteratorTransducer::new(e)`](`IteratorTransducer`)
-/// - `@map f`: `@id |> map(f)`
-/// - `@try_map f`: `@id |> try_map(f)`
-/// - `@seq e`: [`SequenceTransducer::new(e)`](`SequenceTransducer`)
-/// - `@rseq e`: [`RevSequenceTransducer::new(e)`](`RevSequenceTransducer`)
-/// - `@`: [`AlwaysAcceptingTransducer::new()`](`AlwaysAcceptingTransducer`)
-/// - `A |> method(args...)`: `Transducer::method(A, args...)`
-/// - `A |> map(f)`: `Transducer::map(A, f)`
-/// - `A |> try_map(f)`: `Transducer::try_map(A, f)`
-/// - `A |> retain(f)`: `Transducer::retain(A, f)`
-/// - `A |> with_fold(init, f)`: `Transducer::with_fold(A, init, f)`
-/// - `A |> with_try_fold(init, f)`: `Transducer::with_try_fold(A, init, f)`
-/// - `A |> accepting(f)`: `Transducer::accepting(A, f)`
-/// - `A . B`: [`ChainTransducer((A, B))`](`ChainTransducer`)
-/// - `A * B`: [`ProductTransducer((A, B))`](`ProductTransducer`)
-/// - `A & B`: [`IntersectionTransducer((A, B))`](`IntersectionTransducer`)
+/// - `<= seq`, `seq >=`: [`LexicographicalTransducer::less_than_or_equal()`](LexicographicalTransducer::less_than_or_equal) with [`SequenceTransducer`](SequenceTransducer)
+/// - `>= seq`, `seq <=`: [`LexicographicalTransducer::greater_than_or_equal()`](LexicographicalTransducer::greater_than_or_equal) with [`SequenceTransducer`](SequenceTransducer)
+/// - `< seq`, `seq >`: [`LexicographicalTransducer::less_than()`](LexicographicalTransducer::less_than) with [`SequenceTransducer`](SequenceTransducer)
+/// - `> seq`, `seq <`: [`LexicographicalTransducer::greater_than()`](LexicographicalTransducer::greater_than) with [`SequenceTransducer`](SequenceTransducer)
+/// - `!<= seq`, `seq !>=`: [`RevLexicographicalTransducer::less_than_or_equal()`](RevLexicographicalTransducer::less_than_or_equal) with [`SequenceTransducer`](SequenceTransducer)
+/// - `!>= seq`, `seq !<=`: [`RevLexicographicalTransducer::greater_than_or_equal()`](RevLexicographicalTransducer::greater_than_or_equal) with [`SequenceTransducer`](SequenceTransducer)
+/// - `!< seq`, `seq !>`: [`RevLexicographicalTransducer::less_than()`](RevLexicographicalTransducer::less_than) with [`SequenceTransducer`](SequenceTransducer)
+/// - `!> seq`, `seq !<`: [`RevLexicographicalTransducer::greater_than()`](RevLexicographicalTransducer::greater_than) with [`SequenceTransducer`](SequenceTransducer)
+/// - `<=`: [`LexicographicalTransducer::less_than_or_equal()`](LexicographicalTransducer::less_than_or_equal)
+/// - `>=`: [`LexicographicalTransducer::greater_than_or_equal()`](LexicographicalTransducer::greater_than_or_equal)
+/// - `<`: [`LexicographicalTransducer::less_than()`](LexicographicalTransducer::less_than)
+/// - `>`: [`LexicographicalTransducer::greater_than()`](LexicographicalTransducer::greater_than)
+/// - `!<=`: [`RevLexicographicalTransducer::less_than_or_equal()`](RevLexicographicalTransducer::less_than_or_equal)
+/// - `!>=`: [`RevLexicographicalTransducer::greater_than_or_equal()`](RevLexicographicalTransducer::greater_than_or_equal)
+/// - `!<`: [`RevLexicographicalTransducer::less_than()`](RevLexicographicalTransducer::less_than)
+/// - `!>`: [`RevLexicographicalTransducer::greater_than()`](RevLexicographicalTransducer::greater_than)
+/// - `=> f g h`: [`FunctionalTransducer::new(f, g, h)`](FunctionalTransducer)
+/// - `@id`: [`IdentityTransducer::new()`](IdentityTransducer)
+/// - `@it e`: [`IteratorTransducer::new(e)`](IteratorTransducer)
+/// - `@map f`: `@id |>` [`map(f)`](Transducer::map)
+/// - `@try_map f`: `@id |>` [`try_map(f)`](Transducer::try_map)
+/// - `@seq e`: [`SequenceTransducer::new(e)`](SequenceTransducer)
+/// - `@rseq e`: [`RevSequenceTransducer::new(e)`](RevSequenceTransducer)
+/// - `@`: [`AlwaysAcceptingTransducer::new()`](AlwaysAcceptingTransducer)
+/// - `A |> method(args...)`: [`Transducer`](Transducer)`::method(A, args...)`
+/// - `A |> map(f)`: [`Transducer::map(A, f)`](Transducer::map)
+/// - `A |> try_map(f)`: [`Transducer::try_map(A, f)`](Transducer::try_map)
+/// - `A |> retain(f)`: [`Transducer::retain(A, f)`](Transducer::retain)
+/// - `A |> with_fold(init, f)`: [`Transducer::with_fold(A, init, f)`](Transducer::with_fold)
+/// - `A |> with_try_fold(init, f)`: [`Transducer::with_try_fold(A, init, f)`](Transducer::with_try_fold)
+/// - `A |> accepting(f)`: [`Transducer::accepting(A, f)`](Transducer::accepting)
+/// - `A . B`: [`ChainTransducer((A, B))`](ChainTransducer)
+/// - `A * B`: [`ProductTransducer((A, B))`](ProductTransducer)
+/// - `A & B`: [`IntersectionTransducer((A, B))`](IntersectionTransducer)
 #[macro_export]
 macro_rules! transducer {
     (@check $e:expr)                                         => {{ #[inline(always)] fn check_transucer<T>(fst: T) -> T where T: Transducer { fst } check_transucer($e) }};
