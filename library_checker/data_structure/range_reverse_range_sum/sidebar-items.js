@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_reverse_range_sum","range_reverse_range_sum_splay_sequence","test_range_reverse_range_sum","test_range_reverse_range_sum_splay_sequence"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_reverse_range_sum","range_reverse_range_sum_implicit_splay_tree","test_range_reverse_range_sum","test_range_reverse_range_sum_implicit_splay_tree"]};

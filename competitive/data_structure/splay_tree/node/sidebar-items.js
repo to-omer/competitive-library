@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["marker"],"struct":["Node","NodeRange","NodeRef","Root","SeekLeft","SeekRight"],"trait":["SplaySeeker","SplaySpec"]};
