@@ -1,4 +1,7 @@
-use crate::data_structure::BitSet;
+use crate::{
+    data_structure::{BitSet, DoublyLinkedList},
+    num::Zero,
+};
 
 #[codesnip::entry("knapsack_problem")]
 pub use self::knapsack_problem::*;
@@ -10,6 +13,8 @@ pub use self::levenshtein_distance::levenshtein_distance;
 pub use self::lexicographical_subsequence::LexicographicalSubsequence;
 #[codesnip::entry("LongestIncreasingSubsequence")]
 pub use self::longest_increasing_subsequence::LongestIncreasingSubsequence;
+#[codesnip::entry("maximum_scoring_segment_sets")]
+pub use self::maximum_scoring_segment_sets::maximum_scoring_segment_sets;
 #[codesnip::entry("SubsetSumProblem")]
 pub use self::subset_sum_problem::SubsetSumProblem;
 
@@ -23,5 +28,13 @@ mod levenshtein_distance;
 mod lexicographical_subsequence;
 #[cfg_attr(nightly, codesnip::entry("LongestIncreasingSubsequence"))]
 mod longest_increasing_subsequence;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "maximum_scoring_segment_sets",
+        include("DoublyLinkedList", "zero_one")
+    )
+)]
+mod maximum_scoring_segment_sets;
 #[cfg_attr(nightly, codesnip::entry("SubsetSumProblem", include("BitSet")))]
 mod subset_sum_problem;
