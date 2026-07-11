@@ -1,7 +1,7 @@
 use super::{
     Allocator, MemoryPool,
     binary_search_tree::{
-        BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, data,
+        BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, EqualSide, data,
         node::WithNoParent,
         seeker::{SeekByKey, SeekBySize},
         split::Split3,
@@ -103,12 +103,12 @@ impl<K, V> BstSpec for SplayTreeSpec<K, V> {
     fn split<Seeker>(
         node: Option<SplayTreeRoot<K, V>>,
         seeker: Seeker,
-        eq_left: bool,
+        equal_side: EqualSide,
     ) -> (Option<SplayTreeRoot<K, V>>, Option<SplayTreeRoot<K, V>>)
     where
         Seeker: BstSeeker<Spec = Self>,
     {
-        splay_operations::split(node, seeker, eq_left)
+        splay_operations::split(node, seeker, equal_side)
     }
 }
 

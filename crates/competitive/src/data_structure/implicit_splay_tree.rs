@@ -1,7 +1,7 @@
 use super::{
     Allocator, LazyMapMonoid, MemoryPool,
     binary_search_tree::{
-        BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec,
+        BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, EqualSide,
         data::{self, LazyMapElement},
         node::WithNoParent,
         seeker::{SeekByAccCond, SeekByRaccCond, SeekBySize},
@@ -95,7 +95,7 @@ where
     }
 
     fn reverse(mut node: BstDataMutRef<'_, Self>) {
-        unsafe { node.node.as_mut().child.swap(0, 1) };
+        node.swap_children();
         let data = node.data_mut();
         T::toggle(&mut data.value.agg);
         data.rev ^= true;
@@ -158,7 +158,7 @@ where
     fn split<Seeker>(
         node: Option<ImplicitSplayTreeRoot<T>>,
         seeker: Seeker,
-        eq_left: bool,
+        equal_side: EqualSide,
     ) -> (
         Option<ImplicitSplayTreeRoot<T>>,
         Option<ImplicitSplayTreeRoot<T>>,
@@ -166,7 +166,7 @@ where
     where
         Seeker: BstSeeker<Spec = Self>,
     {
-        splay_operations::split(node, seeker, eq_left)
+        splay_operations::split(node, seeker, equal_side)
     }
 }
 
@@ -367,7 +367,7 @@ where
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        let split = split3.split_mid(SeekByAccCond::new(f), false);
+        let split = split3.split_mid(SeekByAccCond::new(f), EqualSide::Right);
         split.right()?;
         let index = split
             .left()
@@ -386,7 +386,7 @@ where
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        let split = split3.split_mid(SeekByRaccCond::new(f), true);
+        let split = split3.split_mid(SeekByRaccCond::new(f), EqualSide::Left);
         let left_size = split.left()?.into_data().size;
         Some(front_size + left_size - 1)
     }
@@ -397,7 +397,7 @@ where
             return;
         }
         let (left, right) =
-            ImplicitSplayTreeSpec::split(self.root.take(), SeekBySize::new(mid), false);
+            ImplicitSplayTreeSpec::split(self.root.take(), SeekBySize::new(mid), EqualSide::Right);
         self.root = ImplicitSplayTreeSpec::merge(right, left);
     }
 

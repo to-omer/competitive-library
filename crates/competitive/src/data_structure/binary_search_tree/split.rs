@@ -1,5 +1,5 @@
 use super::{
-    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec,
+    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec, EqualSide,
     data::{self},
     seeker::{SeekByKey, SeekBySize},
 };
@@ -21,11 +21,15 @@ impl<'a, Spec> Split<'a, Spec>
 where
     Spec: BstSpec,
 {
-    pub fn new<Seek>(node: &'a mut Option<BstRoot<Spec>>, seeker: Seek, eq_left: bool) -> Self
+    pub fn new<Seek>(
+        node: &'a mut Option<BstRoot<Spec>>,
+        seeker: Seek,
+        equal_side: EqualSide,
+    ) -> Self
     where
         Seek: BstSeeker<Spec = Spec>,
     {
-        let (left, right) = Spec::split(node.take(), seeker, eq_left);
+        let (left, right) = Spec::split(node.take(), seeker, equal_side);
         Self {
             left,
             right,
@@ -90,13 +94,13 @@ where
         Seek2: BstSeeker<Spec = Spec>,
     {
         let (mut rest, right) = match end {
-            Bound::Included(seeker) => Spec::split(node.take(), seeker, true),
-            Bound::Excluded(seeker) => Spec::split(node.take(), seeker, false),
+            Bound::Included(seeker) => Spec::split(node.take(), seeker, EqualSide::Left),
+            Bound::Excluded(seeker) => Spec::split(node.take(), seeker, EqualSide::Right),
             Bound::Unbounded => (node.take(), None),
         };
         let (left, mid) = match start {
-            Bound::Included(seeker) => Spec::split(rest.take(), seeker, false),
-            Bound::Excluded(seeker) => Spec::split(rest.take(), seeker, true),
+            Bound::Included(seeker) => Spec::split(rest.take(), seeker, EqualSide::Right),
+            Bound::Excluded(seeker) => Spec::split(rest.take(), seeker, EqualSide::Left),
             Bound::Unbounded => (None, rest),
         };
         Self {
@@ -131,11 +135,11 @@ where
         self.right.as_mut().map(|node| node.borrow_datamut())
     }
 
-    pub fn split_mid<Seek>(&mut self, seeker: Seek, eq_left: bool) -> Split<'_, Spec>
+    pub fn split_mid<Seek>(&mut self, seeker: Seek, equal_side: EqualSide) -> Split<'_, Spec>
     where
         Seek: BstSeeker<Spec = Spec>,
     {
-        Split::new(&mut self.mid, seeker, eq_left)
+        Split::new(&mut self.mid, seeker, equal_side)
     }
 
     pub fn manually_merge<F>(&mut self, mut f: F)

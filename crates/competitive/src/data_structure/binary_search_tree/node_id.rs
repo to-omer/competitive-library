@@ -1,6 +1,6 @@
 use super::{BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec, node};
 use std::{
-    collections::HashMap,
+    collections::{HashMap, hash_map::Entry},
     hash::{Hash, Hasher},
     ptr::NonNull,
     sync::atomic::{self, AtomicU64},
@@ -114,7 +114,7 @@ where
             .is_some_and(|&g| g == node_id.generation)
     }
 
-    pub fn registerd_node_id(
+    pub fn registered_node_id(
         &self,
         node: BstNodeRef<node::marker::Immut<'_>, Spec>,
     ) -> Option<BstNodeId<Spec>> {
@@ -142,6 +142,11 @@ where
     }
 
     pub fn unregister(&mut self, node_id: BstNodeId<Spec>) {
-        self.node_ids.remove(&node_id.node);
+        match self.node_ids.entry(node_id.node) {
+            Entry::Occupied(entry) if *entry.get() == node_id.generation => {
+                entry.remove();
+            }
+            _ => {}
+        }
     }
 }

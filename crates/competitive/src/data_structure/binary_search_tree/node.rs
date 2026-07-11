@@ -1,5 +1,21 @@
 use super::{Allocator, BstSeeker};
-use std::{marker::PhantomData, ptr::NonNull};
+use std::{cmp::Ordering, marker::PhantomData, ptr::NonNull};
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum EqualSide {
+    Left,
+    Right,
+}
+
+impl EqualSide {
+    pub fn goes_left(self, ordering: Ordering) -> bool {
+        match ordering {
+            Ordering::Less => true,
+            Ordering::Equal => matches!(self, Self::Left),
+            Ordering::Greater => false,
+        }
+    }
+}
 
 pub trait BstSpec: Sized {
     type Parent: ParentStrategy<Data = Self::Data>;
@@ -14,7 +30,7 @@ pub trait BstSpec: Sized {
     fn split<Seeker>(
         node: Option<BstRoot<Self>>,
         seeker: Seeker,
-        eq_left: bool,
+        equal_side: EqualSide,
     ) -> (Option<BstRoot<Self>>, Option<BstRoot<Self>>)
     where
         Seeker: BstSeeker<Spec = Self>;
@@ -368,20 +384,20 @@ where
         }
     }
 
-    pub fn leftmost(self) -> Option<Self> {
+    pub fn leftmost(self) -> Self {
         let mut node = self;
         while let Ok(left) = node.left().descend() {
             node = left;
         }
-        Some(node)
+        node
     }
 
-    pub fn rightmost(self) -> Option<Self> {
+    pub fn rightmost(self) -> Self {
         let mut node = self;
         while let Ok(right) = node.right().descend() {
             node = right;
         }
-        Some(node)
+        node
     }
 }
 
@@ -397,6 +413,10 @@ where
     }
     pub fn data_mut(&mut self) -> &mut Spec::Data {
         unsafe { &mut self.node.as_mut().data }
+    }
+
+    pub fn swap_children(&mut self) {
+        unsafe { self.node.as_mut().child.swap(0, 1) };
     }
 }
 

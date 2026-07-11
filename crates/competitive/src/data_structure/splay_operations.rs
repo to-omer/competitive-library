@@ -1,5 +1,5 @@
 use super::binary_search_tree::{
-    BstRoot, BstSeeker, BstSpec, node::WithNoParent, seeker::SeekRight,
+    BstRoot, BstSeeker, BstSpec, EqualSide, node::WithNoParent, seeker::SeekRight,
 };
 use std::cmp::Ordering;
 
@@ -188,7 +188,7 @@ where
 pub(super) fn split<Spec, Data, Seeker>(
     root: Option<BstRoot<Spec>>,
     seeker: Seeker,
-    eq_left: bool,
+    equal_side: EqualSide,
 ) -> (Option<BstRoot<Spec>>, Option<BstRoot<Spec>>)
 where
     Spec: BstSpec<Data = Data, Parent = WithNoParent<Data>>,
@@ -198,26 +198,13 @@ where
         return (None, None);
     };
     let (ordering, mut root) = splay(root, seeker);
-    match ordering {
-        Ordering::Less => {
-            let right = unsafe { root.borrow_mut().right_mut().take() };
-            Spec::bottom_up(root.borrow_datamut());
-            (Some(root), right)
-        }
-        Ordering::Greater => {
-            let left = unsafe { root.borrow_mut().left_mut().take() };
-            Spec::bottom_up(root.borrow_datamut());
-            (left, Some(root))
-        }
-        Ordering::Equal if eq_left => {
-            let right = unsafe { root.borrow_mut().right_mut().take() };
-            Spec::bottom_up(root.borrow_datamut());
-            (Some(root), right)
-        }
-        Ordering::Equal => {
-            let left = unsafe { root.borrow_mut().left_mut().take() };
-            Spec::bottom_up(root.borrow_datamut());
-            (left, Some(root))
-        }
+    if equal_side.goes_left(ordering) {
+        let right = unsafe { root.borrow_mut().right_mut().take() };
+        Spec::bottom_up(root.borrow_datamut());
+        (Some(root), right)
+    } else {
+        let left = unsafe { root.borrow_mut().left_mut().take() };
+        Spec::bottom_up(root.borrow_datamut());
+        (left, Some(root))
     }
 }

@@ -1,7 +1,7 @@
 use super::{
     Allocator, LazyMapMonoid, MemoryPool, Xorshift,
     binary_search_tree::{
-        BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec,
+        BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, EqualSide,
         data::{self, LazyMapElement},
         node::WithNoParent,
         seeker::{SeekByAccCond, SeekByRaccCond, SeekBySize},
@@ -9,7 +9,6 @@ use super::{
     },
 };
 use std::{
-    cmp::Ordering,
     fmt::{self, Debug},
     marker::PhantomData,
     mem::{ManuallyDrop, replace},
@@ -97,9 +96,7 @@ where
     }
 
     fn reverse(mut node: BstDataMutRef<'_, Self>) {
-        unsafe {
-            node.node.as_mut().child.swap(0, 1);
-        }
+        node.swap_children();
         let data = node.data_mut();
         T::toggle(&mut data.value.agg);
         data.rev ^= true;
@@ -182,7 +179,7 @@ where
     fn split<Seeker>(
         node: Option<ImplicitTreapRoot<T>>,
         mut seeker: Seeker,
-        eq_left: bool,
+        equal_side: EqualSide,
     ) -> (Option<ImplicitTreapRoot<T>>, Option<ImplicitTreapRoot<T>>)
     where
         Seeker: BstSeeker<Spec = Self>,
@@ -191,30 +188,25 @@ where
             None => (None, None),
             Some(mut node) => {
                 Self::top_down(node.borrow_datamut());
-                let seek_left = match seeker.bst_seek(node.reborrow()) {
-                    Ordering::Less => false,
-                    Ordering::Equal => !eq_left,
-                    Ordering::Greater => true,
-                };
-                if seek_left {
-                    unsafe {
-                        let left = node.borrow_mut().left().take();
-                        let (l, r) = Self::split(left, seeker, eq_left);
-                        if let Some(r) = r {
-                            node.borrow_mut().left().set(r);
-                        }
-                        Self::bottom_up(node.borrow_datamut());
-                        (l, Some(node))
-                    }
-                } else {
+                if equal_side.goes_left(seeker.bst_seek(node.reborrow())) {
                     unsafe {
                         let right = node.borrow_mut().right().take();
-                        let (l, r) = Self::split(right, seeker, eq_left);
+                        let (l, r) = Self::split(right, seeker, equal_side);
                         if let Some(l) = l {
                             node.borrow_mut().right().set(l);
                         }
                         Self::bottom_up(node.borrow_datamut());
                         (Some(node), r)
+                    }
+                } else {
+                    unsafe {
+                        let left = node.borrow_mut().left().take();
+                        let (l, r) = Self::split(left, seeker, equal_side);
+                        if let Some(r) = r {
+                            node.borrow_mut().left().set(r);
+                        }
+                        Self::bottom_up(node.borrow_datamut());
+                        (l, Some(node))
                     }
                 }
             }
@@ -419,7 +411,7 @@ where
             self.root = ImplicitTreapSpec::<T>::merge(self.root.take(), Some(node));
         } else {
             let mut node = Some(node);
-            let mut split = Split::new(&mut self.root, SeekBySize::new(index), false);
+            let mut split = Split::new(&mut self.root, SeekBySize::new(index), EqualSide::Right);
             split.manually_merge(|left, right| {
                 ImplicitTreapSpec::<T>::merge(
                     ImplicitTreapSpec::<T>::merge(left, node.take()),
@@ -436,19 +428,29 @@ where
         }
         let mid;
         if index == 0 {
-            let (left, right) =
-                ImplicitTreapSpec::<T>::split(self.root.take(), SeekBySize::new(1), false);
+            let (left, right) = ImplicitTreapSpec::<T>::split(
+                self.root.take(),
+                SeekBySize::new(1),
+                EqualSide::Right,
+            );
             mid = left;
             self.root = right;
         } else if index + 1 == self.length {
-            let (left, right) =
-                ImplicitTreapSpec::<T>::split(self.root.take(), SeekBySize::new(index), false);
+            let (left, right) = ImplicitTreapSpec::<T>::split(
+                self.root.take(),
+                SeekBySize::new(index),
+                EqualSide::Right,
+            );
             mid = right;
             self.root = left;
         } else {
-            let (left, rest) =
-                ImplicitTreapSpec::<T>::split(self.root.take(), SeekBySize::new(index), false);
-            let (middle, right) = ImplicitTreapSpec::<T>::split(rest, SeekBySize::new(1), false);
+            let (left, rest) = ImplicitTreapSpec::<T>::split(
+                self.root.take(),
+                SeekBySize::new(index),
+                EqualSide::Right,
+            );
+            let (middle, right) =
+                ImplicitTreapSpec::<T>::split(rest, SeekBySize::new(1), EqualSide::Right);
             mid = middle;
             self.root = ImplicitTreapSpec::<T>::merge(left, right);
         }
@@ -469,7 +471,10 @@ where
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        let split = split3.split_mid(SeekByAccCond::<ImplicitTreapSpec<T>, T, F>::new(f), false);
+        let split = split3.split_mid(
+            SeekByAccCond::<ImplicitTreapSpec<T>, T, F>::new(f),
+            EqualSide::Right,
+        );
         split.right()?;
         let index = split
             .left()
@@ -488,7 +493,10 @@ where
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        let split = split3.split_mid(SeekByRaccCond::<ImplicitTreapSpec<T>, T, F>::new(f), true);
+        let split = split3.split_mid(
+            SeekByRaccCond::<ImplicitTreapSpec<T>, T, F>::new(f),
+            EqualSide::Left,
+        );
         let left_size = split.left()?.into_data().size;
         Some(front_size + left_size - 1)
     }
@@ -499,7 +507,7 @@ where
             return;
         }
         let (left, right) =
-            ImplicitTreapSpec::<T>::split(self.root.take(), SeekBySize::new(mid), false);
+            ImplicitTreapSpec::<T>::split(self.root.take(), SeekBySize::new(mid), EqualSide::Right);
         self.root = ImplicitTreapSpec::<T>::merge(right, left);
     }
 

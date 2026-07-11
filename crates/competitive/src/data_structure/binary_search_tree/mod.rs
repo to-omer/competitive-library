@@ -3,6 +3,7 @@ use super::{Allocator, LazyMapMonoid, Monoid, MonoidAct};
 pub use data::BstDataAccess;
 pub use node::{
     BstDataMutRef, BstEdgeHandle, BstImmutRef, BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec,
+    EqualSide,
 };
 pub use node_id::{BstNodeId, BstNodeIdManager};
 pub use seeker::BstSeeker;

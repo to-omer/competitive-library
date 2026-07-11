@@ -2,7 +2,7 @@ use super::{
     Allocator, BoxAllocator, LazyMapMonoid, MonoidAct, Xorshift,
     binary_search_tree::{
         BstDataAccess, BstDataMutRef, BstNode, BstNodeId, BstNodeIdManager, BstRoot, BstSeeker,
-        BstSpec,
+        BstSpec, EqualSide,
         data::{self, LazyMapElement, MonoidActElement},
         node::WithParent,
         seeker::{SeekByAccCond, SeekByKey, SeekByRaccCond},
@@ -144,7 +144,7 @@ where
     fn split<Seeker>(
         node: Option<TreapRoot<M, L>>,
         mut seeker: Seeker,
-        eq_left: bool,
+        equal_side: EqualSide,
     ) -> (Option<TreapRoot<M, L>>, Option<TreapRoot<M, L>>)
     where
         Seeker: BstSeeker<Spec = Self>,
@@ -153,30 +153,25 @@ where
             None => (None, None),
             Some(mut node) => {
                 Self::top_down(node.borrow_datamut());
-                let seek_left = match seeker.bst_seek(node.reborrow()) {
-                    Ordering::Less => false,
-                    Ordering::Equal => !eq_left,
-                    Ordering::Greater => true,
-                };
-                if seek_left {
-                    unsafe {
-                        let left = node.borrow_mut().left().take();
-                        let (l, r) = Self::split(left, seeker, eq_left);
-                        if let Some(r) = r {
-                            node.borrow_mut().left().set(r);
-                        }
-                        Self::bottom_up(node.borrow_datamut());
-                        (l, Some(node))
-                    }
-                } else {
+                if equal_side.goes_left(seeker.bst_seek(node.reborrow())) {
                     unsafe {
                         let right = node.borrow_mut().right().take();
-                        let (l, r) = Self::split(right, seeker, eq_left);
+                        let (l, r) = Self::split(right, seeker, equal_side);
                         if let Some(l) = l {
                             node.borrow_mut().right().set(l);
                         }
                         Self::bottom_up(node.borrow_datamut());
                         (Some(node), r)
+                    }
+                } else {
+                    unsafe {
+                        let left = node.borrow_mut().left().take();
+                        let (l, r) = Self::split(left, seeker, equal_side);
+                        if let Some(r) = r {
+                            node.borrow_mut().left().set(r);
+                        }
+                        Self::bottom_up(node.borrow_datamut());
+                        (l, Some(node))
                     }
                 }
             }
@@ -200,7 +195,7 @@ where
                 if left.reborrow().into_data().priority > right.reborrow().into_data().priority {
                     Self::top_down(left.borrow_datamut());
                     let key = &left.reborrow().into_data().key.key;
-                    let (rl, rr) = Self::split(Some(right), SeekByKey::new(key), false);
+                    let (rl, rr) = Self::split(Some(right), SeekByKey::new(key), EqualSide::Right);
                     let ll = left.borrow_mut().left().take();
                     let lr = left.borrow_mut().right().take();
                     if let Some(l) = Self::merge_ordered(ll, rl) {
@@ -214,7 +209,7 @@ where
                 } else {
                     Self::top_down(right.borrow_datamut());
                     let key = &right.reborrow().into_data().key.key;
-                    let (ll, lr) = Self::split(Some(left), SeekByKey::new(key), false);
+                    let (ll, lr) = Self::split(Some(left), SeekByKey::new(key), EqualSide::Right);
                     let rl = right.borrow_mut().left().take();
                     let rr = right.borrow_mut().right().take();
                     if let Some(l) = Self::merge_ordered(ll, rl) {
@@ -369,7 +364,8 @@ where
     }
 
     pub fn insert(&mut self, key: M::Key, value: L::Key) -> BstNodeId<TreapSpec<M, L>> {
-        let (left, right) = TreapSpec::split(self.root.take(), SeekByKey::new(&key), false);
+        let (left, right) =
+            TreapSpec::split(self.root.take(), SeekByKey::new(&key), EqualSide::Right);
         let data = TreapData {
             priority: self.rng.rand64(),
             key: MonoidActElement::from_key(key),
@@ -421,11 +417,11 @@ where
         let split = Split::new(
             &mut self.root,
             SeekByKey::<TreapSpec<M, L>, M::Key, Q>::new(key),
-            false,
+            EqualSide::Right,
         );
-        let node = split.right()?.leftmost()?;
+        let node = split.right()?.leftmost();
         matches!(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
-            .then(|| self.node_id_manager.registerd_node_id(node))
+            .then(|| self.node_id_manager.registered_node_id(node))
             .flatten()
     }
 
@@ -436,10 +432,10 @@ where
         let split = Split::new(
             &mut self.root,
             SeekByAccCond::<TreapSpec<M, L>, L, F>::new(f),
-            false,
+            EqualSide::Right,
         );
-        let node = split.right()?.leftmost()?;
-        self.node_id_manager.registerd_node_id(node)
+        let node = split.right()?.leftmost();
+        self.node_id_manager.registered_node_id(node)
     }
 
     pub fn find_by_racc_cond<F>(&mut self, f: F) -> Option<BstNodeId<TreapSpec<M, L>>>
@@ -449,10 +445,10 @@ where
         let split = Split::new(
             &mut self.root,
             SeekByRaccCond::<TreapSpec<M, L>, L, F>::new(f),
-            true,
+            EqualSide::Left,
         );
-        let node = split.left()?.rightmost()?;
-        self.node_id_manager.registerd_node_id(node)
+        let node = split.left()?.rightmost();
+        self.node_id_manager.registered_node_id(node)
     }
 }
 
