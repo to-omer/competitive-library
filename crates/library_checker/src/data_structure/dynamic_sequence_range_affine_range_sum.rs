@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{
     algebra::RangeSumRangeLinear,
-    data_structure::{ImplicitTreap, SplaySequence},
+    data_structure::{ImplicitSplayTree, ImplicitTreap},
     num::mint_basic::MInt998244353,
 };
 
@@ -46,7 +46,7 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: im
 }
 
 #[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
-pub fn dynamic_sequence_range_affine_range_sum_splay_sequence(
+pub fn dynamic_sequence_range_affine_range_sum_implicit_splay_tree(
     reader: impl Read,
     mut writer: impl Write,
 ) {
@@ -54,7 +54,7 @@ pub fn dynamic_sequence_range_affine_range_sum_splay_sequence(
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [MInt998244353; n]);
 
-    let mut seq = SplaySequence::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
+    let mut seq = ImplicitSplayTree::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
     seq.extend(a);
     for _ in 0..q {
         scan!(scanner, query: Query);

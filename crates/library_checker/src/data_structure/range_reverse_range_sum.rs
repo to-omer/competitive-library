@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{
     algebra::RangeSumRangeAdd,
-    data_structure::{ImplicitTreap, SplaySequence},
+    data_structure::{ImplicitSplayTree, ImplicitTreap},
 };
 
 competitive::define_enum_scan! {
@@ -33,11 +33,11 @@ pub fn range_reverse_range_sum(reader: impl Read, mut writer: impl Write) {
 }
 
 #[verify::library_checker("range_reverse_range_sum")]
-pub fn range_reverse_range_sum_splay_sequence(reader: impl Read, mut writer: impl Write) {
+pub fn range_reverse_range_sum_implicit_splay_tree(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n]);
-    let mut seq = SplaySequence::<RangeSumRangeAdd<i64>>::with_capacity(n);
+    let mut seq = ImplicitSplayTree::<RangeSumRangeAdd<i64>>::with_capacity(n);
     seq.extend(a);
     for _ in 0..q {
         scan!(scanner, query: Query);

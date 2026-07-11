@@ -49,6 +49,8 @@ pub use self::doubly_linked_list::DoublyLinkedList;
 pub use self::fibonacci_hash::{
     FibHashMap, FibHashSet, FibonacciHasher, FibonacciHasheru32, FibonacciHasheru64,
 };
+#[codesnip::entry("ImplicitSplayTree")]
+pub use self::implicit_splay_tree::ImplicitSplayTree;
 #[codesnip::entry("ImplicitTreap")]
 pub use self::implicit_treap::ImplicitTreap;
 #[codesnip::entry("Static2DTree")]
@@ -84,7 +86,7 @@ pub use self::slope_trick::SlopeTrick;
 #[codesnip::entry("SparseSet")]
 pub use self::sparse_set::SparseSet;
 #[codesnip::entry("SplayTree")]
-pub use self::splay_tree::{SplayMap, SplaySequence};
+pub use self::splay_tree::SplayTree;
 #[codesnip::entry("StaticRangeProduct")]
 pub use self::static_range_product::StaticRangeProduct;
 #[codesnip::entry("SubmaskRangeQuery")]
@@ -151,6 +153,11 @@ mod disjoint_sparse_table;
 mod doubly_linked_list;
 #[cfg_attr(nightly, codesnip::entry("FibonacciHash"))]
 mod fibonacci_hash;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("ImplicitSplayTree", include("_splay_operations"))
+)]
+mod implicit_splay_tree;
 #[cfg_attr(
     nightly,
     codesnip::entry("ImplicitTreap", include("binary_search_tree", "Xorshift"))
@@ -223,9 +230,11 @@ mod slope_trick;
 mod sparse_set;
 #[cfg_attr(
     nightly,
-    codesnip::entry("SplayTree", include("Allocator", "LazyMapMonoid"))
+    codesnip::entry("_splay_operations", include("binary_search_tree"))
 )]
-pub mod splay_tree;
+mod splay_operations;
+#[cfg_attr(nightly, codesnip::entry("SplayTree", include("_splay_operations")))]
+mod splay_tree;
 #[cfg_attr(
     nightly,
     codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))

@@ -406,7 +406,6 @@ where
         {
             let data = node.data_mut();
             data.value.key = f(&data.value.key);
-            data.value.agg = T::single_agg(&data.value.key);
         }
         ImplicitTreapSpec::<T>::bottom_up(node);
     }

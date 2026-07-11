@@ -482,13 +482,9 @@ where
     where
         A: Allocator<BstNode<Spec::Data, Spec::Parent>>,
     {
-        let BstNode { child, .. } = allocator.deallocate(self.node);
-        for node in child.into_iter().flatten() {
-            unsafe {
-                BstNodeRef::<marker::Owned, Spec>::new(node)
-                    .into_dying()
-                    .drop_all(allocator)
-            }
+        let mut stack = vec![self.node];
+        while let Some(node) = stack.pop() {
+            stack.extend(allocator.deallocate(node).child.into_iter().flatten());
         }
     }
 }

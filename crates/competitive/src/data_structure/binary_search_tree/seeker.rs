@@ -26,7 +26,7 @@ where
     type Spec = Spec;
 
     fn bst_seek(&mut self, node: BstImmutRef<'_, Self::Spec>) -> Ordering {
-        if node.reborrow().right().descend().is_ok() {
+        if node.reborrow().left().descend().is_ok() {
             Ordering::Greater
         } else {
             Ordering::Equal
@@ -52,7 +52,7 @@ where
 {
     type Spec = Spec;
     fn bst_seek(&mut self, node: BstImmutRef<'_, Self::Spec>) -> Ordering {
-        if node.reborrow().left().descend().is_ok() {
+        if node.reborrow().right().descend().is_ok() {
             Ordering::Less
         } else {
             Ordering::Equal

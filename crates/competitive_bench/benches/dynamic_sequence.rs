@@ -1,6 +1,6 @@
 use competitive::{
     algebra::RangeSumRangeLinear,
-    data_structure::{ImplicitTreap, SplaySequence},
+    data_structure::{ImplicitSplayTree, ImplicitTreap},
     num::mint_basic::MInt998244353,
     tools::Xorshift,
 };
@@ -77,8 +77,9 @@ fn run_implicit_treap(a: &[M], queries: &[Query]) -> M {
     acc
 }
 
-fn run_splay_sequence(a: &[M], queries: &[Query]) -> M {
-    let mut seq = SplaySequence::<RangeSumRangeLinear<M>>::with_capacity(a.len() + queries.len());
+fn run_implicit_splay_tree(a: &[M], queries: &[Query]) -> M {
+    let mut seq =
+        ImplicitSplayTree::<RangeSumRangeLinear<M>>::with_capacity(a.len() + queries.len());
     seq.extend(a.iter().copied());
     let mut acc = M::new_unchecked(0);
     for &query in queries {
@@ -105,10 +106,10 @@ pub fn bench_dynamic_sequence(c: &mut Criterion) {
             BatchSize::LargeInput,
         )
     });
-    group.bench_function("splay_sequence", |b| {
+    group.bench_function("implicit_splay_tree", |b| {
         b.iter_batched(
             || (a.clone(), queries.clone()),
-            |(a, queries)| black_box(run_splay_sequence(&a, &queries)),
+            |(a, queries)| black_box(run_implicit_splay_tree(&a, &queries)),
             BatchSize::LargeInput,
         )
     });
