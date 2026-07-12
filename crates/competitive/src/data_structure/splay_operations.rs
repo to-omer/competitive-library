@@ -128,7 +128,7 @@ where
     let mut right_subtree = None;
     let mut left_entry = &mut left_subtree;
     let mut right_entry = &mut right_subtree;
-    let mut inline_stack = [None; 64];
+    let mut inline_stack = [None; 24];
     let mut inline_len = 0;
     let mut overflow_stack = vec![];
 
