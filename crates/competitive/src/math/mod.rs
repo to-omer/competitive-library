@@ -73,6 +73,8 @@ pub use self::linear_diophantine::solve_linear_diophantine;
 pub use self::matrix::Matrix;
 #[codesnip::entry("miller_rabin")]
 pub use self::miller_rabin::{miller_rabin, miller_rabin_with_br};
+#[codesnip::entry("min_plus_convolution")]
+pub use self::min_plus_convolution::*;
 #[codesnip::entry("MIntMatrix")]
 pub use self::mint_matrix::MIntMatrix;
 #[codesnip::entry("NumberTheoreticTransform")]
@@ -221,6 +223,11 @@ mod linear_diophantine;
 mod matrix;
 #[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
 mod miller_rabin;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("min_plus_convolution", include("integer", "NumberTheoreticTransform"))
+)]
+mod min_plus_convolution;
 #[cfg_attr(
     nightly,
     codesnip::entry("MIntMatrix", include("Matrix", "factorial", "Xorshift"))
