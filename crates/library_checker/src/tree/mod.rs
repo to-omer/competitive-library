@@ -1,4 +1,8 @@
 pub mod cartesian_tree;
+pub mod dynamic_tree_subtree_add_subtree_sum;
+pub mod dynamic_tree_vertex_add_path_sum;
+pub mod dynamic_tree_vertex_add_subtree_sum;
+pub mod dynamic_tree_vertex_set_path_composite;
 pub mod frequency_table_of_tree_distance;
 pub mod jump_on_tree;
 pub mod lca;

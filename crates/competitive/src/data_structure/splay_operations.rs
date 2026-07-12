@@ -1,10 +1,121 @@
 use super::binary_search_tree::{
-    BstRoot, BstSeeker, BstSpec, EqualSide, node::WithNoParent, seeker::SeekRight,
+    BstDataMutRef, BstNodePtr, BstRoot, BstSeeker, BstSpec, EqualSide,
+    node::{WithNoParent, WithParent},
+    seeker::SeekRight,
 };
-use std::cmp::Ordering;
+use std::{cmp::Ordering, mem::MaybeUninit};
+
+pub mod with_parent {
+    use super::{BstDataMutRef, BstNodePtr, BstSpec, MaybeUninit, WithParent};
+
+    type NodePtr<Spec> = BstNodePtr<<Spec as BstSpec>::Data, <Spec as BstSpec>::Parent>;
+
+    #[inline]
+    unsafe fn internal_parent<Spec, Data>(
+        node: NodePtr<Spec>,
+    ) -> Result<(NodePtr<Spec>, usize), Option<NodePtr<Spec>>>
+    where
+        Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
+    {
+        let Some(parent) = (unsafe { node.as_ref().parent.parent }) else {
+            return Err(None);
+        };
+        let children = unsafe { parent.as_ref().child };
+        if children[0] == Some(node) {
+            Ok((parent, 0))
+        } else if children[1] == Some(node) {
+            Ok((parent, 1))
+        } else {
+            Err(Some(parent))
+        }
+    }
+
+    #[inline(always)]
+    unsafe fn rotate<Spec, Data>(mut node: NodePtr<Spec>)
+    where
+        Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
+    {
+        let (mut parent, direction) = unsafe { internal_parent::<Spec, Data>(node) }
+            .expect("an auxiliary root cannot be rotated");
+        let (grandparent, parent_direction) = match unsafe { internal_parent::<Spec, Data>(parent) }
+        {
+            Ok((grandparent, direction)) => (Some(grandparent), Some(direction)),
+            Err(grandparent) => (grandparent, None),
+        };
+        let middle = unsafe { node.as_mut().child[direction ^ 1].take() };
+
+        unsafe {
+            parent.as_mut().child[direction] = middle;
+            if let Some(mut middle) = middle {
+                middle.as_mut().parent.parent = Some(parent);
+            }
+            node.as_mut().child[direction ^ 1] = Some(parent);
+            node.as_mut().parent.parent = grandparent;
+            parent.as_mut().parent.parent = Some(node);
+            if let (Some(mut grandparent), Some(parent_direction)) = (grandparent, parent_direction)
+            {
+                grandparent.as_mut().child[parent_direction] = Some(node);
+            }
+            Spec::bottom_up(BstDataMutRef::new_unchecked(parent));
+            Spec::bottom_up(BstDataMutRef::new_unchecked(node));
+        }
+    }
+
+    /// Moves `node` to the root of its auxiliary tree and returns the previous root.
+    ///
+    /// # Safety
+    ///
+    /// `node` and every pointer reachable through its auxiliary-parent chain must
+    /// refer to live nodes of the same tree.
+    #[inline(always)]
+    pub unsafe fn splay<Spec, Data>(node: NodePtr<Spec>) -> NodePtr<Spec>
+    where
+        Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
+    {
+        let mut inline_stack = [const { MaybeUninit::uninit() }; 64];
+        let mut inline_len = 0;
+        let mut overflow_stack = Vec::new();
+        let mut current = node;
+        loop {
+            if inline_len < inline_stack.len() {
+                inline_stack[inline_len].write(current);
+                inline_len += 1;
+            } else {
+                overflow_stack.push(current);
+            }
+            match unsafe { internal_parent::<Spec, Data>(current) } {
+                Ok((parent, _)) => current = parent,
+                Err(_) => break,
+            }
+        }
+        for &node in overflow_stack.iter().rev() {
+            unsafe { Spec::top_down(BstDataMutRef::new_unchecked(node)) };
+        }
+        while inline_len > 0 {
+            inline_len -= 1;
+            unsafe {
+                Spec::top_down(BstDataMutRef::new_unchecked(
+                    *inline_stack[inline_len].assume_init_ref(),
+                ));
+            }
+        }
+
+        while let Ok((parent, node_direction)) = unsafe { internal_parent::<Spec, Data>(node) } {
+            if let Ok((_, parent_direction)) = unsafe { internal_parent::<Spec, Data>(parent) } {
+                if node_direction == parent_direction {
+                    unsafe { rotate::<Spec, Data>(parent) };
+                } else {
+                    unsafe { rotate::<Spec, Data>(node) };
+                }
+            }
+            unsafe { rotate::<Spec, Data>(node) };
+        }
+        current
+    }
+}
 
 #[inline]
-pub(super) fn splay<Spec, Data, Seeker>(
+pub fn splay<Spec, Data, Seeker>(
     root: BstRoot<Spec>,
     mut seeker: Seeker,
 ) -> (Ordering, BstRoot<Spec>)
@@ -159,7 +270,7 @@ where
 }
 
 #[inline]
-pub(super) fn merge<Spec, Data>(
+pub fn merge<Spec, Data>(
     left: Option<BstRoot<Spec>>,
     right: Option<BstRoot<Spec>>,
 ) -> Option<BstRoot<Spec>>
@@ -185,7 +296,7 @@ where
 }
 
 #[inline]
-pub(super) fn split<Spec, Data, Seeker>(
+pub fn split<Spec, Data, Seeker>(
     root: Option<BstRoot<Spec>>,
     seeker: Seeker,
     equal_side: EqualSide,

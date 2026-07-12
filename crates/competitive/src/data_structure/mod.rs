@@ -232,7 +232,7 @@ mod sparse_set;
     nightly,
     codesnip::entry("_splay_operations", include("binary_search_tree"))
 )]
-mod splay_operations;
+pub mod splay_operations;
 #[cfg_attr(nightly, codesnip::entry("SplayTree", include("_splay_operations")))]
 mod splay_tree;
 #[cfg_attr(
