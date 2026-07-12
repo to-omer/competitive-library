@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Computes min-plus convolution by enumerating all input pairs."><title>min_plus_convolution_naive in competitive::math - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.99.0-nightly (be8e82435 2026-07-11)" data-channel="nightly" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-417ebf0a.js"></script><script defer src="../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">min_plus_convolution_naive</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">min_<wbr>plus_<wbr>convolution_<wbr>naive</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#panics" title="Panics">Panics</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">competitive</a>::<wbr><a href="index.html">math</a></div><h1>Function <span class="fn">min_<wbr>plus_<wbr>convolution_<wbr>naive</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/competitive/math/min_plus_convolution/mod.rs.html#56-85">Source</a> </span></div><pre class="rust item-decl"><code>pub fn min_plus_convolution_naive&lt;T&gt;(a: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>, b: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;<div class="where">where
+    T: <a class="trait" href="../num/trait.Signed.html" title="trait competitive::num::Signed">Signed</a>,</div></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Computes min-plus convolution by enumerating all input pairs.</p>
+<h2 id="panics"><a class="doc-anchor" href="#panics">§</a>Panics</h2>
+<p>Panics if the output length does not fit <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html" title="primitive usize"><code>usize</code></a>. Arithmetic overflow is
+the caller’s responsibility.</p>
+</div></details><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/competitive/math/min_plus_convolution/selector.rs.html#299&#34;,&#34;line 299&#34;],[[14,14],&#34;../../src/competitive/math/min_plus_convolution/selector.rs.html#307&#34;,&#34;line 307&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/selector.rs (<a href="../../src/competitive/math/min_plus_convolution/selector.rs.html#299">line 299</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>293</span><span class="kw">pub fn </span>min_plus_convolution&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>294</span><span class="kw">where
+<span data-nosnippet>295</span>    </span>T: Signed + TryFrom&lt;usize&gt;,
+<span data-nosnippet>296</span>    T::Unsigned: TryInto&lt;usize&gt;,
+<span data-nosnippet>297</span>{
+<span data-nosnippet>298</span>    <span class="kw">if </span>(a.len() <span class="kw">as </span>u128) * (b.len() <span class="kw">as </span>u128) &lt;= SMALL_PAIR_COUNT {
+<span data-nosnippet>299</span>        <span class="kw">return </span><span class="highlight focus">min_plus_convolution_naive</span>(a, b);
+<span data-nosnippet>300</span>    }
+<span data-nosnippet>301</span>    <span class="kw">let </span>a_characteristics = analyze(a);
+<span data-nosnippet>302</span>    <span class="kw">let </span>distinct_b_characteristics = (!std::ptr::eq(a, b)).then(|| analyze(b));
+<span data-nosnippet>303</span>    <span class="kw">let </span>b_characteristics = distinct_b_characteristics
+<span data-nosnippet>304</span>        .as_ref()
+<span data-nosnippet>305</span>        .unwrap_or(<span class="kw-2">&amp;</span>a_characteristics);
+<span data-nosnippet>306</span>    <span class="kw">match </span>select_algorithm(a.len(), b.len(), <span class="kw-2">&amp;</span>a_characteristics, b_characteristics) {
+<span data-nosnippet>307</span>        Algorithm::Naive =&gt; <span class="highlight">min_plus_convolution_naive</span>(a, b),
+<span data-nosnippet>308</span>        Algorithm::Sparse =&gt; {
+<span data-nosnippet>309</span>            <span class="kw">let </span>a_entries = a[..a_characteristics.finite_prefix_len]
+<span data-nosnippet>310</span>                .iter()
+<span data-nosnippet>311</span>                .copied()
+<span data-nosnippet>312</span>                .enumerate()
+<span data-nosnippet>313</span>                .chain(a_characteristics.finite_entries.iter().copied());
+<span data-nosnippet>314</span>            <span class="kw">let </span>b_entries = b[..b_characteristics.finite_prefix_len]
+<span data-nosnippet>315</span>                .iter()
+<span data-nosnippet>316</span>                .copied()
+<span data-nosnippet>317</span>                .enumerate()
+<span data-nosnippet>318</span>                .chain(b_characteristics.finite_entries.iter().copied());
+<span data-nosnippet>319</span>            sparse(a_entries, b_entries, output_len(a.len(), b.len()))
+<span data-nosnippet>320</span>        }
+<span data-nosnippet>321</span>        Algorithm::BoundedNtt =&gt; min_plus_convolution_bounded_ntt(a, b),
+<span data-nosnippet>322</span>        Algorithm::ConvexDivideAndConquerLeft =&gt; convex::convex_divide_and_conquer(b, a),
+<span data-nosnippet>323</span>        Algorithm::ConvexDivideAndConquerRight =&gt; convex::convex_divide_and_conquer(a, b),
+<span data-nosnippet>324</span>        Algorithm::ConvexMerge =&gt; convex::convex_merge(a, b),
+<span data-nosnippet>325</span>        Algorithm::ConcaveEnvelopeLeft =&gt; concave::concave_envelope(b, a),
+<span data-nosnippet>326</span>        Algorithm::ConcaveEnvelopeRight =&gt; concave::concave_envelope(a, b),
+<span data-nosnippet>327</span>        Algorithm::ConcaveBoth =&gt; concave::concave_both(a, b),
+<span data-nosnippet>328</span>        algorithm @ (Algorithm::MonotoneRunsIncreasing | Algorithm::MonotoneRunsDecreasing) =&gt; {
+<span data-nosnippet>329</span>            <span class="kw">let </span>increasing = algorithm == Algorithm::MonotoneRunsIncreasing;
+<span data-nosnippet>330</span>            <span class="kw">if let </span>(<span class="prelude-val">Some</span>(a_runs), <span class="prelude-val">Some</span>(b_runs)) = (
+<span data-nosnippet>331</span>                <span class="kw-2">&amp;</span>a_characteristics.run_entries,
+<span data-nosnippet>332</span>                <span class="kw-2">&amp;</span>b_characteristics.run_entries,
+<span data-nosnippet>333</span>            ) {
+<span data-nosnippet>334</span>                monotone::monotone_runs_from_entries(a_runs, b_runs, a.len(), b.len(), increasing)
+<span data-nosnippet>335</span>            } <span class="kw">else </span>{
+<span data-nosnippet>336</span>                monotone::monotone_runs(a, b, increasing)
+<span data-nosnippet>337</span>            }
+<span data-nosnippet>338</span>        }
+<span data-nosnippet>339</span>        Algorithm::LinearLeft =&gt; piecewise_linear::linear(b, a),
+<span data-nosnippet>340</span>        Algorithm::LinearRight =&gt; piecewise_linear::linear(a, b),
+<span data-nosnippet>341</span>        Algorithm::PiecewiseLinearLeft =&gt; piecewise_linear::piecewise_linear(b, a),
+<span data-nosnippet>342</span>        Algorithm::PiecewiseLinearRight =&gt; piecewise_linear::piecewise_linear(a, b),
+<span data-nosnippet>343</span>    }
+<span data-nosnippet>344</span>}</code></pre></div></div></div></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MatrixValue"],"fn":["convex_divide_and_conquer","convex_merge","convex_smawk","is_convex","min_plus_convolution_convex_divide_and_conquer","min_plus_convolution_convex_merge","min_plus_convolution_convex_smawk","orient_one_convex","smawk"]};

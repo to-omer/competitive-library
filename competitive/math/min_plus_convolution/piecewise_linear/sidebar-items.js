@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["convolve_piece","convolve_pieces","finite_pieces","linear","min_plus_convolution_linear","min_plus_convolution_piecewise_linear","pieces","piecewise_linear"],"struct":["LinearPiece"]};

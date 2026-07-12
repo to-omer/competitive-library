@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["first_position_of_new_source","index_as_value","min_plus_convolution_with_squared_distance"]};
