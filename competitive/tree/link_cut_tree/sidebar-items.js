@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["LinkCutBstSpec","LinkCutData","LinkCutTree","PathLinkCutTreeData","PathLinkCutTreeSpec"],"trait":["LinkCutTreePathFold","LinkCutTreePathUpdate","LinkCutTreeSpec","LinkCutTreeSubtreeFold","LinkCutTreeSubtreeUpdate"],"type":["LinkCutNode","LinkCutPtr","PathLinkCutTree"]};

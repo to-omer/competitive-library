@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["dynamic_tree_vertex_set_path_composite","dynamic_tree_vertex_set_path_composite_top_tree","test_dynamic_tree_vertex_set_path_composite","test_dynamic_tree_vertex_set_path_composite_top_tree"],"struct":["BidirectionalAffine","PathComposite"],"type":["Affine","MInt"]};
