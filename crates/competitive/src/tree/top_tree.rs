@@ -356,7 +356,12 @@ where
 
     #[inline]
     unsafe fn splay_rake(node: RakePtr<S, A>) {
-        unsafe { splay_operations::with_parent::splay::<RakeBstSpec<S, A>, RakeData<S, A>>(node) };
+        unsafe {
+            splay_operations::with_parent::splay_with_local_top_down::<
+                RakeBstSpec<S, A>,
+                RakeData<S, A>,
+            >(node)
+        };
     }
 
     unsafe fn rake_rightmost(mut node: RakePtr<S, A>) -> RakePtr<S, A> {

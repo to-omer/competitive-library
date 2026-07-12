@@ -112,6 +112,49 @@ pub mod with_parent {
         }
         current
     }
+
+    /// Moves `node` to the root by propagating only the nodes involved in each rotation and
+    /// returns the previous root.
+    ///
+    /// # Safety
+    ///
+    /// `node` and every pointer reachable through its auxiliary-parent chain must refer to live
+    /// nodes of the same tree. Propagating an ancestor after its descendant must be valid for
+    /// `Spec`.
+    #[inline(always)]
+    pub unsafe fn splay_with_local_top_down<Spec, Data>(node: NodePtr<Spec>) -> NodePtr<Spec>
+    where
+        Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
+    {
+        let mut current = node;
+        unsafe { Spec::top_down(BstDataMutRef::new_unchecked(node)) };
+        while let Ok((parent, node_direction)) = unsafe { internal_parent::<Spec, Data>(node) } {
+            match unsafe { internal_parent::<Spec, Data>(parent) } {
+                Ok((grandparent, parent_direction)) => {
+                    current = grandparent;
+                    unsafe {
+                        Spec::top_down(BstDataMutRef::new_unchecked(grandparent));
+                        Spec::top_down(BstDataMutRef::new_unchecked(parent));
+                        Spec::top_down(BstDataMutRef::new_unchecked(node));
+                    }
+                    if node_direction == parent_direction {
+                        unsafe { rotate::<Spec, Data>(parent) };
+                    } else {
+                        unsafe { rotate::<Spec, Data>(node) };
+                    }
+                }
+                Err(_) => {
+                    current = parent;
+                    unsafe {
+                        Spec::top_down(BstDataMutRef::new_unchecked(parent));
+                        Spec::top_down(BstDataMutRef::new_unchecked(node));
+                    }
+                }
+            }
+            unsafe { rotate::<Spec, Data>(node) };
+        }
+        current
+    }
 }
 
 #[inline]

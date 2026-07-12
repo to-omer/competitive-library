@@ -12,6 +12,9 @@ pub trait LinkCutTreeSpec: Sized {
     type Value;
     type Data;
 
+    /// Whether splay must propagate from the auxiliary root before rotations.
+    const ROOT_TO_NODE_TOP_DOWN: bool = true;
+
     fn new(value: Self::Value) -> Self::Data;
     fn value(data: &Self::Data) -> &Self::Value;
     fn value_mut(data: &mut Self::Data) -> &mut Self::Value;
@@ -182,8 +185,17 @@ where
 
     #[inline]
     unsafe fn splay(node: LinkCutPtr<S>) {
-        let root = unsafe {
-            splay_operations::with_parent::splay::<LinkCutBstSpec<S>, LinkCutData<S>>(node)
+        let root = if S::ROOT_TO_NODE_TOP_DOWN {
+            unsafe {
+                splay_operations::with_parent::splay::<LinkCutBstSpec<S>, LinkCutData<S>>(node)
+            }
+        } else {
+            unsafe {
+                splay_operations::with_parent::splay_with_local_top_down::<
+                    LinkCutBstSpec<S>,
+                    LinkCutData<S>,
+                >(node)
+            }
         };
         if root != node {
             unsafe {
@@ -192,26 +204,24 @@ where
         }
     }
 
-    fn access_node(node: LinkCutPtr<S>) {
+    fn access_node(mut node: LinkCutPtr<S>) {
         unsafe {
-            let mut previous: Option<LinkCutPtr<S>> = None;
-            let mut current = Some(node);
-            while let Some(mut cursor) = current {
-                Self::splay(cursor);
-                let next = cursor.as_ref().parent.parent;
-                if let Some(right) = cursor.as_mut().child[1].take() {
-                    LinkCutBstSpec::<S>::with_two_inner_mut(cursor, right, S::attach_virtual);
-                }
-                if let Some(previous) = previous {
-                    LinkCutBstSpec::<S>::with_two_inner_mut(cursor, previous, S::detach_virtual);
-                    cursor.as_mut().child[1] = Some(previous);
-                    (*previous.as_ptr()).parent.parent = Some(cursor);
-                }
-                Self::pull(cursor);
-                previous = Some(cursor);
-                current = next;
-            }
             Self::splay(node);
+            if let Some(right) = node.as_mut().child[1].take() {
+                LinkCutBstSpec::<S>::with_two_inner_mut(node, right, S::attach_virtual);
+            }
+            Self::pull(node);
+            while let Some(mut parent) = node.as_ref().parent.parent {
+                Self::splay(parent);
+                if let Some(right) = parent.as_mut().child[1].take() {
+                    LinkCutBstSpec::<S>::with_two_inner_mut(parent, right, S::attach_virtual);
+                }
+                LinkCutBstSpec::<S>::with_two_inner_mut(parent, node, S::detach_virtual);
+                parent.as_mut().child[1] = Some(node);
+                node.as_mut().parent.parent = Some(parent);
+                Self::pull(parent);
+                Self::splay(node);
+            }
         }
     }
 
@@ -226,6 +236,19 @@ where
         Self::access_node(node);
         unsafe {
             *S::value_mut(&mut (*node.as_ptr()).data.inner) = value;
+            Self::pull(node);
+        }
+    }
+
+    pub fn modify<F>(&mut self, node: usize, f: F)
+    where
+        F: FnOnce(&S::Value) -> S::Value,
+    {
+        let node = self.node(node);
+        Self::access_node(node);
+        unsafe {
+            let data = &mut (*node.as_ptr()).data.inner;
+            *S::value_mut(data) = f(S::value(data));
             Self::pull(node);
         }
     }
@@ -400,6 +423,8 @@ where
     type Value = L::Key;
     type Data = PathLinkCutTreeData<L>;
 
+    const ROOT_TO_NODE_TOP_DOWN: bool = false;
+
     fn new(value: Self::Value) -> Self::Data {
         Self::Data {
             value: LazyMapElement::from_key(value),
@@ -471,7 +496,7 @@ pub type PathLinkCutTree<L> = LinkCutTree<PathLinkCutTreeSpec<L>>;
 mod tests {
     use super::*;
     use crate::{
-        algebra::{Associative, EmptyAct, Magma, RangeSumRangeAdd, Unital},
+        algebra::{Associative, EmptyAct, Magma, RangeSumRangeLinear, Unital},
         graph::UndirectedSparseGraph,
         tools::Xorshift,
         tree::{MixedTree, PathTree, StarTree},
@@ -712,7 +737,8 @@ mod tests {
         let mut adjacency = adjacency(graph);
         let mut edges = graph.edges.clone();
         let mut values = (0..n).map(|_| rng.random(-20i64..=20)).collect::<Vec<_>>();
-        let mut tree = PathLinkCutTree::<RangeSumRangeAdd<i64>>::from_iter(values.iter().copied());
+        let mut tree =
+            PathLinkCutTree::<RangeSumRangeLinear<i64>>::from_iter(values.iter().copied());
         for &(u, v) in &edges {
             tree.link(u, v);
         }
@@ -726,16 +752,22 @@ mod tests {
             match rng.random(0..if edges.is_empty() { 2 } else { 3 }) {
                 0 => {
                     let u = rng.random(0..n);
-                    values[u] = rng.random(-20i64..=20);
-                    tree.set(u, values[u]);
+                    if rng.random(0..2) == 0 {
+                        values[u] = rng.random(-20i64..=20);
+                        tree.set(u, values[u]);
+                    } else {
+                        let action = rng.random(-20i64..=20);
+                        values[u] += action;
+                        tree.modify(u, |value| *value + action);
+                    }
                 }
                 1 => {
                     let u = rng.random(0..n);
                     let v = rng.random(0..n);
-                    let action = rng.random(-20i64..=20);
+                    let action = (rng.random(0i64..=1), rng.random(-20i64..=20));
                     let path = naive_path(&adjacency, u, v);
                     for &x in &path {
-                        values[x] += action;
+                        values[x] = action.0 * values[x] + action.1;
                     }
                     tree.update_path(u, v, &action);
                 }
@@ -777,7 +809,11 @@ mod tests {
                 0 => {
                     let u = rng.random(0..n);
                     values[u] = rng.random(b'a'..=b'z') as char;
-                    tree.set(u, values[u]);
+                    if rng.random(0..2) == 0 {
+                        tree.set(u, values[u]);
+                    } else {
+                        tree.modify(u, |_| values[u]);
+                    }
                 }
                 1 => {
                     let u = rng.random(0..n);
@@ -822,8 +858,14 @@ mod tests {
                 }
                 1 => {
                     let u = rng.random(0..n);
-                    values[u] = rng.random(-20i64..=20);
-                    tree.set(u, values[u]);
+                    if rng.random(0..2) == 0 {
+                        values[u] = rng.random(-20i64..=20);
+                        tree.set(u, values[u]);
+                    } else {
+                        let action = rng.random(-20i64..=20);
+                        values[u] += action;
+                        tree.modify(u, |value| *value + action);
+                    }
                 }
                 _ => {
                     let &(u, v) = &edges[rng.random(0..edges.len())];

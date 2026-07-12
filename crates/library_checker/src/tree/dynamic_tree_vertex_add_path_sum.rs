@@ -58,10 +58,7 @@ pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, mut writer: impl Writ
                 tree.cut(u, v);
                 tree.link(w, x);
             }
-            Query::Add { p, x } => {
-                let value = *tree.get(p) + x;
-                tree.set(p, value);
-            }
+            Query::Add { p, x } => tree.modify(p, |value| *value + x),
             Query::Sum { u, v } => {
                 writeln!(writer, "{}", tree.fold_path(u, v).0).ok();
             }

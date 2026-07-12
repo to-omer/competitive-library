@@ -15,6 +15,8 @@ impl LinkCutTreeSpec for SubtreeSum {
     type Value = u64;
     type Data = SubtreeSumData;
 
+    const ROOT_TO_NODE_TOP_DOWN: bool = false;
+
     fn new(value: Self::Value) -> Self::Data {
         SubtreeSumData {
             value,
@@ -112,10 +114,7 @@ pub fn dynamic_tree_vertex_add_subtree_sum(reader: impl Read, mut writer: impl W
                 tree.cut(u, v);
                 tree.link(w, x);
             }
-            Query::Add { p, x } => {
-                let value = *tree.get(p) + x;
-                tree.set(p, value);
-            }
+            Query::Add { p, x } => tree.modify(p, |value| *value + x),
             Query::Sum { v, p } => {
                 writeln!(writer, "{}", tree.fold_subtree(v, p)).ok();
             }
