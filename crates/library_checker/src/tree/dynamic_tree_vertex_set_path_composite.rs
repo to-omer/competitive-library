@@ -92,10 +92,7 @@ pub fn dynamic_tree_vertex_set_path_composite(reader: impl Read, mut writer: imp
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, ab: [Affine; n], edges: [(usize, usize); n - 1]);
-    let mut tree = PathLinkCutTree::<PathComposite>::from_iter(ab);
-    for (u, v) in edges {
-        tree.link(u, v);
-    }
+    let mut tree = PathLinkCutTree::<PathComposite>::from_edges(ab, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {
@@ -121,10 +118,7 @@ pub fn dynamic_tree_vertex_set_path_composite_top_tree(reader: impl Read, mut wr
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, ab: [Affine; n], edges: [(usize, usize); n - 1]);
-    let mut tree = TopTree::<PathComposite>::from_iter(ab);
-    for (u, v) in edges {
-        tree.link(u, v);
-    }
+    let mut tree = TopTree::<PathComposite>::from_edges(ab, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {

@@ -57,7 +57,6 @@ pub mod with_parent {
                 grandparent.as_mut().child[parent_direction] = Some(node);
             }
             Spec::bottom_up(BstDataMutRef::new_unchecked(parent));
-            Spec::bottom_up(BstDataMutRef::new_unchecked(node));
         }
     }
 
@@ -110,6 +109,7 @@ pub mod with_parent {
             }
             unsafe { rotate::<Spec, Data>(node) };
         }
+        unsafe { Spec::bottom_up(BstDataMutRef::new_unchecked(node)) };
         current
     }
 
@@ -153,8 +153,57 @@ pub mod with_parent {
             }
             unsafe { rotate::<Spec, Data>(node) };
         }
+        unsafe { Spec::bottom_up(BstDataMutRef::new_unchecked(node)) };
         current
     }
+}
+
+pub fn rooted_heavy_order(
+    vertices_size: usize,
+    edges: &[(usize, usize)],
+) -> Vec<(usize, usize, bool)> {
+    if vertices_size == 0 {
+        return Vec::new();
+    }
+    let mut head = vec![usize::MAX; vertices_size];
+    let mut to = Vec::with_capacity(edges.len() * 2);
+    let mut next = Vec::with_capacity(edges.len() * 2);
+    for &(u, v) in edges {
+        to.push(v);
+        next.push(head[u]);
+        head[u] = to.len() - 1;
+        to.push(u);
+        next.push(head[v]);
+        head[v] = to.len() - 1;
+    }
+    let mut parent = vec![usize::MAX; vertices_size];
+    let mut stack = vec![0];
+    let mut order = Vec::with_capacity(vertices_size - 1);
+    parent[0] = 0;
+    while let Some(u) = stack.pop() {
+        let mut edge = head[u];
+        while edge != usize::MAX {
+            let v = to[edge];
+            if parent[v] == usize::MAX {
+                parent[v] = u;
+                order.push((v, u));
+                stack.push(v);
+            }
+            edge = next[edge];
+        }
+    }
+    let mut size = vec![1usize; vertices_size];
+    let mut heavy = vec![usize::MAX; vertices_size];
+    for &(child, parent) in order.iter().rev() {
+        size[parent] += size[child];
+        if heavy[parent] == usize::MAX || size[heavy[parent]] < size[child] {
+            heavy[parent] = child;
+        }
+    }
+    order
+        .into_iter()
+        .map(|(child, parent)| (child, parent, heavy[parent] == child))
+        .collect()
 }
 
 #[inline]

@@ -311,6 +311,35 @@ where
         }
     }
 
+    /// `edges` must form a tree over the values in iteration order.
+    pub fn from_edges<T>(values: T, edges: &[(usize, usize)]) -> Self
+    where
+        T: IntoIterator<Item = S::Info>,
+    {
+        let mut tree: Self = values.into_iter().collect();
+        for (child, parent, preferred) in
+            splay_operations::rooted_heavy_order(tree.nodes.len(), edges)
+                .into_iter()
+                .rev()
+        {
+            let child = tree.node(child);
+            let mut parent = tree.node(parent);
+            unsafe {
+                (*child.as_ptr()).parent.parent = Some(parent);
+                if preferred {
+                    parent.as_mut().child[1] = Some(child);
+                } else {
+                    let point = S::add_edge(&child.as_ref().data.sum);
+                    let (light, entry) = tree.rake_insert(parent.as_ref().data.light, point);
+                    parent.as_mut().data.light = Some(light);
+                    (*child.as_ptr()).data.belong = Some(entry);
+                }
+                Self::pull_top(parent);
+            }
+        }
+        tree
+    }
+
     pub fn add_node(&mut self, info: S::Info) -> usize {
         let index = self.nodes.len();
         let sum = S::vertex(&info);
@@ -816,10 +845,8 @@ mod tests {
             .collect::<Vec<_>>();
         let mut edges = graph.edges.clone();
         let mut values = (0..n).map(|_| rng.random(-20i64..=20)).collect::<Vec<_>>();
-        let mut tree = TopTree::<SumTopTree, AssignAction>::from_iter(values.iter().copied());
-        for &(u, v) in &edges {
-            tree.link(u, v);
-        }
+        let mut tree =
+            TopTree::<SumTopTree, AssignAction>::from_edges(values.iter().copied(), &edges);
         let root = rng.random(0..n);
         tree.reroot(root);
         for u in 0..n {
@@ -909,10 +936,7 @@ mod tests {
         let mut values = (0..n)
             .map(|_| rng.random(b'a'..=b'z') as char)
             .collect::<Vec<_>>();
-        let mut tree = TopTree::<ConcatenatePath>::from_iter(values.iter().copied());
-        for &(u, v) in &edges {
-            tree.link(u, v);
-        }
+        let mut tree = TopTree::<ConcatenatePath>::from_edges(values.iter().copied(), &edges);
 
         for _ in 0..rounds {
             match rng.random(0..if edges.is_empty() { 2 } else { 3 }) {

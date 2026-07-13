@@ -47,10 +47,7 @@ pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, mut writer: impl Writ
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
-    let mut tree = PathLinkCutTree::<RangeSumRangeAdd<i64>>::from_iter(a);
-    for (u, v) in edges {
-        tree.link(u, v);
-    }
+    let mut tree = PathLinkCutTree::<RangeSumRangeAdd<i64>>::from_edges(a, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {
@@ -71,10 +68,7 @@ pub fn dynamic_tree_vertex_add_path_sum_top_tree(reader: impl Read, mut writer: 
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
-    let mut tree = TopTree::<SumTopTree>::from_iter(a);
-    for (u, v) in edges {
-        tree.link(u, v);
-    }
+    let mut tree = TopTree::<SumTopTree>::from_edges(a, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {

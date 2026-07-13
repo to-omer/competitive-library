@@ -181,10 +181,7 @@ pub fn dynamic_tree_subtree_add_subtree_sum(reader: impl Read, mut writer: impl 
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
-    let mut tree = LinkCutTree::<SubtreeSum>::from_iter(a);
-    for (u, v) in edges {
-        tree.link(u, v);
-    }
+    let mut tree = LinkCutTree::<SubtreeSum>::from_edges(a, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {
@@ -205,10 +202,7 @@ pub fn dynamic_tree_subtree_add_subtree_sum_top_tree(reader: impl Read, mut writ
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
-    let mut tree = TopTree::<TopTreeSubtreeSum, AddAction>::from_iter(a);
-    for (u, v) in edges {
-        tree.link(u, v);
-    }
+    let mut tree = TopTree::<TopTreeSubtreeSum, AddAction>::from_edges(a, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {

@@ -160,6 +160,32 @@ where
         }
     }
 
+    /// `edges` must form a tree over the values in iteration order.
+    pub fn from_edges<T>(values: T, edges: &[(usize, usize)]) -> Self
+    where
+        T: IntoIterator<Item = S::Value>,
+    {
+        let tree: Self = values.into_iter().collect();
+        for (child, parent, preferred) in
+            splay_operations::rooted_heavy_order(tree.nodes.len(), edges)
+                .into_iter()
+                .rev()
+        {
+            let child = tree.node(child);
+            let mut parent = tree.node(parent);
+            unsafe {
+                (*child.as_ptr()).parent.parent = Some(parent);
+                if preferred {
+                    parent.as_mut().child[1] = Some(child);
+                } else {
+                    LinkCutBstSpec::<S>::with_two_inner_mut(parent, child, S::attach_virtual);
+                }
+                Self::pull(parent);
+            }
+        }
+        tree
+    }
+
     pub fn add_node(&mut self, value: S::Value) -> usize {
         let index = self.nodes.len();
         let node = self.allocator.allocate(BstNode::new(LinkCutData {
@@ -738,10 +764,7 @@ mod tests {
         let mut edges = graph.edges.clone();
         let mut values = (0..n).map(|_| rng.random(-20i64..=20)).collect::<Vec<_>>();
         let mut tree =
-            PathLinkCutTree::<RangeSumRangeLinear<i64>>::from_iter(values.iter().copied());
-        for &(u, v) in &edges {
-            tree.link(u, v);
-        }
+            PathLinkCutTree::<RangeSumRangeLinear<i64>>::from_edges(values.iter().copied(), &edges);
         let root = rng.random(0..n);
         tree.reroot(root);
         for u in 0..n {
@@ -799,10 +822,7 @@ mod tests {
         let mut values = (0..n)
             .map(|_| rng.random(b'a'..=b'z') as char)
             .collect::<Vec<_>>();
-        let mut tree = PathLinkCutTree::<StringPath>::from_iter(values.iter().copied());
-        for &(u, v) in &edges {
-            tree.link(u, v);
-        }
+        let mut tree = PathLinkCutTree::<StringPath>::from_edges(values.iter().copied(), &edges);
 
         for _ in 0..rounds {
             match rng.random(0..if edges.is_empty() { 2 } else { 3 }) {
@@ -844,10 +864,7 @@ mod tests {
         let mut adjacency = adjacency(graph);
         let mut edges = graph.edges.clone();
         let mut values = (0..n).map(|_| rng.random(-20i64..=20)).collect::<Vec<_>>();
-        let mut tree = LinkCutTree::<SubtreeSum>::from_iter(values.iter().copied());
-        for &(u, v) in &edges {
-            tree.link(u, v);
-        }
+        let mut tree = LinkCutTree::<SubtreeSum>::from_edges(values.iter().copied(), &edges);
 
         for _ in 0..rounds {
             match rng.random(0..3) {
