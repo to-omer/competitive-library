@@ -79,267 +79,267 @@
     seeker: Seeker,
     equal_side: <a class="enum" href="enum.EqualSide.html" title="enum competitive::data_structure::binary_search_tree::node::EqualSide">EqualSide</a>,
 ) -&gt; (<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Self&gt;&gt;, <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Self&gt;&gt;)<div class="where">where
-    Seeker: <a class="trait" href="../seeker/trait.BstSeeker.html" title="trait competitive::data_structure::binary_search_tree::seeker::BstSeeker">BstSeeker</a>&lt;Spec = Self&gt;,</div></h4></section></div><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.top_down" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#24">Source</a><h4 class="code-header">fn <a href="#method.top_down" class="fn">top_down</a>(_node: <a class="type" href="type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../../src/competitive/tree/top_tree.rs.html#369&#34;,&#34;line 369&#34;],[[41,41],&#34;../../../../src/competitive/tree/top_tree.rs.html#408&#34;,&#34;line 408&#34;],[[157,157],&#34;../../../../src/competitive/tree/top_tree.rs.html#524&#34;,&#34;line 524&#34;],[[222,222],&#34;../../../../src/competitive/tree/top_tree.rs.html#589&#34;,&#34;line 589&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/top_tree.rs (<a href="../../../../src/competitive/tree/top_tree.rs.html#369">line 369</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>367</span>    <span class="kw">unsafe fn </span>rake_rightmost(<span class="kw-2">mut </span>node: RakePtr&lt;S, A&gt;) -&gt; RakePtr&lt;S, A&gt; {
-<span data-nosnippet>368</span>        <span class="kw">loop </span>{
-<span data-nosnippet>369</span>            <span class="kw">unsafe </span>{ <span class="highlight focus">RakeBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(node)) };
-<span data-nosnippet>370</span>            <span class="kw">match unsafe </span>{ node.as_ref().child[<span class="number">1</span>] } {
-<span data-nosnippet>371</span>                <span class="prelude-val">Some</span>(right) =&gt; node = right,
-<span data-nosnippet>372</span>                <span class="prelude-val">None </span>=&gt; <span class="kw">return </span>node,
-<span data-nosnippet>373</span>            }
-<span data-nosnippet>374</span>        }
-<span data-nosnippet>375</span>    }
-<span data-nosnippet>376</span>
-<span data-nosnippet>377</span>    <span class="kw">unsafe fn </span>rake_insert(
-<span data-nosnippet>378</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-<span data-nosnippet>379</span>        root: <span class="prelude-ty">Option</span>&lt;RakePtr&lt;S, A&gt;&gt;,
-<span data-nosnippet>380</span>        key: S::Point,
-<span data-nosnippet>381</span>    ) -&gt; (RakePtr&lt;S, A&gt;, RakePtr&lt;S, A&gt;) {
-<span data-nosnippet>382</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.allocate(BstNode::new(RakeData {
-<span data-nosnippet>383</span>            sum: key.clone(),
-<span data-nosnippet>384</span>            key,
-<span data-nosnippet>385</span>            action: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::unit(),
-<span data-nosnippet>386</span>            buffer: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::unit(),
-<span data-nosnippet>387</span>        }));
-<span data-nosnippet>388</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = root {
-<span data-nosnippet>389</span>            <span class="kw">let </span><span class="kw-2">mut </span>rightmost = <span class="kw">unsafe </span>{ <span class="self">Self</span>::rake_rightmost(root) };
-<span data-nosnippet>390</span>            <span class="kw">unsafe </span>{
-<span data-nosnippet>391</span>                <span class="self">Self</span>::splay_rake(rightmost);
-<span data-nosnippet>392</span>                rightmost.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>393</span>                (<span class="kw-2">*</span>node.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(rightmost);
-<span data-nosnippet>394</span>                <span class="self">Self</span>::pull_rake(rightmost);
-<span data-nosnippet>395</span>            }
-<span data-nosnippet>396</span>            (rightmost, node)
-<span data-nosnippet>397</span>        } <span class="kw">else </span>{
-<span data-nosnippet>398</span>            (node, node)
-<span data-nosnippet>399</span>        }
-<span data-nosnippet>400</span>    }
-<span data-nosnippet>401</span>
-<span data-nosnippet>402</span>    <span class="kw">unsafe fn </span>rake_remove(
-<span data-nosnippet>403</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-<span data-nosnippet>404</span>        <span class="kw-2">mut </span>node: RakePtr&lt;S, A&gt;,
-<span data-nosnippet>405</span>    ) -&gt; (<span class="prelude-ty">Option</span>&lt;RakePtr&lt;S, A&gt;&gt;, A::Action) {
-<span data-nosnippet>406</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>407</span>            <span class="self">Self</span>::splay_rake(node);
-<span data-nosnippet>408</span>            <span class="highlight">RakeBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(node));
-<span data-nosnippet>409</span>        }
-<span data-nosnippet>410</span>        <span class="kw">let </span>left = <span class="kw">unsafe </span>{ node.as_mut().child[<span class="number">0</span>].take() };
-<span data-nosnippet>411</span>        <span class="kw">let </span>right = <span class="kw">unsafe </span>{ node.as_mut().child[<span class="number">1</span>].take() };
-<span data-nosnippet>412</span>        <span class="kw">for </span><span class="kw-2">mut </span>child <span class="kw">in </span>[left, right].into_iter().flatten() {
-<span data-nosnippet>413</span>            <span class="kw">unsafe </span>{ child.as_mut().parent.parent = <span class="prelude-val">None </span>};
-<span data-nosnippet>414</span>        }
-<span data-nosnippet>415</span>        <span class="kw">let </span>root = <span class="kw">match </span>(left, right) {
-<span data-nosnippet>416</span>            (<span class="prelude-val">None</span>, right) =&gt; right,
-<span data-nosnippet>417</span>            (left, <span class="prelude-val">None</span>) =&gt; left,
-<span data-nosnippet>418</span>            (<span class="prelude-val">Some</span>(left), <span class="prelude-val">Some</span>(right)) =&gt; {
-<span data-nosnippet>419</span>                <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="kw">unsafe </span>{ <span class="self">Self</span>::rake_rightmost(left) };
-<span data-nosnippet>420</span>                <span class="kw">unsafe </span>{
-<span data-nosnippet>421</span>                    <span class="self">Self</span>::splay_rake(root);
-<span data-nosnippet>422</span>                    root.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(right);
-<span data-nosnippet>423</span>                    (<span class="kw-2">*</span>right.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(root);
-<span data-nosnippet>424</span>                    <span class="self">Self</span>::pull_rake(root);
-<span data-nosnippet>425</span>                }
-<span data-nosnippet>426</span>                <span class="prelude-val">Some</span>(root)
-<span data-nosnippet>427</span>            }
-<span data-nosnippet>428</span>        };
-<span data-nosnippet>429</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
-<span data-nosnippet>430</span>        (root, node.data.buffer)
-<span data-nosnippet>431</span>    }
-<span data-nosnippet>432</span>
-<span data-nosnippet>433</span>    <span class="kw">fn </span>access_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: TopPtr&lt;S, A&gt;) {
-<span data-nosnippet>434</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>435</span>            <span class="kw">let </span><span class="kw-2">mut </span>previous: <span class="prelude-ty">Option</span>&lt;TopPtr&lt;S, A&gt;&gt; = <span class="prelude-val">None</span>;
-<span data-nosnippet>436</span>            <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>437</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cursor) = current {
-<span data-nosnippet>438</span>                <span class="self">Self</span>::splay_top(cursor);
-<span data-nosnippet>439</span>                <span class="kw">let </span>next = cursor.as_ref().parent.parent;
-<span data-nosnippet>440</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = cursor.as_mut().child[<span class="number">1</span>].take() {
-<span data-nosnippet>441</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.sum);
-<span data-nosnippet>442</span>                    <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(cursor.as_ref().data.light, point);
-<span data-nosnippet>443</span>                    cursor.as_mut().data.light = <span class="prelude-val">Some</span>(light);
-<span data-nosnippet>444</span>                    (<span class="kw-2">*</span>right.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
-<span data-nosnippet>445</span>                }
-<span data-nosnippet>446</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(previous) = previous {
-<span data-nosnippet>447</span>                    <span class="kw">let </span>entry = (<span class="kw-2">*</span>previous.as_ptr())
-<span data-nosnippet>448</span>                        .data
-<span data-nosnippet>449</span>                        .belong
-<span data-nosnippet>450</span>                        .take()
-<span data-nosnippet>451</span>                        .expect(<span class="string">"a virtual path must have a rake-tree entry"</span>);
-<span data-nosnippet>452</span>                    <span class="kw">let </span>(light, action) = <span class="self">self</span>.rake_remove(entry);
-<span data-nosnippet>453</span>                    cursor.as_mut().data.light = light;
-<span data-nosnippet>454</span>                    TopBstSpec::&lt;S, A&gt;::apply_all(previous, <span class="kw-2">&amp;</span>action);
-<span data-nosnippet>455</span>                    cursor.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(previous);
-<span data-nosnippet>456</span>                    (<span class="kw-2">*</span>previous.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(cursor);
-<span data-nosnippet>457</span>                }
-<span data-nosnippet>458</span>                <span class="self">Self</span>::pull_top(cursor);
-<span data-nosnippet>459</span>                previous = <span class="prelude-val">Some</span>(cursor);
-<span data-nosnippet>460</span>                current = next;
-<span data-nosnippet>461</span>            }
-<span data-nosnippet>462</span>            <span class="self">Self</span>::splay_top(node);
-<span data-nosnippet>463</span>        }
-<span data-nosnippet>464</span>    }
-<span data-nosnippet>465</span>
-<span data-nosnippet>466</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) -&gt; <span class="kw-2">&amp;</span>S::Info {
-<span data-nosnippet>467</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
-<span data-nosnippet>468</span>        <span class="self">self</span>.access_node(node);
-<span data-nosnippet>469</span>        <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>node.as_ref().data.info }
-<span data-nosnippet>470</span>    }
-<span data-nosnippet>471</span>
-<span data-nosnippet>472</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, info: S::Info) {
-<span data-nosnippet>473</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>.node(node);
-<span data-nosnippet>474</span>        <span class="self">self</span>.access_node(node);
-<span data-nosnippet>475</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>476</span>            node.as_mut().data.info = info;
-<span data-nosnippet>477</span>            <span class="self">Self</span>::pull_top(node);
-<span data-nosnippet>478</span>        }
-<span data-nosnippet>479</span>    }
-<span data-nosnippet>480</span>
-<span data-nosnippet>481</span>    <span class="kw">pub fn </span>reroot(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) {
-<span data-nosnippet>482</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
-<span data-nosnippet>483</span>        <span class="self">self</span>.access_node(node);
-<span data-nosnippet>484</span>        <span class="kw">unsafe </span>{ TopBstSpec::&lt;S, A&gt;::toggle(node) };
-<span data-nosnippet>485</span>    }
-<span data-nosnippet>486</span>
-<span data-nosnippet>487</span>    <span class="doccomment">/// `child` and `parent` must belong to different trees.
-<span data-nosnippet>488</span>    </span><span class="kw">pub fn </span>link(<span class="kw-2">&amp;mut </span><span class="self">self</span>, child: usize, parent: usize) {
-<span data-nosnippet>489</span>        <span class="macro">assert_ne!</span>(child, parent);
-<span data-nosnippet>490</span>        <span class="self">self</span>.reroot(child);
-<span data-nosnippet>491</span>        <span class="kw">let </span>child = <span class="self">self</span>.node(child);
-<span data-nosnippet>492</span>        <span class="kw">let </span><span class="kw-2">mut </span>parent = <span class="self">self</span>.node(parent);
-<span data-nosnippet>493</span>        <span class="self">self</span>.access_node(parent);
-<span data-nosnippet>494</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>495</span>            (<span class="kw-2">*</span>child.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(parent);
-<span data-nosnippet>496</span>            <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>child.as_ref().data.sum);
-<span data-nosnippet>497</span>            <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(parent.as_ref().data.light, point);
-<span data-nosnippet>498</span>            parent.as_mut().data.light = <span class="prelude-val">Some</span>(light);
-<span data-nosnippet>499</span>            (<span class="kw-2">*</span>child.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
-<span data-nosnippet>500</span>            <span class="self">Self</span>::pull_top(parent);
-<span data-nosnippet>501</span>        }
-<span data-nosnippet>502</span>    }
-<span data-nosnippet>503</span>
-<span data-nosnippet>504</span>    <span class="doccomment">/// `(u, v)` must be an edge.
-<span data-nosnippet>505</span>    </span><span class="kw">pub fn </span>cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) {
-<span data-nosnippet>506</span>        <span class="macro">assert_ne!</span>(u, v);
-<span data-nosnippet>507</span>        <span class="self">self</span>.reroot(<a href="../algebra/action.rs.html#23">u</a>);
-<span data-nosnippet>508</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="self">self</span>.node(v);
-<span data-nosnippet>509</span>        <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">access_node</a>(v);
-<span data-nosnippet>510</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>511</span>            <span class="kw">let </span><span class="kw-2">mut </span>left = v.as_mut().child[<span class="number">0</span>]
-<span data-nosnippet>512</span>                .take()
-<span data-nosnippet>513</span>                .expect(<span class="string">"the specified edge must exist"</span>);
-<span data-nosnippet>514</span>            left.as_mut().parent.parent = <span class="prelude-val">None</span>;
-<span data-nosnippet>515</span>            <span class="self">Self</span>::pull_top(v);
-<span data-nosnippet>516</span>        }
-<span data-nosnippet>517</span>    }
-<span data-nosnippet>518</span>
-<span data-nosnippet>519</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) -&gt; usize {
-<span data-nosnippet>520</span>        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.node(node);
-<span data-nosnippet>521</span>        <span class="self">self</span>.access_node(root);
-<span data-nosnippet>522</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>523</span>            <span class="kw">loop </span>{
-<span data-nosnippet>524</span>                <span class="highlight">TopBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(root));
-<span data-nosnippet>525</span>                <span class="kw">match </span>root.as_ref().child[<span class="number">0</span>] {
-<span data-nosnippet>526</span>                    <span class="prelude-val">Some</span>(left) =&gt; root = left,
-<span data-nosnippet>527</span>                    <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
-<span data-nosnippet>528</span>                }
-<span data-nosnippet>529</span>            }
-<span data-nosnippet>530</span>            <span class="self">Self</span>::splay_top(root);
-<span data-nosnippet>531</span>            root.as_ref().data.index
-<span data-nosnippet>532</span>        }
-<span data-nosnippet>533</span>    }
-<span data-nosnippet>534</span>
-<span data-nosnippet>535</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; bool {
-<span data-nosnippet>536</span>        <span class="self">self</span>.root(u) == <span class="self">self</span>.root(v)
-<span data-nosnippet>537</span>    }
-<span data-nosnippet>538</span>
-<span data-nosnippet>539</span>    <span class="doccomment">/// `u` and `v` must be connected.
-<span data-nosnippet>540</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; S::Path {
-<span data-nosnippet>541</span>        <span class="self">self</span>.reroot(u);
-<span data-nosnippet>542</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
-<span data-nosnippet>543</span>        <span class="self">self</span>.access_node(v);
-<span data-nosnippet>544</span>        <span class="kw">unsafe </span>{ v.as_ref().data.sum.clone() }
-<span data-nosnippet>545</span>    }
-<span data-nosnippet>546</span>
-<span data-nosnippet>547</span>    <span class="doccomment">/// `u` and `v` must be connected.
-<span data-nosnippet>548</span>    </span><span class="kw">pub fn </span>update_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize, action: <span class="kw-2">&amp;</span>A::Action) {
-<span data-nosnippet>549</span>        <span class="self">self</span>.reroot(u);
-<span data-nosnippet>550</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
-<span data-nosnippet>551</span>        <span class="self">self</span>.access_node(v);
-<span data-nosnippet>552</span>        <span class="kw">if </span>!TopBstSpec::&lt;S, A&gt;::is_unit(action) {
-<span data-nosnippet>553</span>            <span class="kw">unsafe </span>{ TopBstSpec::&lt;S, A&gt;::apply_heavy(v, action) };
-<span data-nosnippet>554</span>        }
-<span data-nosnippet>555</span>    }
-<span data-nosnippet>556</span>
-<span data-nosnippet>557</span>    <span class="kw">fn </span>detach_left&lt;R&gt;(<span class="kw-2">mut </span>node: TopPtr&lt;S, A&gt;, f: <span class="kw">impl </span>FnOnce(TopPtr&lt;S, A&gt;) -&gt; R) -&gt; R {
-<span data-nosnippet>558</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>559</span>            <span class="kw">let </span>left = node.as_mut().child[<span class="number">0</span>].take();
-<span data-nosnippet>560</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
-<span data-nosnippet>561</span>                left.as_mut().parent.parent = <span class="prelude-val">None</span>;
-<span data-nosnippet>562</span>            }
-<span data-nosnippet>563</span>            <span class="self">Self</span>::pull_top(node);
-<span data-nosnippet>564</span>            <span class="kw">let </span>result = f(node);
-<span data-nosnippet>565</span>            node.as_mut().child[<span class="number">0</span>] = left;
-<span data-nosnippet>566</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
-<span data-nosnippet>567</span>                left.as_mut().parent.parent = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>568</span>            }
-<span data-nosnippet>569</span>            <span class="self">Self</span>::pull_top(node);
-<span data-nosnippet>570</span>            result
-<span data-nosnippet>571</span>        }
-<span data-nosnippet>572</span>    }
-<span data-nosnippet>573</span>
-<span data-nosnippet>574</span>    <span class="doccomment">/// `(node, parent)` must be an edge.
-<span data-nosnippet>575</span>    </span><span class="kw">pub fn </span>fold_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize) -&gt; S::Path {
-<span data-nosnippet>576</span>        <span class="self">self</span>.reroot(parent);
-<span data-nosnippet>577</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
-<span data-nosnippet>578</span>        <span class="self">self</span>.access_node(node);
-<span data-nosnippet>579</span>        <span class="self">Self</span>::detach_left(node, |node| <span class="kw">unsafe </span>{ node.as_ref().data.sum.clone() })
-<span data-nosnippet>580</span>    }
-<span data-nosnippet>581</span>
-<span data-nosnippet>582</span>    <span class="doccomment">/// `(node, parent)` must be an edge.
-<span data-nosnippet>583</span>    </span><span class="kw">pub fn </span>update_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize, action: <span class="kw-2">&amp;</span>A::Action) {
-<span data-nosnippet>584</span>        <span class="self">self</span>.reroot(parent);
-<span data-nosnippet>585</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
-<span data-nosnippet>586</span>        <span class="self">self</span>.access_node(node);
-<span data-nosnippet>587</span>        <span class="self">Self</span>::detach_left(node, |node| <span class="kw">unsafe </span>{
-<span data-nosnippet>588</span>            TopBstSpec::&lt;S, A&gt;::apply_all(node, action);
-<span data-nosnippet>589</span>            <span class="highlight">TopBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(node));
-<span data-nosnippet>590</span>        });
-<span data-nosnippet>591</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/tree/link_cut_tree.rs.html#296&#34;,&#34;line 296&#34;],[[28,28],&#34;../../../../src/competitive/tree/link_cut_tree.rs.html#319&#34;,&#34;line 319&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../../src/competitive/tree/link_cut_tree.rs.html#296">line 296</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>291</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) -&gt; usize {
-<span data-nosnippet>292</span>        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.node(node);
-<span data-nosnippet>293</span>        <span class="self">Self</span>::access_node(root);
-<span data-nosnippet>294</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>295</span>            <span class="kw">loop </span>{
-<span data-nosnippet>296</span>                <span class="highlight focus">LinkCutBstSpec::&lt;S&gt;::top_down</span>(BstDataMutRef::new_unchecked(root));
-<span data-nosnippet>297</span>                <span class="kw">match </span>root.as_ref().child[<span class="number">0</span>] {
-<span data-nosnippet>298</span>                    <span class="prelude-val">Some</span>(left) =&gt; root = left,
-<span data-nosnippet>299</span>                    <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
-<span data-nosnippet>300</span>                }
-<span data-nosnippet>301</span>            }
-<span data-nosnippet>302</span>            <span class="self">Self</span>::splay(root);
-<span data-nosnippet>303</span>            root.as_ref().data.index
-<span data-nosnippet>304</span>        }
-<span data-nosnippet>305</span>    }
-<span data-nosnippet>306</span>
-<span data-nosnippet>307</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; bool {
-<span data-nosnippet>308</span>        <span class="self">self</span>.root(u) == <span class="self">self</span>.root(v)
-<span data-nosnippet>309</span>    }
-<span data-nosnippet>310</span>
-<span data-nosnippet>311</span>    <span class="kw">fn </span>detach_left&lt;R&gt;(node: LinkCutPtr&lt;S&gt;, f: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>S::Data) -&gt; R) -&gt; R {
-<span data-nosnippet>312</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>313</span>            <span class="kw">let </span>left = (<span class="kw-2">*</span>node.as_ptr()).child[<span class="number">0</span>].take();
-<span data-nosnippet>314</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
-<span data-nosnippet>315</span>                left.as_mut().parent.parent = <span class="prelude-val">None</span>;
-<span data-nosnippet>316</span>            }
-<span data-nosnippet>317</span>            <span class="self">Self</span>::pull(node);
-<span data-nosnippet>318</span>            <span class="kw">let </span>result = f(<span class="kw-2">&amp;mut </span>(<span class="kw-2">*</span>node.as_ptr()).data.inner);
-<span data-nosnippet>319</span>            <span class="highlight">LinkCutBstSpec::&lt;S&gt;::top_down</span>(BstDataMutRef::new_unchecked(node));
-<span data-nosnippet>320</span>            (<span class="kw-2">*</span>node.as_ptr()).child[<span class="number">0</span>] = left;
-<span data-nosnippet>321</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
-<span data-nosnippet>322</span>                left.as_mut().parent.parent = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>323</span>            }
-<span data-nosnippet>324</span>            <span class="self">Self</span>::pull(node);
-<span data-nosnippet>325</span>            result
-<span data-nosnippet>326</span>        }
-<span data-nosnippet>327</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#92&#34;,&#34;line 92&#34;],[[229,229],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#312&#34;,&#34;line 312&#34;],[[268,268],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#351&#34;,&#34;line 351&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#92">line 92</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>83</span>    <span class="kw">fn </span>update_act(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;, act: <span class="kw-2">&amp;</span>T::Act) {
+    Seeker: <a class="trait" href="../seeker/trait.BstSeeker.html" title="trait competitive::data_structure::binary_search_tree::seeker::BstSeeker">BstSeeker</a>&lt;Spec = Self&gt;,</div></h4></section></div><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.top_down" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#24">Source</a><h4 class="code-header">fn <a href="#method.top_down" class="fn">top_down</a>(_node: <a class="type" href="type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../../src/competitive/tree/top_tree.rs.html#398&#34;,&#34;line 398&#34;],[[41,41],&#34;../../../../src/competitive/tree/top_tree.rs.html#437&#34;,&#34;line 437&#34;],[[157,157],&#34;../../../../src/competitive/tree/top_tree.rs.html#553&#34;,&#34;line 553&#34;],[[222,222],&#34;../../../../src/competitive/tree/top_tree.rs.html#618&#34;,&#34;line 618&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/top_tree.rs (<a href="../../../../src/competitive/tree/top_tree.rs.html#398">line 398</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>396</span>    <span class="kw">unsafe fn </span>rake_rightmost(<span class="kw-2">mut </span>node: RakePtr&lt;S, A&gt;) -&gt; RakePtr&lt;S, A&gt; {
+<span data-nosnippet>397</span>        <span class="kw">loop </span>{
+<span data-nosnippet>398</span>            <span class="kw">unsafe </span>{ <span class="highlight focus">RakeBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(node)) };
+<span data-nosnippet>399</span>            <span class="kw">match unsafe </span>{ node.as_ref().child[<span class="number">1</span>] } {
+<span data-nosnippet>400</span>                <span class="prelude-val">Some</span>(right) =&gt; node = right,
+<span data-nosnippet>401</span>                <span class="prelude-val">None </span>=&gt; <span class="kw">return </span>node,
+<span data-nosnippet>402</span>            }
+<span data-nosnippet>403</span>        }
+<span data-nosnippet>404</span>    }
+<span data-nosnippet>405</span>
+<span data-nosnippet>406</span>    <span class="kw">unsafe fn </span>rake_insert(
+<span data-nosnippet>407</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>408</span>        root: <span class="prelude-ty">Option</span>&lt;RakePtr&lt;S, A&gt;&gt;,
+<span data-nosnippet>409</span>        key: S::Point,
+<span data-nosnippet>410</span>    ) -&gt; (RakePtr&lt;S, A&gt;, RakePtr&lt;S, A&gt;) {
+<span data-nosnippet>411</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.allocate(BstNode::new(RakeData {
+<span data-nosnippet>412</span>            sum: key.clone(),
+<span data-nosnippet>413</span>            key,
+<span data-nosnippet>414</span>            action: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::unit(),
+<span data-nosnippet>415</span>            buffer: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::unit(),
+<span data-nosnippet>416</span>        }));
+<span data-nosnippet>417</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = root {
+<span data-nosnippet>418</span>            <span class="kw">let </span><span class="kw-2">mut </span>rightmost = <span class="kw">unsafe </span>{ <span class="self">Self</span>::rake_rightmost(root) };
+<span data-nosnippet>419</span>            <span class="kw">unsafe </span>{
+<span data-nosnippet>420</span>                <span class="self">Self</span>::splay_rake(rightmost);
+<span data-nosnippet>421</span>                rightmost.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(node);
+<span data-nosnippet>422</span>                (<span class="kw-2">*</span>node.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(rightmost);
+<span data-nosnippet>423</span>                <span class="self">Self</span>::pull_rake(rightmost);
+<span data-nosnippet>424</span>            }
+<span data-nosnippet>425</span>            (rightmost, node)
+<span data-nosnippet>426</span>        } <span class="kw">else </span>{
+<span data-nosnippet>427</span>            (node, node)
+<span data-nosnippet>428</span>        }
+<span data-nosnippet>429</span>    }
+<span data-nosnippet>430</span>
+<span data-nosnippet>431</span>    <span class="kw">unsafe fn </span>rake_remove(
+<span data-nosnippet>432</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>433</span>        <span class="kw-2">mut </span>node: RakePtr&lt;S, A&gt;,
+<span data-nosnippet>434</span>    ) -&gt; (<span class="prelude-ty">Option</span>&lt;RakePtr&lt;S, A&gt;&gt;, A::Action) {
+<span data-nosnippet>435</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>436</span>            <span class="self">Self</span>::splay_rake(node);
+<span data-nosnippet>437</span>            <span class="highlight">RakeBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(node));
+<span data-nosnippet>438</span>        }
+<span data-nosnippet>439</span>        <span class="kw">let </span>left = <span class="kw">unsafe </span>{ node.as_mut().child[<span class="number">0</span>].take() };
+<span data-nosnippet>440</span>        <span class="kw">let </span>right = <span class="kw">unsafe </span>{ node.as_mut().child[<span class="number">1</span>].take() };
+<span data-nosnippet>441</span>        <span class="kw">for </span><span class="kw-2">mut </span>child <span class="kw">in </span>[left, right].into_iter().flatten() {
+<span data-nosnippet>442</span>            <span class="kw">unsafe </span>{ child.as_mut().parent.parent = <span class="prelude-val">None </span>};
+<span data-nosnippet>443</span>        }
+<span data-nosnippet>444</span>        <span class="kw">let </span>root = <span class="kw">match </span>(left, right) {
+<span data-nosnippet>445</span>            (<span class="prelude-val">None</span>, right) =&gt; right,
+<span data-nosnippet>446</span>            (left, <span class="prelude-val">None</span>) =&gt; left,
+<span data-nosnippet>447</span>            (<span class="prelude-val">Some</span>(left), <span class="prelude-val">Some</span>(right)) =&gt; {
+<span data-nosnippet>448</span>                <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="kw">unsafe </span>{ <span class="self">Self</span>::rake_rightmost(left) };
+<span data-nosnippet>449</span>                <span class="kw">unsafe </span>{
+<span data-nosnippet>450</span>                    <span class="self">Self</span>::splay_rake(root);
+<span data-nosnippet>451</span>                    root.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(right);
+<span data-nosnippet>452</span>                    (<span class="kw-2">*</span>right.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(root);
+<span data-nosnippet>453</span>                    <span class="self">Self</span>::pull_rake(root);
+<span data-nosnippet>454</span>                }
+<span data-nosnippet>455</span>                <span class="prelude-val">Some</span>(root)
+<span data-nosnippet>456</span>            }
+<span data-nosnippet>457</span>        };
+<span data-nosnippet>458</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>459</span>        (root, node.data.buffer)
+<span data-nosnippet>460</span>    }
+<span data-nosnippet>461</span>
+<span data-nosnippet>462</span>    <span class="kw">fn </span>access_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: TopPtr&lt;S, A&gt;) {
+<span data-nosnippet>463</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>464</span>            <span class="kw">let </span><span class="kw-2">mut </span>previous: <span class="prelude-ty">Option</span>&lt;TopPtr&lt;S, A&gt;&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>465</span>            <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="prelude-val">Some</span>(node);
+<span data-nosnippet>466</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cursor) = current {
+<span data-nosnippet>467</span>                <span class="self">Self</span>::splay_top(cursor);
+<span data-nosnippet>468</span>                <span class="kw">let </span>next = cursor.as_ref().parent.parent;
+<span data-nosnippet>469</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = cursor.as_mut().child[<span class="number">1</span>].take() {
+<span data-nosnippet>470</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.sum);
+<span data-nosnippet>471</span>                    <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(cursor.as_ref().data.light, point);
+<span data-nosnippet>472</span>                    cursor.as_mut().data.light = <span class="prelude-val">Some</span>(light);
+<span data-nosnippet>473</span>                    (<span class="kw-2">*</span>right.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
+<span data-nosnippet>474</span>                }
+<span data-nosnippet>475</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(previous) = previous {
+<span data-nosnippet>476</span>                    <span class="kw">let </span>entry = (<span class="kw-2">*</span>previous.as_ptr())
+<span data-nosnippet>477</span>                        .data
+<span data-nosnippet>478</span>                        .belong
+<span data-nosnippet>479</span>                        .take()
+<span data-nosnippet>480</span>                        .expect(<span class="string">"a virtual path must have a rake-tree entry"</span>);
+<span data-nosnippet>481</span>                    <span class="kw">let </span>(light, action) = <span class="self">self</span>.rake_remove(entry);
+<span data-nosnippet>482</span>                    cursor.as_mut().data.light = light;
+<span data-nosnippet>483</span>                    TopBstSpec::&lt;S, A&gt;::apply_all(previous, <span class="kw-2">&amp;</span>action);
+<span data-nosnippet>484</span>                    cursor.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(previous);
+<span data-nosnippet>485</span>                    (<span class="kw-2">*</span>previous.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(cursor);
+<span data-nosnippet>486</span>                }
+<span data-nosnippet>487</span>                <span class="self">Self</span>::pull_top(cursor);
+<span data-nosnippet>488</span>                previous = <span class="prelude-val">Some</span>(cursor);
+<span data-nosnippet>489</span>                current = next;
+<span data-nosnippet>490</span>            }
+<span data-nosnippet>491</span>            <span class="self">Self</span>::splay_top(node);
+<span data-nosnippet>492</span>        }
+<span data-nosnippet>493</span>    }
+<span data-nosnippet>494</span>
+<span data-nosnippet>495</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) -&gt; <span class="kw-2">&amp;</span>S::Info {
+<span data-nosnippet>496</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
+<span data-nosnippet>497</span>        <span class="self">self</span>.access_node(node);
+<span data-nosnippet>498</span>        <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>node.as_ref().data.info }
+<span data-nosnippet>499</span>    }
+<span data-nosnippet>500</span>
+<span data-nosnippet>501</span>    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, info: S::Info) {
+<span data-nosnippet>502</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>.node(node);
+<span data-nosnippet>503</span>        <span class="self">self</span>.access_node(node);
+<span data-nosnippet>504</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>505</span>            node.as_mut().data.info = info;
+<span data-nosnippet>506</span>            <span class="self">Self</span>::pull_top(node);
+<span data-nosnippet>507</span>        }
+<span data-nosnippet>508</span>    }
+<span data-nosnippet>509</span>
+<span data-nosnippet>510</span>    <span class="kw">pub fn </span>reroot(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) {
+<span data-nosnippet>511</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
+<span data-nosnippet>512</span>        <span class="self">self</span>.access_node(node);
+<span data-nosnippet>513</span>        <span class="kw">unsafe </span>{ TopBstSpec::&lt;S, A&gt;::toggle(node) };
+<span data-nosnippet>514</span>    }
+<span data-nosnippet>515</span>
+<span data-nosnippet>516</span>    <span class="doccomment">/// `child` and `parent` must belong to different trees.
+<span data-nosnippet>517</span>    </span><span class="kw">pub fn </span>link(<span class="kw-2">&amp;mut </span><span class="self">self</span>, child: usize, parent: usize) {
+<span data-nosnippet>518</span>        <span class="macro">assert_ne!</span>(child, parent);
+<span data-nosnippet>519</span>        <span class="self">self</span>.reroot(child);
+<span data-nosnippet>520</span>        <span class="kw">let </span>child = <span class="self">self</span>.node(child);
+<span data-nosnippet>521</span>        <span class="kw">let </span><span class="kw-2">mut </span>parent = <span class="self">self</span>.node(parent);
+<span data-nosnippet>522</span>        <span class="self">self</span>.access_node(parent);
+<span data-nosnippet>523</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>524</span>            (<span class="kw-2">*</span>child.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(parent);
+<span data-nosnippet>525</span>            <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>child.as_ref().data.sum);
+<span data-nosnippet>526</span>            <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(parent.as_ref().data.light, point);
+<span data-nosnippet>527</span>            parent.as_mut().data.light = <span class="prelude-val">Some</span>(light);
+<span data-nosnippet>528</span>            (<span class="kw-2">*</span>child.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
+<span data-nosnippet>529</span>            <span class="self">Self</span>::pull_top(parent);
+<span data-nosnippet>530</span>        }
+<span data-nosnippet>531</span>    }
+<span data-nosnippet>532</span>
+<span data-nosnippet>533</span>    <span class="doccomment">/// `(u, v)` must be an edge.
+<span data-nosnippet>534</span>    </span><span class="kw">pub fn </span>cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) {
+<span data-nosnippet>535</span>        <span class="macro">assert_ne!</span>(u, v);
+<span data-nosnippet>536</span>        <span class="self">self</span>.reroot(<a href="../algebra/action.rs.html#23">u</a>);
+<span data-nosnippet>537</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="self">self</span>.node(v);
+<span data-nosnippet>538</span>        <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">access_node</a>(v);
+<span data-nosnippet>539</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>540</span>            <span class="kw">let </span><span class="kw-2">mut </span>left = v.as_mut().child[<span class="number">0</span>]
+<span data-nosnippet>541</span>                .take()
+<span data-nosnippet>542</span>                .expect(<span class="string">"the specified edge must exist"</span>);
+<span data-nosnippet>543</span>            left.as_mut().parent.parent = <span class="prelude-val">None</span>;
+<span data-nosnippet>544</span>            <span class="self">Self</span>::pull_top(v);
+<span data-nosnippet>545</span>        }
+<span data-nosnippet>546</span>    }
+<span data-nosnippet>547</span>
+<span data-nosnippet>548</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) -&gt; usize {
+<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.node(node);
+<span data-nosnippet>550</span>        <span class="self">self</span>.access_node(root);
+<span data-nosnippet>551</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>552</span>            <span class="kw">loop </span>{
+<span data-nosnippet>553</span>                <span class="highlight">TopBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(root));
+<span data-nosnippet>554</span>                <span class="kw">match </span>root.as_ref().child[<span class="number">0</span>] {
+<span data-nosnippet>555</span>                    <span class="prelude-val">Some</span>(left) =&gt; root = left,
+<span data-nosnippet>556</span>                    <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
+<span data-nosnippet>557</span>                }
+<span data-nosnippet>558</span>            }
+<span data-nosnippet>559</span>            <span class="self">Self</span>::splay_top(root);
+<span data-nosnippet>560</span>            root.as_ref().data.index
+<span data-nosnippet>561</span>        }
+<span data-nosnippet>562</span>    }
+<span data-nosnippet>563</span>
+<span data-nosnippet>564</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; bool {
+<span data-nosnippet>565</span>        <span class="self">self</span>.root(u) == <span class="self">self</span>.root(v)
+<span data-nosnippet>566</span>    }
+<span data-nosnippet>567</span>
+<span data-nosnippet>568</span>    <span class="doccomment">/// `u` and `v` must be connected.
+<span data-nosnippet>569</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; S::Path {
+<span data-nosnippet>570</span>        <span class="self">self</span>.reroot(u);
+<span data-nosnippet>571</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
+<span data-nosnippet>572</span>        <span class="self">self</span>.access_node(v);
+<span data-nosnippet>573</span>        <span class="kw">unsafe </span>{ v.as_ref().data.sum.clone() }
+<span data-nosnippet>574</span>    }
+<span data-nosnippet>575</span>
+<span data-nosnippet>576</span>    <span class="doccomment">/// `u` and `v` must be connected.
+<span data-nosnippet>577</span>    </span><span class="kw">pub fn </span>update_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize, action: <span class="kw-2">&amp;</span>A::Action) {
+<span data-nosnippet>578</span>        <span class="self">self</span>.reroot(u);
+<span data-nosnippet>579</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
+<span data-nosnippet>580</span>        <span class="self">self</span>.access_node(v);
+<span data-nosnippet>581</span>        <span class="kw">if </span>!TopBstSpec::&lt;S, A&gt;::is_unit(action) {
+<span data-nosnippet>582</span>            <span class="kw">unsafe </span>{ TopBstSpec::&lt;S, A&gt;::apply_heavy(v, action) };
+<span data-nosnippet>583</span>        }
+<span data-nosnippet>584</span>    }
+<span data-nosnippet>585</span>
+<span data-nosnippet>586</span>    <span class="kw">fn </span>detach_left&lt;R&gt;(<span class="kw-2">mut </span>node: TopPtr&lt;S, A&gt;, f: <span class="kw">impl </span>FnOnce(TopPtr&lt;S, A&gt;) -&gt; R) -&gt; R {
+<span data-nosnippet>587</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>588</span>            <span class="kw">let </span>left = node.as_mut().child[<span class="number">0</span>].take();
+<span data-nosnippet>589</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
+<span data-nosnippet>590</span>                left.as_mut().parent.parent = <span class="prelude-val">None</span>;
+<span data-nosnippet>591</span>            }
+<span data-nosnippet>592</span>            <span class="self">Self</span>::pull_top(node);
+<span data-nosnippet>593</span>            <span class="kw">let </span>result = f(node);
+<span data-nosnippet>594</span>            node.as_mut().child[<span class="number">0</span>] = left;
+<span data-nosnippet>595</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
+<span data-nosnippet>596</span>                left.as_mut().parent.parent = <span class="prelude-val">Some</span>(node);
+<span data-nosnippet>597</span>            }
+<span data-nosnippet>598</span>            <span class="self">Self</span>::pull_top(node);
+<span data-nosnippet>599</span>            result
+<span data-nosnippet>600</span>        }
+<span data-nosnippet>601</span>    }
+<span data-nosnippet>602</span>
+<span data-nosnippet>603</span>    <span class="doccomment">/// `(node, parent)` must be an edge.
+<span data-nosnippet>604</span>    </span><span class="kw">pub fn </span>fold_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize) -&gt; S::Path {
+<span data-nosnippet>605</span>        <span class="self">self</span>.reroot(parent);
+<span data-nosnippet>606</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
+<span data-nosnippet>607</span>        <span class="self">self</span>.access_node(node);
+<span data-nosnippet>608</span>        <span class="self">Self</span>::detach_left(node, |node| <span class="kw">unsafe </span>{ node.as_ref().data.sum.clone() })
+<span data-nosnippet>609</span>    }
+<span data-nosnippet>610</span>
+<span data-nosnippet>611</span>    <span class="doccomment">/// `(node, parent)` must be an edge.
+<span data-nosnippet>612</span>    </span><span class="kw">pub fn </span>update_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize, action: <span class="kw-2">&amp;</span>A::Action) {
+<span data-nosnippet>613</span>        <span class="self">self</span>.reroot(parent);
+<span data-nosnippet>614</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
+<span data-nosnippet>615</span>        <span class="self">self</span>.access_node(node);
+<span data-nosnippet>616</span>        <span class="self">Self</span>::detach_left(node, |node| <span class="kw">unsafe </span>{
+<span data-nosnippet>617</span>            TopBstSpec::&lt;S, A&gt;::apply_all(node, action);
+<span data-nosnippet>618</span>            <span class="highlight">TopBstSpec::&lt;S, A&gt;::top_down</span>(BstDataMutRef::new_unchecked(node));
+<span data-nosnippet>619</span>        });
+<span data-nosnippet>620</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/tree/link_cut_tree.rs.html#322&#34;,&#34;line 322&#34;],[[28,28],&#34;../../../../src/competitive/tree/link_cut_tree.rs.html#345&#34;,&#34;line 345&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../../src/competitive/tree/link_cut_tree.rs.html#322">line 322</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>317</span>    <span class="kw">pub fn </span>root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize) -&gt; usize {
+<span data-nosnippet>318</span>        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.node(node);
+<span data-nosnippet>319</span>        <span class="self">Self</span>::access_node(root);
+<span data-nosnippet>320</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>321</span>            <span class="kw">loop </span>{
+<span data-nosnippet>322</span>                <span class="highlight focus">LinkCutBstSpec::&lt;S&gt;::top_down</span>(BstDataMutRef::new_unchecked(root));
+<span data-nosnippet>323</span>                <span class="kw">match </span>root.as_ref().child[<span class="number">0</span>] {
+<span data-nosnippet>324</span>                    <span class="prelude-val">Some</span>(left) =&gt; root = left,
+<span data-nosnippet>325</span>                    <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
+<span data-nosnippet>326</span>                }
+<span data-nosnippet>327</span>            }
+<span data-nosnippet>328</span>            <span class="self">Self</span>::splay(root);
+<span data-nosnippet>329</span>            root.as_ref().data.index
+<span data-nosnippet>330</span>        }
+<span data-nosnippet>331</span>    }
+<span data-nosnippet>332</span>
+<span data-nosnippet>333</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; bool {
+<span data-nosnippet>334</span>        <span class="self">self</span>.root(u) == <span class="self">self</span>.root(v)
+<span data-nosnippet>335</span>    }
+<span data-nosnippet>336</span>
+<span data-nosnippet>337</span>    <span class="kw">fn </span>detach_left&lt;R&gt;(node: LinkCutPtr&lt;S&gt;, f: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>S::Data) -&gt; R) -&gt; R {
+<span data-nosnippet>338</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>339</span>            <span class="kw">let </span>left = (<span class="kw-2">*</span>node.as_ptr()).child[<span class="number">0</span>].take();
+<span data-nosnippet>340</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
+<span data-nosnippet>341</span>                left.as_mut().parent.parent = <span class="prelude-val">None</span>;
+<span data-nosnippet>342</span>            }
+<span data-nosnippet>343</span>            <span class="self">Self</span>::pull(node);
+<span data-nosnippet>344</span>            <span class="kw">let </span>result = f(<span class="kw-2">&amp;mut </span>(<span class="kw-2">*</span>node.as_ptr()).data.inner);
+<span data-nosnippet>345</span>            <span class="highlight">LinkCutBstSpec::&lt;S&gt;::top_down</span>(BstDataMutRef::new_unchecked(node));
+<span data-nosnippet>346</span>            (<span class="kw-2">*</span>node.as_ptr()).child[<span class="number">0</span>] = left;
+<span data-nosnippet>347</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
+<span data-nosnippet>348</span>                left.as_mut().parent.parent = <span class="prelude-val">Some</span>(node);
+<span data-nosnippet>349</span>            }
+<span data-nosnippet>350</span>            <span class="self">Self</span>::pull(node);
+<span data-nosnippet>351</span>            result
+<span data-nosnippet>352</span>        }
+<span data-nosnippet>353</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#92&#34;,&#34;line 92&#34;],[[229,229],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#312&#34;,&#34;line 312&#34;],[[268,268],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#351&#34;,&#34;line 351&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#92">line 92</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>83</span>    <span class="kw">fn </span>update_act(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;, act: <span class="kw-2">&amp;</span>T::Act) {
 <span data-nosnippet>84</span>        <span class="kw">if </span>T::is_act_unit(act) {
 <span data-nosnippet>85</span>            <span class="kw">return</span>;
 <span data-nosnippet>86</span>        }
@@ -1117,18 +1117,18 @@
 <span data-nosnippet>223</span>                }
 <span data-nosnippet>224</span>            },
 <span data-nosnippet>225</span>        }
-<span data-nosnippet>226</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../../src/competitive/data_structure/splay_operations.rs.html#92">crates/competitive/src/data_structure/splay_operations.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.bottom_up" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#26">Source</a><h4 class="code-header">fn <a href="#method.bottom_up" class="fn">bottom_up</a>(_node: <a class="type" href="type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../../src/competitive/tree/top_tree.rs.html#337&#34;,&#34;line 337&#34;],[[6,6],&#34;../../../../src/competitive/tree/top_tree.rs.html#342&#34;,&#34;line 342&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/top_tree.rs (<a href="../../../../src/competitive/tree/top_tree.rs.html#337">line 337</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>336</span>    <span class="kw">unsafe fn </span>pull_top(node: TopPtr&lt;S, A&gt;) {
-<span data-nosnippet>337</span>        <span class="kw">unsafe </span>{ <span class="highlight focus">TopBstSpec::&lt;S, A&gt;::bottom_up</span>(BstDataMutRef::new_unchecked(node)) };
-<span data-nosnippet>338</span>    }
-<span data-nosnippet>339</span>
-<span data-nosnippet>340</span>    <span class="attr">#[inline]
-<span data-nosnippet>341</span>    </span><span class="kw">unsafe fn </span>pull_rake(node: RakePtr&lt;S, A&gt;) {
-<span data-nosnippet>342</span>        <span class="kw">unsafe </span>{ <span class="highlight">RakeBstSpec::&lt;S, A&gt;::bottom_up</span>(BstDataMutRef::new_unchecked(node)) };
-<span data-nosnippet>343</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[2,2],&#34;../../../../src/competitive/tree/link_cut_tree.rs.html#182&#34;,&#34;line 182&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../../src/competitive/tree/link_cut_tree.rs.html#182">line 182</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>180</span>    <span class="kw">unsafe fn </span>pull(node: LinkCutPtr&lt;S&gt;) {
-<span data-nosnippet>181</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>182</span>            <span class="highlight focus">LinkCutBstSpec::&lt;S&gt;::bottom_up</span>(BstDataMutRef::new_unchecked(node));
-<span data-nosnippet>183</span>        }
-<span data-nosnippet>184</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#162&#34;,&#34;line 162&#34;],[[31,31],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#188&#34;,&#34;line 188&#34;],[[76,76],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#233&#34;,&#34;line 233&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_search_tree/node.rs (<a href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#162">line 162</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>157</span>    <span class="kw">pub fn </span>resolve_bottom_up&lt;Spec&gt;(<span class="kw-2">mut </span>node: BstNodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, Spec&gt;)
+<span data-nosnippet>226</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../../src/competitive/data_structure/splay_operations.rs.html#91">crates/competitive/src/data_structure/splay_operations.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.bottom_up" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#26">Source</a><h4 class="code-header">fn <a href="#method.bottom_up" class="fn">bottom_up</a>(_node: <a class="type" href="type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../../src/competitive/tree/top_tree.rs.html#366&#34;,&#34;line 366&#34;],[[6,6],&#34;../../../../src/competitive/tree/top_tree.rs.html#371&#34;,&#34;line 371&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/top_tree.rs (<a href="../../../../src/competitive/tree/top_tree.rs.html#366">line 366</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>365</span>    <span class="kw">unsafe fn </span>pull_top(node: TopPtr&lt;S, A&gt;) {
+<span data-nosnippet>366</span>        <span class="kw">unsafe </span>{ <span class="highlight focus">TopBstSpec::&lt;S, A&gt;::bottom_up</span>(BstDataMutRef::new_unchecked(node)) };
+<span data-nosnippet>367</span>    }
+<span data-nosnippet>368</span>
+<span data-nosnippet>369</span>    <span class="attr">#[inline]
+<span data-nosnippet>370</span>    </span><span class="kw">unsafe fn </span>pull_rake(node: RakePtr&lt;S, A&gt;) {
+<span data-nosnippet>371</span>        <span class="kw">unsafe </span>{ <span class="highlight">RakeBstSpec::&lt;S, A&gt;::bottom_up</span>(BstDataMutRef::new_unchecked(node)) };
+<span data-nosnippet>372</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[2,2],&#34;../../../../src/competitive/tree/link_cut_tree.rs.html#208&#34;,&#34;line 208&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../../src/competitive/tree/link_cut_tree.rs.html#208">line 208</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>206</span>    <span class="kw">unsafe fn </span>pull(node: LinkCutPtr&lt;S&gt;) {
+<span data-nosnippet>207</span>        <span class="kw">unsafe </span>{
+<span data-nosnippet>208</span>            <span class="highlight focus">LinkCutBstSpec::&lt;S&gt;::bottom_up</span>(BstDataMutRef::new_unchecked(node));
+<span data-nosnippet>209</span>        }
+<span data-nosnippet>210</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#162&#34;,&#34;line 162&#34;],[[31,31],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#188&#34;,&#34;line 188&#34;],[[76,76],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#233&#34;,&#34;line 233&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_search_tree/node.rs (<a href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#162">line 162</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>157</span>    <span class="kw">pub fn </span>resolve_bottom_up&lt;Spec&gt;(<span class="kw-2">mut </span>node: BstNodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, Spec&gt;)
 <span data-nosnippet>158</span>    <span class="kw">where
 <span data-nosnippet>159</span>        </span>Spec: BstSpec&lt;Data = Data, Parent = <span class="self">Self</span>&gt;,
 <span data-nosnippet>160</span>    {

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["merge","splay","split"],"mod":["with_parent"]};
+window.SIDEBAR_ITEMS = {"fn":["merge","rooted_heavy_order","splay","split"],"mod":["with_parent"]};
