@@ -1,7 +1,7 @@
 use std::{
     ffi::{c_int, c_void},
     fs::File,
-    io::{BufWriter, Read, StdoutLock, Write, stdout},
+    io::{Read, StdoutLock, Write, stdout},
     os::fd::FromRawFd,
     ptr,
     str::FromStr,
@@ -384,12 +384,23 @@ pub struct FastOutput<W>
 where
     W: Write,
 {
-    buf: BufWriter<W>,
+    buf: Box<[u8]>,
+    pos: usize,
+    inner: W,
 }
 
 impl FastOutput<StdoutLock<'static>> {
     pub fn stdout() -> Self {
-        Self::with_capacity(1 << 12, stdout().lock())
+        Self::new(stdout().lock())
+    }
+}
+
+impl<W> Drop for FastOutput<W>
+where
+    W: Write,
+{
+    fn drop(&mut self) {
+        let _ = self.inner.write_all(&self.buf[..self.pos]);
     }
 }
 
@@ -398,100 +409,177 @@ where
     W: Write,
 {
     pub fn new(writer: W) -> Self {
-        FastOutput {
-            buf: BufWriter::new(writer),
-        }
+        Self::with_capacity(1 << 18, writer)
     }
 
     pub fn with_capacity(capacity: usize, writer: W) -> Self {
         FastOutput {
-            buf: BufWriter::with_capacity(capacity, writer),
+            buf: vec![0; capacity.max(32)].into_boxed_slice(),
+            pos: 0,
+            inner: writer,
         }
     }
 
     pub fn flush(&mut self) {
-        self.buf.flush().unwrap();
+        self.flush_buf();
+        self.inner.flush().unwrap();
     }
 
-    fn write_digit4(&mut self, x: usize) {
-        debug_assert!(x < 10000);
-        self.buf.write_all(&DIGIT4[x]).unwrap();
+    #[cold]
+    fn flush_buf(&mut self) {
+        if self.pos != 0 {
+            self.inner.write_all(&self.buf[..self.pos]).unwrap();
+            self.pos = 0;
+        }
     }
 
-    fn write_digit4_trimmed(&mut self, x: usize) {
+    #[inline]
+    fn ensure_capacity(&mut self, capacity: usize) {
+        if self.buf.len() - self.pos < capacity {
+            self.flush_buf();
+        }
+    }
+
+    #[inline]
+    unsafe fn write_byte_unchecked(&mut self, byte: u8) {
+        unsafe {
+            *self.buf.as_mut_ptr().add(self.pos) = byte;
+        }
+        self.pos += 1;
+    }
+
+    #[inline]
+    unsafe fn write_digit4_unchecked(&mut self, x: usize) {
         debug_assert!(x < 10000);
-        let off = (x < 10) as u8 + (x < 100) as u8 + (x < 1000) as u8;
-        self.buf.write_all(&DIGIT4[x][off as usize..]).unwrap();
+        unsafe {
+            ptr::write_unaligned(
+                self.buf.as_mut_ptr().add(self.pos) as *mut u32,
+                ptr::read_unaligned((DIGIT4.as_ptr() as *const u8).add(4 * x) as *const u32),
+            );
+        }
+        self.pos += 4;
+    }
+
+    #[inline]
+    unsafe fn write_digit4_trimmed_unchecked(&mut self, x: usize) {
+        debug_assert!(x < 10000);
+        let off = (x < 10) as usize + (x < 100) as usize + (x < 1000) as usize;
+        unsafe {
+            ptr::write_unaligned(
+                self.buf.as_mut_ptr().add(self.pos) as *mut u32,
+                ptr::read_unaligned((DIGIT4.as_ptr() as *const u8).add(4 * x + off) as *const u32),
+            );
+        }
+        self.pos += 4 - off;
+    }
+
+    #[inline]
+    unsafe fn write_u8_unchecked(&mut self, x: u8) {
+        let off = (x < 10) as usize + (x < 100) as usize + 1;
+        unsafe {
+            ptr::write_unaligned(
+                self.buf.as_mut_ptr().add(self.pos) as *mut u32,
+                ptr::read_unaligned(
+                    (DIGIT4.as_ptr() as *const u8).add(4 * x as usize + off) as *const u32
+                ),
+            );
+        }
+        self.pos += 4 - off;
+    }
+
+    #[inline]
+    unsafe fn write_u16_unchecked(&mut self, x: u16) {
+        unsafe {
+            if x >= 10000 {
+                self.write_digit4_trimmed_unchecked((x / 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else {
+                self.write_digit4_trimmed_unchecked(x as usize);
+            }
+        }
+    }
+
+    #[inline]
+    unsafe fn write_u32_unchecked(&mut self, x: u32) {
+        unsafe {
+            if x >= 1_0000_0000 {
+                let b = x / 10000;
+                let a = b / 10000;
+                self.write_digit4_trimmed_unchecked(a as usize);
+                self.write_digit4_unchecked((b % 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else if x >= 10000 {
+                self.write_digit4_trimmed_unchecked((x / 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else {
+                self.write_digit4_trimmed_unchecked(x as usize);
+            }
+        }
+    }
+
+    #[inline]
+    unsafe fn write_u64_unchecked(&mut self, x: u64) {
+        unsafe {
+            if x >= 1_0000_0000_0000_0000 {
+                let d = x / 10000;
+                let c = d / 10000;
+                let b = c / 10000;
+                let a = b / 10000;
+                self.write_digit4_trimmed_unchecked(a as usize);
+                self.write_digit4_unchecked((b % 10000) as usize);
+                self.write_digit4_unchecked((c % 10000) as usize);
+                self.write_digit4_unchecked((d % 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else if x >= 1_0000_0000_0000 {
+                let c = x / 10000;
+                let b = c / 10000;
+                let a = b / 10000;
+                self.write_digit4_trimmed_unchecked(a as usize);
+                self.write_digit4_unchecked((b % 10000) as usize);
+                self.write_digit4_unchecked((c % 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else if x >= 1_0000_0000 {
+                let b = x / 10000;
+                let a = b / 10000;
+                self.write_digit4_trimmed_unchecked(a as usize);
+                self.write_digit4_unchecked((b % 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else if x >= 10000 {
+                self.write_digit4_trimmed_unchecked((x / 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            } else {
+                self.write_digit4_trimmed_unchecked(x as usize);
+            }
+        }
     }
 
     pub fn u8(&mut self, x: u8) {
-        let off = (x < 10) as u8 + (x < 100) as u8 + 1;
-        self.buf
-            .write_all(&DIGIT4[x as usize][off as usize..])
-            .unwrap();
+        self.ensure_capacity(4);
+        unsafe { self.write_u8_unchecked(x) }
     }
 
     pub fn u16(&mut self, x: u16) {
-        if x >= 10000 {
-            self.write_digit4_trimmed((x / 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else {
-            self.write_digit4_trimmed(x as usize);
-        }
+        self.ensure_capacity(5);
+        unsafe { self.write_u16_unchecked(x) }
     }
 
     pub fn u32(&mut self, x: u32) {
-        if x >= 1_0000_0000 {
-            let b = x / 10000;
-            let a = b / 10000;
-            self.write_digit4_trimmed(a as usize);
-            self.write_digit4((b % 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else if x >= 10000 {
-            self.write_digit4_trimmed((x / 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else {
-            self.write_digit4_trimmed(x as usize);
-        }
+        self.ensure_capacity(10);
+        unsafe { self.write_u32_unchecked(x) }
     }
 
     pub fn u64(&mut self, x: u64) {
-        if x >= 1_0000_0000_0000_0000 {
-            let d = x / 10000;
-            let c = d / 10000;
-            let b = c / 10000;
-            let a = b / 10000;
-            self.write_digit4_trimmed(a as usize);
-            self.write_digit4((b % 10000) as usize);
-            self.write_digit4((c % 10000) as usize);
-            self.write_digit4((d % 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else if x >= 1_0000_0000_0000 {
-            let c = x / 10000;
-            let b = c / 10000;
-            let a = b / 10000;
-            self.write_digit4_trimmed(a as usize);
-            self.write_digit4((b % 10000) as usize);
-            self.write_digit4((c % 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else if x >= 1_0000_0000 {
-            let b = x / 10000;
-            let a = b / 10000;
-            self.write_digit4_trimmed(a as usize);
-            self.write_digit4((b % 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else if x >= 10000 {
-            self.write_digit4_trimmed((x / 10000) as usize);
-            self.write_digit4((x % 10000) as usize);
-        } else {
-            self.write_digit4_trimmed(x as usize);
-        }
+        self.ensure_capacity(20);
+        unsafe { self.write_u64_unchecked(x) }
     }
 
     pub fn i8(&mut self, x: i8) {
         if x < 0 {
-            self.buf.write_all(b"-").unwrap();
-            self.u8(x.wrapping_neg() as u8);
+            self.ensure_capacity(5);
+            unsafe {
+                self.write_byte_unchecked(b'-');
+                self.write_u8_unchecked(x.wrapping_neg() as u8);
+            }
         } else {
             self.u8(x as u8);
         }
@@ -499,8 +587,11 @@ where
 
     pub fn i16(&mut self, x: i16) {
         if x < 0 {
-            self.buf.write_all(b"-").unwrap();
-            self.u16(x.wrapping_neg() as u16);
+            self.ensure_capacity(6);
+            unsafe {
+                self.write_byte_unchecked(b'-');
+                self.write_u16_unchecked(x.wrapping_neg() as u16);
+            }
         } else {
             self.u16(x as u16);
         }
@@ -508,8 +599,11 @@ where
 
     pub fn i32(&mut self, x: i32) {
         if x < 0 {
-            self.buf.write_all(b"-").unwrap();
-            self.u32(x.wrapping_neg() as u32);
+            self.ensure_capacity(11);
+            unsafe {
+                self.write_byte_unchecked(b'-');
+                self.write_u32_unchecked(x.wrapping_neg() as u32);
+            }
         } else {
             self.u32(x as u32);
         }
@@ -517,19 +611,32 @@ where
 
     pub fn i64(&mut self, x: i64) {
         if x < 0 {
-            self.buf.write_all(b"-").unwrap();
-            self.u64(x.wrapping_neg() as u64);
+            self.ensure_capacity(21);
+            unsafe {
+                self.write_byte_unchecked(b'-');
+                self.write_u64_unchecked(x.wrapping_neg() as u64);
+            }
         } else {
             self.u64(x as u64);
         }
     }
 
     pub fn byte(&mut self, b: u8) {
-        self.buf.write_all(&[b]).unwrap();
+        self.ensure_capacity(1);
+        unsafe { self.write_byte_unchecked(b) }
     }
 
     pub fn bytes(&mut self, s: &[u8]) {
-        self.buf.write_all(s).unwrap();
+        if s.len() > self.buf.len() {
+            self.flush_buf();
+            self.inner.write_all(s).unwrap();
+        } else {
+            self.ensure_capacity(s.len());
+            unsafe {
+                ptr::copy_nonoverlapping(s.as_ptr(), self.buf.as_mut_ptr().add(self.pos), s.len());
+            }
+            self.pos += s.len();
+        }
     }
 }
 
@@ -719,8 +826,8 @@ mod tests {
             fo.u8(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for i in 0..=u8::MAX {
             let line = lines.next().unwrap();
@@ -735,8 +842,8 @@ mod tests {
             fo.u16(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for i in 0..=u16::MAX {
             let line = lines.next().unwrap();
@@ -756,8 +863,8 @@ mod tests {
             fo.u32(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for &a in &a {
             let line = lines.next().unwrap();
@@ -777,8 +884,8 @@ mod tests {
             fo.u64(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for &a in &a {
             let line = lines.next().unwrap();
@@ -793,8 +900,8 @@ mod tests {
             fo.i8(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for i in i8::MIN..=i8::MAX {
             let line = lines.next().unwrap();
@@ -809,8 +916,8 @@ mod tests {
             fo.i16(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for i in i16::MIN..=i16::MAX {
             let line = lines.next().unwrap();
@@ -832,8 +939,8 @@ mod tests {
             fo.i32(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for &a in &a {
             let line = lines.next().unwrap();
@@ -855,8 +962,8 @@ mod tests {
             fo.i64(i);
             fo.byte(b'\n');
         }
-        let buf = fo.buf.into_inner().unwrap();
-        let s = String::from_utf8(buf).unwrap();
+        fo.flush();
+        let s = std::str::from_utf8(&fo.inner).unwrap();
         let mut lines = s.lines();
         for &a in &a {
             let line = lines.next().unwrap();
