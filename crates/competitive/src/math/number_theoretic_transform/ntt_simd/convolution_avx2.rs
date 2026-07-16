@@ -326,15 +326,22 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-pub(in super::super) unsafe fn convolve_blocks_avx2<M>(f: &mut [MInt<M>], g: &mut [MInt<M>])
-where
+pub(in super::super) unsafe fn convolve_blocks_avx2<M>(
+    f: &mut [MInt<M>],
+    g: &mut [MInt<M>],
+    same: bool,
+) where
     M: Montgomery32NttModulus,
 {
     let n = f.len() >> 3;
     let f = f.as_mut_ptr() as *mut u32;
     let g = g.as_mut_ptr() as *mut u32;
     ntt_blocks_avx2::<M>(f, n);
-    ntt_blocks_avx2::<M>(g, n);
+    if same {
+        std::ptr::copy_nonoverlapping(f, g, n << 3);
+    } else {
+        ntt_blocks_avx2::<M>(g, n);
+    }
     convolve_8_avx2::<M>(f, g, n);
     intt_blocks_avx2::<M>(f, n);
 }

@@ -422,10 +422,10 @@ where
         }
         let same = a == b;
         #[cfg(target_arch = "x86_64")]
-        if !same && M::MOD < 1 << 30 && simd_backend() == SimdBackend::Avx2 {
+        if M::MOD < 1 << 30 && simd_backend() == SimdBackend::Avx2 {
             a.resize_with(size, Zero::zero);
             b.resize_with(size, Zero::zero);
-            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b) };
+            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same) };
             a.truncate(len);
             return a;
         }
