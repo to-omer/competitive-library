@@ -1,5 +1,11 @@
 use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
 
+#[cfg(target_arch = "x86_64")]
+use super::{MInt, MIntConvert};
+
+#[cfg(target_arch = "x86_64")]
+mod fft_simd;
+
 pub enum ConvolveRealFft {}
 
 enum RotateCache {}
@@ -63,6 +69,15 @@ fn bit_reverse<T>(f: &mut [T]) {
             }
         }
     }
+}
+
+#[cfg(target_arch = "x86_64")]
+pub(super) fn convolve_mint_fft<M>(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>>
+where
+    M: MIntConvert + MIntConvert<u32>,
+{
+    debug_assert!(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("fma"));
+    unsafe { fft_simd::convolve_mint_avx2(a, b) }
 }
 
 impl ConvolveSteps for ConvolveRealFft {
@@ -132,16 +147,36 @@ pub fn fft(a: &mut [Complex<f64>]) {
     RotateCache::ensure(n / 2);
     RotateCache::with(|cache| {
         let mut v = n / 2;
-        while v > 0 {
-            for (a, wj) in a.chunks_exact_mut(v << 1).zip(cache) {
-                let (l, r) = a.split_at_mut(v);
-                for (x, y) in l.iter_mut().zip(r) {
-                    let ajv = wj * *y;
-                    *y = *x - ajv;
-                    *x += ajv;
+        while v >= 2 {
+            let l = v / 2;
+            for (q, block) in a.chunks_exact_mut(l * 4).enumerate() {
+                let (a, rest) = block.split_at_mut(l);
+                let (b, rest) = rest.split_at_mut(l);
+                let (c, d) = rest.split_at_mut(l);
+                let w0 = cache[q];
+                let w1 = cache[q << 1];
+                let w2 = cache[q << 1 | 1];
+                for i in 0..l {
+                    let cv = c[i] * w0;
+                    let dv = d[i] * w0;
+                    let ac0 = a[i] + cv;
+                    let ac1 = a[i] - cv;
+                    let bd0 = (b[i] + dv) * w1;
+                    let bd1 = (b[i] - dv) * w2;
+                    a[i] = ac0 + bd0;
+                    b[i] = ac0 - bd0;
+                    c[i] = ac1 + bd1;
+                    d[i] = ac1 - bd1;
                 }
             }
-            v >>= 1;
+            v >>= 2;
+        }
+        if v == 1 {
+            for (a, w) in a.chunks_exact_mut(2).zip(cache) {
+                let y = a[1] * *w;
+                a[1] = a[0] - y;
+                a[0] += y;
+            }
         }
     });
 }
@@ -152,11 +187,9 @@ pub fn ifft(a: &mut [Complex<f64>]) {
     RotateCache::with(|cache| {
         let mut v = 1;
         while v < n {
-            for (a, wj) in a
-                .chunks_exact_mut(v << 1)
-                .zip(cache.iter().map(|wj| wj.conjugate()))
-            {
+            for (a, wj) in a.chunks_exact_mut(v << 1).zip(cache) {
                 let (l, r) = a.split_at_mut(v);
+                let wj = wj.conjugate();
                 for (x, y) in l.iter_mut().zip(r) {
                     let ajv = *x - *y;
                     *x += *y;

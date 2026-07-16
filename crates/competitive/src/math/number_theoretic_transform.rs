@@ -543,6 +543,16 @@ where
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
         }
+        #[cfg(target_arch = "x86_64")]
+        {
+            let len = a.len() + b.len() - 1;
+            if len.next_power_of_two() <= 1 << 20
+                && is_x86_feature_detected!("avx2")
+                && is_x86_feature_detected!("fma")
+            {
+                return super::fast_fourier_transform::convolve_mint_fft(a, b);
+            }
+        }
         let a_len = a.len();
         let b_len = b.len();
         let a = convert_crt_input(a, a_len);
