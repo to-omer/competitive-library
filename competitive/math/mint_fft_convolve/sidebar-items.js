@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["bit_reverse_soa","convolve_mint_avx2","convolve_mint_fft","fft_soa","ifft_soa","load4","mul4","real_fft_soa","real_ifft_soa","round4","split_coefficients","store4","transpose4"],"struct":["Complex4"]};
+window.SIDEBAR_ITEMS = {"fn":["convolve_mint_avx2","convolve_mint_fft","dot_soa","eval_twiddle","fft_soa","ifft_soa","load4","mul4","multiply_accumulate4","round4","split_coefficients","store4"],"struct":["Complex4"]};

@@ -1900,34 +1900,35 @@
 <span data-nosnippet>617</span>                d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2
 <span data-nosnippet>618</span>            })
 <span data-nosnippet>619</span>            .collect()
-<span data-nosnippet>620</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/math/mint_fft_convolve.rs.html#388&#34;,&#34;line 388&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../src/competitive/math/mint_fft_convolve.rs.html#388">line 388</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>376</span><span class="kw">fn </span>split_coefficients&lt;M&gt;(
-<span data-nosnippet>377</span>    values: Vec&lt;MInt&lt;M&gt;&gt;,
-<span data-nosnippet>378</span>    blocks: usize,
-<span data-nosnippet>379</span>    modulus: i64,
-<span data-nosnippet>380</span>    split: i64,
-<span data-nosnippet>381</span>) -&gt; (Vec&lt;Complex4&gt;, Vec&lt;Complex4&gt;)
-<span data-nosnippet>382</span><span class="kw">where
-<span data-nosnippet>383</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
-<span data-nosnippet>384</span>{
-<span data-nosnippet>385</span>    <span class="kw">let </span><span class="kw-2">mut </span>low = <span class="macro">vec!</span>[Complex4::default(); blocks];
-<span data-nosnippet>386</span>    <span class="kw">let </span><span class="kw-2">mut </span>high = low.clone();
-<span data-nosnippet>387</span>    <span class="kw">for </span>(i, x) <span class="kw">in </span>values.into_iter().enumerate() {
-<span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(x.<span class="highlight focus">inner</span>()) <span class="kw">as </span>i64;
-<span data-nosnippet>389</span>        <span class="kw">if </span>x * <span class="number">2 </span>&gt; modulus {
-<span data-nosnippet>390</span>            x -= modulus;
-<span data-nosnippet>391</span>        }
-<span data-nosnippet>392</span>        <span class="kw">let </span>upper = (x <span class="kw">as </span>f64 / split <span class="kw">as </span>f64).round() <span class="kw">as </span>i64;
-<span data-nosnippet>393</span>        <span class="kw">let </span>lane = (i &gt;&gt; <span class="number">1</span>) &amp; <span class="number">3</span>;
-<span data-nosnippet>394</span>        <span class="kw">let </span>(low, high) = <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>395</span>            (<span class="kw-2">&amp;mut </span>low[i &gt;&gt; <span class="number">3</span>].re, <span class="kw-2">&amp;mut </span>high[i &gt;&gt; <span class="number">3</span>].re)
-<span data-nosnippet>396</span>        } <span class="kw">else </span>{
-<span data-nosnippet>397</span>            (<span class="kw-2">&amp;mut </span>low[i &gt;&gt; <span class="number">3</span>].im, <span class="kw-2">&amp;mut </span>high[i &gt;&gt; <span class="number">3</span>].im)
-<span data-nosnippet>398</span>        };
-<span data-nosnippet>399</span>        low[lane] = (x - upper * split) <span class="kw">as </span>f64;
-<span data-nosnippet>400</span>        high[lane] = upper <span class="kw">as </span>f64;
-<span data-nosnippet>401</span>    }
-<span data-nosnippet>402</span>    (low, high)
-<span data-nosnippet>403</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU32%3E" class="impl"><a class="src rightside" href="../../src/competitive/num/mint/mint_basic.rs.html#138-142">Source</a><a href="#impl-MInt%3CDynModuloU32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;<a class="enum" href="mint_basic/enum.DynModuloU32.html" title="enum competitive::num::mint_basic::DynModuloU32">DynModuloU32</a>&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.set_mod" class="method"><a class="src rightside" href="../../src/competitive/num/mint/mint_basic.rs.html#139-141">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/library_checker/number_theory/sqrt_mod.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sqrt_mod.rs (<a href="../../src/library_checker/number_theory/sqrt_mod.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>sqrt_mod(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>620</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/math/mint_fft_convolve.rs.html#247&#34;,&#34;line 247&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../src/competitive/math/mint_fft_convolve.rs.html#247">line 247</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>235</span><span class="kw">fn </span>split_coefficients&lt;M&gt;(
+<span data-nosnippet>236</span>    values: Vec&lt;MInt&lt;M&gt;&gt;,
+<span data-nosnippet>237</span>    n: usize,
+<span data-nosnippet>238</span>    modulus: i64,
+<span data-nosnippet>239</span>    split: i64,
+<span data-nosnippet>240</span>) -&gt; (Vec&lt;Complex4&gt;, Vec&lt;Complex4&gt;)
+<span data-nosnippet>241</span><span class="kw">where
+<span data-nosnippet>242</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
+<span data-nosnippet>243</span>{
+<span data-nosnippet>244</span>    <span class="kw">let </span><span class="kw-2">mut </span>low = <span class="macro">vec!</span>[Complex4::default(); n / <span class="number">4</span>];
+<span data-nosnippet>245</span>    <span class="kw">let </span><span class="kw-2">mut </span>high = low.clone();
+<span data-nosnippet>246</span>    <span class="kw">for </span>(i, x) <span class="kw">in </span>values.into_iter().enumerate() {
+<span data-nosnippet>247</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(x.<span class="highlight focus">inner</span>()) <span class="kw">as </span>i64;
+<span data-nosnippet>248</span>        <span class="kw">if </span>x * <span class="number">2 </span>&gt; modulus {
+<span data-nosnippet>249</span>            x -= modulus;
+<span data-nosnippet>250</span>        }
+<span data-nosnippet>251</span>        <span class="kw">let </span>upper = (x <span class="kw">as </span>f64 / split <span class="kw">as </span>f64).round() <span class="kw">as </span>i64;
+<span data-nosnippet>252</span>        <span class="kw">let </span>(i, imag) = <span class="kw">if </span>i &lt; n { (i, <span class="bool-val">false</span>) } <span class="kw">else </span>{ (i - n, <span class="bool-val">true</span>) };
+<span data-nosnippet>253</span>        <span class="kw">let </span>lane = i &amp; <span class="number">3</span>;
+<span data-nosnippet>254</span>        <span class="kw">if </span>imag {
+<span data-nosnippet>255</span>            low[i &gt;&gt; <span class="number">2</span>].im[lane] = (x - upper * split) <span class="kw">as </span>f64;
+<span data-nosnippet>256</span>            high[i &gt;&gt; <span class="number">2</span>].im[lane] = upper <span class="kw">as </span>f64;
+<span data-nosnippet>257</span>        } <span class="kw">else </span>{
+<span data-nosnippet>258</span>            low[i &gt;&gt; <span class="number">2</span>].re[lane] = (x - upper * split) <span class="kw">as </span>f64;
+<span data-nosnippet>259</span>            high[i &gt;&gt; <span class="number">2</span>].re[lane] = upper <span class="kw">as </span>f64;
+<span data-nosnippet>260</span>        }
+<span data-nosnippet>261</span>    }
+<span data-nosnippet>262</span>    (low, high)
+<span data-nosnippet>263</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU32%3E" class="impl"><a class="src rightside" href="../../src/competitive/num/mint/mint_basic.rs.html#138-142">Source</a><a href="#impl-MInt%3CDynModuloU32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;<a class="enum" href="mint_basic/enum.DynModuloU32.html" title="enum competitive::num::mint_basic::DynModuloU32">DynModuloU32</a>&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.set_mod" class="method"><a class="src rightside" href="../../src/competitive/num/mint/mint_basic.rs.html#139-141">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/library_checker/number_theory/sqrt_mod.rs.html#10&#34;,&#34;line 10&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sqrt_mod.rs (<a href="../../src/library_checker/number_theory/sqrt_mod.rs.html#10">line 10</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>sqrt_mod(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
 <span data-nosnippet>7</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
 <span data-nosnippet>8</span>    <span class="macro">scan!</span>(scanner, q, yp: [(u32, u32)]);
