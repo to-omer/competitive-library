@@ -52,65 +52,65 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">reduce_sum_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform::<wbr>ntt_<wbr>simd::<wbr>convolution_<wbr>avx2</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../../index.html">competitive</a>::<wbr><a href="../../../index.html">math</a>::<wbr><a href="../../index.html">number_theoretic_transform</a>::<wbr><a href="../index.html">ntt_simd</a>::<wbr><a href="index.html">convolution_avx2</a></div><h1>Function <span class="fn">reduce_<wbr>sum_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../../src/competitive/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs.html#254-265">Source</a> </span></div><pre class="rust item-decl"><code>unsafe fn reduce_sum_avx2(
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">reduce_sum_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform::<wbr>ntt_<wbr>simd::<wbr>convolution_<wbr>avx2</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../../index.html">competitive</a>::<wbr><a href="../../../index.html">math</a>::<wbr><a href="../../index.html">number_theoretic_transform</a>::<wbr><a href="../index.html">ntt_simd</a>::<wbr><a href="index.html">convolution_avx2</a></div><h1>Function <span class="fn">reduce_<wbr>sum_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../../src/competitive/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs.html#256-267">Source</a> </span></div><pre class="rust item-decl"><code>unsafe fn reduce_sum_avx2(
     even: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
     odd: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
     r_vec: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
     mod_vec: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
-) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[49,49],&#34;../../../../../src/competitive/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs.html#317&#34;,&#34;line 317&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs (<a href="../../../../../src/competitive/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs.html#317">line 317</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>268</span><span class="kw">unsafe fn </span>convolve_8_avx2&lt;M&gt;(f: <span class="kw-2">*mut </span>u32, g: <span class="kw-2">*mut </span>u32, n: usize)
-<span data-nosnippet>269</span><span class="kw">where
-<span data-nosnippet>270</span>    </span>M: Montgomery32NttModulus,
-<span data-nosnippet>271</span>{
-<span data-nosnippet>272</span>    <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
-<span data-nosnippet>273</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
-<span data-nosnippet>274</span>    <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R <span class="kw">as </span>i32);
-<span data-nosnippet>275</span>    <span class="kw">let </span><span class="kw-2">mut </span>rr = M::N1;
-<span data-nosnippet>276</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-<span data-nosnippet>277</span>    <span class="kw">while </span>i &lt; n {
-<span data-nosnippet>278</span>        <span class="kw">let </span>rr_i = M::mod_mul(rr, M::INFO.root[<span class="number">2</span>]);
-<span data-nosnippet>279</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = [[<span class="number">0u32</span>; <span class="number">16</span>]; <span class="number">4</span>];
-<span data-nosnippet>280</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = [[<span class="number">0u32</span>; <span class="number">8</span>]; <span class="number">4</span>];
-<span data-nosnippet>281</span>        <span class="kw">for </span>(j, ww) <span class="kw">in </span>[rr, M::MOD - rr, rr_i, M::MOD - rr_i]
-<span data-nosnippet>282</span>            .into_iter()
-<span data-nosnippet>283</span>            .enumerate()
-<span data-nosnippet>284</span>        {
-<span data-nosnippet>285</span>            <span class="kw">let </span>k = i + j;
-<span data-nosnippet>286</span>            <span class="kw">let </span>ff = load_block_avx2(f, k);
-<span data-nosnippet>287</span>            <span class="kw">let </span>gg = load_block_avx2(g, k);
-<span data-nosnippet>288</span>            <span class="kw">let </span>ff = _mm256_min_epu32(ff, _mm256_sub_epi32(ff, mod_vec));
-<span data-nosnippet>289</span>            <span class="kw">let </span>gg = _mm256_min_epu32(gg, _mm256_sub_epi32(gg, mod_vec));
-<span data-nosnippet>290</span>            <span class="comment">// fw &lt; 5 * MOD / 4, so the eight-product sum still reduces below 7 * MOD / 2.
-<span data-nosnippet>291</span>            </span><span class="kw">let </span>fw = simd32::montgomery_mul_256_fixed(
-<span data-nosnippet>292</span>                ff,
-<span data-nosnippet>293</span>                _mm256_set1_epi32(ww <span class="kw">as </span>i32),
-<span data-nosnippet>294</span>                _mm256_set1_epi32(ww.wrapping_mul(M::R) <span class="kw">as </span>i32),
-<span data-nosnippet>295</span>                mod_vec,
-<span data-nosnippet>296</span>            );
-<span data-nosnippet>297</span>            _mm256_storeu_si256(a[j].as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, fw);
-<span data-nosnippet>298</span>            _mm256_storeu_si256(a[j].as_mut_ptr().add(<span class="number">8</span>) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, ff);
-<span data-nosnippet>299</span>            _mm256_storeu_si256(b[j].as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, gg);
-<span data-nosnippet>300</span>        }
-<span data-nosnippet>301</span>        <span class="kw">let </span><span class="kw-2">mut </span>even = [_mm256_setzero_si256(); <span class="number">4</span>];
-<span data-nosnippet>302</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd = [_mm256_setzero_si256(); <span class="number">4</span>];
-<span data-nosnippet>303</span>        <span class="kw">let </span><span class="kw-2">mut </span>l = <span class="number">0</span>;
-<span data-nosnippet>304</span>        <span class="kw">while </span>l &lt; <span class="number">8 </span>{
-<span data-nosnippet>305</span>            <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
-<span data-nosnippet>306</span>            <span class="kw">while </span>j &lt; <span class="number">4 </span>{
-<span data-nosnippet>307</span>                <span class="kw">let </span>x = _mm256_loadu_si256(a[j].as_ptr().add(<span class="number">8 </span>- l) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
-<span data-nosnippet>308</span>                <span class="kw">let </span>y = _mm256_set1_epi32(b[j][l] <span class="kw">as </span>i32);
-<span data-nosnippet>309</span>                even[j] = _mm256_add_epi64(even[j], _mm256_mul_epu32(x, y));
-<span data-nosnippet>310</span>                odd[j] = _mm256_add_epi64(odd[j], _mm256_mul_epu32(_mm256_bsrli_epi128::&lt;<span class="number">4</span>&gt;(x), y));
-<span data-nosnippet>311</span>                j += <span class="number">1</span>;
-<span data-nosnippet>312</span>            }
-<span data-nosnippet>313</span>            l += <span class="number">1</span>;
-<span data-nosnippet>314</span>        }
-<span data-nosnippet>315</span>        <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
-<span data-nosnippet>316</span>        <span class="kw">while </span>j &lt; <span class="number">4 </span>{
-<span data-nosnippet>317</span>            <span class="kw">let </span>x = <span class="highlight focus">reduce_sum_avx2</span>(even[j], odd[j], r_vec, mod_vec);
-<span data-nosnippet>318</span>            store_block_avx2(f, i + j, _mm256_min_epu32(x, _mm256_sub_epi32(x, mod2_vec)));
-<span data-nosnippet>319</span>            j += <span class="number">1</span>;
-<span data-nosnippet>320</span>        }
-<span data-nosnippet>321</span>        i += <span class="number">4</span>;
-<span data-nosnippet>322</span>        rr = M::mod_mul(rr, M::INFO.rate3[(i &gt;&gt; <span class="number">2</span>).trailing_zeros() <span class="kw">as </span>usize]);
-<span data-nosnippet>323</span>    }
-<span data-nosnippet>324</span>}</code></pre></div></div></div></section></div></main></body></html>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[49,49],&#34;../../../../../src/competitive/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs.html#319&#34;,&#34;line 319&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs (<a href="../../../../../src/competitive/math/number_theoretic_transform/ntt_simd/convolution_avx2.rs.html#319">line 319</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>270</span><span class="kw">unsafe fn </span>convolve_8_avx2&lt;M&gt;(f: <span class="kw-2">*mut </span>u32, g: <span class="kw-2">*mut </span>u32, n: usize)
+<span data-nosnippet>271</span><span class="kw">where
+<span data-nosnippet>272</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>273</span>{
+<span data-nosnippet>274</span>    <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
+<span data-nosnippet>275</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
+<span data-nosnippet>276</span>    <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R <span class="kw">as </span>i32);
+<span data-nosnippet>277</span>    <span class="kw">let </span><span class="kw-2">mut </span>rr = M::N1;
+<span data-nosnippet>278</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>279</span>    <span class="kw">while </span>i &lt; n {
+<span data-nosnippet>280</span>        <span class="kw">let </span>rr_i = M::mod_mul(rr, M::INFO.root[<span class="number">2</span>]);
+<span data-nosnippet>281</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = [[<span class="number">0u32</span>; <span class="number">16</span>]; <span class="number">4</span>];
+<span data-nosnippet>282</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = [[<span class="number">0u32</span>; <span class="number">8</span>]; <span class="number">4</span>];
+<span data-nosnippet>283</span>        <span class="kw">for </span>(j, ww) <span class="kw">in </span>[rr, M::MOD - rr, rr_i, M::MOD - rr_i]
+<span data-nosnippet>284</span>            .into_iter()
+<span data-nosnippet>285</span>            .enumerate()
+<span data-nosnippet>286</span>        {
+<span data-nosnippet>287</span>            <span class="kw">let </span>k = i + j;
+<span data-nosnippet>288</span>            <span class="kw">let </span>ff = load_block_avx2(f, k);
+<span data-nosnippet>289</span>            <span class="kw">let </span>gg = load_block_avx2(g, k);
+<span data-nosnippet>290</span>            <span class="kw">let </span>ff = _mm256_min_epu32(ff, _mm256_sub_epi32(ff, mod_vec));
+<span data-nosnippet>291</span>            <span class="kw">let </span>gg = _mm256_min_epu32(gg, _mm256_sub_epi32(gg, mod_vec));
+<span data-nosnippet>292</span>            <span class="comment">// fw &lt; 5 * MOD / 4, so the eight-product sum still reduces below 7 * MOD / 2.
+<span data-nosnippet>293</span>            </span><span class="kw">let </span>fw = simd32::montgomery_mul_256_fixed(
+<span data-nosnippet>294</span>                ff,
+<span data-nosnippet>295</span>                _mm256_set1_epi32(ww <span class="kw">as </span>i32),
+<span data-nosnippet>296</span>                _mm256_set1_epi32(ww.wrapping_mul(M::R) <span class="kw">as </span>i32),
+<span data-nosnippet>297</span>                mod_vec,
+<span data-nosnippet>298</span>            );
+<span data-nosnippet>299</span>            _mm256_storeu_si256(a[j].as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, fw);
+<span data-nosnippet>300</span>            _mm256_storeu_si256(a[j].as_mut_ptr().add(<span class="number">8</span>) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, ff);
+<span data-nosnippet>301</span>            _mm256_storeu_si256(b[j].as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, gg);
+<span data-nosnippet>302</span>        }
+<span data-nosnippet>303</span>        <span class="kw">let </span><span class="kw-2">mut </span>even = [_mm256_setzero_si256(); <span class="number">4</span>];
+<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd = [_mm256_setzero_si256(); <span class="number">4</span>];
+<span data-nosnippet>305</span>        <span class="kw">let </span><span class="kw-2">mut </span>l = <span class="number">0</span>;
+<span data-nosnippet>306</span>        <span class="kw">while </span>l &lt; <span class="number">8 </span>{
+<span data-nosnippet>307</span>            <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
+<span data-nosnippet>308</span>            <span class="kw">while </span>j &lt; <span class="number">4 </span>{
+<span data-nosnippet>309</span>                <span class="kw">let </span>x = _mm256_loadu_si256(a[j].as_ptr().add(<span class="number">8 </span>- l) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>310</span>                <span class="kw">let </span>y = _mm256_set1_epi32(b[j][l] <span class="kw">as </span>i32);
+<span data-nosnippet>311</span>                even[j] = _mm256_add_epi64(even[j], _mm256_mul_epu32(x, y));
+<span data-nosnippet>312</span>                odd[j] = _mm256_add_epi64(odd[j], _mm256_mul_epu32(_mm256_bsrli_epi128::&lt;<span class="number">4</span>&gt;(x), y));
+<span data-nosnippet>313</span>                j += <span class="number">1</span>;
+<span data-nosnippet>314</span>            }
+<span data-nosnippet>315</span>            l += <span class="number">1</span>;
+<span data-nosnippet>316</span>        }
+<span data-nosnippet>317</span>        <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
+<span data-nosnippet>318</span>        <span class="kw">while </span>j &lt; <span class="number">4 </span>{
+<span data-nosnippet>319</span>            <span class="kw">let </span>x = <span class="highlight focus">reduce_sum_avx2</span>(even[j], odd[j], r_vec, mod_vec);
+<span data-nosnippet>320</span>            store_block_avx2(f, i + j, _mm256_min_epu32(x, _mm256_sub_epi32(x, mod2_vec)));
+<span data-nosnippet>321</span>            j += <span class="number">1</span>;
+<span data-nosnippet>322</span>        }
+<span data-nosnippet>323</span>        i += <span class="number">4</span>;
+<span data-nosnippet>324</span>        rr = M::mod_mul(rr, M::INFO.rate3[(i &gt;&gt; <span class="number">2</span>).trailing_zeros() <span class="kw">as </span>usize]);
+<span data-nosnippet>325</span>    }
+<span data-nosnippet>326</span>}</code></pre></div></div></div></section></div></main></body></html>

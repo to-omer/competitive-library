@@ -58,7 +58,7 @@
     M: <a class="trait" href="../../num/trait.MIntConvert.html" title="trait competitive::num::MIntConvert">MIntConvert</a> + <a class="trait" href="../../num/trait.MIntConvert.html" title="trait competitive::num::MIntConvert">MIntConvert</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,
     N1: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,
     N2: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,
-    N3: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,5],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#528-532&#34;,&#34;lines 528-532&#34;],[[23,27],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#550-554&#34;,&#34;lines 550-554&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#528-532">lines 528-532</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>527</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+    N3: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,5],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#528-532&#34;,&#34;lines 528-532&#34;],[[33,37],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#560-564&#34;,&#34;lines 560-564&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#528-532">lines 528-532</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>527</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>528</span>        <span class="highlight focus">reconstruct_mint_crt</span>((
 <span data-nosnippet>529</span>            Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len),
 <span data-nosnippet>530</span>            Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, len),
@@ -77,13 +77,23 @@
 <span data-nosnippet>543</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>544</span>            <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>545</span>        }
-<span data-nosnippet>546</span>        <span class="kw">let </span>a_len = a.len();
-<span data-nosnippet>547</span>        <span class="kw">let </span>b_len = b.len();
-<span data-nosnippet>548</span>        <span class="kw">let </span>a = convert_crt_input(a, a_len);
-<span data-nosnippet>549</span>        <span class="kw">let </span>b = convert_crt_input(b, b_len);
-<span data-nosnippet>550</span>        <span class="highlight">reconstruct_mint_crt</span>((
-<span data-nosnippet>551</span>            Convolve::&lt;N1&gt;::convolve(a.<span class="number">0</span>, b.<span class="number">0</span>),
-<span data-nosnippet>552</span>            Convolve::&lt;N2&gt;::convolve(a.<span class="number">1</span>, b.<span class="number">1</span>),
-<span data-nosnippet>553</span>            Convolve::&lt;N3&gt;::convolve(a.<span class="number">2</span>, b.<span class="number">2</span>),
-<span data-nosnippet>554</span>        ))
-<span data-nosnippet>555</span>    }</code></pre></div></div></div></section></div></main></body></html>
+<span data-nosnippet>546</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>547</span>        </span>{
+<span data-nosnippet>548</span>            <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
+<span data-nosnippet>549</span>            <span class="kw">if </span>len.next_power_of_two() &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">20
+<span data-nosnippet>550</span>                </span>&amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>)
+<span data-nosnippet>551</span>                &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"fma"</span>)
+<span data-nosnippet>552</span>            {
+<span data-nosnippet>553</span>                <span class="kw">return </span><span class="kw">super</span>::fast_fourier_transform::convolve_mint_fft(a, b);
+<span data-nosnippet>554</span>            }
+<span data-nosnippet>555</span>        }
+<span data-nosnippet>556</span>        <span class="kw">let </span>a_len = a.len();
+<span data-nosnippet>557</span>        <span class="kw">let </span>b_len = b.len();
+<span data-nosnippet>558</span>        <span class="kw">let </span>a = convert_crt_input(a, a_len);
+<span data-nosnippet>559</span>        <span class="kw">let </span>b = convert_crt_input(b, b_len);
+<span data-nosnippet>560</span>        <span class="highlight">reconstruct_mint_crt</span>((
+<span data-nosnippet>561</span>            Convolve::&lt;N1&gt;::convolve(a.<span class="number">0</span>, b.<span class="number">0</span>),
+<span data-nosnippet>562</span>            Convolve::&lt;N2&gt;::convolve(a.<span class="number">1</span>, b.<span class="number">1</span>),
+<span data-nosnippet>563</span>            Convolve::&lt;N3&gt;::convolve(a.<span class="number">2</span>, b.<span class="number">2</span>),
+<span data-nosnippet>564</span>        ))
+<span data-nosnippet>565</span>    }</code></pre></div></div></div></section></div></main></body></html>
