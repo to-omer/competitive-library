@@ -214,22 +214,7 @@ define_montgomery_reduction_32!(
 pub mod simd32 {
     use std::arch::x86_64::*;
 
-    #[target_feature(enable = "avx2")]
-    unsafe fn my256_mullo_epu32(a: __m256i, b: __m256i) -> __m256i {
-        _mm256_mullo_epi32(a, b)
-    }
-
-    #[target_feature(enable = "avx2")]
-    unsafe fn my256_mulhi_epu32(a: __m256i, b: __m256i) -> __m256i {
-        let a13 = _mm256_shuffle_epi32(a, 0xF5);
-        let b13 = _mm256_shuffle_epi32(b, 0xF5);
-        let prod02 = _mm256_mul_epu32(a, b);
-        let prod13 = _mm256_mul_epu32(a13, b13);
-        let t0 = _mm256_unpacklo_epi32(prod02, prod13);
-        let t1 = _mm256_unpackhi_epi32(prod02, prod13);
-        _mm256_unpackhi_epi64(t0, t1)
-    }
-
+    #[inline]
     #[target_feature(enable = "avx2")]
     pub unsafe fn montgomery_mul_256(
         a: __m256i,
@@ -237,95 +222,76 @@ pub mod simd32 {
         r_vec: __m256i,
         mod_vec: __m256i,
     ) -> __m256i {
-        let hi = my256_mulhi_epu32(a, b);
-        let lo = my256_mullo_epu32(a, b);
-        let lo = my256_mullo_epu32(lo, r_vec);
-        let lo = my256_mulhi_epu32(lo, mod_vec);
-        _mm256_sub_epi32(_mm256_add_epi32(hi, mod_vec), lo)
+        let a13 = _mm256_bsrli_epi128::<4>(a);
+        let b13 = _mm256_bsrli_epi128::<4>(b);
+        let t02 = _mm256_mul_epu32(a, b);
+        let t13 = _mm256_mul_epu32(a13, b13);
+        let m02 = _mm256_mul_epu32(t02, r_vec);
+        let m13 = _mm256_mul_epu32(t13, r_vec);
+        let u02 = _mm256_add_epi64(t02, _mm256_mul_epu32(m02, mod_vec));
+        let u13 = _mm256_add_epi64(t13, _mm256_mul_epu32(m13, mod_vec));
+        _mm256_or_si256(_mm256_bsrli_epi128::<4>(u02), u13)
     }
 
+    #[inline]
     #[target_feature(enable = "avx2")]
-    pub unsafe fn add_mod_256(a: __m256i, b: __m256i, mod_vec: __m256i, sign: __m256i) -> __m256i {
+    pub unsafe fn montgomery_mul_256_fixed(
+        a: __m256i,
+        b: __m256i,
+        b_r: __m256i,
+        mod_vec: __m256i,
+    ) -> __m256i {
+        let a13 = _mm256_bsrli_epi128::<4>(a);
+        let t02 = _mm256_mul_epu32(a, b);
+        let t13 = _mm256_mul_epu32(a13, b);
+        let m02 = _mm256_mul_epu32(a, b_r);
+        let m13 = _mm256_mul_epu32(a13, b_r);
+        let u02 = _mm256_add_epi64(t02, _mm256_mul_epu32(m02, mod_vec));
+        let u13 = _mm256_add_epi64(t13, _mm256_mul_epu32(m13, mod_vec));
+        _mm256_or_si256(_mm256_bsrli_epi128::<4>(u02), u13)
+    }
+
+    #[inline]
+    #[target_feature(enable = "avx2")]
+    pub unsafe fn add_mod_256(a: __m256i, b: __m256i, mod_vec: __m256i) -> __m256i {
         let sum = _mm256_add_epi32(a, b);
-        let sum_x = _mm256_xor_si256(sum, sign);
-        let mod_x = _mm256_xor_si256(mod_vec, sign);
-        let gt = _mm256_cmpgt_epi32(sum_x, mod_x);
-        let eq = _mm256_cmpeq_epi32(sum, mod_vec);
-        let mask = _mm256_or_si256(gt, eq);
-        let sub = _mm256_and_si256(mod_vec, mask);
-        _mm256_sub_epi32(sum, sub)
+        _mm256_min_epu32(sum, _mm256_sub_epi32(sum, mod_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx2")]
-    pub unsafe fn sub_mod_256(a: __m256i, b: __m256i, mod_vec: __m256i, sign: __m256i) -> __m256i {
-        let diff = _mm256_sub_epi32(a, b);
-        let a_x = _mm256_xor_si256(a, sign);
-        let b_x = _mm256_xor_si256(b, sign);
-        let mask = _mm256_cmpgt_epi32(b_x, a_x);
-        let add = _mm256_and_si256(mod_vec, mask);
-        _mm256_add_epi32(diff, add)
+    pub unsafe fn sub_mod_256(a: __m256i, b: __m256i, mod_vec: __m256i) -> __m256i {
+        let diff = _mm256_sub_epi32(_mm256_add_epi32(a, mod_vec), b);
+        _mm256_min_epu32(diff, _mm256_sub_epi32(diff, mod_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx2")]
     pub unsafe fn montgomery_mul_256_canon(
         a: __m256i,
         b: __m256i,
         r_vec: __m256i,
         mod_vec: __m256i,
-        sign: __m256i,
     ) -> __m256i {
         let x = montgomery_mul_256(a, b, r_vec, mod_vec);
-        add_mod_256(x, _mm256_setzero_si256(), mod_vec, sign)
+        _mm256_min_epu32(x, _mm256_sub_epi32(x, mod_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx2")]
-    pub unsafe fn montgomery_add_256(
-        a: __m256i,
-        b: __m256i,
-        mod2_vec: __m256i,
-        sign: __m256i,
-    ) -> __m256i {
+    pub unsafe fn montgomery_add_256(a: __m256i, b: __m256i, mod2_vec: __m256i) -> __m256i {
         let sum = _mm256_add_epi32(a, b);
-        let sum_x = _mm256_xor_si256(sum, sign);
-        let mod_x = _mm256_xor_si256(mod2_vec, sign);
-        let gt = _mm256_cmpgt_epi32(sum_x, mod_x);
-        let eq = _mm256_cmpeq_epi32(sum, mod2_vec);
-        let mask = _mm256_or_si256(gt, eq);
-        let sub = _mm256_and_si256(mod2_vec, mask);
-        _mm256_sub_epi32(sum, sub)
+        _mm256_min_epu32(sum, _mm256_sub_epi32(sum, mod2_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx2")]
-    pub unsafe fn montgomery_sub_256(
-        a: __m256i,
-        b: __m256i,
-        mod2_vec: __m256i,
-        sign: __m256i,
-    ) -> __m256i {
-        let diff = _mm256_sub_epi32(a, b);
-        let a_x = _mm256_xor_si256(a, sign);
-        let b_x = _mm256_xor_si256(b, sign);
-        let mask = _mm256_cmpgt_epi32(b_x, a_x);
-        let add = _mm256_and_si256(mod2_vec, mask);
-        _mm256_add_epi32(diff, add)
+    pub unsafe fn montgomery_sub_256(a: __m256i, b: __m256i, mod2_vec: __m256i) -> __m256i {
+        let diff = _mm256_sub_epi32(_mm256_add_epi32(a, mod2_vec), b);
+        _mm256_min_epu32(diff, _mm256_sub_epi32(diff, mod2_vec))
     }
 
-    #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-    unsafe fn my512_mullo_epu32(a: __m512i, b: __m512i) -> __m512i {
-        _mm512_mullo_epi32(a, b)
-    }
-
-    #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-    unsafe fn my512_mulhi_epu32(a: __m512i, b: __m512i) -> __m512i {
-        let a13 = _mm512_shuffle_epi32(a, 0xF5);
-        let b13 = _mm512_shuffle_epi32(b, 0xF5);
-        let prod02 = _mm512_mul_epu32(a, b);
-        let prod13 = _mm512_mul_epu32(a13, b13);
-        let t0 = _mm512_unpacklo_epi32(prod02, prod13);
-        let t1 = _mm512_unpackhi_epi32(prod02, prod13);
-        _mm512_unpackhi_epi64(t0, t1)
-    }
-
+    #[inline]
     #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     pub unsafe fn montgomery_mul_512(
         a: __m512i,
@@ -333,27 +299,32 @@ pub mod simd32 {
         r_vec: __m512i,
         mod_vec: __m512i,
     ) -> __m512i {
-        let hi = my512_mulhi_epu32(a, b);
-        let lo = my512_mullo_epu32(a, b);
-        let lo = my512_mullo_epu32(lo, r_vec);
-        let lo = my512_mulhi_epu32(lo, mod_vec);
-        _mm512_sub_epi32(_mm512_add_epi32(hi, mod_vec), lo)
+        let a13 = _mm512_srli_epi64::<32>(a);
+        let b13 = _mm512_srli_epi64::<32>(b);
+        let t02 = _mm512_mul_epu32(a, b);
+        let t13 = _mm512_mul_epu32(a13, b13);
+        let m02 = _mm512_mul_epu32(t02, r_vec);
+        let m13 = _mm512_mul_epu32(t13, r_vec);
+        let u02 = _mm512_add_epi64(t02, _mm512_mul_epu32(m02, mod_vec));
+        let u13 = _mm512_add_epi64(t13, _mm512_mul_epu32(m13, mod_vec));
+        _mm512_or_si512(_mm512_srli_epi64::<32>(u02), u13)
     }
 
+    #[inline]
     #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     pub unsafe fn add_mod_512(a: __m512i, b: __m512i, mod_vec: __m512i) -> __m512i {
         let sum = _mm512_add_epi32(a, b);
-        let mask = !_mm512_cmp_epu32_mask(sum, mod_vec, _MM_CMPINT_LT);
-        _mm512_mask_sub_epi32(sum, mask, sum, mod_vec)
+        _mm512_min_epu32(sum, _mm512_sub_epi32(sum, mod_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     pub unsafe fn sub_mod_512(a: __m512i, b: __m512i, mod_vec: __m512i) -> __m512i {
-        let diff = _mm512_sub_epi32(a, b);
-        let mask = _mm512_cmp_epu32_mask(a, b, _MM_CMPINT_LT);
-        _mm512_mask_add_epi32(diff, mask, diff, mod_vec)
+        let diff = _mm512_sub_epi32(_mm512_add_epi32(a, mod_vec), b);
+        _mm512_min_epu32(diff, _mm512_sub_epi32(diff, mod_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     pub unsafe fn montgomery_mul_512_canon(
         a: __m512i,
@@ -362,21 +333,21 @@ pub mod simd32 {
         mod_vec: __m512i,
     ) -> __m512i {
         let x = montgomery_mul_512(a, b, r_vec, mod_vec);
-        add_mod_512(x, _mm512_setzero_si512(), mod_vec)
+        _mm512_min_epu32(x, _mm512_sub_epi32(x, mod_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     pub unsafe fn montgomery_add_512(a: __m512i, b: __m512i, mod2_vec: __m512i) -> __m512i {
         let sum = _mm512_add_epi32(a, b);
-        let mask = !_mm512_cmp_epu32_mask(sum, mod2_vec, _MM_CMPINT_LT);
-        _mm512_mask_sub_epi32(sum, mask, sum, mod2_vec)
+        _mm512_min_epu32(sum, _mm512_sub_epi32(sum, mod2_vec))
     }
 
+    #[inline]
     #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     pub unsafe fn montgomery_sub_512(a: __m512i, b: __m512i, mod2_vec: __m512i) -> __m512i {
-        let diff = _mm512_sub_epi32(a, b);
-        let mask = _mm512_cmp_epu32_mask(a, b, _MM_CMPINT_LT);
-        _mm512_mask_add_epi32(diff, mask, diff, mod2_vec)
+        let diff = _mm512_sub_epi32(_mm512_add_epi32(a, mod2_vec), b);
+        _mm512_min_epu32(diff, _mm512_sub_epi32(diff, mod2_vec))
     }
 }
 

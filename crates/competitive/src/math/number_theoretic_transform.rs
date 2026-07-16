@@ -86,10 +86,12 @@ pub trait Montgomery32NttModulus: Sized + MontgomeryReduction32 {
 pub struct NttInfo {
     root: [u32; 32],
     inv_root: [u32; 32],
-    rate2: [u32; 32],
-    inv_rate2: [u32; 32],
     rate3: [u32; 32],
+    rate3_2: [u32; 32],
+    rate3_3: [u32; 32],
     inv_rate3: [u32; 32],
+    inv_rate3_2: [u32; 32],
+    inv_rate3_3: [u32; 32],
 }
 impl NttInfo {
     const fn new<M>() -> Self
@@ -98,10 +100,12 @@ impl NttInfo {
     {
         let mut root = [0; 32];
         let mut inv_root = [0; 32];
-        let mut rate2 = [0; 32];
-        let mut inv_rate2 = [0; 32];
         let mut rate3 = [0; 32];
+        let mut rate3_2 = [0; 32];
+        let mut rate3_3 = [0; 32];
         let mut inv_rate3 = [0; 32];
+        let mut inv_rate3_2 = [0; 32];
+        let mut inv_rate3_3 = [0; 32];
         let rank = M::RANK as usize;
 
         let g = reduce(M::PRIMITIVE_ROOT as u64 * M::N2 as u64, M::MOD, M::R);
@@ -118,18 +122,13 @@ impl NttInfo {
         }
 
         let (mut i, mut prod, mut inv_prod) = (0, M::N1, M::N1);
-        while i < rank - 1 {
-            rate2[i] = mod_mul(root[i + 2], prod, M::MOD, M::R);
-            inv_rate2[i] = mod_mul(inv_root[i + 2], inv_prod, M::MOD, M::R);
-            prod = mod_mul(prod, inv_root[i + 2], M::MOD, M::R);
-            inv_prod = mod_mul(inv_prod, root[i + 2], M::MOD, M::R);
-            i += 1;
-        }
-
-        let (mut i, mut prod, mut inv_prod) = (0, M::N1, M::N1);
         while i < rank - 2 {
             rate3[i] = mod_mul(root[i + 3], prod, M::MOD, M::R);
+            rate3_2[i] = mod_mul(rate3[i], rate3[i], M::MOD, M::R);
+            rate3_3[i] = mod_mul(rate3_2[i], rate3[i], M::MOD, M::R);
             inv_rate3[i] = mod_mul(inv_root[i + 3], inv_prod, M::MOD, M::R);
+            inv_rate3_2[i] = mod_mul(inv_rate3[i], inv_rate3[i], M::MOD, M::R);
+            inv_rate3_3[i] = mod_mul(inv_rate3_2[i], inv_rate3[i], M::MOD, M::R);
             prod = mod_mul(prod, inv_root[i + 3], M::MOD, M::R);
             inv_prod = mod_mul(inv_prod, root[i + 3], M::MOD, M::R);
             i += 1;
@@ -138,10 +137,12 @@ impl NttInfo {
         NttInfo {
             root,
             inv_root,
-            rate2,
-            inv_rate2,
             rate3,
+            rate3_2,
+            rate3_3,
             inv_rate3,
+            inv_rate3_2,
+            inv_rate3_3,
         }
     }
 }
@@ -152,6 +153,16 @@ where
 {
     let n = a.len();
     let mut v = n / 2;
+    if n.trailing_zeros() & 1 == 1 {
+        let (l, r) = a.split_at_mut(v);
+        for (x0, x1) in l.iter_mut().zip(r) {
+            let a0 = *x0;
+            let a1 = *x1;
+            *x0 = a0 + a1;
+            *x1 = a0 - a1;
+        }
+        v >>= 1;
+    }
     let imag = MInt::<M>::new_unchecked(M::INFO.root[2]);
     while v > 1 {
         let mut w1 = MInt::<M>::one();
@@ -179,16 +190,6 @@ where
         }
         v >>= 2;
     }
-    if v == 1 {
-        let mut w1 = MInt::<M>::one();
-        for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
-            let a0 = *x0;
-            let a1 = *x1 * w1;
-            *x0 = a0 + a1;
-            *x1 = a0 - a1;
-            w1 *= MInt::<M>::new_unchecked(M::INFO.rate2[s.trailing_ones() as usize]);
-        }
-    }
 }
 
 fn intt_scalar<M>(a: &mut [MInt<M>])
@@ -197,19 +198,13 @@ where
 {
     let n = a.len();
     let mut v = 1;
-    if n.trailing_zeros() & 1 == 1 {
-        let mut w1 = MInt::<M>::one();
-        for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
-            let a0 = *x0;
-            let a1 = *x1;
-            *x0 = a0 + a1;
-            *x1 = (a0 - a1) * w1;
-            w1 *= MInt::<M>::new_unchecked(M::INFO.inv_rate2[s.trailing_ones() as usize]);
-        }
-        v <<= 1;
-    }
+    let limit = if n.trailing_zeros() & 1 == 1 {
+        n / 2
+    } else {
+        n
+    };
     let iimag = MInt::<M>::new_unchecked(M::INFO.inv_root[2]);
-    while v < n {
+    while v < limit {
         let mut w1 = MInt::<M>::one();
         for (s, a) in a.chunks_exact_mut(v << 2).enumerate() {
             let (l, r) = a.split_at_mut(v << 1);
@@ -234,6 +229,19 @@ where
             w1 *= MInt::<M>::new_unchecked(M::INFO.inv_rate3[s.trailing_ones() as usize]);
         }
         v <<= 2;
+    }
+    if n.trailing_zeros() & 1 == 1 {
+        let (l, r) = a.split_at_mut(n / 2);
+        for (x0, x1) in l.iter_mut().zip(r) {
+            let a0 = *x0;
+            let a1 = *x1;
+            *x0 = a0 + a1;
+            *x1 = a0 - a1;
+        }
+    }
+    let inv = MInt::<M>::from(n as u32).inv();
+    for a in a {
+        *a *= inv;
     }
 }
 
@@ -275,532 +283,7 @@ where
 
 #[cfg(target_arch = "x86_64")]
 #[allow(unsafe_op_in_unsafe_fn)] // SIMD intrinsics and raw pointers are confined here
-mod ntt_simd {
-    use super::*;
-    use std::arch::x86_64::*;
-
-    const LAZY_THRESHOLD: u32 = 1 << 30;
-
-    #[target_feature(enable = "avx2")]
-    unsafe fn normalize_avx2<M>(a: &mut [u32])
-    where
-        M: Montgomery32NttModulus,
-    {
-        let mod_vec = _mm256_set1_epi32(M::MOD as i32);
-        let sign = _mm256_set1_epi32(0x8000_0000u32 as i32);
-        let mut i = 0;
-        while i + 8 <= a.len() {
-            let x = _mm256_loadu_si256(a.as_ptr().add(i) as *const __m256i);
-            let x_x = _mm256_xor_si256(x, sign);
-            let m_x = _mm256_xor_si256(mod_vec, sign);
-            let gt = _mm256_cmpgt_epi32(x_x, m_x);
-            let eq = _mm256_cmpeq_epi32(x, mod_vec);
-            let mask = _mm256_or_si256(gt, eq);
-            let sub = _mm256_and_si256(mod_vec, mask);
-            let y = _mm256_sub_epi32(x, sub);
-            _mm256_storeu_si256(a.as_mut_ptr().add(i) as *mut __m256i, y);
-            i += 8;
-        }
-        while i < a.len() {
-            let x = a[i];
-            a[i] = if x >= M::MOD { x - M::MOD } else { x };
-            i += 1;
-        }
-    }
-
-    #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-    unsafe fn normalize_avx512<M>(a: &mut [u32])
-    where
-        M: Montgomery32NttModulus,
-    {
-        let mod_vec = _mm512_set1_epi32(M::MOD as i32);
-        let mut i = 0;
-        while i + 16 <= a.len() {
-            let x = _mm512_loadu_si512(a.as_ptr().add(i) as *const __m512i);
-            let mask = !_mm512_cmp_epu32_mask(x, mod_vec, _MM_CMPINT_LT);
-            let y = _mm512_mask_sub_epi32(x, mask, x, mod_vec);
-            _mm512_storeu_si512(a.as_mut_ptr().add(i) as *mut __m512i, y);
-            i += 16;
-        }
-        while i < a.len() {
-            let x = a[i];
-            a[i] = if x >= M::MOD { x - M::MOD } else { x };
-            i += 1;
-        }
-    }
-
-    unsafe fn add_vec_avx2<M>(
-        a: __m256i,
-        b: __m256i,
-        mod_vec: __m256i,
-        mod2_vec: __m256i,
-        sign: __m256i,
-    ) -> __m256i
-    where
-        M: Montgomery32NttModulus,
-    {
-        if M::MOD < LAZY_THRESHOLD {
-            simd32::montgomery_add_256(a, b, mod2_vec, sign)
-        } else {
-            simd32::add_mod_256(a, b, mod_vec, sign)
-        }
-    }
-
-    unsafe fn sub_vec_avx2<M>(
-        a: __m256i,
-        b: __m256i,
-        mod_vec: __m256i,
-        mod2_vec: __m256i,
-        sign: __m256i,
-    ) -> __m256i
-    where
-        M: Montgomery32NttModulus,
-    {
-        if M::MOD < LAZY_THRESHOLD {
-            simd32::montgomery_sub_256(a, b, mod2_vec, sign)
-        } else {
-            simd32::sub_mod_256(a, b, mod_vec, sign)
-        }
-    }
-
-    unsafe fn mul_vec_avx2<M>(
-        a: __m256i,
-        b: __m256i,
-        r_vec: __m256i,
-        mod_vec: __m256i,
-        sign: __m256i,
-    ) -> __m256i
-    where
-        M: Montgomery32NttModulus,
-    {
-        if M::MOD < LAZY_THRESHOLD {
-            simd32::montgomery_mul_256(a, b, r_vec, mod_vec)
-        } else {
-            simd32::montgomery_mul_256_canon(a, b, r_vec, mod_vec, sign)
-        }
-    }
-
-    unsafe fn add_vec_avx512<M>(
-        a: __m512i,
-        b: __m512i,
-        mod_vec: __m512i,
-        mod2_vec: __m512i,
-    ) -> __m512i
-    where
-        M: Montgomery32NttModulus,
-    {
-        if M::MOD < LAZY_THRESHOLD {
-            simd32::montgomery_add_512(a, b, mod2_vec)
-        } else {
-            simd32::add_mod_512(a, b, mod_vec)
-        }
-    }
-
-    unsafe fn sub_vec_avx512<M>(
-        a: __m512i,
-        b: __m512i,
-        mod_vec: __m512i,
-        mod2_vec: __m512i,
-    ) -> __m512i
-    where
-        M: Montgomery32NttModulus,
-    {
-        if M::MOD < LAZY_THRESHOLD {
-            simd32::montgomery_sub_512(a, b, mod2_vec)
-        } else {
-            simd32::sub_mod_512(a, b, mod_vec)
-        }
-    }
-
-    unsafe fn mul_vec_avx512<M>(a: __m512i, b: __m512i, r_vec: __m512i, mod_vec: __m512i) -> __m512i
-    where
-        M: Montgomery32NttModulus,
-    {
-        if M::MOD < LAZY_THRESHOLD {
-            simd32::montgomery_mul_512(a, b, r_vec, mod_vec)
-        } else {
-            simd32::montgomery_mul_512_canon(a, b, r_vec, mod_vec)
-        }
-    }
-
-    #[target_feature(enable = "avx2")]
-    pub(super) unsafe fn ntt_avx2<M>(a: &mut [MInt<M>])
-    where
-        M: Montgomery32NttModulus,
-    {
-        let n = a.len();
-        if n <= 1 {
-            return;
-        }
-        let ptr = a.as_mut_ptr() as *mut u32;
-        let a = std::slice::from_raw_parts_mut(ptr, n);
-        let mod_vec = _mm256_set1_epi32(M::MOD as i32);
-        let mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) as i32);
-        let r_vec = _mm256_set1_epi32(M::R.wrapping_neg() as i32);
-        let sign = _mm256_set1_epi32(0x8000_0000u32 as i32);
-        let imag = M::INFO.root[2];
-        let imag_vec = _mm256_set1_epi32(imag as i32);
-
-        let mut v = n / 2;
-        while v > 1 {
-            let half = v >> 1;
-            let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(v << 1).enumerate() {
-                let base = block.as_mut_ptr();
-                let ll = base;
-                let lr = base.add(half);
-                let rl = base.add(v);
-                let rr = base.add(v + half);
-
-                let w2 = M::mod_mul(w1, w1);
-                let w3 = M::mod_mul(w2, w1);
-                let w1v = _mm256_set1_epi32(w1 as i32);
-                let w2v = _mm256_set1_epi32(w2 as i32);
-                let w3v = _mm256_set1_epi32(w3 as i32);
-
-                let mut i = 0;
-                while i + 8 <= half {
-                    let x0 = _mm256_loadu_si256(ll.add(i) as *const __m256i);
-                    let x1 = _mm256_loadu_si256(lr.add(i) as *const __m256i);
-                    let x2 = _mm256_loadu_si256(rl.add(i) as *const __m256i);
-                    let x3 = _mm256_loadu_si256(rr.add(i) as *const __m256i);
-
-                    let a1 = mul_vec_avx2::<M>(x1, w1v, r_vec, mod_vec, sign);
-                    let a2 = mul_vec_avx2::<M>(x2, w2v, r_vec, mod_vec, sign);
-                    let a3 = mul_vec_avx2::<M>(x3, w3v, r_vec, mod_vec, sign);
-
-                    let a0pa2 = add_vec_avx2::<M>(x0, a2, mod_vec, mod2_vec, sign);
-                    let a0na2 = sub_vec_avx2::<M>(x0, a2, mod_vec, mod2_vec, sign);
-                    let a1pa3 = add_vec_avx2::<M>(a1, a3, mod_vec, mod2_vec, sign);
-                    let a1na3 = sub_vec_avx2::<M>(a1, a3, mod_vec, mod2_vec, sign);
-                    let a1na3imag = mul_vec_avx2::<M>(a1na3, imag_vec, r_vec, mod_vec, sign);
-
-                    let y0 = add_vec_avx2::<M>(a0pa2, a1pa3, mod_vec, mod2_vec, sign);
-                    let y1 = sub_vec_avx2::<M>(a0pa2, a1pa3, mod_vec, mod2_vec, sign);
-                    let y2 = add_vec_avx2::<M>(a0na2, a1na3imag, mod_vec, mod2_vec, sign);
-                    let y3 = sub_vec_avx2::<M>(a0na2, a1na3imag, mod_vec, mod2_vec, sign);
-
-                    _mm256_storeu_si256(ll.add(i) as *mut __m256i, y0);
-                    _mm256_storeu_si256(lr.add(i) as *mut __m256i, y1);
-                    _mm256_storeu_si256(rl.add(i) as *mut __m256i, y2);
-                    _mm256_storeu_si256(rr.add(i) as *mut __m256i, y3);
-                    i += 8;
-                }
-                while i < half {
-                    let a0 = *ll.add(i);
-                    let a1 = M::mod_mul(*lr.add(i), w1);
-                    let a2 = M::mod_mul(*rl.add(i), w2);
-                    let a3 = M::mod_mul(*rr.add(i), w3);
-                    let a0pa2 = M::mod_add(a0, a2);
-                    let a0na2 = M::mod_sub(a0, a2);
-                    let a1pa3 = M::mod_add(a1, a3);
-                    let a1na3 = M::mod_sub(a1, a3);
-                    let a1na3imag = M::mod_mul(a1na3, imag);
-                    *ll.add(i) = M::mod_add(a0pa2, a1pa3);
-                    *lr.add(i) = M::mod_sub(a0pa2, a1pa3);
-                    *rl.add(i) = M::mod_add(a0na2, a1na3imag);
-                    *rr.add(i) = M::mod_sub(a0na2, a1na3imag);
-                    i += 1;
-                }
-                w1 = M::mod_mul(w1, M::INFO.rate3[s.trailing_ones() as usize]);
-            }
-            v >>= 2;
-        }
-        if v == 1 {
-            let mut w1 = M::N1;
-            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
-                let a0 = *x0;
-                let a1 = M::mod_mul(*x1, w1);
-                *x0 = M::mod_add(a0, a1);
-                *x1 = M::mod_sub(a0, a1);
-                w1 = M::mod_mul(w1, M::INFO.rate2[s.trailing_ones() as usize]);
-            }
-        }
-        normalize_avx2::<M>(a);
-    }
-
-    #[target_feature(enable = "avx2")]
-    pub(super) unsafe fn intt_avx2<M>(a: &mut [MInt<M>])
-    where
-        M: Montgomery32NttModulus,
-    {
-        let n = a.len();
-        if n <= 1 {
-            return;
-        }
-        let ptr = a.as_mut_ptr() as *mut u32;
-        let a = std::slice::from_raw_parts_mut(ptr, n);
-        let mod_vec = _mm256_set1_epi32(M::MOD as i32);
-        let mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) as i32);
-        let r_vec = _mm256_set1_epi32(M::R.wrapping_neg() as i32);
-        let sign = _mm256_set1_epi32(0x8000_0000u32 as i32);
-        let iimag = M::INFO.inv_root[2];
-        let iimag_vec = _mm256_set1_epi32(iimag as i32);
-
-        let mut v = 1;
-        if n.trailing_zeros() & 1 == 1 {
-            let mut w1 = M::N1;
-            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
-                let a0 = *x0;
-                let a1 = *x1;
-                *x0 = M::mod_add(a0, a1);
-                *x1 = M::mod_mul(M::mod_sub(a0, a1), w1);
-                w1 = M::mod_mul(w1, M::INFO.inv_rate2[s.trailing_ones() as usize]);
-            }
-            v <<= 1;
-        }
-        while v < n {
-            let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(v << 2).enumerate() {
-                let base = block.as_mut_ptr();
-                let ll = base;
-                let lr = base.add(v);
-                let rl = base.add(v << 1);
-                let rr = base.add(v * 3);
-
-                let w2 = M::mod_mul(w1, w1);
-                let w3 = M::mod_mul(w2, w1);
-                let w1v = _mm256_set1_epi32(w1 as i32);
-                let w2v = _mm256_set1_epi32(w2 as i32);
-                let w3v = _mm256_set1_epi32(w3 as i32);
-
-                let mut i = 0;
-                while i + 8 <= v {
-                    let x0 = _mm256_loadu_si256(ll.add(i) as *const __m256i);
-                    let x1 = _mm256_loadu_si256(lr.add(i) as *const __m256i);
-                    let x2 = _mm256_loadu_si256(rl.add(i) as *const __m256i);
-                    let x3 = _mm256_loadu_si256(rr.add(i) as *const __m256i);
-
-                    let a0pa1 = add_vec_avx2::<M>(x0, x1, mod_vec, mod2_vec, sign);
-                    let a0na1 = sub_vec_avx2::<M>(x0, x1, mod_vec, mod2_vec, sign);
-                    let a2pa3 = add_vec_avx2::<M>(x2, x3, mod_vec, mod2_vec, sign);
-                    let a2na3 = sub_vec_avx2::<M>(x2, x3, mod_vec, mod2_vec, sign);
-                    let a2na3iimag = mul_vec_avx2::<M>(a2na3, iimag_vec, r_vec, mod_vec, sign);
-
-                    let y0 = add_vec_avx2::<M>(a0pa1, a2pa3, mod_vec, mod2_vec, sign);
-                    let y1 = add_vec_avx2::<M>(a0na1, a2na3iimag, mod_vec, mod2_vec, sign);
-                    let y2 = sub_vec_avx2::<M>(a0pa1, a2pa3, mod_vec, mod2_vec, sign);
-                    let y3 = sub_vec_avx2::<M>(a0na1, a2na3iimag, mod_vec, mod2_vec, sign);
-
-                    let y1 = mul_vec_avx2::<M>(y1, w1v, r_vec, mod_vec, sign);
-                    let y2 = mul_vec_avx2::<M>(y2, w2v, r_vec, mod_vec, sign);
-                    let y3 = mul_vec_avx2::<M>(y3, w3v, r_vec, mod_vec, sign);
-
-                    _mm256_storeu_si256(ll.add(i) as *mut __m256i, y0);
-                    _mm256_storeu_si256(lr.add(i) as *mut __m256i, y1);
-                    _mm256_storeu_si256(rl.add(i) as *mut __m256i, y2);
-                    _mm256_storeu_si256(rr.add(i) as *mut __m256i, y3);
-                    i += 8;
-                }
-                while i < v {
-                    let a0 = *ll.add(i);
-                    let a1 = *lr.add(i);
-                    let a2 = *rl.add(i);
-                    let a3 = *rr.add(i);
-                    let a0pa1 = M::mod_add(a0, a1);
-                    let a0na1 = M::mod_sub(a0, a1);
-                    let a2pa3 = M::mod_add(a2, a3);
-                    let a2na3iimag = M::mod_mul(M::mod_sub(a2, a3), iimag);
-                    *ll.add(i) = M::mod_add(a0pa1, a2pa3);
-                    *lr.add(i) = M::mod_mul(M::mod_add(a0na1, a2na3iimag), w1);
-                    *rl.add(i) = M::mod_mul(M::mod_sub(a0pa1, a2pa3), w2);
-                    *rr.add(i) = M::mod_mul(M::mod_sub(a0na1, a2na3iimag), w3);
-                    i += 1;
-                }
-                w1 = M::mod_mul(w1, M::INFO.inv_rate3[s.trailing_ones() as usize]);
-            }
-            v <<= 2;
-        }
-        normalize_avx2::<M>(a);
-    }
-
-    #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-    pub(super) unsafe fn ntt_avx512<M>(a: &mut [MInt<M>])
-    where
-        M: Montgomery32NttModulus,
-    {
-        let n = a.len();
-        if n <= 1 {
-            return;
-        }
-        let ptr = a.as_mut_ptr() as *mut u32;
-        let a = std::slice::from_raw_parts_mut(ptr, n);
-        let mod_vec = _mm512_set1_epi32(M::MOD as i32);
-        let mod2_vec = _mm512_set1_epi32(M::MOD.wrapping_add(M::MOD) as i32);
-        let r_vec = _mm512_set1_epi32(M::R.wrapping_neg() as i32);
-        let imag = M::INFO.root[2];
-        let imag_vec = _mm512_set1_epi32(imag as i32);
-
-        let mut v = n / 2;
-        while v > 1 {
-            let half = v >> 1;
-            let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(v << 1).enumerate() {
-                let base = block.as_mut_ptr();
-                let ll = base;
-                let lr = base.add(half);
-                let rl = base.add(v);
-                let rr = base.add(v + half);
-                let w2 = M::mod_mul(w1, w1);
-                let w3 = M::mod_mul(w2, w1);
-                let w1v = _mm512_set1_epi32(w1 as i32);
-                let w2v = _mm512_set1_epi32(w2 as i32);
-                let w3v = _mm512_set1_epi32(w3 as i32);
-
-                let mut i = 0;
-                while i + 16 <= half {
-                    let x0 = _mm512_loadu_si512(ll.add(i) as *const __m512i);
-                    let x1 = _mm512_loadu_si512(lr.add(i) as *const __m512i);
-                    let x2 = _mm512_loadu_si512(rl.add(i) as *const __m512i);
-                    let x3 = _mm512_loadu_si512(rr.add(i) as *const __m512i);
-
-                    let a1 = mul_vec_avx512::<M>(x1, w1v, r_vec, mod_vec);
-                    let a2 = mul_vec_avx512::<M>(x2, w2v, r_vec, mod_vec);
-                    let a3 = mul_vec_avx512::<M>(x3, w3v, r_vec, mod_vec);
-
-                    let a0pa2 = add_vec_avx512::<M>(x0, a2, mod_vec, mod2_vec);
-                    let a0na2 = sub_vec_avx512::<M>(x0, a2, mod_vec, mod2_vec);
-                    let a1pa3 = add_vec_avx512::<M>(a1, a3, mod_vec, mod2_vec);
-                    let a1na3 = sub_vec_avx512::<M>(a1, a3, mod_vec, mod2_vec);
-                    let a1na3imag = mul_vec_avx512::<M>(a1na3, imag_vec, r_vec, mod_vec);
-
-                    let y0 = add_vec_avx512::<M>(a0pa2, a1pa3, mod_vec, mod2_vec);
-                    let y1 = sub_vec_avx512::<M>(a0pa2, a1pa3, mod_vec, mod2_vec);
-                    let y2 = add_vec_avx512::<M>(a0na2, a1na3imag, mod_vec, mod2_vec);
-                    let y3 = sub_vec_avx512::<M>(a0na2, a1na3imag, mod_vec, mod2_vec);
-
-                    _mm512_storeu_si512(ll.add(i) as *mut __m512i, y0);
-                    _mm512_storeu_si512(lr.add(i) as *mut __m512i, y1);
-                    _mm512_storeu_si512(rl.add(i) as *mut __m512i, y2);
-                    _mm512_storeu_si512(rr.add(i) as *mut __m512i, y3);
-                    i += 16;
-                }
-                while i < half {
-                    let a0 = *ll.add(i);
-                    let a1 = M::mod_mul(*lr.add(i), w1);
-                    let a2 = M::mod_mul(*rl.add(i), w2);
-                    let a3 = M::mod_mul(*rr.add(i), w3);
-                    let a0pa2 = M::mod_add(a0, a2);
-                    let a0na2 = M::mod_sub(a0, a2);
-                    let a1pa3 = M::mod_add(a1, a3);
-                    let a1na3 = M::mod_sub(a1, a3);
-                    let a1na3imag = M::mod_mul(a1na3, imag);
-                    *ll.add(i) = M::mod_add(a0pa2, a1pa3);
-                    *lr.add(i) = M::mod_sub(a0pa2, a1pa3);
-                    *rl.add(i) = M::mod_add(a0na2, a1na3imag);
-                    *rr.add(i) = M::mod_sub(a0na2, a1na3imag);
-                    i += 1;
-                }
-                w1 = M::mod_mul(w1, M::INFO.rate3[s.trailing_ones() as usize]);
-            }
-            v >>= 2;
-        }
-        if v == 1 {
-            let mut w1 = M::N1;
-            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
-                let a0 = *x0;
-                let a1 = M::mod_mul(*x1, w1);
-                *x0 = M::mod_add(a0, a1);
-                *x1 = M::mod_sub(a0, a1);
-                w1 = M::mod_mul(w1, M::INFO.rate2[s.trailing_ones() as usize]);
-            }
-        }
-        normalize_avx512::<M>(a);
-    }
-
-    #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-    pub(super) unsafe fn intt_avx512<M>(a: &mut [MInt<M>])
-    where
-        M: Montgomery32NttModulus,
-    {
-        let n = a.len();
-        if n <= 1 {
-            return;
-        }
-        let ptr = a.as_mut_ptr() as *mut u32;
-        let a = std::slice::from_raw_parts_mut(ptr, n);
-        let mod_vec = _mm512_set1_epi32(M::MOD as i32);
-        let mod2_vec = _mm512_set1_epi32(M::MOD.wrapping_add(M::MOD) as i32);
-        let r_vec = _mm512_set1_epi32(M::R.wrapping_neg() as i32);
-        let iimag = M::INFO.inv_root[2];
-        let iimag_vec = _mm512_set1_epi32(iimag as i32);
-
-        let mut v = 1;
-        if n.trailing_zeros() & 1 == 1 {
-            let mut w1 = M::N1;
-            for (s, [x0, x1]) in a.as_chunks_mut::<2>().0.iter_mut().enumerate() {
-                let a0 = *x0;
-                let a1 = *x1;
-                *x0 = M::mod_add(a0, a1);
-                *x1 = M::mod_mul(M::mod_sub(a0, a1), w1);
-                w1 = M::mod_mul(w1, M::INFO.inv_rate2[s.trailing_ones() as usize]);
-            }
-            v <<= 1;
-        }
-        while v < n {
-            let mut w1 = M::N1;
-            for (s, block) in a.chunks_exact_mut(v << 2).enumerate() {
-                let base = block.as_mut_ptr();
-                let ll = base;
-                let lr = base.add(v);
-                let rl = base.add(v << 1);
-                let rr = base.add(v * 3);
-                let w2 = M::mod_mul(w1, w1);
-                let w3 = M::mod_mul(w2, w1);
-                let w1v = _mm512_set1_epi32(w1 as i32);
-                let w2v = _mm512_set1_epi32(w2 as i32);
-                let w3v = _mm512_set1_epi32(w3 as i32);
-
-                let mut i = 0;
-                while i + 16 <= v {
-                    let x0 = _mm512_loadu_si512(ll.add(i) as *const __m512i);
-                    let x1 = _mm512_loadu_si512(lr.add(i) as *const __m512i);
-                    let x2 = _mm512_loadu_si512(rl.add(i) as *const __m512i);
-                    let x3 = _mm512_loadu_si512(rr.add(i) as *const __m512i);
-
-                    let a0pa1 = add_vec_avx512::<M>(x0, x1, mod_vec, mod2_vec);
-                    let a0na1 = sub_vec_avx512::<M>(x0, x1, mod_vec, mod2_vec);
-                    let a2pa3 = add_vec_avx512::<M>(x2, x3, mod_vec, mod2_vec);
-                    let a2na3 = sub_vec_avx512::<M>(x2, x3, mod_vec, mod2_vec);
-                    let a2na3iimag = mul_vec_avx512::<M>(a2na3, iimag_vec, r_vec, mod_vec);
-
-                    let y0 = add_vec_avx512::<M>(a0pa1, a2pa3, mod_vec, mod2_vec);
-                    let y1 = add_vec_avx512::<M>(a0na1, a2na3iimag, mod_vec, mod2_vec);
-                    let y2 = sub_vec_avx512::<M>(a0pa1, a2pa3, mod_vec, mod2_vec);
-                    let y3 = sub_vec_avx512::<M>(a0na1, a2na3iimag, mod_vec, mod2_vec);
-
-                    let y1 = mul_vec_avx512::<M>(y1, w1v, r_vec, mod_vec);
-                    let y2 = mul_vec_avx512::<M>(y2, w2v, r_vec, mod_vec);
-                    let y3 = mul_vec_avx512::<M>(y3, w3v, r_vec, mod_vec);
-
-                    _mm512_storeu_si512(ll.add(i) as *mut __m512i, y0);
-                    _mm512_storeu_si512(lr.add(i) as *mut __m512i, y1);
-                    _mm512_storeu_si512(rl.add(i) as *mut __m512i, y2);
-                    _mm512_storeu_si512(rr.add(i) as *mut __m512i, y3);
-                    i += 16;
-                }
-                while i < v {
-                    let a0 = *ll.add(i);
-                    let a1 = *lr.add(i);
-                    let a2 = *rl.add(i);
-                    let a3 = *rr.add(i);
-                    let a0pa1 = M::mod_add(a0, a1);
-                    let a0na1 = M::mod_sub(a0, a1);
-                    let a2pa3 = M::mod_add(a2, a3);
-                    let a2na3iimag = M::mod_mul(M::mod_sub(a2, a3), iimag);
-                    *ll.add(i) = M::mod_add(a0pa1, a2pa3);
-                    *lr.add(i) = M::mod_mul(M::mod_add(a0na1, a2na3iimag), w1);
-                    *rl.add(i) = M::mod_mul(M::mod_sub(a0pa1, a2pa3), w2);
-                    *rr.add(i) = M::mod_mul(M::mod_sub(a0na1, a2na3iimag), w3);
-                    i += 1;
-                }
-                w1 = M::mod_mul(w1, M::INFO.inv_rate3[s.trailing_ones() as usize]);
-            }
-            v <<= 2;
-        }
-        normalize_avx512::<M>(a);
-    }
-}
+mod ntt_simd;
 
 fn convolve_naive<T>(a: &[T], b: &[T]) -> Vec<T>
 where
@@ -892,14 +375,21 @@ where
     fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
         intt(&mut f);
         f.truncate(len);
-        let inv = MInt::from(len.max(1).next_power_of_two() as u32).inv();
-        for f in f.iter_mut() {
-            *f *= inv;
-        }
         f
     }
     fn multiply(f: &mut Self::F, g: &Self::F) {
         assert_eq!(f.len(), g.len());
+        #[cfg(target_arch = "x86_64")]
+        match simd_backend() {
+            SimdBackend::Avx512 => unsafe { ntt_simd::pointwise_multiply_avx512(f, g) },
+            SimdBackend::Avx2 => unsafe { ntt_simd::pointwise_multiply_avx2(f, g) },
+            SimdBackend::Scalar => {
+                for (f, g) in f.iter_mut().zip(g.iter()) {
+                    *f *= *g;
+                }
+            }
+        }
+        #[cfg(not(target_arch = "x86_64"))]
         for (f, g) in f.iter_mut().zip(g.iter()) {
             *f *= *g;
         }
@@ -931,6 +421,14 @@ where
             return c;
         }
         let same = a == b;
+        #[cfg(target_arch = "x86_64")]
+        if !same && M::MOD < 1 << 30 && simd_backend() == SimdBackend::Avx2 {
+            a.resize_with(size, Zero::zero);
+            b.resize_with(size, Zero::zero);
+            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b) };
+            a.truncate(len);
+            return a;
+        }
         let mut a = Self::transform(a, len);
         if same {
             for a in a.iter_mut() {
@@ -997,18 +495,9 @@ where
             .collect()
     }
     fn multiply(f: &mut Self::F, g: &Self::F) {
-        assert_eq!(f.0.len(), g.0.len());
-        assert_eq!(f.1.len(), g.1.len());
-        assert_eq!(f.2.len(), g.2.len());
-        for (f, g) in f.0.iter_mut().zip(g.0.iter()) {
-            *f *= *g;
-        }
-        for (f, g) in f.1.iter_mut().zip(g.1.iter()) {
-            *f *= *g;
-        }
-        for (f, g) in f.2.iter_mut().zip(g.2.iter()) {
-            *f *= *g;
-        }
+        Convolve::<N1>::multiply(&mut f.0, &g.0);
+        Convolve::<N2>::multiply(&mut f.1, &g.1);
+        Convolve::<N3>::multiply(&mut f.2, &g.2);
     }
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
         if Self::length(&a).max(Self::length(&b)) <= 300 {
@@ -1080,18 +569,9 @@ where
     }
 
     fn multiply(f: &mut Self::F, g: &Self::F) {
-        assert_eq!(f.0.len(), g.0.len());
-        assert_eq!(f.1.len(), g.1.len());
-        assert_eq!(f.2.len(), g.2.len());
-        for (f, g) in f.0.iter_mut().zip(g.0.iter()) {
-            *f *= *g;
-        }
-        for (f, g) in f.1.iter_mut().zip(g.1.iter()) {
-            *f *= *g;
-        }
-        for (f, g) in f.2.iter_mut().zip(g.2.iter()) {
-            *f *= *g;
-        }
+        Convolve::<N1>::multiply(&mut f.0, &g.0);
+        Convolve::<N2>::multiply(&mut f.1, &g.1);
+        Convolve::<N3>::multiply(&mut f.2, &g.2);
     }
 
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
