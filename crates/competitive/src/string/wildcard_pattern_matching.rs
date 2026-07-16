@@ -1,7 +1,7 @@
 use super::{Convolve, ConvolveSteps, Zero, montgomery};
 
 pub fn wildcard_pattern_matching(p: &[u8], s: &[u8]) -> Vec<bool> {
-    type M = montgomery::MInt2013265921;
+    type M = montgomery::MInt469762049;
     let n = p.len();
     let m = s.len();
     assert!(n >= 1);
@@ -11,7 +11,7 @@ pub fn wildcard_pattern_matching(p: &[u8], s: &[u8]) -> Vec<bool> {
         ($f:expr; $g:expr;) => {{
             let x: Vec<M> = p.iter().map($f).rev().collect();
             let y: Vec<M> = s.iter().map($g).collect();
-            let z = Convolve::<montgomery::Modulo2013265921>::convolve(x, y);
+            let z = Convolve::<montgomery::Modulo469762049>::convolve(x, y);
             for i in 0..=m - n {
                 sum[i] += z[n + i - 1];
             }

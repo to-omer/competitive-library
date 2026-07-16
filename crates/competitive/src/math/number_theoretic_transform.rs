@@ -9,8 +9,8 @@ use std::{
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
-pub type MIntConvolve<M> = Convolve<(M, (Modulo2013265921, Modulo1811939329, Modulo2113929217))>;
-pub type U64Convolve = Convolve<(u64, (Modulo2013265921, Modulo1811939329, Modulo2113929217))>;
+pub type MIntConvolve<M> = Convolve<(M, (Modulo167772161, Modulo469762049, Modulo754974721))>;
+pub type U64Convolve = Convolve<(u64, (Modulo167772161, Modulo469762049, Modulo754974721))>;
 
 macro_rules! impl_ntt_modulus {
     ($([$name:ident, $g:expr]),*) => {
@@ -20,10 +20,10 @@ macro_rules! impl_ntt_modulus {
     };
 }
 impl_ntt_modulus!(
-    [Modulo998244353, 3],
-    [Modulo2113929217, 5],
-    [Modulo1811939329, 13],
-    [Modulo2013265921, 31]
+    [Modulo167772161, 3],
+    [Modulo469762049, 3],
+    [Modulo754974721, 11],
+    [Modulo998244353, 3]
 );
 
 const fn reduce(z: u64, p: u32, r: u32) -> u32 {
@@ -443,6 +443,64 @@ where
 }
 
 type MVec<M> = Vec<MInt<M>>;
+
+fn convert_crt_input<M, N1, N2, N3>(t: MVec<M>, capacity: usize) -> (MVec<N1>, MVec<N2>, MVec<N3>)
+where
+    M: MIntConvert<u32>,
+    N1: Montgomery32NttModulus,
+    N2: Montgomery32NttModulus,
+    N3: Montgomery32NttModulus,
+{
+    let mut f = (
+        MVec::<N1>::with_capacity(capacity),
+        MVec::<N2>::with_capacity(capacity),
+        MVec::<N3>::with_capacity(capacity),
+    );
+    for t in t {
+        let t = <M as MIntConvert<u32>>::into(t.inner());
+        f.0.push(t.into());
+        f.1.push(t.into());
+        f.2.push(t.into());
+    }
+    f
+}
+
+fn reconstruct_mint_crt<M, N1, N2, N3>(f: (MVec<N1>, MVec<N2>, MVec<N3>)) -> MVec<M>
+where
+    M: MIntConvert + MIntConvert<u32>,
+    N1: Montgomery32NttModulus,
+    N2: Montgomery32NttModulus,
+    N3: Montgomery32NttModulus,
+{
+    let t1 = MInt::<N2>::new(N1::get_mod()).inv();
+    let m1_3 = MInt::<N3>::new(N1::get_mod());
+    let t2 = (m1_3 * MInt::<N3>::new(N2::get_mod())).inv();
+    let modulus = <M as MIntConvert<u32>>::mod_into() as u64;
+    let m1 = N1::get_mod() as u64;
+    let m2 = m1 * N2::get_mod() as u64 % modulus;
+    let fits_u64 = (N1::get_mod() - 1) as u128
+        + (N2::get_mod() - 1) as u128 * m1 as u128
+        + (N3::get_mod() - 1) as u128 * m2 as u128
+        <= u64::MAX as u128;
+    f.0.into_iter()
+        .zip(f.1)
+        .zip(f.2)
+        .map(|((c1, c2), c3)| {
+            let d1 = c1.inner();
+            let d2 = ((c2 - MInt::<N2>::from(d1)) * t1).inner();
+            let x = MInt::<N3>::new(d1) + MInt::<N3>::new(d2) * m1_3;
+            let d3 = ((c3 - x) * t2).inner();
+            let value = if fits_u64 {
+                (d1 as u64 + d2 as u64 * m1 + d3 as u64 * m2) % modulus
+            } else {
+                ((d1 as u128 + d2 as u128 * m1 as u128 + d3 as u128 * m2 as u128) % modulus as u128)
+                    as u64
+            };
+            MInt::<M>::from(value as u32)
+        })
+        .collect()
+}
+
 impl<M, N1, N2, N3> ConvolveSteps for Convolve<(M, (N1, N2, N3))>
 where
     M: MIntConvert + MIntConvert<u32>,
@@ -457,16 +515,7 @@ where
     }
     fn transform(t: Self::T, len: usize) -> Self::F {
         let npot = len.max(1).next_power_of_two();
-        let mut f = (
-            MVec::<N1>::with_capacity(npot),
-            MVec::<N2>::with_capacity(npot),
-            MVec::<N3>::with_capacity(npot),
-        );
-        for t in t {
-            f.0.push(<M as MIntConvert<u32>>::into(t.inner()).into());
-            f.1.push(<M as MIntConvert<u32>>::into(t.inner()).into());
-            f.2.push(<M as MIntConvert<u32>>::into(t.inner()).into());
-        }
+        let mut f = convert_crt_input(t, npot);
         f.0.resize_with(npot, Zero::zero);
         f.1.resize_with(npot, Zero::zero);
         f.2.resize_with(npot, Zero::zero);
@@ -476,23 +525,11 @@ where
         f
     }
     fn inverse_transform(f: Self::F, len: usize) -> Self::T {
-        let t1 = MInt::<N2>::new(N1::get_mod()).inv();
-        let m1 = MInt::<M>::from(N1::get_mod());
-        let m1_3 = MInt::<N3>::new(N1::get_mod());
-        let t2 = (m1_3 * MInt::<N3>::new(N2::get_mod())).inv();
-        let m2 = m1 * MInt::<M>::from(N2::get_mod());
-        Convolve::<N1>::inverse_transform(f.0, len)
-            .into_iter()
-            .zip(Convolve::<N2>::inverse_transform(f.1, len))
-            .zip(Convolve::<N3>::inverse_transform(f.2, len))
-            .map(|((c1, c2), c3)| {
-                let d1 = c1.inner();
-                let d2 = ((c2 - MInt::<N2>::from(d1)) * t1).inner();
-                let x = MInt::<N3>::new(d1) + MInt::<N3>::new(d2) * m1_3;
-                let d3 = ((c3 - x) * t2).inner();
-                MInt::<M>::from(d1) + MInt::<M>::from(d2) * m1 + MInt::<M>::from(d3) * m2
-            })
-            .collect()
+        reconstruct_mint_crt((
+            Convolve::<N1>::inverse_transform(f.0, len),
+            Convolve::<N2>::inverse_transform(f.1, len),
+            Convolve::<N3>::inverse_transform(f.2, len),
+        ))
     }
     fn multiply(f: &mut Self::F, g: &Self::F) {
         Convolve::<N1>::multiply(&mut f.0, &g.0);
@@ -506,11 +543,15 @@ where
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
         }
-        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
-        let mut a = Self::transform(a, len);
-        let b = Self::transform(b, len);
-        Self::multiply(&mut a, &b);
-        Self::inverse_transform(a, len)
+        let a_len = a.len();
+        let b_len = b.len();
+        let a = convert_crt_input(a, a_len);
+        let b = convert_crt_input(b, b_len);
+        reconstruct_mint_crt((
+            Convolve::<N1>::convolve(a.0, b.0),
+            Convolve::<N2>::convolve(a.1, b.1),
+            Convolve::<N3>::convolve(a.2, b.2),
+        ))
     }
 }
 

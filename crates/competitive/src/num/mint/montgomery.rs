@@ -203,10 +203,10 @@ macro_rules! define_montgomery_reduction_32 {
     };
 }
 define_montgomery_reduction_32!(
+    [Modulo167772161, 167_772_161, MInt167772161],
+    [Modulo469762049, 469_762_049, MInt469762049],
+    [Modulo754974721, 754_974_721, MInt754974721],
     [Modulo998244353, 998_244_353, MInt998244353],
-    [Modulo2113929217, 2_113_929_217, MInt2113929217],
-    [Modulo1811939329, 1_811_939_329, MInt1811939329],
-    [Modulo2013265921, 2_013_265_921, MInt2013265921],
 );
 
 #[cfg(target_arch = "x86_64")]
