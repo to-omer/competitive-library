@@ -165,10 +165,10 @@
 <span data-nosnippet>422</span>        }
 <span data-nosnippet>423</span>        <span class="kw">let </span>same = a == b;
 <span data-nosnippet>424</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>425</span>        </span><span class="kw">if </span>!same &amp;&amp; M::MOD &lt; <span class="number">1 </span>&lt;&lt; <span class="number">30 </span>&amp;&amp; simd_backend() == SimdBackend::Avx2 {
+<span data-nosnippet>425</span>        </span><span class="kw">if </span>M::MOD &lt; <span class="number">1 </span>&lt;&lt; <span class="number">30 </span>&amp;&amp; simd_backend() == SimdBackend::Avx2 {
 <span data-nosnippet>426</span>            a.resize_with(size, Zero::zero);
 <span data-nosnippet>427</span>            b.resize_with(size, Zero::zero);
-<span data-nosnippet>428</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b) };
+<span data-nosnippet>428</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b, same) };
 <span data-nosnippet>429</span>            a.truncate(len);
 <span data-nosnippet>430</span>            <span class="kw">return </span>a;
 <span data-nosnippet>431</span>        }
@@ -239,7 +239,7 @@
 <span data-nosnippet>496</span>                ((d1 <span class="kw">as </span>u128 + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
 <span data-nosnippet>497</span>                    <span class="kw">as </span>u64
 <span data-nosnippet>498</span>            };
-<span data-nosnippet>499</span>            MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32)
+<span data-nosnippet>499</span>            MInt::&lt;M&gt;::from(value <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">u32</a>)
 <span data-nosnippet>500</span>        })
 <span data-nosnippet>501</span>        .collect()
 <span data-nosnippet>502</span>}
@@ -279,7 +279,7 @@
 <span data-nosnippet>536</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
 <span data-nosnippet>537</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>538</span>    }
-<span data-nosnippet>539</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#23">T</a>) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>539</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>540</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">300 </span>{
 <span data-nosnippet>541</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>542</span>        }
@@ -362,7 +362,7 @@
 <span data-nosnippet>619</span>            .collect()
 <span data-nosnippet>620</span>    }
 <span data-nosnippet>621</span>
-<span data-nosnippet>622</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, <a href="../algebra/lazy_map.rs.html#131">g</a>: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>622</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>623</span>        Convolve::&lt;N1&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
 <span data-nosnippet>624</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
 <span data-nosnippet>625</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);

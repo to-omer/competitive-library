@@ -108,10 +108,10 @@
 <span data-nosnippet>422</span>        }
 <span data-nosnippet>423</span>        <span class="kw">let </span>same = a == b;
 <span data-nosnippet>424</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>425</span>        </span><span class="kw">if </span>!same &amp;&amp; M::MOD &lt; <span class="number">1 </span>&lt;&lt; <span class="number">30 </span>&amp;&amp; simd_backend() == SimdBackend::Avx2 {
+<span data-nosnippet>425</span>        </span><span class="kw">if </span>M::MOD &lt; <span class="number">1 </span>&lt;&lt; <span class="number">30 </span>&amp;&amp; simd_backend() == SimdBackend::Avx2 {
 <span data-nosnippet>426</span>            a.resize_with(size, Zero::zero);
 <span data-nosnippet>427</span>            b.resize_with(size, Zero::zero);
-<span data-nosnippet>428</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b) };
+<span data-nosnippet>428</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b, same) };
 <span data-nosnippet>429</span>            a.truncate(len);
 <span data-nosnippet>430</span>            <span class="kw">return </span>a;
 <span data-nosnippet>431</span>        }
@@ -222,11 +222,11 @@
 <span data-nosnippet>536</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
 <span data-nosnippet>537</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>538</span>    }
-<span data-nosnippet>539</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>539</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <a href="../algebra/magma.rs.html#9"><span class="self">Self</span>::T</a> {
 <span data-nosnippet>540</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">300 </span>{
 <span data-nosnippet>541</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>542</span>        }
-<span data-nosnippet>543</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">min</a>(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
+<span data-nosnippet>543</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>544</span>            <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>545</span>        }
 <span data-nosnippet>546</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
