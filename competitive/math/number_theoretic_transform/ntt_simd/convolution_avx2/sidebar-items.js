@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["convolve_8_avx2","convolve_blocks_avx2","intt_block_stage_avx2","intt_blocks_avx2","load_block_avx2","ntt_block_stage_avx2","ntt_blocks_avx2","reduce_sum_avx2","store_block_avx2"]};
