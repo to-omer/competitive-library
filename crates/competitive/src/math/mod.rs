@@ -228,6 +228,12 @@ mod miller_rabin;
     codesnip::entry("min_plus_convolution", include("integer", "NumberTheoreticTransform"))
 )]
 mod min_plus_convolution;
+#[cfg(target_arch = "x86_64")]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("NumberTheoreticTransform", include("fast_fourier_transform", "MInt"))
+)]
+mod mint_fft_convolve;
 #[cfg_attr(
     nightly,
     codesnip::entry("MIntMatrix", include("Matrix", "factorial", "Xorshift"))

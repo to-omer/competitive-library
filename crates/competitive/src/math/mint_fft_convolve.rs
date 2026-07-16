@@ -1,6 +1,6 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
-use super::{AssociatedValue, Complex, MInt, MIntConvert, RotateCache};
+use super::{AssociatedValue, Complex, MInt, MIntConvert, fast_fourier_transform::RotateCache};
 use std::arch::x86_64::*;
 #[derive(Clone, Copy, Default)]
 #[repr(C, align(32))]
@@ -123,7 +123,7 @@ unsafe fn fft_soa(a: &mut [Complex4]) {
             v >>= 2;
         }
         if v == 4 {
-            for (block, w) in a.chunks_exact_mut(2).zip(cache) {
+            for (block, w) in a.as_chunks_mut::<2>().0.iter_mut().zip(cache) {
                 let (ar, ai) = load4(&block[0]);
                 let (br, bi) = load4(&block[1]);
                 let (br, bi) = mul4(br, bi, _mm256_set1_pd(w.re), _mm256_set1_pd(w.im));
@@ -405,7 +405,7 @@ where
 // Fixed lane indexes keep coefficient order and compile to straight-line recovery.
 #[target_feature(enable = "avx2,fma")]
 #[allow(clippy::needless_range_loop)]
-pub(super) unsafe fn convolve_mint_avx2<M>(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>>
+unsafe fn convolve_mint_avx2<M>(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>>
 where
     M: MIntConvert + MIntConvert<u32>,
 {
@@ -479,4 +479,12 @@ where
         }
     }
     result
+}
+
+pub(super) fn convolve_mint_fft<M>(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>>
+where
+    M: MIntConvert + MIntConvert<u32>,
+{
+    debug_assert!(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("fma"));
+    unsafe { convolve_mint_avx2(a, b) }
 }

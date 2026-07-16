@@ -550,7 +550,7 @@ where
                 && is_x86_feature_detected!("avx2")
                 && is_x86_feature_detected!("fma")
             {
-                return super::fast_fourier_transform::convolve_mint_fft(a, b);
+                return super::mint_fft_convolve::convolve_mint_fft(a, b);
             }
         }
         let a_len = a.len();

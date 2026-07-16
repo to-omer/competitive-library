@@ -1,16 +1,10 @@
 use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
 
-#[cfg(target_arch = "x86_64")]
-use super::{MInt, MIntConvert};
-
-#[cfg(target_arch = "x86_64")]
-mod fft_simd;
-
 pub enum ConvolveRealFft {}
 
-enum RotateCache {}
+pub(super) enum RotateCache {}
 impl RotateCache {
-    fn ensure(n: usize) {
+    pub(super) fn ensure(n: usize) {
         assert_eq!(n.count_ones(), 1, "call with power of two but {}", n);
         Self::modify(|cache| {
             let mut m = cache.len();
@@ -69,15 +63,6 @@ fn bit_reverse<T>(f: &mut [T]) {
             }
         }
     }
-}
-
-#[cfg(target_arch = "x86_64")]
-pub(super) fn convolve_mint_fft<M>(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>>
-where
-    M: MIntConvert + MIntConvert<u32>,
-{
-    debug_assert!(is_x86_feature_detected!("avx2") && is_x86_feature_detected!("fma"));
-    unsafe { fft_simd::convolve_mint_avx2(a, b) }
 }
 
 impl ConvolveSteps for ConvolveRealFft {
@@ -172,7 +157,7 @@ pub fn fft(a: &mut [Complex<f64>]) {
             v >>= 2;
         }
         if v == 1 {
-            for (a, w) in a.chunks_exact_mut(2).zip(cache) {
+            for (a, w) in a.as_chunks_mut::<2>().0.iter_mut().zip(cache) {
                 let y = a[1] * *w;
                 a[1] = a[0] - y;
                 a[0] += y;
