@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["bit_reverse_soa","convolve_mint_avx2","fft_soa","ifft_soa","load4","mul4","real_fft_soa","real_ifft_soa","round4","split_coefficients","store4","transpose4"],"struct":["Complex4"]};
