@@ -119,8 +119,10 @@ where
     }
 }
 
+// Passing stage constants directly avoids constructing state in this hot SIMD loop.
 #[inline]
 #[target_feature(enable = "avx2")]
+#[allow(clippy::too_many_arguments)]
 unsafe fn intt_block_stage_avx2<M>(
     a: *mut u32,
     n: usize,
