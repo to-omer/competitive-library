@@ -162,7 +162,7 @@ mod factorial;
     nightly,
     codesnip::entry(
         "fast_fourier_transform",
-        include("Complex", "AssociatedValue", "ConvolveSteps")
+        include("Complex", "AssociatedValue", "ConvolveSteps", "avx_helper")
     )
 )]
 mod fast_fourier_transform;
