@@ -19,7 +19,7 @@ where
     }
 }
 
-pub(super) unsafe fn add_vec_avx2<M>(
+pub unsafe fn add_vec_avx2<M>(
     a: __m256i,
     b: __m256i,
     mod_vec: __m256i,
@@ -35,7 +35,7 @@ where
     }
 }
 
-pub(super) unsafe fn sub_vec_avx2<M>(
+pub unsafe fn sub_vec_avx2<M>(
     a: __m256i,
     b: __m256i,
     mod_vec: __m256i,
@@ -63,7 +63,7 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-pub(in super::super) unsafe fn pointwise_multiply_avx2<M>(f: &mut [MInt<M>], g: &[MInt<M>])
+pub unsafe fn pointwise_multiply_avx2<M>(f: &mut [MInt<M>], g: &[MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
@@ -84,7 +84,32 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-pub(in super::super) unsafe fn ntt_avx2<M>(a: &mut [MInt<M>])
+pub unsafe fn pointwise_multiply_add_avx2<M>(sum: &mut [MInt<M>], f: &[MInt<M>], g: &[MInt<M>])
+where
+    M: Montgomery32NttModulus,
+{
+    let r_vec = _mm256_set1_epi32(M::R as i32);
+    let mod_vec = _mm256_set1_epi32(M::MOD as i32);
+    let mut i = 0;
+    while i + 8 <= sum.len() {
+        let s = _mm256_loadu_si256(sum.as_ptr().add(i).cast());
+        let f = _mm256_loadu_si256(f.as_ptr().add(i).cast());
+        let g = _mm256_loadu_si256(g.as_ptr().add(i).cast());
+        let product = simd32::montgomery_mul_256_canon(f, g, r_vec, mod_vec);
+        _mm256_storeu_si256(
+            sum.as_mut_ptr().add(i).cast(),
+            simd32::add_mod_256(s, product, mod_vec),
+        );
+        i += 8;
+    }
+    while i < sum.len() {
+        sum[i] += f[i] * g[i];
+        i += 1;
+    }
+}
+
+#[target_feature(enable = "avx2")]
+pub unsafe fn ntt_avx2<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
@@ -195,7 +220,7 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-pub(in super::super) unsafe fn intt_avx2<M>(a: &mut [MInt<M>])
+pub unsafe fn intt_avx2<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {

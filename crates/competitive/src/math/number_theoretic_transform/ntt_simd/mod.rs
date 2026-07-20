@@ -7,6 +7,11 @@ mod convolution_avx2;
 mod ntt_avx2;
 mod ntt_avx512;
 
-pub(super) use convolution_avx2::convolve_blocks_avx2;
-pub(super) use ntt_avx2::{intt_avx2, ntt_avx2, pointwise_multiply_avx2};
-pub(super) use ntt_avx512::{intt_avx512, ntt_avx512, pointwise_multiply_avx512};
+pub use convolution_avx2::{
+    convolve_blocks_avx2, inverse_transform_blocks_avx2, multiply_blocks_avx2,
+    transform_blocks_avx2,
+};
+pub use ntt_avx2::{intt_avx2, ntt_avx2, pointwise_multiply_add_avx2, pointwise_multiply_avx2};
+pub use ntt_avx512::{
+    intt_avx512, ntt_avx512, pointwise_multiply_add_avx512, pointwise_multiply_avx512,
+};

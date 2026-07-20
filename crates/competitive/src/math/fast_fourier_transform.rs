@@ -2,9 +2,9 @@ use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
 
 pub enum ConvolveRealFft {}
 
-pub(super) enum RotateCache {}
+pub enum RotateCache {}
 impl RotateCache {
-    pub(super) fn ensure(n: usize) {
+    pub fn ensure(n: usize) {
         assert_eq!(n.count_ones(), 1, "call with power of two but {}", n);
         Self::modify(|cache| {
             let mut m = cache.len();
@@ -65,6 +65,54 @@ fn bit_reverse<T>(f: &mut [T]) {
     }
 }
 
+pub fn transform_real(t: impl IntoIterator<Item = f64>, len: usize) -> Vec<Complex<f64>> {
+    let n = len.max(4).next_power_of_two();
+    let mut f = vec![Complex::zero(); n / 2];
+    for (i, t) in t.into_iter().enumerate() {
+        if i & 1 == 0 {
+            f[i / 2].re = t;
+        } else {
+            f[i / 2].im = t;
+        }
+    }
+    fft(&mut f);
+    bit_reverse(&mut f);
+    f[0] = Complex::new(f[0].re + f[0].im, f[0].re - f[0].im);
+    f[n / 4] = f[n / 4].conjugate();
+    let w = Complex::primitive_nth_root_of_unity(-(n as f64));
+    let mut wk = Complex::<f64>::one();
+    for k in 1..n / 4 {
+        wk *= w;
+        let c = wk.conjugate().transpose() + 1.;
+        let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
+        f[k] -= d;
+        f[n / 2 - k] += d.conjugate();
+    }
+    f
+}
+
+pub fn inverse_transform_real(mut f: Vec<Complex<f64>>, len: usize) -> Vec<f64> {
+    let n = len.max(4).next_power_of_two();
+    assert_eq!(f.len(), n / 2);
+    f[0] = Complex::new((f[0].re + f[0].im) * 0.5, (f[0].re - f[0].im) * 0.5);
+    f[n / 4] = f[n / 4].conjugate();
+    let w = Complex::primitive_nth_root_of_unity(n as f64);
+    let mut wk = Complex::<f64>::one();
+    for k in 1..n / 4 {
+        wk *= w;
+        let c = wk.transpose().conjugate() + 1.;
+        let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
+        f[k] -= d;
+        f[n / 2 - k] += d.conjugate();
+    }
+    bit_reverse(&mut f);
+    ifft(&mut f);
+    let inv = 1. / (n / 2) as f64;
+    (0..len)
+        .map(|i| inv * if i & 1 == 0 { f[i / 2].re } else { f[i / 2].im })
+        .collect()
+}
+
 impl ConvolveSteps for ConvolveRealFft {
     type T = Vec<i64>;
     type F = Vec<Complex<f64>>;
@@ -72,49 +120,12 @@ impl ConvolveSteps for ConvolveRealFft {
         t.len()
     }
     fn transform(t: Self::T, len: usize) -> Self::F {
-        let n = len.max(4).next_power_of_two();
-        let mut f = vec![Complex::zero(); n / 2];
-        for (i, t) in t.into_iter().enumerate() {
-            if i & 1 == 0 {
-                f[i / 2].re = t as f64;
-            } else {
-                f[i / 2].im = t as f64;
-            }
-        }
-        fft(&mut f);
-        bit_reverse(&mut f);
-        f[0] = Complex::new(f[0].re + f[0].im, f[0].re - f[0].im);
-        f[n / 4] = f[n / 4].conjugate();
-        let w = Complex::primitive_nth_root_of_unity(-(n as f64));
-        let mut wk = Complex::<f64>::one();
-        for k in 1..n / 4 {
-            wk *= w;
-            let c = wk.conjugate().transpose() + 1.;
-            let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
-            f[k] -= d;
-            f[n / 2 - k] += d.conjugate();
-        }
-        f
+        transform_real(t.into_iter().map(|t| t as f64), len)
     }
-    fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
-        let n = len.max(4).next_power_of_two();
-        assert_eq!(f.len(), n / 2);
-        f[0] = Complex::new((f[0].re + f[0].im) * 0.5, (f[0].re - f[0].im) * 0.5);
-        f[n / 4] = f[n / 4].conjugate();
-        let w = Complex::primitive_nth_root_of_unity(n as f64);
-        let mut wk = Complex::<f64>::one();
-        for k in 1..n / 4 {
-            wk *= w;
-            let c = wk.transpose().conjugate() + 1.;
-            let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
-            f[k] -= d;
-            f[n / 2 - k] += d.conjugate();
-        }
-        bit_reverse(&mut f);
-        ifft(&mut f);
-        let inv = 1. / (n / 2) as f64;
-        (0..len)
-            .map(|i| (inv * if i & 1 == 0 { f[i / 2].re } else { f[i / 2].im }).round() as i64)
+    fn inverse_transform(f: Self::F, len: usize) -> Self::T {
+        inverse_transform_real(f, len)
+            .into_iter()
+            .map(|value| value.round() as i64)
             .collect()
     }
     fn multiply(f: &mut Self::F, g: &Self::F) {
@@ -124,6 +135,32 @@ impl ConvolveSteps for ConvolveRealFft {
         for (f, g) in f.iter_mut().zip(g.iter()).skip(1) {
             *f *= *g;
         }
+    }
+}
+
+pub fn middle_product_f64_scalar(
+    a: impl ExactSizeIterator<Item = f64>,
+    b: impl ExactSizeIterator<Item = f64>,
+) -> Vec<f64> {
+    let a_len = a.len();
+    let b_len = b.len();
+    let len = a_len + b_len - 1;
+    let mut a = transform_real(a, len);
+    let b = transform_real(b, len);
+    ConvolveRealFft::multiply(&mut a, &b);
+    inverse_transform_real(a, len)[b_len - 1..a_len].to_vec()
+}
+
+#[cfg(not(target_arch = "x86_64"))]
+impl ConvolveRealFft {
+    /// Returns coefficients `b.len() - 1..a.len()` of the convolution of `a` and `b`.
+    /// Panics unless `0 < b.len() <= a.len()`.
+    pub fn middle_product_f64(
+        a: impl ExactSizeIterator<Item = f64>,
+        b: impl ExactSizeIterator<Item = f64>,
+    ) -> Vec<f64> {
+        assert!(0 < b.len() && b.len() <= a.len());
+        middle_product_f64_scalar(a, b)
     }
 }
 

@@ -10,7 +10,7 @@ use crate::num::{
 };
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
 #[cfg(target_arch = "x86_64")]
-use crate::tools::{SimdBackend, simd_backend};
+use crate::tools::{SimdBackend, avx512_supported, simd_backend};
 
 #[codesnip::entry("ArbitraryModBinomial")]
 pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
@@ -245,7 +245,13 @@ mod mod_sqrt;
     nightly,
     codesnip::entry(
         "NumberTheoreticTransform",
-        include("montgomery", "ConvolveSteps", "avx_helper")
+        include(
+            "montgomery",
+            "ConvolveSteps",
+            "avx_helper",
+            "fast_fourier_transform",
+            "Xorshift"
+        )
     )
 )]
 mod number_theoretic_transform;

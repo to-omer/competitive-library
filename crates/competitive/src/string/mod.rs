@@ -2,8 +2,7 @@
 
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, MinOperation, Monoid, Ring, SemiRing};
 use crate::data_structure::StaticRangeProduct;
-use crate::math::{Convolve, ConvolveSteps};
-use crate::num::{Zero, montgomery};
+use crate::math::ConvolveRealFft;
 use crate::tools::Xorshift;
 
 #[codesnip::entry("KnuthMorrisPratt")]
@@ -50,7 +49,10 @@ mod suffix_array;
 mod suffix_automaton;
 #[cfg_attr(nightly, codesnip::entry("SuffixTree", include("SuffixArray")))]
 mod suffix_tree;
-#[cfg_attr(nightly, codesnip::entry(include("NumberTheoreticTransform")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry(include("fast_fourier_transform", "Xorshift"))
+)]
 mod wildcard_pattern_matching;
 #[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]
 mod z_algorithm;

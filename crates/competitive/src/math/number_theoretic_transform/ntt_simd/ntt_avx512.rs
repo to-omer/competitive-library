@@ -54,7 +54,7 @@ where
 }
 
 #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-pub(in super::super) unsafe fn pointwise_multiply_avx512<M>(f: &mut [MInt<M>], g: &[MInt<M>])
+pub unsafe fn pointwise_multiply_avx512<M>(f: &mut [MInt<M>], g: &[MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
@@ -75,7 +75,32 @@ where
 }
 
 #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-pub(in super::super) unsafe fn ntt_avx512<M>(a: &mut [MInt<M>])
+pub unsafe fn pointwise_multiply_add_avx512<M>(sum: &mut [MInt<M>], f: &[MInt<M>], g: &[MInt<M>])
+where
+    M: Montgomery32NttModulus,
+{
+    let r_vec = _mm512_set1_epi32(M::R as i32);
+    let mod_vec = _mm512_set1_epi32(M::MOD as i32);
+    let mut i = 0;
+    while i + 16 <= sum.len() {
+        let s = _mm512_loadu_si512(sum.as_ptr().add(i).cast());
+        let f = _mm512_loadu_si512(f.as_ptr().add(i).cast());
+        let g = _mm512_loadu_si512(g.as_ptr().add(i).cast());
+        let product = simd32::montgomery_mul_512_canon(f, g, r_vec, mod_vec);
+        _mm512_storeu_si512(
+            sum.as_mut_ptr().add(i).cast(),
+            simd32::add_mod_512(s, product, mod_vec),
+        );
+        i += 16;
+    }
+    while i < sum.len() {
+        sum[i] += f[i] * g[i];
+        i += 1;
+    }
+}
+
+#[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
+pub unsafe fn ntt_avx512<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
@@ -185,7 +210,7 @@ where
 }
 
 #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-pub(in super::super) unsafe fn intt_avx512<M>(a: &mut [MInt<M>])
+pub unsafe fn intt_avx512<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {

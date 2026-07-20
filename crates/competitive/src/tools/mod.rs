@@ -2,7 +2,7 @@
 pub use self::associated_value::AssociatedValue;
 #[codesnip::entry("avx_helper")]
 pub use self::avx_helper::{
-    SimdBackend, avx512_enabled, disable_avx512, enable_avx512, simd_backend,
+    SimdBackend, avx512_enabled, avx512_supported, disable_avx512, enable_avx512, simd_backend,
 };
 #[codesnip::entry("char_convert")]
 pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};

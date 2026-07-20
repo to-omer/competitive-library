@@ -1,6 +1,9 @@
-use super::{ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, montgomery::*};
+use super::{
+    ConvolveSteps, MInt, MIntBase, MIntConvert, One, Xorshift, Zero,
+    fast_fourier_transform::ConvolveRealFft, montgomery::*,
+};
 #[cfg(target_arch = "x86_64")]
-use super::{SimdBackend, simd_backend};
+use super::{SimdBackend, avx512_supported, simd_backend};
 use std::{
     cell::UnsafeCell,
     marker::PhantomData,
@@ -87,11 +90,9 @@ pub struct NttInfo {
     root: [u32; 32],
     inv_root: [u32; 32],
     rate3: [u32; 32],
-    rate3_2: [u32; 32],
-    rate3_3: [u32; 32],
     inv_rate3: [u32; 32],
-    inv_rate3_2: [u32; 32],
-    inv_rate3_3: [u32; 32],
+    rate3_packed: [[u32; 8]; 32],
+    inv_rate3_packed: [[u32; 8]; 32],
 }
 impl NttInfo {
     const fn new<M>() -> Self
@@ -101,11 +102,9 @@ impl NttInfo {
         let mut root = [0; 32];
         let mut inv_root = [0; 32];
         let mut rate3 = [0; 32];
-        let mut rate3_2 = [0; 32];
-        let mut rate3_3 = [0; 32];
         let mut inv_rate3 = [0; 32];
-        let mut inv_rate3_2 = [0; 32];
-        let mut inv_rate3_3 = [0; 32];
+        let mut rate3_packed = [[0; 8]; 32];
+        let mut inv_rate3_packed = [[0; 8]; 32];
         let rank = M::RANK as usize;
 
         let g = reduce(M::PRIMITIVE_ROOT as u64 * M::N2 as u64, M::MOD, M::R);
@@ -124,11 +123,31 @@ impl NttInfo {
         let (mut i, mut prod, mut inv_prod) = (0, M::N1, M::N1);
         while i < rank - 2 {
             rate3[i] = mod_mul(root[i + 3], prod, M::MOD, M::R);
-            rate3_2[i] = mod_mul(rate3[i], rate3[i], M::MOD, M::R);
-            rate3_3[i] = mod_mul(rate3_2[i], rate3[i], M::MOD, M::R);
+            let rate3_2 = mod_mul(rate3[i], rate3[i], M::MOD, M::R);
+            let rate3_3 = mod_mul(rate3_2, rate3[i], M::MOD, M::R);
             inv_rate3[i] = mod_mul(inv_root[i + 3], inv_prod, M::MOD, M::R);
-            inv_rate3_2[i] = mod_mul(inv_rate3[i], inv_rate3[i], M::MOD, M::R);
-            inv_rate3_3[i] = mod_mul(inv_rate3_2[i], inv_rate3[i], M::MOD, M::R);
+            let inv_rate3_2 = mod_mul(inv_rate3[i], inv_rate3[i], M::MOD, M::R);
+            let inv_rate3_3 = mod_mul(inv_rate3_2, inv_rate3[i], M::MOD, M::R);
+            rate3_packed[i] = [
+                rate3[i].wrapping_mul(M::R),
+                rate3[i],
+                rate3_2.wrapping_mul(M::R),
+                rate3_2,
+                rate3_3.wrapping_mul(M::R),
+                rate3_3,
+                0,
+                0,
+            ];
+            inv_rate3_packed[i] = [
+                inv_rate3[i].wrapping_mul(M::R),
+                inv_rate3[i],
+                inv_rate3_2.wrapping_mul(M::R),
+                inv_rate3_2,
+                inv_rate3_3.wrapping_mul(M::R),
+                inv_rate3_3,
+                0,
+                0,
+            ];
             prod = mod_mul(prod, inv_root[i + 3], M::MOD, M::R);
             inv_prod = mod_mul(inv_prod, root[i + 3], M::MOD, M::R);
             i += 1;
@@ -138,11 +157,9 @@ impl NttInfo {
             root,
             inv_root,
             rate3,
-            rate3_2,
-            rate3_3,
             inv_rate3,
-            inv_rate3_2,
-            inv_rate3_3,
+            rate3_packed,
+            inv_rate3_packed,
         }
     }
 }
@@ -250,17 +267,13 @@ where
     M: Montgomery32NttModulus,
 {
     #[cfg(target_arch = "x86_64")]
-    {
-        match simd_backend() {
-            SimdBackend::Avx512 => unsafe { ntt_simd::ntt_avx512::<M>(a) },
-            SimdBackend::Avx2 => unsafe { ntt_simd::ntt_avx2::<M>(a) },
-            SimdBackend::Scalar => ntt_scalar(a),
-        }
+    match simd_backend() {
+        SimdBackend::Avx512 => unsafe { ntt_simd::ntt_avx512(a) },
+        SimdBackend::Avx2 => unsafe { ntt_simd::ntt_avx2(a) },
+        SimdBackend::Scalar => ntt_scalar(a),
     }
     #[cfg(not(target_arch = "x86_64"))]
-    {
-        ntt_scalar(a);
-    }
+    ntt_scalar(a);
 }
 
 fn intt<M>(a: &mut [MInt<M>])
@@ -268,17 +281,54 @@ where
     M: Montgomery32NttModulus,
 {
     #[cfg(target_arch = "x86_64")]
-    {
-        match simd_backend() {
-            SimdBackend::Avx512 => unsafe { ntt_simd::intt_avx512::<M>(a) },
-            SimdBackend::Avx2 => unsafe { ntt_simd::intt_avx2::<M>(a) },
-            SimdBackend::Scalar => intt_scalar(a),
-        }
+    match simd_backend() {
+        SimdBackend::Avx512 => unsafe { ntt_simd::intt_avx512(a) },
+        SimdBackend::Avx2 => unsafe { ntt_simd::intt_avx2(a) },
+        SimdBackend::Scalar => intt_scalar(a),
     }
     #[cfg(not(target_arch = "x86_64"))]
-    {
-        intt_scalar(a);
-    }
+    intt_scalar(a);
+}
+
+#[cfg(target_arch = "x86_64")]
+fn use_block_ntt<M>(len: usize) -> bool
+where
+    M: Montgomery32NttModulus,
+{
+    len >= 64 && M::MOD < 1 << 30 && is_x86_feature_detected!("avx2") && !avx512_supported()
+}
+
+fn pointwise_multiply<M>(f: &mut [MInt<M>], g: &[MInt<M>])
+where
+    M: Montgomery32NttModulus,
+{
+    assert!(f.len() <= g.len());
+    crate::avx_helper!(
+        @dispatch simd_backend, SimdBackend;
+        unsafe { ntt_simd::pointwise_multiply_avx512(f, g) },
+        unsafe { ntt_simd::pointwise_multiply_avx2(f, g) },
+        {
+            for (f, g) in f.iter_mut().zip(g.iter()) {
+                *f *= *g;
+            }
+        }
+    )
+}
+
+fn pointwise_multiply_add<M>(sum: &mut [MInt<M>], f: &[MInt<M>], g: &[MInt<M>])
+where
+    M: Montgomery32NttModulus,
+{
+    crate::avx_helper!(
+        @dispatch simd_backend, SimdBackend;
+        unsafe { ntt_simd::pointwise_multiply_add_avx512(sum, f, g) },
+        unsafe { ntt_simd::pointwise_multiply_add_avx2(sum, f, g) },
+        {
+            for ((sum, f), g) in sum.iter_mut().zip(f.iter()).zip(g.iter()) {
+                *sum += *f * *g;
+            }
+        }
+    )
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -358,6 +408,47 @@ where
     c
 }
 
+#[cold]
+fn convolve_large_ntt<M>(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>>
+where
+    M: Montgomery32NttModulus,
+{
+    let len = a.len() + b.len() - 1;
+    let ntt_len = 1usize << M::RANK;
+    let block_len = ntt_len / 2;
+    let same = a == b;
+    let fa: Vec<_> = a
+        .chunks(block_len)
+        .map(|a| Convolve::<M>::transform_ntt(a.to_vec(), ntt_len))
+        .collect();
+    let fb: Option<Vec<_>> = if same {
+        None
+    } else {
+        Some(
+            b.chunks(block_len)
+                .map(|b| Convolve::<M>::transform_ntt(b.to_vec(), ntt_len))
+                .collect(),
+        )
+    };
+    let b_blocks = fb.as_ref().map_or(fa.len(), Vec::len);
+    let mut result = vec![MInt::<M>::zero(); len];
+    for diagonal in 0..fa.len() + b_blocks - 1 {
+        let mut spectrum = vec![MInt::<M>::zero(); ntt_len];
+        let start = diagonal.saturating_sub(b_blocks - 1);
+        for i in start..=diagonal.min(fa.len() - 1) {
+            let j = diagonal - i;
+            let g = if let Some(fb) = &fb { &fb[j] } else { &fa[j] };
+            pointwise_multiply_add(&mut spectrum, &fa[i], g);
+        }
+        spectrum = Convolve::<M>::inverse_transform_ntt(spectrum, ntt_len);
+        let offset = diagonal * block_len;
+        for (result, value) in result[offset..].iter_mut().zip(spectrum) {
+            *result += value;
+        }
+    }
+    result
+}
+
 impl<M> ConvolveSteps for Convolve<M>
 where
     M: Montgomery32NttModulus,
@@ -369,10 +460,21 @@ where
     }
     fn transform(mut t: Self::T, len: usize) -> Self::F {
         t.resize_with(len.max(1).next_power_of_two(), Zero::zero);
+        #[cfg(target_arch = "x86_64")]
+        if use_block_ntt::<M>(t.len()) {
+            unsafe { ntt_simd::transform_blocks_avx2(&mut t) };
+            return t;
+        }
         ntt(&mut t);
         t
     }
     fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
+        #[cfg(target_arch = "x86_64")]
+        if use_block_ntt::<M>(f.len()) {
+            unsafe { ntt_simd::inverse_transform_blocks_avx2(&mut f) };
+            f.truncate(len);
+            return f;
+        }
         intt(&mut f);
         f.truncate(len);
         f
@@ -380,19 +482,11 @@ where
     fn multiply(f: &mut Self::F, g: &Self::F) {
         assert_eq!(f.len(), g.len());
         #[cfg(target_arch = "x86_64")]
-        match simd_backend() {
-            SimdBackend::Avx512 => unsafe { ntt_simd::pointwise_multiply_avx512(f, g) },
-            SimdBackend::Avx2 => unsafe { ntt_simd::pointwise_multiply_avx2(f, g) },
-            SimdBackend::Scalar => {
-                for (f, g) in f.iter_mut().zip(g.iter()) {
-                    *f *= *g;
-                }
-            }
+        if use_block_ntt::<M>(f.len()) {
+            unsafe { ntt_simd::multiply_blocks_avx2(f, g) };
+            return;
         }
-        #[cfg(not(target_arch = "x86_64"))]
-        for (f, g) in f.iter_mut().zip(g.iter()) {
-            *f *= *g;
-        }
+        pointwise_multiply(f, g);
     }
     fn convolve(mut a: Self::T, mut b: Self::T) -> Self::T {
         if Self::length(&a).max(Self::length(&b)) <= 100 {
@@ -403,6 +497,9 @@ where
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let size = len.max(1).next_power_of_two();
+        if size > 1usize << M::RANK {
+            return convolve_large_ntt(a, b);
+        }
         if len <= size / 2 + 2 {
             let xa = a.pop().unwrap();
             let xb = b.pop().unwrap();
@@ -422,7 +519,7 @@ where
         }
         let same = a == b;
         #[cfg(target_arch = "x86_64")]
-        if M::MOD < 1 << 30 && simd_backend() == SimdBackend::Avx2 {
+        if use_block_ntt::<M>(size) {
             a.resize_with(size, Zero::zero);
             b.resize_with(size, Zero::zero);
             unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same) };
@@ -515,14 +612,12 @@ where
     }
     fn transform(t: Self::T, len: usize) -> Self::F {
         let npot = len.max(1).next_power_of_two();
-        let mut f = convert_crt_input(t, npot);
-        f.0.resize_with(npot, Zero::zero);
-        f.1.resize_with(npot, Zero::zero);
-        f.2.resize_with(npot, Zero::zero);
-        ntt(&mut f.0);
-        ntt(&mut f.1);
-        ntt(&mut f.2);
-        f
+        let f = convert_crt_input(t, npot);
+        (
+            Convolve::<N1>::transform(f.0, npot),
+            Convolve::<N2>::transform(f.1, npot),
+            Convolve::<N3>::transform(f.2, npot),
+        )
     }
     fn inverse_transform(f: Self::F, len: usize) -> Self::T {
         reconstruct_mint_crt((
@@ -543,15 +638,10 @@ where
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
         }
-        #[cfg(target_arch = "x86_64")]
-        {
-            let len = a.len() + b.len() - 1;
-            if len.next_power_of_two() <= 1 << 20
-                && is_x86_feature_detected!("avx2")
-                && is_x86_feature_detected!("fma")
-            {
-                return super::mint_fft_convolve::convolve_mint_fft(a, b);
-            }
+        if (a.len() + b.len() - 1).next_power_of_two() <= 1 << 20 {
+            crate::avx_helper!(@dispatch_avx2_fma return unsafe {
+                super::mint_fft_convolve::convolve_mint_avx2(a, b)
+            }, ());
         }
         let a_len = a.len();
         let b_len = b.len();
@@ -590,13 +680,11 @@ where
             f.1.push(t.into());
             f.2.push(t.into());
         }
-        f.0.resize_with(npot, Zero::zero);
-        f.1.resize_with(npot, Zero::zero);
-        f.2.resize_with(npot, Zero::zero);
-        ntt(&mut f.0);
-        ntt(&mut f.1);
-        ntt(&mut f.2);
-        f
+        (
+            Convolve::<N1>::transform(f.0, npot),
+            Convolve::<N2>::transform(f.1, npot),
+            Convolve::<N3>::transform(f.2, npot),
+        )
     }
 
     fn inverse_transform(f: Self::F, len: usize) -> Self::T {
@@ -633,6 +721,17 @@ where
             return convolve_naive(&a, &b);
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
+        if len.next_power_of_two() <= 1 << 21 {
+            let factor = Xorshift::new().rand64() | 1;
+            let mut inverse = factor;
+            for _ in 0..5 {
+                inverse = inverse.wrapping_mul(2u64.wrapping_sub(factor.wrapping_mul(inverse)));
+            }
+            crate::avx_helper!(@dispatch_avx2_fma return unsafe {
+                super::mint_fft_convolve::convolve_u64_avx2(a, b, factor, inverse)
+            }, ());
+            return convolve_u64_fft_scalar(a, b, factor, inverse);
+        }
         let mut a = Self::transform(a, len);
         let b = Self::transform(b, len);
         Self::multiply(&mut a, &b);
@@ -640,17 +739,80 @@ where
     }
 }
 
+fn convolve_u64_fft_scalar(a: Vec<u64>, b: Vec<u64>, factor: u64, inverse: u64) -> Vec<u64> {
+    fn split(values: &[u64], factor: u64) -> [Vec<i64>; 4] {
+        let mut result = std::array::from_fn(|_| Vec::with_capacity(values.len()));
+        let mut multiplier = 1u64;
+        for &value in values {
+            let mut value = value.wrapping_mul(multiplier);
+            for part in &mut result {
+                let digit = value as i16;
+                part.push(digit as i64);
+                value = (value >> 16).wrapping_add(u64::from(digit < 0));
+            }
+            multiplier = multiplier.wrapping_mul(factor);
+        }
+        result
+    }
+
+    let len = a.len() + b.len() - 1;
+    let fa = split(&a, factor).map(|a| ConvolveRealFft::transform(a, len));
+    drop(a);
+    let fb = split(&b, factor).map(|b| ConvolveRealFft::transform(b, len));
+    drop(b);
+    let values: [Vec<i64>; 4] = std::array::from_fn(|part| {
+        let mut sum = fa[0].clone();
+        ConvolveRealFft::multiply(&mut sum, &fb[part]);
+        for left in 1..=part {
+            let mut product = fa[left].clone();
+            ConvolveRealFft::multiply(&mut product, &fb[part - left]);
+            for (sum, product) in sum.iter_mut().zip(product) {
+                *sum += product;
+            }
+        }
+        ConvolveRealFft::inverse_transform(sum, len)
+    });
+    let mut multiplier = 1u64;
+    (0..len)
+        .map(|i| {
+            let value = (values[0][i] as u64)
+                .wrapping_add((values[1][i] as u64) << 16)
+                .wrapping_add((values[2][i] as u64) << 32)
+                .wrapping_add((values[3][i] as u64) << 48)
+                .wrapping_mul(multiplier);
+            multiplier = multiplier.wrapping_mul(inverse);
+            value
+        })
+        .collect()
+}
+
 pub trait NttReuse: ConvolveSteps {
     const MULTIPLE: bool = true;
 
-    /// F(a) → F(a + [0] * a.len())
+    /// Transforms coefficients into the usual NTT frequency order.
+    fn transform_ntt(t: Self::T, len: usize) -> Self::F {
+        Self::transform(t, len)
+    }
+
+    /// Inverts a value produced by `transform_ntt`.
+    fn inverse_transform_ntt(f: Self::F, len: usize) -> Self::T {
+        Self::inverse_transform(f, len)
+    }
+
+    /// Extends a value produced by `transform_ntt` to twice its length.
     fn ntt_doubling(f: Self::F) -> Self::F;
 
-    /// F(a(x)), F(b(x)) → even(F(a(x) * b(-x)))
+    /// Extracts the even coefficients of `a(x) * b(-x)` in the usual NTT frequency order.
     fn even_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F;
 
-    /// F(a(x)), F(b(x)) → odd(F(a(x) * b(-x)))
+    /// Extracts the odd coefficients of `a(x) * b(-x)` in the usual NTT frequency order.
     fn odd_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F;
+
+    /// Multiplies a usual NTT transform by the corresponding prefix of another one.
+    fn multiply_prefix(f: &mut Self::F, g: &Self::F);
+
+    /// Adds the pointwise product of two usual NTT transforms to `sum`.
+    fn multiply_add(sum: &mut Self::F, f: &Self::F, g: &Self::F);
 }
 
 thread_local!(
@@ -663,17 +825,29 @@ where
 {
     const MULTIPLE: bool = false;
 
+    fn transform_ntt(mut t: Self::T, len: usize) -> Self::F {
+        t.resize_with(len.max(1).next_power_of_two(), Zero::zero);
+        ntt(&mut t);
+        t
+    }
+
+    fn inverse_transform_ntt(mut f: Self::F, len: usize) -> Self::T {
+        intt(&mut f);
+        f.truncate(len);
+        f
+    }
+
     fn ntt_doubling(mut f: Self::F) -> Self::F {
         let n = f.len();
         let k = n.trailing_zeros() as usize;
-        let mut a = Self::inverse_transform(f.clone(), n);
+        let mut a = Self::inverse_transform_ntt(f.clone(), n);
         let mut rot = MInt::<M>::one();
         let zeta = MInt::<M>::new_unchecked(M::INFO.root[k + 1]);
         for a in a.iter_mut() {
             *a *= rot;
             rot *= zeta;
         }
-        f.extend(Self::transform(a, n));
+        f.extend(Self::transform_ntt(a, n));
         f
     }
 
@@ -706,7 +880,7 @@ where
             if br[k].is_empty() {
                 let mut v = vec![0; 1 << k];
                 for i in 0..1 << k {
-                    v[i] = (v[i >> 1] >> 1) | ((i & 1) << (k.saturating_sub(1)));
+                    v[i] = (v[i >> 1] >> 1) | ((i & 1) << k.saturating_sub(1));
                 }
                 br[k] = v;
             }
@@ -717,6 +891,15 @@ where
         });
         h
     }
+
+    fn multiply_prefix(f: &mut Self::F, g: &Self::F) {
+        pointwise_multiply(f, g);
+    }
+
+    fn multiply_add(sum: &mut Self::F, f: &Self::F, g: &Self::F) {
+        assert!(sum.len() == f.len() && sum.len() == g.len());
+        pointwise_multiply_add(sum, f, g);
+    }
 }
 
 impl<M, N1, N2, N3> NttReuse for Convolve<(M, (N1, N2, N3))>
@@ -726,6 +909,24 @@ where
     N2: Montgomery32NttModulus,
     N3: Montgomery32NttModulus,
 {
+    fn transform_ntt(t: Self::T, len: usize) -> Self::F {
+        let npot = len.max(1).next_power_of_two();
+        let f = convert_crt_input(t, npot);
+        (
+            Convolve::<N1>::transform_ntt(f.0, npot),
+            Convolve::<N2>::transform_ntt(f.1, npot),
+            Convolve::<N3>::transform_ntt(f.2, npot),
+        )
+    }
+
+    fn inverse_transform_ntt(f: Self::F, len: usize) -> Self::T {
+        reconstruct_mint_crt((
+            Convolve::<N1>::inverse_transform_ntt(f.0, len),
+            Convolve::<N2>::inverse_transform_ntt(f.1, len),
+            Convolve::<N3>::inverse_transform_ntt(f.2, len),
+        ))
+    }
+
     fn ntt_doubling(f: Self::F) -> Self::F {
         (
             Convolve::<N1>::ntt_doubling(f.0),
@@ -791,7 +992,7 @@ where
                 if br[k].is_empty() {
                     let mut v = vec![0; 1 << k];
                     for i in 0..1 << k {
-                        v[i] = (v[i >> 1] >> 1) | ((i & 1) << (k.saturating_sub(1)));
+                        v[i] = (v[i >> 1] >> 1) | ((i & 1) << k.saturating_sub(1));
                     }
                     br[k] = v;
                 }
@@ -816,6 +1017,18 @@ where
             odd_mul_normal_neg_corrected(&f.1, &g.1, m),
             odd_mul_normal_neg_corrected(&f.2, &g.2, m),
         )
+    }
+
+    fn multiply_prefix(f: &mut Self::F, g: &Self::F) {
+        Convolve::<N1>::multiply_prefix(&mut f.0, &g.0);
+        Convolve::<N2>::multiply_prefix(&mut f.1, &g.1);
+        Convolve::<N3>::multiply_prefix(&mut f.2, &g.2);
+    }
+
+    fn multiply_add(sum: &mut Self::F, f: &Self::F, g: &Self::F) {
+        Convolve::<N1>::multiply_add(&mut sum.0, &f.0, &g.0);
+        Convolve::<N2>::multiply_add(&mut sum.1, &f.1, &g.1);
+        Convolve::<N3>::multiply_add(&mut sum.2, &f.2, &g.2);
     }
 }
 
@@ -866,16 +1079,17 @@ mod tests {
     #[test]
     fn test_ntt998244353() {
         let mut rng = Xorshift::default();
-        for t in 0..1000 {
-            let n: usize = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=120) } else { n };
-            let m: usize = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=120) } else { m };
-            let (n, m) = if t % 100 != 0 {
-                (n, m)
-            } else {
+        for _ in 0..1000 {
+            let (n, m) = if rng.random(0..100) == 0 {
                 let w = rng.random(6..=8);
                 ((1usize << w) + 1usize, (1usize << w) + 1usize)
+            } else {
+                let n = rng.random(0..=5);
+                let m = rng.random(0..=5);
+                (
+                    if n == 5 { rng.random(70..=120) } else { n },
+                    if m == 5 { rng.random(70..=120) } else { m },
+                )
             };
             let a: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
             let mut b: Vec<MInt998244353> = rng.random_iter(..).take(m).collect();
@@ -893,6 +1107,35 @@ mod tests {
             assert_eq!(c, d);
         }
         assert_eq!(NttInfo::new::<Modulo998244353>(), Modulo998244353::INFO);
+    }
+
+    #[test]
+    fn test_convolve_large_ntt() {
+        enum Modulo17 {}
+        impl MontgomeryReduction32 for Modulo17 {
+            const MOD: u32 = 17;
+        }
+        impl Montgomery32NttModulus for Modulo17 {}
+
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(101..=300);
+            let m = rng.random(101..=300);
+            let a: Vec<_> = rng
+                .random_iter(0u32..17)
+                .take(n)
+                .map(MInt::<Modulo17>::from)
+                .collect();
+            let b = if rng.random(0..2) == 0 {
+                a.clone()
+            } else {
+                rng.random_iter(0u32..17)
+                    .take(m)
+                    .map(MInt::<Modulo17>::from)
+                    .collect()
+            };
+            assert_eq!(convolve_naive(&a, &b), Convolve::<Modulo17>::convolve(a, b));
+        }
     }
 
     #[test]
@@ -921,16 +1164,31 @@ mod tests {
     fn test_convolve_u64() {
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
-            let n = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=400) } else { n };
-            let m = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=400) } else { m };
-            let a: Vec<u64> = rng.random_iter(0u64..1 << 24).take(n).collect();
-            let b: Vec<u64> = rng.random_iter(0u64..1 << 24).take(m).collect();
-            let mut c = vec![0; (n + m).saturating_sub(1)];
+            let wide = rng.random(0..100) == 0;
+            let (n, m) = if wide {
+                (rng.random(301..=400), rng.random(301..=400))
+            } else {
+                let n = rng.random(0..=5);
+                let m = rng.random(0..=5);
+                (
+                    if n == 5 { rng.random(70..=400) } else { n },
+                    if m == 5 { rng.random(70..=400) } else { m },
+                )
+            };
+            let a: Vec<u64> = if wide {
+                rng.random_iter(..).take(n).collect()
+            } else {
+                rng.random_iter(0u64..1 << 24).take(n).collect()
+            };
+            let b: Vec<u64> = if wide {
+                rng.random_iter(..).take(m).collect()
+            } else {
+                rng.random_iter(0u64..1 << 24).take(m).collect()
+            };
+            let mut c = vec![0u64; (n + m).saturating_sub(1)];
             for i in 0..n {
                 for j in 0..m {
-                    c[i + j] += a[i] * b[j];
+                    c[i + j] = c[i + j].wrapping_add(a[i].wrapping_mul(b[j]));
                 }
             }
             let d = U64Convolve::convolve(a, b);
@@ -948,20 +1206,19 @@ mod tests {
                 rng.random(1..=1000)
             };
             let a: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
-            let f = Convolve998244353::transform(a.clone(), n);
+            let f = Convolve998244353::transform_ntt(a.clone(), n);
 
             // doubling
             {
                 let f_double = Convolve998244353::ntt_doubling(f.clone());
                 let mut a = a.clone();
                 a.resize_with(n * 2, Zero::zero);
-                let f2 = Convolve998244353::transform(a, n * 2);
-                assert_eq!(f_double, f2);
+                assert_eq!(f_double, Convolve998244353::transform_ntt(a, n * 2));
             }
 
-            let f = Convolve998244353::transform(a.clone(), n * 2);
+            let f = Convolve998244353::transform_ntt(a.clone(), n * 2);
             let b: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
-            let g = Convolve998244353::transform(b.clone(), n * 2);
+            let g = Convolve998244353::transform_ntt(b.clone(), n * 2);
             let mut b_neg = b.clone();
             for b in b_neg.iter_mut().skip(1).step_by(2) {
                 *b = -*b;
@@ -974,8 +1231,7 @@ mod tests {
                     .into_iter()
                     .step_by(2)
                     .collect();
-                let fg = Convolve998244353::transform(ab_neg_even, n);
-                assert_eq!(fg_neg, fg);
+                assert_eq!(fg_neg, Convolve998244353::transform_ntt(ab_neg_even, n));
             }
 
             // odd_mul_normal_neg
@@ -986,8 +1242,7 @@ mod tests {
                     .skip(1)
                     .step_by(2)
                     .collect();
-                let fg = Convolve998244353::transform(ab_neg_odd, n);
-                assert_eq!(fg_neg, fg);
+                assert_eq!(fg_neg, Convolve998244353::transform_ntt(ab_neg_odd, n));
             }
         }
     }
@@ -1003,20 +1258,22 @@ mod tests {
                 rng.random(1..=1000)
             };
             let a: Vec<M> = rng.random_iter(..).take(n).collect();
-            let f = MIntConvolve::<Modulo1000000009>::transform(a.clone(), n);
+            let f = MIntConvolve::<Modulo1000000009>::transform_ntt(a.clone(), n);
 
             // doubling
             {
                 let f_double = MIntConvolve::<Modulo1000000009>::ntt_doubling(f.clone());
                 let mut a = a.clone();
                 a.resize_with(n * 2, Zero::zero);
-                let f2 = MIntConvolve::<Modulo1000000009>::transform(a, n * 2);
-                assert_eq!(f_double, f2);
+                assert_eq!(
+                    f_double,
+                    MIntConvolve::<Modulo1000000009>::transform_ntt(a, n * 2)
+                );
             }
 
-            let f = MIntConvolve::<Modulo1000000009>::transform(a.clone(), n * 2);
+            let f = MIntConvolve::<Modulo1000000009>::transform_ntt(a.clone(), n * 2);
             let b: Vec<M> = rng.random_iter(..).take(n).collect();
-            let g = MIntConvolve::<Modulo1000000009>::transform(b.clone(), n * 2);
+            let g = MIntConvolve::<Modulo1000000009>::transform_ntt(b.clone(), n * 2);
             let mut b_neg = b.clone();
             for b in b_neg.iter_mut().skip(1).step_by(2) {
                 *b = -*b;
@@ -1031,7 +1288,7 @@ mod tests {
                         .step_by(2)
                         .collect();
                 assert_eq!(
-                    MIntConvolve::<Modulo1000000009>::inverse_transform(fg_neg.clone(), n),
+                    MIntConvolve::<Modulo1000000009>::inverse_transform_ntt(fg_neg, n),
                     ab_neg_even
                 );
             }
@@ -1047,7 +1304,7 @@ mod tests {
                         .chain([M::zero()])
                         .collect();
                 assert_eq!(
-                    MIntConvolve::<Modulo1000000009>::inverse_transform(fg_neg.clone(), n),
+                    MIntConvolve::<Modulo1000000009>::inverse_transform_ntt(fg_neg, n),
                     ab_neg_odd
                 );
             }

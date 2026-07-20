@@ -195,18 +195,15 @@ where
     }
     pub fn diff(mut self) -> Self {
         let mut c = T::one();
-        for x in self.iter_mut().skip(1) {
-            *x *= &c;
+        for i in 1..self.length() {
+            self.data[i - 1] = self.data[i].clone() * &c;
             c += T::one();
         }
-        if self.length() > 0 {
-            self.data.remove(0);
-        }
+        self.data.pop();
         self
     }
     pub fn integral(mut self) -> Self {
         let n = self.length();
-        self.data.insert(0, Zero::zero());
         let mut fact = Vec::with_capacity(n + 1);
         let mut c = T::one();
         fact.push(c.clone());
@@ -215,11 +212,13 @@ where
             c += T::one();
         }
         let mut invf = T::one() / (fact.last().cloned().unwrap() * c.clone());
-        for x in self.iter_mut().skip(1).rev() {
-            *x *= invf.clone() * fact.pop().unwrap();
+        self.data.push(T::zero());
+        for i in (1..=n).rev() {
+            self.data[i] = self.data[i - 1].clone() * (invf.clone() * fact.pop().unwrap());
             invf *= c.clone();
             c -= T::one();
         }
+        self.data[0] = T::zero();
         self
     }
     pub fn parity_inversion(mut self) -> Self {
@@ -246,13 +245,23 @@ where
     C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn inv(&self, deg: usize) -> Self {
+        if deg == 0 {
+            return Self::zero();
+        }
         debug_assert!(!self[0].is_zero());
-        if self.data.iter().filter(|x| !x.is_zero()).count()
-            <= deg.next_power_of_two().trailing_zeros() as usize * 6
+        let sparse_limit = deg.next_power_of_two().trailing_zeros() as usize * 6;
+        if self
+            .data
+            .iter()
+            .take(deg)
+            .filter(|x| !x.is_zero())
+            .nth(sparse_limit)
+            .is_none()
         {
             let pos: Vec<_> = self
                 .data
                 .iter()
+                .take(deg)
                 .enumerate()
                 .skip(1)
                 .filter_map(|(i, x)| if x.is_zero() { None } else { Some(i) })
@@ -272,30 +281,49 @@ where
             return f;
         }
         let mut f = Self::from(T::one() / self[0].clone());
+        f.data.reserve(deg.saturating_sub(1));
+        let mut error = Vec::with_capacity(deg.next_power_of_two());
         let mut i = 1;
         while i < deg {
-            let g = self.prefix_ref((i * 2).min(deg));
-            let h = f.clone();
-            let mut g = C::transform(g.data, 2 * i);
-            let h = C::transform(h.data, 2 * i);
-            C::multiply(&mut g, &h);
-            let mut g = Self::from_vec(C::inverse_transform(g, 2 * i));
-            g >>= i;
-            let mut g = C::transform(g.data, 2 * i);
-            C::multiply(&mut g, &h);
-            let g = Self::from_vec(C::inverse_transform(g, 2 * i));
-            f.data.extend((-g).into_iter().take(i));
+            error.clear();
+            error.extend(
+                self.data[..(i * 2).min(deg).min(self.length())]
+                    .iter()
+                    .cloned(),
+            );
+            let factor = C::transform(f.data.clone(), 2 * i);
+            let mut error_fft = C::transform(error, 2 * i);
+            C::multiply(&mut error_fft, &factor);
+            error = C::inverse_transform(error_fft, 2 * i);
+            error.drain(..i);
+            let mut error_fft = C::transform(error, 2 * i);
+            C::multiply(&mut error_fft, &factor);
+            error = C::inverse_transform(error_fft, 2 * i);
+            error.truncate(i.min(deg - i));
+            f.data.extend(error.drain(..).map(Neg::neg));
             i *= 2;
         }
-        f.truncate(deg);
         f
     }
-    pub fn exp(&self, deg: usize) -> Self {
+    pub fn exp(&self, deg: usize) -> Self
+    where
+        C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
+    {
+        if deg == 0 {
+            return Self::zero();
+        }
         debug_assert!(self[0].is_zero());
-        if self.data.iter().filter(|x| !x.is_zero()).count()
-            <= deg.next_power_of_two().trailing_zeros() as usize * 16
+        let sparse_limit = deg.next_power_of_two().trailing_zeros() as usize * 16;
+        if self
+            .data
+            .iter()
+            .take(deg)
+            .filter(|x| !x.is_zero())
+            .nth(sparse_limit)
+            .is_none()
         {
-            let diff = self.clone().diff();
+            let diff = self.prefix_ref(deg).clone().diff();
             let pos: Vec<_> = diff
                 .data
                 .iter()
@@ -317,23 +345,163 @@ where
             }
             return f;
         }
-        let mut f = Self::one();
-        let mut i = 1;
-        while i < deg {
-            let mut g = -f.log(i * 2);
-            g[0] += T::one();
-            for (g, x) in g.iter_mut().zip(self.iter().take(i * 2)) {
-                *g += x.clone();
-            }
-            f = (f * g).prefix(i * 2);
-            i *= 2;
+        let indices: Vec<_> = (0..=deg).map(T::from).collect();
+        let modulus = <T::Base as MIntConvert<usize>>::mod_into();
+        let mut inv = vec![T::zero(); deg + 1];
+        inv[1] = T::one();
+        for i in 2..=deg {
+            inv[i] = -T::from(modulus / i) * &inv[modulus % i];
         }
-        f.prefix(deg)
+        let block = deg.next_power_of_two() / 32;
+        let (kernel, mut kernel_inverse, previous_inverse_fft) =
+            self.prefix_ref(block).exp_newton(block, &indices, &inv);
+        let mut error_fft = C::transform_ntt(kernel.data.clone(), block);
+        C::multiply_prefix(&mut error_fft, &previous_inverse_fft);
+        let error = C::inverse_transform_ntt(error_fft, block);
+        let mut error_fft = C::transform_ntt(error.into_iter().skip(block / 2).collect(), block);
+        C::multiply_prefix(&mut error_fft, &previous_inverse_fft);
+        let error = C::inverse_transform_ntt(error_fft, block / 2);
+        kernel_inverse
+            .data
+            .extend(error.into_iter().take(block / 2).map(Neg::neg));
+        let kernel_data = kernel.data;
+        let kernel_inverse_data = kernel_inverse.data;
+        let kernel_inverse = C::transform(kernel_inverse_data, block * 2);
+        let kernel = C::transform(kernel_data.clone(), block * 2);
+        let blocks = deg.div_ceil(block);
+        let mut derivative_ffts = Vec::with_capacity(blocks);
+        for q in 0..blocks {
+            let start = q * block;
+            let mut values = Self::zeros(block * 2);
+            for i in 0..block
+                .min(deg.saturating_sub(start))
+                .min(self.length().saturating_sub(start))
+            {
+                values[i] = self[start + i].clone() * &indices[start + i];
+            }
+            if q > 0 {
+                let start = start - block;
+                for i in 0..block.min(self.length().saturating_sub(start)) {
+                    values[block + i] = self[start + i].clone() * &indices[start + i];
+                }
+            }
+            derivative_ffts.push(C::transform_ntt(values.data, block * 2));
+        }
+
+        let mut result = kernel_data.clone();
+        result.reserve(deg - block);
+        let mut result_ffts = Vec::with_capacity(blocks - 1);
+        for q in 1..blocks {
+            result_ffts.push(C::transform_ntt(
+                result[(q - 1) * block..q * block].to_vec(),
+                block * 2,
+            ));
+            let mut sum_fft = derivative_ffts[q].clone();
+            C::multiply_prefix(&mut sum_fft, &result_ffts[0]);
+            for j in 1..q {
+                C::multiply_add(&mut sum_fft, &derivative_ffts[q - j], &result_ffts[j]);
+            }
+            let values = C::inverse_transform_ntt(sum_fft, block);
+            let mut values = C::transform(values, block * 2);
+            C::multiply(&mut values, &kernel_inverse);
+            let mut values = C::inverse_transform(values, block * 2);
+            values.truncate(block);
+            let len = block.min(deg - q * block);
+            for (i, value) in values.iter_mut().take(len).enumerate() {
+                *value *= &inv[q * block + i];
+            }
+            values[len..].fill(T::zero());
+            let mut values = C::transform(values, block * 2);
+            C::multiply(&mut values, &kernel);
+            let mut values = C::inverse_transform(values, block * 2);
+            values.truncate(len);
+            result.extend(values);
+        }
+        Self::from_vec(result)
+    }
+
+    fn exp_newton(&self, deg: usize, indices: &[T], inv: &[T]) -> (Self, Self, C::F)
+    where
+        C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
+    {
+        if deg == 1 {
+            let one = Self::one();
+            return (one.clone(), one.clone(), C::transform_ntt(one.data, 1));
+        }
+        let mut f = Self::from_vec(vec![T::one(), self.coeff(1)]);
+        let mut inverse = Self::one();
+        let mut inverse_fft = C::transform_ntt(inverse.data.clone(), 2);
+        let mut m = 2;
+        while m < deg {
+            let f_fft = C::transform_ntt(f.data.clone(), 2 * m);
+
+            let previous_inverse_fft = inverse_fft;
+            let mut error_fft = previous_inverse_fft.clone();
+            C::multiply_prefix(&mut error_fft, &f_fft);
+            let mut error = C::inverse_transform_ntt(error_fft, m);
+            error[..m / 2].fill(T::zero());
+            let mut error_fft = C::transform_ntt(error, m);
+            C::multiply_prefix(&mut error_fft, &previous_inverse_fft);
+            let error = C::inverse_transform_ntt(error_fft, m);
+            inverse
+                .data
+                .extend(error.into_iter().skip(m / 2).map(Neg::neg));
+            inverse_fft = C::transform_ntt(inverse.data.clone(), 2 * m);
+
+            let mut delta = Self::from_vec(
+                self.data
+                    .iter()
+                    .take(m)
+                    .enumerate()
+                    .skip(1)
+                    .map(|(i, value)| value.clone() * &indices[i])
+                    .collect(),
+            );
+            delta.resize(m);
+            let mut delta_fft = C::transform_ntt(delta.data, m);
+            C::multiply_prefix(&mut delta_fft, &f_fft);
+            let mut delta = Self::from_vec(C::inverse_transform_ntt(delta_fft, m));
+            for i in 1..f.length() {
+                delta[i - 1] -= f[i].clone() * &indices[i];
+            }
+            delta.resize(2 * m);
+            for i in (0..m - 1).rev() {
+                delta.data[m + i] = delta.data[i].clone();
+            }
+            delta.data[..m - 1].fill(T::zero());
+            let mut delta_fft = C::transform_ntt(delta.data, 2 * m);
+            C::multiply_prefix(&mut delta_fft, &inverse_fft);
+            let mut delta = C::inverse_transform_ntt(delta_fft, 2 * m);
+            delta.pop();
+            delta.push(T::zero());
+            let target = (2 * m).min(deg);
+            for i in (1..target).rev() {
+                delta[i] = delta[i - 1].clone() * &inv[i];
+            }
+            delta[0] = T::zero();
+            delta[target..].fill(T::zero());
+            for i in m..(2 * m).min(self.length()) {
+                delta[i] += self[i].clone();
+            }
+            delta[..m].fill(T::zero());
+            let mut delta_fft = C::transform_ntt(delta, 2 * m);
+            C::multiply_prefix(&mut delta_fft, &f_fft);
+            let delta = C::inverse_transform_ntt(delta_fft, 2 * m);
+            f.data
+                .extend(delta.into_iter().skip(m).take((deg - m).min(m)));
+            m *= 2;
+        }
+        (f, inverse, inverse_fft)
     }
     pub fn log(&self, deg: usize) -> Self {
         (self.inv(deg) * self.clone().diff()).integral().prefix(deg)
     }
-    pub fn pow(&self, rhs: usize, deg: usize) -> Self {
+    pub fn pow(&self, rhs: usize, deg: usize) -> Self
+    where
+        C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
+    {
         if rhs == 0 {
             return Self::from_vec(
                 once(T::one())
@@ -592,6 +760,8 @@ where
     pub fn count_subset_sum<F>(&self, deg: usize, mut inverse: F) -> Self
     where
         F: FnMut(usize) -> T,
+        C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
     {
         let n = self.length();
         let mut f = Self::zeros(n);
@@ -611,6 +781,8 @@ where
     pub fn count_multiset_sum<F>(&self, deg: usize, mut inverse: F) -> Self
     where
         F: FnMut(usize) -> T,
+        C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
     {
         let n = self.length();
         let mut f = Self::zeros(n);
@@ -639,8 +811,8 @@ where
             self.trim_tail_zeros();
         }
         let k = rhs.length().next_power_of_two();
-        let mut p = C::transform(self.data, k * 2);
-        let mut q = C::transform(rhs.data, k * 2);
+        let mut p = C::transform_ntt(self.data, k * 2);
+        let mut q = C::transform_ntt(rhs.data, k * 2);
         while n > 0 {
             let t = C::even_mul_normal_neg(&q, &q);
             p = if n.is_multiple_of(2) {
@@ -652,16 +824,16 @@ where
             n /= 2;
             if n != 0 {
                 if C::MULTIPLE {
-                    p = C::transform(C::inverse_transform(p, k), k * 2);
-                    q = C::transform(C::inverse_transform(q, k), k * 2);
+                    p = C::transform_ntt(C::inverse_transform_ntt(p, k), k * 2);
+                    q = C::transform_ntt(C::inverse_transform_ntt(q, k), k * 2);
                 } else {
                     p = C::ntt_doubling(p);
                     q = C::ntt_doubling(q);
                 }
             }
         }
-        let p = C::inverse_transform(p, k);
-        let q = C::inverse_transform(q, k);
+        let p = C::inverse_transform_ntt(p, k);
+        let q = C::inverse_transform_ntt(q, k);
         res + p[0].clone() / q[0].clone()
     }
     /// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
@@ -862,12 +1034,12 @@ where
             let len_pot = len.max(1).next_power_of_two();
             let half = len_pot / 2;
 
-            let p_fft = C::transform(p_flat, len);
-            let q_fft = C::transform(q_flat, len);
+            let p_fft = C::transform_ntt(p_flat, len);
+            let q_fft = C::transform_ntt(q_flat, len);
             let pr_fft = C::odd_mul_normal_neg(&p_fft, &q_fft);
             let qr_fft = C::even_mul_normal_neg(&q_fft, &q_fft);
-            let mut pr = C::inverse_transform(pr_fft, half);
-            let mut qr = C::inverse_transform(qr_fft, half);
+            let mut pr = C::inverse_transform_ntt(pr_fft, half);
+            let mut qr = C::inverse_transform_ntt(qr_fft, half);
 
             let new_py = (py + qy - 1).min(y_limit);
             let new_qy = (qy + qy - 1).min(y_limit);
@@ -925,6 +1097,7 @@ where
     pub fn compositional_inverse(&self, deg: usize) -> Self
     where
         C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
     {
         if deg == 0 {
             return Self::zero();
@@ -994,6 +1167,56 @@ where
 mod tests {
     use super::*;
     use crate::{num::mint_basic::Modulo1000000009, rand, tools::Xorshift};
+
+    #[test]
+    fn test_diff_integral() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1..=300);
+            let f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            let expected_diff = Fps998244353::from_vec(
+                (1..n)
+                    .map(|i| f[i] * MInt998244353::from(i as u32))
+                    .collect(),
+            );
+            let expected_integral = Fps998244353::from_vec(
+                std::iter::once(MInt998244353::zero())
+                    .chain(
+                        f.iter()
+                            .enumerate()
+                            .map(|(i, &x)| x / MInt998244353::from(i as u32 + 1)),
+                    )
+                    .collect(),
+            );
+            assert_eq!(expected_diff, f.clone().diff());
+            assert_eq!(expected_integral, f.integral());
+        }
+    }
+
+    #[test]
+    fn test_exp() {
+        let mut rng = Xorshift::default();
+        for _ in 0..30 {
+            let deg = rng.random(0usize..=600);
+            let n = rng.random(deg.max(1)..=deg + 100);
+            let mut f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            assert_eq!(Fps998244353::zero(), f.inv(0));
+            f[0] = MInt998244353::zero();
+            assert_eq!(Fps998244353::zero(), f.exp(0));
+            let mut expected = Fps998244353::zeros(deg);
+            if deg > 0 {
+                expected[0] = MInt998244353::one();
+            }
+            for i in 1..deg {
+                let mut value = MInt998244353::zero();
+                for j in 1..=i {
+                    value += f[j] * MInt998244353::from(j as u32) * expected[i - j];
+                }
+                expected[i] = value / MInt998244353::from(i as u32);
+            }
+            assert_eq!(expected, f.exp(deg));
+        }
+    }
 
     #[test]
     fn test_bostan_mori() {
@@ -1072,7 +1295,7 @@ mod tests {
     fn test_mul_of_pow_sparse() {
         let mut rng = Xorshift::default();
         for _ in 0..200 {
-            let n = rng.random(1usize..100);
+            let n = rng.random(0usize..100);
             let prob = rng.random(0u32..100) as f64 / 100.0;
             let exp_p = rng.random(-5isize..5);
             let exp_q = rng.random(-5isize..5);
