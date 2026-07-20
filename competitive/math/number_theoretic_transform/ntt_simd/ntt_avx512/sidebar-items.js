@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["add_vec_avx512","intt_avx512","mul_vec_avx512","normalize_avx512","ntt_avx512","pointwise_multiply_avx512","sub_vec_avx512"]};
+window.SIDEBAR_ITEMS = {"fn":["add_vec_avx512","intt_avx512","mul_vec_avx512","normalize_avx512","ntt_avx512","pointwise_multiply_add_avx512","pointwise_multiply_avx512","sub_vec_avx512"]};
