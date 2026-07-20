@@ -27,17 +27,29 @@ pub trait One: Sized {
     }
 }
 macro_rules! impl_zero_one {
-    ($({$Trait:ident $method:ident $($t:ty)*, $e:expr})*) => {$($(
+    ($({$(<$T:ident: $Bound:ident>)? $Trait:ident $method:ident $($t:ty)*, $e:expr})*) => {$(
+        impl_zero_one!(@impl [$(<$T: $Bound>)?] $Trait $method [$($t)*], $e);
+    )*};
+    (@impl [<$T:ident: $Bound:ident>] $Trait:ident $method:ident [$($t:ty)*], $e:expr) => {$(
+        impl<$T: $Bound> $Trait for $t {
+            fn $method() -> Self {
+                $e
+            }
+        }
+    )*};
+    (@impl [] $Trait:ident $method:ident [$($t:ty)*], $e:expr) => {$(
         impl $Trait for $t {
             fn $method() -> Self {
                 $e
             }
-        })*)*
-    };
+        }
+    )*};
 }
 impl_zero_one!(
     {Zero zero u8 u16 u32 u64 usize i8 i16 i32 i64 isize u128 i128, 0}
     {Zero zero f32 f64, 0.}
     {One one u8 u16 u32 u64 usize i8 i16 i32 i64 isize u128 i128, 1}
     {One one f32 f64, 1.}
+    {<T: Zero> Zero zero std::num::Wrapping<T>, Self(T::zero())}
+    {<T: One> One one std::num::Wrapping<T>, Self(T::one())}
 );

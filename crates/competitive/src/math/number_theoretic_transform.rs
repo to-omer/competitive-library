@@ -7,6 +7,7 @@ use super::{SimdBackend, avx512_supported, simd_backend};
 use std::{
     cell::UnsafeCell,
     marker::PhantomData,
+    num::Wrapping,
     ops::{AddAssign, Mul, SubAssign},
 };
 
@@ -702,7 +703,9 @@ where
                 let d2 = ((c2 - MInt::<N2>::from(d1)) * t1).inner();
                 let x = MInt::<N3>::new(d1) + MInt::<N3>::new(d2) * m1_3;
                 let d3 = ((c3 - x) * t2).inner();
-                d1 as u64 + d2 as u64 * m1 + d3 as u64 * m2
+                (d1 as u64)
+                    .wrapping_add((d2 as u64).wrapping_mul(m1))
+                    .wrapping_add((d3 as u64).wrapping_mul(m2))
             })
             .collect()
     }
@@ -714,11 +717,18 @@ where
     }
 
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
-        if Self::length(&a).max(Self::length(&b)) <= 300 {
-            return convolve_karatsuba(&a, &b);
-        }
-        if Self::length(&a).min(Self::length(&b)) <= 60 {
-            return convolve_naive(&a, &b);
+        let max_len = Self::length(&a).max(Self::length(&b));
+        if max_len <= 300 || Self::length(&a).min(Self::length(&b)) <= 60 {
+            let a_wrapping: &[Wrapping<u64>] =
+                unsafe { std::slice::from_raw_parts(a.as_ptr().cast(), a.len()) };
+            let b_wrapping: &[Wrapping<u64>] =
+                unsafe { std::slice::from_raw_parts(b.as_ptr().cast(), b.len()) };
+            let mut c = std::mem::ManuallyDrop::new(if max_len <= 300 {
+                convolve_karatsuba(a_wrapping, b_wrapping)
+            } else {
+                convolve_naive(a_wrapping, b_wrapping)
+            });
+            return unsafe { Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         if len.next_power_of_two() <= 1 << 21 {
