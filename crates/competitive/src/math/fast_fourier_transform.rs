@@ -355,6 +355,19 @@ fn bit_reverse<T>(f: &mut [T]) {
     }
 }
 
+fn real_twiddles(n: usize, inverse: bool, mut f: impl FnMut(usize, Complex<f64>)) {
+    const BLOCK: usize = 256;
+    let sign = if inverse { 1.0 } else { -1.0 };
+    let step = Complex::primitive_nth_root_of_unity(sign * n as f64);
+    for start in (1..n / 4).step_by(BLOCK) {
+        let mut w = Complex::polar(1.0, sign * std::f64::consts::TAU * start as f64 / n as f64);
+        for k in start..(start + BLOCK).min(n / 4) {
+            f(k, w);
+            w *= step;
+        }
+    }
+}
+
 pub fn transform_real(t: impl IntoIterator<Item = f64>, len: usize) -> Vec<Complex<f64>> {
     let n = len.max(4).next_power_of_two();
     let mut f = vec![Complex::zero(); n / 2];
@@ -369,15 +382,12 @@ pub fn transform_real(t: impl IntoIterator<Item = f64>, len: usize) -> Vec<Compl
     bit_reverse(&mut f);
     f[0] = Complex::new(f[0].re + f[0].im, f[0].re - f[0].im);
     f[n / 4] = f[n / 4].conjugate();
-    let w = Complex::primitive_nth_root_of_unity(-(n as f64));
-    let mut wk = Complex::<f64>::one();
-    for k in 1..n / 4 {
-        wk *= w;
+    real_twiddles(n, false, |k, wk| {
         let c = wk.conjugate().transpose() + 1.;
         let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
         f[k] -= d;
         f[n / 2 - k] += d.conjugate();
-    }
+    });
     f
 }
 
@@ -386,15 +396,12 @@ pub fn inverse_transform_real(mut f: Vec<Complex<f64>>, len: usize) -> Vec<f64> 
     assert_eq!(f.len(), n / 2);
     f[0] = Complex::new((f[0].re + f[0].im) * 0.5, (f[0].re - f[0].im) * 0.5);
     f[n / 4] = f[n / 4].conjugate();
-    let w = Complex::primitive_nth_root_of_unity(n as f64);
-    let mut wk = Complex::<f64>::one();
-    for k in 1..n / 4 {
-        wk *= w;
+    real_twiddles(n, true, |k, wk| {
         let c = wk.transpose().conjugate() + 1.;
         let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
         f[k] -= d;
         f[n / 2 - k] += d.conjugate();
-    }
+    });
     bit_reverse(&mut f);
     ifft(&mut f);
     let inv = 1. / (n / 2) as f64;

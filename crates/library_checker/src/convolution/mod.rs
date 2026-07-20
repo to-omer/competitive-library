@@ -2,6 +2,8 @@ pub mod bitwise_and_convolution;
 pub mod bitwise_xor_convolution;
 pub mod convolution_mod;
 pub mod convolution_mod_1000000007;
+pub mod convolution_mod_2_64;
+pub mod convolution_mod_large;
 pub mod gcd_convolution;
 pub mod lcm_convolution;
 pub mod min_plus_convolution_concave_arbitrary;
