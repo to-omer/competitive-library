@@ -52,50 +52,50 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">bit_reverse</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>fast_<wbr>fourier_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">fast_fourier_transform</a></div><h1>Function <span class="fn">bit_<wbr>reverse</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/fast_fourier_transform.rs.html#37-66">Source</a> </span></div><pre class="rust item-decl"><code>fn bit_reverse&lt;T&gt;(f: &amp;mut <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/competitive/math/fast_fourier_transform.rs.html#79&#34;,&#34;line 79&#34;],[[40,40],&#34;../../../src/competitive/math/fast_fourier_transform.rs.html#108&#34;,&#34;line 108&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#79">line 79</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>68</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
-<span data-nosnippet>69</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>70</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
-<span data-nosnippet>71</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
-<span data-nosnippet>72</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>73</span>            f[i / <span class="number">2</span>].re = t;
-<span data-nosnippet>74</span>        } <span class="kw">else </span>{
-<span data-nosnippet>75</span>            f[i / <span class="number">2</span>].im = t;
-<span data-nosnippet>76</span>        }
-<span data-nosnippet>77</span>    }
-<span data-nosnippet>78</span>    fft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>79</span>    <span class="highlight focus">bit_reverse</span>(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>80</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
-<span data-nosnippet>81</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
-<span data-nosnippet>82</span>    <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(-(n <span class="kw">as </span>f64));
-<span data-nosnippet>83</span>    <span class="kw">let </span><span class="kw-2">mut </span>wk = Complex::&lt;f64&gt;::one();
-<span data-nosnippet>84</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..n / <span class="number">4 </span>{
-<span data-nosnippet>85</span>        wk <span class="kw-2">*</span>= w;
-<span data-nosnippet>86</span>        <span class="kw">let </span>c = wk.conjugate().transpose() + <span class="number">1.</span>;
-<span data-nosnippet>87</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
-<span data-nosnippet>88</span>        f[k] -= d;
-<span data-nosnippet>89</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
-<span data-nosnippet>90</span>    }
-<span data-nosnippet>91</span>    f
-<span data-nosnippet>92</span>}
-<span data-nosnippet>93</span>
-<span data-nosnippet>94</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>95</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>96</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
-<span data-nosnippet>97</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
-<span data-nosnippet>98</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
-<span data-nosnippet>99</span>    <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(n <span class="kw">as </span>f64);
-<span data-nosnippet>100</span>    <span class="kw">let </span><span class="kw-2">mut </span>wk = Complex::&lt;f64&gt;::one();
-<span data-nosnippet>101</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..n / <span class="number">4 </span>{
-<span data-nosnippet>102</span>        wk <span class="kw-2">*</span>= w;
-<span data-nosnippet>103</span>        <span class="kw">let </span>c = wk.transpose().conjugate() + <span class="number">1.</span>;
-<span data-nosnippet>104</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
-<span data-nosnippet>105</span>        f[k] -= d;
-<span data-nosnippet>106</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
-<span data-nosnippet>107</span>    }
-<span data-nosnippet>108</span>    <span class="highlight">bit_reverse</span>(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>109</span>    ifft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>110</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
-<span data-nosnippet>111</span>    (<span class="number">0</span>..len)
-<span data-nosnippet>112</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
-<span data-nosnippet>113</span>        .collect()
-<span data-nosnippet>114</span>}</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">bit_reverse</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>fast_<wbr>fourier_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">fast_fourier_transform</a></div><h1>Function <span class="fn">bit_<wbr>reverse</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/fast_fourier_transform.rs.html#327-356">Source</a> </span></div><pre class="rust item-decl"><code>fn bit_reverse&lt;T&gt;(f: &amp;mut <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/competitive/math/fast_fourier_transform.rs.html#369&#34;,&#34;line 369&#34;],[[40,40],&#34;../../../src/competitive/math/fast_fourier_transform.rs.html#398&#34;,&#34;line 398&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#369">line 369</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>358</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
+<span data-nosnippet>359</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>360</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
+<span data-nosnippet>361</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
+<span data-nosnippet>362</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>363</span>            f[i / <span class="number">2</span>].re = t;
+<span data-nosnippet>364</span>        } <span class="kw">else </span>{
+<span data-nosnippet>365</span>            f[i / <span class="number">2</span>].im = t;
+<span data-nosnippet>366</span>        }
+<span data-nosnippet>367</span>    }
+<span data-nosnippet>368</span>    fft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>369</span>    <span class="highlight focus">bit_reverse</span>(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>370</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
+<span data-nosnippet>371</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
+<span data-nosnippet>372</span>    <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(-(n <span class="kw">as </span>f64));
+<span data-nosnippet>373</span>    <span class="kw">let </span><span class="kw-2">mut </span>wk = Complex::&lt;f64&gt;::one();
+<span data-nosnippet>374</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..n / <span class="number">4 </span>{
+<span data-nosnippet>375</span>        wk <span class="kw-2">*</span>= w;
+<span data-nosnippet>376</span>        <span class="kw">let </span>c = wk.conjugate().transpose() + <span class="number">1.</span>;
+<span data-nosnippet>377</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>378</span>        f[k] -= d;
+<span data-nosnippet>379</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
+<span data-nosnippet>380</span>    }
+<span data-nosnippet>381</span>    f
+<span data-nosnippet>382</span>}
+<span data-nosnippet>383</span>
+<span data-nosnippet>384</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>385</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>386</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
+<span data-nosnippet>387</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
+<span data-nosnippet>388</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
+<span data-nosnippet>389</span>    <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(n <span class="kw">as </span>f64);
+<span data-nosnippet>390</span>    <span class="kw">let </span><span class="kw-2">mut </span>wk = Complex::&lt;f64&gt;::one();
+<span data-nosnippet>391</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..n / <span class="number">4 </span>{
+<span data-nosnippet>392</span>        wk <span class="kw-2">*</span>= w;
+<span data-nosnippet>393</span>        <span class="kw">let </span>c = wk.transpose().conjugate() + <span class="number">1.</span>;
+<span data-nosnippet>394</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>395</span>        f[k] -= d;
+<span data-nosnippet>396</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
+<span data-nosnippet>397</span>    }
+<span data-nosnippet>398</span>    <span class="highlight">bit_reverse</span>(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>399</span>    ifft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>400</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
+<span data-nosnippet>401</span>    (<span class="number">0</span>..len)
+<span data-nosnippet>402</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
+<span data-nosnippet>403</span>        .collect()
+<span data-nosnippet>404</span>}</code></pre></div></div></div></section></div></main></body></html>

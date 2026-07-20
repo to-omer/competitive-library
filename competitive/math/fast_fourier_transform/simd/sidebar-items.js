@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["dot_one_soa","eval_twiddle","fft_soa","ifft_soa","load4","middle_product_f64_avx2","mul4","multiply_accumulate4","pack_f64","store4"],"struct":["Complex4"]};

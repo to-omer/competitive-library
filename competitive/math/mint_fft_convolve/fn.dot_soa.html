@@ -52,51 +52,51 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">dot_soa</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>mint_<wbr>fft_<wbr>convolve</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">mint_fft_convolve</a></div><h1>Function <span class="fn">dot_soa</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/mint_fft_convolve.rs.html#275-314">Source</a> </span></div><pre class="rust item-decl"><code>unsafe fn dot_soa(
-    a0: &amp;mut [<a class="struct" href="struct.Complex4.html" title="struct competitive::math::mint_fft_convolve::Complex4">Complex4</a>],
-    a1: &amp;mut [<a class="struct" href="struct.Complex4.html" title="struct competitive::math::mint_fft_convolve::Complex4">Complex4</a>],
-    b0: &amp;mut [<a class="struct" href="struct.Complex4.html" title="struct competitive::math::mint_fft_convolve::Complex4">Complex4</a>],
-    b1: &amp;[<a class="struct" href="struct.Complex4.html" title="struct competitive::math::mint_fft_convolve::Complex4">Complex4</a>],
-)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/math/mint_fft_convolve.rs.html#527&#34;,&#34;line 527&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../../src/competitive/math/mint_fft_convolve.rs.html#527">line 527</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>513</span><span class="kw">pub unsafe fn </span>convolve_mint_avx2&lt;M&gt;(a: Vec&lt;MInt&lt;M&gt;&gt;, b: Vec&lt;MInt&lt;M&gt;&gt;) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
-<span data-nosnippet>514</span><span class="kw">where
-<span data-nosnippet>515</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
-<span data-nosnippet>516</span>{
-<span data-nosnippet>517</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
-<span data-nosnippet>518</span>    <span class="kw">let </span>n = len.next_power_of_two() / <span class="number">2</span>;
-<span data-nosnippet>519</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>i64;
-<span data-nosnippet>520</span>    <span class="kw">let </span>split = (modulus <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>i64 + <span class="number">1</span>;
-<span data-nosnippet>521</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>a0, <span class="kw-2">mut </span>a1) = split_coefficients(a, n, modulus, split);
-<span data-nosnippet>522</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>b0, <span class="kw-2">mut </span>b1) = split_coefficients(b, n, modulus, split);
-<span data-nosnippet>523</span>    fft_soa(<span class="kw-2">&amp;mut </span>a0);
-<span data-nosnippet>524</span>    fft_soa(<span class="kw-2">&amp;mut </span>a1);
-<span data-nosnippet>525</span>    fft_soa(<span class="kw-2">&amp;mut </span>b0);
-<span data-nosnippet>526</span>    fft_soa(<span class="kw-2">&amp;mut </span>b1);
-<span data-nosnippet>527</span>    <span class="highlight focus">dot_soa</span>(<span class="kw-2">&amp;mut </span>a0, <span class="kw-2">&amp;mut </span>a1, <span class="kw-2">&amp;mut </span>b0, <span class="kw-2">&amp;</span>b1);
-<span data-nosnippet>528</span>    drop(b1);
-<span data-nosnippet>529</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a0);
-<span data-nosnippet>530</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a1);
-<span data-nosnippet>531</span>    ifft_soa(<span class="kw-2">&amp;mut </span>b0);
-<span data-nosnippet>532</span>    <span class="kw">let </span>modulus = modulus <span class="kw">as </span>u64;
-<span data-nosnippet>533</span>    <span class="kw">let </span>split = split <span class="kw">as </span>u64;
-<span data-nosnippet>534</span>    <span class="kw">let </span>split2 = split * split % modulus;
-<span data-nosnippet>535</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::from(<span class="number">0u32</span>); len];
-<span data-nosnippet>536</span>    <span class="kw">for </span>(block, ((a0, a1), b0)) <span class="kw">in </span>a0.iter().zip(<span class="kw-2">&amp;</span>a1).zip(<span class="kw-2">&amp;</span>b0).enumerate() {
-<span data-nosnippet>537</span>        <span class="kw">let </span>values = [
-<span data-nosnippet>538</span>            [round4(<span class="kw-2">&amp;</span>a0.re), round4(<span class="kw-2">&amp;</span>a1.re), round4(<span class="kw-2">&amp;</span>b0.re)],
-<span data-nosnippet>539</span>            [round4(<span class="kw-2">&amp;</span>a0.im), round4(<span class="kw-2">&amp;</span>a1.im), round4(<span class="kw-2">&amp;</span>b0.im)],
-<span data-nosnippet>540</span>        ];
-<span data-nosnippet>541</span>        <span class="kw">for </span>(part, values) <span class="kw">in </span>values.into_iter().enumerate() {
-<span data-nosnippet>542</span>            <span class="kw">for </span>(lane, value0) <span class="kw">in </span>values[<span class="number">0</span>].into_iter().enumerate() {
-<span data-nosnippet>543</span>                <span class="kw">let </span>i = block * <span class="number">4 </span>+ lane + part * n;
-<span data-nosnippet>544</span>                <span class="kw">if </span>i &lt; len {
-<span data-nosnippet>545</span>                    <span class="kw">let </span>value = (value0.rem_euclid(modulus <span class="kw">as </span>i64) <span class="kw">as </span>u64
-<span data-nosnippet>546</span>                        + values[<span class="number">1</span>][lane].rem_euclid(modulus <span class="kw">as </span>i64) <span class="kw">as </span>u64 * split
-<span data-nosnippet>547</span>                        + values[<span class="number">2</span>][lane].rem_euclid(modulus <span class="kw">as </span>i64) <span class="kw">as </span>u64 * split2)
-<span data-nosnippet>548</span>                        % modulus;
-<span data-nosnippet>549</span>                    result[i] = MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32);
-<span data-nosnippet>550</span>                }
-<span data-nosnippet>551</span>            }
-<span data-nosnippet>552</span>        }
-<span data-nosnippet>553</span>    }
-<span data-nosnippet>554</span>    result
-<span data-nosnippet>555</span>}</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">dot_soa</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>mint_<wbr>fft_<wbr>convolve</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">mint_fft_convolve</a></div><h1>Function <span class="fn">dot_soa</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/mint_fft_convolve.rs.html#62-101">Source</a> </span></div><pre class="rust item-decl"><code>unsafe fn dot_soa(
+    a0: &amp;mut [<a class="struct" href="../fast_fourier_transform/simd/struct.Complex4.html" title="struct competitive::math::fast_fourier_transform::simd::Complex4">Complex4</a>],
+    a1: &amp;mut [<a class="struct" href="../fast_fourier_transform/simd/struct.Complex4.html" title="struct competitive::math::fast_fourier_transform::simd::Complex4">Complex4</a>],
+    b0: &amp;mut [<a class="struct" href="../fast_fourier_transform/simd/struct.Complex4.html" title="struct competitive::math::fast_fourier_transform::simd::Complex4">Complex4</a>],
+    b1: &amp;[<a class="struct" href="../fast_fourier_transform/simd/struct.Complex4.html" title="struct competitive::math::fast_fourier_transform::simd::Complex4">Complex4</a>],
+)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/math/mint_fft_convolve.rs.html#233&#34;,&#34;line 233&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../../src/competitive/math/mint_fft_convolve.rs.html#233">line 233</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>219</span><span class="kw">pub unsafe fn </span>convolve_mint_avx2&lt;M&gt;(a: Vec&lt;MInt&lt;M&gt;&gt;, b: Vec&lt;MInt&lt;M&gt;&gt;) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
+<span data-nosnippet>220</span><span class="kw">where
+<span data-nosnippet>221</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
+<span data-nosnippet>222</span>{
+<span data-nosnippet>223</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
+<span data-nosnippet>224</span>    <span class="kw">let </span>n = len.next_power_of_two() / <span class="number">2</span>;
+<span data-nosnippet>225</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>i64;
+<span data-nosnippet>226</span>    <span class="kw">let </span>split = (modulus <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>i64 + <span class="number">1</span>;
+<span data-nosnippet>227</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>a0, <span class="kw-2">mut </span>a1) = split_coefficients(a, n, modulus, split);
+<span data-nosnippet>228</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>b0, <span class="kw-2">mut </span>b1) = split_coefficients(b, n, modulus, split);
+<span data-nosnippet>229</span>    fft_soa(<span class="kw-2">&amp;mut </span>a0);
+<span data-nosnippet>230</span>    fft_soa(<span class="kw-2">&amp;mut </span>a1);
+<span data-nosnippet>231</span>    fft_soa(<span class="kw-2">&amp;mut </span>b0);
+<span data-nosnippet>232</span>    fft_soa(<span class="kw-2">&amp;mut </span>b1);
+<span data-nosnippet>233</span>    <span class="highlight focus">dot_soa</span>(<span class="kw-2">&amp;mut </span>a0, <span class="kw-2">&amp;mut </span>a1, <span class="kw-2">&amp;mut </span>b0, <span class="kw-2">&amp;</span>b1);
+<span data-nosnippet>234</span>    drop(b1);
+<span data-nosnippet>235</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a0);
+<span data-nosnippet>236</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a1);
+<span data-nosnippet>237</span>    ifft_soa(<span class="kw-2">&amp;mut </span>b0);
+<span data-nosnippet>238</span>    <span class="kw">let </span>modulus = modulus <span class="kw">as </span>u64;
+<span data-nosnippet>239</span>    <span class="kw">let </span>split = split <span class="kw">as </span>u64;
+<span data-nosnippet>240</span>    <span class="kw">let </span>split2 = split * split % modulus;
+<span data-nosnippet>241</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::from(<span class="number">0u32</span>); len];
+<span data-nosnippet>242</span>    <span class="kw">for </span>(block, ((a0, a1), b0)) <span class="kw">in </span>a0.iter().zip(<span class="kw-2">&amp;</span>a1).zip(<span class="kw-2">&amp;</span>b0).enumerate() {
+<span data-nosnippet>243</span>        <span class="kw">let </span>values = [
+<span data-nosnippet>244</span>            [round4(<span class="kw-2">&amp;</span>a0.re), round4(<span class="kw-2">&amp;</span>a1.re), round4(<span class="kw-2">&amp;</span>b0.re)],
+<span data-nosnippet>245</span>            [round4(<span class="kw-2">&amp;</span>a0.im), round4(<span class="kw-2">&amp;</span>a1.im), round4(<span class="kw-2">&amp;</span>b0.im)],
+<span data-nosnippet>246</span>        ];
+<span data-nosnippet>247</span>        <span class="kw">for </span>(part, values) <span class="kw">in </span>values.into_iter().enumerate() {
+<span data-nosnippet>248</span>            <span class="kw">for </span>(lane, value0) <span class="kw">in </span>values[<span class="number">0</span>].into_iter().enumerate() {
+<span data-nosnippet>249</span>                <span class="kw">let </span>i = block * <span class="number">4 </span>+ lane + part * n;
+<span data-nosnippet>250</span>                <span class="kw">if </span>i &lt; len {
+<span data-nosnippet>251</span>                    <span class="kw">let </span>value = (value0.rem_euclid(modulus <span class="kw">as </span>i64) <span class="kw">as </span>u64
+<span data-nosnippet>252</span>                        + values[<span class="number">1</span>][lane].rem_euclid(modulus <span class="kw">as </span>i64) <span class="kw">as </span>u64 * split
+<span data-nosnippet>253</span>                        + values[<span class="number">2</span>][lane].rem_euclid(modulus <span class="kw">as </span>i64) <span class="kw">as </span>u64 * split2)
+<span data-nosnippet>254</span>                        % modulus;
+<span data-nosnippet>255</span>                    result[i] = MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32);
+<span data-nosnippet>256</span>                }
+<span data-nosnippet>257</span>            }
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>    }
+<span data-nosnippet>260</span>    result
+<span data-nosnippet>261</span>}</code></pre></div></div></div></section></div></main></body></html>
