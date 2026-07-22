@@ -9,6 +9,14 @@ SIZE = 15
 
 verify_packages = ["aizu_online_judge", "library_checker"]
 
+# Generates about 12 GB of test data.
+excluded_verify_tests = {
+    (
+        "library_checker",
+        "convolution::convolution_mod_large::verify_convolution_mod_large",
+    ),
+}
+
 
 def cargo_verify(package: str, name: str):
     res = run(
@@ -44,7 +52,9 @@ def verify_list():
         ]
         res = run(command, stdout=PIPE)
         for s in res.stdout.splitlines():
-            yield (package, s.split()[0][:-1].decode("utf-8"))
+            name = s.split()[0][:-1].decode("utf-8")
+            if (package, name) not in excluded_verify_tests:
+                yield (package, name)
 
 
 def arrange_artifacts():

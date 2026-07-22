@@ -4,7 +4,10 @@ use competitive::{
     num::montgomery::MInt998244353,
 };
 
-#[verify::library_checker("convolution_mod_large")]
+#[cfg_attr(
+    not(feature = "verify_doc"),
+    verify::library_checker("convolution_mod_large")
+)]
 pub fn convolution_mod_large(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

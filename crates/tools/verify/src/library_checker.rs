@@ -60,6 +60,16 @@ impl Display for CheckerBinaryNotFound {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+struct SampleTestcaseNotFound;
+
+impl Error for SampleTestcaseNotFound {}
+impl Display for SampleTestcaseNotFound {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("sample testcase not found")
+    }
+}
+
 #[derive(Debug)]
 struct LibraryCheckerProblemsPrepareFailed {
     status: Option<i32>,
@@ -147,6 +157,13 @@ fn casename(name: &str, i: usize) -> Option<String> {
     .map(|name| format!("{}_{:02}", name, i))
 }
 
+fn is_sample_testcase(name: &str) -> bool {
+    let name = name.to_ascii_lowercase();
+    name.contains("example")
+        || name.contains("sample")
+        || name.contains("small") && !name.contains("large")
+}
+
 fn find_problem(rootdir: &PathBuf, problem: &str) -> BoxResult<LibraryCheckerProblem> {
     for entry in read_dir(rootdir)?.flatten() {
         let mut path = entry.path();
@@ -209,7 +226,10 @@ fn prepare_library_checker_problems() -> BoxResult<PathBuf> {
     Ok(rootdir)
 }
 
-pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, CheckerBinary)> {
+pub fn get_testcases_and_checker(
+    problem_id: &str,
+    sample_only: bool,
+) -> BoxResult<(Vec<TestCase>, CheckerBinary)> {
     let rootdir = prepare_library_checker_problems()?;
 
     let problem_lock_file = File::create(app_cache_directory().join(format!(
@@ -249,6 +269,9 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
     }
 
     for case in &problem.info.tests {
+        if sample_only && !is_sample_testcase(&case.name) {
+            continue;
+        }
         for i in 0..case.number {
             if let Some(name) = casename(&case.name, i) {
                 let input = indir.join(&name).with_extension("in");
@@ -261,11 +284,29 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
             }
         }
     }
+    if sample_only && cases.is_empty() {
+        Err(SampleTestcaseNotFound)?;
+    }
 
     let mut command = Command::new(option_env!("PYTHON").unwrap_or("python3"));
-    command
-        .arg(rootdir.join("generate.py"))
-        .arg(problem.problemdir.join("info.toml"));
+    if sample_only {
+        command
+            .arg(Path::new(env!("CARGO_MANIFEST_DIR")).join("generate_sample.py"))
+            .arg(&rootdir)
+            .arg(&problem.problemdir)
+            .args(
+                problem
+                    .info
+                    .tests
+                    .iter()
+                    .filter(|case| is_sample_testcase(&case.name))
+                    .map(|case| &case.name),
+            );
+    } else {
+        command
+            .arg(rootdir.join("generate.py"))
+            .arg(problem.problemdir.join("info.toml"));
+    }
     if OS == "macos" {
         // FIXME: Remove this when library-checker-problems accepts Apple clang 21's
         // -Wmisleading-indentation warning in sharp_p_subset_sum/correct.cpp.
@@ -368,9 +409,37 @@ pub fn get_problem_list() -> BoxResult<Vec<(String, Vec<String>)>> {
     Ok(problems)
 }
 
-#[test]
-fn test_aplusb() -> BoxResult<()> {
-    let res = get_testcases_and_checker("aplusb")?;
-    eprintln!("res = {:?}", res);
-    Ok(())
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_aplusb() -> BoxResult<()> {
+        let res = get_testcases_and_checker("aplusb", false)?;
+        eprintln!("res = {:?}", res);
+        Ok(())
+    }
+
+    #[test]
+    fn test_sample_aplusb() -> BoxResult<()> {
+        let (cases, _) = get_testcases_and_checker("aplusb", true)?;
+        assert!(!cases.is_empty());
+        assert!(cases.iter().all(|case| case.name.starts_with("example_")));
+        Ok(())
+    }
+
+    #[test]
+    fn test_sample_testcase() {
+        for name in [
+            "example.in",
+            "small.cpp",
+            "small_random.cpp",
+            "very_small.cpp",
+        ] {
+            assert!(is_sample_testcase(name), "{name}");
+        }
+        for name in ["random.cpp", "small_and_large.cpp", "large_small.cpp"] {
+            assert!(!is_sample_testcase(name), "{name}");
+        }
+    }
 }

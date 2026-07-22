@@ -264,8 +264,10 @@ impl<'t> VerifyConfig<'t> {
         log::info!("download testcases: {} {}", self.service, self.problem);
         let start = Instant::now();
         let res = match self.service {
-            Service::LibraryChecker => library_checker::get_testcases_and_checker(self.problem)
-                .map(|(cases, checker)| (cases, Some(checker))),
+            Service::LibraryChecker => {
+                library_checker::get_testcases_and_checker(self.problem, false)
+                    .map(|(cases, checker)| (cases, Some(checker)))
+            }
             Service::AizuOnlineJudge => {
                 aizu_online_judge::get_testcases(self.problem).map(|cases| (cases, None))
             }
@@ -281,6 +283,10 @@ impl<'t> VerifyConfig<'t> {
         res
     }
     pub fn get_sample_testcases_and_checker(&self) -> BoxResult<(Vec<TestCase>, Checker)> {
+        if matches!(self.service, Service::LibraryChecker) {
+            return library_checker::get_testcases_and_checker(self.problem, true)
+                .map(|(cases, checker)| (cases, Some(checker)));
+        }
         self.get_testcases_and_checker().map(|(cases, checker)| {
             let cases = cases
                 .into_iter()

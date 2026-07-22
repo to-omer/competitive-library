@@ -1,7 +1,8 @@
 use crate::{TestCase, app_cache_directory, build_client, gen_case};
+use fd_lock::RwLock;
 use serde::Deserialize;
 use std::{
-    fs::{create_dir, create_dir_all, remove_dir_all},
+    fs::{File, create_dir, create_dir_all, remove_dir_all},
     time::Duration,
 };
 use tokio::runtime;
@@ -19,9 +20,22 @@ struct AOJTestCaseHeaders {
 pub fn get_testcases(
     problem_id: &str,
 ) -> Result<Vec<TestCase>, Box<dyn 'static + std::error::Error>> {
-    let mut problemdir = app_cache_directory();
-    problemdir.push("aizu-online-judge");
-    problemdir.push(problem_id);
+    let cache_directory = app_cache_directory();
+    create_dir_all(&cache_directory)?;
+    let lock_file = File::create(cache_directory.join(format!(
+        "aizu-online-judge-{}.lock",
+        problem_id
+            .chars()
+            .map(|c| match c {
+                'a'..='z' | 'A'..='Z' | '0'..='9' | '-' | '_' => c,
+                _ => '_',
+            })
+            .collect::<String>()
+    )))?;
+    let mut lock = RwLock::new(lock_file);
+    let _lock_guard = lock.write()?;
+
+    let problemdir = cache_directory.join("aizu-online-judge").join(problem_id);
     if !problemdir.exists() {
         create_dir_all(&problemdir)?;
     }
