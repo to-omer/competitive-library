@@ -1,4 +1,4 @@
-use super::{Monoid, SliceBisectExt};
+use super::Monoid;
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
@@ -112,7 +112,7 @@ macro_rules! impl_compressed_segment_tree {
         let mut segs = vec![CompressedSegmentTree::default(); n * 2];
         let mut ps = vec![vec![]; n * 2];
         for (x, q) in $points {
-            let i = compress.position_bisect(|c| x <= c);
+            let i = compress.binary_search(x).unwrap();
             ps[i + n].push(q);
         }
         for i in (n..n * 2).rev() {
@@ -163,13 +163,13 @@ macro_rules! impl_compressed_segment_tree {
                 $($Q: RangeBounds<$T>,)*
             {
                 let mut l = match range.0.start_bound() {
-                    Bound::Included(index) => self.compress.position_bisect(|x| x >= &index),
-                    Bound::Excluded(index) => self.compress.position_bisect(|x| x > &index),
+                    Bound::Included(index) => self.compress.partition_point(|x| x < index),
+                    Bound::Excluded(index) => self.compress.partition_point(|x| x <= index),
                     Bound::Unbounded => 0,
                 } + self.compress.len();
                 let mut r = match range.0.end_bound() {
-                    Bound::Included(index) => self.compress.position_bisect(|x| x > &index),
-                    Bound::Excluded(index) => self.compress.position_bisect(|x| x >= &index),
+                    Bound::Included(index) => self.compress.partition_point(|x| x <= index),
+                    Bound::Excluded(index) => self.compress.partition_point(|x| x < index),
                     Bound::Unbounded => self.compress.len(),
                 } + self.compress.len();
                 let mut x = M::unit();

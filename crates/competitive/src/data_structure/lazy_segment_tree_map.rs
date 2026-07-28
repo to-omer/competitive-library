@@ -1,6 +1,5 @@
-use super::{LazyMapMonoid, RangeBoundsExt};
+use super::{FibHashMap, LazyMapMonoid, RangeBoundsExt};
 use std::{
-    collections::HashMap,
     fmt::{self, Debug, Formatter},
     mem::replace,
     ops::RangeBounds,
@@ -11,7 +10,7 @@ where
     M: LazyMapMonoid,
 {
     n: usize,
-    seg: HashMap<usize, (M::Agg, M::Act)>,
+    seg: FibHashMap<usize, (M::Agg, M::Act)>,
 }
 
 impl<M> Clone for LazySegmentTreeMap<M>
@@ -176,7 +175,13 @@ where
         self.recalc(k, false, true);
     }
     pub fn get(&mut self, k: usize) -> M::Agg {
-        self.fold(k..k + 1)
+        assert!(k < self.n);
+        let k = k + self.n;
+        self.propagate(k, false, true);
+        self.seg
+            .get(&k)
+            .map(|(x, _)| x.clone())
+            .unwrap_or_else(M::agg_unit)
     }
     pub fn fold_all(&mut self) -> M::Agg {
         self.fold(0..self.n)
@@ -337,25 +342,37 @@ mod tests {
         }
         for _ in 0..Q {
             rand!(rng, (l, r): NotEmptySegment(N));
-            if rng.rand(2) == 0 {
-                // Range Add Query
-                rand!(rng, x: -A..A);
-                seg.update(l..r, x);
-                for a in arr[l..r].iter_mut() {
-                    *a += x;
+            match rng.rand(3) {
+                0 => {
+                    // Range Add Query
+                    rand!(rng, x: -A..A);
+                    seg.update(l..r, x);
+                    for a in arr[l..r].iter_mut() {
+                        *a += x;
+                    }
                 }
-            } else {
-                // Range Sum Query
-                let res = arr[l..r].iter().sum();
-                assert_eq!(seg.fold(l..r).0, res);
+                1 => {
+                    // Point Set Query
+                    rand!(rng, k: 0..N, x: -A..A);
+                    seg.set(k, (x, 1));
+                    arr[k] = x;
+                }
+                _ => {
+                    // Range Sum Query
+                    let res = arr[l..r].iter().sum();
+                    assert_eq!(seg.fold(l..r).0, res);
+                }
             }
+            rand!(rng, k: 0..N);
+            assert_eq!(seg.get(k).0, arr[k]);
+            assert_eq!(seg.fold_all().0, arr.iter().sum());
         }
 
         // Range Max Query & Range Update Query & Binary Search Query
         let mut arr = vec![i64::MIN; N];
         let mut seg = LazySegmentTreeMap::<RangeMaxRangeUpdate<_>>::new(N);
         for _ in 0..Q {
-            rand!(rng, ty: 0..4, (l, r): NotEmptySegment(N));
+            rand!(rng, ty: 0..5, (l, r): NotEmptySegment(N));
             match ty {
                 0 => {
                     // Range Update Query
@@ -383,7 +400,7 @@ mod tests {
                             .map(|i| i + l),
                     );
                 }
-                _ => {
+                3 => {
                     // Binary Search Query
                     rand!(rng, x: -A..A);
                     assert_eq!(
@@ -399,7 +416,16 @@ mod tests {
                             .map(|i| r - i - 1),
                     );
                 }
+                _ => {
+                    // Point Set Query
+                    rand!(rng, k: 0..N, x: -A..A);
+                    seg.set(k, x);
+                    arr[k] = x;
+                }
             }
+            rand!(rng, k: 0..N);
+            assert_eq!(seg.get(k), arr[k]);
+            assert_eq!(seg.fold_all(), *arr.iter().max().unwrap());
         }
     }
 }

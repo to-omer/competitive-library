@@ -161,6 +161,12 @@ where
             node.value.clone()
         } else {
             let mid = (start + end) / 2;
+            if range.end <= mid {
+                return Self::fold_dfs(node.children[0], start, mid, range);
+            }
+            if mid <= range.start {
+                return Self::fold_dfs(node.children[1], mid, end, range);
+            }
             let left = Self::fold_dfs(node.children[0], start, mid, range);
             let right = Self::fold_dfs(node.children[1], mid, end, range);
             M::operate(&left, &right)

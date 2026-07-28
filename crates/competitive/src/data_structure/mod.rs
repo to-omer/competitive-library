@@ -138,10 +138,7 @@ mod compress;
     codesnip::entry("CompressedBinaryIndexedTree", include("algebra", "binary_search"))
 )]
 mod compressed_binary_indexed_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("CompressedSegmentTree", include("algebra", "binary_search"))
-)]
+#[cfg_attr(nightly, codesnip::entry("CompressedSegmentTree", include("algebra")))]
 mod compressed_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("container"))]
 mod container;
@@ -172,7 +169,10 @@ mod kdtree;
 mod lazy_segment_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("LazySegmentTreeMap", include("LazyMapMonoid", "discrete_steps"))
+    codesnip::entry(
+        "LazySegmentTreeMap",
+        include("FibonacciHash", "LazyMapMonoid", "discrete_steps")
+    )
 )]
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
@@ -216,7 +216,10 @@ mod range_minimum_query;
 mod segment_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("SegmentTreeMap", include("algebra", "discrete_steps"))
+    codesnip::entry(
+        "SegmentTreeMap",
+        include("FibonacciHash", "algebra", "discrete_steps")
+    )
 )]
 mod segment_tree_map;
 #[cfg_attr(

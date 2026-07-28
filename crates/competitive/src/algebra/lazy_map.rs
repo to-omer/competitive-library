@@ -154,13 +154,8 @@ where
     fn single_agg(key: &Self::Key) -> Self::Agg {
         (*key, T::one())
     }
-    fn act_agg(&(x, y): &Self::Agg, act: &Self::Act) -> Option<Self::Agg> {
-        Some(if Self::is_act_unit(act) {
-            (x, y)
-        } else {
-            let &(a, b) = act;
-            (a * x + b * y, y)
-        })
+    fn act_agg(&(x, y): &Self::Agg, &(a, b): &Self::Act) -> Option<Self::Agg> {
+        Some((a * x + b * y, y))
     }
 }
 

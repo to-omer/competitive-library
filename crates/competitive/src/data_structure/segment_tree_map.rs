@@ -1,6 +1,5 @@
-use super::{AbelianMonoid, Monoid, RangeBoundsExt};
+use super::{AbelianMonoid, FibHashMap, Monoid, RangeBoundsExt};
 use std::{
-    collections::HashMap,
     fmt::{self, Debug, Formatter},
     ops::RangeBounds,
 };
@@ -10,7 +9,7 @@ where
     M: Monoid,
 {
     n: usize,
-    seg: HashMap<usize, M::T>,
+    seg: FibHashMap<usize, M::T>,
     u: M::T,
 }
 
