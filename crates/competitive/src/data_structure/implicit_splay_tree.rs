@@ -357,38 +357,33 @@ where
         Some(data.value.key)
     }
 
-    pub fn position_acc<R, F>(&mut self, range: R, f: F) -> Option<usize>
+    pub fn partition_point_acc<F>(&mut self, left: usize, mut pred: F) -> usize
     where
-        R: RangeBounds<usize>,
         F: FnMut(&T::Agg) -> bool,
     {
-        let mut split3 = Split3::seek_by_size(&mut self.root, range);
+        let mut split3 = Split3::seek_by_size(&mut self.root, left..);
         let front_size = split3
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        let split = split3.split_mid(SeekByAccCond::new(f), EqualSide::Right);
-        split.right()?;
+        let split = split3.split_mid(SeekByAccCond::new(|acc| !pred(acc)), EqualSide::Right);
         let index = split
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        Some(front_size + index)
+        front_size + index
     }
 
-    pub fn rposition_acc<R, F>(&mut self, range: R, f: F) -> Option<usize>
+    pub fn rpartition_point_acc<F>(&mut self, right: usize, mut pred: F) -> usize
     where
-        R: RangeBounds<usize>,
         F: FnMut(&T::Agg) -> bool,
     {
-        let mut split3 = Split3::seek_by_size(&mut self.root, range);
-        let front_size = split3
+        let mut split3 = Split3::seek_by_size(&mut self.root, ..right);
+        let split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
+        split
             .left()
             .map(|node| node.into_data().size)
-            .unwrap_or_default();
-        let split = split3.split_mid(SeekByRaccCond::new(f), EqualSide::Left);
-        let left_size = split.left()?.into_data().size;
-        Some(front_size + left_size - 1)
+            .unwrap_or_default()
     }
 
     pub fn rotate_left(&mut self, mid: usize) {
@@ -495,24 +490,24 @@ mod tests {
                     arr[l..r].reverse();
                 }
                 5 => {
-                    rand!(rng, x: -A..A);
+                    rand!(rng, left: ..=arr.len(), x: -A..A);
                     assert_eq!(
-                        tree.position_acc(l..r, |&value| value >= x),
-                        arr[l..r]
+                        tree.partition_point_acc(left, |&value| value < x),
+                        arr[left..]
                             .iter()
                             .scan(i64::MIN, |acc, &value| {
                                 *acc = (*acc).max(value);
                                 Some(*acc)
                             })
                             .position(|value| value >= x)
-                            .map(|index| l + index),
+                            .map_or(arr.len(), |index| left + index),
                     );
                 }
                 6 => {
-                    rand!(rng, x: -A..A);
+                    rand!(rng, right: ..=arr.len(), x: -A..A);
                     assert_eq!(
-                        tree.rposition_acc(l..r, |&value| value >= x),
-                        arr[l..r]
+                        tree.rpartition_point_acc(right, |&value| value < x),
+                        arr[..right]
                             .iter()
                             .rev()
                             .scan(i64::MIN, |acc, &value| {
@@ -520,7 +515,7 @@ mod tests {
                                 Some(*acc)
                             })
                             .position(|value| value >= x)
-                            .map(|index| r - index - 1),
+                            .map_or(0, |index| right - index),
                     );
                 }
                 7 => {

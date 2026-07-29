@@ -81,6 +81,27 @@ where
             k += k & (!k + 1);
         }
     }
+    #[inline]
+    pub fn partition_point_acc<P>(&self, mut pred: P) -> usize
+    where
+        P: FnMut(&M::T) -> bool,
+    {
+        let n = self.n;
+        let mut acc = M::unit();
+        let mut pos = 0;
+        let mut k = n.next_power_of_two();
+        while k > 0 {
+            if k + pos <= n {
+                let nacc = M::operate(&acc, &self.bit[k + pos]);
+                if pred(&nacc) {
+                    pos += k;
+                    acc = nacc;
+                }
+            }
+            k >>= 1;
+        }
+        pos
+    }
 }
 
 impl<G: Group> BinaryIndexedTree<G> {
@@ -99,33 +120,11 @@ impl<G: Group> BinaryIndexedTree<G> {
     }
 }
 
-impl<M> BinaryIndexedTree<M>
-where
-    M: Monoid<T: Ord>,
-{
-    #[inline]
-    pub fn lower_bound(&self, x: M::T) -> usize {
-        let n = self.n;
-        let mut acc = M::unit();
-        let mut pos = 0;
-        let mut k = n.next_power_of_two();
-        while k > 0 {
-            if k + pos <= n && M::operate(&acc, &self.bit[k + pos]) < x {
-                pos += k;
-                acc = M::operate(&acc, &self.bit[pos]);
-            }
-            k >>= 1;
-        }
-        pos
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
         algebra::{AdditiveOperation, MaxOperation},
-        algorithm::SliceBisectExt as _,
         tools::Xorshift,
     };
 
@@ -188,7 +187,7 @@ mod tests {
     }
 
     #[test]
-    fn test_binary_indexed_tree_lower_bound() {
+    fn test_binary_indexed_tree_partition_point_acc() {
         let mut rng = Xorshift::default();
         let mut arr: Vec<_> = rng.random_iter(1..B).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
@@ -200,7 +199,10 @@ mod tests {
             arr[i + 1] += arr[i];
         }
         for x in rng.random_iter(1..B * N as i64).take(Q) {
-            assert_eq!(bit.lower_bound(x), arr.position_bisect(|&a| a >= x));
+            assert_eq!(
+                bit.partition_point_acc(|&a| a < x),
+                arr.partition_point(|&a| a < x)
+            );
         }
     }
 }

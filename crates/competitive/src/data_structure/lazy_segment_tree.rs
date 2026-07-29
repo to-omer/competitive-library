@@ -240,123 +240,73 @@ where
     pub fn fold_all(&mut self) -> M::Agg {
         self.fold(0..self.len)
     }
-    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
+    pub fn partition_point_acc<P>(&mut self, left: usize, mut pred: P) -> usize
     where
-        P: Fn(&M::Agg) -> bool,
+        P: FnMut(&M::Agg) -> bool,
     {
-        while pos < self.n {
-            self.propagate_at(pos);
-            pos <<= 1;
-            let nacc = M::agg_operate(&acc, &self.seg[pos]);
-            if !p(&nacc) {
-                acc = nacc;
-                pos += 1;
-            }
-        }
-        (pos - self.n, acc)
-    }
-    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
-    where
-        P: Fn(&M::Agg) -> bool,
-    {
-        while pos < self.n {
-            self.propagate_at(pos);
-            pos = pos * 2 + 1;
-            let nacc = M::agg_operate(&self.seg[pos], &acc);
-            if !p(&nacc) {
-                acc = nacc;
-                pos -= 1;
-            }
-        }
-        (pos - self.n, acc)
-    }
-    /// Returns the first index that satisfies a accumlative predicate.
-    pub fn position_acc<R, P>(&mut self, range: R, p: P) -> Option<usize>
-    where
-        R: RangeBounds<usize>,
-        P: Fn(&M::Agg) -> bool,
-    {
-        let range = range.to_range_bounded(0, self.len).expect("invalid range");
-        if range.is_empty() {
-            return None;
-        }
-        let mut l = range.start + self.n;
-        let r = range.end + self.n;
-        self.propagate(l);
-        self.propagate(r - 1);
-        let mut k = 0usize;
         let mut acc = M::agg_unit();
-        while l < r >> k {
-            if l & 1 != 0 {
-                let nacc = M::agg_operate(&acc, &self.seg[l]);
-                if p(&nacc) {
-                    return Some(self.bisect_perfect(l, acc, p).0);
-                }
-                acc = nacc;
-                l += 1;
+        if left == self.len {
+            return self.len;
+        }
+        let mut k = left + self.n;
+        self.propagate(k);
+        loop {
+            while k & 1 == 0 {
+                k >>= 1;
             }
-            l >>= 1;
+            let nacc = M::agg_operate(&acc, &self.seg[k]);
+            if !pred(&nacc) {
+                while k < self.n {
+                    self.propagate_at(k);
+                    k <<= 1;
+                    let nacc = M::agg_operate(&acc, &self.seg[k]);
+                    if pred(&nacc) {
+                        acc = nacc;
+                        k += 1;
+                    }
+                }
+                return k - self.n;
+            }
+            acc = nacc;
             k += 1;
-        }
-        for k in (0..k).rev() {
-            let r = r >> k;
-            if r & 1 != 0 {
-                let nacc = M::agg_operate(&acc, &self.seg[r - 1]);
-                if p(&nacc) {
-                    return Some(self.bisect_perfect(r - 1, acc, p).0);
-                }
-                acc = nacc;
+            if k.is_power_of_two() {
+                return self.len;
             }
         }
-        None
     }
-    /// Returns the last index that satisfies a accumlative predicate.
-    pub fn rposition_acc<R, P>(&mut self, range: R, p: P) -> Option<usize>
+    pub fn rpartition_point_acc<P>(&mut self, right: usize, mut pred: P) -> usize
     where
-        R: RangeBounds<usize>,
-        P: Fn(&M::Agg) -> bool,
+        P: FnMut(&M::Agg) -> bool,
     {
-        let range = range.to_range_bounded(0, self.len).expect("invalid range");
-        if range.is_empty() {
-            return None;
-        }
-        let mut l = range.start + self.n;
-        let mut r = range.end + self.n;
-        self.propagate(l);
-        self.propagate(r - 1);
-        let mut c = 0usize;
-        let mut k = 0usize;
         let mut acc = M::agg_unit();
-        while l >> k < r {
-            c <<= 1;
-            if l & (1 << k) != 0 {
-                l += 1 << k;
-                c += 1;
-            }
-            if r & 1 != 0 {
-                r -= 1;
-                let nacc = M::agg_operate(&self.seg[r], &acc);
-                if p(&nacc) {
-                    return Some(self.rbisect_perfect(r, acc, p).0);
-                }
-                acc = nacc;
-            }
-            r >>= 1;
-            k += 1;
+        if right == 0 {
+            return 0;
         }
-        for k in (0..k).rev() {
-            if c & 1 != 0 {
-                l -= 1 << k;
-                let l = l >> k;
-                let nacc = M::agg_operate(&self.seg[l], &acc);
-                if p(&nacc) {
-                    return Some(self.rbisect_perfect(l, acc, p).0);
-                }
-                acc = nacc;
+        let mut k = right + self.n;
+        self.propagate(k - 1);
+        loop {
+            k -= 1;
+            while k > 1 && k & 1 != 0 {
+                k >>= 1;
             }
-            c >>= 1;
+            let nacc = M::agg_operate(&self.seg[k], &acc);
+            if !pred(&nacc) {
+                while k < self.n {
+                    self.propagate_at(k);
+                    k = 2 * k + 1;
+                    let nacc = M::agg_operate(&self.seg[k], &acc);
+                    if pred(&nacc) {
+                        acc = nacc;
+                        k -= 1;
+                    }
+                }
+                return k + 1 - self.n;
+            }
+            acc = nacc;
+            if k.is_power_of_two() {
+                return 0;
+            }
         }
-        None
     }
 }
 
@@ -430,25 +380,25 @@ mod tests {
                 }
                 2 => {
                     // Binary Search Query
-                    rand!(rng, x: -A..A);
+                    rand!(rng, left: ..=N, x: -A..A);
                     assert_eq!(
-                        seg.position_acc(l..r, |&d| d >= x),
-                        arr[l..r]
+                        seg.partition_point_acc(left, |&d| d < x),
+                        arr[left..]
                             .iter()
                             .scan(i64::MIN, |acc, &a| {
                                 *acc = a.max(*acc);
                                 Some(*acc)
                             })
                             .position(|acc| acc >= x)
-                            .map(|i| i + l),
+                            .map_or(N, |i| i + left),
                     );
                 }
                 3 => {
                     // Binary Search Query
-                    rand!(rng, x: -A..A);
+                    rand!(rng, right: ..=N, x: -A..A);
                     assert_eq!(
-                        seg.rposition_acc(l..r, |&d| d >= x),
-                        arr[l..r]
+                        seg.rpartition_point_acc(right, |&d| d < x),
+                        arr[..right]
                             .iter()
                             .rev()
                             .scan(i64::MIN, |acc, &a| {
@@ -456,7 +406,7 @@ mod tests {
                                 Some(*acc)
                             })
                             .position(|acc| acc >= x)
-                            .map(|i| r - i - 1),
+                            .map_or(0, |i| right - i),
                     );
                 }
                 _ => {

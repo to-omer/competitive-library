@@ -105,50 +105,57 @@ where
         }
         M::operate(&vl, &vr)
     }
-    fn bisect_perfect<F>(&self, mut pos: usize, mut acc: M::T, f: F) -> (usize, M::T)
+    fn partition_point_perfect<P>(
+        &self,
+        mut pos: usize,
+        mut acc: M::T,
+        mut pred: P,
+    ) -> (usize, M::T)
     where
-        F: Fn(&M::T) -> bool,
+        P: FnMut(&M::T) -> bool,
     {
         while pos < self.n {
             pos <<= 1;
             let nacc = M::operate(&acc, &self.seg[pos]);
-            if !f(&nacc) {
+            if pred(&nacc) {
                 acc = nacc;
                 pos += 1;
             }
         }
         (pos - self.n, acc)
     }
-    fn rbisect_perfect<F>(&self, mut pos: usize, mut acc: M::T, f: F) -> (usize, M::T)
+    fn rpartition_point_perfect<P>(
+        &self,
+        mut pos: usize,
+        mut acc: M::T,
+        mut pred: P,
+    ) -> (usize, M::T)
     where
-        F: Fn(&M::T) -> bool,
+        P: FnMut(&M::T) -> bool,
     {
         while pos < self.n {
             pos = pos * 2 + 1;
             let nacc = M::operate(&self.seg[pos], &acc);
-            if !f(&nacc) {
+            if pred(&nacc) {
                 acc = nacc;
                 pos -= 1;
             }
         }
         (pos - self.n, acc)
     }
-    /// Returns the first index that satisfies a accumlative predicate.
-    pub fn position_acc<R, F>(&self, range: R, f: F) -> Option<usize>
+    pub fn partition_point_acc<P>(&self, left: usize, mut pred: P) -> usize
     where
-        R: RangeBounds<usize>,
-        F: Fn(&M::T) -> bool,
+        P: FnMut(&M::T) -> bool,
     {
-        let range = range.to_range_bounded(0, self.n).expect("invalid range");
-        let mut l = range.start + self.n;
-        let r = range.end + self.n;
+        let mut l = left + self.n;
+        let r = 2 * self.n;
         let mut k = 0usize;
         let mut acc = M::unit();
         while l < r >> k {
             if l & 1 != 0 {
                 let nacc = M::operate(&acc, &self.seg[l]);
-                if f(&nacc) {
-                    return Some(self.bisect_perfect(l, acc, f).0);
+                if !pred(&nacc) {
+                    return self.partition_point_perfect(l, acc, pred).0;
                 }
                 acc = nacc;
                 l += 1;
@@ -160,23 +167,20 @@ where
             let r = r >> k;
             if r & 1 != 0 {
                 let nacc = M::operate(&acc, &self.seg[r - 1]);
-                if f(&nacc) {
-                    return Some(self.bisect_perfect(r - 1, acc, f).0);
+                if !pred(&nacc) {
+                    return self.partition_point_perfect(r - 1, acc, pred).0;
                 }
                 acc = nacc;
             }
         }
-        None
+        self.n
     }
-    /// Returns the last index that satisfies a accumlative predicate.
-    pub fn rposition_acc<R, F>(&self, range: R, f: F) -> Option<usize>
+    pub fn rpartition_point_acc<P>(&self, right: usize, mut pred: P) -> usize
     where
-        R: RangeBounds<usize>,
-        F: Fn(&M::T) -> bool,
+        P: FnMut(&M::T) -> bool,
     {
-        let range = range.to_range_bounded(0, self.n).expect("invalid range");
-        let mut l = range.start + self.n;
-        let mut r = range.end + self.n;
+        let mut l = self.n;
+        let mut r = right + self.n;
         let mut c = 0usize;
         let mut k = 0usize;
         let mut acc = M::unit();
@@ -189,8 +193,8 @@ where
             if r & 1 != 0 {
                 r -= 1;
                 let nacc = M::operate(&self.seg[r], &acc);
-                if f(&nacc) {
-                    return Some(self.rbisect_perfect(r, acc, f).0);
+                if !pred(&nacc) {
+                    return self.rpartition_point_perfect(r, acc, pred).0 + 1;
                 }
                 acc = nacc;
             }
@@ -202,14 +206,14 @@ where
                 l -= 1 << k;
                 let l = l >> k;
                 let nacc = M::operate(&self.seg[l], &acc);
-                if f(&nacc) {
-                    return Some(self.rbisect_perfect(l, acc, f).0);
+                if !pred(&nacc) {
+                    return self.rpartition_point_perfect(l, acc, pred).0 + 1;
                 }
                 acc = nacc;
             }
             c >>= 1;
         }
-        None
+        0
     }
     pub fn as_slice(&self) -> &[M::T] {
         &self.seg[self.n..]
@@ -255,20 +259,16 @@ mod tests {
                 assert_eq!(seg.fold(i..j), arr[j] - arr[i]);
             }
         }
-        for v in rng.random_iter(1..=A * N as i64).take(Q) {
+        for (left, v) in rng.random_iter((..=N, 1..=A * N as i64)).take(Q) {
             assert_eq!(
-                seg.position_acc(0..N, |&x| v <= x).unwrap_or(N),
-                arr[1..].position_bisect(|&x| x >= v)
+                seg.partition_point_acc(left, |&x| x < v),
+                arr[left + 1..].position_bisect(|&x| x - arr[left] >= v) + left
             );
         }
-        for ((l, r), v) in rng.random_iter((Nes(N), 1..=A)).take(Q) {
+        for (right, v) in rng.random_iter((..=N, 1..=A)).take(Q) {
             assert_eq!(
-                seg.position_acc(l..r, |&x| v <= x).unwrap_or(r),
-                arr[l + 1..r + 1].position_bisect(|&x| x - arr[l] >= v) + l
-            );
-            assert_eq!(
-                seg.rposition_acc(l..r, |&x| v <= x).map_or(l, |i| i + 1),
-                arr[l..r].rposition_bisect(|&x| arr[r] - x >= v) + l
+                seg.rpartition_point_acc(right, |&x| x < v),
+                arr[..right].rposition_bisect(|&x| arr[right] - x >= v)
             );
         }
 

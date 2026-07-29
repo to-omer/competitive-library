@@ -99,8 +99,8 @@ where
         let p = self.flow.fold(i..self.n).sum;
         let j = if p < 0 {
             self.flow
-                .rposition_acc(0..i, |s| s.suffix_min + p >= 0)
-                .unwrap_or(0)
+                .rpartition_point_acc(i, |s| s.suffix_min + p < 0)
+                .saturating_sub(1)
         } else {
             i
         };
@@ -128,8 +128,8 @@ where
         let p = self.flow.fold(i..self.n).sum;
         let j = if p < 0 {
             self.flow
-                .rposition_acc(0..i, |s| s.suffix_min + p >= 0)
-                .unwrap_or(0)
+                .rpartition_point_acc(i, |s| s.suffix_min + p < 0)
+                .saturating_sub(1)
         } else {
             i
         };
@@ -150,8 +150,8 @@ where
         let p = self.flow.fold(0..=i).sum;
         let j = if p > 0 {
             self.flow
-                .position_acc(i + 1..self.n - 1, |s| p + s.prefix_min <= 0)
-                .unwrap_or(self.n - 1)
+                .partition_point_acc(i + 1, |s| p + s.prefix_min > 0)
+                .min(self.n - 1)
         } else {
             i
         };
@@ -180,8 +180,8 @@ where
         let p = self.flow.fold(0..=i).sum;
         let j = if p > 0 {
             self.flow
-                .position_acc(i + 1..self.n - 1, |s| p + s.prefix_min <= 0)
-                .unwrap_or(self.n - 1)
+                .partition_point_acc(i + 1, |s| p + s.prefix_min > 0)
+                .min(self.n - 1)
         } else {
             i
         };

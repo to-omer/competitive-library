@@ -461,44 +461,33 @@ where
         Some(data.value.key)
     }
 
-    pub fn position_acc<R, F>(&mut self, range: R, f: F) -> Option<usize>
+    pub fn partition_point_acc<F>(&mut self, left: usize, mut pred: F) -> usize
     where
-        R: RangeBounds<usize>,
         F: FnMut(&T::Agg) -> bool,
     {
-        let mut split3 = Split3::seek_by_size(&mut self.root, range);
+        let mut split3 = Split3::seek_by_size(&mut self.root, left..);
         let front_size = split3
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        let split = split3.split_mid(
-            SeekByAccCond::<ImplicitTreapSpec<T>, T, F>::new(f),
-            EqualSide::Right,
-        );
-        split.right()?;
+        let split = split3.split_mid(SeekByAccCond::new(|acc| !pred(acc)), EqualSide::Right);
         let index = split
             .left()
             .map(|node| node.into_data().size)
             .unwrap_or_default();
-        Some(front_size + index)
+        front_size + index
     }
 
-    pub fn rposition_acc<R, F>(&mut self, range: R, f: F) -> Option<usize>
+    pub fn rpartition_point_acc<F>(&mut self, right: usize, mut pred: F) -> usize
     where
-        R: RangeBounds<usize>,
         F: FnMut(&T::Agg) -> bool,
     {
-        let mut split3 = Split3::seek_by_size(&mut self.root, range);
-        let front_size = split3
+        let mut split3 = Split3::seek_by_size(&mut self.root, ..right);
+        let split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
+        split
             .left()
             .map(|node| node.into_data().size)
-            .unwrap_or_default();
-        let split = split3.split_mid(
-            SeekByRaccCond::<ImplicitTreapSpec<T>, T, F>::new(f),
-            EqualSide::Left,
-        );
-        let left_size = split.left()?.into_data().size;
-        Some(front_size + left_size - 1)
+            .unwrap_or_default()
     }
 
     pub fn rotate_left(&mut self, mid: usize) {
@@ -608,27 +597,28 @@ mod tests {
                     arr[l..r].reverse();
                 }
                 5 if !arr.is_empty() => {
-                    let (l, r) = rng.random(NotEmptySegment(arr.len()));
-                    let sum = arr[l..r].iter().copied().sum::<Saturating<i64>>();
-                    let x = Saturating(rng.random(0..=sum.0.saturating_add(A)));
+                    let left = rng.random(0..=arr.len());
+                    let sum = arr[left..].iter().copied().sum::<Saturating<i64>>();
+                    let x = Saturating(rng.random(1..=sum.0.saturating_add(A)));
                     assert_eq!(
-                        arr[l..r]
+                        treap.partition_point_acc(left, |acc| acc.sum < x),
+                        arr[left..]
                             .iter()
                             .scan(Saturating(0), |acc, &a| {
                                 *acc += a;
                                 Some(*acc)
                             })
                             .position(|acc| acc >= x)
-                            .map(|i| i + l),
-                        treap.position_acc(l..r, |acc| acc.sum >= x),
+                            .map_or(arr.len(), |i| i + left),
                     );
                 }
                 6 if !arr.is_empty() => {
-                    let (l, r) = rng.random(NotEmptySegment(arr.len()));
-                    let sum = arr[l..r].iter().copied().sum::<Saturating<i64>>();
-                    let x = Saturating(rng.random(0..=sum.0.saturating_add(A)));
+                    let right = rng.random(0..=arr.len());
+                    let sum = arr[..right].iter().copied().sum::<Saturating<i64>>();
+                    let x = Saturating(rng.random(1..=sum.0.saturating_add(A)));
                     assert_eq!(
-                        arr[l..r]
+                        treap.rpartition_point_acc(right, |acc| acc.sum < x),
+                        arr[..right]
                             .iter()
                             .rev()
                             .scan(Saturating(0), |acc, &a| {
@@ -636,8 +626,7 @@ mod tests {
                                 Some(*acc)
                             })
                             .position(|acc| acc >= x)
-                            .map(|i| r - i - 1),
-                        treap.rposition_acc(l..r, |acc| acc.sum >= x),
+                            .map_or(0, |i| right - i),
                     );
                 }
                 7 => {
