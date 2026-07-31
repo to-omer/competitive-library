@@ -134,6 +134,64 @@ macro_rules! impl_compressed_binary_indexed_tree {
     (@update $e:expr, $M:ident $key:ident $x:ident $T:ident $($Rest:ident)+) => {
         $e.update(&$key.1, $x);
     };
+    (@partition_method $T:ident, $Q:ident) => {
+        pub fn partition_point_acc<P>(&self, mut pred: P) -> (Option<&$T>, M::T)
+        where
+            P: FnMut(&M::T) -> bool,
+        {
+            let n = self.compress.len();
+            let mut acc = M::unit();
+            let mut pos = 0;
+            let mut k = n.next_power_of_two();
+            if k > n {
+                k >>= 1;
+            }
+            while k > 0 {
+                if k + pos <= n {
+                    let nacc = M::operate(&acc, &self.bits[k + pos].0);
+                    if pred(&nacc) {
+                        pos += k;
+                        acc = nacc;
+                    }
+                }
+                k >>= 1;
+            }
+            (self.compress.get(pos), acc)
+        }
+    };
+    (@partition_method $T:ident $($RestT:ident)+, $Q:ident $($RestQ:ident)+) => {
+        pub fn partition_point_acc<P, $($RestQ,)*>(
+            &self,
+            inner_ranges: &impl_compressed_binary_indexed_tree!(@tuple () () $($RestQ)*),
+            mut pred: P,
+        ) -> (Option<&$T>, M::T)
+        where
+            P: FnMut(&M::T) -> bool,
+            $($RestQ: RangeBounds<$RestT>,)*
+        {
+            let n = self.compress.len();
+            let mut acc = M::unit();
+            let mut pos = 0;
+            let mut k = n.next_power_of_two();
+            if k > n {
+                k >>= 1;
+            }
+            while k > 0 {
+                if k + pos <= n {
+                    let nacc = M::operate(
+                        &acc,
+                        &self.bits[k + pos].accumulate(inner_ranges),
+                    );
+                    if pred(&nacc) {
+                        pos += k;
+                        acc = nacc;
+                    }
+                }
+                k >>= 1;
+            }
+            (self.compress.get(pos), acc)
+        }
+    };
     (@impl $C:ident $($T:ident)*, $($Q:ident)*) => {
         impl<M, $($T,)*> impl_compressed_binary_indexed_tree!(@cst M $($T)*)
         where
@@ -177,6 +235,7 @@ macro_rules! impl_compressed_binary_indexed_tree {
                     k += k & (!k + 1);
                 }
             }
+            impl_compressed_binary_indexed_tree!(@partition_method $($T)*, $($Q)*);
         }
         pub type $C<M, $($T),*> = impl_compressed_binary_indexed_tree!(@cst M $($T)*);
     };
@@ -212,6 +271,54 @@ mod tests {
     use super::*;
     use crate::{algebra::AdditiveOperation, tools::Xorshift};
     use std::{collections::HashMap, ops::RangeTo};
+
+    #[test]
+    fn test_bit1d() {
+        let mut rng = Xorshift::default();
+        const N: usize = 100;
+        const Q: usize = 5000;
+        const A: RangeTo<u64> = ..1_000;
+        let mut points: Vec<_> = rng.random_iter(A).take(N).map(|x| (x,)).collect();
+        points.sort();
+        points.dedup();
+        let mut values: HashMap<_, _> = points.iter().map(|p| (p.0, 0u64)).collect();
+        let mut bit = CompressedBinaryIndexedTree1d::<AdditiveOperation<u64>, _>::new(&points);
+        for _ in 0..Q {
+            let p = &points[rng.random(0..points.len())];
+            let x = rng.random(A);
+            *values.get_mut(&p.0).unwrap() += x;
+            bit.update(p, &x);
+
+            let range = ((
+                Bound::Unbounded,
+                match rng.rand(3) {
+                    0 => Bound::Excluded(rng.random(A)),
+                    1 => Bound::Included(rng.random(A)),
+                    _ => Bound::Unbounded,
+                },
+            ),);
+            let expected: u64 = values
+                .iter()
+                .filter_map(|(p, x)| RangeBounds::contains(&range.0, p).then_some(*x))
+                .sum();
+            assert_eq!(bit.accumulate(&range), expected);
+
+            let target = rng.random(1..A.end * Q as u64);
+            let mut expected_acc = 0;
+            let mut expected_pos = None;
+            for p in &points {
+                let nacc = expected_acc + values[&p.0];
+                if nacc < target {
+                    expected_acc = nacc;
+                } else {
+                    expected_pos = Some(&p.0);
+                    break;
+                }
+            }
+            let result = bit.partition_point_acc(|&acc| acc < target);
+            assert_eq!(result, (expected_pos, expected_acc));
+        }
+    }
 
     #[test]
     fn test_bit4d() {
@@ -260,6 +367,37 @@ mod tests {
                 .sum();
             let result = bit.accumulate(&range);
             assert_eq!(expected, result);
+
+            let target = rng.random(1..A.end * Q as u64);
+            let (_, inner_ranges) = &range;
+            let (r1, (r2, (r3,))) = inner_ranges;
+            let mut expected_acc = 0;
+            let mut expected_pos = None;
+            for p0 in &bit.compress {
+                let value: u64 = map
+                    .iter()
+                    .filter_map(|((q0, (q1, (q2, (q3,)))), x)| {
+                        if q0 == p0
+                            && RangeBounds::contains(r1, q1)
+                            && RangeBounds::contains(r2, q2)
+                            && RangeBounds::contains(r3, q3)
+                        {
+                            Some(*x)
+                        } else {
+                            None
+                        }
+                    })
+                    .sum();
+                let nacc = expected_acc + value;
+                if nacc < target {
+                    expected_acc = nacc;
+                } else {
+                    expected_pos = Some(p0);
+                    break;
+                }
+            }
+            let (pos, acc) = bit.partition_point_acc(inner_ranges, |&acc| acc < target);
+            assert_eq!((pos, acc), (expected_pos, expected_acc));
         }
     }
 }

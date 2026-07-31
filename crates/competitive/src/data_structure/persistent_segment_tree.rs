@@ -173,6 +173,72 @@ where
         }
     }
 
+    fn partition_point_dfs<P>(
+        node: NodePtr<M::T>,
+        start: usize,
+        end: usize,
+        left: usize,
+        acc: &mut M::T,
+        pred: &mut P,
+    ) -> Option<usize>
+    where
+        P: FnMut(&M::T) -> bool,
+    {
+        if end <= left {
+            return None;
+        }
+        if left <= start {
+            let nacc = M::operate(acc, &Self::subtree_value(node));
+            if pred(&nacc) {
+                *acc = nacc;
+                return None;
+            }
+            if end - start == 1 {
+                return Some(start);
+            }
+        }
+        let mid = (start + end) / 2;
+        let [l, r] = Self::children(node);
+        if let Some(pos) = Self::partition_point_dfs(l, start, mid, left, acc, pred) {
+            Some(pos)
+        } else {
+            Self::partition_point_dfs(r, mid, end, left, acc, pred)
+        }
+    }
+
+    fn rpartition_point_dfs<P>(
+        node: NodePtr<M::T>,
+        start: usize,
+        end: usize,
+        right: usize,
+        acc: &mut M::T,
+        pred: &mut P,
+    ) -> Option<usize>
+    where
+        P: FnMut(&M::T) -> bool,
+    {
+        if right <= start {
+            return None;
+        }
+        if end <= right {
+            let nacc = M::operate(&Self::subtree_value(node), acc);
+            if pred(&nacc) {
+                *acc = nacc;
+                return None;
+            }
+            if end - start == 1 {
+                return Some(end);
+            }
+        }
+        let mid = (start + end) / 2;
+        let [l, r] = Self::children(node);
+        if let Some(pos) = Self::rpartition_point_dfs(r, mid, end, right, acc, pred) {
+            Some(pos)
+        } else {
+            Self::rpartition_point_dfs(l, start, mid, right, acc, pred)
+        }
+    }
+
     fn set_dfs(
         &mut self,
         node: NodePtr<M::T>,
@@ -266,6 +332,44 @@ where
         }
     }
 
+    pub fn partition_point_acc<P>(
+        &self,
+        version: PersistentSegmentTreeVersion,
+        left: usize,
+        mut pred: P,
+    ) -> (usize, M::T)
+    where
+        P: FnMut(&M::T) -> bool,
+    {
+        let root = self.version_root(version);
+        let mut acc = M::unit();
+        let pos = if self.len == 0 {
+            None
+        } else {
+            Self::partition_point_dfs(root, 0, self.len, left, &mut acc, &mut pred)
+        };
+        (pos.unwrap_or(self.len), acc)
+    }
+
+    pub fn rpartition_point_acc<P>(
+        &self,
+        version: PersistentSegmentTreeVersion,
+        right: usize,
+        mut pred: P,
+    ) -> (usize, M::T)
+    where
+        P: FnMut(&M::T) -> bool,
+    {
+        let root = self.version_root(version);
+        let mut acc = M::unit();
+        let pos = if self.len == 0 {
+            None
+        } else {
+            Self::rpartition_point_dfs(root, 0, self.len, right, &mut acc, &mut pred)
+        };
+        (pos.unwrap_or(0), acc)
+    }
+
     #[must_use]
     pub fn fold_all(&self, version: PersistentSegmentTreeVersion) -> M::T {
         Self::subtree_value(self.version_root(version))
@@ -332,6 +436,44 @@ mod tests {
             );
             assert_eq!(segtree.fold(versions[version], start..end), expected);
             assert_eq!(segtree.fold_all(versions[version]), expected_all);
+
+            let left = rng.random(0..=N);
+            let limit = rng.random(1..=N * 4);
+            let mut expected_acc = Vec::new();
+            let mut expected_pos = left;
+            while expected_pos < N {
+                let mut nacc = expected_acc.clone();
+                nacc.extend_from_slice(&states[version][expected_pos]);
+                if nacc.len() < limit {
+                    expected_acc = nacc;
+                    expected_pos += 1;
+                } else {
+                    break;
+                }
+            }
+            assert_eq!(
+                segtree.partition_point_acc(versions[version], left, |acc| acc.len() < limit),
+                (expected_pos, expected_acc)
+            );
+
+            let right = rng.random(0..=N);
+            let limit = rng.random(1..=N * 4);
+            let mut expected_acc = Vec::new();
+            let mut expected_pos = right;
+            while expected_pos > 0 {
+                let mut nacc = states[version][expected_pos - 1].clone();
+                nacc.extend_from_slice(&expected_acc);
+                if nacc.len() < limit {
+                    expected_acc = nacc;
+                    expected_pos -= 1;
+                } else {
+                    break;
+                }
+            }
+            assert_eq!(
+                segtree.rpartition_point_acc(versions[version], right, |acc| acc.len() < limit),
+                (expected_pos, expected_acc)
+            );
         }
     }
 }
