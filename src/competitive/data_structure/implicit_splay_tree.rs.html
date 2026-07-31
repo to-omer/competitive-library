@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/implicit_splay_tree.rs`."><title>implicit_splay_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ddecd707.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.99.0-nightly (da86f4d07 2026-07-24)" data-channel="nightly" data-search-js="search-cf4fc35e.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/implicit_splay_tree.rs`."><title>implicit_splay_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-650bd49d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.99.0-nightly (1a833e165 2026-07-29)" data-channel="nightly" data-search-js="search-cf4fc35e.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-d4bd101e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -61,7 +61,7 @@
 <a href=#7 id=7 data-nosnippet>7</a>        seeker::{<a href="binary_search_tree/seeker.rs.html#135-142">SeekByAccCond</a>, <a href="binary_search_tree/seeker.rs.html#198-205">SeekByRaccCond</a>, <a href="binary_search_tree/seeker.rs.html#100-103">SeekBySize</a>},
 <a href=#8 id=8 data-nosnippet>8</a>        <a href="binary_search_tree/split.rs.html#73-81">split::Split3</a>,
 <a href=#9 id=9 data-nosnippet>9</a>    },
-<a href=#10 id=10 data-nosnippet>10</a>    <a href="mod.rs.html#235">splay_operations</a>,
+<a href=#10 id=10 data-nosnippet>10</a>    <a href="mod.rs.html#238">splay_operations</a>,
 <a href=#11 id=11 data-nosnippet>11</a>};
 <a href=#12 id=12 data-nosnippet>12</a><span class="kw">use </span>std::{
 <a href=#13 id=13 data-nosnippet>13</a>    <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
@@ -411,192 +411,187 @@
 <a href=#357 id=357 data-nosnippet>357</a>        <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#356">data</a>.value.key)
 <a href=#358 id=358 data-nosnippet>358</a>    }
 <a href=#359 id=359 data-nosnippet>359</a>
-<a href=#360 id=360 data-nosnippet>360</a>    <span class="kw">pub fn </span>position_acc&lt;R, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R, f: F) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
+<a href=#360 id=360 data-nosnippet>360</a>    <span class="kw">pub fn </span>partition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>pred: F) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
 <a href=#361 id=361 data-nosnippet>361</a>    <span class="kw">where
-<a href=#362 id=362 data-nosnippet>362</a>        </span>R: <a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">RangeBounds</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#363 id=363 data-nosnippet>363</a>        F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>T::Agg) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
-<a href=#364 id=364 data-nosnippet>364</a>    {
-<a href=#365 id=365 data-nosnippet>365</a>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = <a href="binary_search_tree/split.rs.html#73-81">Split3</a>::<a href="binary_search_tree/split.rs.html#173-189">seek_by_size</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#360">self</a>.root, <a href="#360">range</a>);
-<a href=#366 id=366 data-nosnippet>366</a>        <span class="kw">let </span>front_size = <a href="#365">split3</a>
-<a href=#367 id=367 data-nosnippet>367</a>            .<a href="binary_search_tree/split.rs.html#114-116">left</a>()
-<a href=#368 id=368 data-nosnippet>368</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|node| <a href="#368">node</a>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size)
-<a href=#369 id=369 data-nosnippet>369</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_default">unwrap_or_default</a>();
-<a href=#370 id=370 data-nosnippet>370</a>        <span class="kw">let </span>split = <a href="#365">split3</a>.<a href="binary_search_tree/split.rs.html#138-143">split_mid</a>(<a href="binary_search_tree/seeker.rs.html#135-142">SeekByAccCond</a>::<a href="binary_search_tree/seeker.rs.html#149-155">new</a>(<a href="#360">f</a>), EqualSide::<a href="binary_search_tree/node.rs.html#7">Right</a>);
-<a href=#371 id=371 data-nosnippet>371</a>        split.right()<span class="question-mark">?</span>;
-<a href=#372 id=372 data-nosnippet>372</a>        <span class="kw">let </span>index = <a href="#370">split</a>
-<a href=#373 id=373 data-nosnippet>373</a>            .<a href="binary_search_tree/split.rs.html#40-42">left</a>()
-<a href=#374 id=374 data-nosnippet>374</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|node| <a href="#374">node</a>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size)
-<a href=#375 id=375 data-nosnippet>375</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_default">unwrap_or_default</a>();
-<a href=#376 id=376 data-nosnippet>376</a>        <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#366">front_size</a> + <a href="#372">index</a>)
-<a href=#377 id=377 data-nosnippet>377</a>    }
-<a href=#378 id=378 data-nosnippet>378</a>
-<a href=#379 id=379 data-nosnippet>379</a>    <span class="kw">pub fn </span>rposition_acc&lt;R, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R, f: F) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
-<a href=#380 id=380 data-nosnippet>380</a>    <span class="kw">where
-<a href=#381 id=381 data-nosnippet>381</a>        </span>R: <a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">RangeBounds</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#382 id=382 data-nosnippet>382</a>        F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>T::Agg) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
-<a href=#383 id=383 data-nosnippet>383</a>    {
-<a href=#384 id=384 data-nosnippet>384</a>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = <a href="binary_search_tree/split.rs.html#73-81">Split3</a>::<a href="binary_search_tree/split.rs.html#173-189">seek_by_size</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#379">self</a>.root, <a href="#379">range</a>);
-<a href=#385 id=385 data-nosnippet>385</a>        <span class="kw">let </span>front_size = <a href="#384">split3</a>
-<a href=#386 id=386 data-nosnippet>386</a>            .<a href="binary_search_tree/split.rs.html#114-116">left</a>()
-<a href=#387 id=387 data-nosnippet>387</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|node| <a href="#387">node</a>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size)
-<a href=#388 id=388 data-nosnippet>388</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_default">unwrap_or_default</a>();
-<a href=#389 id=389 data-nosnippet>389</a>        <span class="kw">let </span>split = <a href="#384">split3</a>.<a href="binary_search_tree/split.rs.html#138-143">split_mid</a>(<a href="binary_search_tree/seeker.rs.html#198-205">SeekByRaccCond</a>::<a href="binary_search_tree/seeker.rs.html#212-218">new</a>(<a href="#379">f</a>), EqualSide::<a href="binary_search_tree/node.rs.html#6">Left</a>);
-<a href=#390 id=390 data-nosnippet>390</a>        <span class="kw">let </span>left_size = split.left()<span class="question-mark">?</span>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size;
-<a href=#391 id=391 data-nosnippet>391</a>        <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#385">front_size</a> + <a href="#390">left_size</a> - <span class="number">1</span>)
-<a href=#392 id=392 data-nosnippet>392</a>    }
-<a href=#393 id=393 data-nosnippet>393</a>
-<a href=#394 id=394 data-nosnippet>394</a>    <span class="kw">pub fn </span>rotate_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, mid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-<a href=#395 id=395 data-nosnippet>395</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(mid &lt;= <span class="self">self</span>.length);
-<a href=#396 id=396 data-nosnippet>396</a>        <span class="kw">if </span><a href="#394">mid</a> == <span class="number">0 </span>|| <a href="#394">mid</a> == <a class="self" href="#394">self</a>.length {
-<a href=#397 id=397 data-nosnippet>397</a>            <span class="kw">return</span>;
-<a href=#398 id=398 data-nosnippet>398</a>        }
-<a href=#399 id=399 data-nosnippet>399</a>        <span class="kw">let </span>(left, right) =
-<a href=#400 id=400 data-nosnippet>400</a>            <a href="#23-25">ImplicitSplayTreeSpec</a>::<a href="binary_search_tree/node.rs.html#30-36">split</a>(<a class="self" href="#394">self</a>.root.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>(), <a href="binary_search_tree/seeker.rs.html#100-103">SeekBySize</a>::<a href="binary_search_tree/seeker.rs.html#106-111">new</a>(<a href="#394">mid</a>), EqualSide::<a href="binary_search_tree/node.rs.html#7">Right</a>);
-<a href=#401 id=401 data-nosnippet>401</a>        <a class="self" href="#394">self</a>.root = <a href="#23-25">ImplicitSplayTreeSpec</a>::<a href="binary_search_tree/node.rs.html#28">merge</a>(<a href="#399">right</a>, <a href="#399">left</a>);
+<a href=#362 id=362 data-nosnippet>362</a>        </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>T::Agg) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+<a href=#363 id=363 data-nosnippet>363</a>    {
+<a href=#364 id=364 data-nosnippet>364</a>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = <a href="binary_search_tree/split.rs.html#73-81">Split3</a>::<a href="binary_search_tree/split.rs.html#173-189">seek_by_size</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#360">self</a>.root, left..);
+<a href=#365 id=365 data-nosnippet>365</a>        <span class="kw">let </span>front_size = <a href="#364">split3</a>
+<a href=#366 id=366 data-nosnippet>366</a>            .<a href="binary_search_tree/split.rs.html#114-116">left</a>()
+<a href=#367 id=367 data-nosnippet>367</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|node| <a href="#367">node</a>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size)
+<a href=#368 id=368 data-nosnippet>368</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_default">unwrap_or_default</a>();
+<a href=#369 id=369 data-nosnippet>369</a>        <span class="kw">let </span>split = <a href="#364">split3</a>.<a href="binary_search_tree/split.rs.html#138-143">split_mid</a>(<a href="binary_search_tree/seeker.rs.html#135-142">SeekByAccCond</a>::<a href="binary_search_tree/seeker.rs.html#149-155">new</a>(|acc| !<a href="#360">pred</a>(<a href="#369">acc</a>)), EqualSide::<a href="binary_search_tree/node.rs.html#7">Right</a>);
+<a href=#370 id=370 data-nosnippet>370</a>        <span class="kw">let </span>index = <a href="#369">split</a>
+<a href=#371 id=371 data-nosnippet>371</a>            .<a href="binary_search_tree/split.rs.html#40-42">left</a>()
+<a href=#372 id=372 data-nosnippet>372</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|node| <a href="#372">node</a>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size)
+<a href=#373 id=373 data-nosnippet>373</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_default">unwrap_or_default</a>();
+<a href=#374 id=374 data-nosnippet>374</a>        <a href="#365">front_size</a> + <a href="#370">index</a>
+<a href=#375 id=375 data-nosnippet>375</a>    }
+<a href=#376 id=376 data-nosnippet>376</a>
+<a href=#377 id=377 data-nosnippet>377</a>    <span class="kw">pub fn </span>rpartition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>pred: F) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
+<a href=#378 id=378 data-nosnippet>378</a>    <span class="kw">where
+<a href=#379 id=379 data-nosnippet>379</a>        </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>T::Agg) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+<a href=#380 id=380 data-nosnippet>380</a>    {
+<a href=#381 id=381 data-nosnippet>381</a>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = <a href="binary_search_tree/split.rs.html#73-81">Split3</a>::<a href="binary_search_tree/split.rs.html#173-189">seek_by_size</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#377">self</a>.root, ..right);
+<a href=#382 id=382 data-nosnippet>382</a>        <span class="kw">let </span>split = <a href="#381">split3</a>.<a href="binary_search_tree/split.rs.html#138-143">split_mid</a>(<a href="binary_search_tree/seeker.rs.html#198-205">SeekByRaccCond</a>::<a href="binary_search_tree/seeker.rs.html#212-218">new</a>(|acc| !<a href="#377">pred</a>(<a href="#382">acc</a>)), EqualSide::<a href="binary_search_tree/node.rs.html#6">Left</a>);
+<a href=#383 id=383 data-nosnippet>383</a>        <a href="#382">split</a>
+<a href=#384 id=384 data-nosnippet>384</a>            .<a href="binary_search_tree/split.rs.html#40-42">left</a>()
+<a href=#385 id=385 data-nosnippet>385</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|node| <a href="#385">node</a>.<a href="binary_search_tree/node.rs.html#370-372">into_data</a>().size)
+<a href=#386 id=386 data-nosnippet>386</a>            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_default">unwrap_or_default</a>()
+<a href=#387 id=387 data-nosnippet>387</a>    }
+<a href=#388 id=388 data-nosnippet>388</a>
+<a href=#389 id=389 data-nosnippet>389</a>    <span class="kw">pub fn </span>rotate_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, mid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+<a href=#390 id=390 data-nosnippet>390</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(mid &lt;= <span class="self">self</span>.length);
+<a href=#391 id=391 data-nosnippet>391</a>        <span class="kw">if </span><a href="#389">mid</a> == <span class="number">0 </span>|| <a href="#389">mid</a> == <a class="self" href="#389">self</a>.length {
+<a href=#392 id=392 data-nosnippet>392</a>            <span class="kw">return</span>;
+<a href=#393 id=393 data-nosnippet>393</a>        }
+<a href=#394 id=394 data-nosnippet>394</a>        <span class="kw">let </span>(left, right) =
+<a href=#395 id=395 data-nosnippet>395</a>            <a href="#23-25">ImplicitSplayTreeSpec</a>::<a href="binary_search_tree/node.rs.html#30-36">split</a>(<a class="self" href="#389">self</a>.root.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>(), <a href="binary_search_tree/seeker.rs.html#100-103">SeekBySize</a>::<a href="binary_search_tree/seeker.rs.html#106-111">new</a>(<a href="#389">mid</a>), EqualSide::<a href="binary_search_tree/node.rs.html#7">Right</a>);
+<a href=#396 id=396 data-nosnippet>396</a>        <a class="self" href="#389">self</a>.root = <a href="#23-25">ImplicitSplayTreeSpec</a>::<a href="binary_search_tree/node.rs.html#28">merge</a>(<a href="#394">right</a>, <a href="#394">left</a>);
+<a href=#397 id=397 data-nosnippet>397</a>    }
+<a href=#398 id=398 data-nosnippet>398</a>
+<a href=#399 id=399 data-nosnippet>399</a>    <span class="kw">pub fn </span>rotate_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+<a href=#400 id=400 data-nosnippet>400</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(k &lt;= <span class="self">self</span>.length);
+<a href=#401 id=401 data-nosnippet>401</a>        <a class="self" href="#399">self</a>.<a href="#389-397">rotate_left</a>(<a class="self" href="#399">self</a>.length - <a href="#399">k</a>);
 <a href=#402 id=402 data-nosnippet>402</a>    }
-<a href=#403 id=403 data-nosnippet>403</a>
-<a href=#404 id=404 data-nosnippet>404</a>    <span class="kw">pub fn </span>rotate_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-<a href=#405 id=405 data-nosnippet>405</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(k &lt;= <span class="self">self</span>.length);
-<a href=#406 id=406 data-nosnippet>406</a>        <a class="self" href="#404">self</a>.<a href="#394-402">rotate_left</a>(<a class="self" href="#404">self</a>.length - <a href="#404">k</a>);
-<a href=#407 id=407 data-nosnippet>407</a>    }
-<a href=#408 id=408 data-nosnippet>408</a>}
-<a href=#409 id=409 data-nosnippet>409</a>
-<a href=#410 id=410 data-nosnippet>410</a><span class="kw">impl</span>&lt;T, A&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">Extend</a>&lt;T::Key&gt; <span class="kw">for </span><a href="#173-182">ImplicitSplayTree</a>&lt;T, A&gt;
-<a href=#411 id=411 data-nosnippet>411</a><span class="kw">where
-<a href=#412 id=412 data-nosnippet>412</a>    </span>T: <a href="../algebra/lazy_map.rs.html#8-51">LazyMapMonoid</a>,
-<a href=#413 id=413 data-nosnippet>413</a>    A: <a href="allocator.rs.html#7-10">Allocator</a>&lt;<a href="#21">ImplicitSplayTreeNode</a>&lt;T&gt;&gt;,
-<a href=#414 id=414 data-nosnippet>414</a>{
-<a href=#415 id=415 data-nosnippet>415</a>    <span class="kw">fn </span>extend&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I)
-<a href=#416 id=416 data-nosnippet>416</a>    <span class="kw">where
-<a href=#417 id=417 data-nosnippet>417</a>        </span>I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = T::Key&gt;,
-<a href=#418 id=418 data-nosnippet>418</a>    {
-<a href=#419 id=419 data-nosnippet>419</a>        <span class="kw">let </span>nodes = <a href="#415">iter</a>
-<a href=#420 id=420 data-nosnippet>420</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
-<a href=#421 id=421 data-nosnippet>421</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.map">map</a>(|key| <a class="self" href="#415">self</a>.<a href="#237-246">node</a>(<a href="#421">key</a>))
-<a href=#422 id=422 data-nosnippet>422</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.collect">collect</a>::&lt;<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="kw">_</span>&gt;&gt;();
-<a href=#423 id=423 data-nosnippet>423</a>        <span class="kw">let </span>len = <a href="#419">nodes</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
-<a href=#424 id=424 data-nosnippet>424</a>        <span class="kw">let </span>root = <span class="kw">if </span><a href="#423">len</a> == <span class="number">0 </span>{
-<a href=#425 id=425 data-nosnippet>425</a>            <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>
-<a href=#426 id=426 data-nosnippet>426</a>        } <span class="kw">else </span>{
-<a href=#427 id=427 data-nosnippet>427</a>            <span class="kw">let </span><span class="kw-2">mut </span>stack = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<span class="number">64</span>);
-<a href=#428 id=428 data-nosnippet>428</a>            <a href="#427">stack</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<span class="number">0</span>, <a href="#423">len</a>, <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>::&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;, <span class="bool-val">false</span>));
-<a href=#429 id=429 data-nosnippet>429</a>            <span class="kw">while let </span><span class="prelude-val">Some</span>((start, end, parent, visited)) = stack.pop() {
-<a href=#430 id=430 data-nosnippet>430</a>                <span class="kw">if </span>start == end {
-<a href=#431 id=431 data-nosnippet>431</a>                    <span class="kw">continue</span>;
-<a href=#432 id=432 data-nosnippet>432</a>                }
-<a href=#433 id=433 data-nosnippet>433</a>                <span class="kw">let </span>mid = start + (end - start) / <span class="number">2</span>;
-<a href=#434 id=434 data-nosnippet>434</a>                <span class="kw">if </span>visited {
-<a href=#435 id=435 data-nosnippet>435</a>                    ImplicitSplayTreeSpec::bottom_up(
-<a href=#436 id=436 data-nosnippet>436</a>                        BstRoot::new(nodes[mid].node).borrow_datamut(),
-<a href=#437 id=437 data-nosnippet>437</a>                    );
-<a href=#438 id=438 data-nosnippet>438</a>                    <span class="kw">continue</span>;
-<a href=#439 id=439 data-nosnippet>439</a>                }
-<a href=#440 id=440 data-nosnippet>440</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>((parent, direction)) = parent {
-<a href=#441 id=441 data-nosnippet>441</a>                    <span class="kw">let </span><span class="kw-2">mut </span>parent = nodes[parent].node;
-<a href=#442 id=442 data-nosnippet>442</a>                    <span class="kw">unsafe </span>{ parent.as_mut().child[direction] = <span class="prelude-val">Some</span>(nodes[mid].node) };
-<a href=#443 id=443 data-nosnippet>443</a>                }
-<a href=#444 id=444 data-nosnippet>444</a>                stack.push((start, end, parent, <span class="bool-val">true</span>));
-<a href=#445 id=445 data-nosnippet>445</a>                stack.push((mid + <span class="number">1</span>, end, <span class="prelude-val">Some</span>((mid, <span class="number">1</span>)), <span class="bool-val">false</span>));
-<a href=#446 id=446 data-nosnippet>446</a>                stack.push((start, mid, <span class="prelude-val">Some</span>((mid, <span class="number">0</span>)), <span class="bool-val">false</span>));
-<a href=#447 id=447 data-nosnippet>447</a>            }
-<a href=#448 id=448 data-nosnippet>448</a>            <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="binary_search_tree/node.rs.html#575">BstRoot</a>::<a href="binary_search_tree/node.rs.html#334-339">new</a>(<a href="#419">nodes</a>[<a href="#423">len</a> / <span class="number">2</span>].node))
-<a href=#449 id=449 data-nosnippet>449</a>        };
-<a href=#450 id=450 data-nosnippet>450</a>        <a class="self" href="#415">self</a>.root = <a href="#23-25">ImplicitSplayTreeSpec</a>::<a href="binary_search_tree/node.rs.html#28">merge</a>(<a class="self" href="#415">self</a>.root.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>(), <a href="#424">root</a>);
-<a href=#451 id=451 data-nosnippet>451</a>        <a class="self" href="#415">self</a>.length += <a href="#423">len</a>;
-<a href=#452 id=452 data-nosnippet>452</a>    }
-<a href=#453 id=453 data-nosnippet>453</a>}
-<a href=#454 id=454 data-nosnippet>454</a>
-<a href=#455 id=455 data-nosnippet>455</a><span class="attr">#[cfg(test)]
-<a href=#456 id=456 data-nosnippet>456</a></span><span class="kw">mod </span>tests {
-<a href=#457 id=457 data-nosnippet>457</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#458 id=458 data-nosnippet>458</a>    <span class="kw">use crate</span>::{
-<a href=#459 id=459 data-nosnippet>459</a>        algebra::RangeMaxRangeUpdate,
-<a href=#460 id=460 data-nosnippet>460</a>        rand,
-<a href=#461 id=461 data-nosnippet>461</a>        tools::{NotEmptySegment, Xorshift},
-<a href=#462 id=462 data-nosnippet>462</a>    };
-<a href=#463 id=463 data-nosnippet>463</a>
-<a href=#464 id=464 data-nosnippet>464</a>    <span class="attr">#[test]
-<a href=#465 id=465 data-nosnippet>465</a>    </span><span class="kw">fn </span>test_implicit_splay_tree() {
-<a href=#466 id=466 data-nosnippet>466</a>        <span class="kw">const </span>N: usize = <span class="number">1_000</span>;
-<a href=#467 id=467 data-nosnippet>467</a>        <span class="kw">const </span>Q: usize = <span class="number">20_000</span>;
-<a href=#468 id=468 data-nosnippet>468</a>        <span class="kw">const </span>A: i64 = <span class="number">1_000_000_000</span>;
-<a href=#469 id=469 data-nosnippet>469</a>
-<a href=#470 id=470 data-nosnippet>470</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#471 id=471 data-nosnippet>471</a>        <span class="macro">rand!</span>(rng, <span class="kw-2">mut </span>arr: [-A..A; N]);
-<a href=#472 id=472 data-nosnippet>472</a>        <span class="kw">let </span><span class="kw-2">mut </span>tree = ImplicitSplayTree::&lt;RangeMaxRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new();
-<a href=#473 id=473 data-nosnippet>473</a>        tree.extend(arr.iter().copied());
-<a href=#474 id=474 data-nosnippet>474</a>        <span class="kw">for _ in </span><span class="number">0</span>..Q {
-<a href=#475 id=475 data-nosnippet>475</a>            <span class="macro">assert_eq!</span>(arr.len(), tree.len());
-<a href=#476 id=476 data-nosnippet>476</a>            <span class="macro">rand!</span>(rng, ty: <span class="number">0</span>..<span class="number">10</span>, (l, r): NotEmptySegment(arr.len()));
-<a href=#477 id=477 data-nosnippet>477</a>            <span class="kw">match </span>ty {
-<a href=#478 id=478 data-nosnippet>478</a>                <span class="number">0 </span><span class="kw">if </span>arr.len() &lt; N * <span class="number">2 </span>=&gt; {
-<a href=#479 id=479 data-nosnippet>479</a>                    <span class="macro">rand!</span>(rng, i: ..=arr.len(), x: -A..A);
-<a href=#480 id=480 data-nosnippet>480</a>                    tree.insert(i, x);
-<a href=#481 id=481 data-nosnippet>481</a>                    arr.insert(i, x);
-<a href=#482 id=482 data-nosnippet>482</a>                }
-<a href=#483 id=483 data-nosnippet>483</a>                <span class="number">1 </span><span class="kw">if </span>arr.len() &gt; <span class="number">1 </span>=&gt; {
-<a href=#484 id=484 data-nosnippet>484</a>                    <span class="macro">rand!</span>(rng, i: ..arr.len());
-<a href=#485 id=485 data-nosnippet>485</a>                    <span class="macro">assert_eq!</span>(arr.remove(i), tree.remove(i).unwrap());
-<a href=#486 id=486 data-nosnippet>486</a>                }
-<a href=#487 id=487 data-nosnippet>487</a>                <span class="number">2 </span>=&gt; <span class="macro">assert_eq!</span>(tree.fold(l..r), <span class="kw-2">*</span>arr[l..r].iter().max().unwrap()),
-<a href=#488 id=488 data-nosnippet>488</a>                <span class="number">3 </span>=&gt; {
-<a href=#489 id=489 data-nosnippet>489</a>                    <span class="macro">rand!</span>(rng, x: -A..A);
-<a href=#490 id=490 data-nosnippet>490</a>                    tree.update(l..r, <span class="prelude-val">Some</span>(x));
-<a href=#491 id=491 data-nosnippet>491</a>                    arr[l..r].fill(x);
-<a href=#492 id=492 data-nosnippet>492</a>                }
-<a href=#493 id=493 data-nosnippet>493</a>                <span class="number">4 </span>=&gt; {
-<a href=#494 id=494 data-nosnippet>494</a>                    tree.reverse(l..r);
-<a href=#495 id=495 data-nosnippet>495</a>                    arr[l..r].reverse();
-<a href=#496 id=496 data-nosnippet>496</a>                }
-<a href=#497 id=497 data-nosnippet>497</a>                <span class="number">5 </span>=&gt; {
-<a href=#498 id=498 data-nosnippet>498</a>                    <span class="macro">rand!</span>(rng, x: -A..A);
-<a href=#499 id=499 data-nosnippet>499</a>                    <span class="macro">assert_eq!</span>(
-<a href=#500 id=500 data-nosnippet>500</a>                        tree.position_acc(l..r, |<span class="kw-2">&amp;</span>value| value &gt;= x),
-<a href=#501 id=501 data-nosnippet>501</a>                        arr[l..r]
-<a href=#502 id=502 data-nosnippet>502</a>                            .iter()
-<a href=#503 id=503 data-nosnippet>503</a>                            .scan(i64::MIN, |acc, <span class="kw-2">&amp;</span>value| {
-<a href=#504 id=504 data-nosnippet>504</a>                                <span class="kw-2">*</span>acc = (<span class="kw-2">*</span>acc).max(value);
-<a href=#505 id=505 data-nosnippet>505</a>                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
-<a href=#506 id=506 data-nosnippet>506</a>                            })
-<a href=#507 id=507 data-nosnippet>507</a>                            .position(|value| value &gt;= x)
-<a href=#508 id=508 data-nosnippet>508</a>                            .map(|index| l + index),
-<a href=#509 id=509 data-nosnippet>509</a>                    );
-<a href=#510 id=510 data-nosnippet>510</a>                }
-<a href=#511 id=511 data-nosnippet>511</a>                <span class="number">6 </span>=&gt; {
-<a href=#512 id=512 data-nosnippet>512</a>                    <span class="macro">rand!</span>(rng, x: -A..A);
-<a href=#513 id=513 data-nosnippet>513</a>                    <span class="macro">assert_eq!</span>(
-<a href=#514 id=514 data-nosnippet>514</a>                        tree.rposition_acc(l..r, |<span class="kw-2">&amp;</span>value| value &gt;= x),
-<a href=#515 id=515 data-nosnippet>515</a>                        arr[l..r]
-<a href=#516 id=516 data-nosnippet>516</a>                            .iter()
-<a href=#517 id=517 data-nosnippet>517</a>                            .rev()
-<a href=#518 id=518 data-nosnippet>518</a>                            .scan(i64::MIN, |acc, <span class="kw-2">&amp;</span>value| {
-<a href=#519 id=519 data-nosnippet>519</a>                                <span class="kw-2">*</span>acc = (<span class="kw-2">*</span>acc).max(value);
-<a href=#520 id=520 data-nosnippet>520</a>                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
-<a href=#521 id=521 data-nosnippet>521</a>                            })
-<a href=#522 id=522 data-nosnippet>522</a>                            .position(|value| value &gt;= x)
-<a href=#523 id=523 data-nosnippet>523</a>                            .map(|index| r - index - <span class="number">1</span>),
-<a href=#524 id=524 data-nosnippet>524</a>                    );
+<a href=#403 id=403 data-nosnippet>403</a>}
+<a href=#404 id=404 data-nosnippet>404</a>
+<a href=#405 id=405 data-nosnippet>405</a><span class="kw">impl</span>&lt;T, A&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">Extend</a>&lt;T::Key&gt; <span class="kw">for </span><a href="#173-182">ImplicitSplayTree</a>&lt;T, A&gt;
+<a href=#406 id=406 data-nosnippet>406</a><span class="kw">where
+<a href=#407 id=407 data-nosnippet>407</a>    </span>T: <a href="../algebra/lazy_map.rs.html#8-51">LazyMapMonoid</a>,
+<a href=#408 id=408 data-nosnippet>408</a>    A: <a href="allocator.rs.html#7-10">Allocator</a>&lt;<a href="#21">ImplicitSplayTreeNode</a>&lt;T&gt;&gt;,
+<a href=#409 id=409 data-nosnippet>409</a>{
+<a href=#410 id=410 data-nosnippet>410</a>    <span class="kw">fn </span>extend&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I)
+<a href=#411 id=411 data-nosnippet>411</a>    <span class="kw">where
+<a href=#412 id=412 data-nosnippet>412</a>        </span>I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = T::Key&gt;,
+<a href=#413 id=413 data-nosnippet>413</a>    {
+<a href=#414 id=414 data-nosnippet>414</a>        <span class="kw">let </span>nodes = <a href="#410">iter</a>
+<a href=#415 id=415 data-nosnippet>415</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+<a href=#416 id=416 data-nosnippet>416</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.map">map</a>(|key| <a class="self" href="#410">self</a>.<a href="#237-246">node</a>(<a href="#416">key</a>))
+<a href=#417 id=417 data-nosnippet>417</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.collect">collect</a>::&lt;<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="kw">_</span>&gt;&gt;();
+<a href=#418 id=418 data-nosnippet>418</a>        <span class="kw">let </span>len = <a href="#414">nodes</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
+<a href=#419 id=419 data-nosnippet>419</a>        <span class="kw">let </span>root = <span class="kw">if </span><a href="#418">len</a> == <span class="number">0 </span>{
+<a href=#420 id=420 data-nosnippet>420</a>            <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>
+<a href=#421 id=421 data-nosnippet>421</a>        } <span class="kw">else </span>{
+<a href=#422 id=422 data-nosnippet>422</a>            <span class="kw">let </span><span class="kw-2">mut </span>stack = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<span class="number">64</span>);
+<a href=#423 id=423 data-nosnippet>423</a>            <a href="#422">stack</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<span class="number">0</span>, <a href="#418">len</a>, <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>::&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;, <span class="bool-val">false</span>));
+<a href=#424 id=424 data-nosnippet>424</a>            <span class="kw">while let </span><span class="prelude-val">Some</span>((start, end, parent, visited)) = stack.pop() {
+<a href=#425 id=425 data-nosnippet>425</a>                <span class="kw">if </span>start == end {
+<a href=#426 id=426 data-nosnippet>426</a>                    <span class="kw">continue</span>;
+<a href=#427 id=427 data-nosnippet>427</a>                }
+<a href=#428 id=428 data-nosnippet>428</a>                <span class="kw">let </span>mid = start + (end - start) / <span class="number">2</span>;
+<a href=#429 id=429 data-nosnippet>429</a>                <span class="kw">if </span>visited {
+<a href=#430 id=430 data-nosnippet>430</a>                    ImplicitSplayTreeSpec::bottom_up(
+<a href=#431 id=431 data-nosnippet>431</a>                        BstRoot::new(nodes[mid].node).borrow_datamut(),
+<a href=#432 id=432 data-nosnippet>432</a>                    );
+<a href=#433 id=433 data-nosnippet>433</a>                    <span class="kw">continue</span>;
+<a href=#434 id=434 data-nosnippet>434</a>                }
+<a href=#435 id=435 data-nosnippet>435</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>((parent, direction)) = parent {
+<a href=#436 id=436 data-nosnippet>436</a>                    <span class="kw">let </span><span class="kw-2">mut </span>parent = nodes[parent].node;
+<a href=#437 id=437 data-nosnippet>437</a>                    <span class="kw">unsafe </span>{ parent.as_mut().child[direction] = <span class="prelude-val">Some</span>(nodes[mid].node) };
+<a href=#438 id=438 data-nosnippet>438</a>                }
+<a href=#439 id=439 data-nosnippet>439</a>                stack.push((start, end, parent, <span class="bool-val">true</span>));
+<a href=#440 id=440 data-nosnippet>440</a>                stack.push((mid + <span class="number">1</span>, end, <span class="prelude-val">Some</span>((mid, <span class="number">1</span>)), <span class="bool-val">false</span>));
+<a href=#441 id=441 data-nosnippet>441</a>                stack.push((start, mid, <span class="prelude-val">Some</span>((mid, <span class="number">0</span>)), <span class="bool-val">false</span>));
+<a href=#442 id=442 data-nosnippet>442</a>            }
+<a href=#443 id=443 data-nosnippet>443</a>            <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="binary_search_tree/node.rs.html#575">BstRoot</a>::<a href="binary_search_tree/node.rs.html#334-339">new</a>(<a href="#414">nodes</a>[<a href="#418">len</a> / <span class="number">2</span>].node))
+<a href=#444 id=444 data-nosnippet>444</a>        };
+<a href=#445 id=445 data-nosnippet>445</a>        <a class="self" href="#410">self</a>.root = <a href="#23-25">ImplicitSplayTreeSpec</a>::<a href="binary_search_tree/node.rs.html#28">merge</a>(<a class="self" href="#410">self</a>.root.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>(), <a href="#419">root</a>);
+<a href=#446 id=446 data-nosnippet>446</a>        <a class="self" href="#410">self</a>.length += <a href="#418">len</a>;
+<a href=#447 id=447 data-nosnippet>447</a>    }
+<a href=#448 id=448 data-nosnippet>448</a>}
+<a href=#449 id=449 data-nosnippet>449</a>
+<a href=#450 id=450 data-nosnippet>450</a><span class="attr">#[cfg(test)]
+<a href=#451 id=451 data-nosnippet>451</a></span><span class="kw">mod </span>tests {
+<a href=#452 id=452 data-nosnippet>452</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#453 id=453 data-nosnippet>453</a>    <span class="kw">use crate</span>::{
+<a href=#454 id=454 data-nosnippet>454</a>        algebra::RangeMaxRangeUpdate,
+<a href=#455 id=455 data-nosnippet>455</a>        rand,
+<a href=#456 id=456 data-nosnippet>456</a>        tools::{NotEmptySegment, Xorshift},
+<a href=#457 id=457 data-nosnippet>457</a>    };
+<a href=#458 id=458 data-nosnippet>458</a>
+<a href=#459 id=459 data-nosnippet>459</a>    <span class="attr">#[test]
+<a href=#460 id=460 data-nosnippet>460</a>    </span><span class="kw">fn </span>test_implicit_splay_tree() {
+<a href=#461 id=461 data-nosnippet>461</a>        <span class="kw">const </span>N: usize = <span class="number">1_000</span>;
+<a href=#462 id=462 data-nosnippet>462</a>        <span class="kw">const </span>Q: usize = <span class="number">20_000</span>;
+<a href=#463 id=463 data-nosnippet>463</a>        <span class="kw">const </span>A: i64 = <span class="number">1_000_000_000</span>;
+<a href=#464 id=464 data-nosnippet>464</a>
+<a href=#465 id=465 data-nosnippet>465</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#466 id=466 data-nosnippet>466</a>        <span class="macro">rand!</span>(rng, <span class="kw-2">mut </span>arr: [-A..A; N]);
+<a href=#467 id=467 data-nosnippet>467</a>        <span class="kw">let </span><span class="kw-2">mut </span>tree = ImplicitSplayTree::&lt;RangeMaxRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new();
+<a href=#468 id=468 data-nosnippet>468</a>        tree.extend(arr.iter().copied());
+<a href=#469 id=469 data-nosnippet>469</a>        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+<a href=#470 id=470 data-nosnippet>470</a>            <span class="macro">assert_eq!</span>(arr.len(), tree.len());
+<a href=#471 id=471 data-nosnippet>471</a>            <span class="macro">rand!</span>(rng, ty: <span class="number">0</span>..<span class="number">10</span>, (l, r): NotEmptySegment(arr.len()));
+<a href=#472 id=472 data-nosnippet>472</a>            <span class="kw">match </span>ty {
+<a href=#473 id=473 data-nosnippet>473</a>                <span class="number">0 </span><span class="kw">if </span>arr.len() &lt; N * <span class="number">2 </span>=&gt; {
+<a href=#474 id=474 data-nosnippet>474</a>                    <span class="macro">rand!</span>(rng, i: ..=arr.len(), x: -A..A);
+<a href=#475 id=475 data-nosnippet>475</a>                    tree.insert(i, x);
+<a href=#476 id=476 data-nosnippet>476</a>                    arr.insert(i, x);
+<a href=#477 id=477 data-nosnippet>477</a>                }
+<a href=#478 id=478 data-nosnippet>478</a>                <span class="number">1 </span><span class="kw">if </span>arr.len() &gt; <span class="number">1 </span>=&gt; {
+<a href=#479 id=479 data-nosnippet>479</a>                    <span class="macro">rand!</span>(rng, i: ..arr.len());
+<a href=#480 id=480 data-nosnippet>480</a>                    <span class="macro">assert_eq!</span>(arr.remove(i), tree.remove(i).unwrap());
+<a href=#481 id=481 data-nosnippet>481</a>                }
+<a href=#482 id=482 data-nosnippet>482</a>                <span class="number">2 </span>=&gt; <span class="macro">assert_eq!</span>(tree.fold(l..r), <span class="kw-2">*</span>arr[l..r].iter().max().unwrap()),
+<a href=#483 id=483 data-nosnippet>483</a>                <span class="number">3 </span>=&gt; {
+<a href=#484 id=484 data-nosnippet>484</a>                    <span class="macro">rand!</span>(rng, x: -A..A);
+<a href=#485 id=485 data-nosnippet>485</a>                    tree.update(l..r, <span class="prelude-val">Some</span>(x));
+<a href=#486 id=486 data-nosnippet>486</a>                    arr[l..r].fill(x);
+<a href=#487 id=487 data-nosnippet>487</a>                }
+<a href=#488 id=488 data-nosnippet>488</a>                <span class="number">4 </span>=&gt; {
+<a href=#489 id=489 data-nosnippet>489</a>                    tree.reverse(l..r);
+<a href=#490 id=490 data-nosnippet>490</a>                    arr[l..r].reverse();
+<a href=#491 id=491 data-nosnippet>491</a>                }
+<a href=#492 id=492 data-nosnippet>492</a>                <span class="number">5 </span>=&gt; {
+<a href=#493 id=493 data-nosnippet>493</a>                    <span class="macro">rand!</span>(rng, left: ..=arr.len(), x: -A..A);
+<a href=#494 id=494 data-nosnippet>494</a>                    <span class="macro">assert_eq!</span>(
+<a href=#495 id=495 data-nosnippet>495</a>                        tree.partition_point_acc(left, |<span class="kw-2">&amp;</span>value| value &lt; x),
+<a href=#496 id=496 data-nosnippet>496</a>                        arr[left..]
+<a href=#497 id=497 data-nosnippet>497</a>                            .iter()
+<a href=#498 id=498 data-nosnippet>498</a>                            .scan(i64::MIN, |acc, <span class="kw-2">&amp;</span>value| {
+<a href=#499 id=499 data-nosnippet>499</a>                                <span class="kw-2">*</span>acc = (<span class="kw-2">*</span>acc).max(value);
+<a href=#500 id=500 data-nosnippet>500</a>                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
+<a href=#501 id=501 data-nosnippet>501</a>                            })
+<a href=#502 id=502 data-nosnippet>502</a>                            .position(|value| value &gt;= x)
+<a href=#503 id=503 data-nosnippet>503</a>                            .map_or(arr.len(), |index| left + index),
+<a href=#504 id=504 data-nosnippet>504</a>                    );
+<a href=#505 id=505 data-nosnippet>505</a>                }
+<a href=#506 id=506 data-nosnippet>506</a>                <span class="number">6 </span>=&gt; {
+<a href=#507 id=507 data-nosnippet>507</a>                    <span class="macro">rand!</span>(rng, right: ..=arr.len(), x: -A..A);
+<a href=#508 id=508 data-nosnippet>508</a>                    <span class="macro">assert_eq!</span>(
+<a href=#509 id=509 data-nosnippet>509</a>                        tree.rpartition_point_acc(right, |<span class="kw-2">&amp;</span>value| value &lt; x),
+<a href=#510 id=510 data-nosnippet>510</a>                        arr[..right]
+<a href=#511 id=511 data-nosnippet>511</a>                            .iter()
+<a href=#512 id=512 data-nosnippet>512</a>                            .rev()
+<a href=#513 id=513 data-nosnippet>513</a>                            .scan(i64::MIN, |acc, <span class="kw-2">&amp;</span>value| {
+<a href=#514 id=514 data-nosnippet>514</a>                                <span class="kw-2">*</span>acc = (<span class="kw-2">*</span>acc).max(value);
+<a href=#515 id=515 data-nosnippet>515</a>                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
+<a href=#516 id=516 data-nosnippet>516</a>                            })
+<a href=#517 id=517 data-nosnippet>517</a>                            .position(|value| value &gt;= x)
+<a href=#518 id=518 data-nosnippet>518</a>                            .map_or(<span class="number">0</span>, |index| right - index),
+<a href=#519 id=519 data-nosnippet>519</a>                    );
+<a href=#520 id=520 data-nosnippet>520</a>                }
+<a href=#521 id=521 data-nosnippet>521</a>                <span class="number">7 </span>=&gt; {
+<a href=#522 id=522 data-nosnippet>522</a>                    <span class="macro">rand!</span>(rng, mid: ..=arr.len());
+<a href=#523 id=523 data-nosnippet>523</a>                    tree.rotate_left(mid);
+<a href=#524 id=524 data-nosnippet>524</a>                    arr.rotate_left(mid);
 <a href=#525 id=525 data-nosnippet>525</a>                }
-<a href=#526 id=526 data-nosnippet>526</a>                <span class="number">7 </span>=&gt; {
-<a href=#527 id=527 data-nosnippet>527</a>                    <span class="macro">rand!</span>(rng, mid: ..=arr.len());
-<a href=#528 id=528 data-nosnippet>528</a>                    tree.rotate_left(mid);
-<a href=#529 id=529 data-nosnippet>529</a>                    arr.rotate_left(mid);
+<a href=#526 id=526 data-nosnippet>526</a>                <span class="number">8 </span>=&gt; {
+<a href=#527 id=527 data-nosnippet>527</a>                    <span class="macro">rand!</span>(rng, count: ..=arr.len());
+<a href=#528 id=528 data-nosnippet>528</a>                    tree.rotate_right(count);
+<a href=#529 id=529 data-nosnippet>529</a>                    arr.rotate_right(count);
 <a href=#530 id=530 data-nosnippet>530</a>                }
-<a href=#531 id=531 data-nosnippet>531</a>                <span class="number">8 </span>=&gt; {
-<a href=#532 id=532 data-nosnippet>532</a>                    <span class="macro">rand!</span>(rng, count: ..=arr.len());
-<a href=#533 id=533 data-nosnippet>533</a>                    tree.rotate_right(count);
-<a href=#534 id=534 data-nosnippet>534</a>                    arr.rotate_right(count);
+<a href=#531 id=531 data-nosnippet>531</a>                <span class="kw">_ </span>=&gt; {
+<a href=#532 id=532 data-nosnippet>532</a>                    <span class="macro">rand!</span>(rng, index: ..arr.len(), value: -A..A);
+<a href=#533 id=533 data-nosnippet>533</a>                    tree.modify(index, |<span class="kw">_</span>| value);
+<a href=#534 id=534 data-nosnippet>534</a>                    arr[index] = value;
 <a href=#535 id=535 data-nosnippet>535</a>                }
-<a href=#536 id=536 data-nosnippet>536</a>                <span class="kw">_ </span>=&gt; {
-<a href=#537 id=537 data-nosnippet>537</a>                    <span class="macro">rand!</span>(rng, index: ..arr.len(), value: -A..A);
-<a href=#538 id=538 data-nosnippet>538</a>                    tree.modify(index, |<span class="kw">_</span>| value);
-<a href=#539 id=539 data-nosnippet>539</a>                    arr[index] = value;
-<a href=#540 id=540 data-nosnippet>540</a>                }
-<a href=#541 id=541 data-nosnippet>541</a>            }
-<a href=#542 id=542 data-nosnippet>542</a>            <span class="macro">assert_eq!</span>(tree.get(tree.len()), <span class="prelude-val">None</span>);
-<a href=#543 id=543 data-nosnippet>543</a>            <span class="macro">rand!</span>(rng, index: ..arr.len());
-<a href=#544 id=544 data-nosnippet>544</a>            <span class="macro">assert_eq!</span>(tree.get(index), arr.get(index));
-<a href=#545 id=545 data-nosnippet>545</a>        }
-<a href=#546 id=546 data-nosnippet>546</a>    }
-<a href=#547 id=547 data-nosnippet>547</a>}
+<a href=#536 id=536 data-nosnippet>536</a>            }
+<a href=#537 id=537 data-nosnippet>537</a>            <span class="macro">assert_eq!</span>(tree.get(tree.len()), <span class="prelude-val">None</span>);
+<a href=#538 id=538 data-nosnippet>538</a>            <span class="macro">rand!</span>(rng, index: ..arr.len());
+<a href=#539 id=539 data-nosnippet>539</a>            <span class="macro">assert_eq!</span>(tree.get(index), arr.get(index));
+<a href=#540 id=540 data-nosnippet>540</a>        }
+<a href=#541 id=541 data-nosnippet>541</a>    }
+<a href=#542 id=542 data-nosnippet>542</a>}
 </code></pre></div></section></main></body></html>
