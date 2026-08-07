@@ -500,6 +500,7 @@ mod tests {
         }
         DynMIntU64::set_mod(n);
         let res = baby_step_giant_step::<MultiplicativeOperation<_>>(
+            DynMIntU64::new(1),
             DynMIntU64::new(a),
             DynMIntU64::new(b),
             n as _,
