@@ -135,31 +135,31 @@
 <span data-nosnippet>272</span>    }
 <span data-nosnippet>273</span>    x = <span class="highlight">M::pow</span>(x.clone(), n);
 <span data-nosnippet>274</span>    M::operate(<span class="kw-2">&amp;</span>M::operate(<span class="kw-2">&amp;</span>pre, <span class="kw-2">&amp;</span>x), <span class="kw-2">&amp;</span>suf)
-<span data-nosnippet>275</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/algorithm/baby_step_giant_step.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/baby_step_giant_step.rs (<a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>baby_step_giant_step&lt;M&gt;(x: M::T, y: M::T, n: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt;
+<span data-nosnippet>275</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/algorithm/baby_step_giant_step.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/baby_step_giant_step.rs (<a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>baby_step_giant_step&lt;M&gt;(a: M::T, x: M::T, b: M::T, n: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt;
 <span data-nosnippet>6</span><span class="kw">where
 <span data-nosnippet>7</span>    </span>M: Monoid&lt;T: Eq + Hash&gt;,
 <span data-nosnippet>8</span>{
-<span data-nosnippet>9</span>    <span class="kw">if </span>M::is_unit(<span class="kw-2">&amp;</span>y) {
+<span data-nosnippet>9</span>    <span class="kw">if </span>a == b {
 <span data-nosnippet>10</span>        <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="number">0</span>);
 <span data-nosnippet>11</span>    }
 <span data-nosnippet>12</span>    <span class="kw">let </span>block_size = <span class="number">1usize</span>.max((n <span class="kw">as </span>f64).sqrt() <span class="kw">as _</span>);
 <span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashSet::new();
-<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = y.clone();
+<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = b.clone();
 <span data-nosnippet>15</span>    <span class="kw">for _ in </span><span class="number">0</span>..block_size {
-<span data-nosnippet>16</span>        t = M::operate(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>t);
+<span data-nosnippet>16</span>        t = M::operate(<span class="kw-2">&amp;</span>t, <span class="kw-2">&amp;</span>x);
 <span data-nosnippet>17</span>        baby.insert(t.clone());
 <span data-nosnippet>18</span>    }
 <span data-nosnippet>19</span>    <span class="kw">let </span>g = <span class="highlight focus">M::pow</span>(x.clone(), block_size);
-<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = M::unit();
+<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = a;
 <span data-nosnippet>21</span>    <span class="kw">let </span><span class="kw-2">mut </span>fail = <span class="number">0usize</span>;
 <span data-nosnippet>22</span>    <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">0</span>..n).step_by(block_size) {
-<span data-nosnippet>23</span>        <span class="kw">let </span>nt = M::operate(<span class="kw-2">&amp;</span>g, <span class="kw-2">&amp;</span>t);
+<span data-nosnippet>23</span>        <span class="kw">let </span>nt = M::operate(<span class="kw-2">&amp;</span>t, <span class="kw-2">&amp;</span>g);
 <span data-nosnippet>24</span>        <span class="kw">if </span>baby.contains(<span class="kw-2">&amp;</span>nt) {
 <span data-nosnippet>25</span>            <span class="kw">for </span>m <span class="kw">in </span>k..n.min(k + block_size) {
-<span data-nosnippet>26</span>                <span class="kw">if </span>t == y {
+<span data-nosnippet>26</span>                <span class="kw">if </span>t == b {
 <span data-nosnippet>27</span>                    <span class="kw">return </span><span class="prelude-val">Some</span>(m);
 <span data-nosnippet>28</span>                }
-<span data-nosnippet>29</span>                t = M::operate(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>t);
+<span data-nosnippet>29</span>                t = M::operate(<span class="kw-2">&amp;</span>t, <span class="kw-2">&amp;</span>x);
 <span data-nosnippet>30</span>            }
 <span data-nosnippet>31</span>            fail += <span class="number">1</span>;
 <span data-nosnippet>32</span>            <span class="kw">if </span>fail &gt;= <span class="number">2 </span>{
