@@ -1,58 +1,61 @@
 use super::UndirectedSparseGraph;
 
 pub struct LevelAncestor {
-    vidx: Vec<usize>,
-    inv_vidx: Vec<usize>,
+    parent: Vec<usize>,
     depth: Vec<usize>,
     start: Vec<usize>,
-    bucket: Vec<usize>,
-}
-
-struct LevelAncestorBatch<'a> {
-    tree: &'a UndirectedSparseGraph,
-    path: Vec<usize>,
-    start: Vec<usize>,
-    queries: Vec<(usize, usize)>,
-    results: Vec<Option<usize>>,
+    index: Vec<usize>,
+    ladder: Vec<usize>,
 }
 
 impl UndirectedSparseGraph {
     pub fn level_ancestor(&self, root: usize) -> LevelAncestor {
         let n = self.vertices_size();
-        let mut vidx = vec![0; n];
-        let mut inv_vidx = vec![0; n];
+        let (order, parent) = self.tree_order(root);
         let mut depth = vec![0; n];
-        let mut start = vec![0; n + 1];
-        let mut bucket = vec![0; n];
-        let mut stack = Vec::with_capacity(n);
-        stack.push((root, !0));
-        let mut idx = 0usize;
-        while let Some((u, p)) = stack.pop() {
-            vidx[u] = idx;
-            inv_vidx[idx] = u;
-            idx += 1;
-            start[depth[u]] += 1;
-            for a in self.adjacencies(u) {
-                if a.to != p {
-                    depth[a.to] = depth[u] + 1;
-                    stack.push((a.to, u));
-                }
+        for &u in order.iter().skip(1) {
+            depth[u] = depth[parent[u]] + 1;
+        }
+        let mut height = vec![1; n];
+        let mut heavy = vec![n; n];
+        for &u in order.iter().skip(1).rev() {
+            let p = parent[u];
+            if heavy[p] == n || height[heavy[p]] < height[u] {
+                heavy[p] = u;
             }
+            height[p] = height[p].max(height[u] + 1);
         }
-        for d in 0..n {
-            start[d + 1] += start[d];
-        }
-        for &u in &inv_vidx {
-            start[depth[u]] -= 1;
-            bucket[start[depth[u]]] = vidx[u];
+
+        let mut start = vec![0; n];
+        let mut index = vec![0; n];
+        let mut ladder = Vec::with_capacity(2 * n);
+        for &head in &order {
+            if head != root && heavy[parent[head]] == head {
+                continue;
+            }
+            let extension = height[head].min(depth[head]);
+            let offset = ladder.len();
+            ladder.resize(offset + extension + height[head], n);
+            let mut u = head;
+            for i in (0..extension).rev() {
+                u = parent[u];
+                ladder[offset + i] = u;
+            }
+            let mut u = head;
+            for i in extension..extension + height[head] {
+                ladder[offset + i] = u;
+                start[u] = offset;
+                index[u] = offset + i;
+                u = heavy[u];
+            }
         }
 
         LevelAncestor {
-            vidx,
-            inv_vidx,
+            parent,
             depth,
             start,
-            bucket,
+            index,
+            ladder,
         }
     }
 
@@ -76,49 +79,45 @@ impl UndirectedSparseGraph {
             start[u] -= 1;
             batch[start[u]] = (k, i);
         }
-        let mut la = LevelAncestorBatch {
-            tree: self,
-            path: Vec::with_capacity(n),
-            start,
-            queries: batch,
-            results: vec![None; qsize],
-        };
-        la.dfs(root, !0);
-        la.results
+        let (order, parent) = self.tree_order(root);
+        let mut path = Vec::with_capacity(n);
+        let mut results = vec![None; qsize];
+        for u in order {
+            while path.last().is_some_and(|&v| v != parent[u]) {
+                path.pop();
+            }
+            path.push(u);
+            for &(k, qi) in &batch[start[u]..start[u + 1]] {
+                let depth = path.len() - 1;
+                if k <= depth {
+                    results[qi] = Some(path[depth - k]);
+                }
+            }
+        }
+        results
     }
 }
 
 impl LevelAncestor {
-    pub fn la(&self, u: usize, k: usize) -> Option<usize> {
+    #[inline]
+    pub fn la(&self, mut u: usize, mut k: usize) -> Option<usize> {
         if self.depth[u] < k {
             return None;
         }
-        let d = self.depth[u] - k;
-        let slice = &self.bucket[self.start[d]..self.start[d + 1]];
-        let idx = slice.partition_point(|&v| v > self.vidx[u]);
-        Some(self.inv_vidx[slice[idx]])
+        loop {
+            let start = self.start[u];
+            let index = self.index[u];
+            if k <= index - start {
+                return Some(self.ladder[index - k]);
+            }
+            k -= index - start + 1;
+            u = self.parent[self.ladder[start]];
+        }
     }
 
+    #[inline]
     pub fn depth(&self, u: usize) -> usize {
         self.depth[u]
-    }
-}
-
-impl<'a> LevelAncestorBatch<'a> {
-    fn dfs(&mut self, u: usize, p: usize) {
-        self.path.push(u);
-        for &(k, qi) in &self.queries[self.start[u]..self.start[u + 1]] {
-            let depth = self.path.len() - 1;
-            if k <= depth {
-                self.results[qi] = Some(self.path[depth - k]);
-            }
-        }
-        for a in self.tree.adjacencies(u) {
-            if a.to != p {
-                self.dfs(a.to, u);
-            }
-        }
-        self.path.pop();
     }
 }
 

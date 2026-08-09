@@ -2,7 +2,7 @@ use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
 
 #[verify::library_checker("lca")]
-pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {
+pub fn lca(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, p: [usize]);

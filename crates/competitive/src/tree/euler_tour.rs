@@ -189,17 +189,20 @@ impl UndirectedSparseGraph {
     }
 
     pub fn lca(&self, root: usize) -> LowestCommonAncestor {
-        let depth = self.tree_depth(root);
-        let mut trace = Vec::with_capacity(2 * self.vertices_size() - 1);
-        let mut depth_trace = Vec::with_capacity(2 * self.vertices_size() - 1);
-        let euler_tour = self.full_euler_tour_builder(root).build_with_trace(|u| {
-            trace.push(u);
-            depth_trace.push(depth[u]);
-        });
-        let rmq = RangeMinimumQuery::new(depth_trace);
+        let (preorder, parent) = self.tree_order(root);
+        let mut index = vec![0; preorder.len()];
+        let mut depth = vec![0; preorder.len()];
+        for (i, &u) in preorder.iter().enumerate() {
+            index[u] = i;
+            if u != root {
+                depth[u] = depth[parent[u]] + 1;
+            }
+        }
+        let rmq = RangeMinimumQuery::new(preorder.iter().map(|&u| depth[u]).collect());
         LowestCommonAncestor {
-            euler_tour,
-            trace,
+            parent,
+            preorder,
+            index,
             rmq,
         }
     }
@@ -247,20 +250,34 @@ impl EulerTour<marker::FirstLast> {
 
 #[derive(Debug)]
 pub struct LowestCommonAncestor {
-    euler_tour: EulerTour<marker::Visit>,
-    trace: Vec<usize>,
-    rmq: RangeMinimumQuery<u64>,
+    parent: Vec<usize>,
+    preorder: Vec<usize>,
+    index: Vec<usize>,
+    rmq: RangeMinimumQuery<usize>,
 }
 
 impl LowestCommonAncestor {
+    #[inline]
+    pub fn depth(&self, u: usize) -> usize {
+        *self.rmq.get(self.index[u])
+    }
+
+    #[inline]
     pub fn lca(&self, u: usize, v: usize) -> usize {
-        let mut l = self.euler_tour.vidx[u][0];
-        let mut r = self.euler_tour.vidx[v][0];
+        if u == v {
+            return u;
+        }
+        let mut l = self.index[u];
+        let mut r = self.index[v];
         if l > r {
             swap(&mut l, &mut r);
         }
-        let idx = self.rmq.argmin(l, r + 1);
-        self.trace[idx]
+        let i = self.rmq.argmin(l + 1, r + 1);
+        if self.rmq.get(l) < self.rmq.get(i) {
+            self.preorder[l]
+        } else {
+            self.parent[self.preorder[i]]
+        }
     }
 }
 

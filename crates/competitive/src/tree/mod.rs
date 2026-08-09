@@ -44,7 +44,7 @@ mod centroid_decomposition;
 mod depth;
 #[cfg_attr(
     nightly,
-    codesnip::entry("EulerTour", include("RangeMinimumQuery", "SparseGraph", "tree_depth"))
+    codesnip::entry("EulerTour", include("RangeMinimumQuery", "SparseGraph", "tree_order"))
 )]
 mod euler_tour;
 #[cfg_attr(
@@ -57,7 +57,10 @@ mod generator;
     codesnip::entry("HeavyLightDecomposition", include("algebra", "SparseGraph"))
 )]
 mod heavy_light_decomposition;
-#[cfg_attr(nightly, codesnip::entry("LevelAncestor", include("SparseGraph")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("LevelAncestor", include("SparseGraph", "tree_order"))
+)]
 mod level_ancestor;
 #[cfg_attr(
     nightly,
