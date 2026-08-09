@@ -4,7 +4,6 @@ use competitive::{
     data_structure::SegmentTree,
     graph::TreeGraphScanner,
     num::mint_basic::MInt998244353,
-    tree::HeavyLightDecomposition,
 };
 
 competitive::define_enum_scan! {
@@ -18,11 +17,11 @@ competitive::define_enum_scan! {
 pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (mut graph, _): @TreeGraphScanner::<usize, ()>::new(n));
-    let hld = HeavyLightDecomposition::new(0, &mut graph);
+    scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
+    let hld = graph.hld(0);
     let mut nab = vec![(MInt998244353::default(), MInt998244353::default()); n];
     for i in 0..n {
-        nab[hld.vidx[i]] = ab[i];
+        nab[hld.index(i)] = ab[i];
     }
     let mut seg1 = SegmentTree::<LinearOperation<_>>::from_vec(nab.clone());
     let mut seg2 = SegmentTree::<ReverseOperation<LinearOperation<_>>>::from_vec(nab);
@@ -30,14 +29,13 @@ pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
         scan!(scanner, query: Query);
         match query {
             Query::Set { p, cd } => {
-                seg1.set(hld.vidx[p], cd);
-                seg2.set(hld.vidx[p], cd);
+                seg1.set(hld.index(p), cd);
+                seg2.set(hld.index(p), cd);
             }
             Query::Apply { u, v, x } => {
-                let (a, b) = hld.query_noncom::<LinearOperation<_>, _, _>(
+                let (a, b) = hld.fold_vertices::<LinearOperation<_>, _, _>(
                     u,
                     v,
-                    false,
                     |l, r| seg1.fold(l..r),
                     |l, r| seg2.fold(l..r),
                 );

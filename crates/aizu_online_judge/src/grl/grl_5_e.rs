@@ -1,10 +1,7 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::{AdditiveOperation, RangeSumRangeAdd},
-    data_structure::LazySegmentTree,
-    graph::UndirectedSparseGraph,
+    algebra::RangeSumRangeAdd, data_structure::LazySegmentTree, graph::UndirectedSparseGraph,
     tools::SizedCollect,
-    tree::HeavyLightDecomposition,
 };
 
 competitive::define_enum_scan! {
@@ -24,9 +21,8 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
         .enumerate()
         .flat_map(|(u, it)| it.into_iter().map(move |v| (u, v)))
         .collect();
-    let mut graph = UndirectedSparseGraph::from_edges(n, edges);
-    let hld = HeavyLightDecomposition::new(0, &mut graph);
-    type M = (AdditiveOperation<u64>, AdditiveOperation<u64>);
+    let graph = UndirectedSparseGraph::from_edges(n, edges);
+    let hld = graph.hld(0);
     let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0u64, 1u64); n]);
 
     scan!(scanner, q);
@@ -34,10 +30,11 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
         scan!(scanner, query: Query);
         match query {
             Query::Add { v, w } => {
-                hld.update(0, v, true, |l, r| seg.update(l..r, w));
+                hld.path_edges(0, v, |l, r| seg.update(l..r, w));
             }
             Query::Get { u } => {
-                let ans = hld.query::<M, _>(0, u, true, |l, r| seg.fold(l..r)).0;
+                let mut ans = 0;
+                hld.path_edges(0, u, |l, r| ans += seg.fold(l..r).0);
                 writeln!(writer, "{}", ans).ok();
             }
         }

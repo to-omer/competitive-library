@@ -1,7 +1,6 @@
 use competitive::prelude::*;
 use competitive::{
     algebra::AdditiveOperation, data_structure::BinaryIndexedTree, graph::TreeGraphScanner,
-    tree::HeavyLightDecomposition,
 };
 
 competitive::define_enum_scan! {
@@ -15,25 +14,22 @@ competitive::define_enum_scan! {
 pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], (mut graph, _): @TreeGraphScanner::<usize, ()>::new(n));
-    let hld = HeavyLightDecomposition::new(0, &mut graph);
+    scan!(scanner, n, q, a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
+    let hld = graph.hld(0);
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(n);
-    for (i, a) in a.iter().cloned().enumerate() {
-        bit.update(hld.vidx[i], a);
+    for (v, &x) in a.iter().enumerate() {
+        bit.update(hld.index(v), x);
     }
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {
             Query::Add { p, x } => {
-                bit.update(hld.vidx[p], x);
+                bit.update(hld.index(p), x);
             }
             Query::Sum { u, v } => {
-                writeln!(
-                    writer,
-                    "{}",
-                    hld.query::<AdditiveOperation<_>, _>(u, v, false, |l, r| bit.fold(l, r))
-                )
-                .ok();
+                let mut sum = 0;
+                hld.path_vertices(u, v, |l, r| sum += bit.fold(l, r));
+                writeln!(writer, "{sum}").ok();
             }
         }
     }
