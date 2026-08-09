@@ -5,6 +5,7 @@ pub struct BipartiteMatching {
     left_size: usize,
     right_size: usize,
     left_graph: Vec<Vec<usize>>,
+    right_graph: Vec<Vec<usize>>,
     left_match: Vec<Option<usize>>,
     right_match: Vec<Option<usize>>,
     matching_size: usize,
@@ -16,6 +17,7 @@ impl BipartiteMatching {
             left_size,
             right_size,
             left_graph: vec![vec![]; left_size],
+            right_graph: vec![vec![]; right_size],
             left_match: vec![None; left_size],
             right_match: vec![None; right_size],
             matching_size: 0,
@@ -25,23 +27,29 @@ impl BipartiteMatching {
         assert!(l < self.left_size);
         assert!(r < self.right_size);
         self.left_graph[l].push(r);
+        self.right_graph[r].push(l);
         self.matching_size = !0;
     }
     pub fn from_edges(left_size: usize, right_size: usize, lr: &[(usize, usize)]) -> Self {
-        let mut deg = vec![0usize; left_size];
-        for &(l, _) in lr {
-            deg[l] += 1;
+        let mut left_deg = vec![0usize; left_size];
+        let mut right_deg = vec![0usize; right_size];
+        for &(l, r) in lr {
+            left_deg[l] += 1;
+            right_deg[r] += 1;
         }
-        let mut left_graph: Vec<_> = deg.into_iter().map(Vec::with_capacity).collect();
+        let mut left_graph: Vec<_> = left_deg.into_iter().map(Vec::with_capacity).collect();
+        let mut right_graph: Vec<_> = right_deg.into_iter().map(Vec::with_capacity).collect();
         for &(l, r) in lr {
             assert!(l < left_size);
             assert!(r < right_size);
             left_graph[l].push(r);
+            right_graph[r].push(l);
         }
         Self {
             left_size,
             right_size,
             left_graph,
+            right_graph,
             left_match: vec![None; left_size],
             right_match: vec![None; right_size],
             matching_size: !0,
@@ -168,8 +176,77 @@ impl BipartiteMatching {
             }
         }
     }
+    pub fn push_relabel(&mut self) {
+        if self.matching_size != !0 {
+            return;
+        }
+        let size = self.left_size + self.right_size;
+        let mut level_left = vec![size; self.left_size];
+        let mut level_right = vec![size; self.right_size];
+        let mut bfs = VecDeque::with_capacity(self.left_size);
+        let mut queue: VecDeque<_> = self
+            .right_match
+            .iter()
+            .enumerate()
+            .filter_map(|(right, left)| left.is_none().then_some(right))
+            .collect();
+        let mut iteration = 0;
+        while let Some(right) = queue.pop_front() {
+            if iteration == 0 {
+                level_left.fill(size);
+                level_right.fill(size);
+                bfs.clear();
+                for (left, right) in self.left_match.iter().enumerate() {
+                    if right.is_none() {
+                        level_left[left] = 0;
+                        bfs.push_back(left);
+                    }
+                }
+                while let Some(left) = bfs.pop_front() {
+                    for &right in &self.left_graph[left] {
+                        if level_right[right] > level_left[left] + 1 {
+                            level_right[right] = level_left[left] + 1;
+                            if let Some(next_left) = self.right_match[right] {
+                                level_left[next_left] = level_right[right] + 1;
+                                bfs.push_back(next_left);
+                            }
+                        }
+                    }
+                }
+            }
+
+            let mut selected = !0;
+            let mut selected_level = size;
+            for &left in &self.right_graph[right] {
+                if level_left[left] < selected_level {
+                    selected = left;
+                    selected_level = level_left[left];
+                }
+            }
+            if selected != !0 {
+                level_right[right] = selected_level + 1;
+                if let Some(previous_right) = self.left_match[selected].take() {
+                    self.right_match[previous_right] = None;
+                    queue.push_back(previous_right);
+                }
+                self.left_match[selected] = Some(right);
+                self.right_match[right] = Some(selected);
+                level_left[selected] += 2;
+            }
+
+            iteration += 1;
+            if iteration == size {
+                iteration = 0;
+            }
+        }
+        self.matching_size = self
+            .left_match
+            .iter()
+            .filter(|right| right.is_some())
+            .count();
+    }
     pub fn maximum_matching(&mut self) -> Vec<(usize, usize)> {
-        self.kuhn_multi_start_bfs();
+        self.push_relabel();
         self.left_match
             .iter()
             .enumerate()
@@ -177,7 +254,7 @@ impl BipartiteMatching {
             .collect()
     }
     pub fn minimum_edge_cover(&mut self) -> Vec<(usize, usize)> {
-        self.kuhn_multi_start_bfs();
+        self.push_relabel();
         let mut res = Vec::with_capacity(self.left_size + self.right_size - self.matching_size);
         let mut left_used: Vec<_> = self.left_match.iter().map(Option::is_some).collect();
         let mut right_used: Vec<_> = self.right_match.iter().map(Option::is_some).collect();
@@ -201,7 +278,7 @@ impl BipartiteMatching {
             Left(usize),
             Right(usize),
         }
-        self.kuhn_multi_start_bfs();
+        self.push_relabel();
         let mut left_used = vec![false; self.left_size];
         let mut right_used = vec![false; self.right_size];
         let mut deq = VecDeque::new();
@@ -288,6 +365,70 @@ mod tests {
     const Q: usize = 100;
     const N: usize = 8;
     const M: usize = 8;
+
+    #[test]
+    fn test_maximum_matching() {
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            let n = rng.rand((N + 1) as u64) as usize;
+            let m = rng.rand((M + 1) as u64) as usize;
+            let mut lr = vec![];
+            for l in 0..n {
+                for r in 0..m {
+                    if rng.rand(3) == 0 {
+                        lr.push((l, r));
+                    }
+                }
+            }
+
+            let mut reachable = vec![false; 1 << m];
+            reachable[0] = true;
+            for l in 0..n {
+                let mut next = reachable.clone();
+                for (bits, &can_match) in reachable.iter().enumerate() {
+                    if can_match {
+                        for &(_, r) in lr.iter().filter(|&&(left, _)| left == l) {
+                            next[bits | 1 << r] = true;
+                        }
+                    }
+                }
+                reachable = next;
+            }
+            let expected = reachable
+                .iter()
+                .enumerate()
+                .filter_map(|(bits, &reachable)| reachable.then_some(bits.count_ones() as usize))
+                .max()
+                .unwrap();
+
+            for incremental in [false, true] {
+                let mut bm = if incremental {
+                    let mut bm = BipartiteMatching::new(n, m);
+                    for &(l, r) in &lr[..lr.len() / 2] {
+                        bm.add_edge(l, r);
+                    }
+                    bm.maximum_matching();
+                    for &(l, r) in &lr[lr.len() / 2..] {
+                        bm.add_edge(l, r);
+                    }
+                    bm
+                } else {
+                    BipartiteMatching::from_edges(n, m, &lr)
+                };
+                let matching = bm.maximum_matching();
+                assert_eq!(matching.len(), expected);
+                let mut left_used = vec![false; n];
+                let mut right_used = vec![false; m];
+                for (l, r) in matching {
+                    assert!(lr.contains(&(l, r)));
+                    assert!(!left_used[l]);
+                    assert!(!right_used[r]);
+                    left_used[l] = true;
+                    right_used[r] = true;
+                }
+            }
+        }
+    }
 
     #[test]
     fn test_minimum_edge_cover() {
