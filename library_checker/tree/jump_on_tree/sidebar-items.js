@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["jump_on_tree","jump_on_tree_batch","test_jump_on_tree","test_jump_on_tree_batch"]};
+window.SIDEBAR_ITEMS = {"fn":["jump_on_tree","jump_on_tree_level_ancestor","jump_on_tree_level_ancestor_batch","test_jump_on_tree","test_jump_on_tree_level_ancestor","test_jump_on_tree_level_ancestor_batch"]};

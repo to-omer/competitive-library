@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["LevelAncestor","LevelAncestorBatch"]};
+window.SIDEBAR_ITEMS = {"struct":["LevelAncestor"]};
