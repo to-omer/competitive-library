@@ -264,7 +264,7 @@ mod pow_prec;
 mod prime;
 #[cfg_attr(
     nightly,
-    codesnip::entry("prime_factors", include("miller_rabin", "gcd"))
+    codesnip::entry("prime_factors", include("miller_rabin", "gcd", "Xorshift"))
 )]
 mod prime_factors;
 #[cfg_attr(nightly, codesnip::entry("PrimeList"))]

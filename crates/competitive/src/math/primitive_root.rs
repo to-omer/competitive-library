@@ -1,4 +1,4 @@
-use super::{BarrettReduction, prime_factors};
+use super::{BarrettReduction, Xorshift, prime_factors};
 
 pub fn primitive_root(p: u64) -> u64 {
     if p == 2 {
@@ -7,9 +7,18 @@ pub fn primitive_root(p: u64) -> u64 {
     let phi = p - 1;
     let pf = prime_factors(phi);
     let br = BarrettReduction::<u128>::new(p as _);
-    (2..)
-        .find(|&g| check_primitive_root(g, phi, &br, &pf))
-        .unwrap()
+    for g in 2..=3.min(p - 1) {
+        if check_primitive_root(g, phi, &br, &pf) {
+            return g;
+        }
+    }
+    let mut rng = Xorshift::default();
+    loop {
+        let g = ((rng.rand64() as u128 * (p - 2) as u128) >> 64) as u64 + 2;
+        if check_primitive_root(g, phi, &br, &pf) {
+            return g;
+        }
+    }
 }
 
 pub fn check_primitive_root(
