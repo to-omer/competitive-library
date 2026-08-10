@@ -51,7 +51,7 @@ mod tests {
     fn test_primitive_root() {
         assert_eq!(3, primitive_root(998244353));
         let pl = PrimeList::new(1000);
-        for &p in pl.primes() {
+        for p in pl.primes().map(u64::from) {
             let g = primitive_root(p);
             let mut x = g;
             for _ in 1..p - 1 {
@@ -65,7 +65,7 @@ mod tests {
     #[test]
     fn test_primitive_root_prime_power() {
         let pl = PrimeList::new(100);
-        for &p in pl.primes().iter().skip(1) {
+        for p in pl.primes().skip(1).map(u64::from) {
             for e in 1.. {
                 let n = p.pow(e);
                 let phi = n - n / p;

@@ -62,8 +62,10 @@ impl<T> QuotientArray<T> {
     where
         G: Group<T = T>,
     {
-        with_prime_list(self.isqrtn, |pl| {
-            for &p in pl.primes_lte(self.isqrtn) {
+        let max_n = self.isqrtn as u32;
+        with_prime_list(max_n, |pl| {
+            for p in pl.primes_lte(max_n) {
+                let p = u64::from(p);
                 let k = self.quotient_index(p - 1);
                 let p2 = p * p;
                 for (i, q) in Self::index_iter(self.n, self.isqrtn).enumerate() {
@@ -85,8 +87,10 @@ impl<T> QuotientArray<T> {
         R: Ring<T = T, Additive: Invertible>,
     {
         let mut dp = self.clone();
-        with_prime_list(self.isqrtn, |pl| {
-            for &p in pl.primes_lte(self.isqrtn).iter().rev() {
+        let max_n = self.isqrtn as u32;
+        with_prime_list(max_n, |pl| {
+            for p in pl.primes_lte(max_n).rev() {
+                let p = u64::from(p);
                 let k = self.quotient_index(p);
                 for (i, q) in Self::index_iter(self.n, self.isqrtn).enumerate() {
                     let mut pc = p;
@@ -142,7 +146,7 @@ mod tests {
             let n = if n <= 10 { n } else { rng.random(1..10_000) };
             let qa = QuotientArray::from_fn(n, |i| i as i64 - 1)
                 .lucy_dp::<AdditiveOperation<_>>(|x, _p| x);
-            assert_eq!(pl.primes_lte(n).len(), qa[n] as usize);
+            assert_eq!(pl.primes_lte(n as u32).count(), qa[n] as usize);
         }
     }
 

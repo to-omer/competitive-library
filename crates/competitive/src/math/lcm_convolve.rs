@@ -11,9 +11,9 @@ where
 {
     /// $$g(m) = \sum_{n \mid m}f(n)$$
     pub fn zeta_transform(f: &mut [M::T]) {
-        let n = f.len().saturating_sub(1) as u64;
+        let n = f.len().saturating_sub(1) as u32;
         with_prime_list(n, |pl| {
-            for &p in pl.primes_lte(n).iter() {
+            for p in pl.primes_lte(n) {
                 for (i, j) in (0..f.len()).step_by(p as _).enumerate() {
                     f[j] = M::operate(&f[j], &f[i]);
                 }
@@ -28,9 +28,9 @@ where
 {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(f: &mut [G::T]) {
-        let n = f.len().saturating_sub(1) as u64;
+        let n = f.len().saturating_sub(1) as u32;
         with_prime_list(n, |pl| {
-            for &p in pl.primes_lte(n).iter() {
+            for p in pl.primes_lte(n) {
                 for (i, j) in (0..f.len()).step_by(p as _).enumerate().rev() {
                     f[j] = G::rinv_operate(&f[j], &f[i]);
                 }

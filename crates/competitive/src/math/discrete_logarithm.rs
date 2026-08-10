@@ -66,14 +66,16 @@ impl IndexCalculus {
     }
     fn discrete_logarithm(&mut self, a: u64, b: u64, p: u64) -> Option<(u64, u64)> {
         let lim = ((((p as f64).log2() * (p as f64).log2().log2()).sqrt() / 2.0 + 1.).exp2() * 0.9)
-            as u64;
+            as u32;
         self.primes.reserve(lim);
-        let primes = self.primes.primes_lte(lim);
-        while self.br_primes.len() < primes.len() {
-            let br = BarrettReduction::<u64>::new(primes[self.br_primes.len()]);
-            self.br_primes.push(br);
-        }
-        let br_primes = &self.br_primes[..primes.len()];
+        let prime_count = self.primes.primes_lte(lim).count();
+        self.br_primes.extend(
+            self.primes
+                .primes_lte(lim)
+                .skip(self.br_primes.len())
+                .map(|p| BarrettReduction::<u64>::new(p.into())),
+        );
+        let br_primes = &self.br_primes[..prime_count];
         self.ic
             .entry(p)
             .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(p, br_primes))
@@ -512,7 +514,7 @@ mod tests {
     #[test]
     fn test_ic_small_prime() {
         let pl = PrimeList::new(30);
-        for &p in pl.primes() {
+        for p in pl.primes().map(u64::from) {
             for a in 1..p {
                 for b in 1..p {
                     let l = discrete_logarithm_prime_mod(a, b, p);
@@ -561,7 +563,7 @@ mod tests {
     #[test]
     fn test_discrete_logarithm_prime_power_small() {
         let pl = PrimeList::new(30);
-        for &p in pl.primes() {
+        for p in pl.primes().map(u64::from) {
             for e in 1.. {
                 for a in 1..p {
                     for b in 1..p {
