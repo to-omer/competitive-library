@@ -1027,56 +1027,21 @@ where
 
         let y_limit = m;
         while n > 1 {
-            let base = n * 2;
-            let len_p = base * py;
-            let len_q = base * qy;
-            let len = (len_p + len_q - 1).max(len_q + len_q - 1);
-            let len_pot = len.max(1).next_power_of_two();
-            let half = len_pot / 2;
-
-            let p_fft = C::transform_ntt(p_flat, len);
-            let q_fft = C::transform_ntt(q_flat, len);
-            let pr_fft = C::odd_mul_normal_neg(&p_fft, &q_fft);
-            let qr_fft = C::even_mul_normal_neg(&q_fft, &q_fft);
-            let mut pr = C::inverse_transform_ntt(pr_fft, half);
-            let mut qr = C::inverse_transform_ntt(qr_fft, half);
-
+            let (mut p, mut q) = C::power_projection_step(p_flat, q_flat, n, py, qy);
             let new_py = (py + qy - 1).min(y_limit);
             let new_qy = (qy + qy - 1).min(y_limit);
-            let new_base = n;
-            let need_p = new_base * new_py;
-            if pr.len() < need_p {
-                pr.resize_with(need_p, T::zero);
-            } else if pr.len() > need_p {
-                pr.truncate(need_p);
-            }
-            let need_q = new_base * new_qy;
-            if qr.len() < need_q {
-                qr.resize_with(need_q, T::zero);
-            } else if qr.len() > need_q {
-                qr.truncate(need_q);
-            }
+            p.resize_with(n * new_py, T::zero);
+            q.resize_with(n * new_qy, T::zero);
 
             let n2 = n / 2;
-            if n2 < new_base {
-                for y in 0..new_py {
-                    let start = y * new_base + n2;
-                    let end = y * new_base + new_base;
-                    for v in pr[start..end].iter_mut() {
-                        *v = T::zero();
-                    }
-                }
-                for y in 0..new_qy {
-                    let start = y * new_base + n2;
-                    let end = y * new_base + new_base;
-                    for v in qr[start..end].iter_mut() {
-                        *v = T::zero();
-                    }
-                }
+            for row in p.chunks_exact_mut(n) {
+                row[n2..].fill_with(T::zero);
             }
-
-            p_flat = pr;
-            q_flat = qr;
+            for row in q.chunks_exact_mut(n) {
+                row[n2..].fill_with(T::zero);
+            }
+            p_flat = p;
+            q_flat = q;
             py = new_py;
             qy = new_qy;
             n = n2;
@@ -1288,6 +1253,46 @@ mod tests {
                 }
                 assert_eq!(result[k], expected);
             }
+        }
+    }
+
+    #[test]
+    fn test_power_projection() {
+        macro_rules! check {
+            ($mint:ty, $fps:ty, $rng:expr, $n:expr, $m:expr) => {{
+                let f: Vec<$mint> = $rng.random_iter(..).take($n).collect();
+                let w: Vec<$mint> = $rng.random_iter(..).take($n).collect();
+                let mut power = vec![<$mint>::zero(); $n];
+                power[0] = <$mint>::one();
+                let mut expected = Vec::with_capacity($m);
+                for _ in 0..$m {
+                    expected.push(
+                        w.iter()
+                            .zip(&power)
+                            .map(|(&w, &coefficient)| w * coefficient)
+                            .sum(),
+                    );
+                    let mut next = vec![<$mint>::zero(); $n];
+                    for (i, &left) in power.iter().enumerate() {
+                        for (j, &right) in f[..$n - i].iter().enumerate() {
+                            next[i + j] += left * right;
+                        }
+                    }
+                    power = next;
+                }
+                assert_eq!(
+                    <$fps>::from_vec(expected),
+                    <$fps>::from_vec(f).power_projection(&w, $m)
+                );
+            }};
+        }
+
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1usize..=40);
+            let m = rng.random(0usize..=50);
+            check!(MInt998244353, Fps998244353, rng, n, m);
+            check!(MInt<Modulo1000000009>, Fps<Modulo1000000009>, rng, n, m);
         }
     }
 

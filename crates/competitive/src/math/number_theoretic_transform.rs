@@ -169,10 +169,20 @@ fn ntt_scalar<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
-    let n = a.len();
+    ntt_batch(a, 1);
+}
+
+fn ntt_batch<M>(a: &mut [MInt<M>], width: usize)
+where
+    M: Montgomery32NttModulus,
+{
+    let n = a.len() / width;
+    if n <= 1 {
+        return;
+    }
     let mut v = n / 2;
     if n.trailing_zeros() & 1 == 1 {
-        let (l, r) = a.split_at_mut(v);
+        let (l, r) = a.split_at_mut(v * width);
         for (x0, x1) in l.iter_mut().zip(r) {
             let a0 = *x0;
             let a1 = *x1;
@@ -184,10 +194,10 @@ where
     let imag = MInt::<M>::new_unchecked(M::INFO.root[2]);
     while v > 1 {
         let mut w1 = MInt::<M>::one();
-        for (s, a) in a.chunks_exact_mut(v << 1).enumerate() {
-            let (l, r) = a.split_at_mut(v);
-            let (ll, lr) = l.split_at_mut(v >> 1);
-            let (rl, rr) = r.split_at_mut(v >> 1);
+        for (s, a) in a.chunks_exact_mut((v << 1) * width).enumerate() {
+            let (l, r) = a.split_at_mut(v * width);
+            let (ll, lr) = l.split_at_mut((v >> 1) * width);
+            let (rl, rr) = r.split_at_mut((v >> 1) * width);
             let w2 = w1 * w1;
             let w3 = w1 * w2;
             for (((x0, x1), x2), x3) in ll.iter_mut().zip(lr).zip(rl).zip(rr) {
@@ -214,7 +224,17 @@ fn intt_scalar<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
-    let n = a.len();
+    intt_batch(a, 1);
+}
+
+fn intt_batch<M>(a: &mut [MInt<M>], width: usize)
+where
+    M: Montgomery32NttModulus,
+{
+    let n = a.len() / width;
+    if n <= 1 {
+        return;
+    }
     let mut v = 1;
     let limit = if n.trailing_zeros() & 1 == 1 {
         n / 2
@@ -224,10 +244,10 @@ where
     let iimag = MInt::<M>::new_unchecked(M::INFO.inv_root[2]);
     while v < limit {
         let mut w1 = MInt::<M>::one();
-        for (s, a) in a.chunks_exact_mut(v << 2).enumerate() {
-            let (l, r) = a.split_at_mut(v << 1);
-            let (ll, lr) = l.split_at_mut(v);
-            let (rl, rr) = r.split_at_mut(v);
+        for (s, a) in a.chunks_exact_mut((v << 2) * width).enumerate() {
+            let (l, r) = a.split_at_mut((v << 1) * width);
+            let (ll, lr) = l.split_at_mut(v * width);
+            let (rl, rr) = r.split_at_mut(v * width);
             let w2 = w1 * w1;
             let w3 = w1 * w2;
             for (((x0, x1), x2), x3) in ll.iter_mut().zip(lr).zip(rl).zip(rr) {
@@ -249,7 +269,7 @@ where
         v <<= 2;
     }
     if n.trailing_zeros() & 1 == 1 {
-        let (l, r) = a.split_at_mut(n / 2);
+        let (l, r) = a.split_at_mut(n / 2 * width);
         for (x0, x1) in l.iter_mut().zip(r) {
             let a0 = *x0;
             let a1 = *x1;
@@ -289,6 +309,24 @@ where
     }
     #[cfg(not(target_arch = "x86_64"))]
     intt_scalar(a);
+}
+
+fn ntt_rows<M>(a: &mut [MInt<M>], width: usize)
+where
+    M: Montgomery32NttModulus,
+{
+    for row in a.chunks_exact_mut(width) {
+        ntt(row);
+    }
+}
+
+fn intt_rows<M>(a: &mut [MInt<M>], width: usize)
+where
+    M: Montgomery32NttModulus,
+{
+    for row in a.chunks_exact_mut(width) {
+        intt(row);
+    }
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -823,6 +861,29 @@ pub trait NttReuse: ConvolveSteps {
 
     /// Adds the pointwise product of two usual NTT transforms to `sum`.
     fn multiply_add(sum: &mut Self::F, f: &Self::F, g: &Self::F);
+
+    fn power_projection_step(
+        p_flat: Self::T,
+        q_flat: Self::T,
+        n: usize,
+        py: usize,
+        qy: usize,
+    ) -> (Self::T, Self::T) {
+        let base = n * 2;
+        let len_p = base * py;
+        let len_q = base * qy;
+        let len = (len_p + len_q - 1).max(len_q + len_q - 1);
+        let half = len.max(1).next_power_of_two() / 2;
+
+        let p_fft = Self::transform_ntt(p_flat, len);
+        let q_fft = Self::transform_ntt(q_flat, len);
+        let pr_fft = Self::odd_mul_normal_neg(&p_fft, &q_fft);
+        let qr_fft = Self::even_mul_normal_neg(&q_fft, &q_fft);
+        (
+            Self::inverse_transform_ntt(pr_fft, half),
+            Self::inverse_transform_ntt(qr_fft, half),
+        )
+    }
 }
 
 thread_local!(
@@ -909,6 +970,78 @@ where
     fn multiply_add(sum: &mut Self::F, f: &Self::F, g: &Self::F) {
         assert!(sum.len() == f.len() && sum.len() == g.len());
         pointwise_multiply_add(sum, f, g);
+    }
+
+    fn power_projection_step(
+        p_flat: Vec<MInt<M>>,
+        q_flat: Vec<MInt<M>>,
+        n: usize,
+        py: usize,
+        qy: usize,
+    ) -> (Vec<MInt<M>>, Vec<MInt<M>>) {
+        let high_degree = (qy - 1) * 2;
+        let rows = (py + qy - 1).max(high_degree).next_power_of_two();
+        let cols = n * 2;
+        let size = rows * cols;
+        let mut p = p_flat;
+        p.resize_with(size, MInt::<M>::zero);
+        ntt_rows(&mut p, cols);
+        ntt_batch(&mut p, cols);
+
+        let mut q = q_flat;
+        q.resize_with(size, MInt::<M>::zero);
+        ntt_rows(&mut q, cols);
+        let q_high = (rows == high_degree).then(|| q[(qy - 1) * cols..qy * cols].to_vec());
+        ntt_batch(&mut q, cols);
+
+        let half = cols / 2;
+        let mut odd_factor = vec![MInt::<M>::zero(); half];
+        let mut factor = MInt::<M>::from(2).inv();
+        let k = cols.trailing_zeros() as usize;
+        let w = MInt::<M>::new_unchecked(M::INFO.inv_root[k]);
+        BIT_REVERSE.with(|br| {
+            let br = unsafe { &mut *br.get() };
+            if br.len() < k {
+                br.resize_with(k, Default::default);
+            }
+            let k = k - 1;
+            if br[k].is_empty() {
+                let mut v = vec![0; 1 << k];
+                for i in 0..1 << k {
+                    v[i] = (v[i >> 1] >> 1) | ((i & 1) << k.saturating_sub(1));
+                }
+                br[k] = v;
+            }
+            for &i in &br[k] {
+                odd_factor[i] = factor;
+                factor *= w;
+            }
+        });
+
+        let mut pr = vec![MInt::<M>::zero(); rows * half];
+        let mut qr = vec![MInt::<M>::zero(); rows * half];
+        for i in 0..pr.len() {
+            pr[i] = (p[i << 1] * q[i << 1 | 1] - p[i << 1 | 1] * q[i << 1])
+                * odd_factor[i & (half - 1)];
+            qr[i] = q[i << 1] * q[i << 1 | 1];
+        }
+        intt_batch(&mut pr, half);
+        intt_rows(&mut pr, half);
+        intt_batch(&mut qr, half);
+        intt_rows(&mut qr, half);
+
+        if let Some(q_high) = q_high {
+            let mut q_high_even = vec![MInt::<M>::zero(); half];
+            for i in 0..half {
+                q_high_even[i] = q_high[i << 1] * q_high[i << 1 | 1];
+            }
+            intt(&mut q_high_even);
+            for (value, high) in qr.iter_mut().zip(&q_high_even) {
+                *value -= *high;
+            }
+            qr.extend_from_slice(&q_high_even);
+        }
+        (pr, qr)
     }
 }
 
