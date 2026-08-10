@@ -810,7 +810,7 @@ where
             self -= r * &rhs;
             self.trim_tail_zeros();
         }
-        let k = rhs.length().next_power_of_two();
+        let mut k = rhs.length().next_power_of_two();
         let mut p = C::transform_ntt(self.data, k * 2);
         let mut q = C::transform_ntt(rhs.data, k * 2);
         while n > 0 {
@@ -823,7 +823,11 @@ where
             q = t;
             n /= 2;
             if n != 0 {
-                if C::MULTIPLE {
+                if n < k / 2 {
+                    p = C::transform_ntt(C::inverse_transform_ntt(p, k / 2), k);
+                    q = C::transform_ntt(C::inverse_transform_ntt(q, k / 2), k);
+                    k /= 2;
+                } else if C::MULTIPLE {
                     p = C::transform_ntt(C::inverse_transform_ntt(p, k), k * 2);
                     q = C::transform_ntt(C::inverse_transform_ntt(q, k), k * 2);
                 } else {
