@@ -1,5 +1,5 @@
 use super::{RangeMinimumQuery, UndirectedSparseGraph};
-use std::{marker::PhantomData, mem::swap, ops::Range};
+use std::{marker::PhantomData, ops::Range};
 
 pub trait EulerTourKind {
     const USE_LAST: bool = false;
@@ -189,22 +189,8 @@ impl UndirectedSparseGraph {
     }
 
     pub fn lca(&self, root: usize) -> LowestCommonAncestor {
-        let (preorder, parent) = self.tree_order(root);
-        let mut index = vec![0; preorder.len()];
-        let mut depth = vec![0; preorder.len()];
-        for (i, &u) in preorder.iter().enumerate() {
-            index[u] = i;
-            if u != root {
-                depth[u] = depth[parent[u]] + 1;
-            }
-        }
-        let rmq = RangeMinimumQuery::new(preorder.iter().map(|&u| depth[u]).collect());
-        LowestCommonAncestor {
-            parent,
-            preorder,
-            index,
-            rmq,
-        }
+        let (_, parents) = self.tree_order(root);
+        LowestCommonAncestor::from_parents(&parents)
     }
 }
 
@@ -250,16 +236,77 @@ impl EulerTour<marker::FirstLast> {
 
 #[derive(Debug)]
 pub struct LowestCommonAncestor {
-    parent: Vec<usize>,
-    preorder: Vec<usize>,
-    index: Vec<usize>,
-    rmq: RangeMinimumQuery<usize>,
+    node_to_index: Vec<u32>,
+    label_to_node: Vec<u32>,
+    rmq: RangeMinimumQuery<u32>,
+    depth: Vec<u32>,
 }
 
 impl LowestCommonAncestor {
+    /// `parents` must contain one parent per vertex and use `!0` for the root.
+    pub fn from_parents(parents: &[usize]) -> Self {
+        let n = parents.len();
+        let root = parents.iter().position(|&parent| parent == !0).unwrap();
+        let mut depth = vec![!0u32; n];
+        depth[root] = 0;
+        let mut label_to_node = Vec::with_capacity(n);
+        let mut node_to_label = vec![0u32; n];
+        label_to_node.push(root as u32);
+        let mut path = Vec::new();
+        for mut u in 0..n {
+            if depth[u] != !0 {
+                continue;
+            }
+            if depth[parents[u]] != !0 {
+                depth[u] = depth[parents[u]] + 1;
+                node_to_label[u] = label_to_node.len() as u32;
+                label_to_node.push(u as u32);
+                continue;
+            }
+            while depth[u] == !0 {
+                path.push(u);
+                u = parents[u];
+            }
+            while let Some(u) = path.pop() {
+                depth[u] = depth[parents[u]] + 1;
+                node_to_label[u] = label_to_node.len() as u32;
+                label_to_node.push(u as u32);
+            }
+        }
+
+        let mut label_to_index = vec![0u32; n];
+        for i in (1..n).rev() {
+            let u = label_to_node[i] as usize;
+            let parent = node_to_label[parents[u]] as usize;
+            label_to_index[parent] += label_to_index[i] + 1;
+        }
+        for i in 1..n {
+            let u = label_to_node[i] as usize;
+            let parent = node_to_label[parents[u]] as usize;
+            let descendants = label_to_index[i];
+            let next = label_to_index[parent];
+            label_to_index[i] = next;
+            label_to_index[parent] = next - descendants - 1;
+        }
+
+        let mut index_to_parent = vec![0u32; n];
+        for label in (1..n).rev() {
+            let u = label_to_node[label] as usize;
+            index_to_parent[label_to_index[label] as usize] = node_to_label[parents[u]];
+            node_to_label[u] = label_to_index[label];
+        }
+
+        Self {
+            node_to_index: node_to_label,
+            label_to_node,
+            rmq: RangeMinimumQuery::new(index_to_parent),
+            depth,
+        }
+    }
+
     #[inline]
     pub fn depth(&self, u: usize) -> usize {
-        *self.rmq.get(self.index[u])
+        self.depth[u] as usize
     }
 
     #[inline]
@@ -267,17 +314,10 @@ impl LowestCommonAncestor {
         if u == v {
             return u;
         }
-        let mut l = self.index[u];
-        let mut r = self.index[v];
-        if l > r {
-            swap(&mut l, &mut r);
-        }
-        let i = self.rmq.argmin(l + 1, r + 1);
-        if self.rmq.get(l) < self.rmq.get(i) {
-            self.preorder[l]
-        } else {
-            self.parent[self.preorder[i]]
-        }
+        let u = self.node_to_index[u] as usize;
+        let v = self.node_to_index[v] as usize;
+        let label = self.rmq.fold(u.min(v) + 1, u.max(v) + 1) as usize;
+        self.label_to_node[label] as usize
     }
 }
 

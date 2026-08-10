@@ -1,7 +1,7 @@
 //! string algorithms
 
-use crate::algebra::{Gf2_63, Invertible, Mersenne61, MinOperation, Monoid, Ring, SemiRing};
-use crate::data_structure::StaticRangeProduct;
+use crate::algebra::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing};
+use crate::data_structure::RangeMinimumQuery;
 use crate::math::ConvolveRealFft;
 use crate::tools::Xorshift;
 
@@ -37,10 +37,7 @@ mod knuth_morris_pratt;
 pub mod rolling_hash;
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "StringSearch",
-        include("SuffixArray", "StaticRangeProduct", "MinOperation")
-    )
+    codesnip::entry("StringSearch", include("SuffixArray", "RangeMinimumQuery"))
 )]
 mod string_search;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray", include("binary_search")))]

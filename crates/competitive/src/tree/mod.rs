@@ -12,6 +12,8 @@ use crate::{
 
 #[codesnip::entry("centroid_decomposition")]
 pub use self::centroid_decomposition::ContourQueryRange;
+#[codesnip::entry("EulerTour")]
+pub use self::euler_tour::LowestCommonAncestor;
 #[codesnip::entry("tree_generator")]
 pub use self::generator::*;
 #[codesnip::entry("HeavyLightDecomposition")]
