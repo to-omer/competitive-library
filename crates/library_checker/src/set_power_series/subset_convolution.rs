@@ -2,7 +2,7 @@ use competitive::prelude::*;
 use competitive::{
     algebra::AddMulOperation,
     math::{ConvolveSteps, SubsetConvolve},
-    num::montgomery::MInt998244353,
+    num::mint_basic::MInt998244353,
 };
 
 #[verify::library_checker("subset_convolution")]

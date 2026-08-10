@@ -102,6 +102,7 @@ impl<M> DotProduct for MInt<M>
 where
     M: MIntBase,
 {
+    #[inline]
     fn dot_product(x: &[Self], y: &[Self]) -> Self {
         assert_eq!(x.len(), y.len());
         Self::new_unchecked(M::mod_dot_product(x, y))

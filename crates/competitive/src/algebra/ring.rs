@@ -128,6 +128,7 @@ where
     type Additive = AdditiveOperation<T>;
     type Multiplicative = MultiplicativeOperation<T>;
 
+    #[inline]
     fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
         T::dot_product(x, y)
     }

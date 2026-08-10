@@ -42,6 +42,7 @@ macro_rules! define_basic_mintbase {
                 // (x as $upperty * y as $upperty % Self::get_mod() as $upperty) as $basety
                 $name::rem(x as $upperty * y as $upperty) as $basety
             }
+            #[inline]
             fn mod_dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> Self::Inner {
                 assert_eq!(x.len(), y.len());
                 let modulus = Self::get_mod() as $upperty;
