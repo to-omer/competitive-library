@@ -42,6 +42,26 @@ macro_rules! define_basic_mintbase {
                 // (x as $upperty * y as $upperty % Self::get_mod() as $upperty) as $basety
                 $name::rem(x as $upperty * y as $upperty) as $basety
             }
+            fn mod_dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> Self::Inner {
+                assert_eq!(x.len(), y.len());
+                let modulus = Self::get_mod() as $upperty;
+                let max_value = modulus - 1;
+                let block = ((<$upperty>::MAX - max_value) / (max_value * max_value))
+                    .min(64) as usize;
+                let mut result = 0 as $upperty;
+                for (x, y) in x.chunks(block).zip(y.chunks(block)) {
+                    let sum: $upperty = x
+                        .iter()
+                        .zip(y)
+                        .map(|(&x, &y)| x.inner() as $upperty * y.inner() as $upperty)
+                        .sum();
+                    result += sum % modulus;
+                    if result >= modulus {
+                        result -= modulus;
+                    }
+                }
+                result as $basety
+            }
             #[inline]
             fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner {
                 Self::mod_mul(x, Self::mod_inv(y))
@@ -274,6 +294,15 @@ mod tests {
                     let x = a.inv();
                     assert!(x.inner() < $mint::get_mod());
                     assert_eq!(a * x, $mint::one());
+                }
+                for _ in 0..100 {
+                    let n = rng.random(0..100);
+                    let x: Vec<$mint> = (0..n).map(|_| rng.random(..)).collect();
+                    let y: Vec<$mint> = (0..n).map(|_| rng.random(..)).collect();
+                    assert_eq!(
+                        $mint::dot_product(&x, &y),
+                        x.iter().zip(&y).map(|(&x, &y)| x * y).sum()
+                    );
                 }
             }
         };

@@ -1,11 +1,12 @@
 //! modint
 
 use crate::{
+    algebra::DotProduct,
     num::{BarrettReduction, One, Zero},
     tools::{IterScan, SerdeByteStr},
 };
 
-#[codesnip::entry("MIntBase", include("scanner", "zero_one", "coding"))]
+#[codesnip::entry("MIntBase", include("scanner", "zero_one", "coding", "ring"))]
 pub use mint_base::{MInt, MIntBase, MIntConvert};
 
 #[cfg_attr(nightly, codesnip::entry("MIntBase"))]

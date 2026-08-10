@@ -1,7 +1,8 @@
 //! mathematical datas
 
 use crate::algebra::{
-    AddMulOperation, Associative, Field, Group, Invertible, Magma, Monoid, Ring, SemiRing, Unital,
+    AddMulOperation, Associative, DotProduct, Field, Group, Invertible, Magma, Monoid, Ring,
+    SemiRing, Unital,
 };
 use crate::array;
 use crate::num::{

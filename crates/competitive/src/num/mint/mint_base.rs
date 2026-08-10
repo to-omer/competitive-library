@@ -32,6 +32,15 @@ pub trait MIntBase {
     fn mod_add(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_sub(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_mul(x: Self::Inner, y: Self::Inner) -> Self::Inner;
+    fn mod_dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> Self::Inner
+    where
+        Self: Sized,
+    {
+        assert_eq!(x.len(), y.len());
+        x.iter().zip(y).fold(Self::mod_zero(), |sum, (&x, &y)| {
+            Self::mod_add(sum, Self::mod_mul(x.x, y.x))
+        })
+    }
     fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_neg(x: Self::Inner) -> Self::Inner;
     fn mod_inv(x: Self::Inner) -> Self::Inner;
@@ -86,6 +95,16 @@ where
     #[inline]
     pub fn inner(self) -> M::Inner {
         M::mod_inner(self.x)
+    }
+}
+
+impl<M> DotProduct for MInt<M>
+where
+    M: MIntBase,
+{
+    fn dot_product(x: &[Self], y: &[Self]) -> Self {
+        assert_eq!(x.len(), y.len());
+        Self::new_unchecked(M::mod_dot_product(x, y))
     }
 }
 

@@ -1,6 +1,7 @@
 use super::*;
 use std::{
     marker::PhantomData,
+    num::Wrapping,
     ops::{Add, Mul},
 };
 
@@ -37,6 +38,14 @@ pub trait SemiRing {
     /// multiplicative operaion: $+$
     fn mul(x: &Self::T, y: &Self::T) -> Self::T {
         <Self::Multiplicative as Magma>::operate(x, y)
+    }
+
+    fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
+        assert_eq!(x.len(), y.len());
+        x.iter().zip(y).fold(Self::zero(), |mut sum, (x, y)| {
+            Self::add_assign(&mut sum, &Self::mul(x, y));
+            sum
+        })
     }
 
     fn add_assign(x: &mut Self::T, y: &Self::T) {
@@ -82,18 +91,44 @@ pub trait Field: Ring<Multiplicative: Invertible> {
 
 impl<F> Field for F where F: Ring<Multiplicative: Invertible> {}
 
+/// Dot product using `+` and `*`.
+pub trait DotProduct: Sized + Clone + Zero + Add<Output = Self> + Mul<Output = Self> {
+    fn dot_product(x: &[Self], y: &[Self]) -> Self {
+        assert_eq!(x.len(), y.len());
+        x.iter()
+            .zip(y)
+            .fold(Self::zero(), |sum, (x, y)| sum + x.clone() * y.clone())
+    }
+}
+
+macro_rules! impl_dot_product {
+    ($($t:ty)*) => {
+        $(impl DotProduct for $t {})*
+    };
+}
+impl_dot_product!(u8 u16 u32 u64 usize u128 i8 i16 i32 i64 isize i128 f32 f64);
+
+impl<T> DotProduct for Wrapping<T> where
+    Wrapping<T>: Clone + Zero + Add<Output = Wrapping<T>> + Mul<Output = Wrapping<T>>
+{
+}
+
 /// $+,\times$
 pub struct AddMulOperation<T>
 where
-    T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
+    T: DotProduct + One,
 {
     _marker: PhantomData<fn() -> T>,
 }
 impl<T> SemiRing for AddMulOperation<T>
 where
-    T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
+    T: DotProduct + One,
 {
     type T = T;
     type Additive = AdditiveOperation<T>;
     type Multiplicative = MultiplicativeOperation<T>;
+
+    fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
+        T::dot_product(x, y)
+    }
 }

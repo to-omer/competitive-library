@@ -3,7 +3,7 @@ use std::{
     cmp::{Ordering, Reverse},
     collections::{BinaryHeap, VecDeque},
     marker::PhantomData,
-    ops::{Add, Mul},
+    ops::Add,
 };
 
 pub trait ShortestPathSemiRing {
@@ -238,7 +238,7 @@ pub trait ShortestPathExt: GraphBase {
     where
         Self: Sized + GraphBase,
         T: Clone + Zero + Add<Output = T> + Bounded + Ord,
-        U: Clone + Zero + One + Add<Output = U> + Mul<Output = U>,
+        U: DotProduct + One,
     {
         ShortestPathBuilder {
             graph: self,

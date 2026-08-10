@@ -1,7 +1,7 @@
 //! graph structures and algorithms
 
 use crate::{
-    algebra::{AddMulOperation, AdditiveOperation, Group, Monoid, MonoidAct, SemiRing},
+    algebra::{AddMulOperation, AdditiveOperation, DotProduct, Group, Monoid, MonoidAct, SemiRing},
     algorithm::BitDpExt,
     data_structure::{MergingUnionFind, PairingHeap, UnionFind},
     num::{Bounded, One, Zero},

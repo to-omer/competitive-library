@@ -1,12 +1,8 @@
 use super::{
-    AddMulOperation, Associative, BarrettReduction, Group, Invertible, Magma, Monoid, One, Ring,
-    SemiRing, Unital, Wrapping, Zero, array,
+    AddMulOperation, Associative, BarrettReduction, DotProduct, Group, Invertible, Magma, Monoid,
+    One, Ring, SemiRing, Unital, Wrapping, array,
 };
-use std::{
-    marker::PhantomData,
-    mem::swap,
-    ops::{Add, Mul, Range},
-};
+use std::{marker::PhantomData, mem::swap, ops::Range};
 
 fn choose2(n: Wrapping<u64>) -> Wrapping<u64> {
     if n.0.is_multiple_of(2) {
@@ -282,7 +278,7 @@ pub fn floor_sum_polynomial<T, const X: usize, const Y: usize>(
     m: u64,
 ) -> [[T; Y]; X]
 where
-    T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
+    T: DotProduct + One,
 {
     debug_assert!(a == 0 || n < (u64::MAX - b) / a);
     floor_monoid_product::<FloorSum<AddMulOperation<T>, X, Y>>(
@@ -305,7 +301,7 @@ pub fn floor_sum_polynomial_i64<T, const X: usize, const Y: usize>(
     m: u64,
 ) -> [[T; Y]; X]
 where
-    T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
+    T: DotProduct + One,
     AddMulOperation<T>: SemiRing<T = T, Additive: Invertible>,
 {
     assert!(l <= r);

@@ -155,6 +155,23 @@ impl<R> Matrix<R>
 where
     R: Field<T: PartialEq, Additive: Invertible, Multiplicative: Invertible>,
 {
+    #[inline]
+    fn eliminate_below(&mut self, row: usize, col: usize) {
+        let inv = R::inv(&self[row][col]);
+        let (upper, lower) = self.data.split_at_mut(row + 1);
+        let pivot = &upper[row];
+        for target in lower {
+            if R::is_zero(&target[col]) {
+                continue;
+            }
+            let factor = R::mul(&target[col], &inv);
+            target[col] = R::zero();
+            for (x, y) in target[(col + 1)..].iter_mut().zip(&pivot[(col + 1)..]) {
+                R::sub_assign(x, &R::mul(&factor, y));
+            }
+        }
+    }
+
     /// f: (row, pivot_row, col)
     pub fn row_reduction_with<F>(&mut self, normalize: bool, mut f: F)
     where
@@ -199,25 +216,45 @@ where
     }
 
     pub fn rank(&mut self) -> usize {
-        let n = self.shape.0;
-        self.row_reduction(false);
-        (0..n)
-            .filter(|&i| !self.data[i].iter().all(|x| R::is_zero(x)))
-            .count()
+        let (n, m) = self.shape;
+        if n == 0 {
+            return 0;
+        }
+        let mut rank = 0;
+        for c in 0..m {
+            let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&self[i][c])) else {
+                continue;
+            };
+            self.data.swap(rank, pivot);
+            self.eliminate_below(rank, c);
+            rank += 1;
+            if rank == n {
+                break;
+            }
+        }
+        rank
     }
 
     pub fn determinant(&mut self) -> R::T {
         assert_eq!(self.shape.0, self.shape.1);
+        let n = self.shape.0;
+        let mut determinant = R::one();
         let mut neg = false;
-        self.row_reduction_with(false, |r, p, _| neg ^= r != p);
-        let mut d = R::one();
+        for c in 0..n {
+            let Some(pivot) = (c..n).find(|&i| !R::is_zero(&self[i][c])) else {
+                return R::zero();
+            };
+            if c != pivot {
+                self.data.swap(c, pivot);
+                neg = !neg;
+            }
+            R::mul_assign(&mut determinant, &self[c][c]);
+            self.eliminate_below(c, c);
+        }
         if neg {
-            d = R::neg(&d);
+            determinant = R::neg(&determinant);
         }
-        for i in 0..self.shape.0 {
-            R::mul_assign(&mut d, &self[i][i]);
-        }
-        d
+        determinant
     }
 
     pub fn solve_system_of_linear_equations(
@@ -226,31 +263,90 @@ where
     ) -> Option<SystemOfLinearEquationsSolution<R>> {
         assert_eq!(self.shape.0, b.len());
         let (n, m) = self.shape;
-        let mut c = Matrix::<R>::zeros((n, m + 1));
-        for i in 0..n {
-            c[i][..m].clone_from_slice(&self[i]);
-            c[i][m] = b[i].clone();
+        let mut a = self.clone();
+        let mut b = b.to_vec();
+        let mut pivots = Vec::with_capacity(n.min(m));
+        let mut rank = 0;
+        for c in 0..m {
+            if rank == n {
+                break;
+            }
+            let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&a[i][c])) else {
+                continue;
+            };
+            a.data.swap(rank, pivot);
+            b.swap(rank, pivot);
+
+            let d = R::inv(&a[rank][c]);
+            a[rank][c] = R::one();
+            for x in &mut a[rank][(c + 1)..] {
+                R::mul_assign(x, &d);
+            }
+            R::mul_assign(&mut b[rank], &d);
+
+            let (upper, lower) = a.data.split_at_mut(rank + 1);
+            let pivot = &upper[rank];
+            let pivot_b = b[rank].clone();
+            for (row, value) in lower.iter_mut().zip(&mut b[(rank + 1)..]) {
+                if R::is_zero(&row[c]) {
+                    continue;
+                }
+                let factor = row[c].clone();
+                row[c] = R::zero();
+                for (x, y) in row[(c + 1)..].iter_mut().zip(&pivot[(c + 1)..]) {
+                    R::sub_assign(x, &R::mul(&factor, y));
+                }
+                R::sub_assign(value, &R::mul(&factor, &pivot_b));
+            }
+            pivots.push(c);
+            rank += 1;
         }
-        let mut reduced = vec![!0; m + 1];
-        c.row_reduction_with(true, |r, _, c| reduced[c] = r);
-        if reduced[m] != !0 {
+        if b[rank..].iter().any(|x| !R::is_zero(x)) {
             return None;
         }
-        let mut particular = vec![R::zero(); m];
-        let mut basis = vec![];
-        for j in 0..m {
-            if reduced[j] != !0 {
-                particular[j] = c[reduced[j]][m].clone();
+
+        let mut free = Vec::with_capacity(m - rank);
+        let mut pivot = 0;
+        for c in 0..m {
+            if pivot < rank && pivots[pivot] == c {
+                pivot += 1;
             } else {
-                let mut v = vec![R::zero(); m];
-                v[j] = R::one();
-                for i in 0..m {
-                    if reduced[i] != !0 {
-                        R::sub_assign(&mut v[i], &c[reduced[i]][j]);
-                    }
-                }
-                basis.push(v);
+                free.push(c);
             }
+        }
+        let mut coefficients: Vec<Vec<_>> = (0..rank)
+            .map(|i| free.iter().map(|&c| a[i][c].clone()).collect())
+            .collect();
+        for k in (0..rank).rev() {
+            let c = pivots[k];
+            let pivot_b = b[k].clone();
+            let (upper, lower) = coefficients.split_at_mut(k);
+            let pivot_coefficients = &lower[0];
+            for ((row, value), coefficients) in a.data[..k].iter_mut().zip(&mut b[..k]).zip(upper) {
+                if R::is_zero(&row[c]) {
+                    continue;
+                }
+                let factor = row[c].clone();
+                row[c] = R::zero();
+                R::sub_assign(value, &R::mul(&factor, &pivot_b));
+                for (x, y) in coefficients.iter_mut().zip(pivot_coefficients) {
+                    R::sub_assign(x, &R::mul(&factor, y));
+                }
+            }
+        }
+
+        let mut particular = vec![R::zero(); m];
+        for i in 0..rank {
+            particular[pivots[i]] = b[i].clone();
+        }
+        let mut basis = Vec::with_capacity(free.len());
+        for (j, &c) in free.iter().enumerate() {
+            let mut vector = vec![R::zero(); m];
+            vector[c] = R::one();
+            for i in 0..rank {
+                vector[pivots[i]] = R::neg(&coefficients[i][j]);
+            }
+            basis.push(vector);
         }
         Some(SystemOfLinearEquationsSolution { particular, basis })
     }
@@ -258,19 +354,72 @@ where
     pub fn inverse(&self) -> Option<Matrix<R>> {
         assert_eq!(self.shape.0, self.shape.1);
         let n = self.shape.0;
-        let mut c = Matrix::<R>::zeros((n, n * 2));
-        for i in 0..n {
-            c[i][..n].clone_from_slice(&self[i]);
-            c[i][n + i] = R::one();
+        let mut a = self.clone();
+        let mut inverse = Self::eye((n, n));
+        let mut ranges: Vec<_> = (0..n).map(|i| (i, i + 1)).collect();
+        for r in 0..n {
+            let pivot = (r..n).find(|&i| !R::is_zero(&a[i][r]))?;
+            a.data.swap(r, pivot);
+            inverse.data.swap(r, pivot);
+            ranges.swap(r, pivot);
+
+            let d = R::inv(&a[r][r]);
+            for x in &mut a[r][r..] {
+                R::mul_assign(x, &d);
+            }
+            let (left, right) = ranges[r];
+            for x in &mut inverse[r][left..right] {
+                R::mul_assign(x, &d);
+            }
+
+            let (a_upper, a_lower) = a.data.split_at_mut(r + 1);
+            let pivot_a = &a_upper[r];
+            let (inverse_upper, inverse_lower) = inverse.data.split_at_mut(r + 1);
+            let pivot_inverse = &inverse_upper[r];
+            let (ranges_upper, ranges_lower) = ranges.split_at_mut(r + 1);
+            let (left, right) = ranges_upper[r];
+            for ((a, inverse), range) in a_lower.iter_mut().zip(inverse_lower).zip(ranges_lower) {
+                if R::is_zero(&a[r]) {
+                    continue;
+                }
+                let e = a[r].clone();
+                a[r] = R::zero();
+                for (x, y) in a[(r + 1)..].iter_mut().zip(&pivot_a[(r + 1)..]) {
+                    R::sub_assign(x, &R::mul(&e, y));
+                }
+                for (x, y) in inverse[left..right]
+                    .iter_mut()
+                    .zip(&pivot_inverse[left..right])
+                {
+                    R::sub_assign(x, &R::mul(&e, y));
+                }
+                range.0 = range.0.min(left);
+                range.1 = range.1.max(right);
+            }
         }
-        c.row_reduction(true);
-        if (0..n).any(|i| R::is_zero(&c[i][i])) {
-            None
-        } else {
-            Some(Self::from_vec(
-                c.data.into_iter().map(|r| r[n..].to_vec()).collect(),
-            ))
+        for r in (0..n).rev() {
+            let (left, right) = ranges[r];
+            let (inverse_upper, inverse_lower) = inverse.data.split_at_mut(r);
+            let pivot_inverse = &inverse_lower[0];
+            let (ranges_upper, _) = ranges.split_at_mut(r);
+            for ((a, inverse), range) in a.data[..r].iter_mut().zip(inverse_upper).zip(ranges_upper)
+            {
+                if R::is_zero(&a[r]) {
+                    continue;
+                }
+                let e = a[r].clone();
+                a[r] = R::zero();
+                for (x, y) in inverse[left..right]
+                    .iter_mut()
+                    .zip(&pivot_inverse[left..right])
+                {
+                    R::sub_assign(x, &R::mul(&e, y));
+                }
+                range.0 = range.0.min(left);
+                range.1 = range.1.max(right);
+            }
         }
+        Some(inverse)
     }
 
     pub fn characteristic_polynomial(&mut self) -> Vec<R::T> {
@@ -467,15 +616,10 @@ where
     type Output = Matrix<R>;
     fn mul(self, rhs: &Matrix<R>) -> Self::Output {
         assert_eq!(self.shape.1, rhs.shape.0);
-        let mut res = Matrix::zeros((self.shape.0, rhs.shape.1));
-        for (a, c) in self.data.iter().zip(res.data.iter_mut()) {
-            for (a, b) in a.iter().zip(rhs.data.iter()) {
-                for (b, c) in b.iter().zip(c.iter_mut()) {
-                    R::add_assign(c, &R::mul(a, b));
-                }
-            }
-        }
-        res
+        let rhs = rhs.transpose();
+        Matrix::new_with((self.shape.0, rhs.shape.0), |i, j| {
+            R::dot_product(&self[i], &rhs[j])
+        })
     }
 }
 
@@ -525,7 +669,7 @@ fn strassen_rec<R: Ring>(
         }
     }
 
-    if n <= 64 {
+    if n <= 16 {
         for (a, c) in a.chunks(stride_a).zip(c.chunks_exact_mut(n)) {
             for (a, b) in a.iter().zip(b.chunks(stride_b)).take(n) {
                 for (b, c) in b.iter().zip(c.iter_mut()) {
@@ -645,6 +789,9 @@ where
             return self * rhs;
         }
         let size = max_dim.next_power_of_two();
+        if size * size * size > n * m * p * 2 {
+            return self * rhs;
+        }
         let mut a = vec![R::zero(); size * size];
         for (a, data) in a.chunks_exact_mut(size).zip(&self.data) {
             a[..m].clone_from_slice(data);
@@ -776,13 +923,23 @@ mod tests {
                     DynMIntU32::zero()
                 }
             })
-        } else {
+        } else if rng.gen_bool(0.5) {
             let mut mat = Matrix::new_with(shape, |_, _| rng.random(..));
             let i0 = rng.random(0..shape.0);
             let i1 = rng.random(0..shape.0);
             let x: DynMIntU32 = rng.random(..);
             for j in 0..shape.1 {
                 mat[(i0, j)] = mat[(i1, j)] * x;
+            }
+            mat
+        } else {
+            let mut rows: Vec<_> = (0..shape.0).collect();
+            let mut cols: Vec<_> = (0..shape.1).collect();
+            rng.shuffle(&mut rows);
+            rng.shuffle(&mut cols);
+            let mut mat = Matrix::zeros(shape);
+            for (&i, &j) in rows.iter().zip(&cols) {
+                mat[i][j] = DynMIntU32::one();
             }
             mat
         }
@@ -850,6 +1007,12 @@ mod tests {
             ac *= &c;
             assert_eq!(ac, Matrix::new_with(a.shape, |i, j| a[i][j] * c));
         }
+        for _ in 0..3 {
+            rand!(rng, n: 65..130, m: 65..130, l: 65..130);
+            let a = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
+            let b = Matrix::<R>::new_with((m, l), |_, _| rng.random(..));
+            assert_eq!(a.mul_strassen(&b), &a * &b);
+        }
     }
 
     #[test]
@@ -868,6 +1031,20 @@ mod tests {
             if let Some(inv) = inv {
                 assert_eq!(&mat * &inv, Matrix::eye((n, n)));
             }
+        }
+        for _ in 0..100 {
+            let m = ps[rng.random(..ps.len())];
+            DynMIntU32::set_mod(m);
+            let shape = (rng.random(1..=30), rng.random(1..=30));
+            let mat = random_matrix(&mut rng, shape);
+            let mut reduced = mat.clone();
+            reduced.row_reduction(false);
+            let expected = reduced
+                .data
+                .iter()
+                .filter(|row| row.iter().any(|x| !R::is_zero(x)))
+                .count();
+            assert_eq!(mat.clone().rank(), expected);
         }
     }
 
