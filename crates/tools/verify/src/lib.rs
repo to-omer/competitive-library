@@ -2,7 +2,7 @@ use self::library_checker::CheckerBinary;
 use chrono::{DateTime, FixedOffset, SecondsFormat, Utc};
 use dirs::cache_dir;
 use rand::prelude::*;
-use reqwest::{Client, blocking};
+use reqwest::Client;
 use serde::Deserialize;
 use std::{
     borrow::Borrow,
@@ -58,10 +58,6 @@ fn app_cache_directory() -> PathBuf {
     path
 }
 
-fn build_client() -> reqwest::Result<blocking::Client> {
-    blocking::Client::builder().user_agent(APP_NAME).build()
-}
-
 fn build_async_client() -> reqwest::Result<Client> {
     Client::builder().user_agent(APP_NAME).build()
 }
@@ -78,7 +74,9 @@ async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
             .error_for_status()?
             .bytes()
             .await?;
-        File::create(file).await?.write_all(bytes.borrow()).await?;
+        let mut file = File::create(file).await?;
+        file.write_all(bytes.borrow()).await?;
+        file.flush().await?;
         Ok(())
     }
     if file.exists() {
