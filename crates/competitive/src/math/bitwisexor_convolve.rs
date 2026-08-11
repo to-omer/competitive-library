@@ -1,11 +1,35 @@
 use super::{ConvolveSteps, Field, Group, Invertible, bitwise_transform};
 use std::{fmt::Debug, marker::PhantomData};
 
-pub struct BitwisexorConvolve<M, const TRY: bool = false> {
+trait FromLength<const EXACT_DIVISION: bool> {
+    fn from_length(len: usize) -> Self;
+}
+
+impl<T> FromLength<false> for T
+where
+    T: From<usize>,
+{
+    fn from_length(len: usize) -> Self {
+        T::from(len)
+    }
+}
+
+impl<T> FromLength<true> for T
+where
+    T: TryFrom<usize>,
+    T::Error: Debug,
+{
+    fn from_length(len: usize) -> Self {
+        T::try_from(len).unwrap()
+    }
+}
+
+/// `EXACT_DIVISION` normalizes with division instead of a multiplicative inverse.
+pub struct BitwisexorConvolve<M, const EXACT_DIVISION: bool = false> {
     _marker: PhantomData<fn() -> M>,
 }
 
-impl<G, const TRY: bool> BitwisexorConvolve<G, TRY>
+impl<G, const EXACT_DIVISION: bool> BitwisexorConvolve<G, EXACT_DIVISION>
 where
     G: Group,
 {
@@ -18,9 +42,13 @@ where
     }
 }
 
-impl<R> ConvolveSteps for BitwisexorConvolve<R, false>
+impl<R, const EXACT_DIVISION: bool> ConvolveSteps for BitwisexorConvolve<R, EXACT_DIVISION>
 where
-    R: Field<T: PartialEq + From<usize>, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field<
+            T: PartialEq + FromLength<EXACT_DIVISION>,
+            Additive: Invertible,
+            Multiplicative: Invertible,
+        >,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;
@@ -30,64 +58,22 @@ where
     }
 
     fn transform(mut t: Self::T, _len: usize) -> Self::F {
-        BitwisexorConvolve::<R::Additive, false>::hadamard_transform(&mut t);
+        BitwisexorConvolve::<R::Additive, EXACT_DIVISION>::hadamard_transform(&mut t);
         t
     }
 
     fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
-        BitwisexorConvolve::<R::Additive, false>::hadamard_transform(&mut f);
-        let len = R::T::from(len);
-        for f in f.iter_mut() {
-            *f = R::div(f, &len);
-        }
-        f
-    }
-
-    fn multiply(f: &mut Self::F, g: &Self::F) {
-        for (f, g) in f.iter_mut().zip(g) {
-            *f = R::mul(f, g);
-        }
-    }
-
-    fn convolve(a: Self::T, b: Self::T) -> Self::T {
-        assert_eq!(a.len(), b.len());
-        let len = a.len();
-        let same = a == b;
-        let mut a = Self::transform(a, len);
-        if same {
-            for a in a.iter_mut() {
-                *a = R::mul(a, a);
+        BitwisexorConvolve::<R::Additive, EXACT_DIVISION>::hadamard_transform(&mut f);
+        let len = R::T::from_length(len);
+        if EXACT_DIVISION {
+            for f in &mut f {
+                *f = R::div(f, &len);
             }
-        } else {
-            let b = Self::transform(b, len);
-            Self::multiply(&mut a, &b);
-        }
-        Self::inverse_transform(a, len)
-    }
-}
-
-impl<R> ConvolveSteps for BitwisexorConvolve<R, true>
-where
-    R: Field<T: PartialEq + TryFrom<usize>, Additive: Invertible, Multiplicative: Invertible>,
-    <R::T as TryFrom<usize>>::Error: Debug,
-{
-    type T = Vec<R::T>;
-    type F = Vec<R::T>;
-
-    fn length(t: &Self::T) -> usize {
-        t.len()
-    }
-
-    fn transform(mut t: Self::T, _len: usize) -> Self::F {
-        BitwisexorConvolve::<R::Additive, true>::hadamard_transform(&mut t);
-        t
-    }
-
-    fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
-        BitwisexorConvolve::<R::Additive, true>::hadamard_transform(&mut f);
-        let len = R::T::try_from(len).unwrap();
-        for f in f.iter_mut() {
-            *f = R::div(f, &len);
+        } else if !f.is_empty() {
+            let inv_len = R::inv(&len);
+            for f in &mut f {
+                *f = R::mul(f, &inv_len);
+            }
         }
         f
     }
