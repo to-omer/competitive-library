@@ -164,14 +164,32 @@ impl FromIterator<bool> for BitVector {
     fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
         let iter = iter.into_iter();
         let (lower, upper) = iter.size_hint();
-        let mut bit_vector = match upper {
-            Some(upper) => Self::with_capacity(upper),
-            None => Self::with_capacity(lower),
+        let capacity = match upper {
+            Some(upper) => upper,
+            None => lower,
         };
-        for b in iter {
-            bit_vector.push(b);
+        let mut data = Vec::with_capacity(capacity.div_ceil(Self::WORD_SIZE) + 1);
+        let mut word = 0;
+        let mut word_len = 0;
+        let mut sum = 0;
+        let mut len = 0;
+        for bit in iter {
+            word |= (bit as usize) << word_len;
+            word_len += 1;
+            len += 1;
+            if word_len == Self::WORD_SIZE {
+                data.push((word, sum));
+                sum += word.count_ones() as usize;
+                word = 0;
+                word_len = 0;
+            }
         }
-        bit_vector
+        if word_len != 0 {
+            data.push((word, sum));
+            sum += word.count_ones() as usize;
+        }
+        data.push((0, sum));
+        Self { data, sum, len }
     }
 }
 

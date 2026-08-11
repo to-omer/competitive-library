@@ -5,9 +5,8 @@ use competitive::prelude::*;
 pub fn range_kth_smallest(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [usize; n]);
+    scan!(scanner, n, q, a: [usize; n], queries: [(usize, usize, usize)]);
     let wm = WaveletMatrix::new(a);
-    for (l, r, k) in scanner.iter::<(usize, usize, usize)>().take(q) {
-        writeln!(writer, "{}", wm.quantile(l..r, k)).ok();
-    }
+    let results = wm.quantile_batch(queries.take(q).map(|(l, r, k)| (l..r, k)));
+    iter_print!(writer, @lf @it results);
 }

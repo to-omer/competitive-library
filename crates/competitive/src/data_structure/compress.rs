@@ -22,6 +22,10 @@ pub struct VecCompress<T> {
 }
 
 impl<T> VecCompress<T> {
+    pub fn from_sorted_unique(data: Vec<T>) -> Self {
+        Self { data }
+    }
+
     pub fn values(&self) -> &[T] {
         &self.data
     }

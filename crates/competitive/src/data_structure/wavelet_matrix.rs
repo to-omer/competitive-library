@@ -9,8 +9,7 @@ pub struct WaveletMatrix<T> {
     len: usize,
     bit_length: usize,
     zeros: Vec<usize>,
-    ones_prefix: Vec<usize>,
-    bit_vector: BitVector,
+    bit_vectors: Vec<BitVector>,
     compress: VecCompress<T>,
 }
 
@@ -20,51 +19,45 @@ where
 {
     pub fn new(v: Vec<T>) -> Self {
         let len = v.len();
-        let compress: VecCompress<T> = v.iter().cloned().collect();
-        let bit_length = usize::BITS as usize - compress.size().leading_zeros() as usize;
-        let mut indices: Vec<usize> = v
-            .iter()
-            .map(|value| compress.index_exact(value).unwrap())
+        let mut sorted: Vec<_> = v
+            .into_iter()
+            .enumerate()
+            .map(|(i, value)| (value, i))
             .collect();
-        let mut bit_vector = BitVector::with_capacity(len * bit_length);
+        sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+        let mut values = Vec::with_capacity(len);
+        let mut indices = vec![0; len];
+        for (value, i) in sorted {
+            if values.last().is_none_or(|last| last != &value) {
+                values.push(value);
+            }
+            indices[i] = values.len() - 1;
+        }
+        let compress = VecCompress::from_sorted_unique(values);
+        let bit_length = usize::BITS as usize - compress.size().leading_zeros() as usize;
+        let mut bit_vectors = Vec::with_capacity(bit_length);
         let mut zeros = Vec::with_capacity(bit_length);
+        let mut next = Vec::with_capacity(len);
+        let mut ones = Vec::with_capacity(len);
         for d in (0..bit_length).rev() {
-            let mut zero_count = 0;
+            bit_vectors.push(indices.iter().map(|&idx| ((idx >> d) & 1) != 0).collect());
             for &idx in &indices {
-                let bit = ((idx >> d) & 1) != 0;
-                bit_vector.push(bit);
-                if !bit {
-                    zero_count += 1;
+                if ((idx >> d) & 1) == 0 {
+                    next.push(idx);
+                } else {
+                    ones.push(idx);
                 }
             }
-            zeros.push(zero_count);
-            let mut next = Vec::with_capacity(len);
-            next.extend(
-                indices
-                    .iter()
-                    .filter(|&&idx| ((idx >> d) & 1) == 0)
-                    .copied(),
-            );
-            next.extend(
-                indices
-                    .iter()
-                    .filter(|&&idx| ((idx >> d) & 1) == 1)
-                    .copied(),
-            );
-            indices = next;
-        }
-        let mut ones_prefix = Vec::with_capacity(bit_length);
-        let mut prefix = 0;
-        for &zero in &zeros {
-            ones_prefix.push(prefix);
-            prefix += len - zero;
+            zeros.push(next.len());
+            next.append(&mut ones);
+            mem::swap(&mut indices, &mut next);
+            next.clear();
         }
         Self {
             len,
             bit_length,
             zeros,
-            ones_prefix,
-            bit_vector,
+            bit_vectors,
             compress,
         }
     }
@@ -98,8 +91,7 @@ where
     }
 
     fn rank1(&self, level: usize, k: usize) -> usize {
-        let offset = level * self.len;
-        self.bit_vector.rank1(offset + k) - self.ones_prefix[level]
+        self.bit_vectors[level].rank1(k)
     }
 
     fn rank0(&self, level: usize, k: usize) -> usize {
@@ -125,7 +117,7 @@ where
         let mut idx = 0;
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
-            if self.bit_vector.access(level * self.len + k) {
+            if self.bit_vectors[level].access(k) {
                 idx |= 1 << d;
                 k = self.zeros[level] + self.rank1(level, k);
             } else {
@@ -160,16 +152,12 @@ where
         }
         i += k;
         for level in (0..self.bit_length).rev() {
-            let offset = level * self.len;
             if i >= self.zeros[level] {
-                let global_k = self.ones_prefix[level] + (i - self.zeros[level]);
-                let pos = self.bit_vector.select1(global_k).unwrap();
-                i = pos - offset;
+                i = self.bit_vectors[level]
+                    .select1(i - self.zeros[level])
+                    .unwrap();
             } else {
-                let zeros_before = offset - self.ones_prefix[level];
-                let global_k = zeros_before + i;
-                let pos = self.bit_vector.select0(global_k).unwrap();
-                i = pos - offset;
+                i = self.bit_vectors[level].select0(i).unwrap();
             }
         }
         Some(i)
@@ -192,6 +180,37 @@ where
             }
         }
         self.compress.values()[idx].clone()
+    }
+
+    pub fn quantile_batch(
+        &self,
+        queries: impl IntoIterator<Item = (Range<usize>, usize)>,
+    ) -> Vec<T> {
+        let mut queries: Vec<_> = queries
+            .into_iter()
+            .map(|(range, k)| [range.start as u32, range.end as u32, k as u32, 0])
+            .collect();
+        for d in (0..self.bit_length).rev() {
+            let level = self.level(d);
+            for query in &mut queries {
+                let start = query[0] as usize;
+                let end = query[1] as usize;
+                let start1 = self.rank1(level, start);
+                let end1 = self.rank1(level, end);
+                let start0 = (start - start1) as u32;
+                let end0 = (end - end1) as u32;
+                let zeros = end0 - start0;
+                let mask = 0u32.wrapping_sub((query[2] >= zeros) as u32);
+                query[0] = (start0 & !mask) | ((self.zeros[level] as u32 + start1 as u32) & mask);
+                query[1] = (end0 & !mask) | ((self.zeros[level] as u32 + end1 as u32) & mask);
+                query[2] -= zeros & mask;
+                query[3] |= (1u32 << d) & mask;
+            }
+        }
+        queries
+            .into_iter()
+            .map(|query| self.compress.values()[query[3] as usize].clone())
+            .collect()
     }
 
     /// get k-th smallest value out of range
@@ -273,7 +292,6 @@ where
         let mut prefix = Vec::with_capacity((self.bit_length + 1) * (len + 1));
         let mut current: Vec<M::T> = weights.to_vec();
         for level in 0..self.bit_length {
-            let offset = level * len;
             let zeros = self.zeros[level];
             let mut next: Vec<MaybeUninit<M::T>> = Vec::with_capacity(len);
             next.resize_with(len, MaybeUninit::uninit);
@@ -284,7 +302,7 @@ where
             for (i, w) in current.into_iter().enumerate() {
                 acc = M::operate(&acc, &w);
                 prefix.push(acc.clone());
-                if self.bit_vector.access(offset + i) {
+                if self.bit_vectors[level].access(i) {
                     next[one_pos].write(w);
                     one_pos += 1;
                 } else {
@@ -409,6 +427,23 @@ mod tests {
             assert_eq!(wm.access(i), v);
         }
         assert_eq!(fold.fold_lessthan(A, 0..N), w.iter().sum::<i64>());
+        let quantile_queries: Vec<_> = (0..Q)
+            .map(|_| {
+                let l = rng.random(0..N);
+                let r = rng.random(l + 1..=N);
+                let k = rng.random(0..r - l);
+                (l..r, k)
+            })
+            .collect();
+        let expected: Vec<_> = quantile_queries
+            .iter()
+            .map(|(range, k)| {
+                let mut values = v[range.clone()].to_vec();
+                values.sort_unstable();
+                values[*k]
+            })
+            .collect();
+        assert_eq!(wm.quantile_batch(quantile_queries), expected);
         for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
             assert_eq!(
                 wm.rank(a, l..r),
