@@ -872,37 +872,68 @@ where
         C::multiply(&mut s, other);
         Self::from_vec((C::inverse_transform(s, deg))[n - 1..].to_vec())
     }
-    pub fn multipoint_evaluation(self, points: &[T]) -> Vec<T> {
+    pub fn multipoint_evaluation(self, points: &[T]) -> Vec<T>
+    where
+        C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
+    {
         let n = points.len();
         if n <= 32 {
             return points.iter().map(|p| self.eval(p.clone())).collect();
         }
-        let mut subproduct_tree = Vec::with_capacity(n * 2);
-        subproduct_tree.resize_with(n, Zero::zero);
-        for x in points {
-            subproduct_tree.push(Self::from_vec(vec![-x.clone(), T::one()]));
+        let size = n.next_power_of_two();
+        let mut subproduct_tree = Vec::with_capacity(size * 2);
+        subproduct_tree.resize_with(size * 2, || None);
+        for (subproduct, x) in subproduct_tree[size..].iter_mut().zip(points) {
+            *subproduct = Some(C::transform_ntt(vec![-x.clone(), T::one()], 2));
         }
-        for i in (1..n).rev() {
-            subproduct_tree[i] = &subproduct_tree[i * 2] * &subproduct_tree[i * 2 + 1];
+        if n < size {
+            let padding = C::transform_ntt(vec![T::zero(), T::one()], 2);
+            for subproduct in &mut subproduct_tree[size + n..] {
+                *subproduct = Some(padding.clone());
+            }
         }
-        let mut uptree_t = Vec::with_capacity(n * 2);
+        for i in (1..size).rev() {
+            let mut product = subproduct_tree[i * 2].as_ref().unwrap().clone();
+            C::multiply_prefix(&mut product, subproduct_tree[i * 2 + 1].as_ref().unwrap());
+            if i > 1 {
+                let degree = size >> i.ilog2();
+                let mut coefficients = C::inverse_transform_ntt(product, degree);
+                coefficients[0] -= T::one();
+                coefficients.reserve(degree);
+                coefficients.push(T::one());
+                product = C::transform_ntt(coefficients, degree * 2);
+            }
+            subproduct_tree[i] = Some(product);
+        }
+        let mut product = C::inverse_transform_ntt(subproduct_tree[1].take().unwrap(), size);
+        product[0] -= T::one();
+        product.push(T::one());
+        let mut uptree_t = Vec::with_capacity(size * 2);
         uptree_t.resize_with(1, Zero::zero);
-        subproduct_tree.reverse();
-        subproduct_tree.pop();
         let m = self.length();
-        let v = subproduct_tree.pop().unwrap().reversed().resized(m);
+        let v = Self::from_vec(product).reversed().resized(m);
         let s = C::transform(self.data, m * 2);
-        uptree_t.push(v.inv(m).middle_product(&s, m * 2).resized(n).reversed());
-        for i in 1..n {
-            let subl = subproduct_tree.pop().unwrap();
-            let subr = subproduct_tree.pop().unwrap();
-            let (dl, dr) = (subl.length(), subr.length());
-            let len = dl.max(dr) + uptree_t[i].length();
-            let s = C::transform(uptree_t[i].data.to_vec(), len);
-            uptree_t.push(subr.middle_product(&s, len).prefix(dl));
-            uptree_t.push(subl.middle_product(&s, len).prefix(dr));
+        uptree_t.push(v.inv(m).middle_product(&s, m * 2).resized(size));
+        for i in 1..size {
+            let degree = uptree_t[i].length();
+            let spectrum = C::transform_ntt(std::mem::take(&mut uptree_t[i].data), degree);
+            let left = subproduct_tree[i * 2].take().unwrap();
+            let right = subproduct_tree[i * 2 + 1].take().unwrap();
+
+            let mut child = spectrum.clone();
+            C::multiply_prefix(&mut child, &right);
+            let mut child = C::inverse_transform_ntt(child, degree);
+            child.drain(..degree / 2);
+            uptree_t.push(Self::from_vec(child));
+
+            let mut child = spectrum;
+            C::multiply_prefix(&mut child, &left);
+            let mut child = C::inverse_transform_ntt(child, degree);
+            child.drain(..degree / 2);
+            uptree_t.push(Self::from_vec(child));
         }
-        uptree_t[n..]
+        uptree_t[size..size + n]
             .iter()
             .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
             .collect()
@@ -1240,6 +1271,23 @@ mod tests {
 
             let result = f.pow_mod(k);
             assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn test_multipoint_evaluation() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 1..100, m: 0..100);
+            let f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            let points: Vec<_> = rng.random_iter(..).take(m).collect();
+            let expected = points.iter().map(|&x| f.eval(x)).collect::<Vec<_>>();
+            assert_eq!(expected, f.multipoint_evaluation(&points));
+
+            let f = Fps::<Modulo1000000009>::from_vec(rng.random_iter(..).take(n).collect());
+            let points: Vec<_> = rng.random_iter(..).take(m).collect();
+            let expected = points.iter().map(|&x| f.eval(x)).collect::<Vec<_>>();
+            assert_eq!(expected, f.multipoint_evaluation(&points));
         }
     }
 
