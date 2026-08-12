@@ -1,0 +1,812 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `FrequencyMatrix` struct in crate `competitive`."><title>FrequencyMatrix in competitive::math::formal_power_series::berlekamp_massey - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-650bd49d.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.99.0-nightly (3d6c19bb9 2026-08-11)" data-channel="nightly" data-search-js="search-cf4fc35e.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><script defer src="../../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-d4bd101e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">FrequencyMatrix</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Frequency<wbr>Matrix</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.a00" title="a00">a00</a></li><li><a href="#structfield.a01" title="a01">a01</a></li><li><a href="#structfield.a10" title="a10">a10</a></li><li><a href="#structfield.a11" title="a11">a11</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.product_sum" title="product_sum">product_sum</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.apply" title="apply">apply</a></li><li><a href="#method.inverse_transform" title="inverse_transform">inverse_transform</a></li><li><a href="#method.left_multiply_step" title="left_multiply_step">left_multiply_step</a></li><li><a href="#method.multiply" title="multiply">multiply</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-FrequencyMatrix%3CC%3E" title="Clone">Clone</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Freeze-for-FrequencyMatrix%3CC%3E" title="Freeze">Freeze</a></li><li><a href="#impl-RefUnwindSafe-for-FrequencyMatrix%3CC%3E" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-FrequencyMatrix%3CC%3E" title="Send">Send</a></li><li><a href="#impl-Sync-for-FrequencyMatrix%3CC%3E" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-FrequencyMatrix%3CC%3E" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-FrequencyMatrix%3CC%3E" title="UnsafeUnpin">UnsafeUnpin</a></li><li><a href="#impl-UnwindSafe-for-FrequencyMatrix%3CC%3E" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>formal_<wbr>power_<wbr>series::<wbr>berlekamp_<wbr>massey</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">formal_power_series</a>::<wbr><a href="index.html">berlekamp_massey</a></div><h1>Struct <span class="struct">Frequency<wbr>Matrix</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#12-20">Source</a> </span></div><pre class="rust item-decl"><code>struct FrequencyMatrix&lt;C&gt;<div class="where">where
+    C: <a class="trait" href="../../trait.NttReuse.html" title="trait competitive::math::NttReuse">NttReuse</a>,</div>{
+    a00: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+    a01: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+    a10: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+    a11: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.a00" class="structfield section-header"><a href="#structfield.a00" class="anchor field">§</a><code>a00: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a></code></span><span id="structfield.a01" class="structfield section-header"><a href="#structfield.a01" class="anchor field">§</a><code>a01: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a></code></span><span id="structfield.a10" class="structfield section-header"><a href="#structfield.a10" class="anchor field">§</a><code>a10: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a></code></span><span id="structfield.a11" class="structfield section-header"><a href="#structfield.a11" class="anchor field">§</a><code>a11: C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a></code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-FrequencyMatrix%3CC%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#109-165">Source</a><a href="#impl-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T, C&gt; <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    T: <a class="trait" href="../../trait.FormalPowerSeriesCoefficient.html" title="trait competitive::math::FormalPowerSeriesCoefficient">FormalPowerSeriesCoefficient</a>,
+    C: <a class="trait" href="../../trait.NttReuse.html" title="trait competitive::math::NttReuse">NttReuse</a>&lt;T = <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;&gt;,
+    C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.product_sum" class="method"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#115-120">Source</a><h4 class="code-header">fn <a href="#method.product_sum" class="fn">product_sum</a>(
+    left_a: &amp;C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+    right_a: &amp;C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+    left_b: &amp;C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+    right_b: &amp;C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>,
+) -&gt; C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#124&#34;,&#34;line 124&#34;],[[3,3],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#125&#34;,&#34;line 125&#34;],[[4,4],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#126&#34;,&#34;line 126&#34;],[[5,5],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#127&#34;,&#34;line 127&#34;],[[11,11],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#133&#34;,&#34;line 133&#34;],[[12,12],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#134&#34;,&#34;line 134&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/berlekamp_massey.rs (<a href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#124">line 124</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>122</span>    <span class="kw">fn </span>multiply(<span class="kw-2">&amp;</span><span class="self">self</span>, right: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>123</span>        <span class="self">Self </span>{
+<span data-nosnippet>124</span>            a00: <span class="highlight focus"><span class="self">Self</span>::product_sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.a00, <span class="kw-2">&amp;</span>right.a00, <span class="kw-2">&amp;</span><span class="self">self</span>.a01, <span class="kw-2">&amp;</span>right.a10),
+<span data-nosnippet>125</span>            a01: <span class="highlight"><span class="self">Self</span>::product_sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.a00, <span class="kw-2">&amp;</span>right.a01, <span class="kw-2">&amp;</span><span class="self">self</span>.a01, <span class="kw-2">&amp;</span>right.a11),
+<span data-nosnippet>126</span>            a10: <span class="highlight"><span class="self">Self</span>::product_sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.a10, <span class="kw-2">&amp;</span>right.a00, <span class="kw-2">&amp;</span><span class="self">self</span>.a11, <span class="kw-2">&amp;</span>right.a10),
+<span data-nosnippet>127</span>            a11: <span class="highlight"><span class="self">Self</span>::product_sum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.a10, <span class="kw-2">&amp;</span>right.a01, <span class="kw-2">&amp;</span><span class="self">self</span>.a11, <span class="kw-2">&amp;</span>right.a11),
+<span data-nosnippet>128</span>        }
+<span data-nosnippet>129</span>    }
+<span data-nosnippet>130</span>
+<span data-nosnippet>131</span>    <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <span class="kw-2">&amp;</span>C::F, q: <span class="kw-2">&amp;</span>C::F, length: usize) -&gt; (Vec&lt;T&gt;, Vec&lt;T&gt;) {
+<span data-nosnippet>132</span>        (
+<span data-nosnippet>133</span>            C::inverse_transform_ntt(<span class="highlight"><span class="self">Self</span>::product_sum</span>(p, <span class="kw-2">&amp;</span><span class="self">self</span>.a00, q, <span class="kw-2">&amp;</span><span class="self">self</span>.a01), length),
+<span data-nosnippet>134</span>            C::inverse_transform_ntt(<span class="highlight"><span class="self">Self</span>::product_sum</span>(p, <span class="kw-2">&amp;</span><span class="self">self</span>.a10, q, <span class="kw-2">&amp;</span><span class="self">self</span>.a11), length),
+<span data-nosnippet>135</span>        )
+<span data-nosnippet>136</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.multiply" class="method"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#122-129">Source</a><h4 class="code-header">fn <a href="#method.multiply" class="fn">multiply</a>(&amp;self, right: &amp;Self) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[99,99],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#457&#34;,&#34;line 457&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/berlekamp_massey.rs (<a href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#457">line 457</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>358</span><span class="kw">fn </span>half_gcd&lt;T, C&gt;(
+<span data-nosnippet>359</span>    p: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>360</span>    q: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>361</span>    k: usize,
+<span data-nosnippet>362</span>    length: usize,
+<span data-nosnippet>363</span>) -&gt; (FpsMatrix&lt;T, C&gt;, FrequencyMatrix&lt;C&gt;)
+<span data-nosnippet>364</span><span class="kw">where
+<span data-nosnippet>365</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>366</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>367</span>    C::F: Clone,
+<span data-nosnippet>368</span>{
+<span data-nosnippet>369</span>    <span class="kw">let </span>d = degree(p);
+<span data-nosnippet>370</span>    <span class="kw">if </span>degree(q) &lt; d - k <span class="kw">as </span>isize {
+<span data-nosnippet>371</span>        <span class="kw">let </span>matrix = FpsMatrix::identity();
+<span data-nosnippet>372</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>373</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>374</span>    }
+<span data-nosnippet>375</span>    <span class="kw">if </span>k == <span class="number">1 </span>{
+<span data-nosnippet>376</span>        <span class="kw">let </span>matrix = FpsMatrix {
+<span data-nosnippet>377</span>            a00: FormalPowerSeries::zero(),
+<span data-nosnippet>378</span>            a01: FormalPowerSeries::one(),
+<span data-nosnippet>379</span>            a10: FormalPowerSeries::one(),
+<span data-nosnippet>380</span>            a11: -(tail(p, d - <span class="number">2</span>) / tail(q, d - <span class="number">2</span>)),
+<span data-nosnippet>381</span>        };
+<span data-nosnippet>382</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>383</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>384</span>    }
+<span data-nosnippet>385</span>    <span class="kw">if </span>p.length().min(q.length()) &lt;= <span class="number">32 </span>{
+<span data-nosnippet>386</span>        <span class="kw">let </span>matrix = brute_force(p.clone(), q.clone(), k);
+<span data-nosnippet>387</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>388</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>389</span>    }
+<span data-nosnippet>390</span>
+<span data-nosnippet>391</span>    <span class="kw">let </span>half = length / <span class="number">2</span>;
+<span data-nosnippet>392</span>    <span class="kw">if </span>k &lt;= half {
+<span data-nosnippet>393</span>        <span class="kw">let </span>(matrix, frequency) = half_gcd(p, q, k, half);
+<span data-nosnippet>394</span>        <span class="kw">let </span>frequency = matrix.extend_transform(frequency, length);
+<span data-nosnippet>395</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>396</span>    }
+<span data-nosnippet>397</span>
+<span data-nosnippet>398</span>    <span class="kw">let </span>(matrix, <span class="kw-2">mut </span>matrix_frequency) = half_gcd(
+<span data-nosnippet>399</span>        <span class="kw-2">&amp;</span>tail(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>400</span>        <span class="kw-2">&amp;</span>tail(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>401</span>        half,
+<span data-nosnippet>402</span>        length,
+<span data-nosnippet>403</span>    );
+<span data-nosnippet>404</span>    <span class="kw">let </span>degeneracy = half <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>405</span>
+<span data-nosnippet>406</span>    <span class="kw">let </span>(p0, q0) = matrix_frequency.apply(
+<span data-nosnippet>407</span>        <span class="kw-2">&amp;</span>transform_window(p, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>408</span>        <span class="kw-2">&amp;</span>transform_window(q, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>409</span>        length,
+<span data-nosnippet>410</span>    );
+<span data-nosnippet>411</span>    <span class="kw">let </span>(p1, q1) = matrix_frequency.apply(
+<span data-nosnippet>412</span>        <span class="kw-2">&amp;</span>transform_window(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>413</span>        <span class="kw-2">&amp;</span>transform_window(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>414</span>        length,
+<span data-nosnippet>415</span>    );
+<span data-nosnippet>416</span>    <span class="kw">let </span>part_length = (half <span class="kw">as </span>isize + degeneracy) <span class="kw">as </span>usize;
+<span data-nosnippet>417</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced = p1[length - part_length..].to_vec();
+<span data-nosnippet>418</span>    p_reduced.extend_from_slice(<span class="kw-2">&amp;</span>p0[length - part_length..]);
+<span data-nosnippet>419</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced = q1[length - part_length..].to_vec();
+<span data-nosnippet>420</span>    q_reduced.extend_from_slice(<span class="kw-2">&amp;</span>q0[length - part_length..]);
+<span data-nosnippet>421</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(q_reduced).trimed();
+<span data-nosnippet>422</span>
+<span data-nosnippet>423</span>    <span class="kw">let </span>position = d - half <span class="kw">as </span>isize + degeneracy;
+<span data-nosnippet>424</span>    <span class="kw">let </span><span class="kw-2">mut </span>leading = T::zero();
+<span data-nosnippet>425</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=position {
+<span data-nosnippet>426</span>        leading += coefficient(p, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a00, position - i)
+<span data-nosnippet>427</span>            + coefficient(q, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a01, position - i);
+<span data-nosnippet>428</span>    }
+<span data-nosnippet>429</span>    p_reduced.push(leading);
+<span data-nosnippet>430</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(p_reduced);
+<span data-nosnippet>431</span>    <span class="kw">if </span>degree(<span class="kw-2">&amp;</span>q_reduced) &lt; <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize {
+<span data-nosnippet>432</span>        <span class="kw">return </span>(matrix, matrix_frequency);
+<span data-nosnippet>433</span>    }
+<span data-nosnippet>434</span>
+<span data-nosnippet>435</span>    <span class="kw">let </span><span class="kw-2">mut </span>remaining = k <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>436</span>    <span class="kw">let </span><span class="kw-2">mut </span>top_product = matrix.a11.data.last().unwrap().clone();
+<span data-nosnippet>437</span>    <span class="kw">let </span><span class="kw-2">mut </span>product_degree = degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>438</span>    <span class="kw">if </span>degeneracy &gt; <span class="number">0 </span>{
+<span data-nosnippet>439</span>        <span class="kw">let </span>skip = (<span class="number">2 </span>* half <span class="kw">as </span>isize + <span class="number">2 </span>* degeneracy - (d - half <span class="kw">as </span>isize + degeneracy)).max(<span class="number">0</span>);
+<span data-nosnippet>440</span>        <span class="kw">let </span>(division, remainder) = tail(<span class="kw-2">&amp;</span>p_reduced, skip).div_rem(tail(<span class="kw-2">&amp;</span>q_reduced, skip));
+<span data-nosnippet>441</span>        remaining -= degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>442</span>        top_product <span class="kw-2">*</span>= -division.data.last().unwrap().clone();
+<span data-nosnippet>443</span>        product_degree += degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>444</span>        matrix_frequency = matrix_frequency.left_multiply_step(<span class="kw-2">&amp;</span>division, length);
+<span data-nosnippet>445</span>        swap(<span class="kw-2">&amp;mut </span>p_reduced, <span class="kw-2">&amp;mut </span>q_reduced);
+<span data-nosnippet>446</span>        q_reduced = FormalPowerSeries::zeros(skip <span class="kw">as </span>usize);
+<span data-nosnippet>447</span>        q_reduced.data.extend(remainder.data);
+<span data-nosnippet>448</span>    }
+<span data-nosnippet>449</span>
+<span data-nosnippet>450</span>    <span class="kw">let </span>start = <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize - remaining;
+<span data-nosnippet>451</span>    <span class="kw">let </span>(right_matrix, right_frequency) = half_gcd(
+<span data-nosnippet>452</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>p_reduced, start),
+<span data-nosnippet>453</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>q_reduced, start),
+<span data-nosnippet>454</span>        remaining <span class="kw">as </span>usize,
+<span data-nosnippet>455</span>        length,
+<span data-nosnippet>456</span>    );
+<span data-nosnippet>457</span>    <span class="kw">let </span>product_frequency = right_frequency.<span class="highlight focus">multiply</span>(<span class="kw-2">&amp;</span>matrix_frequency);
+<span data-nosnippet>458</span>    <span class="kw">let </span><span class="kw-2">mut </span>product = product_frequency.clone().inverse_transform(length);
+<span data-nosnippet>459</span>    product.a00.truncate(k);
+<span data-nosnippet>460</span>    product.a00.trim_tail_zeros();
+<span data-nosnippet>461</span>    product.a01.truncate(k);
+<span data-nosnippet>462</span>    product.a01.trim_tail_zeros();
+<span data-nosnippet>463</span>    product.a10.truncate(k);
+<span data-nosnippet>464</span>    product.a10.trim_tail_zeros();
+<span data-nosnippet>465</span>    product_degree += degree(<span class="kw-2">&amp;</span>right_matrix.a11);
+<span data-nosnippet>466</span>    <span class="kw">if </span>product_degree == length <span class="kw">as </span>isize {
+<span data-nosnippet>467</span>        product.a11.resize(k + <span class="number">1</span>);
+<span data-nosnippet>468</span>        <span class="kw">let </span>highest = top_product * right_matrix.a11.data.last().unwrap();
+<span data-nosnippet>469</span>        product.a11[k] = highest.clone();
+<span data-nosnippet>470</span>        product.a11[<span class="number">0</span>] -= highest;
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    product.a11.trim_tail_zeros();
+<span data-nosnippet>473</span>    <span class="kw">let </span>product_frequency = <span class="kw">if </span>C::MULTIPLE {
+<span data-nosnippet>474</span>        product.transform(length)
+<span data-nosnippet>475</span>    } <span class="kw">else </span>{
+<span data-nosnippet>476</span>        product_frequency
+<span data-nosnippet>477</span>    };
+<span data-nosnippet>478</span>    (product, product_frequency)
+<span data-nosnippet>479</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.apply" class="method"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#131-136">Source</a><h4 class="code-header">fn <a href="#method.apply" class="fn">apply</a>(&amp;self, p: &amp;C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>, q: &amp;C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>, length: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[48,52],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#406-410&#34;,&#34;lines 406-410&#34;],[[53,57],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#411-415&#34;,&#34;lines 411-415&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/berlekamp_massey.rs (<a href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#406-410">lines 406-410</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>358</span><span class="kw">fn </span>half_gcd&lt;T, C&gt;(
+<span data-nosnippet>359</span>    p: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>360</span>    q: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>361</span>    k: usize,
+<span data-nosnippet>362</span>    length: usize,
+<span data-nosnippet>363</span>) -&gt; (FpsMatrix&lt;T, C&gt;, FrequencyMatrix&lt;C&gt;)
+<span data-nosnippet>364</span><span class="kw">where
+<span data-nosnippet>365</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>366</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>367</span>    C::F: Clone,
+<span data-nosnippet>368</span>{
+<span data-nosnippet>369</span>    <span class="kw">let </span>d = degree(p);
+<span data-nosnippet>370</span>    <span class="kw">if </span>degree(q) &lt; d - k <span class="kw">as </span>isize {
+<span data-nosnippet>371</span>        <span class="kw">let </span>matrix = FpsMatrix::identity();
+<span data-nosnippet>372</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>373</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>374</span>    }
+<span data-nosnippet>375</span>    <span class="kw">if </span>k == <span class="number">1 </span>{
+<span data-nosnippet>376</span>        <span class="kw">let </span>matrix = FpsMatrix {
+<span data-nosnippet>377</span>            a00: FormalPowerSeries::zero(),
+<span data-nosnippet>378</span>            a01: FormalPowerSeries::one(),
+<span data-nosnippet>379</span>            a10: FormalPowerSeries::one(),
+<span data-nosnippet>380</span>            a11: -(tail(p, d - <span class="number">2</span>) / tail(q, d - <span class="number">2</span>)),
+<span data-nosnippet>381</span>        };
+<span data-nosnippet>382</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>383</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>384</span>    }
+<span data-nosnippet>385</span>    <span class="kw">if </span>p.length().min(q.length()) &lt;= <span class="number">32 </span>{
+<span data-nosnippet>386</span>        <span class="kw">let </span>matrix = brute_force(p.clone(), q.clone(), k);
+<span data-nosnippet>387</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>388</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>389</span>    }
+<span data-nosnippet>390</span>
+<span data-nosnippet>391</span>    <span class="kw">let </span>half = length / <span class="number">2</span>;
+<span data-nosnippet>392</span>    <span class="kw">if </span>k &lt;= half {
+<span data-nosnippet>393</span>        <span class="kw">let </span>(matrix, frequency) = half_gcd(p, q, k, half);
+<span data-nosnippet>394</span>        <span class="kw">let </span>frequency = matrix.extend_transform(frequency, length);
+<span data-nosnippet>395</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>396</span>    }
+<span data-nosnippet>397</span>
+<span data-nosnippet>398</span>    <span class="kw">let </span>(matrix, <span class="kw-2">mut </span>matrix_frequency) = half_gcd(
+<span data-nosnippet>399</span>        <span class="kw-2">&amp;</span>tail(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>400</span>        <span class="kw-2">&amp;</span>tail(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>401</span>        half,
+<span data-nosnippet>402</span>        length,
+<span data-nosnippet>403</span>    );
+<span data-nosnippet>404</span>    <span class="kw">let </span>degeneracy = half <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>405</span>
+<span data-nosnippet>406</span>    <span class="kw">let </span>(p0, q0) = matrix_frequency.<span class="highlight focus">apply</span>(
+<span data-nosnippet>407</span>        <span class="kw-2">&amp;</span>transform_window(p, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>408</span>        <span class="kw-2">&amp;</span>transform_window(q, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>409</span>        length,
+<span data-nosnippet>410</span>    );
+<span data-nosnippet>411</span>    <span class="kw">let </span>(p1, q1) = matrix_frequency.<span class="highlight">apply</span>(
+<span data-nosnippet>412</span>        <span class="kw-2">&amp;</span>transform_window(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>413</span>        <span class="kw-2">&amp;</span>transform_window(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>414</span>        length,
+<span data-nosnippet>415</span>    );
+<span data-nosnippet>416</span>    <span class="kw">let </span>part_length = (half <span class="kw">as </span>isize + degeneracy) <span class="kw">as </span>usize;
+<span data-nosnippet>417</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced = p1[length - part_length..].to_vec();
+<span data-nosnippet>418</span>    p_reduced.extend_from_slice(<span class="kw-2">&amp;</span>p0[length - part_length..]);
+<span data-nosnippet>419</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced = q1[length - part_length..].to_vec();
+<span data-nosnippet>420</span>    q_reduced.extend_from_slice(<span class="kw-2">&amp;</span>q0[length - part_length..]);
+<span data-nosnippet>421</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(q_reduced).trimed();
+<span data-nosnippet>422</span>
+<span data-nosnippet>423</span>    <span class="kw">let </span>position = d - half <span class="kw">as </span>isize + degeneracy;
+<span data-nosnippet>424</span>    <span class="kw">let </span><span class="kw-2">mut </span>leading = T::zero();
+<span data-nosnippet>425</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=position {
+<span data-nosnippet>426</span>        leading += coefficient(p, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a00, position - i)
+<span data-nosnippet>427</span>            + coefficient(q, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a01, position - i);
+<span data-nosnippet>428</span>    }
+<span data-nosnippet>429</span>    p_reduced.push(leading);
+<span data-nosnippet>430</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(p_reduced);
+<span data-nosnippet>431</span>    <span class="kw">if </span>degree(<span class="kw-2">&amp;</span>q_reduced) &lt; <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize {
+<span data-nosnippet>432</span>        <span class="kw">return </span>(matrix, matrix_frequency);
+<span data-nosnippet>433</span>    }
+<span data-nosnippet>434</span>
+<span data-nosnippet>435</span>    <span class="kw">let </span><span class="kw-2">mut </span>remaining = k <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>436</span>    <span class="kw">let </span><span class="kw-2">mut </span>top_product = matrix.a11.data.last().unwrap().clone();
+<span data-nosnippet>437</span>    <span class="kw">let </span><span class="kw-2">mut </span>product_degree = degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>438</span>    <span class="kw">if </span>degeneracy &gt; <span class="number">0 </span>{
+<span data-nosnippet>439</span>        <span class="kw">let </span>skip = (<span class="number">2 </span>* half <span class="kw">as </span>isize + <span class="number">2 </span>* degeneracy - (d - half <span class="kw">as </span>isize + degeneracy)).max(<span class="number">0</span>);
+<span data-nosnippet>440</span>        <span class="kw">let </span>(division, remainder) = tail(<span class="kw-2">&amp;</span>p_reduced, skip).div_rem(tail(<span class="kw-2">&amp;</span>q_reduced, skip));
+<span data-nosnippet>441</span>        remaining -= degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>442</span>        top_product <span class="kw-2">*</span>= -division.data.last().unwrap().clone();
+<span data-nosnippet>443</span>        product_degree += degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>444</span>        matrix_frequency = matrix_frequency.left_multiply_step(<span class="kw-2">&amp;</span>division, length);
+<span data-nosnippet>445</span>        swap(<span class="kw-2">&amp;mut </span>p_reduced, <span class="kw-2">&amp;mut </span>q_reduced);
+<span data-nosnippet>446</span>        q_reduced = FormalPowerSeries::zeros(skip <span class="kw">as </span>usize);
+<span data-nosnippet>447</span>        q_reduced.data.extend(remainder.data);
+<span data-nosnippet>448</span>    }
+<span data-nosnippet>449</span>
+<span data-nosnippet>450</span>    <span class="kw">let </span>start = <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize - remaining;
+<span data-nosnippet>451</span>    <span class="kw">let </span>(right_matrix, right_frequency) = half_gcd(
+<span data-nosnippet>452</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>p_reduced, start),
+<span data-nosnippet>453</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>q_reduced, start),
+<span data-nosnippet>454</span>        remaining <span class="kw">as </span>usize,
+<span data-nosnippet>455</span>        length,
+<span data-nosnippet>456</span>    );
+<span data-nosnippet>457</span>    <span class="kw">let </span>product_frequency = right_frequency.multiply(<span class="kw-2">&amp;</span>matrix_frequency);
+<span data-nosnippet>458</span>    <span class="kw">let </span><span class="kw-2">mut </span>product = product_frequency.clone().inverse_transform(length);
+<span data-nosnippet>459</span>    product.a00.truncate(k);
+<span data-nosnippet>460</span>    product.a00.trim_tail_zeros();
+<span data-nosnippet>461</span>    product.a01.truncate(k);
+<span data-nosnippet>462</span>    product.a01.trim_tail_zeros();
+<span data-nosnippet>463</span>    product.a10.truncate(k);
+<span data-nosnippet>464</span>    product.a10.trim_tail_zeros();
+<span data-nosnippet>465</span>    product_degree += degree(<span class="kw-2">&amp;</span>right_matrix.a11);
+<span data-nosnippet>466</span>    <span class="kw">if </span>product_degree == length <span class="kw">as </span>isize {
+<span data-nosnippet>467</span>        product.a11.resize(k + <span class="number">1</span>);
+<span data-nosnippet>468</span>        <span class="kw">let </span>highest = top_product * right_matrix.a11.data.last().unwrap();
+<span data-nosnippet>469</span>        product.a11[k] = highest.clone();
+<span data-nosnippet>470</span>        product.a11[<span class="number">0</span>] -= highest;
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    product.a11.trim_tail_zeros();
+<span data-nosnippet>473</span>    <span class="kw">let </span>product_frequency = <span class="kw">if </span>C::MULTIPLE {
+<span data-nosnippet>474</span>        product.transform(length)
+<span data-nosnippet>475</span>    } <span class="kw">else </span>{
+<span data-nosnippet>476</span>        product_frequency
+<span data-nosnippet>477</span>    };
+<span data-nosnippet>478</span>    (product, product_frequency)
+<span data-nosnippet>479</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.left_multiply_step" class="method"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#138-155">Source</a><h4 class="code-header">fn <a href="#method.left_multiply_step" class="fn">left_multiply_step</a>(
+    self,
+    quotient: &amp;<a class="struct" href="../../struct.FormalPowerSeries.html" title="struct competitive::math::FormalPowerSeries">FormalPowerSeries</a>&lt;T, C&gt;,
+    length: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[86,86],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#444&#34;,&#34;line 444&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/berlekamp_massey.rs (<a href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#444">line 444</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>358</span><span class="kw">fn </span>half_gcd&lt;T, C&gt;(
+<span data-nosnippet>359</span>    p: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>360</span>    q: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>361</span>    k: usize,
+<span data-nosnippet>362</span>    length: usize,
+<span data-nosnippet>363</span>) -&gt; (FpsMatrix&lt;T, C&gt;, FrequencyMatrix&lt;C&gt;)
+<span data-nosnippet>364</span><span class="kw">where
+<span data-nosnippet>365</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>366</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>367</span>    C::F: Clone,
+<span data-nosnippet>368</span>{
+<span data-nosnippet>369</span>    <span class="kw">let </span>d = degree(p);
+<span data-nosnippet>370</span>    <span class="kw">if </span>degree(q) &lt; d - k <span class="kw">as </span>isize {
+<span data-nosnippet>371</span>        <span class="kw">let </span>matrix = FpsMatrix::identity();
+<span data-nosnippet>372</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>373</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>374</span>    }
+<span data-nosnippet>375</span>    <span class="kw">if </span>k == <span class="number">1 </span>{
+<span data-nosnippet>376</span>        <span class="kw">let </span>matrix = FpsMatrix {
+<span data-nosnippet>377</span>            a00: FormalPowerSeries::zero(),
+<span data-nosnippet>378</span>            a01: FormalPowerSeries::one(),
+<span data-nosnippet>379</span>            a10: FormalPowerSeries::one(),
+<span data-nosnippet>380</span>            a11: -(tail(p, d - <span class="number">2</span>) / tail(q, d - <span class="number">2</span>)),
+<span data-nosnippet>381</span>        };
+<span data-nosnippet>382</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>383</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>384</span>    }
+<span data-nosnippet>385</span>    <span class="kw">if </span>p.length().min(q.length()) &lt;= <span class="number">32 </span>{
+<span data-nosnippet>386</span>        <span class="kw">let </span>matrix = brute_force(p.clone(), q.clone(), k);
+<span data-nosnippet>387</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>388</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>389</span>    }
+<span data-nosnippet>390</span>
+<span data-nosnippet>391</span>    <span class="kw">let </span>half = length / <span class="number">2</span>;
+<span data-nosnippet>392</span>    <span class="kw">if </span>k &lt;= half {
+<span data-nosnippet>393</span>        <span class="kw">let </span>(matrix, frequency) = half_gcd(p, q, k, half);
+<span data-nosnippet>394</span>        <span class="kw">let </span>frequency = matrix.extend_transform(frequency, length);
+<span data-nosnippet>395</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>396</span>    }
+<span data-nosnippet>397</span>
+<span data-nosnippet>398</span>    <span class="kw">let </span>(matrix, <span class="kw-2">mut </span>matrix_frequency) = half_gcd(
+<span data-nosnippet>399</span>        <span class="kw-2">&amp;</span>tail(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>400</span>        <span class="kw-2">&amp;</span>tail(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>401</span>        half,
+<span data-nosnippet>402</span>        length,
+<span data-nosnippet>403</span>    );
+<span data-nosnippet>404</span>    <span class="kw">let </span>degeneracy = half <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>405</span>
+<span data-nosnippet>406</span>    <span class="kw">let </span>(p0, q0) = matrix_frequency.apply(
+<span data-nosnippet>407</span>        <span class="kw-2">&amp;</span>transform_window(p, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>408</span>        <span class="kw-2">&amp;</span>transform_window(q, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>409</span>        length,
+<span data-nosnippet>410</span>    );
+<span data-nosnippet>411</span>    <span class="kw">let </span>(p1, q1) = matrix_frequency.apply(
+<span data-nosnippet>412</span>        <span class="kw-2">&amp;</span>transform_window(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>413</span>        <span class="kw-2">&amp;</span>transform_window(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>414</span>        length,
+<span data-nosnippet>415</span>    );
+<span data-nosnippet>416</span>    <span class="kw">let </span>part_length = (half <span class="kw">as </span>isize + degeneracy) <span class="kw">as </span>usize;
+<span data-nosnippet>417</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced = p1[length - part_length..].to_vec();
+<span data-nosnippet>418</span>    p_reduced.extend_from_slice(<span class="kw-2">&amp;</span>p0[length - part_length..]);
+<span data-nosnippet>419</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced = q1[length - part_length..].to_vec();
+<span data-nosnippet>420</span>    q_reduced.extend_from_slice(<span class="kw-2">&amp;</span>q0[length - part_length..]);
+<span data-nosnippet>421</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(q_reduced).trimed();
+<span data-nosnippet>422</span>
+<span data-nosnippet>423</span>    <span class="kw">let </span>position = d - half <span class="kw">as </span>isize + degeneracy;
+<span data-nosnippet>424</span>    <span class="kw">let </span><span class="kw-2">mut </span>leading = T::zero();
+<span data-nosnippet>425</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=position {
+<span data-nosnippet>426</span>        leading += coefficient(p, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a00, position - i)
+<span data-nosnippet>427</span>            + coefficient(q, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a01, position - i);
+<span data-nosnippet>428</span>    }
+<span data-nosnippet>429</span>    p_reduced.push(leading);
+<span data-nosnippet>430</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(p_reduced);
+<span data-nosnippet>431</span>    <span class="kw">if </span>degree(<span class="kw-2">&amp;</span>q_reduced) &lt; <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize {
+<span data-nosnippet>432</span>        <span class="kw">return </span>(matrix, matrix_frequency);
+<span data-nosnippet>433</span>    }
+<span data-nosnippet>434</span>
+<span data-nosnippet>435</span>    <span class="kw">let </span><span class="kw-2">mut </span>remaining = k <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>436</span>    <span class="kw">let </span><span class="kw-2">mut </span>top_product = matrix.a11.data.last().unwrap().clone();
+<span data-nosnippet>437</span>    <span class="kw">let </span><span class="kw-2">mut </span>product_degree = degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>438</span>    <span class="kw">if </span>degeneracy &gt; <span class="number">0 </span>{
+<span data-nosnippet>439</span>        <span class="kw">let </span>skip = (<span class="number">2 </span>* half <span class="kw">as </span>isize + <span class="number">2 </span>* degeneracy - (d - half <span class="kw">as </span>isize + degeneracy)).max(<span class="number">0</span>);
+<span data-nosnippet>440</span>        <span class="kw">let </span>(division, remainder) = tail(<span class="kw-2">&amp;</span>p_reduced, skip).div_rem(tail(<span class="kw-2">&amp;</span>q_reduced, skip));
+<span data-nosnippet>441</span>        remaining -= degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>442</span>        top_product <span class="kw-2">*</span>= -division.data.last().unwrap().clone();
+<span data-nosnippet>443</span>        product_degree += degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>444</span>        matrix_frequency = matrix_frequency.<span class="highlight focus">left_multiply_step</span>(<span class="kw-2">&amp;</span>division, length);
+<span data-nosnippet>445</span>        swap(<span class="kw-2">&amp;mut </span>p_reduced, <span class="kw-2">&amp;mut </span>q_reduced);
+<span data-nosnippet>446</span>        q_reduced = FormalPowerSeries::zeros(skip <span class="kw">as </span>usize);
+<span data-nosnippet>447</span>        q_reduced.data.extend(remainder.data);
+<span data-nosnippet>448</span>    }
+<span data-nosnippet>449</span>
+<span data-nosnippet>450</span>    <span class="kw">let </span>start = <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize - remaining;
+<span data-nosnippet>451</span>    <span class="kw">let </span>(right_matrix, right_frequency) = half_gcd(
+<span data-nosnippet>452</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>p_reduced, start),
+<span data-nosnippet>453</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>q_reduced, start),
+<span data-nosnippet>454</span>        remaining <span class="kw">as </span>usize,
+<span data-nosnippet>455</span>        length,
+<span data-nosnippet>456</span>    );
+<span data-nosnippet>457</span>    <span class="kw">let </span>product_frequency = right_frequency.multiply(<span class="kw-2">&amp;</span>matrix_frequency);
+<span data-nosnippet>458</span>    <span class="kw">let </span><span class="kw-2">mut </span>product = product_frequency.clone().inverse_transform(length);
+<span data-nosnippet>459</span>    product.a00.truncate(k);
+<span data-nosnippet>460</span>    product.a00.trim_tail_zeros();
+<span data-nosnippet>461</span>    product.a01.truncate(k);
+<span data-nosnippet>462</span>    product.a01.trim_tail_zeros();
+<span data-nosnippet>463</span>    product.a10.truncate(k);
+<span data-nosnippet>464</span>    product.a10.trim_tail_zeros();
+<span data-nosnippet>465</span>    product_degree += degree(<span class="kw-2">&amp;</span>right_matrix.a11);
+<span data-nosnippet>466</span>    <span class="kw">if </span>product_degree == length <span class="kw">as </span>isize {
+<span data-nosnippet>467</span>        product.a11.resize(k + <span class="number">1</span>);
+<span data-nosnippet>468</span>        <span class="kw">let </span>highest = top_product * right_matrix.a11.data.last().unwrap();
+<span data-nosnippet>469</span>        product.a11[k] = highest.clone();
+<span data-nosnippet>470</span>        product.a11[<span class="number">0</span>] -= highest;
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    product.a11.trim_tail_zeros();
+<span data-nosnippet>473</span>    <span class="kw">let </span>product_frequency = <span class="kw">if </span>C::MULTIPLE {
+<span data-nosnippet>474</span>        product.transform(length)
+<span data-nosnippet>475</span>    } <span class="kw">else </span>{
+<span data-nosnippet>476</span>        product_frequency
+<span data-nosnippet>477</span>    };
+<span data-nosnippet>478</span>    (product, product_frequency)
+<span data-nosnippet>479</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.inverse_transform" class="method"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#157-164">Source</a><h4 class="code-header">fn <a href="#method.inverse_transform" class="fn">inverse_transform</a>(self, length: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.FpsMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FpsMatrix">FpsMatrix</a>&lt;T, C&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[13,13],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#151&#34;,&#34;line 151&#34;],[[320,320],&#34;../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#458&#34;,&#34;line 458&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/berlekamp_massey.rs (<a href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#151">line 151</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>138</span>    <span class="kw">fn </span>left_multiply_step(<span class="self">self</span>, quotient: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, length: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>139</span>        <span class="kw">let </span>negative_quotient = reduced_transform(<span class="kw-2">&amp;</span>(-quotient), length);
+<span data-nosnippet>140</span>        <span class="kw">let </span><span class="kw-2">mut </span>a10 = <span class="self">self</span>.a00;
+<span data-nosnippet>141</span>        C::multiply_add(<span class="kw-2">&amp;mut </span>a10, <span class="kw-2">&amp;</span>negative_quotient, <span class="kw-2">&amp;</span><span class="self">self</span>.a10);
+<span data-nosnippet>142</span>        <span class="kw">let </span><span class="kw-2">mut </span>a11 = <span class="self">self</span>.a01;
+<span data-nosnippet>143</span>        C::multiply_add(<span class="kw-2">&amp;mut </span>a11, <span class="kw-2">&amp;</span>negative_quotient, <span class="kw-2">&amp;</span><span class="self">self</span>.a11);
+<span data-nosnippet>144</span>        <span class="kw">let </span>result = <span class="self">Self </span>{
+<span data-nosnippet>145</span>            a00: <span class="self">self</span>.a10,
+<span data-nosnippet>146</span>            a01: <span class="self">self</span>.a11,
+<span data-nosnippet>147</span>            a10,
+<span data-nosnippet>148</span>            a11,
+<span data-nosnippet>149</span>        };
+<span data-nosnippet>150</span>        <span class="kw">if </span>C::MULTIPLE {
+<span data-nosnippet>151</span>            result.<span class="highlight focus">inverse_transform</span>(length).transform(length)
+<span data-nosnippet>152</span>        } <span class="kw">else </span>{
+<span data-nosnippet>153</span>            result
+<span data-nosnippet>154</span>        }
+<span data-nosnippet>155</span>    }
+<span data-nosnippet>156</span>
+<span data-nosnippet>157</span>    <span class="kw">fn </span>inverse_transform(<span class="self">self</span>, length: usize) -&gt; FpsMatrix&lt;T, C&gt; {
+<span data-nosnippet>158</span>        FpsMatrix {
+<span data-nosnippet>159</span>            a00: FormalPowerSeries::from_vec(C::inverse_transform_ntt(<span class="self">self</span>.a00, length)),
+<span data-nosnippet>160</span>            a01: FormalPowerSeries::from_vec(C::inverse_transform_ntt(<span class="self">self</span>.a01, length)),
+<span data-nosnippet>161</span>            a10: FormalPowerSeries::from_vec(C::inverse_transform_ntt(<span class="self">self</span>.a10, length)),
+<span data-nosnippet>162</span>            a11: FormalPowerSeries::from_vec(C::inverse_transform_ntt(<span class="self">self</span>.a11, length)),
+<span data-nosnippet>163</span>        }
+<span data-nosnippet>164</span>    }
+<span data-nosnippet>165</span>}
+<span data-nosnippet>166</span>
+<span data-nosnippet>167</span><span class="kw">fn </span>berlekamp_massey_naive&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], max_work: usize) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;T&gt;&gt;
+<span data-nosnippet>168</span><span class="kw">where
+<span data-nosnippet>169</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>170</span>{
+<span data-nosnippet>171</span>    <span class="kw">let </span>n = a.len();
+<span data-nosnippet>172</span>    <span class="kw">let </span><span class="kw-2">mut </span>b = Vec::with_capacity(n + <span class="number">1</span>);
+<span data-nosnippet>173</span>    <span class="kw">let </span><span class="kw-2">mut </span>c = Vec::with_capacity(n + <span class="number">1</span>);
+<span data-nosnippet>174</span>    <span class="kw">let </span><span class="kw-2">mut </span>temporary = Vec::with_capacity(n + <span class="number">1</span>);
+<span data-nosnippet>175</span>    b.push(T::one());
+<span data-nosnippet>176</span>    c.push(T::one());
+<span data-nosnippet>177</span>    <span class="kw">let </span><span class="kw-2">mut </span>y = T::one();
+<span data-nosnippet>178</span>    <span class="kw">let </span><span class="kw-2">mut </span>work = <span class="number">0usize</span>;
+<span data-nosnippet>179</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..=n {
+<span data-nosnippet>180</span>        <span class="kw">let </span>c_len = c.len();
+<span data-nosnippet>181</span>        work = work.saturating_add(c_len);
+<span data-nosnippet>182</span>        <span class="kw">if </span>work &gt; max_work {
+<span data-nosnippet>183</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>184</span>        }
+<span data-nosnippet>185</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = T::zero();
+<span data-nosnippet>186</span>        <span class="kw">for </span>(c, a) <span class="kw">in </span>c.iter().zip(<span class="kw-2">&amp;</span>a[k - c_len..]) {
+<span data-nosnippet>187</span>            x += c.clone() * a.clone();
+<span data-nosnippet>188</span>        }
+<span data-nosnippet>189</span>        b.push(T::zero());
+<span data-nosnippet>190</span>        <span class="kw">let </span>b_len = b.len();
+<span data-nosnippet>191</span>        <span class="kw">if </span>x.is_zero() {
+<span data-nosnippet>192</span>            <span class="kw">continue</span>;
+<span data-nosnippet>193</span>        }
+<span data-nosnippet>194</span>        <span class="kw">let </span>frequency = x.clone() / y.clone();
+<span data-nosnippet>195</span>        <span class="kw">if </span>c_len &lt; b_len {
+<span data-nosnippet>196</span>            swap(<span class="kw-2">&amp;mut </span>c, <span class="kw-2">&amp;mut </span>temporary);
+<span data-nosnippet>197</span>            c.clear();
+<span data-nosnippet>198</span>            c.resize_with(b_len - c_len, T::zero);
+<span data-nosnippet>199</span>            c.extend(temporary.iter().cloned());
+<span data-nosnippet>200</span>            <span class="kw">for </span>(c, b) <span class="kw">in </span>c.iter_mut().rev().zip(b.iter().rev()) {
+<span data-nosnippet>201</span>                <span class="kw-2">*</span>c -= frequency.clone() * b.clone();
+<span data-nosnippet>202</span>            }
+<span data-nosnippet>203</span>            swap(<span class="kw-2">&amp;mut </span>b, <span class="kw-2">&amp;mut </span>temporary);
+<span data-nosnippet>204</span>            y = x;
+<span data-nosnippet>205</span>        } <span class="kw">else </span>{
+<span data-nosnippet>206</span>            <span class="kw">for </span>(c, b) <span class="kw">in </span>c.iter_mut().rev().zip(b.iter().rev()) {
+<span data-nosnippet>207</span>                <span class="kw-2">*</span>c -= frequency.clone() * b.clone();
+<span data-nosnippet>208</span>            }
+<span data-nosnippet>209</span>        }
+<span data-nosnippet>210</span>    }
+<span data-nosnippet>211</span>    c.reverse();
+<span data-nosnippet>212</span>    <span class="prelude-val">Some</span>(c)
+<span data-nosnippet>213</span>}
+<span data-nosnippet>214</span>
+<span data-nosnippet>215</span><span class="kw">impl</span>&lt;T, C&gt; FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>216</span><span class="kw">where
+<span data-nosnippet>217</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>218</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>219</span>    C::F: Clone,
+<span data-nosnippet>220</span>{
+<span data-nosnippet>221</span>    <span class="kw">pub fn </span>berlekamp_massey(input: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>222</span>        <span class="kw">if </span>input.last().is_none_or(|value| value.is_zero())
+<span data-nosnippet>223</span>            &amp;&amp; input.iter().all(|value| value.is_zero())
+<span data-nosnippet>224</span>        {
+<span data-nosnippet>225</span>            <span class="kw">return </span><span class="self">Self</span>::one();
+<span data-nosnippet>226</span>        }
+<span data-nosnippet>227</span>        <span class="kw">let </span>max_work = <span class="kw">if </span>input.len() &lt;= <span class="number">1536 </span>{
+<span data-nosnippet>228</span>            usize::MAX
+<span data-nosnippet>229</span>        } <span class="kw">else </span>{
+<span data-nosnippet>230</span>            input.len().saturating_mul(<span class="number">2</span>)
+<span data-nosnippet>231</span>        };
+<span data-nosnippet>232</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(recurrence) = berlekamp_massey_naive(input, max_work) {
+<span data-nosnippet>233</span>            <span class="kw">return </span><span class="self">Self</span>::from_vec(recurrence);
+<span data-nosnippet>234</span>        }
+<span data-nosnippet>235</span>        <span class="kw">let </span>n = input.len();
+<span data-nosnippet>236</span>        <span class="kw">let </span>leading_zeros = input.iter().take_while(|value| value.is_zero()).count();
+<span data-nosnippet>237</span>        <span class="kw">let </span>sequence = <span class="self">Self</span>::from_vec(input.to_vec()).trimed();
+<span data-nosnippet>238</span>        <span class="kw">let </span><span class="kw-2">mut </span>modulus = <span class="self">Self</span>::zeros(n + <span class="number">1</span>);
+<span data-nosnippet>239</span>        modulus[n] = T::one();
+<span data-nosnippet>240</span>        <span class="kw">let </span>(matrix, <span class="kw">_</span>) = half_gcd(<span class="kw-2">&amp;</span>modulus, <span class="kw-2">&amp;</span>sequence, n / <span class="number">2</span>, n.max(<span class="number">1</span>).next_power_of_two());
+<span data-nosnippet>241</span>        <span class="kw">let </span>(x, y) = matrix.multiply_vector(<span class="kw-2">&amp;</span>modulus, <span class="kw-2">&amp;</span>sequence);
+<span data-nosnippet>242</span>        <span class="kw">let </span><span class="kw-2">mut </span>recurrence = <span class="kw">if </span>y.length() == <span class="number">0 </span>{
+<span data-nosnippet>243</span>            matrix.a01.clone()
+<span data-nosnippet>244</span>        } <span class="kw">else </span>{
+<span data-nosnippet>245</span>            matrix.a11.clone()
+<span data-nosnippet>246</span>        };
+<span data-nosnippet>247</span>        <span class="kw">let </span>recurrence_leading_zeros = recurrence
+<span data-nosnippet>248</span>            .iter()
+<span data-nosnippet>249</span>            .take_while(|value| value.is_zero())
+<span data-nosnippet>250</span>            .count();
+<span data-nosnippet>251</span>        <span class="kw">if </span>recurrence_leading_zeros &gt; <span class="number">0 </span>{
+<span data-nosnippet>252</span>            <span class="kw">let </span>(division, <span class="kw">_</span>) = x.div_rem(y.clone());
+<span data-nosnippet>253</span>            recurrence = add(recurrence * division, matrix.a01);
+<span data-nosnippet>254</span>        }
+<span data-nosnippet>255</span>        <span class="kw">let </span>inverse = T::one() / <span class="kw-2">&amp;</span>recurrence[<span class="number">0</span>];
+<span data-nosnippet>256</span>        <span class="kw">for </span>value <span class="kw">in </span>recurrence.iter_mut() {
+<span data-nosnippet>257</span>            <span class="kw-2">*</span>value <span class="kw-2">*</span>= <span class="kw-2">&amp;</span>inverse;
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        <span class="kw">let </span>minimum_length = (leading_zeros + <span class="number">2</span>).max(y.length() + <span class="number">1</span>);
+<span data-nosnippet>260</span>        <span class="kw">if </span>recurrence.length() &lt; minimum_length {
+<span data-nosnippet>261</span>            recurrence.resize(minimum_length);
+<span data-nosnippet>262</span>        }
+<span data-nosnippet>263</span>        recurrence
+<span data-nosnippet>264</span>    }
+<span data-nosnippet>265</span>}
+<span data-nosnippet>266</span>
+<span data-nosnippet>267</span><span class="kw">fn </span>degree&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;) -&gt; isize {
+<span data-nosnippet>268</span>    fps.length() <span class="kw">as </span>isize - <span class="number">1
+<span data-nosnippet>269</span></span>}
+<span data-nosnippet>270</span>
+<span data-nosnippet>271</span><span class="kw">fn </span>add&lt;T, C&gt;(
+<span data-nosnippet>272</span>    left: FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>273</span>    right: FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>274</span>) -&gt; FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>275</span><span class="kw">where
+<span data-nosnippet>276</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>277</span>{
+<span data-nosnippet>278</span>    (left + right).trimed()
+<span data-nosnippet>279</span>}
+<span data-nosnippet>280</span>
+<span data-nosnippet>281</span><span class="kw">fn </span>tail&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, start: isize) -&gt; FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>282</span><span class="kw">where
+<span data-nosnippet>283</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>284</span>{
+<span data-nosnippet>285</span>    <span class="kw">let </span>start = start.max(<span class="number">0</span>) <span class="kw">as </span>usize;
+<span data-nosnippet>286</span>    <span class="kw">if </span>start &gt;= fps.length() {
+<span data-nosnippet>287</span>        FormalPowerSeries::zero()
+<span data-nosnippet>288</span>    } <span class="kw">else </span>{
+<span data-nosnippet>289</span>        FormalPowerSeries::from_vec(fps.data[start..].to_vec())
+<span data-nosnippet>290</span>    }
+<span data-nosnippet>291</span>}
+<span data-nosnippet>292</span>
+<span data-nosnippet>293</span><span class="kw">fn </span>coefficient&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, index: isize) -&gt; T
+<span data-nosnippet>294</span><span class="kw">where
+<span data-nosnippet>295</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>296</span>{
+<span data-nosnippet>297</span>    <span class="kw">if </span>index &lt; <span class="number">0 </span>{
+<span data-nosnippet>298</span>        T::zero()
+<span data-nosnippet>299</span>    } <span class="kw">else </span>{
+<span data-nosnippet>300</span>        fps.coeff(index <span class="kw">as </span>usize)
+<span data-nosnippet>301</span>    }
+<span data-nosnippet>302</span>}
+<span data-nosnippet>303</span>
+<span data-nosnippet>304</span><span class="kw">fn </span>brute_force&lt;T, C&gt;(
+<span data-nosnippet>305</span>    <span class="kw-2">mut </span>p: FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>306</span>    <span class="kw-2">mut </span>q: FormalPowerSeries&lt;<a href="../../algebra/action.rs.html#23">T</a>, C&gt;,
+<span data-nosnippet>307</span>    k: usize,
+<span data-nosnippet>308</span>) -&gt; FpsMatrix&lt;T, C&gt;
+<span data-nosnippet>309</span><span class="kw">where
+<span data-nosnippet>310</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>311</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>312</span>    C::F: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+<span data-nosnippet>313</span>{
+<span data-nosnippet>314</span>    <span class="kw">let </span>threshold = degree(<span class="kw-2">&amp;</span>p) - k <span class="kw">as </span>isize;
+<span data-nosnippet>315</span>    <span class="kw">let </span><span class="kw-2">mut </span>matrix = FpsMatrix::identity();
+<span data-nosnippet>316</span>    <span class="kw">while </span>q.length() <span class="kw">as </span>isize &gt; threshold {
+<span data-nosnippet>317</span>        <span class="kw">let </span>q_degree = q.length() - <span class="number">1</span>;
+<span data-nosnippet>318</span>        <span class="kw">let </span><span class="kw-2">mut </span>negative_quotient = <span class="macro">vec!</span>[T::zero(); p.length() - q.length() + <span class="number">1</span>];
+<span data-nosnippet>319</span>        <span class="kw">let </span>inverse = -T::one() / <span class="kw-2">&amp;</span>q[q_degree];
+<span data-nosnippet>320</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..negative_quotient.len()).rev() {
+<span data-nosnippet>321</span>            negative_quotient[i] = p[i + q_degree].clone() * <span class="kw-2">&amp;</span>inverse;
+<span data-nosnippet>322</span>            p[i + q_degree] = T::zero();
+<span data-nosnippet>323</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..q_degree {
+<span data-nosnippet>324</span>                <span class="kw">let </span>value = negative_quotient[i].clone() * <span class="kw-2">&amp;</span>q[j];
+<span data-nosnippet>325</span>                p[i + j] += <span class="kw-2">&amp;</span>value;
+<span data-nosnippet>326</span>            }
+<span data-nosnippet>327</span>        }
+<span data-nosnippet>328</span>        matrix.left_multiply_step(<span class="kw-2">&amp;</span>negative_quotient);
+<span data-nosnippet>329</span>        p.truncate(q_degree);
+<span data-nosnippet>330</span>        p.trim_tail_zeros();
+<span data-nosnippet>331</span>        swap(<span class="kw-2">&amp;mut </span>p, <span class="kw-2">&amp;mut </span>q);
+<span data-nosnippet>332</span>    }
+<span data-nosnippet>333</span>    matrix
+<span data-nosnippet>334</span>}
+<span data-nosnippet>335</span>
+<span data-nosnippet>336</span><span class="kw">fn </span>reduced_transform&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, length: usize) -&gt; C::F
+<span data-nosnippet>337</span><span class="kw">where
+<span data-nosnippet>338</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>339</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>340</span>{
+<span data-nosnippet>341</span>    <span class="kw">let </span><span class="kw-2">mut </span>coefficients = <span class="macro">vec!</span>[T::zero(); length];
+<span data-nosnippet>342</span>    <span class="kw">for </span>(i, value) <span class="kw">in </span>fps.iter().enumerate() {
+<span data-nosnippet>343</span>        coefficients[i &amp; (length - <span class="number">1</span>)] += value;
+<span data-nosnippet>344</span>    }
+<span data-nosnippet>345</span>    C::transform_ntt(coefficients, length)
+<span data-nosnippet>346</span>}
+<span data-nosnippet>347</span>
+<span data-nosnippet>348</span><span class="kw">fn </span>transform_window&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, end: isize, length: usize) -&gt; C::F
+<span data-nosnippet>349</span><span class="kw">where
+<span data-nosnippet>350</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>351</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>352</span>{
+<span data-nosnippet>353</span>    <span class="kw">let </span>start = end - length <span class="kw">as </span>isize;
+<span data-nosnippet>354</span>    <span class="kw">let </span>coefficients = (start..end).map(|index| coefficient(fps, index)).collect();
+<span data-nosnippet>355</span>    C::transform_ntt(coefficients, length)
+<span data-nosnippet>356</span>}
+<span data-nosnippet>357</span>
+<span data-nosnippet>358</span><span class="kw">fn </span>half_gcd&lt;T, C&gt;(
+<span data-nosnippet>359</span>    p: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>360</span>    q: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;,
+<span data-nosnippet>361</span>    k: usize,
+<span data-nosnippet>362</span>    length: usize,
+<span data-nosnippet>363</span>) -&gt; (FpsMatrix&lt;T, C&gt;, FrequencyMatrix&lt;C&gt;)
+<span data-nosnippet>364</span><span class="kw">where
+<span data-nosnippet>365</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>366</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>367</span>    C::F: Clone,
+<span data-nosnippet>368</span>{
+<span data-nosnippet>369</span>    <span class="kw">let </span>d = degree(p);
+<span data-nosnippet>370</span>    <span class="kw">if </span>degree(q) &lt; d - k <span class="kw">as </span>isize {
+<span data-nosnippet>371</span>        <span class="kw">let </span>matrix = FpsMatrix::identity();
+<span data-nosnippet>372</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>373</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>374</span>    }
+<span data-nosnippet>375</span>    <span class="kw">if </span>k == <span class="number">1 </span>{
+<span data-nosnippet>376</span>        <span class="kw">let </span>matrix = FpsMatrix {
+<span data-nosnippet>377</span>            a00: FormalPowerSeries::zero(),
+<span data-nosnippet>378</span>            a01: FormalPowerSeries::one(),
+<span data-nosnippet>379</span>            a10: FormalPowerSeries::one(),
+<span data-nosnippet>380</span>            a11: -(tail(p, d - <span class="number">2</span>) / tail(q, d - <span class="number">2</span>)),
+<span data-nosnippet>381</span>        };
+<span data-nosnippet>382</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>383</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>384</span>    }
+<span data-nosnippet>385</span>    <span class="kw">if </span>p.length().min(q.length()) &lt;= <span class="number">32 </span>{
+<span data-nosnippet>386</span>        <span class="kw">let </span>matrix = brute_force(p.clone(), q.clone(), k);
+<span data-nosnippet>387</span>        <span class="kw">let </span>frequency = matrix.transform(length);
+<span data-nosnippet>388</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>389</span>    }
+<span data-nosnippet>390</span>
+<span data-nosnippet>391</span>    <span class="kw">let </span>half = length / <span class="number">2</span>;
+<span data-nosnippet>392</span>    <span class="kw">if </span>k &lt;= half {
+<span data-nosnippet>393</span>        <span class="kw">let </span>(matrix, frequency) = half_gcd(p, q, k, half);
+<span data-nosnippet>394</span>        <span class="kw">let </span>frequency = matrix.extend_transform(frequency, length);
+<span data-nosnippet>395</span>        <span class="kw">return </span>(matrix, frequency);
+<span data-nosnippet>396</span>    }
+<span data-nosnippet>397</span>
+<span data-nosnippet>398</span>    <span class="kw">let </span>(matrix, <span class="kw-2">mut </span>matrix_frequency) = half_gcd(
+<span data-nosnippet>399</span>        <span class="kw-2">&amp;</span>tail(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>400</span>        <span class="kw-2">&amp;</span>tail(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize),
+<span data-nosnippet>401</span>        half,
+<span data-nosnippet>402</span>        length,
+<span data-nosnippet>403</span>    );
+<span data-nosnippet>404</span>    <span class="kw">let </span>degeneracy = half <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>405</span>
+<span data-nosnippet>406</span>    <span class="kw">let </span>(p0, q0) = matrix_frequency.apply(
+<span data-nosnippet>407</span>        <span class="kw-2">&amp;</span>transform_window(p, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>408</span>        <span class="kw-2">&amp;</span>transform_window(q, d - half <span class="kw">as </span>isize + degeneracy, length),
+<span data-nosnippet>409</span>        length,
+<span data-nosnippet>410</span>    );
+<span data-nosnippet>411</span>    <span class="kw">let </span>(p1, q1) = matrix_frequency.apply(
+<span data-nosnippet>412</span>        <span class="kw-2">&amp;</span>transform_window(p, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>413</span>        <span class="kw-2">&amp;</span>transform_window(q, d - <span class="number">2 </span>* half <span class="kw">as </span>isize, length),
+<span data-nosnippet>414</span>        length,
+<span data-nosnippet>415</span>    );
+<span data-nosnippet>416</span>    <span class="kw">let </span>part_length = (half <span class="kw">as </span>isize + degeneracy) <span class="kw">as </span>usize;
+<span data-nosnippet>417</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced = p1[length - part_length..].to_vec();
+<span data-nosnippet>418</span>    p_reduced.extend_from_slice(<span class="kw-2">&amp;</span>p0[length - part_length..]);
+<span data-nosnippet>419</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced = q1[length - part_length..].to_vec();
+<span data-nosnippet>420</span>    q_reduced.extend_from_slice(<span class="kw-2">&amp;</span>q0[length - part_length..]);
+<span data-nosnippet>421</span>    <span class="kw">let </span><span class="kw-2">mut </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">q_reduced</a>: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(q_reduced).trimed();
+<span data-nosnippet>422</span>
+<span data-nosnippet>423</span>    <span class="kw">let </span>position = d - half <span class="kw">as </span>isize + degeneracy;
+<span data-nosnippet>424</span>    <span class="kw">let </span><span class="kw-2">mut </span>leading = T::zero();
+<span data-nosnippet>425</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=position {
+<span data-nosnippet>426</span>        leading += coefficient(p, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a00, position - i)
+<span data-nosnippet>427</span>            + coefficient(q, i) * coefficient(<span class="kw-2">&amp;</span>matrix.a01, position - i);
+<span data-nosnippet>428</span>    }
+<span data-nosnippet>429</span>    p_reduced.push(leading);
+<span data-nosnippet>430</span>    <span class="kw">let </span><span class="kw-2">mut </span>p_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(p_reduced);
+<span data-nosnippet>431</span>    <span class="kw">if </span>degree(<span class="kw-2">&amp;</span>q_reduced) &lt; <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize {
+<span data-nosnippet>432</span>        <span class="kw">return </span>(matrix, matrix_frequency);
+<span data-nosnippet>433</span>    }
+<span data-nosnippet>434</span>
+<span data-nosnippet>435</span>    <span class="kw">let </span><span class="kw-2">mut </span>remaining = k <span class="kw">as </span>isize - degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>436</span>    <span class="kw">let </span><span class="kw-2">mut </span>top_product = matrix.a11.data.last().unwrap().clone();
+<span data-nosnippet>437</span>    <span class="kw">let </span><span class="kw-2">mut </span>product_degree = degree(<span class="kw-2">&amp;</span>matrix.a11);
+<span data-nosnippet>438</span>    <span class="kw">if </span>degeneracy &gt; <span class="number">0 </span>{
+<span data-nosnippet>439</span>        <span class="kw">let </span>skip = (<span class="number">2 </span>* half <span class="kw">as </span>isize + <span class="number">2 </span>* degeneracy - (d - half <span class="kw">as </span>isize + degeneracy)).max(<span class="number">0</span>);
+<span data-nosnippet>440</span>        <span class="kw">let </span>(division, remainder) = tail(<span class="kw-2">&amp;</span>p_reduced, skip).div_rem(tail(<span class="kw-2">&amp;</span>q_reduced, skip));
+<span data-nosnippet>441</span>        remaining -= degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>442</span>        top_product <span class="kw-2">*</span>= -division.data.last().unwrap().clone();
+<span data-nosnippet>443</span>        product_degree += degree(<span class="kw-2">&amp;</span>division);
+<span data-nosnippet>444</span>        matrix_frequency = matrix_frequency.left_multiply_step(<span class="kw-2">&amp;</span>division, length);
+<span data-nosnippet>445</span>        swap(<span class="kw-2">&amp;mut </span>p_reduced, <span class="kw-2">&amp;mut </span>q_reduced);
+<span data-nosnippet>446</span>        q_reduced = FormalPowerSeries::zeros(skip <span class="kw">as </span>usize);
+<span data-nosnippet>447</span>        q_reduced.data.extend(remainder.data);
+<span data-nosnippet>448</span>    }
+<span data-nosnippet>449</span>
+<span data-nosnippet>450</span>    <span class="kw">let </span>start = <span class="number">3 </span>* half <span class="kw">as </span>isize + degeneracy - k <span class="kw">as </span>isize - remaining;
+<span data-nosnippet>451</span>    <span class="kw">let </span>(right_matrix, right_frequency) = half_gcd(
+<span data-nosnippet>452</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>p_reduced, start),
+<span data-nosnippet>453</span>        <span class="kw-2">&amp;</span>tail(<span class="kw-2">&amp;</span>q_reduced, start),
+<span data-nosnippet>454</span>        remaining <span class="kw">as </span>usize,
+<span data-nosnippet>455</span>        length,
+<span data-nosnippet>456</span>    );
+<span data-nosnippet>457</span>    <span class="kw">let </span>product_frequency = right_frequency.multiply(<span class="kw-2">&amp;</span>matrix_frequency);
+<span data-nosnippet>458</span>    <span class="kw">let </span><span class="kw-2">mut </span>product = product_frequency.clone().<span class="highlight">inverse_transform</span>(length);
+<span data-nosnippet>459</span>    product.a00.truncate(k);
+<span data-nosnippet>460</span>    product.a00.trim_tail_zeros();
+<span data-nosnippet>461</span>    product.a01.truncate(k);
+<span data-nosnippet>462</span>    product.a01.trim_tail_zeros();
+<span data-nosnippet>463</span>    product.a10.truncate(k);
+<span data-nosnippet>464</span>    product.a10.trim_tail_zeros();
+<span data-nosnippet>465</span>    product_degree += degree(<span class="kw-2">&amp;</span>right_matrix.a11);
+<span data-nosnippet>466</span>    <span class="kw">if </span>product_degree == length <span class="kw">as </span>isize {
+<span data-nosnippet>467</span>        product.a11.resize(k + <span class="number">1</span>);
+<span data-nosnippet>468</span>        <span class="kw">let </span>highest = top_product * right_matrix.a11.data.last().unwrap();
+<span data-nosnippet>469</span>        product.a11[k] = highest.clone();
+<span data-nosnippet>470</span>        product.a11[<span class="number">0</span>] -= highest;
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    product.a11.trim_tail_zeros();
+<span data-nosnippet>473</span>    <span class="kw">let </span>product_frequency = <span class="kw">if </span>C::MULTIPLE {
+<span data-nosnippet>474</span>        product.transform(length)
+<span data-nosnippet>475</span>    } <span class="kw">else </span>{
+<span data-nosnippet>476</span>        product_frequency
+<span data-nosnippet>477</span>    };
+<span data-nosnippet>478</span>    (product, product_frequency)
+<span data-nosnippet>479</span>}</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-FrequencyMatrix%3CC%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#22-35">Source</a><a href="#impl-Clone-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    C: <a class="trait" href="../../trait.NttReuse.html" title="trait competitive::math::NttReuse">NttReuse</a>,
+    C::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../../../src/competitive/math/formal_power_series/berlekamp_massey.rs.html#27-34">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; Self</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0, const unstable">1.0.0 (const: <a href="https://github.com/rust-lang/rust/issues/142757" title="Tracking issue for const_clone">unstable</a>)</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-Freeze-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,</div></h3></section><section id="impl-RefUnwindSafe-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-RefUnwindSafe-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,</div></h3></section><section id="impl-Send-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-Send-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,</div></h3></section><section id="impl-Sync-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-Sync-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a>,</div></h3></section><section id="impl-Unpin-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-Unpin-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a>,</div></h3></section><section id="impl-UnsafeUnpin-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-UnsafeUnpin-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a>,</div></h3></section><section id="impl-UnwindSafe-for-FrequencyMatrix%3CC%3E" class="impl"><a href="#impl-UnwindSafe-for-FrequencyMatrix%3CC%3E" class="anchor">§</a><h3 class="code-header">impl&lt;C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.FrequencyMatrix.html" title="struct competitive::math::formal_power_series::berlekamp_massey::FrequencyMatrix">FrequencyMatrix</a>&lt;C&gt;<div class="where">where
+    &lt;C as <a class="trait" href="../../trait.ConvolveSteps.html" title="trait competitive::math::ConvolveSteps">ConvolveSteps</a>&gt;::<a class="associatedtype" href="../../trait.ConvolveSteps.html#associatedtype.F" title="type competitive::math::ConvolveSteps::F">F</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a>,</div></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#141">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#142">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#222">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-CloneToUninit-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#648">Source</a><a href="#impl-CloneToUninit-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html" title="trait core::clone::CloneToUninit">CloneToUninit</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone_to_uninit" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#650">Source</a><a href="#method.clone_to_uninit" class="anchor">§</a><h4 class="code-header">unsafe fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit" class="fn">clone_to_uninit</a>(&amp;self, dest: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>clone_to_uninit</code>)</span></div></span><div class='docblock'>Performs copy-assignment from <code>self</code> to <code>dest</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#788">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#791">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#770-772">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#780">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToArrayVecScalar-for-T" class="impl"><a class="src rightside" href="../../../../src/competitive/math/array_vec.rs.html#20-24">Source</a><a href="#impl-ToArrayVecScalar-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../../trait.ToArrayVecScalar.html" title="trait competitive::math::ToArrayVecScalar">ToArrayVecScalar</a> for T</h3></section></summary><div class="impl-items"><section id="method.to_array_vec_scalar" class="method trait-impl"><a class="src rightside" href="../../../../src/competitive/math/array_vec.rs.html#21-23">Source</a><a href="#method.to_array_vec_scalar" class="anchor">§</a><h4 class="code-header">fn <a href="../../trait.ToArrayVecScalar.html#tymethod.to_array_vec_scalar" class="fn">to_array_vec_scalar</a>(self) -&gt; <a class="struct" href="../../array_vec/struct.ArrayVecScalar.html" title="struct competitive::math::array_vec::ArrayVecScalar">ArrayVecScalar</a>&lt;T&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToOwned-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#72-74">Source</a><a href="#impl-ToOwned-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Owned" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#76">Source</a><a href="#associatedtype.Owned" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'>The resulting type after obtaining ownership.</div></details><details class="toggle method-toggle" open><summary><section id="method.to_owned" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#77">Source</a><a href="#method.to_owned" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned" class="fn">to_owned</a>(&amp;self) -&gt; T</h4></section></summary><div class='docblock'>Creates owned data from borrowed data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#81">Source</a><a href="#method.clone_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into" class="fn">clone_into</a>(&amp;self, target: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a>)</h4></section></summary><div class='docblock'>Uses borrowed data to replace owned data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#830-832">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#834">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#837">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#814-816">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#818">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#821">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details></div></section></div></main></body></html>

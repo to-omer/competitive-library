@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["formal_power_series_impls","formal_power_series_nums"],"struct":["FormalPowerSeries"],"trait":["FormalPowerSeriesCoefficient","FormalPowerSeriesCoefficientSqrt"],"type":["Fps","Fps998244353"]};
+window.SIDEBAR_ITEMS = {"mod":["berlekamp_massey","formal_power_series_impls","formal_power_series_nums"],"struct":["FormalPowerSeries"],"trait":["FormalPowerSeriesCoefficient","FormalPowerSeriesCoefficientSqrt"],"type":["Fps","Fps998244353"]};

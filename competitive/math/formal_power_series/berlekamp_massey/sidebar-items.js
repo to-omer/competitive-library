@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add","berlekamp_massey_naive","brute_force","coefficient","degree","half_gcd","reduced_transform","tail","transform_window"],"struct":["FpsMatrix","FrequencyMatrix"]};

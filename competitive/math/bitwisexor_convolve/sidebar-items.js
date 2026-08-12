@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BitwisexorConvolve"]};
+window.SIDEBAR_ITEMS = {"struct":["BitwisexorConvolve"],"trait":["FromLength"]};

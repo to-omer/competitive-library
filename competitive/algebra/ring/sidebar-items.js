@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["AddMulOperation"],"trait":["Field","Ring","SemiRing"]};
+window.SIDEBAR_ITEMS = {"macro":[["impl_dot_product",1]],"struct":["AddMulOperation"],"trait":["DotProduct","Field","Ring","SemiRing"]};
