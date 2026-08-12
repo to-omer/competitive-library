@@ -14,6 +14,8 @@ pub trait LinkCutTreeSpec: Sized {
 
     /// Whether splay must propagate from the auxiliary root before rotations.
     const ROOT_TO_NODE_TOP_DOWN: bool = true;
+    /// Whether `modify` must expose the node to update virtual subtree state.
+    const MODIFY_REQUIRES_ACCESS: bool = true;
 
     fn new(value: Self::Value) -> Self::Data;
     fn value(data: &Self::Data) -> &Self::Value;
@@ -271,7 +273,11 @@ where
         F: FnOnce(&S::Value) -> S::Value,
     {
         let node = self.node(node);
-        Self::access_node(node);
+        if S::MODIFY_REQUIRES_ACCESS {
+            Self::access_node(node);
+        } else {
+            unsafe { Self::splay(node) };
+        }
         unsafe {
             let data = &mut (*node.as_ptr()).data.inner;
             *S::value_mut(data) = f(S::value(data));
@@ -450,6 +456,7 @@ where
     type Data = PathLinkCutTreeData<L>;
 
     const ROOT_TO_NODE_TOP_DOWN: bool = false;
+    const MODIFY_REQUIRES_ACCESS: bool = false;
 
     fn new(value: Self::Value) -> Self::Data {
         Self::Data {

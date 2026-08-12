@@ -1,6 +1,6 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::RangeSumRangeAdd,
+    algebra::{AdditiveOperation, EmptyActLazy},
     tree::{PathLinkCutTree, TopTree, TopTreeSpec},
 };
 
@@ -47,7 +47,7 @@ pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, mut writer: impl Writ
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
-    let mut tree = PathLinkCutTree::<RangeSumRangeAdd<i64>>::from_edges(a, &edges);
+    let mut tree = PathLinkCutTree::<EmptyActLazy<AdditiveOperation<i64>>>::from_edges(a, &edges);
     for _ in 0..q {
         scan!(scanner, query: Query);
         match query {
@@ -57,7 +57,7 @@ pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, mut writer: impl Writ
             }
             Query::Add { p, x } => tree.modify(p, |value| *value + x),
             Query::Sum { u, v } => {
-                writeln!(writer, "{}", tree.fold_path(u, v).0).ok();
+                writeln!(writer, "{}", tree.fold_path(u, v)).ok();
             }
         }
     }
