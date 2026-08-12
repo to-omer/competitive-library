@@ -92,6 +92,10 @@ where
         }
         self.truncate(len);
     }
+    pub fn trimed(mut self) -> Self {
+        self.trim_tail_zeros();
+        self
+    }
 }
 
 impl<T, C> Zero for FormalPowerSeries<T, C>
@@ -991,11 +995,12 @@ where
     pub fn kth_term(a: Vec<T>, k: usize) -> T
     where
         C: NttReuse<T = Vec<T>>,
+        C::F: Clone,
     {
         if let Some(x) = a.get(k) {
             return x.clone();
         }
-        Self::from_vec(berlekamp_massey(&a)).kth_term_of_linearly_recurrence(a, k)
+        Self::berlekamp_massey(&a).kth_term_of_linearly_recurrence(a, k)
     }
     /// sum_i a_i exp(b_i x)
     pub fn linear_sum_of_exp<I, F>(iter: I, deg: usize, mut inv_fact: F) -> Self

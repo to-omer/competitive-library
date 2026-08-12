@@ -17,8 +17,6 @@ use crate::tools::{SimdBackend, avx512_supported, simd_backend};
 pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
 #[codesnip::entry("ArrayVec")]
 pub use self::array_vec::{ArrayVec, ToArrayVec, ToArrayVecScalar};
-#[codesnip::entry("berlekamp_massey")]
-pub use self::berlekamp_massey::berlekamp_massey;
 #[codesnip::entry("BinomialPrefixSum")]
 pub use self::binomial_prefix_sum::{BinomialPolynomialPrefixSum, BinomialPrefixSum};
 #[codesnip::entry("bitwise_transform")]
@@ -111,8 +109,6 @@ pub use self::subset_convolve::SubsetConvolve;
 mod arbitrary_mod_binomial;
 #[cfg_attr(nightly, codesnip::entry("ArrayVec"))]
 mod array_vec;
-#[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
-mod berlekamp_massey;
 #[cfg_attr(
     nightly,
     codesnip::entry("BinomialPrefixSum", include("factorial", "MIntBase", "mo_algorithm"))
@@ -189,8 +185,7 @@ mod floor_sum;
             "montgomery",
             "mod_sqrt",
             "factorial",
-            "PartialIgnoredOrd",
-            "berlekamp_massey"
+            "PartialIgnoredOrd"
         )
     )
 )]

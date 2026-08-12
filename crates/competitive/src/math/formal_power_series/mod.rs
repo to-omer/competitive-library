@@ -1,6 +1,6 @@
 use super::{
     Convolve998244353, ConvolveSteps, MInt, MIntConvert, MIntConvolve, MemorizedFactorial,
-    NttReuse, One, PartialIgnoredOrd, Zero, berlekamp_massey, montgomery::MInt998244353,
+    NttReuse, One, PartialIgnoredOrd, Zero, montgomery::MInt998244353,
 };
 use std::{
     fmt::{self, Debug},
@@ -101,5 +101,6 @@ where
     }
 }
 
+mod berlekamp_massey;
 mod formal_power_series_impls;
 mod formal_power_series_nums;
