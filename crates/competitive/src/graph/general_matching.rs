@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::mem::swap;
 
 #[derive(Debug, Clone)]
 pub struct GeneralMatching {
@@ -6,6 +6,12 @@ pub struct GeneralMatching {
     graph: Vec<Vec<usize>>,
     mate: Vec<usize>,
     matching_size: usize,
+    parent: Vec<usize>,
+    base: Vec<usize>,
+    state: Vec<u8>,
+    seen: Vec<usize>,
+    queue: Vec<usize>,
+    timestamp: usize,
 }
 
 impl GeneralMatching {
@@ -13,8 +19,14 @@ impl GeneralMatching {
         Self {
             size,
             graph: vec![vec![]; size],
-            mate: vec![!0; size],
+            mate: vec![size; size],
             matching_size: 0,
+            parent: vec![size; size + 1],
+            base: (0..=size).collect(),
+            state: vec![Self::UNSEEN; size],
+            seen: vec![0; size],
+            queue: Vec::with_capacity(size),
+            timestamp: 0,
         }
     }
     pub fn add_edge(&mut self, u: usize, v: usize) {
@@ -39,7 +51,7 @@ impl GeneralMatching {
         let mut res = Vec::with_capacity(self.matching_size);
         for v in 0..self.size {
             let u = self.mate[v];
-            if u != !0 && v < u {
+            if u != self.size && v < u {
                 res.push((v, u));
             }
         }
@@ -49,119 +61,102 @@ impl GeneralMatching {
         if self.matching_size != !0 {
             return;
         }
-        let mut cnt = 0usize;
-        for &m in &self.mate {
-            if m != !0 {
-                cnt += 1;
-            }
-        }
-        self.matching_size = cnt / 2;
+        self.matching_size = self.mate.iter().filter(|&&mate| mate != self.size).count() / 2;
 
-        let mut p = vec![!0; self.size];
         for v in 0..self.size {
-            if self.mate[v] == !0 {
-                let finish = self.find_path(v, &mut p);
-                if finish != !0 {
-                    self.augment(finish, &p);
-                    self.matching_size += 1;
-                }
+            if self.mate[v] == self.size && self.augment_from(v) {
+                self.matching_size += 1;
             }
         }
     }
-    fn augment(&mut self, mut v: usize, p: &[usize]) {
-        while v != !0 {
-            let pv = p[v];
-            let nv = if pv != !0 { self.mate[pv] } else { !0 };
-            self.mate[v] = pv;
-            if pv != !0 {
-                self.mate[pv] = v;
-            }
-            v = nv;
-        }
-    }
-    fn find_path(&self, root: usize, p: &mut [usize]) -> usize {
-        let n = self.size;
-        p.fill(!0);
-        let mut used = vec![false; n];
-        let mut base: Vec<usize> = (0..n).collect();
-        let mut q = VecDeque::with_capacity(n);
-        let mut lca_vis = vec![0usize; n];
-        let mut lca_iter = 0usize;
 
-        used[root] = true;
-        q.push_back(root);
-        while let Some(v) = q.pop_front() {
-            for &u in &self.graph[v] {
-                if base[v] == base[u] || self.mate[v] == u {
-                    continue;
+    const UNSEEN: u8 = 0;
+    const OUTER: u8 = 1;
+    const INNER: u8 = 2;
+
+    fn find(&mut self, mut v: usize) -> usize {
+        while self.base[v] != v {
+            let parent = self.base[v];
+            self.base[v] = self.base[parent];
+            v = self.base[v];
+        }
+        v
+    }
+
+    fn lca(&mut self, mut u: usize, mut v: usize) -> usize {
+        self.timestamp += 1;
+        u = self.find(u);
+        v = self.find(v);
+        loop {
+            if u != self.size {
+                if self.seen[u] == self.timestamp {
+                    return u;
                 }
-                if u == root || (self.mate[u] != !0 && p[self.mate[u]] != !0) {
-                    let cur = {
-                        let mut a = v;
-                        let mut b = u;
-                        lca_iter += 1;
-                        let iter = lca_iter;
-                        loop {
-                            a = base[a];
-                            lca_vis[a] = iter;
-                            if self.mate[a] == !0 {
-                                break;
-                            }
-                            a = p[self.mate[a]];
+                self.seen[u] = self.timestamp;
+                u = self.find(self.parent[self.mate[u]]);
+            }
+            swap(&mut u, &mut v);
+        }
+    }
+
+    fn contract(&mut self, mut v: usize, mut child: usize, ancestor: usize) {
+        while self.find(v) != ancestor {
+            self.parent[v] = child;
+            child = self.mate[v];
+            if self.state[child] == Self::INNER {
+                self.state[child] = Self::OUTER;
+                self.queue.push(child);
+            }
+            if self.base[v] == v {
+                self.base[v] = ancestor;
+            }
+            if self.base[child] == child {
+                self.base[child] = ancestor;
+            }
+            v = self.parent[child];
+        }
+    }
+
+    fn augment_from(&mut self, root: usize) -> bool {
+        for (v, base) in self.base.iter_mut().enumerate() {
+            *base = v;
+        }
+        self.state.fill(Self::UNSEEN);
+        self.queue.clear();
+        self.state[root] = Self::OUTER;
+        self.queue.push(root);
+        let mut head = 0;
+        while head < self.queue.len() {
+            let u = self.queue[head];
+            head += 1;
+            for edge in 0..self.graph[u].len() {
+                let v = self.graph[u][edge];
+                if self.state[v] == Self::UNSEEN {
+                    self.parent[v] = u;
+                    self.state[v] = Self::INNER;
+                    if self.mate[v] == self.size {
+                        let mut v = v;
+                        let mut u = u;
+                        while u != self.size {
+                            let next = self.mate[u];
+                            self.mate[u] = v;
+                            self.mate[v] = u;
+                            v = next;
+                            u = self.parent[v];
                         }
-                        loop {
-                            b = base[b];
-                            if lca_vis[b] == iter {
-                                break b;
-                            }
-                            if self.mate[b] == !0 {
-                                break b;
-                            }
-                            b = p[self.mate[b]];
-                        }
-                    };
-                    let mut blossom = vec![false; n];
-                    mark_path(&self.mate, &base, p, &mut blossom, v, cur, u);
-                    mark_path(&self.mate, &base, p, &mut blossom, u, cur, v);
-                    for i in 0..n {
-                        if blossom[base[i]] {
-                            base[i] = cur;
-                            if !used[i] {
-                                used[i] = true;
-                                q.push_back(i);
-                            }
-                        }
+                        return true;
                     }
-                } else if p[u] == !0 {
-                    p[u] = v;
-                    if self.mate[u] == !0 {
-                        return u;
-                    }
-                    let m = self.mate[u];
-                    used[m] = true;
-                    q.push_back(m);
+                    let v = self.mate[v];
+                    self.state[v] = Self::OUTER;
+                    self.queue.push(v);
+                } else if self.state[v] == Self::OUTER && self.find(u) != self.find(v) {
+                    let ancestor = self.lca(u, v);
+                    self.contract(u, v, ancestor);
+                    self.contract(v, u, ancestor);
                 }
             }
         }
-        !0
-    }
-}
-
-fn mark_path(
-    mate: &[usize],
-    base: &[usize],
-    p: &mut [usize],
-    blossom: &mut [bool],
-    mut v: usize,
-    b: usize,
-    mut child: usize,
-) {
-    while base[v] != b {
-        blossom[base[v]] = true;
-        blossom[base[mate[v]]] = true;
-        p[v] = child;
-        child = mate[v];
-        v = p[mate[v]];
+        false
     }
 }
 
@@ -213,7 +208,15 @@ mod tests {
                     }
                 }
             }
-            let mut gm = GeneralMatching::from_edges(n, &edges);
+            rand!(rng, split: 0..=edges.len());
+            let mut gm = GeneralMatching::from_edges(n, &edges[..split]);
+            assert_eq!(
+                gm.maximum_matching().len(),
+                brute_maximum_matching(n, &edges[..split])
+            );
+            for &(u, v) in &edges[split..] {
+                gm.add_edge(u, v);
+            }
             let matching = gm.maximum_matching();
             let mut used = vec![false; n];
             let mut adj = vec![vec![false; n]; n];
