@@ -1,5 +1,49 @@
 use std::{cmp::Ordering, ptr::copy_nonoverlapping};
 
+pub trait RadixSortKey: Copy {
+    const BYTES: usize;
+    fn radix_byte(self, byte: usize) -> usize;
+}
+
+macro_rules! unsigned_radix_sort_key {
+    ($($t:ty),* $(,)?) => {
+        $(
+            impl RadixSortKey for $t {
+                const BYTES: usize = (<$t>::BITS / 8) as usize;
+
+                fn radix_byte(self, byte: usize) -> usize {
+                    ((self >> (byte * 8)) & 0xff) as usize
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! signed_radix_sort_key {
+    ($($t:ty => $u:ty),* $(,)?) => {
+        $(
+            impl RadixSortKey for $t {
+                const BYTES: usize = (<$t>::BITS / 8) as usize;
+
+                fn radix_byte(self, byte: usize) -> usize {
+                    let key = self as $u ^ (1 << (<$t>::BITS - 1));
+                    ((key >> (byte * 8)) & 0xff) as usize
+                }
+            }
+        )*
+    };
+}
+
+unsigned_radix_sort_key!(u8, u16, u32, u64, u128, usize);
+signed_radix_sort_key!(
+    i8 => u8,
+    i16 => u16,
+    i32 => u32,
+    i64 => u64,
+    i128 => u128,
+    isize => usize,
+);
+
 pub trait SliceSortExt<T> {
     fn bubble_sort(&mut self)
     where
@@ -19,6 +63,10 @@ pub trait SliceSortExt<T> {
     fn insertion_sort_by<F>(&mut self, compare: F)
     where
         F: FnMut(&T, &T) -> Ordering;
+    fn radix_sort_by_key<K>(&mut self, key: impl FnMut(&T) -> K)
+    where
+        T: Clone,
+        K: RadixSortKey;
 }
 impl<T> SliceSortExt<T> for [T] {
     fn bubble_sort(&mut self)
@@ -56,6 +104,76 @@ impl<T> SliceSortExt<T> for [T] {
         F: FnMut(&T, &T) -> Ordering,
     {
         insertion_sort(self, |a, b| compare(a, b) == Ordering::Less);
+    }
+    fn radix_sort_by_key<K>(&mut self, key: impl FnMut(&T) -> K)
+    where
+        T: Clone,
+        K: RadixSortKey,
+    {
+        radix_sort_by_key(self, key);
+    }
+}
+
+fn radix_sort_by_key<T, K>(values: &mut [T], mut key: impl FnMut(&T) -> K)
+where
+    T: Clone,
+    K: RadixSortKey,
+{
+    if values.len() <= 1 {
+        return;
+    }
+    let mut histograms = vec![[0usize; 256]; K::BYTES];
+    for value in values.iter() {
+        let key = key(value);
+        for (byte, histogram) in histograms.iter_mut().enumerate() {
+            histogram[key.radix_byte(byte)] += 1;
+        }
+    }
+    for histogram in histograms.iter_mut() {
+        let mut position = 0;
+        for count in histogram.iter_mut() {
+            let next = position + *count;
+            *count = position;
+            position = next;
+        }
+    }
+    let mut ends = [values.len(); 256];
+    ends[..255].copy_from_slice(&histograms[0][1..]);
+    let mut buffer = Vec::with_capacity(values.len());
+    {
+        let spare = buffer.spare_capacity_mut();
+        let positions = &mut histograms[0];
+        for value in values.iter() {
+            let bucket = key(value).radix_byte(0);
+            let position = &mut positions[bucket];
+            assert!(*position < ends[bucket]);
+            spare[*position].write(value.clone());
+            *position += 1;
+        }
+    }
+    // Every bucket filled its disjoint range completely.
+    unsafe { buffer.set_len(values.len()) };
+    for (byte, positions) in histograms.iter_mut().enumerate().skip(1) {
+        macro_rules! distribute {
+            ($source:expr, $destination:expr) => {{
+                let source = $source;
+                let destination = $destination;
+                for value in source {
+                    let bucket = key(value).radix_byte(byte);
+                    let position = &mut positions[bucket];
+                    destination[*position].clone_from(value);
+                    *position += 1;
+                }
+            }};
+        }
+        if byte % 2 == 0 {
+            distribute!(&*values, &mut buffer);
+        } else {
+            distribute!(&buffer, &mut *values);
+        }
+    }
+    if K::BYTES % 2 == 1 {
+        values.clone_from_slice(&buffer);
     }
 }
 
@@ -232,5 +350,40 @@ mod tests {
     #[test]
     fn test_insertion_sort_large() {
         test_sort!(@large insertion_sort, 100_000);
+    }
+
+    #[test]
+    fn test_radix_sort() {
+        let mut rng = Xorshift::default();
+        macro_rules! test_types {
+            ($($t:ty),* $(,)?) => {
+                $(
+                    for _ in 0..20 {
+                        let n = rng.random(0..1000);
+                        let mut actual: Vec<($t, usize)> =
+                            rng.random_iter(..).take(n).zip(0..).collect();
+                        let mut expected = actual.clone();
+                        actual.radix_sort_by_key(|&(key, _)| key);
+                        expected.sort_by_key(|&(key, _)| key);
+                        assert_eq!(actual, expected);
+                    }
+                )*
+            };
+        }
+        test_types!(u8, u16, u32, u64, u128, usize);
+        test_types!(i8, i16, i32, i64, i128, isize);
+        for _ in 0..20 {
+            let n = rng.random(0..1000);
+            let mut actual: Vec<_> = rng
+                .random_iter(0u32..64)
+                .take(n)
+                .zip(0..)
+                .map(|(key, index)| (key, index.to_string()))
+                .collect();
+            let mut expected = actual.clone();
+            actual.radix_sort_by_key(|value| value.0);
+            expected.sort_by_key(|value| value.0);
+            assert_eq!(actual, expected);
+        }
     }
 }

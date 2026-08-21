@@ -46,7 +46,7 @@ pub use self::rho_path::RhoPath;
 #[codesnip::entry("01_on_tree")]
 pub use self::solve_01_on_tree::solve_01_on_tree;
 #[codesnip::entry("sort")]
-pub use self::sort::SliceSortExt;
+pub use self::sort::{RadixSortKey, SliceSortExt};
 #[codesnip::entry("SqrtDecomposition")]
 pub use self::sqrt_decomposition::{
     RangeUpdateRangeFoldSqrtDecomposition, SqrtDecomposition, SqrtDecompositionBuckets,

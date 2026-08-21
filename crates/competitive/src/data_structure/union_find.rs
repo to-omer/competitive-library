@@ -3,7 +3,7 @@ use std::{
     collections::HashMap,
     fmt::{self, Debug},
     marker::PhantomData,
-    mem::swap,
+    mem::{MaybeUninit, needs_drop, swap},
 };
 
 pub struct UnionFindBase<U, F, M, P, H>
@@ -12,21 +12,21 @@ where
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
-    H: UndoStrategy<UfCell<U, M, P>>,
+    H: UndoStrategy<UfCell<M::Data, P>>,
 {
-    cells: Vec<UfCell<U, M, P>>,
+    cells: Vec<UfCell<M::Data, P>>,
     merger: M,
     history: H::History,
-    _marker: PhantomData<fn() -> F>,
+    _marker: PhantomData<fn() -> (U, F)>,
 }
 
 impl<U, F, M, P, H> Clone for UnionFindBase<U, F, M, P, H>
 where
-    U: UnionStrategy<Info: Clone>,
+    U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec<Data: Clone> + Clone,
     P: Monoid,
-    H: UndoStrategy<UfCell<U, M, P>, History: Clone>,
+    H: UndoStrategy<UfCell<M::Data, P>, History: Clone>,
 {
     fn clone(&self) -> Self {
         Self {
@@ -40,11 +40,11 @@ where
 
 impl<U, F, M, P, H> Debug for UnionFindBase<U, F, M, P, H>
 where
-    U: UnionStrategy<Info: Debug>,
+    U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec<Data: Debug>,
     P: Monoid<T: Debug>,
-    H: UndoStrategy<UfCell<U, M, P>, History: Debug>,
+    H: UndoStrategy<UfCell<M::Data, P>, History: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("UnionFindBase")
@@ -54,60 +54,108 @@ where
     }
 }
 
-pub enum UfCell<U, M, P>
+pub struct UfCell<D, P>
 where
-    U: UnionStrategy,
-    M: UfMergeSpec,
     P: Monoid,
 {
-    Root((U::Info, M::Data)),
-    Child((usize, P::T)),
+    // Roots store `!info` and initialized data; children store a parent and no data.
+    parent_or_info: i32,
+    data: MaybeUninit<D>,
+    potential: P::T,
 }
 
-impl<U, M, P> Clone for UfCell<U, M, P>
+impl<D, P> Clone for UfCell<D, P>
 where
-    U: UnionStrategy<Info: Clone>,
-    M: UfMergeSpec<Data: Clone>,
+    D: Clone,
     P: Monoid,
 {
     fn clone(&self) -> Self {
-        match self {
-            Self::Root(data) => Self::Root(data.clone()),
-            Self::Child(data) => Self::Child(data.clone()),
+        let is_root = self.is_root();
+        let potential = if is_root {
+            P::unit()
+        } else {
+            self.potential.clone()
+        };
+        Self {
+            parent_or_info: self.parent_or_info,
+            data: if is_root {
+                MaybeUninit::new(self.data().clone())
+            } else {
+                MaybeUninit::uninit()
+            },
+            potential,
         }
     }
 }
 
-impl<U, M, P> Debug for UfCell<U, M, P>
+impl<D, P> Debug for UfCell<D, P>
 where
-    U: UnionStrategy<Info: Debug>,
-    M: UfMergeSpec<Data: Debug>,
+    D: Debug,
     P: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Root(data) => f.debug_tuple("Root").field(data).finish(),
-            Self::Child(data) => f.debug_tuple("Child").field(data).finish(),
+        if let Some(info) = self.root_info() {
+            f.debug_tuple("Root").field(&(info, self.data())).finish()
+        } else {
+            f.debug_tuple("Child")
+                .field(&(self.parent().unwrap(), &self.potential))
+                .finish()
         }
     }
 }
 
-impl<U, M, P> UfCell<U, M, P>
+impl<D, P> UfCell<D, P>
 where
-    U: UnionStrategy,
-    M: UfMergeSpec,
     P: Monoid,
 {
-    fn root_mut(&mut self) -> Option<&mut (U::Info, M::Data)> {
-        match self {
-            UfCell::Root(root) => Some(root),
-            UfCell::Child(_) => None,
+    fn root(info: u32, data: D) -> Self {
+        Self {
+            parent_or_info: !(info as i32),
+            data: MaybeUninit::new(data),
+            potential: P::unit(),
         }
     }
-    fn child_mut(&mut self) -> Option<&mut (usize, P::T)> {
-        match self {
-            UfCell::Child(child) => Some(child),
-            UfCell::Root(_) => None,
+
+    fn root_info(&self) -> Option<u32> {
+        (self.parent_or_info < 0).then_some((!self.parent_or_info) as u32)
+    }
+
+    fn set_root_info(&mut self, info: u32) {
+        self.parent_or_info = !(info as i32);
+    }
+
+    fn parent(&self) -> Option<usize> {
+        (self.parent_or_info >= 0).then_some(self.parent_or_info as usize)
+    }
+
+    fn set_child(&mut self, parent: usize, potential: P::T) {
+        if needs_drop::<D>() && self.is_root() {
+            unsafe { self.data.assume_init_drop() };
+        }
+        self.parent_or_info = parent as i32;
+        self.potential = potential;
+    }
+
+    fn is_root(&self) -> bool {
+        self.parent_or_info < 0
+    }
+
+    fn data(&self) -> &D {
+        unsafe { self.data.assume_init_ref() }
+    }
+
+    fn data_mut(&mut self) -> &mut D {
+        unsafe { self.data.assume_init_mut() }
+    }
+}
+
+impl<D, P> Drop for UfCell<D, P>
+where
+    P: Monoid,
+{
+    fn drop(&mut self) {
+        if needs_drop::<D>() && self.is_root() {
+            unsafe { self.data.assume_init_drop() };
         }
     }
 }
@@ -127,26 +175,23 @@ impl FindStrategy for () {
 }
 
 pub trait UnionStrategy {
-    type Info: Clone;
-    fn single_info() -> Self::Info;
-    fn check_directoin(parent: &Self::Info, child: &Self::Info) -> bool;
-    fn unite(parent: &Self::Info, child: &Self::Info) -> Self::Info;
+    fn single_info() -> u32;
+    fn check_directoin(parent: &u32, child: &u32) -> bool;
+    fn unite(parent: &u32, child: &u32) -> u32;
 }
 
 pub enum UnionBySize {}
 
 impl UnionStrategy for UnionBySize {
-    type Info = usize;
-
-    fn single_info() -> Self::Info {
+    fn single_info() -> u32 {
         1
     }
 
-    fn check_directoin(parent: &Self::Info, child: &Self::Info) -> bool {
+    fn check_directoin(parent: &u32, child: &u32) -> bool {
         parent >= child
     }
 
-    fn unite(parent: &Self::Info, child: &Self::Info) -> Self::Info {
+    fn unite(parent: &u32, child: &u32) -> u32 {
         parent + child
     }
 }
@@ -154,31 +199,31 @@ impl UnionStrategy for UnionBySize {
 pub enum UnionByRank {}
 
 impl UnionStrategy for UnionByRank {
-    type Info = u32;
-
-    fn single_info() -> Self::Info {
+    fn single_info() -> u32 {
         0
     }
 
-    fn check_directoin(parent: &Self::Info, child: &Self::Info) -> bool {
+    fn check_directoin(parent: &u32, child: &u32) -> bool {
         parent >= child
     }
 
-    fn unite(parent: &Self::Info, child: &Self::Info) -> Self::Info {
+    fn unite(parent: &u32, child: &u32) -> u32 {
         parent + (parent == child) as u32
     }
 }
 
 impl UnionStrategy for () {
-    type Info = ();
+    fn single_info() -> u32 {
+        0
+    }
 
-    fn single_info() -> Self::Info {}
-
-    fn check_directoin(_parent: &Self::Info, _child: &Self::Info) -> bool {
+    fn check_directoin(_parent: &u32, _child: &u32) -> bool {
         false
     }
 
-    fn unite(_parent: &Self::Info, _child: &Self::Info) -> Self::Info {}
+    fn unite(_parent: &u32, _child: &u32) -> u32 {
+        0
+    }
 }
 
 pub trait UfMergeSpec {
@@ -258,12 +303,10 @@ where
     U: UnionStrategy,
     F: FindStrategy,
     P: Monoid,
-    H: UndoStrategy<UfCell<U, (), P>>,
+    H: UndoStrategy<UfCell<(), P>>,
 {
     pub fn new(n: usize) -> Self {
-        let cells: Vec<_> = (0..n)
-            .map(|_| UfCell::Root((U::single_info(), ())))
-            .collect();
+        let cells: Vec<_> = (0..n).map(|_| UfCell::root(U::single_info(), ())).collect();
         Self {
             cells,
             merger: (),
@@ -272,7 +315,7 @@ where
         }
     }
     pub fn push(&mut self) {
-        self.cells.push(UfCell::Root((U::single_info(), ())));
+        self.cells.push(UfCell::root(U::single_info(), ()));
     }
 }
 
@@ -282,11 +325,11 @@ where
     F: FindStrategy,
     Merge: FnMut(&mut T, &mut T),
     P: Monoid,
-    H: UndoStrategy<UfCell<U, FnMerger<T, Merge>, P>>,
+    H: UndoStrategy<UfCell<T, P>>,
 {
     pub fn new_with_merger(n: usize, mut init: impl FnMut(usize) -> T, merge: Merge) -> Self {
         let cells: Vec<_> = (0..n)
-            .map(|i| UfCell::Root((U::single_info(), init(i))))
+            .map(|i| UfCell::root(U::single_info(), init(i)))
             .collect();
         Self {
             cells,
@@ -305,11 +348,11 @@ where
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
-    H: UndoStrategy<UfCell<UnionBySize, M, P>>,
+    H: UndoStrategy<UfCell<M::Data, P>>,
 {
-    pub fn size(&mut self, x: usize) -> <UnionBySize as UnionStrategy>::Info {
+    pub fn size(&mut self, x: usize) -> usize {
         let root = self.find_root(x);
-        self.root_info(root).unwrap()
+        self.root_info(root).unwrap() as usize
     }
 }
 
@@ -319,20 +362,14 @@ where
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
-    H: UndoStrategy<UfCell<U, M, P>>,
+    H: UndoStrategy<UfCell<M::Data, P>>,
 {
-    fn root_info(&mut self, x: usize) -> Option<U::Info> {
-        match &self.cells[x] {
-            UfCell::Root((info, _)) => Some(info.clone()),
-            UfCell::Child(_) => None,
-        }
+    fn root_info(&self, x: usize) -> Option<u32> {
+        self.cells[x].root_info()
     }
 
-    fn root_info_mut(&mut self, x: usize) -> Option<&mut U::Info> {
-        match &mut self.cells[x] {
-            UfCell::Root((info, _)) => Some(info),
-            UfCell::Child(_) => None,
-        }
+    fn set_root_info(&mut self, x: usize, info: u32) {
+        self.cells[x].set_root_info(info);
     }
 
     pub fn same(&mut self, x: usize, y: usize) -> bool {
@@ -341,22 +378,16 @@ where
 
     pub fn merge_data(&mut self, x: usize) -> &M::Data {
         let root = self.find_root(x);
-        match &self.cells[root] {
-            UfCell::Root((_, data)) => data,
-            UfCell::Child(_) => unreachable!(),
-        }
+        self.cells[root].data()
     }
 
     pub fn merge_data_mut(&mut self, x: usize) -> &mut M::Data {
         let root = self.find_root(x);
-        match &mut self.cells[root] {
-            UfCell::Root((_, data)) => data,
-            UfCell::Child(_) => unreachable!(),
-        }
+        self.cells[root].data_mut()
     }
 
     pub fn roots(&self) -> impl Iterator<Item = usize> + '_ {
-        (0..self.cells.len()).filter(|&x| matches!(self.cells[x], UfCell::Root(_)))
+        (0..self.cells.len()).filter(|&x| self.cells[x].is_root())
     }
 
     pub fn all_group_members(&mut self) -> HashMap<usize, Vec<usize>> {
@@ -369,38 +400,37 @@ where
     }
 
     pub fn find(&mut self, x: usize) -> (usize, P::T) {
-        let (parent_parent, parent_potential) = match &self.cells[x] {
-            UfCell::Child((parent, _)) => self.find(*parent),
-            UfCell::Root(_) => return (x, P::unit()),
-        };
-        let (parent, potential) = self.cells[x].child_mut().unwrap();
-        let potential = if F::CHENGE_ROOT {
-            *parent = parent_parent;
-            *potential = P::operate(&parent_potential, potential);
-            potential.clone()
-        } else {
-            P::operate(&parent_potential, potential)
-        };
-        (parent_parent, potential)
+        let mut current = x;
+        let mut potential = P::unit();
+        while let Some(parent) = self.cells[current].parent() {
+            let current_potential = self.cells[current].potential.clone();
+            potential = P::operate(&current_potential, &potential);
+            if F::CHENGE_ROOT
+                && let Some(parent_parent) = self.cells[parent].parent()
+            {
+                let potential = P::operate(&self.cells[parent].potential, &current_potential);
+                self.cells[current].set_child(parent_parent, potential);
+            }
+            current = parent;
+        }
+        (current, potential)
     }
 
     pub fn find_root(&mut self, x: usize) -> usize {
-        let (parent, parent_parent) = match &self.cells[x] {
-            UfCell::Child((parent, _)) => (*parent, self.find_root(*parent)),
-            UfCell::Root(_) => return x,
-        };
-        if F::CHENGE_ROOT {
-            let (cx, cp) = {
-                let ptr = self.cells.as_mut_ptr();
-                unsafe { (&mut *ptr.add(x), &*ptr.add(parent)) }
-            };
-            let (parent, potential) = cx.child_mut().unwrap();
-            *parent = parent_parent;
-            if let UfCell::Child((_, ppot)) = &cp {
-                *potential = P::operate(ppot, potential);
+        let mut current = x;
+        while let Some(parent) = self.cells[current].parent() {
+            if F::CHENGE_ROOT
+                && let Some(parent_parent) = self.cells[parent].parent()
+            {
+                let potential = P::operate(
+                    &self.cells[parent].potential,
+                    &self.cells[current].potential,
+                );
+                self.cells[current].set_child(parent_parent, potential);
             }
+            current = parent;
         }
-        parent_parent
+        current
     }
 
     pub fn unite_noninv(&mut self, x: usize, y: usize, potential: P::T) -> bool {
@@ -413,12 +443,11 @@ where
         {
             let ptr = self.cells.as_mut_ptr();
             let (cx, cy) = unsafe { (&mut *ptr.add(rx), &mut *ptr.add(ry)) };
-            self.merger
-                .merge(&mut cx.root_mut().unwrap().1, &mut cy.root_mut().unwrap().1);
+            self.merger.merge(cx.data_mut(), cy.data_mut());
         }
-        *self.root_info_mut(rx).unwrap() =
-            U::unite(&self.root_info(rx).unwrap(), &self.root_info(ry).unwrap());
-        self.cells[ry] = UfCell::Child((rx, P::operate(&potx, &potential)));
+        let info = U::unite(&self.root_info(rx).unwrap(), &self.root_info(ry).unwrap());
+        self.set_root_info(rx, info);
+        self.cells[ry].set_child(rx, P::operate(&potx, &potential));
         true
     }
 }
@@ -429,7 +458,7 @@ where
     F: FindStrategy,
     M: UfMergeSpec,
     P: Group,
-    H: UndoStrategy<UfCell<U, M, P>>,
+    H: UndoStrategy<UfCell<M::Data, P>>,
 {
     pub fn difference(&mut self, x: usize, y: usize) -> Option<P::T> {
         let (rx, potx) = self.find(x);
@@ -463,11 +492,10 @@ where
         {
             let ptr = self.cells.as_mut_ptr();
             let (cx, cy) = unsafe { (&mut *ptr.add(rx), &mut *ptr.add(ry)) };
-            self.merger
-                .merge(&mut cx.root_mut().unwrap().1, &mut cy.root_mut().unwrap().1);
+            self.merger.merge(cx.data_mut(), cy.data_mut());
         }
-        *self.root_info_mut(rx).unwrap() = U::unite(&xinfo, &yinfo);
-        self.cells[ry] = UfCell::Child((rx, potential));
+        self.set_root_info(rx, U::unite(&xinfo, &yinfo));
+        self.cells[ry].set_child(rx, potential);
         true
     }
 
@@ -481,7 +509,7 @@ where
     U: UnionStrategy,
     M: UfMergeSpec,
     P: Monoid,
-    H: UndoStrategy<UfCell<U, M, P>>,
+    H: UndoStrategy<UfCell<M::Data, P>>,
 {
     pub fn undo(&mut self) {
         H::undo_unite(&mut self.history, &mut self.cells);
