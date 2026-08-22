@@ -134,7 +134,7 @@
 <span data-nosnippet>141</span>                <span class="kw">let </span>ar: [__m256d; <span class="number">4</span>] =
 <span data-nosnippet>142</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].re[lane]));
 <span data-nosnippet>143</span>                <span class="kw">let </span>ai: [__m256d; <span class="number">4</span>] =
-<span data-nosnippet>144</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[lane]));
+<span data-nosnippet>144</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[<a href="mod.rs.html#1-292">lane</a>]));
 <span data-nosnippet>145</span>                <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
 <span data-nosnippet>146</span>                    <span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..=part {
 <span data-nosnippet>147</span>                        multiply_accumulate4(
@@ -322,12 +322,12 @@
 <span data-nosnippet>266</span>                <span class="kw">let </span>(<span class="kw-2">mut </span>br, <span class="kw-2">mut </span>bi) = load4(<span class="kw-2">&amp;</span>b[i]);
 <span data-nosnippet>267</span>                <span class="kw">let </span><span class="kw-2">mut </span>rr = _mm256_setzero_pd();
 <span data-nosnippet>268</span>                <span class="kw">let </span><span class="kw-2">mut </span>ri = _mm256_setzero_pd();
-<span data-nosnippet>269</span>                <span class="kw">let </span>w = eval_twiddle(cache, <span class="number">1</span>, a.len(), <a href="../algebra/lazy_map.rs.html#44">i</a>);
+<span data-nosnippet>269</span>                <span class="kw">let </span>w = eval_twiddle(cache, <span class="number">1</span>, a.len(), i);
 <span data-nosnippet>270</span>                <span class="kw">let </span>wr = _mm256_setr_pd(w.re, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);
 <span data-nosnippet>271</span>                <span class="kw">let </span>wi = _mm256_setr_pd(w.im, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 <span data-nosnippet>272</span>                <span class="kw">for </span>lane <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
 <span data-nosnippet>273</span>                    <span class="kw">let </span>ar = _mm256_set1_pd(a[i].re[lane]);
-<span data-nosnippet>274</span>                    <span class="kw">let </span>ai = _mm256_set1_pd(a[i].im[lane]);
+<span data-nosnippet>274</span>                    <span class="kw">let </span>ai = _mm256_set1_pd(a[<a href="../algebra/lazy_map.rs.html#48">i</a>].im[lane]);
 <span data-nosnippet>275</span>                    multiply_accumulate4(<span class="kw-2">&amp;mut </span>rr, <span class="kw-2">&amp;mut </span>ri, ar, ai, br, bi);
 <span data-nosnippet>276</span>                    <span class="kw">if </span>lane != <span class="number">3 </span>{
 <span data-nosnippet>277</span>                        br = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(br);
@@ -341,7 +341,7 @@
 <span data-nosnippet>285</span>    }
 <span data-nosnippet>286</span>
 <span data-nosnippet>287</span>    <span class="attr">#[inline]
-<span data-nosnippet>288</span>    </span><span class="kw">fn </span>pack_f64(values: <span class="kw">impl </span>Iterator&lt;Item = f64&gt;, n: usize) -&gt; Vec&lt;Complex4&gt; {
+<span data-nosnippet>288</span>    </span><span class="kw">fn </span>pack_f64(values: <span class="kw">impl </span>Iterator&lt;Item = f64&gt;, <a href="../algebra/lazy_map.rs.html#69">n</a>: usize) -&gt; Vec&lt;Complex4&gt; {
 <span data-nosnippet>289</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[Complex4::default(); n / <span class="number">4</span>];
 <span data-nosnippet>290</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
 <span data-nosnippet>291</span>            <span class="kw">if </span>i &lt; n {
@@ -435,7 +435,7 @@
 <span data-nosnippet>379</span>        }
 <span data-nosnippet>380</span>    }
 <span data-nosnippet>381</span>    fft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>382</span>    bit_reverse(<span class="kw-2">&amp;mut </span><a href="../algebra/lazy_map.rs.html#178">f</a>);
+<span data-nosnippet>382</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
 <span data-nosnippet>383</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
 <span data-nosnippet>384</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
 <span data-nosnippet>385</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
@@ -454,7 +454,7 @@
 <span data-nosnippet>398</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
 <span data-nosnippet>399</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
 <span data-nosnippet>400</span>        <span class="kw">let </span>c = wk.transpose().conjugate() + <span class="number">1.</span>;
-<span data-nosnippet>401</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>401</span>        <span class="kw">let </span>d = c * (f[<a href="../algebra/lazy_map.rs.html#199">k</a>] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
 <span data-nosnippet>402</span>        f[k] -= d;
 <span data-nosnippet>403</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
 <span data-nosnippet>404</span>    });
@@ -473,7 +473,7 @@
 <span data-nosnippet>417</span>        t.len()
 <span data-nosnippet>418</span>    }
 <span data-nosnippet>419</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>420</span>        transform_real(t.into_iter().map(|t| t <span class="kw">as </span>f64), len)
+<span data-nosnippet>420</span>        transform_real(t.into_iter().map(|<a href="../algebra/lazy_map.rs.html#220">t</a>| t <span class="kw">as </span>f64), len)
 <span data-nosnippet>421</span>    }
 <span data-nosnippet>422</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>423</span>        inverse_transform_real(f, len)
@@ -536,7 +536,7 @@
 <span data-nosnippet>480</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..l {
 <span data-nosnippet>481</span>                    <span class="kw">let </span>cv = c[i] * w0;
 <span data-nosnippet>482</span>                    <span class="kw">let </span>dv = d[i] * w0;
-<span data-nosnippet>483</span>                    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">ac0</a> = a[i] + cv;
+<span data-nosnippet>483</span>                    <span class="kw">let </span>ac0 = a[i] + cv;
 <span data-nosnippet>484</span>                    <span class="kw">let </span>ac1 = a[i] - cv;
 <span data-nosnippet>485</span>                    <span class="kw">let </span>bd0 = (b[i] + dv) * w1;
 <span data-nosnippet>486</span>                    <span class="kw">let </span>bd1 = (b[i] - dv) * w2;

@@ -262,7 +262,7 @@
 <span data-nosnippet>298</span>    <span class="kw">let </span>modulus2 = _mm256_set1_epi32(M::MOD.wrapping_mul(<span class="number">2</span>) <span class="kw">as </span>i32);
 <span data-nosnippet>299</span>    <span class="kw">let </span>r = _mm256_set1_epi32(M::R <span class="kw">as </span>i32);
 <span data-nosnippet>300</span>    <span class="kw">let </span>imag = _mm256_set1_epi32(M::INFO.root[<span class="number">2</span>] <span class="kw">as </span>i32);
-<span data-nosnippet>301</span>    <span class="kw">let </span>imag_r = _mm256_set1_epi32(<a href="../../../algebra/lazy_map.rs.html#69">M</a>::INFO.root[<span class="number">2</span>].wrapping_mul(M::R) <span class="kw">as </span>i32);
+<span data-nosnippet>301</span>    <span class="kw">let </span>imag_r = _mm256_set1_epi32(M::INFO.root[<span class="number">2</span>].wrapping_mul(M::R) <span class="kw">as </span>i32);
 <span data-nosnippet>302</span>    <span class="kw">let </span>root_indices = _mm256_setr_epi32(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">4</span>);
 <span data-nosnippet>303</span>    <span class="kw">let </span>root3 = M::INFO.inv_root[<span class="number">3</span>];
 <span data-nosnippet>304</span>    <span class="kw">let </span>root2 = M::INFO.inv_root[<span class="number">2</span>];
@@ -323,7 +323,7 @@
 <span data-nosnippet>359</span>            } <span class="kw">else </span>{
 <span data-nosnippet>360</span>                store_block_avx2(
 <span data-nosnippet>361</span>                    a,
-<span data-nosnippet>362</span>                    <a href="../../../algebra/lazy_map.rs.html#157">i</a>,
+<span data-nosnippet>362</span>                    i,
 <span data-nosnippet>363</span>                    simd32::montgomery_mul_256_fixed(h0, inv_vec, inv_r, modulus),
 <span data-nosnippet>364</span>                );
 <span data-nosnippet>365</span>            }
@@ -414,7 +414,7 @@
 <span data-nosnippet>450</span>                    <span class="kw">let </span>h1 = _mm256_add_epi32(g1, g3);
 <span data-nosnippet>451</span>                    _mm256_storeu_si256(base.add(p0).cast(), shrink_avx2(h0, modulus2));
 <span data-nosnippet>452</span>                    _mm256_storeu_si256(
-<span data-nosnippet>453</span>                        base.add(p0 + (quarter &lt;&lt; <span class="number">3</span>)).cast(),
+<span data-nosnippet>453</span>                        base.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">add</a>(p0 + (quarter &lt;&lt; <span class="number">3</span>)).cast(),
 <span data-nosnippet>454</span>                        simd32::montgomery_mul_256_fixed(h1, r1, r1_r, modulus),
 <span data-nosnippet>455</span>                    );
 <span data-nosnippet>456</span>                    _mm256_storeu_si256(
@@ -434,7 +434,7 @@
 <span data-nosnippet>470</span>            quarter = group_len;
 <span data-nosnippet>471</span>            group_len &lt;&lt;= <span class="number">2</span>;
 <span data-nosnippet>472</span>            stage_log += <span class="number">2</span>;
-<span data-nosnippet>473</span>            root_slot += <span class="number">1</span>;
+<span data-nosnippet>473</span>            <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">root_slot</a> += <span class="number">1</span>;
 <span data-nosnippet>474</span>        }
 <span data-nosnippet>475</span>        tile += tile_len;
 <span data-nosnippet>476</span>    }
@@ -460,14 +460,14 @@
 <span data-nosnippet>496</span>                    modulus,
 <span data-nosnippet>497</span>                ),
 <span data-nosnippet>498</span>            );
-<span data-nosnippet>499</span>            <a href="../../../algebra/lazy_map.rs.html#411">i</a> += <span class="number">1</span>;
+<span data-nosnippet>499</span>            i += <span class="number">1</span>;
 <span data-nosnippet>500</span>        }
 <span data-nosnippet>501</span>    } <span class="kw">else </span>{
-<span data-nosnippet>502</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>502</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../../algebra/lazy_map.rs.html#411">i</a> = <span class="number">0</span>;
 <span data-nosnippet>503</span>        <span class="kw">while </span>i &lt; n {
 <span data-nosnippet>504</span>            store_block_avx2(
 <span data-nosnippet>505</span>                a,
-<span data-nosnippet>506</span>                <a href="../../../algebra/lazy_map.rs.html#411">i</a>,
+<span data-nosnippet>506</span>                i,
 <span data-nosnippet>507</span>                shrink_avx2(shrink_avx2(<span class="highlight">load_block_avx2</span>(a, i), modulus), modulus),
 <span data-nosnippet>508</span>            );
 <span data-nosnippet>509</span>            i += <span class="number">1</span>;
@@ -522,7 +522,7 @@
 <span data-nosnippet>558</span>            </span><span class="kw">let </span>fw = shrink_avx2(
 <span data-nosnippet>559</span>                simd32::montgomery_mul_256_fixed(
 <span data-nosnippet>560</span>                    ff,
-<span data-nosnippet>561</span>                    _mm256_set1_epi32(ww <span class="kw">as </span>i32),
+<span data-nosnippet>561</span>                    _mm256_set1_epi32(ww <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">i32</a>),
 <span data-nosnippet>562</span>                    _mm256_set1_epi32(ww.wrapping_mul(M::R) <span class="kw">as </span>i32),
 <span data-nosnippet>563</span>                    mod_vec,
 <span data-nosnippet>564</span>                ),
@@ -538,7 +538,7 @@
 <span data-nosnippet>574</span>            <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
 <span data-nosnippet>575</span>            <span class="kw">while </span>j &lt; <span class="number">4 </span>{
 <span data-nosnippet>576</span>                <span class="kw">let </span>x = _mm256_loadu_si256(work.add((j &lt;&lt; <span class="number">4</span>) + <span class="number">8 </span>- l).cast());
-<span data-nosnippet>577</span>                <span class="kw">let </span>y = _mm256_set1_epi32(<span class="kw-2">*</span>g.add(((i + j) &lt;&lt; <span class="number">3</span>) + l) <span class="kw">as </span><a href="../../../algebra/lazy_map.rs.html#524">i32</a>);
+<span data-nosnippet>577</span>                <span class="kw">let </span>y = _mm256_set1_epi32(<span class="kw-2">*</span>g.add(((i + j) &lt;&lt; <span class="number">3</span>) + l) <span class="kw">as </span>i32);
 <span data-nosnippet>578</span>                even[j] = _mm256_add_epi64(even[j], _mm256_mul_epu32(x, y));
 <span data-nosnippet>579</span>                odd[j] = _mm256_add_epi64(odd[j], _mm256_mul_epu32(_mm256_bsrli_epi128::&lt;<span class="number">4</span>&gt;(x), y));
 <span data-nosnippet>580</span>                j += <span class="number">1</span>;
@@ -546,7 +546,7 @@
 <span data-nosnippet>582</span>            l += <span class="number">1</span>;
 <span data-nosnippet>583</span>        }
 <span data-nosnippet>584</span>        <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
-<span data-nosnippet>585</span>        <span class="kw">while </span><a href="../../../algebra/lazy_map.rs.html#527">j</a> &lt; <span class="number">4 </span>{
+<span data-nosnippet>585</span>        <span class="kw">while </span>j &lt; <span class="number">4 </span>{
 <span data-nosnippet>586</span>            <span class="kw">let </span>x = reduce_sum_avx2(even[j], odd[j], r_vec, mod_vec);
 <span data-nosnippet>587</span>            store_block_avx2(f, i + j, _mm256_min_epu32(x, _mm256_sub_epi32(x, mod2_vec)));
 <span data-nosnippet>588</span>            j += <span class="number">1</span>;

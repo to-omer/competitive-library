@@ -134,7 +134,7 @@
 <span data-nosnippet>141</span>                <span class="kw">let </span>ar: [__m256d; <span class="number">4</span>] =
 <span data-nosnippet>142</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].re[lane]));
 <span data-nosnippet>143</span>                <span class="kw">let </span>ai: [__m256d; <span class="number">4</span>] =
-<span data-nosnippet>144</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[lane]));
+<span data-nosnippet>144</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[<a href="mod.rs.html#1-292">lane</a>]));
 <span data-nosnippet>145</span>                <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
 <span data-nosnippet>146</span>                    <span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..=part {
 <span data-nosnippet>147</span>                        multiply_accumulate4(
@@ -322,12 +322,12 @@
 <span data-nosnippet>266</span>                <span class="kw">let </span>(<span class="kw-2">mut </span>br, <span class="kw-2">mut </span>bi) = <span class="highlight">load4</span>(<span class="kw-2">&amp;</span>b[i]);
 <span data-nosnippet>267</span>                <span class="kw">let </span><span class="kw-2">mut </span>rr = _mm256_setzero_pd();
 <span data-nosnippet>268</span>                <span class="kw">let </span><span class="kw-2">mut </span>ri = _mm256_setzero_pd();
-<span data-nosnippet>269</span>                <span class="kw">let </span>w = eval_twiddle(cache, <span class="number">1</span>, a.len(), <a href="../algebra/lazy_map.rs.html#44">i</a>);
+<span data-nosnippet>269</span>                <span class="kw">let </span>w = eval_twiddle(cache, <span class="number">1</span>, a.len(), i);
 <span data-nosnippet>270</span>                <span class="kw">let </span>wr = _mm256_setr_pd(w.re, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);
 <span data-nosnippet>271</span>                <span class="kw">let </span>wi = _mm256_setr_pd(w.im, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 <span data-nosnippet>272</span>                <span class="kw">for </span>lane <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
 <span data-nosnippet>273</span>                    <span class="kw">let </span>ar = _mm256_set1_pd(a[i].re[lane]);
-<span data-nosnippet>274</span>                    <span class="kw">let </span>ai = _mm256_set1_pd(a[i].im[lane]);
+<span data-nosnippet>274</span>                    <span class="kw">let </span>ai = _mm256_set1_pd(a[<a href="../algebra/lazy_map.rs.html#48">i</a>].im[lane]);
 <span data-nosnippet>275</span>                    multiply_accumulate4(<span class="kw-2">&amp;mut </span>rr, <span class="kw-2">&amp;mut </span>ri, ar, ai, br, bi);
 <span data-nosnippet>276</span>                    <span class="kw">if </span>lane != <span class="number">3 </span>{
 <span data-nosnippet>277</span>                        br = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(br);

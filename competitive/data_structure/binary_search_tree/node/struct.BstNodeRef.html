@@ -272,7 +272,7 @@
 <span data-nosnippet>574</span>    }
 <span data-nosnippet>575</span>
 <span data-nosnippet>576</span>    <span class="doccomment">/// `u` and `v` must be connected.
-<span data-nosnippet>577</span>    </span><span class="kw">pub fn </span>update_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize, action: <span class="kw-2">&amp;</span>A::Action) {
+<span data-nosnippet>577</span>    </span><span class="kw">pub fn </span>update_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize, action: <span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#23">A</a>::Action) {
 <span data-nosnippet>578</span>        <span class="self">self</span>.reroot(u);
 <span data-nosnippet>579</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
 <span data-nosnippet>580</span>        <span class="self">self</span>.access_node(v);
@@ -288,7 +288,7 @@
 <span data-nosnippet>590</span>                left.as_mut().parent.parent = <span class="prelude-val">None</span>;
 <span data-nosnippet>591</span>            }
 <span data-nosnippet>592</span>            <span class="self">Self</span>::pull_top(node);
-<span data-nosnippet>593</span>            <span class="kw">let </span>result = f(node);
+<span data-nosnippet>593</span>            <span class="kw">let </span>result = <a href="../algebra/lazy_map.rs.html#44">f</a>(node);
 <span data-nosnippet>594</span>            node.as_mut().child[<span class="number">0</span>] = left;
 <span data-nosnippet>595</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
 <span data-nosnippet>596</span>                left.as_mut().parent.parent = <span class="prelude-val">Some</span>(node);
@@ -459,7 +459,7 @@
 <span data-nosnippet>349</span>            <span class="self">Self</span>::pull(node);
 <span data-nosnippet>350</span>            <span class="kw">let </span>result = f(<span class="kw-2">&amp;mut </span>(<span class="kw-2">*</span>node.as_ptr()).data.inner);
 <span data-nosnippet>351</span>            LinkCutBstSpec::&lt;S&gt;::top_down(<span class="highlight">BstDataMutRef::new_unchecked</span>(node));
-<span data-nosnippet>352</span>            (<span class="kw-2">*</span>node.as_ptr()).child[<span class="number">0</span>] = left;
+<span data-nosnippet>352</span>            (<span class="kw-2">*</span>node.as_ptr()).<a href="../lib.rs.html#21">child</a>[<span class="number">0</span>] = left;
 <span data-nosnippet>353</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
 <span data-nosnippet>354</span>                left.as_mut().parent.parent = <span class="prelude-val">Some</span>(node);
 <span data-nosnippet>355</span>            }
@@ -1068,7 +1068,7 @@
 <span data-nosnippet>220</span>        })
 <span data-nosnippet>221</span>    }
 <span data-nosnippet>222</span>
-<span data-nosnippet>223</span>    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
+<span data-nosnippet>223</span>    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../graph/mod.rs.html#1-136">index</a>: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
 <span data-nosnippet>224</span>        <span class="kw">if </span>index &gt;= <span class="self">self</span>.length {
 <span data-nosnippet>225</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>226</span>        }
@@ -1284,7 +1284,7 @@
 <span data-nosnippet>289</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>290</span>    {
 <span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, range);
-<span data-nosnippet>292</span>        <span class="kw">if let </span><a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(root) = split.mid_datamut() {
+<span data-nosnippet>292</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = split.mid_datamut() {
 <span data-nosnippet>293</span>            ImplicitSplayTreeSpec::reverse(root);
 <span data-nosnippet>294</span>        }
 <span data-nosnippet>295</span>    }
@@ -1550,7 +1550,7 @@
 <span data-nosnippet>162</span>    <span class="kw">where
 <span data-nosnippet>163</span>        </span>Spec: BstSpec&lt;Data: BstDataAccess&lt;marker::LazyMap, Value = <span class="self">Self</span>&gt;&gt;,
 <span data-nosnippet>164</span>    {
-<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.<span class="highlight">reborrow</span>().into_data().bst_data().<a href="../../num/zero_one.rs.html#15-28">act</a>) {
+<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.<span class="highlight">reborrow</span>().into_data().bst_data().act) {
 <span data-nosnippet>166</span>            <span class="kw">return</span>;
 <span data-nosnippet>167</span>        }
 <span data-nosnippet>168</span>        <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().bst_data_mut().act, L::act_unit());
@@ -1880,7 +1880,7 @@
 <span data-nosnippet>162</span>    <span class="kw">where
 <span data-nosnippet>163</span>        </span>Spec: BstSpec&lt;Data: BstDataAccess&lt;marker::LazyMap, Value = <span class="self">Self</span>&gt;&gt;,
 <span data-nosnippet>164</span>    {
-<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().<a href="../../num/zero_one.rs.html#15-28">act</a>) {
+<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().act) {
 <span data-nosnippet>166</span>            <span class="kw">return</span>;
 <span data-nosnippet>167</span>        }
 <span data-nosnippet>168</span>        <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().bst_data_mut().act, L::act_unit());
@@ -2055,7 +2055,7 @@
 <span data-nosnippet>287</span>
 <span data-nosnippet>288</span><span class="kw">impl</span>&lt;BorrowType, Spec, Data&gt; BstNodeRef&lt;BorrowType, Spec&gt;
 <span data-nosnippet>289</span><span class="kw">where
-<span data-nosnippet>290</span>    </span><a href="../../algebra/ring.rs.html#1-135">Spec</a>: BstSpec&lt;Data = Data, Parent = WithParent&lt;Data&gt;&gt;,
+<span data-nosnippet>290</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithParent&lt;Data&gt;&gt;,
 <span data-nosnippet>291</span>    BorrowType: marker::BorrowType,
 <span data-nosnippet>292</span>{
 <span data-nosnippet>293</span>    <span class="kw">pub fn </span>ascend(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BstNodeRef&lt;BorrowType, Spec&gt;, <span class="self">Self</span>&gt; {
@@ -2105,7 +2105,7 @@
 <span data-nosnippet>337</span>            _marker: PhantomData,
 <span data-nosnippet>338</span>        }
 <span data-nosnippet>339</span>    }
-<span data-nosnippet>340</span>    <span class="kw">pub fn </span>from_data&lt;A&gt;(data: Spec::Data, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
+<span data-nosnippet>340</span>    <span class="kw">pub fn </span><a href="../../../../../../../algebra/struct.LinearAct.html">from_data</a>&lt;A&gt;(data: Spec::Data, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
 <span data-nosnippet>341</span>    </span><span class="kw">where
 <span data-nosnippet>342</span>        </span>A: Allocator&lt;BstNode&lt;Spec::Data, Spec::Parent&gt;&gt;,
 <span data-nosnippet>343</span>    {
@@ -2155,7 +2155,7 @@
 <span data-nosnippet>387</span>    <span class="kw">pub fn </span>leftmost(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>;
 <span data-nosnippet>389</span>        <span class="kw">while let </span><span class="prelude-val">Ok</span>(left) = node.<span class="highlight">left</span>().descend() {
-<span data-nosnippet>390</span>            <a href="../../algebra/magma.rs.html#56">node</a> = left;
+<span data-nosnippet>390</span>            node = left;
 <span data-nosnippet>391</span>        }
 <span data-nosnippet>392</span>        node
 <span data-nosnippet>393</span>    }
@@ -2461,7 +2461,7 @@
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
 <span data-nosnippet>272</span>            rng: Xorshift::new(),
-<span data-nosnippet>273</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
+<span data-nosnippet>273</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(<a href="../../../../../../../algebra/struct.EmptyAct.html">capacity</a>)),
 <span data-nosnippet>274</span>            _marker: PhantomData,
 <span data-nosnippet>275</span>        }
 <span data-nosnippet>276</span>    }
@@ -2484,7 +2484,7 @@
 <span data-nosnippet>293</span>        )
 <span data-nosnippet>294</span>    }
 <span data-nosnippet>295</span>
-<span data-nosnippet>296</span>    <span class="kw">fn </span>build&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; (<span class="prelude-ty">Option</span>&lt;ImplicitTreapRoot&lt;T&gt;&gt;, usize)
+<span data-nosnippet>296</span>    <span class="kw">fn </span>build&lt;<a href="../algebra/action.rs.html#54">I</a>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; (<span class="prelude-ty">Option</span>&lt;ImplicitTreapRoot&lt;T&gt;&gt;, usize)
 <span data-nosnippet>297</span>    <span class="kw">where
 <span data-nosnippet>298</span>        </span>I: IntoIterator&lt;Item = T::Key&gt;,
 <span data-nosnippet>299</span>    {
@@ -2870,7 +2870,7 @@
 <span data-nosnippet>162</span>    <span class="kw">where
 <span data-nosnippet>163</span>        </span>Spec: BstSpec&lt;Data: BstDataAccess&lt;marker::LazyMap, Value = <span class="self">Self</span>&gt;&gt;,
 <span data-nosnippet>164</span>    {
-<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().<a href="../../num/zero_one.rs.html#15-28">act</a>) {
+<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().act) {
 <span data-nosnippet>166</span>            <span class="kw">return</span>;
 <span data-nosnippet>167</span>        }
 <span data-nosnippet>168</span>        <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().bst_data_mut().act, L::act_unit());
@@ -3045,7 +3045,7 @@
 <span data-nosnippet>287</span>
 <span data-nosnippet>288</span><span class="kw">impl</span>&lt;BorrowType, Spec, Data&gt; BstNodeRef&lt;BorrowType, Spec&gt;
 <span data-nosnippet>289</span><span class="kw">where
-<span data-nosnippet>290</span>    </span><a href="../../algebra/ring.rs.html#1-135">Spec</a>: BstSpec&lt;Data = Data, Parent = WithParent&lt;Data&gt;&gt;,
+<span data-nosnippet>290</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithParent&lt;Data&gt;&gt;,
 <span data-nosnippet>291</span>    BorrowType: marker::BorrowType,
 <span data-nosnippet>292</span>{
 <span data-nosnippet>293</span>    <span class="kw">pub fn </span>ascend(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BstNodeRef&lt;BorrowType, Spec&gt;, <span class="self">Self</span>&gt; {
@@ -3095,7 +3095,7 @@
 <span data-nosnippet>337</span>            _marker: PhantomData,
 <span data-nosnippet>338</span>        }
 <span data-nosnippet>339</span>    }
-<span data-nosnippet>340</span>    <span class="kw">pub fn </span>from_data&lt;A&gt;(data: Spec::Data, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
+<span data-nosnippet>340</span>    <span class="kw">pub fn </span><a href="../../../../../../../algebra/struct.LinearAct.html">from_data</a>&lt;A&gt;(data: Spec::Data, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
 <span data-nosnippet>341</span>    </span><span class="kw">where
 <span data-nosnippet>342</span>        </span>A: Allocator&lt;BstNode&lt;Spec::Data, Spec::Parent&gt;&gt;,
 <span data-nosnippet>343</span>    {
@@ -3145,7 +3145,7 @@
 <span data-nosnippet>387</span>    <span class="kw">pub fn </span>leftmost(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>;
 <span data-nosnippet>389</span>        <span class="kw">while let </span><span class="prelude-val">Ok</span>(left) = node.left().descend() {
-<span data-nosnippet>390</span>            <a href="../../algebra/magma.rs.html#56">node</a> = left;
+<span data-nosnippet>390</span>            node = left;
 <span data-nosnippet>391</span>        }
 <span data-nosnippet>392</span>        node
 <span data-nosnippet>393</span>    }
@@ -3451,7 +3451,7 @@
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
 <span data-nosnippet>272</span>            rng: Xorshift::new(),
-<span data-nosnippet>273</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
+<span data-nosnippet>273</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(<a href="../../../../../../../algebra/struct.EmptyAct.html">capacity</a>)),
 <span data-nosnippet>274</span>            _marker: PhantomData,
 <span data-nosnippet>275</span>        }
 <span data-nosnippet>276</span>    }
@@ -3474,7 +3474,7 @@
 <span data-nosnippet>293</span>        )
 <span data-nosnippet>294</span>    }
 <span data-nosnippet>295</span>
-<span data-nosnippet>296</span>    <span class="kw">fn </span>build&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; (<span class="prelude-ty">Option</span>&lt;ImplicitTreapRoot&lt;T&gt;&gt;, usize)
+<span data-nosnippet>296</span>    <span class="kw">fn </span>build&lt;<a href="../algebra/action.rs.html#54">I</a>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; (<span class="prelude-ty">Option</span>&lt;ImplicitTreapRoot&lt;T&gt;&gt;, usize)
 <span data-nosnippet>297</span>    <span class="kw">where
 <span data-nosnippet>298</span>        </span>I: IntoIterator&lt;Item = T::Key&gt;,
 <span data-nosnippet>299</span>    {
@@ -3630,7 +3630,7 @@
 <span data-nosnippet>265</span>            _marker: PhantomData,
 <span data-nosnippet>266</span>        }
 <span data-nosnippet>267</span>    }
-<span data-nosnippet>268</span>    <span class="kw">pub fn </span>reborrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BstNodeRef&lt;marker::<a href="../../graph/mod.rs.html#1-136">Immut</a>&lt;<span class="lifetime">'_</span>&gt;, Spec&gt; {
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>reborrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BstNodeRef&lt;marker::Immut&lt;<span class="lifetime">'_</span>&gt;, Spec&gt; {
 <span data-nosnippet>269</span>        BstNodeRef {
 <span data-nosnippet>270</span>            node: <span class="self">self</span>.node,
 <span data-nosnippet>271</span>            _marker: PhantomData,
@@ -3838,7 +3838,7 @@
 <span data-nosnippet>297</span>            }
 <span data-nosnippet>298</span>            Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
 <span data-nosnippet>299</span>            Ordering::Less =&gt; {
-<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/mod.rs.html#1-86">child</a>) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().take() }) <span class="kw">else </span>{
+<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>child) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().take() }) <span class="kw">else </span>{
 <span data-nosnippet>301</span>                    <span class="kw">break </span>Ordering::Less;
 <span data-nosnippet>302</span>                };
 <span data-nosnippet>303</span>                Spec::top_down(child.borrow_datamut());
@@ -4102,8 +4102,8 @@
 <span data-nosnippet>294</span>        <span class="kw">const </span>{
 <span data-nosnippet>295</span>            <span class="macro">assert!</span>(BorrowType::TRAVERSAL_PERMIT);
 <span data-nosnippet>296</span>        };
-<span data-nosnippet>297</span>        <span class="kw">let </span>parent = <span class="kw">unsafe </span>{ <span class="self">self</span>.node.as_ref().parent.parent };
-<span data-nosnippet>298</span>        parent
+<span data-nosnippet>297</span>        <span class="kw">let </span>parent = <span class="kw">unsafe </span>{ <a class="self" href="../../math/mod.rs.html#1-292">self</a>.node.as_ref().parent.parent };
+<span data-nosnippet>298</span>        <a href="../../string/mod.rs.html#1-55">parent</a>
 <span data-nosnippet>299</span>            .map(|node| BstNodeRef {
 <span data-nosnippet>300</span>                node,
 <span data-nosnippet>301</span>                _marker: PhantomData,
@@ -4322,7 +4322,7 @@
 <span data-nosnippet>514</span>    _marker: PhantomData&lt;Dir&gt;,
 <span data-nosnippet>515</span>}
 <span data-nosnippet>516</span>
-<span data-nosnippet>517</span><span class="kw">impl</span>&lt;BorrowType, Spec, <a href="../../algebra/lazy_map.rs.html#107">Dir</a>&gt; BstEdgeHandle&lt;BstNodeRef&lt;BorrowType, Spec&gt;, Dir&gt;
+<span data-nosnippet>517</span><span class="kw">impl</span>&lt;BorrowType, Spec, Dir&gt; BstEdgeHandle&lt;BstNodeRef&lt;BorrowType, Spec&gt;, Dir&gt;
 <span data-nosnippet>518</span><span class="kw">where
 <span data-nosnippet>519</span>    </span>Spec: BstSpec,
 <span data-nosnippet>520</span>    BorrowType: marker::BorrowType,
@@ -4347,7 +4347,7 @@
 <span data-nosnippet>539</span>    </span>Spec: BstSpec,
 <span data-nosnippet>540</span>    Dir: marker::BstDirection,
 <span data-nosnippet>541</span>{
-<span data-nosnippet>542</span>    <span class="kw">pub unsafe fn </span>take(<span class="kw-2">&amp;mut </span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeRef&lt;marker::Owned, Spec&gt;&gt; {
+<span data-nosnippet>542</span>    <span class="kw">pub unsafe fn </span>take(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeRef&lt;marker::Owned, Spec&gt;&gt; {
 <span data-nosnippet>543</span>        <span class="kw">let </span>child = <span class="kw">unsafe </span>{ <span class="self">self</span>.node.node.as_mut().child.get_unchecked_mut(Dir::IDX) };
 <span data-nosnippet>544</span>        child.take().map(|node| {
 <span data-nosnippet>545</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = BstNodeRef {
@@ -4362,7 +4362,7 @@
 <span data-nosnippet>554</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
 <span data-nosnippet>555</span>        <span class="kw-2">mut </span>other: BstNodeRef&lt;marker::Owned, Spec&gt;,
 <span data-nosnippet>556</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeRef&lt;marker::Owned, Spec&gt;&gt; {
-<span data-nosnippet>557</span>        <span class="kw">let </span>child = <span class="kw">unsafe </span>{ <span class="self">self</span>.node.node.as_mut().child.get_unchecked_mut(<a href="../../algebra/lazy_map.rs.html#154">Dir</a>::IDX) };
+<span data-nosnippet>557</span>        <span class="kw">let </span>child = <span class="kw">unsafe </span>{ <span class="self">self</span>.node.node.as_mut().child.get_unchecked_mut(Dir::IDX) };
 <span data-nosnippet>558</span>        Spec::Parent::set_parent(other.<span class="highlight">borrow_mut</span>(), <span class="prelude-val">Some</span>(<span class="self">self</span>.node.node));
 <span data-nosnippet>559</span>        child.replace(other.node).map(|node| {
 <span data-nosnippet>560</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = BstNodeRef {
@@ -4374,7 +4374,7 @@
 <span data-nosnippet>566</span>        })
 <span data-nosnippet>567</span>    }
 <span data-nosnippet>568</span>    <span class="kw">pub unsafe fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>other: BstNodeRef&lt;marker::Owned, Spec&gt;) {
-<span data-nosnippet>569</span>        <span class="kw">let </span>child = <span class="kw">unsafe </span>{ <span class="self">self</span>.node.node.as_mut().child.get_unchecked_mut(Dir::IDX) };
+<span data-nosnippet>569</span>        <span class="kw">let </span>child = <span class="kw">unsafe </span>{ <span class="self">self</span>.node.<a href="../../num/zero_one.rs.html#1-14">node</a>.as_mut().child.get_unchecked_mut(Dir::IDX) };
 <span data-nosnippet>570</span>        Spec::Parent::set_parent(other.<span class="highlight">borrow_mut</span>(), <span class="prelude-val">Some</span>(<span class="self">self</span>.node.node));
 <span data-nosnippet>571</span>        <span class="kw-2">*</span>child = <span class="prelude-val">Some</span>(other.node);
 <span data-nosnippet>572</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#327&#34;,&#34;line 327&#34;],[[13,13],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#333&#34;,&#34;line 333&#34;],[[15,15],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#335&#34;,&#34;line 335&#34;],[[18,18],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#338&#34;,&#34;line 338&#34;],[[32,32],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#352&#34;,&#34;line 352&#34;],[[33,33],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#353&#34;,&#34;line 353&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#327">line 327</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>320</span>    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, key: T::Key) {
@@ -4755,7 +4755,7 @@
 <span data-nosnippet>297</span>            }
 <span data-nosnippet>298</span>            Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
 <span data-nosnippet>299</span>            Ordering::Less =&gt; {
-<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/mod.rs.html#1-86">child</a>) = (<span class="kw">unsafe </span>{ root.<span class="highlight">borrow_mut</span>().right_mut().take() }) <span class="kw">else </span>{
+<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>child) = (<span class="kw">unsafe </span>{ root.<span class="highlight">borrow_mut</span>().right_mut().take() }) <span class="kw">else </span>{
 <span data-nosnippet>301</span>                    <span class="kw">break </span>Ordering::Less;
 <span data-nosnippet>302</span>                };
 <span data-nosnippet>303</span>                Spec::top_down(child.borrow_datamut());
@@ -4850,10 +4850,10 @@
 <span data-nosnippet>392</span>    root: <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;,
 <span data-nosnippet>393</span>    seeker: Seeker,
 <span data-nosnippet>394</span>    equal_side: EqualSide,
-<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;<a href="../algebra/magma.rs.html#56">Spec</a>&gt;&gt;)
+<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;)
 <span data-nosnippet>396</span><span class="kw">where
 <span data-nosnippet>397</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithNoParent&lt;Data&gt;&gt;,
-<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;<a href="../algebra/magma.rs.html#56">Spec</a> = Spec&gt;,
+<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;Spec = Spec&gt;,
 <span data-nosnippet>399</span>{
 <span data-nosnippet>400</span>    <span class="kw">let </span><span class="prelude-val">Some</span>(root) = root <span class="kw">else </span>{
 <span data-nosnippet>401</span>        <span class="kw">return </span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
@@ -5327,7 +5327,7 @@
 <span data-nosnippet>319</span>            stack.push(cur);
 <span data-nosnippet>320</span>            len += <span class="number">1</span>;
 <span data-nosnippet>321</span>        }
-<span data-nosnippet>322</span>        <span class="kw">let </span>root = stack.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">first</a>().copied().map(BstRoot::new);
+<span data-nosnippet>322</span>        <span class="kw">let </span>root = stack.first().copied().map(BstRoot::new);
 <span data-nosnippet>323</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>root) = root {
 <span data-nosnippet>324</span>            <span class="self">Self</span>::build_bottom_up(root.<span class="highlight">borrow_datamut</span>());
 <span data-nosnippet>325</span>            (<span class="prelude-val">Some</span>(root), len)
@@ -5395,7 +5395,7 @@
 <span data-nosnippet>387</span>        <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>node.as_ptr()).data.value.key })
 <span data-nosnippet>388</span>    }
 <span data-nosnippet>389</span>
-<span data-nosnippet>390</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><a class="self" href="../algebra/magma.rs.html#56">self</a>, index: usize, f: F)
+<span data-nosnippet>390</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, f: F)
 <span data-nosnippet>391</span>    <span class="kw">where
 <span data-nosnippet>392</span>        </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
 <span data-nosnippet>393</span>    {
@@ -5586,7 +5586,7 @@
 <span data-nosnippet>233</span>    A: Allocator&lt;TreapNode&lt;M, L&gt;&gt;,
 <span data-nosnippet>234</span>{
 <span data-nosnippet>235</span>    root: <span class="prelude-ty">Option</span>&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>236</span>    node_id_manager: BstNodeIdManager&lt;TreapSpec&lt;<a href="../algebra/action.rs.html#14">M</a>, L&gt;&gt;,
+<span data-nosnippet>236</span>    node_id_manager: BstNodeIdManager&lt;TreapSpec&lt;M, L&gt;&gt;,
 <span data-nosnippet>237</span>    rng: Xorshift,
 <span data-nosnippet>238</span>    allocator: ManuallyDrop&lt;A&gt;,
 <span data-nosnippet>239</span>    _marker: PhantomData&lt;(M, L)&gt;,
@@ -5609,7 +5609,7 @@
 <span data-nosnippet>256</span>    }
 <span data-nosnippet>257</span>}
 <span data-nosnippet>258</span>
-<span data-nosnippet>259</span><span class="kw">impl</span>&lt;M, L, A&gt; Drop <span class="kw">for </span>Treap&lt;M, L, A&gt;
+<span data-nosnippet>259</span><span class="kw">impl</span>&lt;<a href="../algebra/action.rs.html#23">M</a>, <a href="../algebra/action.rs.html#23">L</a>, A&gt; Drop <span class="kw">for </span>Treap&lt;M, L, A&gt;
 <span data-nosnippet>260</span><span class="kw">where
 <span data-nosnippet>261</span>    </span>M: MonoidAct&lt;Key: Ord&gt;,
 <span data-nosnippet>262</span>    L: LazyMapMonoid,
@@ -6038,7 +6038,7 @@
 <span data-nosnippet>367</span>            .unwrap_or_else(T::agg_unit)
 <span data-nosnippet>368</span>    }
 <span data-nosnippet>369</span>
-<span data-nosnippet>370</span>    <span class="kw">pub fn </span><a href="../algebra/mod.rs.html#1-49">reverse</a>&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R)
+<span data-nosnippet>370</span>    <span class="kw">pub fn </span>reverse&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R)
 <span data-nosnippet>371</span>    <span class="kw">where
 <span data-nosnippet>372</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>373</span>    {
@@ -6732,7 +6732,7 @@
 <span data-nosnippet>220</span>        })
 <span data-nosnippet>221</span>    }
 <span data-nosnippet>222</span>
-<span data-nosnippet>223</span>    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
+<span data-nosnippet>223</span>    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../graph/mod.rs.html#1-136">index</a>: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
 <span data-nosnippet>224</span>        <span class="kw">if </span>index &gt;= <span class="self">self</span>.length {
 <span data-nosnippet>225</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>226</span>        }
@@ -6854,7 +6854,7 @@
 <span data-nosnippet>342</span><span class="kw">pub struct </span>Iter&lt;<span class="lifetime">'a</span>, K, V&gt; {
 <span data-nosnippet>343</span>    split: Split3&lt;<span class="lifetime">'a</span>, SplayTreeSpec&lt;K, V&gt;&gt;,
 <span data-nosnippet>344</span>    front: Vec&lt;NonNull&lt;SplayTreeNode&lt;K, V&gt;&gt;&gt;,
-<span data-nosnippet>345</span>    back: Vec&lt;NonNull&lt;SplayTreeNode&lt;K, V&gt;&gt;&gt;,
+<span data-nosnippet>345</span>    back: <a href="../algebra/action.rs.html#12">Vec</a>&lt;NonNull&lt;SplayTreeNode&lt;K, V&gt;&gt;&gt;,
 <span data-nosnippet>346</span>    remaining: usize,
 <span data-nosnippet>347</span>}
 <span data-nosnippet>348</span>
@@ -6866,7 +6866,7 @@
 <span data-nosnippet>354</span>    }
 <span data-nosnippet>355</span>}
 <span data-nosnippet>356</span>
-<span data-nosnippet>357</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <a href="../algebra/lazy_map.rs.html#40">K</a>, V&gt; Iter&lt;<span class="lifetime">'a</span>, K, V&gt; {
+<span data-nosnippet>357</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, K, V&gt; Iter&lt;<span class="lifetime">'a</span>, K, V&gt; {
 <span data-nosnippet>358</span>    <span class="kw">fn </span>new(split: Split3&lt;<span class="lifetime">'a</span>, SplayTreeSpec&lt;K, V&gt;&gt;) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>359</span>        <span class="kw">let </span>remaining = split
 <span data-nosnippet>360</span>            .mid()
@@ -7092,7 +7092,7 @@
 <span data-nosnippet>289</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>290</span>    {
 <span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, range);
-<span data-nosnippet>292</span>        <span class="kw">if let </span><a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(root) = split.mid_datamut() {
+<span data-nosnippet>292</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = split.mid_datamut() {
 <span data-nosnippet>293</span>            ImplicitSplayTreeSpec::reverse(root);
 <span data-nosnippet>294</span>        }
 <span data-nosnippet>295</span>    }
@@ -7105,7 +7105,7 @@
 <span data-nosnippet>302</span>        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.root.as_ref()<span class="question-mark">?</span>.reborrow().<span class="highlight">into_data</span>().value.key)
 <span data-nosnippet>303</span>    }
 <span data-nosnippet>304</span>
-<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, f: F)
+<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>, f: <a href="../algebra/action.rs.html#70">F</a>)
 <span data-nosnippet>306</span>    <span class="kw">where
 <span data-nosnippet>307</span>        </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
 <span data-nosnippet>308</span>    {
@@ -7348,7 +7348,7 @@
 <span data-nosnippet>242</span>    }
 <span data-nosnippet>243</span>}
 <span data-nosnippet>244</span>
-<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;T, A&gt;
+<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;<a href="../algebra/action.rs.html#39">T</a>, A&gt;
 <span data-nosnippet>246</span><span class="kw">where
 <span data-nosnippet>247</span>    </span>T: LazyMapMonoid,
 <span data-nosnippet>248</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
@@ -7371,7 +7371,7 @@
 <span data-nosnippet>265</span>        <span class="self">Self</span>::default()
 <span data-nosnippet>266</span>    }
 <span data-nosnippet>267</span>
-<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>269</span>        <span class="self">Self </span>{
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
@@ -7385,7 +7385,7 @@
 <span data-nosnippet>279</span><span class="kw">impl</span>&lt;T, A&gt; ImplicitTreap&lt;T, A&gt;
 <span data-nosnippet>280</span><span class="kw">where
 <span data-nosnippet>281</span>    </span>T: LazyMapMonoid,
-<span data-nosnippet>282</span>    <a href="../algebra/action.rs.html#86">A</a>: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
+<span data-nosnippet>282</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
 <span data-nosnippet>283</span>{
 <span data-nosnippet>284</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: T::Key) -&gt; ImplicitTreapRoot&lt;T&gt; {
 <span data-nosnippet>285</span>        BstRoot::from_data(
@@ -7499,7 +7499,7 @@
 <span data-nosnippet>393</span>    {
 <span data-nosnippet>394</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.length);
 <span data-nosnippet>395</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, index..=index);
-<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.<a href="../algebra/lazy_map.rs.html#18-20">mid_datamut</a>().unwrap();
+<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.mid_datamut().unwrap();
 <span data-nosnippet>397</span>        ImplicitTreapSpec::&lt;T&gt;::top_down(node.reborrow_datamut());
 <span data-nosnippet>398</span>        {
 <span data-nosnippet>399</span>            <span class="kw">let </span>data = node.data_mut();
@@ -7719,7 +7719,7 @@
 <span data-nosnippet>162</span>    <span class="kw">where
 <span data-nosnippet>163</span>        </span>Spec: BstSpec&lt;Data: BstDataAccess&lt;marker::LazyMap, Value = <span class="self">Self</span>&gt;&gt;,
 <span data-nosnippet>164</span>    {
-<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().<span class="highlight">into_data</span>().bst_data().<a href="../../num/zero_one.rs.html#15-28">act</a>) {
+<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().<span class="highlight">into_data</span>().bst_data().act) {
 <span data-nosnippet>166</span>            <span class="kw">return</span>;
 <span data-nosnippet>167</span>        }
 <span data-nosnippet>168</span>        <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().bst_data_mut().act, L::act_unit());
@@ -8105,7 +8105,7 @@
 <span data-nosnippet>289</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>290</span>    {
 <span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, range);
-<span data-nosnippet>292</span>        <span class="kw">if let </span><a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(root) = split.mid_datamut() {
+<span data-nosnippet>292</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = split.mid_datamut() {
 <span data-nosnippet>293</span>            ImplicitSplayTreeSpec::reverse(root);
 <span data-nosnippet>294</span>        }
 <span data-nosnippet>295</span>    }
@@ -8118,7 +8118,7 @@
 <span data-nosnippet>302</span>        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.root.as_ref()<span class="question-mark">?</span>.reborrow().into_data().value.key)
 <span data-nosnippet>303</span>    }
 <span data-nosnippet>304</span>
-<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, f: F)
+<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>, f: <a href="../algebra/action.rs.html#70">F</a>)
 <span data-nosnippet>306</span>    <span class="kw">where
 <span data-nosnippet>307</span>        </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
 <span data-nosnippet>308</span>    {
@@ -8292,7 +8292,7 @@
 <span data-nosnippet>242</span>    }
 <span data-nosnippet>243</span>}
 <span data-nosnippet>244</span>
-<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;T, A&gt;
+<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;<a href="../algebra/action.rs.html#39">T</a>, A&gt;
 <span data-nosnippet>246</span><span class="kw">where
 <span data-nosnippet>247</span>    </span>T: LazyMapMonoid,
 <span data-nosnippet>248</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
@@ -8315,7 +8315,7 @@
 <span data-nosnippet>265</span>        <span class="self">Self</span>::default()
 <span data-nosnippet>266</span>    }
 <span data-nosnippet>267</span>
-<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>269</span>        <span class="self">Self </span>{
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
@@ -8329,7 +8329,7 @@
 <span data-nosnippet>279</span><span class="kw">impl</span>&lt;T, A&gt; ImplicitTreap&lt;T, A&gt;
 <span data-nosnippet>280</span><span class="kw">where
 <span data-nosnippet>281</span>    </span>T: LazyMapMonoid,
-<span data-nosnippet>282</span>    <a href="../algebra/action.rs.html#86">A</a>: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
+<span data-nosnippet>282</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
 <span data-nosnippet>283</span>{
 <span data-nosnippet>284</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: T::Key) -&gt; ImplicitTreapRoot&lt;T&gt; {
 <span data-nosnippet>285</span>        BstRoot::from_data(
@@ -8443,7 +8443,7 @@
 <span data-nosnippet>393</span>    {
 <span data-nosnippet>394</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.length);
 <span data-nosnippet>395</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, index..=index);
-<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.<a href="../algebra/lazy_map.rs.html#18-20">mid_datamut</a>().unwrap();
+<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.mid_datamut().unwrap();
 <span data-nosnippet>397</span>        ImplicitTreapSpec::&lt;T&gt;::top_down(node.<span class="highlight">reborrow_datamut</span>());
 <span data-nosnippet>398</span>        {
 <span data-nosnippet>399</span>            <span class="kw">let </span>data = node.data_mut();
@@ -8624,7 +8624,7 @@
 <span data-nosnippet>220</span>        })
 <span data-nosnippet>221</span>    }
 <span data-nosnippet>222</span>
-<span data-nosnippet>223</span>    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
+<span data-nosnippet>223</span>    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../graph/mod.rs.html#1-136">index</a>: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
 <span data-nosnippet>224</span>        <span class="kw">if </span>index &gt;= <span class="self">self</span>.length {
 <span data-nosnippet>225</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>226</span>        }
@@ -8892,7 +8892,7 @@
 <span data-nosnippet>289</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>290</span>    {
 <span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, range);
-<span data-nosnippet>292</span>        <span class="kw">if let </span><a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(root) = split.mid_datamut() {
+<span data-nosnippet>292</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = split.mid_datamut() {
 <span data-nosnippet>293</span>            ImplicitSplayTreeSpec::reverse(root);
 <span data-nosnippet>294</span>        }
 <span data-nosnippet>295</span>    }
@@ -8905,7 +8905,7 @@
 <span data-nosnippet>302</span>        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.root.as_ref()<span class="question-mark">?</span>.reborrow().into_data().value.key)
 <span data-nosnippet>303</span>    }
 <span data-nosnippet>304</span>
-<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, f: F)
+<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>, f: <a href="../algebra/action.rs.html#70">F</a>)
 <span data-nosnippet>306</span>    <span class="kw">where
 <span data-nosnippet>307</span>        </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
 <span data-nosnippet>308</span>    {
@@ -9079,7 +9079,7 @@
 <span data-nosnippet>242</span>    }
 <span data-nosnippet>243</span>}
 <span data-nosnippet>244</span>
-<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;T, A&gt;
+<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;<a href="../algebra/action.rs.html#39">T</a>, A&gt;
 <span data-nosnippet>246</span><span class="kw">where
 <span data-nosnippet>247</span>    </span>T: LazyMapMonoid,
 <span data-nosnippet>248</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
@@ -9102,7 +9102,7 @@
 <span data-nosnippet>265</span>        <span class="self">Self</span>::default()
 <span data-nosnippet>266</span>    }
 <span data-nosnippet>267</span>
-<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>269</span>        <span class="self">Self </span>{
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
@@ -9116,7 +9116,7 @@
 <span data-nosnippet>279</span><span class="kw">impl</span>&lt;T, A&gt; ImplicitTreap&lt;T, A&gt;
 <span data-nosnippet>280</span><span class="kw">where
 <span data-nosnippet>281</span>    </span>T: LazyMapMonoid,
-<span data-nosnippet>282</span>    <a href="../algebra/action.rs.html#86">A</a>: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
+<span data-nosnippet>282</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
 <span data-nosnippet>283</span>{
 <span data-nosnippet>284</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: T::Key) -&gt; ImplicitTreapRoot&lt;T&gt; {
 <span data-nosnippet>285</span>        BstRoot::from_data(
@@ -9230,7 +9230,7 @@
 <span data-nosnippet>393</span>    {
 <span data-nosnippet>394</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.length);
 <span data-nosnippet>395</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, index..=index);
-<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.<a href="../algebra/lazy_map.rs.html#18-20">mid_datamut</a>().unwrap();
+<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.mid_datamut().unwrap();
 <span data-nosnippet>397</span>        ImplicitTreapSpec::&lt;T&gt;::top_down(node.reborrow_datamut());
 <span data-nosnippet>398</span>        {
 <span data-nosnippet>399</span>            <span class="kw">let </span>data = node.<span class="highlight">data_mut</span>();
@@ -9362,7 +9362,7 @@
 <span data-nosnippet>162</span>    <span class="kw">where
 <span data-nosnippet>163</span>        </span>Spec: BstSpec&lt;Data: BstDataAccess&lt;marker::LazyMap, Value = <span class="self">Self</span>&gt;&gt;,
 <span data-nosnippet>164</span>    {
-<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().<a href="../../num/zero_one.rs.html#15-28">act</a>) {
+<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().act) {
 <span data-nosnippet>166</span>            <span class="kw">return</span>;
 <span data-nosnippet>167</span>        }
 <span data-nosnippet>168</span>        <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.<span class="highlight">data_mut</span>().bst_data_mut().act, L::act_unit());
@@ -9866,7 +9866,7 @@
 <span data-nosnippet>297</span>            }
 <span data-nosnippet>298</span>            Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
 <span data-nosnippet>299</span>            Ordering::Less =&gt; {
-<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/mod.rs.html#1-86">child</a>) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().take() }) <span class="kw">else </span>{
+<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>child) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().take() }) <span class="kw">else </span>{
 <span data-nosnippet>301</span>                    <span class="kw">break </span>Ordering::Less;
 <span data-nosnippet>302</span>                };
 <span data-nosnippet>303</span>                Spec::top_down(child.borrow_datamut());
@@ -9961,10 +9961,10 @@
 <span data-nosnippet>392</span>    root: <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;,
 <span data-nosnippet>393</span>    seeker: Seeker,
 <span data-nosnippet>394</span>    equal_side: EqualSide,
-<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;<a href="../algebra/magma.rs.html#56">Spec</a>&gt;&gt;)
+<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;)
 <span data-nosnippet>396</span><span class="kw">where
 <span data-nosnippet>397</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithNoParent&lt;Data&gt;&gt;,
-<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;<a href="../algebra/magma.rs.html#56">Spec</a> = Spec&gt;,
+<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;Spec = Spec&gt;,
 <span data-nosnippet>399</span>{
 <span data-nosnippet>400</span>    <span class="kw">let </span><span class="prelude-val">Some</span>(root) = root <span class="kw">else </span>{
 <span data-nosnippet>401</span>        <span class="kw">return </span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
@@ -10245,7 +10245,7 @@
 <span data-nosnippet>297</span>            }
 <span data-nosnippet>298</span>            Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
 <span data-nosnippet>299</span>            Ordering::Less =&gt; {
-<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/mod.rs.html#1-86">child</a>) = (<span class="kw">unsafe </span>{ root.borrow_mut().<span class="highlight">right_mut</span>().take() }) <span class="kw">else </span>{
+<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>child) = (<span class="kw">unsafe </span>{ root.borrow_mut().<span class="highlight">right_mut</span>().take() }) <span class="kw">else </span>{
 <span data-nosnippet>301</span>                    <span class="kw">break </span>Ordering::Less;
 <span data-nosnippet>302</span>                };
 <span data-nosnippet>303</span>                Spec::top_down(child.borrow_datamut());
@@ -10340,10 +10340,10 @@
 <span data-nosnippet>392</span>    root: <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;,
 <span data-nosnippet>393</span>    seeker: Seeker,
 <span data-nosnippet>394</span>    equal_side: EqualSide,
-<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;<a href="../algebra/magma.rs.html#56">Spec</a>&gt;&gt;)
+<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;)
 <span data-nosnippet>396</span><span class="kw">where
 <span data-nosnippet>397</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithNoParent&lt;Data&gt;&gt;,
-<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;<a href="../algebra/magma.rs.html#56">Spec</a> = Spec&gt;,
+<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;Spec = Spec&gt;,
 <span data-nosnippet>399</span>{
 <span data-nosnippet>400</span>    <span class="kw">let </span><span class="prelude-val">Some</span>(root) = root <span class="kw">else </span>{
 <span data-nosnippet>401</span>        <span class="kw">return </span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>);

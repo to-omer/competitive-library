@@ -237,7 +237,7 @@
 <span data-nosnippet>231</span>    <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
 <span data-nosnippet>232</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, n);
 <span data-nosnippet>233</span>    <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
-<span data-nosnippet>234</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
+<span data-nosnippet>234</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">i32</a>);
 <span data-nosnippet>235</span>    <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R <span class="kw">as </span>i32);
 <span data-nosnippet>236</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
 <span data-nosnippet>237</span>    <span class="kw">let </span>iimag_vec = _mm256_set1_epi32(iimag <span class="kw">as </span>i32);
@@ -308,11 +308,11 @@
 <span data-nosnippet>302</span>                <span class="kw">let </span>a2na3iimag = M::mod_mul(M::mod_sub(a2, a3), iimag);
 <span data-nosnippet>303</span>                <span class="kw-2">*</span>ll.add(i) = M::mod_add(a0pa1, a2pa3);
 <span data-nosnippet>304</span>                <span class="kw-2">*</span>lr.add(i) = M::mod_mul(M::mod_add(a0na1, a2na3iimag), w1);
-<span data-nosnippet>305</span>                <span class="kw-2">*</span>rl.<a href="../../../algebra/lazy_map.rs.html#128">add</a>(i) = M::mod_mul(M::mod_sub(a0pa1, a2pa3), w2);
+<span data-nosnippet>305</span>                <span class="kw-2">*</span>rl.add(i) = M::mod_mul(M::mod_sub(a0pa1, a2pa3), w2);
 <span data-nosnippet>306</span>                <span class="kw-2">*</span>rr.add(i) = M::mod_mul(M::mod_sub(a0na1, a2na3iimag), w3);
 <span data-nosnippet>307</span>                i += <span class="number">1</span>;
 <span data-nosnippet>308</span>            }
-<span data-nosnippet>309</span>            w1 = M::mod_mul(w1, M::INFO.inv_rate3[<a href="../../../algebra/lazy_map.rs.html#131">s</a>.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>309</span>            w1 = M::mod_mul(w1, M::INFO.inv_rate3[s.trailing_ones() <span class="kw">as </span>usize]);
 <span data-nosnippet>310</span>        }
 <span data-nosnippet>311</span>        v &lt;&lt;= <span class="number">2</span>;
 <span data-nosnippet>312</span>    }
@@ -325,7 +325,7 @@
 <span data-nosnippet>319</span>            <span class="kw">let </span>y0 = add_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>320</span>            <span class="kw">let </span>y1 = sub_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>321</span>            _mm256_storeu_si256(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y0);
-<span data-nosnippet>322</span>            _mm256_storeu_si256(a.as_mut_ptr().add(half + <a href="../../../algebra/lazy_map.rs.html#157">i</a>) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y1);
+<span data-nosnippet>322</span>            _mm256_storeu_si256(a.as_mut_ptr().add(half + i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y1);
 <span data-nosnippet>323</span>            i += <span class="number">8</span>;
 <span data-nosnippet>324</span>        }
 <span data-nosnippet>325</span>        <span class="kw">while </span>i &lt; half {
@@ -342,7 +342,7 @@
 <span data-nosnippet>336</span>    <span class="kw">while </span>i + <span class="number">8 </span>&lt;= n {
 <span data-nosnippet>337</span>        <span class="kw">let </span>x = _mm256_loadu_si256(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
 <span data-nosnippet>338</span>        <span class="kw">let </span>y = <span class="highlight">simd32::montgomery_mul_256_canon</span>(x, inv_vec, r_vec, mod_vec);
-<span data-nosnippet>339</span>        _mm256_storeu_si256(a.as_mut_ptr().add(<a href="../../../algebra/lazy_map.rs.html#179">i</a>) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y);
+<span data-nosnippet>339</span>        _mm256_storeu_si256(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y);
 <span data-nosnippet>340</span>        i += <span class="number">8</span>;
 <span data-nosnippet>341</span>    }
 <span data-nosnippet>342</span>    <span class="kw">while </span>i &lt; n {

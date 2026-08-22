@@ -280,7 +280,7 @@
 <span data-nosnippet>223</span>            }
 <span data-nosnippet>224</span>            <span class="kw">let </span>row = <span class="kw-2">&amp;mut </span>rows[ri];
 <span data-nosnippet>225</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>226</span>                <span class="kw">if </span>row[j] != <span class="number">0 </span>{
+<span data-nosnippet>226</span>                <span class="kw">if </span>row[<a href="../algebra/action.rs.html#20">j</a>] != <span class="number">0 </span>{
 <span data-nosnippet>227</span>                    <span class="kw">let </span>b = mul(modinv(mat[j][j], ord), row[j]);
 <span data-nosnippet>228</span>                    <span class="kw">for </span>(r, a) <span class="kw">in </span>row[j..].iter_mut().zip(<span class="kw-2">&amp;</span>mat[j][j..]) {
 <span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span>r, mul(<span class="kw-2">*</span>a, b));
@@ -308,7 +308,7 @@
 <span data-nosnippet>251</span><span class="attr">#[derive(Debug)]
 <span data-nosnippet>252</span></span><span class="kw">struct </span>IndexCalculusWithPrimitiveRoot {
 <span data-nosnippet>253</span>    p: u64,
-<span data-nosnippet>254</span>    ord: u64,
+<span data-nosnippet>254</span>    <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">ord</a>: u64,
 <span data-nosnippet>255</span>    prec: QdrtPowPrec,
 <span data-nosnippet>256</span>    coeff: Vec&lt;u64&gt;,
 <span data-nosnippet>257</span>}
@@ -348,7 +348,7 @@
 <span data-nosnippet>291</span>        <span class="kw">loop </span>{
 <span data-nosnippet>292</span>            <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
 <span data-nosnippet>293</span>                <span class="kw">let </span><span class="kw-2">mut </span>res = ord - k;
-<span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
+<span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#23">c</a>, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
 <span data-nosnippet>295</span>                    <span class="kw">for _ in </span><span class="number">0</span>..r {
 <span data-nosnippet>296</span>                        res += c;
 <span data-nosnippet>297</span>                        <span class="kw">if </span>res &gt;= ord {
@@ -440,7 +440,7 @@
 <span data-nosnippet>383</span>    <span class="macro">assert_ne!</span>(e, <span class="number">0</span>);
 <span data-nosnippet>384</span>    <span class="kw">let </span>n = p.pow(e);
 <span data-nosnippet>385</span>    <span class="macro">assert!</span>(a &lt; n);
-<span data-nosnippet>386</span>    <span class="macro">assert!</span>(b &lt; n);
+<span data-nosnippet>386</span>    <span class="macro">assert!</span>(<a href="../algebra/lazy_map.rs.html#131">b</a> &lt; n);
 <span data-nosnippet>387</span>    <span class="macro">assert_eq!</span>(gcd(a, p), <span class="number">1</span>);
 <span data-nosnippet>388</span>    <span class="kw">if </span>p == <span class="number">1 </span>{
 <span data-nosnippet>389</span>        <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">1</span>));
@@ -457,12 +457,12 @@
 <span data-nosnippet>400</span>    <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(n <span class="kw">as _</span>);
 <span data-nosnippet>401</span>    <span class="kw">if </span>p == <span class="number">2 </span>{
 <span data-nosnippet>402</span>        <span class="kw">if </span>e &gt;= <span class="number">3 </span>{
-<span data-nosnippet>403</span>            <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>&amp;&amp; <a href="../algebra/lazy_map.rs.html#157">b</a> % <span class="number">4 </span>!= <span class="number">1 </span>{
+<span data-nosnippet>403</span>            <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>&amp;&amp; b % <span class="number">4 </span>!= <span class="number">1 </span>{
 <span data-nosnippet>404</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>405</span>            }
 <span data-nosnippet>406</span>            <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ a } <span class="kw">else </span>{ n - a };
 <span data-nosnippet>407</span>            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ b } <span class="kw">else </span>{ n - b };
-<span data-nosnippet>408</span>            <span class="kw">let </span>g = <span class="number">5</span>;
+<span data-nosnippet>408</span>            <span class="kw">let </span><a href="../algebra/lazy_map.rs.html#157">g</a> = <span class="number">5</span>;
 <span data-nosnippet>409</span>            <span class="kw">let </span>ord = n / <span class="number">4</span>;
 <span data-nosnippet>410</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(g, aa, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
 <span data-nosnippet>411</span>            <span class="kw">let </span>y = pohlig_hellman_prime_power_order(g, bb, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
@@ -1043,7 +1043,7 @@
 <span data-nosnippet>165</span>        k = a;
 <span data-nosnippet>166</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
 <span data-nosnippet>167</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>168</span>            x = br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * <span class="self">self</span>.p1[<a href="../algebra/action.rs.html#14">b</a> <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>168</span>            x = br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * <span class="self">self</span>.p1[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>169</span>            k = a;
 <span data-nosnippet>170</span>        }
 <span data-nosnippet>171</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
@@ -1055,7 +1055,7 @@
 <span data-nosnippet>177</span>            <span class="kw">let </span>(<span class="kw">_</span>, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
 <span data-nosnippet>178</span>            x = br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * <span class="self">self</span>.p3[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>179</span>        }
-<span data-nosnippet>180</span>        x
+<span data-nosnippet>180</span>        <a href="../algebra/action.rs.html#20">x</a>
 <span data-nosnippet>181</span>    }
 <span data-nosnippet>182</span>}
 <span data-nosnippet>183</span>
@@ -1082,7 +1082,7 @@
 <span data-nosnippet>204</span>            <span class="kw">let </span><span class="kw-2">mut </span>kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
 <span data-nosnippet>205</span>            <span class="kw">let </span><span class="kw-2">mut </span>gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>206</span>            <span class="kw">let </span><span class="kw-2">mut </span>k = kk;
-<span data-nosnippet>207</span>            <span class="kw">let </span><span class="kw-2">mut </span>gk = gkk;
+<span data-nosnippet>207</span>            <span class="kw">let </span><span class="kw-2">mut </span>gk = <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">gkk</a>;
 <span data-nosnippet>208</span>            <span class="kw">while </span>ri &gt;= rows.len() {
 <span data-nosnippet>209</span>                row[pc] = k;
 <span data-nosnippet>210</span>                <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
@@ -1094,7 +1094,7 @@
 <span data-nosnippet>216</span>                    gk = br.<span class="highlight">rem</span>(gk <span class="kw">as </span>u128 * gkk <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>217</span>                } <span class="kw">else </span>{
 <span data-nosnippet>218</span>                    kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>219</span>                    gkk = prec.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">pow</a>(kk, <span class="kw-2">&amp;</span>br);
+<span data-nosnippet>219</span>                    gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>220</span>                    k = kk;
 <span data-nosnippet>221</span>                    gk = gkk;
 <span data-nosnippet>222</span>                }
@@ -1160,7 +1160,7 @@
 <span data-nosnippet>282</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>283</span>        }
 <span data-nosnippet>284</span>
-<span data-nosnippet>285</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::new();
+<span data-nosnippet>285</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::<a href="../algebra/lazy_map.rs.html#66">new</a>();
 <span data-nosnippet>286</span>        <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0u64</span>; br_primes.len()];
 <span data-nosnippet>287</span>        <span class="kw">let </span><span class="kw-2">mut </span>kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
 <span data-nosnippet>288</span>        <span class="kw">let </span><span class="kw-2">mut </span>gkk = <span class="self">self</span>.prec.pow(kk, <span class="kw-2">&amp;</span>br);
@@ -1200,7 +1200,7 @@
 <span data-nosnippet>322</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
 <span data-nosnippet>323</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
 <span data-nosnippet>324</span>        <span class="kw">let </span>a = br.<span class="highlight">rem</span>(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>325</span>        <span class="kw">let </span>b = br.<span class="highlight"><a href="../num/zero_one.rs.html#16">rem</a></span>(b <span class="kw">as _</span>) <span class="kw">as </span>u64;
+<span data-nosnippet>325</span>        <span class="kw">let </span>b = br.<span class="highlight">rem</span>(b <span class="kw">as _</span>) <span class="kw">as </span>u64;
 <span data-nosnippet>326</span>        <span class="kw">if </span>a == <span class="number">0 </span>{
 <span data-nosnippet>327</span>            <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
 <span data-nosnippet>328</span>        }
@@ -1208,7 +1208,7 @@
 <span data-nosnippet>330</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>331</span>        }
 <span data-nosnippet>332</span>
-<span data-nosnippet>333</span>        <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(<a href="../algebra/lazy_map.rs.html#135">a</a>, br_primes)<span class="question-mark">?</span>;
+<span data-nosnippet>333</span>        <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
 <span data-nosnippet>334</span>        <span class="kw">let </span>y = <span class="self">self</span>.index_calculus(b, br_primes)<span class="question-mark">?</span>;
 <span data-nosnippet>335</span>        solve_linear_congruence(x, y, ord)
 <span data-nosnippet>336</span>    }
@@ -1220,7 +1220,7 @@
 <span data-nosnippet>342</span>
 <span data-nosnippet>343</span><span class="kw">pub fn </span>discrete_logarithm_prime_mod(a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
 <span data-nosnippet>344</span>    IC.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>ic.get() }.discrete_logarithm(a, b, p))
-<span data-nosnippet>345</span>        .map(|t| t.<span class="number">0</span>)
+<span data-nosnippet>345</span>        .<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">map</a>(|t| t.<span class="number">0</span>)
 <span data-nosnippet>346</span>}
 <span data-nosnippet>347</span>
 <span data-nosnippet>348</span><span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
@@ -1379,7 +1379,7 @@
 <span data-nosnippet>126</span>                <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>127</span>                <span class="kw">while </span>n &gt; <span class="number">0 </span>{
 <span data-nosnippet>128</span>                    res = <span class="self">self</span>.bm.<span class="highlight">rem</span>(res * <span class="self">self</span>.fact[<span class="self">self</span>.bm.<span class="highlight">rem</span>(n) <span class="kw">as </span>usize]);
-<span data-nosnippet>129</span>                    res = <span class="self">self</span>.bm.<span class="highlight">rem</span>(res * <span class="self">self</span>.inv_fact[<span class="self">self</span>.bm.<span class="highlight">rem</span>(k) <span class="kw">as </span>usize]);
+<span data-nosnippet>129</span>                    res = <span class="self">self</span>.bm.<span class="highlight">rem</span>(res * <span class="self">self</span>.inv_fact[<a class="self" href="../num/zero_one.rs.html#1-14">self</a>.bm.<span class="highlight">rem</span>(k) <span class="kw">as </span>usize]);
 <span data-nosnippet>130</span>                    res = <span class="self">self</span>.bm.<span class="highlight">rem</span>(res * <span class="self">self</span>.inv_fact[<span class="self">self</span>.bm.<span class="highlight">rem</span>(r) <span class="kw">as </span>usize]);
 <span data-nosnippet>131</span>                    n = <span class="self">self</span>.bp.div(n);
 <span data-nosnippet>132</span>                    k = <span class="self">self</span>.bp.div(k);
@@ -1434,12 +1434,12 @@
 <span data-nosnippet>181</span>                    res = <span class="self">self
 <span data-nosnippet>182</span>                        </span>.bm128
 <span data-nosnippet>183</span>                        .<span class="highlight">rem</span>(res * <span class="self">self</span>.inv_fact[<span class="self">self</span>.bm.<span class="highlight">rem</span>(r) <span class="kw">as </span>usize] <span class="kw">as </span>u128);
-<span data-nosnippet>184</span>                    n = <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.bp.div(n);
+<span data-nosnippet>184</span>                    n = <span class="self">self</span>.bp.div(n);
 <span data-nosnippet>185</span>                    k = <span class="self">self</span>.bp.div(k);
 <span data-nosnippet>186</span>                    r = <span class="self">self</span>.bp.div(r);
 <span data-nosnippet>187</span>                    <span class="kw">let </span>eps = n - k - r;
 <span data-nosnippet>188</span>                    e0 += eps;
-<span data-nosnippet>189</span>                    <span class="kw">if </span>e0 &gt;= <span class="self">self</span>.<a href="../algebra/action.rs.html#70">e</a> <span class="kw">as </span>u64 {
+<span data-nosnippet>189</span>                    <span class="kw">if </span>e0 &gt;= <span class="self">self</span>.e <span class="kw">as </span>u64 {
 <span data-nosnippet>190</span>                        <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>191</span>                    }
 <span data-nosnippet>192</span>                    i += <span class="number">1</span>;
@@ -1452,7 +1452,7 @@
 <span data-nosnippet>199</span>                }
 <span data-nosnippet>200</span>                res = <span class="self">self</span>.bm128.<span class="highlight">rem</span>(res * pow64(<span class="self">self</span>.p, e0, <span class="kw-2">&amp;</span><span class="self">self</span>.bm128) <span class="kw">as </span>u128);
 <span data-nosnippet>201</span>            }
-<span data-nosnippet>202</span>            res <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">u64</a>
+<span data-nosnippet>202</span>            res <span class="kw">as </span>u64
 <span data-nosnippet>203</span>        }
 <span data-nosnippet>204</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/competitive/math/primitive_root.rs.html#36&#34;,&#34;line 36&#34;],[[14,14],&#34;../../../src/competitive/math/primitive_root.rs.html#38&#34;,&#34;line 38&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#36">line 36</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>24</span><span class="kw">pub fn </span>check_primitive_root(
 <span data-nosnippet>25</span>    g: u64,

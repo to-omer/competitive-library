@@ -182,7 +182,7 @@
 <span data-nosnippet>144</span>            .filter(|(r, v)| pred(r, v))
 <span data-nosnippet>145</span>    }
 <span data-nosnippet>146</span>    <span class="doccomment">/// Pop a left neighboring range of `[key, key)` if the predicate is satisfied.
-<span data-nosnippet>147</span>    </span><span class="kw">pub fn </span>pop_left_if&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>K, pred: F) -&gt; <a class="prelude-ty" href="../string/mod.rs.html#1-55">Option</a>&lt;((K, K), V)&gt;
+<span data-nosnippet>147</span>    </span><span class="kw">pub fn </span>pop_left_if&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>K, pred: F) -&gt; <span class="prelude-ty">Option</span>&lt;((K, K), V)&gt;
 <span data-nosnippet>148</span>    <span class="kw">where
 <span data-nosnippet>149</span>        </span>K: Clone + Ord,
 <span data-nosnippet>150</span>        F: FnMut(<span class="kw-2">&amp;</span>(K, K), <span class="kw-2">&amp;</span>V) -&gt; bool,
@@ -238,7 +238,7 @@
 <span data-nosnippet>200</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, v)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">0</span>, |r, <span class="kw">_</span>| range.<span class="number">0 </span>&lt; r.<span class="number">1</span>) {
 <span data-nosnippet>201</span>            <span class="kw">if </span>range.<span class="number">1 </span>&lt; r.<span class="number">1 </span>{
 <span data-nosnippet>202</span>                f(range.clone(), v.clone());
-<span data-nosnippet>203</span>                <span class="self">self</span>.map.insert((range.<span class="number">1</span>.clone(), r.<span class="number">1</span>), v.clone());
+<span data-nosnippet>203</span>                <span class="self">self</span>.map.insert((range.<span class="number">1</span>.clone(), <a href="../algebra/action.rs.html#20">r</a>.<span class="number">1</span>), v.clone());
 <span data-nosnippet>204</span>            } <span class="kw">else </span>{
 <span data-nosnippet>205</span>                f((range.<span class="number">0</span>.clone(), r.<span class="number">1</span>), v.clone());
 <span data-nosnippet>206</span>            }
@@ -247,7 +247,7 @@
 <span data-nosnippet>209</span>        <span class="kw">let </span><span class="kw-2">mut </span>wait = <span class="prelude-val">None</span>;
 <span data-nosnippet>210</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, v)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">1</span>, |r, <span class="kw">_</span>| range.<span class="number">1 </span>&lt; r.<span class="number">1</span>) {
 <span data-nosnippet>211</span>            wait = <span class="prelude-val">Some</span>(((r.<span class="number">0</span>, range.<span class="number">1</span>.clone()), v.clone()));
-<span data-nosnippet>212</span>            <span class="self">self</span>.map.insert((range.<span class="number">1</span>.clone(), r.<span class="number">1</span>), v);
+<span data-nosnippet>212</span>            <span class="self">self</span>.map.insert((range.<span class="number">1</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(), r.<span class="number">1</span>), v);
 <span data-nosnippet>213</span>        }
 <span data-nosnippet>214</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">self</span>.drain_with_inner(range, f);
 <span data-nosnippet>215</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, v)) = wait {
@@ -275,7 +275,7 @@
 <span data-nosnippet>237</span>    </span>K: Clone + Ord,
 <span data-nosnippet>238</span>    V: Clone + Eq,
 <span data-nosnippet>239</span>{
-<span data-nosnippet>240</span>    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = ((<a href="../algebra/action.rs.html#86">K</a>, K), V)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
+<span data-nosnippet>240</span>    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = ((K, K), V)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
 <span data-nosnippet>241</span>        <span class="kw">for </span>(range, value) <span class="kw">in </span>iter {
 <span data-nosnippet>242</span>            <span class="self">self</span>.insert(range, value);
 <span data-nosnippet>243</span>        }
@@ -495,7 +495,7 @@
 <span data-nosnippet>204</span>            } <span class="kw">else </span>{
 <span data-nosnippet>205</span>                f((range.<span class="number">0</span>.clone(), r.<span class="number">1</span>), v.clone());
 <span data-nosnippet>206</span>            }
-<span data-nosnippet>207</span>            <span class="self">self</span>.map.insert((r.<span class="number">0</span>, range.<span class="number">0</span>.clone()), v);
+<span data-nosnippet>207</span>            <span class="self">self</span>.map.<a href="../algebra/magma.rs.html#145-172">insert</a>((r.<span class="number">0</span>, range.<span class="number">0</span>.clone()), v);
 <span data-nosnippet>208</span>        }
 <span data-nosnippet>209</span>        <span class="kw">let </span><span class="kw-2">mut </span>wait = <span class="prelude-val">None</span>;
 <span data-nosnippet>210</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, v)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">1</span>, |r, <span class="kw">_</span>| range.<span class="number">1 </span>&lt; r.<span class="number">1</span>) {
@@ -593,12 +593,12 @@
 <span data-nosnippet>302</span>    <span class="doccomment">/// Inserts into the specified range.
 <span data-nosnippet>303</span>    </span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T))
 <span data-nosnippet>304</span>    <span class="kw">where
-<span data-nosnippet>305</span>        </span>T: Clone + Ord,
+<span data-nosnippet>305</span>        </span><a href="../algebra/lazy_map.rs.html#23">T</a>: Clone + Ord,
 <span data-nosnippet>306</span>    {
 <span data-nosnippet>307</span>        <span class="self">self</span>.insert_with(range, |<span class="kw">_</span>| {});
 <span data-nosnippet>308</span>    }
 <span data-nosnippet>309</span>    <span class="doccomment">/// Insert and operate old range.
-<span data-nosnippet>310</span>    </span><span class="kw">pub fn </span>insert_with&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (<a href="../algebra/lazy_map.rs.html#36">T</a>, <a href="../algebra/lazy_map.rs.html#36">T</a>), <span class="kw-2">mut </span>f: F)
+<span data-nosnippet>310</span>    </span><span class="kw">pub fn </span>insert_with&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T), <span class="kw-2">mut </span>f: F)
 <span data-nosnippet>311</span>    <span class="kw">where
 <span data-nosnippet>312</span>        </span>T: Clone + Ord,
 <span data-nosnippet>313</span>        F: FnMut((T, T)),
@@ -759,7 +759,7 @@
 <span data-nosnippet>197</span>        V: Clone,
 <span data-nosnippet>198</span>        F: FnMut((K, K), V),
 <span data-nosnippet>199</span>    {
-<span data-nosnippet>200</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, <a href="../algebra/action.rs.html#14">v</a>)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">0</span>, |r, <span class="kw">_</span>| range.<span class="number">0 </span>&lt; r.<span class="number">1</span>) {
+<span data-nosnippet>200</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, v)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">0</span>, |r, <span class="kw">_</span>| range.<span class="number">0 </span>&lt; r.<span class="number">1</span>) {
 <span data-nosnippet>201</span>            <span class="kw">if </span>range.<span class="number">1 </span>&lt; r.<span class="number">1 </span>{
 <span data-nosnippet>202</span>                f(range.clone(), v.clone());
 <span data-nosnippet>203</span>                <span class="self">self</span>.map.insert((range.<span class="number">1</span>.clone(), r.<span class="number">1</span>), v.clone());
@@ -874,7 +874,7 @@
 <span data-nosnippet>312</span>        </span>T: Clone + Ord,
 <span data-nosnippet>313</span>        F: FnMut((T, T)),
 <span data-nosnippet>314</span>    {
-<span data-nosnippet>315</span>        <span class="self">self</span>.map.insert_with(range, (), |r, <span class="kw">_</span>| f(<a href="../algebra/lazy_map.rs.html#48">r</a>))
+<span data-nosnippet>315</span>        <span class="self">self</span>.map.insert_with(range, (), |r, <span class="kw">_</span>| f(r))
 <span data-nosnippet>316</span>    }
 <span data-nosnippet>317</span>    <span class="doccomment">/// Remove items contained in the range.
 <span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T))
@@ -1042,7 +1042,7 @@
 <span data-nosnippet>197</span>        V: Clone,
 <span data-nosnippet>198</span>        F: FnMut((K, K), V),
 <span data-nosnippet>199</span>    {
-<span data-nosnippet>200</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, <a href="../algebra/action.rs.html#14">v</a>)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">0</span>, |r, <span class="kw">_</span>| range.<span class="number">0 </span>&lt; r.<span class="number">1</span>) {
+<span data-nosnippet>200</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((r, v)) = <span class="self">self</span>.pop_left_if(<span class="kw-2">&amp;</span>range.<span class="number">0</span>, |r, <span class="kw">_</span>| range.<span class="number">0 </span>&lt; r.<span class="number">1</span>) {
 <span data-nosnippet>201</span>            <span class="kw">if </span>range.<span class="number">1 </span>&lt; r.<span class="number">1 </span>{
 <span data-nosnippet>202</span>                f(range.clone(), v.clone());
 <span data-nosnippet>203</span>                <span class="self">self</span>.map.insert((range.<span class="number">1</span>.clone(), r.<span class="number">1</span>), v.clone());
@@ -1157,7 +1157,7 @@
 <span data-nosnippet>312</span>        </span>T: Clone + Ord,
 <span data-nosnippet>313</span>        F: FnMut((T, T)),
 <span data-nosnippet>314</span>    {
-<span data-nosnippet>315</span>        <span class="self">self</span>.map.insert_with(range, (), |r, <span class="kw">_</span>| f(<a href="../algebra/lazy_map.rs.html#48">r</a>))
+<span data-nosnippet>315</span>        <span class="self">self</span>.map.insert_with(range, (), |r, <span class="kw">_</span>| f(r))
 <span data-nosnippet>316</span>    }
 <span data-nosnippet>317</span>    <span class="doccomment">/// Remove items contained in the range.
 <span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T))
@@ -1417,7 +1417,7 @@
 <span data-nosnippet>297</span>    <span class="kw">where
 <span data-nosnippet>298</span>        </span>T: Clone + Ord,
 <span data-nosnippet>299</span>    {
-<span data-nosnippet>300</span>        <span class="self">self</span>.map.get_range_value(key).<a href="../algebra/lazy_map.rs.html#18">map</a>(|(r, <span class="kw">_</span>)| r)
+<span data-nosnippet>300</span>        <span class="self">self</span>.map.get_range_value(key).map(|(r, <span class="kw">_</span>)| r)
 <span data-nosnippet>301</span>    }
 <span data-nosnippet>302</span>    <span class="doccomment">/// Inserts into the specified range.
 <span data-nosnippet>303</span>    </span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T))
@@ -1700,7 +1700,7 @@
 <span data-nosnippet>297</span>    <span class="kw">where
 <span data-nosnippet>298</span>        </span>T: Clone + Ord,
 <span data-nosnippet>299</span>    {
-<span data-nosnippet>300</span>        <span class="self">self</span>.map.get_range_value(key).<a href="../algebra/lazy_map.rs.html#18">map</a>(|(r, <span class="kw">_</span>)| r)
+<span data-nosnippet>300</span>        <span class="self">self</span>.map.get_range_value(key).map(|(r, <span class="kw">_</span>)| r)
 <span data-nosnippet>301</span>    }
 <span data-nosnippet>302</span>    <span class="doccomment">/// Inserts into the specified range.
 <span data-nosnippet>303</span>    </span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T))
@@ -2114,7 +2114,7 @@
 <span data-nosnippet>315</span>        <span class="self">self</span>.map.insert_with(range, (), |r, <span class="kw">_</span>| f(r))
 <span data-nosnippet>316</span>    }
 <span data-nosnippet>317</span>    <span class="doccomment">/// Remove items contained in the range.
-<span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (<a href="../algebra/action.rs.html#54">T</a>, <a href="../algebra/action.rs.html#54">T</a>))
+<span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: (T, T))
 <span data-nosnippet>319</span>    <span class="kw">where
 <span data-nosnippet>320</span>        </span>T: Clone + Ord,
 <span data-nosnippet>321</span>    {
@@ -2129,7 +2129,7 @@
 <span data-nosnippet>330</span>        <span class="self">self</span>.map.get_left_if(key, |r, <span class="kw">_</span>| pred(r)).map(|(r, <span class="kw">_</span>)| r)
 <span data-nosnippet>331</span>    }
 <span data-nosnippet>332</span>    <span class="doccomment">/// Get a right neighboring range of `[key, key)` if the predicate is satisfied.
-<span data-nosnippet>333</span>    </span><span class="kw">pub fn </span>get_right_if&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T, <span class="kw-2">mut </span>pred: F) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(T, T)&gt;
+<span data-nosnippet>333</span>    </span><span class="kw">pub fn </span>get_right_if&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T, <span class="kw-2">mut </span>pred: <a href="../algebra/action.rs.html#70">F</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(T, T)&gt;
 <span data-nosnippet>334</span>    <span class="kw">where
 <span data-nosnippet>335</span>        </span>T: Clone + Ord,
 <span data-nosnippet>336</span>        F: FnMut(<span class="kw-2">&amp;</span>(T, T)) -&gt; bool,
@@ -2137,12 +2137,12 @@
 <span data-nosnippet>338</span>        <span class="self">self</span>.map.get_right_if(key, |r, <span class="kw">_</span>| pred(r)).map(|(r, <span class="kw">_</span>)| r)
 <span data-nosnippet>339</span>    }
 <span data-nosnippet>340</span>    <span class="doccomment">/// Pop a left neighboring range of `[key, key)` if the predicate is satisfied.
-<span data-nosnippet>341</span>    </span><span class="kw">pub fn </span>pop_left_if&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T, <span class="kw-2">mut </span>pred: F) -&gt; <span class="prelude-ty">Option</span>&lt;(T, T)&gt;
+<span data-nosnippet>341</span>    </span><span class="kw">pub fn </span>pop_left_if&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T, <span class="kw-2">mut </span>pred: <a href="../algebra/action.rs.html#86">F</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(T, T)&gt;
 <span data-nosnippet>342</span>    <span class="kw">where
 <span data-nosnippet>343</span>        </span>T: Clone + Ord,
 <span data-nosnippet>344</span>        F: FnMut(<span class="kw-2">&amp;</span>(T, T)) -&gt; bool,
 <span data-nosnippet>345</span>    {
-<span data-nosnippet>346</span>        <span class="self">self</span>.map.pop_left_if(key, |r, <span class="kw">_</span>| pred(r)).map(|(r, <span class="kw">_</span>)| r)
+<span data-nosnippet>346</span>        <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">map</a>.pop_left_if(key, |r, <span class="kw">_</span>| pred(r)).map(|(r, <span class="kw">_</span>)| r)
 <span data-nosnippet>347</span>    }
 <span data-nosnippet>348</span>    <span class="doccomment">/// Pop a right neighboring range of `[key, key)` if the predicate is satisfied.
 <span data-nosnippet>349</span>    </span><span class="kw">pub fn </span>pop_right_if&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T, <span class="kw-2">mut </span>pred: F) -&gt; <span class="prelude-ty">Option</span>&lt;(T, T)&gt;

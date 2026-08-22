@@ -615,13 +615,13 @@
 <span data-nosnippet>303</span>
 <span data-nosnippet>304</span><span class="kw">fn </span>brute_force&lt;T, C&gt;(
 <span data-nosnippet>305</span>    <span class="kw-2">mut </span>p: FormalPowerSeries&lt;T, C&gt;,
-<span data-nosnippet>306</span>    <span class="kw-2">mut </span>q: FormalPowerSeries&lt;<a href="../../algebra/action.rs.html#23">T</a>, C&gt;,
+<span data-nosnippet>306</span>    <span class="kw-2">mut </span>q: FormalPowerSeries&lt;T, C&gt;,
 <span data-nosnippet>307</span>    k: usize,
 <span data-nosnippet>308</span>) -&gt; FpsMatrix&lt;T, C&gt;
 <span data-nosnippet>309</span><span class="kw">where
-<span data-nosnippet>310</span>    </span>T: FormalPowerSeriesCoefficient,
+<span data-nosnippet>310</span>    </span><a href="../../algebra/action.rs.html#20">T</a>: FormalPowerSeriesCoefficient,
 <span data-nosnippet>311</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
-<span data-nosnippet>312</span>    C::F: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+<span data-nosnippet>312</span>    C::F: Clone,
 <span data-nosnippet>313</span>{
 <span data-nosnippet>314</span>    <span class="kw">let </span>threshold = degree(<span class="kw-2">&amp;</span>p) - k <span class="kw">as </span>isize;
 <span data-nosnippet>315</span>    <span class="kw">let </span><span class="kw-2">mut </span>matrix = FpsMatrix::identity();
@@ -634,7 +634,7 @@
 <span data-nosnippet>322</span>            p[i + q_degree] = T::zero();
 <span data-nosnippet>323</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..q_degree {
 <span data-nosnippet>324</span>                <span class="kw">let </span>value = negative_quotient[i].clone() * <span class="kw-2">&amp;</span>q[j];
-<span data-nosnippet>325</span>                p[i + j] += <span class="kw-2">&amp;</span>value;
+<span data-nosnippet>325</span>                p[<a href="../../algebra/action.rs.html#54">i</a> + j] += <span class="kw-2">&amp;</span>value;
 <span data-nosnippet>326</span>            }
 <span data-nosnippet>327</span>        }
 <span data-nosnippet>328</span>        matrix.left_multiply_step(<span class="kw-2">&amp;</span>negative_quotient);
@@ -657,7 +657,7 @@
 <span data-nosnippet>345</span>    C::transform_ntt(coefficients, length)
 <span data-nosnippet>346</span>}
 <span data-nosnippet>347</span>
-<span data-nosnippet>348</span><span class="kw">fn </span>transform_window&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, end: isize, length: usize) -&gt; C::F
+<span data-nosnippet>348</span><span class="kw">fn </span>transform_window&lt;T, C&gt;(fps: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;, end: isize, length: usize) -&gt; C::<a href="../../algebra/action.rs.html#86">F</a>
 <span data-nosnippet>349</span><span class="kw">where
 <span data-nosnippet>350</span>    </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>351</span>    C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
@@ -730,7 +730,7 @@
 <span data-nosnippet>418</span>    p_reduced.extend_from_slice(<span class="kw-2">&amp;</span>p0[length - part_length..]);
 <span data-nosnippet>419</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced = q1[length - part_length..].to_vec();
 <span data-nosnippet>420</span>    q_reduced.extend_from_slice(<span class="kw-2">&amp;</span>q0[length - part_length..]);
-<span data-nosnippet>421</span>    <span class="kw">let </span><span class="kw-2">mut </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">q_reduced</a>: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(q_reduced).trimed();
+<span data-nosnippet>421</span>    <span class="kw">let </span><span class="kw-2">mut </span>q_reduced: FormalPowerSeries&lt;T, C&gt; = FormalPowerSeries::from_vec(q_reduced).trimed();
 <span data-nosnippet>422</span>
 <span data-nosnippet>423</span>    <span class="kw">let </span>position = d - half <span class="kw">as </span>isize + degeneracy;
 <span data-nosnippet>424</span>    <span class="kw">let </span><span class="kw-2">mut </span>leading = T::zero();

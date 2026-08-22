@@ -328,7 +328,7 @@
 <span data-nosnippet>308</span>        <span class="kw">let </span><span class="kw-2">mut </span>free = Vec::with_capacity(m - rank);
 <span data-nosnippet>309</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivot = <span class="number">0</span>;
 <span data-nosnippet>310</span>        <span class="kw">for </span>c <span class="kw">in </span><span class="number">0</span>..m {
-<span data-nosnippet>311</span>            <span class="kw">if </span>pivot &lt; rank &amp;&amp; <a href="../algebra/magma.rs.html#145-172">pivots</a>[pivot] == c {
+<span data-nosnippet>311</span>            <span class="kw">if </span>pivot &lt; rank &amp;&amp; pivots[pivot] == c {
 <span data-nosnippet>312</span>                pivot += <span class="number">1</span>;
 <span data-nosnippet>313</span>            } <span class="kw">else </span>{
 <span data-nosnippet>314</span>                free.push(c);
@@ -428,7 +428,7 @@
 <span data-nosnippet>408</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>409</span>                }
 <span data-nosnippet>410</span>                <span class="kw">let </span>e = a[r].clone();
-<span data-nosnippet>411</span>                <a href="../algebra/lazy_map.rs.html#157">a</a>[r] = <span class="highlight"><a href="../algebra/lazy_map.rs.html#157">R</a>::zero</span>();
+<span data-nosnippet>411</span>                a[r] = <span class="highlight">R::zero</span>();
 <span data-nosnippet>412</span>                <span class="kw">for </span>(x, y) <span class="kw">in </span>inverse[left..right]
 <span data-nosnippet>413</span>                    .iter_mut()
 <span data-nosnippet>414</span>                    .zip(<span class="kw-2">&amp;</span>pivot_inverse[left..right])
@@ -635,9 +635,9 @@
 <span data-nosnippet>615</span>{
 <span data-nosnippet>616</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
 <span data-nosnippet>617</span>    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>618</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, rhs.shape.<span class="number">0</span>);
+<span data-nosnippet>618</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.min">rhs</a>.shape.<span class="number">0</span>);
 <span data-nosnippet>619</span>        <span class="kw">let </span>rhs = rhs.transpose();
-<span data-nosnippet>620</span>        Matrix::new_with((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">0</span>), |i, j| {
+<span data-nosnippet>620</span>        Matrix::new_with((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">0</span>), |i, <a href="../algebra/lazy_map.rs.html#411">j</a>| {
 <span data-nosnippet>621</span>            R::dot_product(<span class="kw-2">&amp;</span><span class="self">self</span>[i], <span class="kw-2">&amp;</span>rhs[j])
 <span data-nosnippet>622</span>        })
 <span data-nosnippet>623</span>    }
@@ -652,7 +652,7 @@
 <span data-nosnippet>632</span>    stride_b: usize,
 <span data-nosnippet>633</span>) {
 <span data-nosnippet>634</span>    <span class="kw">fn </span>add_block&lt;R: Ring&gt;(
-<span data-nosnippet>635</span>        <a href="../algebra/lazy_map.rs.html#411">a</a>: <span class="kw-2">&amp;</span>[R::T],
+<span data-nosnippet>635</span>        a: <span class="kw-2">&amp;</span>[R::T],
 <span data-nosnippet>636</span>        b: <span class="kw-2">&amp;</span>[R::T],
 <span data-nosnippet>637</span>        out: <span class="kw-2">&amp;mut </span>[R::T],
 <span data-nosnippet>638</span>        n: usize,
@@ -673,7 +673,7 @@
 <span data-nosnippet>653</span>    <span class="kw">fn </span>sub_block&lt;R: Ring&gt;(
 <span data-nosnippet>654</span>        a: <span class="kw-2">&amp;</span>[R::T],
 <span data-nosnippet>655</span>        b: <span class="kw-2">&amp;</span>[R::T],
-<span data-nosnippet>656</span>        out: <span class="kw-2">&amp;mut </span>[<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">R::T</a>],
+<span data-nosnippet>656</span>        out: <span class="kw-2">&amp;mut </span>[R::T],
 <span data-nosnippet>657</span>        n: usize,
 <span data-nosnippet>658</span>        stride_a: usize,
 <span data-nosnippet>659</span>        stride_b: usize,
@@ -739,22 +739,22 @@
 <span data-nosnippet>719</span>
 <span data-nosnippet>720</span>    <span class="comment">// (A11 + A12) B22
 <span data-nosnippet>721</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a12..], s1, h, stride_a, stride_a);
-<span data-nosnippet>722</span>    strassen_rec::&lt;R&gt;(s1, <span class="kw-2">&amp;</span>b[b22..], m5, h, <a href="../algebra/lazy_map.rs.html#527">h</a>, stride_b);
+<span data-nosnippet>722</span>    strassen_rec::&lt;R&gt;(s1, <span class="kw-2">&amp;</span>b[<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">b22</a>..], m5, h, h, stride_b);
 <span data-nosnippet>723</span>
 <span data-nosnippet>724</span>    <span class="comment">// (A21 - A11)(B11 + B12)
 <span data-nosnippet>725</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a11..], s1, h, stride_a, stride_a);
-<span data-nosnippet>726</span>    add_block::&lt;<a href="../algebra/lazy_map.rs.html#535">R</a>&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b12..], s2, h, stride_b, stride_b);
-<span data-nosnippet>727</span>    strassen_rec::&lt;R&gt;(s1, s2, m6, h, h, h);
+<span data-nosnippet>726</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#527">b</a>[b11..], <span class="kw-2">&amp;</span>b[b12..], s2, h, stride_b, stride_b);
+<span data-nosnippet>727</span>    strassen_rec::&lt;<a href="../algebra/lazy_map.rs.html#535">R</a>&gt;(s1, s2, m6, h, h, h);
 <span data-nosnippet>728</span>
 <span data-nosnippet>729</span>    <span class="comment">// (A12 - A22)(B21 + B22)
-<span data-nosnippet>730</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
+<span data-nosnippet>730</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#535">a</a>[a12..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
 <span data-nosnippet>731</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
-<span data-nosnippet>732</span>    strassen_rec::&lt;R&gt;(s1, s2, m7, h, h, <a href="../algebra/lazy_map.rs.html#545">h</a>);
+<span data-nosnippet>732</span>    strassen_rec::&lt;R&gt;(s1, s2, m7, h, h, h);
 <span data-nosnippet>733</span>
 <span data-nosnippet>734</span>    <span class="kw">let </span>c11 = <span class="number">0</span>;
 <span data-nosnippet>735</span>    <span class="kw">let </span>c12 = h;
 <span data-nosnippet>736</span>    <span class="kw">let </span>c21 = h * n;
-<span data-nosnippet>737</span>    <span class="kw">let </span>c22 = c21 + h;
+<span data-nosnippet>737</span>    <span class="kw">let </span>c22 = <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.min">c21</a> + h;
 <span data-nosnippet>738</span>    <span class="kw">for </span>((((m1, m4), m5), m7), c) <span class="kw">in </span>m1
 <span data-nosnippet>739</span>        .iter()
 <span data-nosnippet>740</span>        .zip(m4.iter())
@@ -948,7 +948,7 @@
 <span data-nosnippet>291</span>    <span class="kw-2">mut </span>x: M::T,
 <span data-nosnippet>292</span>    <span class="kw-2">mut </span>y: M::T,
 <span data-nosnippet>293</span>    <span class="kw-2">mut </span>n: u64,
-<span data-nosnippet>294</span>    <span class="kw-2">mut </span>a: <a href="../num/zero_one.rs.html#15-28">u64</a>,
+<span data-nosnippet>294</span>    <span class="kw-2">mut </span>a: u64,
 <span data-nosnippet>295</span>    <span class="kw-2">mut </span>b: u64,
 <span data-nosnippet>296</span>    <span class="kw-2">mut </span>m: u64,
 <span data-nosnippet>297</span>) -&gt; M::T
@@ -1027,7 +1027,7 @@
 <span data-nosnippet>370</span>        <span class="kw">return </span>ans;
 <span data-nosnippet>371</span>    }
 <span data-nosnippet>372</span>
-<span data-nosnippet>373</span>    <span class="kw">let </span>add_x = l;
+<span data-nosnippet>373</span>    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">add_x</a> = l;
 <span data-nosnippet>374</span>    <span class="kw">let </span>n = (r - l) <span class="kw">as </span>u64;
 <span data-nosnippet>375</span>    <span class="kw">let </span>b = a * add_x + b;
 <span data-nosnippet>376</span>
@@ -1035,7 +1035,7 @@
 <span data-nosnippet>378</span>    <span class="kw">let </span>b = b.rem_euclid(m <span class="kw">as </span>i64);
 <span data-nosnippet>379</span>    <span class="macro">assert!</span>(a &gt;= <span class="number">0</span>);
 <span data-nosnippet>380</span>    <span class="macro">assert!</span>(b &gt;= <span class="number">0</span>);
-<span data-nosnippet>381</span>    <span class="kw">let </span>data = floor_monoid_product::&lt;FloorSum&lt;AddMulOperation&lt;<a href="../algebra/action.rs.html#54">T</a>&gt;, X, Y&gt;&gt;(
+<span data-nosnippet>381</span>    <span class="kw">let </span>data = floor_monoid_product::&lt;FloorSum&lt;AddMulOperation&lt;T&gt;, X, Y&gt;&gt;(
 <span data-nosnippet>382</span>        FloorSum::&lt;AddMulOperation&lt;T&gt;, X, Y&gt;::to_x(),
 <span data-nosnippet>383</span>        FloorSum::&lt;AddMulOperation&lt;T&gt;, X, Y&gt;::to_y(),
 <span data-nosnippet>384</span>        n,
@@ -1105,7 +1105,7 @@
 <span data-nosnippet>448</span>    <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>449</span>        <span class="self">Self </span>{
 <span data-nosnippet>450</span>            x: R::one(),
-<span data-nosnippet>451</span>            <a href="../algebra/lazy_map.rs.html#18">sum</a>: <span class="highlight">R::zero</span>(),
+<span data-nosnippet>451</span>            sum: <span class="highlight">R::zero</span>(),
 <span data-nosnippet>452</span>        }
 <span data-nosnippet>453</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/math/subset_convolve.rs.html#14&#34;,&#34;line 14&#34;],[[92,92],&#34;../../../src/competitive/math/subset_convolve.rs.html#104&#34;,&#34;line 104&#34;],[[93,93],&#34;../../../src/competitive/math/subset_convolve.rs.html#105&#34;,&#34;line 105&#34;],[[112,112],&#34;../../../src/competitive/math/subset_convolve.rs.html#124&#34;,&#34;line 124&#34;],[[113,113],&#34;../../../src/competitive/math/subset_convolve.rs.html#125&#34;,&#34;line 125&#34;],[[132,132],&#34;../../../src/competitive/math/subset_convolve.rs.html#144&#34;,&#34;line 144&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/subset_convolve.rs (<a href="../../../src/competitive/math/subset_convolve.rs.html#14">line 14</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>12</span>    <span class="kw">fn </span>ranked(t: Vec&lt;R::T&gt;, len: usize) -&gt; (Vec&lt;R::T&gt;, usize) {
 <span data-nosnippet>13</span>        <span class="kw">let </span>width = len.trailing_zeros() <span class="kw">as </span>usize + <span class="number">1</span>;
@@ -1231,7 +1231,7 @@
 <span data-nosnippet>133</span>                }
 <span data-nosnippet>134</span>                <span class="kw">let </span>(lower, upper) = y[start..start + half * <span class="number">2</span>].split_at_mut(half);
 <span data-nosnippet>135</span>                <span class="kw">for </span>(upper, lower) <span class="kw">in </span>upper.iter_mut().zip(lower) {
-<span data-nosnippet>136</span>                    R::add_assign(upper, <a href="../lib.rs.html#19">lower</a>);
+<span data-nosnippet>136</span>                    R::add_assign(upper, lower);
 <span data-nosnippet>137</span>                }
 <span data-nosnippet>138</span>            }
 <span data-nosnippet>139</span>
@@ -1240,7 +1240,7 @@
 <span data-nosnippet>142</span>            <span class="kw">let </span>x_row = <span class="kw-2">&amp;</span>x[start..start + width];
 <span data-nosnippet>143</span>            <span class="kw">let </span>y_row = <span class="kw-2">&amp;</span>y[start..start + width];
 <span data-nosnippet>144</span>            output.fill(<span class="highlight">R::zero</span>());
-<span data-nosnippet>145</span>            <span class="self">Self</span>::multiply_row(x_row, y_row, <span class="kw-2">&amp;mut </span>right, <span class="kw-2">&amp;mut </span>output, rank);
+<span data-nosnippet>145</span>            <span class="self">Self</span>::multiply_row(x_row, y_row, <span class="kw-2">&amp;mut </span>right, <span class="kw-2">&amp;mut </span><a href="../algebra/magma.rs.html#145-172">output</a>, rank);
 <span data-nosnippet>146</span>            x[start..start + width].clone_from_slice(<span class="kw-2">&amp;</span>output);
 <span data-nosnippet>147</span>
 <span data-nosnippet>148</span>            <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..i.trailing_ones() <span class="kw">as </span>usize {
@@ -1614,7 +1614,7 @@
 <span data-nosnippet>352</span>    }
 <span data-nosnippet>353</span>
 <span data-nosnippet>354</span>    <span class="kw">pub fn </span>inverse(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Matrix&lt;R&gt;&gt; {
-<span data-nosnippet>355</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
+<span data-nosnippet>355</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">shape</a>.<span class="number">1</span>);
 <span data-nosnippet>356</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>357</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">self</span>.clone();
 <span data-nosnippet>358</span>        <span class="kw">let </span><span class="kw-2">mut </span>inverse = <span class="self">Self</span>::eye((n, n));
@@ -1634,8 +1634,8 @@
 <span data-nosnippet>372</span>                R::mul_assign(x, <span class="kw-2">&amp;</span>d);
 <span data-nosnippet>373</span>            }
 <span data-nosnippet>374</span>
-<span data-nosnippet>375</span>            <span class="kw">let </span>(a_upper, a_lower) = a.data.split_at_mut(r + <span class="number">1</span>);
-<span data-nosnippet>376</span>            <span class="kw">let </span>pivot_a = <span class="kw-2">&amp;</span>a_upper[<a href="../algebra/lazy_map.rs.html#23">r</a>];
+<span data-nosnippet>375</span>            <span class="kw">let </span>(a_upper, a_lower) = a.<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">data</a>.split_at_mut(r + <span class="number">1</span>);
+<span data-nosnippet>376</span>            <span class="kw">let </span>pivot_a = <span class="kw-2">&amp;</span>a_upper[r];
 <span data-nosnippet>377</span>            <span class="kw">let </span>(inverse_upper, inverse_lower) = inverse.data.split_at_mut(r + <span class="number">1</span>);
 <span data-nosnippet>378</span>            <span class="kw">let </span>pivot_inverse = <span class="kw-2">&amp;</span>inverse_upper[r];
 <span data-nosnippet>379</span>            <span class="kw">let </span>(ranges_upper, ranges_lower) = ranges.split_at_mut(r + <span class="number">1</span>);
@@ -1888,7 +1888,7 @@
 <span data-nosnippet>645</span>                <span class="self">self</span>.suffixes.push(sample);
 <span data-nosnippet>646</span>            }
 <span data-nosnippet>647</span>        }
-<span data-nosnippet>648</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = Matrix::&lt;F&gt;::new_with((<span class="self">self</span>.prefixes.len(), <span class="self">self</span>.suffixes.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">len</a>()), |i, j| {
+<span data-nosnippet>648</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = Matrix::&lt;F&gt;::new_with((<span class="self">self</span>.prefixes.len(), <span class="self">self</span>.suffixes.len()), |i, j| {
 <span data-nosnippet>649</span>            <span class="self">self</span>.automaton.behavior(
 <span data-nosnippet>650</span>                <span class="self">self</span>.prefixes[i]
 <span data-nosnippet>651</span>                    .iter()
@@ -1900,7 +1900,7 @@
 <span data-nosnippet>657</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">1</span>..<span class="self">self</span>.suffixes.len() {
 <span data-nosnippet>658</span>                <span class="kw">if </span>!<span class="highlight">F::is_zero</span>(<span class="kw-2">&amp;</span>h[<span class="number">0</span>][j]) {
 <span data-nosnippet>659</span>                    <span class="self">self</span>.suffixes.swap(<span class="number">0</span>, j);
-<span data-nosnippet>660</span>                    <span class="kw">for </span><a href="../algebra/action.rs.html#86">i</a> <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.prefixes.len() {
+<span data-nosnippet>660</span>                    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.prefixes.len() {
 <span data-nosnippet>661</span>                        h.data[i].swap(<span class="number">0</span>, j);
 <span data-nosnippet>662</span>                    }
 <span data-nosnippet>663</span>                    <span class="kw">break</span>;
@@ -2102,7 +2102,7 @@
 <span data-nosnippet>291</span>    <span class="kw-2">mut </span>x: M::T,
 <span data-nosnippet>292</span>    <span class="kw-2">mut </span>y: M::T,
 <span data-nosnippet>293</span>    <span class="kw-2">mut </span>n: u64,
-<span data-nosnippet>294</span>    <span class="kw-2">mut </span>a: <a href="../num/zero_one.rs.html#15-28">u64</a>,
+<span data-nosnippet>294</span>    <span class="kw-2">mut </span>a: u64,
 <span data-nosnippet>295</span>    <span class="kw-2">mut </span>b: u64,
 <span data-nosnippet>296</span>    <span class="kw-2">mut </span>m: u64,
 <span data-nosnippet>297</span>) -&gt; M::T
@@ -2181,7 +2181,7 @@
 <span data-nosnippet>370</span>        <span class="kw">return </span>ans;
 <span data-nosnippet>371</span>    }
 <span data-nosnippet>372</span>
-<span data-nosnippet>373</span>    <span class="kw">let </span>add_x = l;
+<span data-nosnippet>373</span>    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">add_x</a> = l;
 <span data-nosnippet>374</span>    <span class="kw">let </span>n = (r - l) <span class="kw">as </span>u64;
 <span data-nosnippet>375</span>    <span class="kw">let </span>b = a * add_x + b;
 <span data-nosnippet>376</span>
@@ -2189,7 +2189,7 @@
 <span data-nosnippet>378</span>    <span class="kw">let </span>b = b.rem_euclid(m <span class="kw">as </span>i64);
 <span data-nosnippet>379</span>    <span class="macro">assert!</span>(a &gt;= <span class="number">0</span>);
 <span data-nosnippet>380</span>    <span class="macro">assert!</span>(b &gt;= <span class="number">0</span>);
-<span data-nosnippet>381</span>    <span class="kw">let </span>data = floor_monoid_product::&lt;FloorSum&lt;AddMulOperation&lt;<a href="../algebra/action.rs.html#54">T</a>&gt;, X, Y&gt;&gt;(
+<span data-nosnippet>381</span>    <span class="kw">let </span>data = floor_monoid_product::&lt;FloorSum&lt;AddMulOperation&lt;T&gt;, X, Y&gt;&gt;(
 <span data-nosnippet>382</span>        FloorSum::&lt;AddMulOperation&lt;T&gt;, X, Y&gt;::to_x(),
 <span data-nosnippet>383</span>        FloorSum::&lt;AddMulOperation&lt;T&gt;, X, Y&gt;::to_y(),
 <span data-nosnippet>384</span>        n,
@@ -2259,7 +2259,7 @@
 <span data-nosnippet>448</span>    <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>449</span>        <span class="self">Self </span>{
 <span data-nosnippet>450</span>            x: <span class="highlight">R::one</span>(),
-<span data-nosnippet>451</span>            <a href="../algebra/lazy_map.rs.html#18">sum</a>: R::zero(),
+<span data-nosnippet>451</span>            sum: R::zero(),
 <span data-nosnippet>452</span>        }
 <span data-nosnippet>453</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/math/matrix.rs.html#98&#34;,&#34;line 98&#34;],[[146,146],&#34;../../../src/competitive/math/matrix.rs.html#241&#34;,&#34;line 241&#34;],[[186,186],&#34;../../../src/competitive/math/matrix.rs.html#281&#34;,&#34;line 281&#34;],[[250,250],&#34;../../../src/competitive/math/matrix.rs.html#345&#34;,&#34;line 345&#34;],[[333,333],&#34;../../../src/competitive/math/matrix.rs.html#428&#34;,&#34;line 428&#34;],[[360,360],&#34;../../../src/competitive/math/matrix.rs.html#455&#34;,&#34;line 455&#34;],[[367,367],&#34;../../../src/competitive/math/matrix.rs.html#462&#34;,&#34;line 462&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/matrix.rs (<a href="../../../src/competitive/math/matrix.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>95</span>    <span class="kw">pub fn </span>eye(shape: (usize, usize)) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>96</span>        <span class="kw">let </span><span class="kw-2">mut </span>data = <span class="macro">vec!</span>[<span class="macro">vec!</span>[R::zero(); shape.<span class="number">1</span>]; shape.<span class="number">0</span>];
@@ -2436,7 +2436,7 @@
 <span data-nosnippet>267</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = b.to_vec();
 <span data-nosnippet>268</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::with_capacity(n.min(m));
 <span data-nosnippet>269</span>        <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="number">0</span>;
-<span data-nosnippet>270</span>        <span class="kw">for </span>c <span class="kw">in </span><span class="number">0</span>..m {
+<span data-nosnippet>270</span>        <span class="kw">for </span>c <span class="kw">in </span><span class="number">0</span>..<a href="../algebra/action.rs.html#14">m</a> {
 <span data-nosnippet>271</span>            <span class="kw">if </span>rank == n {
 <span data-nosnippet>272</span>                <span class="kw">break</span>;
 <span data-nosnippet>273</span>            }
@@ -2461,7 +2461,7 @@
 <span data-nosnippet>292</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>293</span>                }
 <span data-nosnippet>294</span>                <span class="kw">let </span>factor = row[c].clone();
-<span data-nosnippet>295</span>                <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">row</a>[c] = R::zero();
+<span data-nosnippet>295</span>                row[c] = R::zero();
 <span data-nosnippet>296</span>                <span class="kw">for </span>(x, y) <span class="kw">in </span>row[(c + <span class="number">1</span>)..].iter_mut().zip(<span class="kw-2">&amp;</span>pivot[(c + <span class="number">1</span>)..]) {
 <span data-nosnippet>297</span>                    R::sub_assign(x, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, y));
 <span data-nosnippet>298</span>                }
@@ -2511,9 +2511,9 @@
 <span data-nosnippet>342</span>        <span class="kw">let </span><span class="kw-2">mut </span>basis = Vec::with_capacity(free.len());
 <span data-nosnippet>343</span>        <span class="kw">for </span>(j, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>free.iter().enumerate() {
 <span data-nosnippet>344</span>            <span class="kw">let </span><span class="kw-2">mut </span>vector = <span class="macro">vec!</span>[R::zero(); m];
-<span data-nosnippet>345</span>            vector[c] = <span class="highlight"><a href="../algebra/lazy_map.rs.html#44">R</a>::one</span>();
+<span data-nosnippet>345</span>            vector[c] = <span class="highlight">R::one</span>();
 <span data-nosnippet>346</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..rank {
-<span data-nosnippet>347</span>                vector[pivots[i]] = R::neg(<span class="kw-2">&amp;</span>coefficients[<a href="../algebra/lazy_map.rs.html#48">i</a>][j]);
+<span data-nosnippet>347</span>                vector[pivots[i]] = R::neg(<span class="kw-2">&amp;</span>coefficients[i][j]);
 <span data-nosnippet>348</span>            }
 <span data-nosnippet>349</span>            basis.push(vector);
 <span data-nosnippet>350</span>        }
@@ -2633,7 +2633,7 @@
 <span data-nosnippet>464</span>                mul = R::mul(<span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;</span><span class="self">self</span>[j + <span class="number">1</span>][j]);
 <span data-nosnippet>465</span>                <span class="kw">let </span>c = R::mul(<span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;</span><span class="self">self</span>[j][i]);
 <span data-nosnippet>466</span>                <span class="kw">for </span>(next, dp) <span class="kw">in </span>next.iter_mut().zip(dp[j].iter()) {
-<span data-nosnippet>467</span>                    R::sub_assign(next, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>c, dp));
+<span data-nosnippet>467</span>                    R::sub_assign(<a href="../num/zero_one.rs.html#1-14">next</a>, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>c, dp));
 <span data-nosnippet>468</span>                }
 <span data-nosnippet>469</span>            }
 <span data-nosnippet>470</span>            dp.push(next);
@@ -2777,7 +2777,7 @@
 <span data-nosnippet>658</span>                <span class="kw">if </span>!F::is_zero(<span class="kw-2">&amp;</span>h[<span class="number">0</span>][j]) {
 <span data-nosnippet>659</span>                    <span class="self">self</span>.suffixes.swap(<span class="number">0</span>, j);
 <span data-nosnippet>660</span>                    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.prefixes.len() {
-<span data-nosnippet>661</span>                        h.data[i].swap(<span class="number">0</span>, <a href="../algebra/action.rs.html#23">j</a>);
+<span data-nosnippet>661</span>                        h.data[i].swap(<span class="number">0</span>, j);
 <span data-nosnippet>662</span>                    }
 <span data-nosnippet>663</span>                    <span class="kw">break</span>;
 <span data-nosnippet>664</span>                }
@@ -3129,7 +3129,7 @@
 <span data-nosnippet>644</span>            .zip(b.chunks(stride_b))
 <span data-nosnippet>645</span>            .zip(out.chunks_exact_mut(n))
 <span data-nosnippet>646</span>        {
-<span data-nosnippet>647</span>            <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a.iter().zip(b.iter()).zip(c.iter_mut()) {
+<span data-nosnippet>647</span>            <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a.iter().zip(b.iter()).zip(<a href="../algebra/action.rs.html#70">c</a>.iter_mut()) {
 <span data-nosnippet>648</span>                <span class="kw-2">*</span>c = <span class="highlight">R::add</span>(a, b);
 <span data-nosnippet>649</span>            }
 <span data-nosnippet>650</span>        }
@@ -3187,7 +3187,7 @@
 <span data-nosnippet>702</span>
 <span data-nosnippet>703</span>    <span class="comment">// (A11 + A22)(B11 + B22)
 <span data-nosnippet>704</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
-<span data-nosnippet>705</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
+<span data-nosnippet>705</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#44">b</a>[b11..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
 <span data-nosnippet>706</span>    strassen_rec::&lt;R&gt;(s1, s2, m1, h, h, h);
 <span data-nosnippet>707</span>
 <span data-nosnippet>708</span>    <span class="comment">// (A21 + A22) B11
@@ -3785,7 +3785,7 @@
 <span data-nosnippet>644</span>            .zip(b.chunks(stride_b))
 <span data-nosnippet>645</span>            .zip(out.chunks_exact_mut(n))
 <span data-nosnippet>646</span>        {
-<span data-nosnippet>647</span>            <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a.iter().zip(b.iter()).zip(c.iter_mut()) {
+<span data-nosnippet>647</span>            <span class="kw">for </span>((a, b), c) <span class="kw">in </span>a.iter().zip(b.iter()).zip(<a href="../algebra/action.rs.html#70">c</a>.iter_mut()) {
 <span data-nosnippet>648</span>                <span class="kw-2">*</span>c = R::add(a, b);
 <span data-nosnippet>649</span>            }
 <span data-nosnippet>650</span>        }
@@ -3843,7 +3843,7 @@
 <span data-nosnippet>702</span>
 <span data-nosnippet>703</span>    <span class="comment">// (A11 + A22)(B11 + B22)
 <span data-nosnippet>704</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
-<span data-nosnippet>705</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
+<span data-nosnippet>705</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#44">b</a>[b11..], <span class="kw-2">&amp;</span>b[b22..], s2, h, stride_b, stride_b);
 <span data-nosnippet>706</span>    strassen_rec::&lt;R&gt;(s1, s2, m1, h, h, h);
 <span data-nosnippet>707</span>
 <span data-nosnippet>708</span>    <span class="comment">// (A21 + A22) B11
@@ -4263,7 +4263,7 @@
 <span data-nosnippet>358</span>        <span class="kw">let </span><span class="kw-2">mut </span>inverse = <span class="self">Self</span>::eye((n, n));
 <span data-nosnippet>359</span>        <span class="kw">let </span><span class="kw-2">mut </span>ranges: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).map(|i| (i, i + <span class="number">1</span>)).collect();
 <span data-nosnippet>360</span>        <span class="kw">for </span>r <span class="kw">in </span><span class="number">0</span>..n {
-<span data-nosnippet>361</span>            <span class="kw">let </span>pivot = (r..n).find(|<span class="kw-2">&amp;</span>i| !R::is_zero(<span class="kw-2">&amp;</span>a[i][<a href="../algebra/action.rs.html#70">r</a>]))<span class="question-mark">?</span>;
+<span data-nosnippet>361</span>            <span class="kw">let </span>pivot = (r..n).<a href="../num/zero_one.rs.html#1-14">find</a>(|<span class="kw-2">&amp;</span>i| !R::is_zero(<span class="kw-2">&amp;</span>a[i][r]))<span class="question-mark">?</span>;
 <span data-nosnippet>362</span>            a.data.swap(r, pivot);
 <span data-nosnippet>363</span>            inverse.data.swap(r, pivot);
 <span data-nosnippet>364</span>            ranges.swap(r, pivot);
@@ -4307,7 +4307,7 @@
 <span data-nosnippet>402</span>            <span class="kw">let </span>(inverse_upper, inverse_lower) = inverse.data.split_at_mut(r);
 <span data-nosnippet>403</span>            <span class="kw">let </span>pivot_inverse = <span class="kw-2">&amp;</span>inverse_lower[<span class="number">0</span>];
 <span data-nosnippet>404</span>            <span class="kw">let </span>(ranges_upper, <span class="kw">_</span>) = ranges.split_at_mut(r);
-<span data-nosnippet>405</span>            <span class="kw">for </span>((<a href="../algebra/lazy_map.rs.html#48">a</a>, inverse), range) <span class="kw">in </span>a.data[..r].iter_mut().zip(inverse_upper).zip(ranges_upper)
+<span data-nosnippet>405</span>            <span class="kw">for </span>((a, inverse), range) <span class="kw">in </span>a.data[..r].iter_mut().zip(inverse_upper).zip(ranges_upper)
 <span data-nosnippet>406</span>            {
 <span data-nosnippet>407</span>                <span class="kw">if </span>R::is_zero(<span class="kw-2">&amp;</span>a[r]) {
 <span data-nosnippet>408</span>                    <span class="kw">continue</span>;
@@ -4351,7 +4351,7 @@
 <span data-nosnippet>446</span>                <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.data.iter_mut() {
 <span data-nosnippet>447</span>                    <span class="kw">let </span>v = a[(j + <span class="number">2</span>)..]
 <span data-nosnippet>448</span>                        .iter()
-<span data-nosnippet>449</span>                        .zip(v.iter())
+<span data-nosnippet>449</span>                        .zip(v.<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">iter</a>())
 <span data-nosnippet>450</span>                        .fold(R::zero(), |s, a| R::add(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span>R::mul(a.<span class="number">0</span>, a.<span class="number">1</span>)));
 <span data-nosnippet>451</span>                    R::add_assign(<span class="kw-2">&amp;mut </span>a[j + <span class="number">1</span>], <span class="kw-2">&amp;</span>v);
 <span data-nosnippet>452</span>                }
@@ -4368,7 +4368,7 @@
 <span data-nosnippet>463</span>            <span class="kw">for </span>j <span class="kw">in </span>(<span class="number">0</span>..i).rev() {
 <span data-nosnippet>464</span>                mul = R::mul(<span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;</span><span class="self">self</span>[j + <span class="number">1</span>][j]);
 <span data-nosnippet>465</span>                <span class="kw">let </span>c = R::mul(<span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;</span><span class="self">self</span>[j][i]);
-<span data-nosnippet>466</span>                <span class="kw">for </span>(next, dp) <span class="kw">in </span>next.iter_mut().zip(dp[j].iter()) {
+<span data-nosnippet>466</span>                <span class="kw">for </span>(next, dp) <span class="kw">in </span>next.iter_mut().zip(dp[j].<a href="../num/zero_one.rs.html#1-14">iter</a>()) {
 <span data-nosnippet>467</span>                    R::sub_assign(next, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>c, dp));
 <span data-nosnippet>468</span>                }
 <span data-nosnippet>469</span>            }
@@ -4590,7 +4590,7 @@
 <span data-nosnippet>685</span>    <span class="kw">let </span>a21 = h * stride_a;
 <span data-nosnippet>686</span>    <span class="kw">let </span>a22 = a21 + h;
 <span data-nosnippet>687</span>    <span class="kw">let </span>b11 = <span class="number">0</span>;
-<span data-nosnippet>688</span>    <span class="kw">let </span>b12 = h;
+<span data-nosnippet>688</span>    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">b12</a> = h;
 <span data-nosnippet>689</span>    <span class="kw">let </span>b21 = h * stride_b;
 <span data-nosnippet>690</span>    <span class="kw">let </span>b22 = b21 + h;
 <span data-nosnippet>691</span>
@@ -4599,7 +4599,7 @@
 <span data-nosnippet>694</span>    <span class="kw">let </span>(s_buf, m_buf) = buf.split_at_mut(block * <span class="number">2</span>);
 <span data-nosnippet>695</span>    <span class="kw">let </span>(s1, s2) = s_buf.split_at_mut(block);
 <span data-nosnippet>696</span>    <span class="kw">let </span>(m1, rest) = m_buf.split_at_mut(block);
-<span data-nosnippet>697</span>    <span class="kw">let </span>(m2, rest) = rest.split_at_mut(block);
+<span data-nosnippet>697</span>    <span class="kw">let </span>(m2, rest) = <a href="../algebra/lazy_map.rs.html#385">rest</a>.split_at_mut(block);
 <span data-nosnippet>698</span>    <span class="kw">let </span>(m3, rest) = rest.split_at_mut(block);
 <span data-nosnippet>699</span>    <span class="kw">let </span>(m4, rest) = rest.split_at_mut(block);
 <span data-nosnippet>700</span>    <span class="kw">let </span>(m5, rest) = rest.split_at_mut(block);
@@ -4611,8 +4611,8 @@
 <span data-nosnippet>706</span>    strassen_rec::&lt;R&gt;(s1, s2, m1, h, h, h);
 <span data-nosnippet>707</span>
 <span data-nosnippet>708</span>    <span class="comment">// (A21 + A22) B11
-<span data-nosnippet>709</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
-<span data-nosnippet>710</span>    strassen_rec::&lt;R&gt;(s1, <span class="kw-2">&amp;</span>b[b11..], m2, <a href="../algebra/lazy_map.rs.html#411">h</a>, h, stride_b);
+<span data-nosnippet>709</span>    </span>add_block::&lt;<a href="../algebra/lazy_map.rs.html#411">R</a>&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
+<span data-nosnippet>710</span>    strassen_rec::&lt;R&gt;(s1, <span class="kw-2">&amp;</span>b[b11..], m2, h, h, stride_b);
 <span data-nosnippet>711</span>
 <span data-nosnippet>712</span>    <span class="comment">// A11 (B12 - B22)
 <span data-nosnippet>713</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b12..], <span class="kw-2">&amp;</span>b[b22..], s1, h, stride_b, stride_b);
@@ -4620,7 +4620,7 @@
 <span data-nosnippet>715</span>
 <span data-nosnippet>716</span>    <span class="comment">// A22 (B21 - B11)
 <span data-nosnippet>717</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b11..], s1, h, stride_b, stride_b);
-<span data-nosnippet>718</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a22..], s1, m4, h, stride_a, h);
+<span data-nosnippet>718</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a22..], s1, m4, <a href="../algebra/lazy_map.rs.html#411">h</a>, stride_a, h);
 <span data-nosnippet>719</span>
 <span data-nosnippet>720</span>    <span class="comment">// (A11 + A12) B22
 <span data-nosnippet>721</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a12..], s1, h, stride_a, stride_a);
@@ -4629,7 +4629,7 @@
 <span data-nosnippet>724</span>    <span class="comment">// (A21 - A11)(B11 + B12)
 <span data-nosnippet>725</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a11..], s1, h, stride_a, stride_a);
 <span data-nosnippet>726</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b12..], s2, h, stride_b, stride_b);
-<span data-nosnippet>727</span>    strassen_rec::&lt;R&gt;(s1, s2, m6, h, h, h);
+<span data-nosnippet>727</span>    strassen_rec::&lt;<a href="../algebra/lazy_map.rs.html#411">R</a>&gt;(s1, s2, m6, h, h, h);
 <span data-nosnippet>728</span>
 <span data-nosnippet>729</span>    <span class="comment">// (A12 - A22)(B21 + B22)
 <span data-nosnippet>730</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span>a[a22..], s1, h, stride_a, stride_a);
@@ -4701,11 +4701,11 @@
 <span data-nosnippet>796</span>        <span class="kw">for </span>(a, data) <span class="kw">in </span>a.chunks_exact_mut(size).zip(<span class="kw-2">&amp;</span><span class="self">self</span>.data) {
 <span data-nosnippet>797</span>            a[..m].clone_from_slice(data);
 <span data-nosnippet>798</span>        }
-<span data-nosnippet>799</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = <span class="macro">vec!</span>[R::zero(); size * size];
+<span data-nosnippet>799</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = <span class="macro">vec!</span>[R::zero(); <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">size</a> * size];
 <span data-nosnippet>800</span>        <span class="kw">for </span>(b, data) <span class="kw">in </span>b.chunks_exact_mut(size).zip(<span class="kw-2">&amp;</span>rhs.data) {
 <span data-nosnippet>801</span>            b[..p].clone_from_slice(data);
 <span data-nosnippet>802</span>        }
-<span data-nosnippet>803</span>        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[R::zero(); size * size];
+<span data-nosnippet>803</span>        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[<a href="../algebra/lazy_map.rs.html#527">R</a>::zero(); size * size];
 <span data-nosnippet>804</span>        strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b, <span class="kw-2">&amp;mut </span>c, size, size, size);
 <span data-nosnippet>805</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = Matrix::zeros((n, p));
 <span data-nosnippet>806</span>        <span class="kw">for </span>(data, c) <span class="kw">in </span>res.data.iter_mut().zip(c.chunks_exact(size)) {
@@ -4719,10 +4719,10 @@
 <span data-nosnippet>814</span><span class="kw">where
 <span data-nosnippet>815</span>    </span>R: SemiRing,
 <span data-nosnippet>816</span>{
-<span data-nosnippet>817</span>    <span class="kw">fn </span>mul_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#545">R</a>::T) {
+<span data-nosnippet>817</span>    <span class="kw">fn </span>mul_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>R::T) {
 <span data-nosnippet>818</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>819</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
-<span data-nosnippet>820</span>                <span class="highlight">R::mul_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>[(i, <a href="../algebra/lazy_map.rs.html#545">j</a>)], rhs);
+<span data-nosnippet>820</span>                <span class="highlight">R::mul_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>[(i, j)], rhs);
 <span data-nosnippet>821</span>            }
 <span data-nosnippet>822</span>        }
 <span data-nosnippet>823</span>    }</code></pre></div></div></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><details class="toggle implementors-toggle"><summary><section id="impl-SemiRing-for-Gf2_63" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#53-57">Source</a><a href="#impl-SemiRing-for-Gf2_63" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="../trait.SemiRing.html" title="trait competitive::algebra::SemiRing">SemiRing</a> for <a class="enum" href="../enum.Gf2_63.html" title="enum competitive::algebra::Gf2_63">Gf2_63</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#54">Source</a><a href="#associatedtype.T-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section><section id="associatedtype.Additive-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#55">Source</a><a href="#associatedtype.Additive-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Additive" class="associatedtype">Additive</a> = <a class="struct" href="../struct.BitXorOperation.html" title="struct competitive::algebra::BitXorOperation">BitXorOperation</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</h4></section><section id="associatedtype.Multiplicative-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#56">Source</a><a href="#associatedtype.Multiplicative-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Multiplicative" class="associatedtype">Multiplicative</a> = <a class="enum" href="../enum.Gf2_63.html" title="enum competitive::algebra::Gf2_63">Gf2_63</a></h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-SemiRing-for-Mersenne61" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#107-111">Source</a><a href="#impl-SemiRing-for-Mersenne61" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="../trait.SemiRing.html" title="trait competitive::algebra::SemiRing">SemiRing</a> for <a class="enum" href="../enum.Mersenne61.html" title="enum competitive::algebra::Mersenne61">Mersenne61</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-2" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#108">Source</a><a href="#associatedtype.T-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section><section id="associatedtype.Additive-2" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#109">Source</a><a href="#associatedtype.Additive-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Additive" class="associatedtype">Additive</a> = <a class="enum" href="../ring_operations/mersenne61/enum.Mersenne61Add.html" title="enum competitive::algebra::ring_operations::mersenne61::Mersenne61Add">Mersenne61Add</a></h4></section><section id="associatedtype.Multiplicative-2" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/ring_operations.rs.html#110">Source</a><a href="#associatedtype.Multiplicative-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Multiplicative" class="associatedtype">Multiplicative</a> = <a class="enum" href="../enum.Mersenne61.html" title="enum competitive::algebra::Mersenne61">Mersenne61</a></h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-SemiRing-for-AddMulOperation%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/ring.rs.html#123-135">Source</a><a href="#impl-SemiRing-for-AddMulOperation%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../trait.SemiRing.html" title="trait competitive::algebra::SemiRing">SemiRing</a> for <a class="struct" href="../struct.AddMulOperation.html" title="struct competitive::algebra::AddMulOperation">AddMulOperation</a>&lt;T&gt;<div class="where">where

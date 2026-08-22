@@ -158,7 +158,7 @@
 <span data-nosnippet>758</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>759</span>        <span class="kw">if </span>max_len &lt;= <span class="number">300 </span>|| <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>760</span>            <span class="kw">let </span>a_wrapping: <span class="kw-2">&amp;</span>[Wrapping&lt;u64&gt;] =
-<span data-nosnippet>761</span>                <span class="kw">unsafe </span>{ std::slice::from_raw_parts(a.as_ptr().cast(), a.len()) };
+<span data-nosnippet>761</span>                <span class="kw">unsafe </span>{ <a href="../num/mod.rs.html#1-69">std</a>::slice::from_raw_parts(a.as_ptr().cast(), a.len()) };
 <span data-nosnippet>762</span>            <span class="kw">let </span>b_wrapping: <span class="kw-2">&amp;</span>[Wrapping&lt;u64&gt;] =
 <span data-nosnippet>763</span>                <span class="kw">unsafe </span>{ std::slice::from_raw_parts(b.as_ptr().cast(), b.len()) };
 <span data-nosnippet>764</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = std::mem::ManuallyDrop::new(<span class="kw">if </span>max_len &lt;= <span class="number">300 </span>{
@@ -196,7 +196,7 @@
 <span data-nosnippet>796</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>result {
 <span data-nosnippet>797</span>                <span class="kw">let </span>digit = value <span class="kw">as </span>i16;
 <span data-nosnippet>798</span>                part.push(digit <span class="kw">as </span>i64);
-<span data-nosnippet>799</span>                value = (value &gt;&gt; <span class="number">16</span>).wrapping_add(u64::from(digit &lt; <span class="number">0</span>));
+<span data-nosnippet>799</span>                value = (value &gt;&gt; <span class="number">16</span>).wrapping_add(<a href="../algebra/action.rs.html#7-26">u64::from</a>(digit &lt; <span class="number">0</span>));
 <span data-nosnippet>800</span>            }
 <span data-nosnippet>801</span>            multiplier = multiplier.wrapping_mul(factor);
 <span data-nosnippet>802</span>        }
@@ -257,10 +257,10 @@
 <span data-nosnippet>857</span>    </span><span class="kw">fn </span>odd_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F;
 <span data-nosnippet>858</span>
 <span data-nosnippet>859</span>    <span class="doccomment">/// Multiplies a usual NTT transform by the corresponding prefix of another one.
-<span data-nosnippet>860</span>    </span><span class="kw">fn </span>multiply_prefix(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F);
+<span data-nosnippet>860</span>    </span><span class="kw">fn </span>multiply_prefix(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, <a href="../algebra/lazy_map.rs.html#36">g</a>: <span class="kw-2">&amp;</span><span class="self">Self</span>::F);
 <span data-nosnippet>861</span>
 <span data-nosnippet>862</span>    <span class="doccomment">/// Adds the pointwise product of two usual NTT transforms to `sum`.
-<span data-nosnippet>863</span>    </span><span class="kw">fn </span>multiply_add(sum: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F);
+<span data-nosnippet>863</span>    </span><span class="kw">fn </span>multiply_add(sum: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, f: <span class="kw-2">&amp;</span><span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#40">F</a>, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F);
 <span data-nosnippet>864</span>
 <span data-nosnippet>865</span>    <span class="kw">fn </span>power_projection_step(
 <span data-nosnippet>866</span>        p_flat: <span class="self">Self</span>::T,
@@ -333,7 +333,7 @@
 <span data-nosnippet>933</span>            .collect()
 <span data-nosnippet>934</span>    }
 <span data-nosnippet>935</span>
-<span data-nosnippet>936</span>    <span class="kw">fn </span>odd_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#131">F</a>, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>936</span>    <span class="kw">fn </span>odd_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>937</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>938</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
 <span data-nosnippet>939</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
@@ -353,7 +353,7 @@
 <span data-nosnippet>953</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; k {
 <span data-nosnippet>954</span>                    v[i] = (v[i &gt;&gt; <span class="number">1</span>] &gt;&gt; <span class="number">1</span>) | ((i &amp; <span class="number">1</span>) &lt;&lt; k.saturating_sub(<span class="number">1</span>));
 <span data-nosnippet>955</span>                }
-<span data-nosnippet>956</span>                br[k] = v;
+<span data-nosnippet>956</span>                br[k] = <a href="../algebra/lazy_map.rs.html#157">v</a>;
 <span data-nosnippet>957</span>            }
 <span data-nosnippet>958</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>i <span class="kw">in </span><span class="kw-2">&amp;</span>br[k] {
 <span data-nosnippet>959</span>                h[i] = (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] - f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2;
@@ -386,7 +386,7 @@
 <span data-nosnippet>986</span>        <span class="kw">let </span><span class="kw-2">mut </span>p = p_flat;
 <span data-nosnippet>987</span>        p.resize_with(size, MInt::&lt;M&gt;::zero);
 <span data-nosnippet>988</span>        ntt_rows(<span class="kw-2">&amp;mut </span>p, cols);
-<span data-nosnippet>989</span>        ntt_batch(<span class="kw-2">&amp;mut </span><a href="../algebra/lazy_map.rs.html#199">p</a>, cols);
+<span data-nosnippet>989</span>        ntt_batch(<span class="kw-2">&amp;mut </span>p, cols);
 <span data-nosnippet>990</span>
 <span data-nosnippet>991</span>        <span class="kw">let </span><span class="kw-2">mut </span>q = q_flat;
 <span data-nosnippet>992</span>        q.resize_with(size, MInt::&lt;M&gt;::zero);
@@ -466,6 +466,6 @@
 <span data-nosnippet>1066</span>        <span class="highlight">reconstruct_mint_crt</span>((
 <span data-nosnippet>1067</span>            Convolve::&lt;N1&gt;::inverse_transform_ntt(f.<span class="number">0</span>, len),
 <span data-nosnippet>1068</span>            Convolve::&lt;N2&gt;::inverse_transform_ntt(f.<span class="number">1</span>, len),
-<span data-nosnippet>1069</span>            Convolve::&lt;N3&gt;::inverse_transform_ntt(<a href="../algebra/lazy_map.rs.html#320">f</a>.<span class="number">2</span>, len),
+<span data-nosnippet>1069</span>            Convolve::&lt;N3&gt;::inverse_transform_ntt(f.<span class="number">2</span>, len),
 <span data-nosnippet>1070</span>        ))
 <span data-nosnippet>1071</span>    }</code></pre></div></div></div></section></div></main></body></html>

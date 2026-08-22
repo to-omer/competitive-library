@@ -167,7 +167,7 @@
 <span data-nosnippet>135</span>            <span class="kw">let </span>x0 = load_block_avx2(a, i);
 <span data-nosnippet>136</span>            <span class="kw">let </span>x1 = load_block_avx2(a, size + i);
 <span data-nosnippet>137</span>            <span class="kw">let </span>x2 = load_block_avx2(a, size * <span class="number">2 </span>+ i);
-<span data-nosnippet>138</span>            <span class="kw">let </span>x3 = load_block_avx2(a, size * <span class="number">3 </span>+ i);
+<span data-nosnippet>138</span>            <span class="kw">let </span>x3 = load_block_avx2(a, <a href="../../mod.rs.html#1-292">size</a> * <span class="number">3 </span>+ i);
 <span data-nosnippet>139</span>            <span class="kw">let </span>g3 = simd32::montgomery_mul_256_fixed(
 <span data-nosnippet>140</span>                lazy_sub_avx2(x1, x3, modulus2),
 <span data-nosnippet>141</span>                imag,
@@ -245,11 +245,11 @@
 <span data-nosnippet>213</span>                        lazy_sub_avx2(h0, h1, modulus2),
 <span data-nosnippet>214</span>                    );
 <span data-nosnippet>215</span>                    _mm256_storeu_si256(
-<span data-nosnippet>216</span>                        base.add(p0 + (quarter &lt;&lt; <span class="number">4</span>)).<a href="../../../algebra/magma.rs.html#56">cast</a>(),
+<span data-nosnippet>216</span>                        base.add(p0 + (quarter &lt;&lt; <span class="number">4</span>)).cast(),
 <span data-nosnippet>217</span>                        _mm256_add_epi32(h2, h3),
 <span data-nosnippet>218</span>                    );
 <span data-nosnippet>219</span>                    _mm256_storeu_si256(
-<span data-nosnippet>220</span>                        base.add(p0 + quarter * <span class="number">24</span>).cast(),
+<span data-nosnippet>220</span>                        base.add(p0 + quarter * <span class="number">24</span>).<a href="../../../algebra/magma.rs.html#56">cast</a>(),
 <span data-nosnippet>221</span>                        lazy_sub_avx2(h2, h3, modulus2),
 <span data-nosnippet>222</span>                    );
 <span data-nosnippet>223</span>                    j += <span class="number">1</span>;
@@ -332,14 +332,14 @@
 <span data-nosnippet>300</span>    <span class="kw">let </span>imag = _mm256_set1_epi32(M::INFO.root[<span class="number">2</span>] <span class="kw">as </span>i32);
 <span data-nosnippet>301</span>    <span class="kw">let </span>imag_r = _mm256_set1_epi32(M::INFO.root[<span class="number">2</span>].wrapping_mul(M::R) <span class="kw">as </span>i32);
 <span data-nosnippet>302</span>    <span class="kw">let </span>root_indices = _mm256_setr_epi32(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">4</span>);
-<span data-nosnippet>303</span>    <span class="kw">let </span>root3 = <a href="../../../algebra/lazy_map.rs.html#157">M</a>::INFO.inv_root[<span class="number">3</span>];
+<span data-nosnippet>303</span>    <span class="kw">let </span>root3 = M::INFO.inv_root[<span class="number">3</span>];
 <span data-nosnippet>304</span>    <span class="kw">let </span>root2 = M::INFO.inv_root[<span class="number">2</span>];
 <span data-nosnippet>305</span>    <span class="kw">let </span>initial_root = _mm256_setr_epi32(
 <span data-nosnippet>306</span>        root3 <span class="kw">as </span>i32,
 <span data-nosnippet>307</span>        <span class="number">0</span>,
 <span data-nosnippet>308</span>        root2 <span class="kw">as </span>i32,
 <span data-nosnippet>309</span>        <span class="number">0</span>,
-<span data-nosnippet>310</span>        M::mod_mul(root2, root3) <span class="kw">as </span>i32,
+<span data-nosnippet>310</span>        <a href="../../../algebra/lazy_map.rs.html#157">M</a>::mod_mul(root2, root3) <span class="kw">as </span>i32,
 <span data-nosnippet>311</span>        <span class="number">0</span>,
 <span data-nosnippet>312</span>        <span class="number">0</span>,
 <span data-nosnippet>313</span>        <span class="number">0</span>,
@@ -463,7 +463,7 @@
 <span data-nosnippet>431</span>                <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
 <span data-nosnippet>432</span>                <span class="kw">while </span>j &lt; quarter {
 <span data-nosnippet>433</span>                    <span class="kw">let </span>p0 = (i + j) &lt;&lt; <span class="number">3</span>;
-<span data-nosnippet>434</span>                    <span class="kw">let </span>x0 = _mm256_loadu_si256(base.<a href="../../../num/zero_one.rs.html#15-28">add</a>(p0).cast());
+<span data-nosnippet>434</span>                    <span class="kw">let </span>x0 = _mm256_loadu_si256(base.add(p0).cast());
 <span data-nosnippet>435</span>                    <span class="kw">let </span>x1 = _mm256_loadu_si256(base.add(p0 + (quarter &lt;&lt; <span class="number">3</span>)).cast());
 <span data-nosnippet>436</span>                    <span class="kw">let </span>x2 = _mm256_loadu_si256(base.add(p0 + (quarter &lt;&lt; <span class="number">4</span>)).cast());
 <span data-nosnippet>437</span>                    <span class="kw">let </span>x3 = _mm256_loadu_si256(base.add(p0 + quarter * <span class="number">24</span>).cast());
@@ -561,7 +561,7 @@
 <span data-nosnippet>529</span><span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
 <span data-nosnippet>530</span></span><span class="kw">unsafe fn </span>convolve_8_avx2&lt;M&gt;(f: <span class="kw-2">*mut </span>u32, g: <span class="kw-2">*const </span>u32, n: usize)
 <span data-nosnippet>531</span><span class="kw">where
-<span data-nosnippet>532</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>532</span>    </span><a href="../../../algebra/lazy_map.rs.html#527">M</a>: Montgomery32NttModulus,
 <span data-nosnippet>533</span>{
 <span data-nosnippet>534</span>    <span class="attr">#[repr(C, align(<span class="number">32</span>))]
 <span data-nosnippet>535</span>    </span><span class="kw">struct </span>AlignedWork([u32; <span class="number">64</span>]);
@@ -577,7 +577,7 @@
 <span data-nosnippet>545</span>        <span class="kw">let </span>work = work.as_mut_ptr().cast::&lt;u32&gt;();
 <span data-nosnippet>546</span>        <span class="kw">for </span>(j, ww) <span class="kw">in </span>[
 <span data-nosnippet>547</span>            rr,
-<span data-nosnippet>548</span>            M::MOD.wrapping_mul(<span class="number">2</span>) - rr,
+<span data-nosnippet>548</span>            <a href="../../../algebra/lazy_map.rs.html#527">M</a>::MOD.wrapping_mul(<span class="number">2</span>) - rr,
 <span data-nosnippet>549</span>            rr_i,
 <span data-nosnippet>550</span>            M::MOD.wrapping_mul(<span class="number">2</span>) - rr_i,
 <span data-nosnippet>551</span>        ]

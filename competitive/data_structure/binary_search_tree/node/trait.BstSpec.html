@@ -219,9 +219,9 @@
 <span data-nosnippet>533</span>    <span class="doccomment">/// `(u, v)` must be an edge.
 <span data-nosnippet>534</span>    </span><span class="kw">pub fn </span>cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) {
 <span data-nosnippet>535</span>        <span class="macro">assert_ne!</span>(u, v);
-<span data-nosnippet>536</span>        <span class="self">self</span>.reroot(<a href="../algebra/action.rs.html#23">u</a>);
+<span data-nosnippet>536</span>        <span class="self">self</span>.reroot(u);
 <span data-nosnippet>537</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="self">self</span>.node(v);
-<span data-nosnippet>538</span>        <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">access_node</a>(v);
+<span data-nosnippet>538</span>        <span class="self">self</span>.access_node(v);
 <span data-nosnippet>539</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>540</span>            <span class="kw">let </span><span class="kw-2">mut </span>left = v.as_mut().child[<span class="number">0</span>]
 <span data-nosnippet>541</span>                .take()
@@ -247,7 +247,7 @@
 <span data-nosnippet>561</span>        }
 <span data-nosnippet>562</span>    }
 <span data-nosnippet>563</span>
-<span data-nosnippet>564</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; bool {
+<span data-nosnippet>564</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a>) -&gt; bool {
 <span data-nosnippet>565</span>        <span class="self">self</span>.root(u) == <span class="self">self</span>.root(v)
 <span data-nosnippet>566</span>    }
 <span data-nosnippet>567</span>
@@ -548,7 +548,7 @@
 <span data-nosnippet>289</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>290</span>    {
 <span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, range);
-<span data-nosnippet>292</span>        <span class="kw">if let </span><a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(root) = split.mid_datamut() {
+<span data-nosnippet>292</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = split.mid_datamut() {
 <span data-nosnippet>293</span>            ImplicitSplayTreeSpec::reverse(root);
 <span data-nosnippet>294</span>        }
 <span data-nosnippet>295</span>    }
@@ -561,7 +561,7 @@
 <span data-nosnippet>302</span>        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.root.as_ref()<span class="question-mark">?</span>.reborrow().into_data().value.key)
 <span data-nosnippet>303</span>    }
 <span data-nosnippet>304</span>
-<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, f: F)
+<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>, f: <a href="../algebra/action.rs.html#70">F</a>)
 <span data-nosnippet>306</span>    <span class="kw">where
 <span data-nosnippet>307</span>        </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
 <span data-nosnippet>308</span>    {
@@ -775,7 +775,7 @@
 <span data-nosnippet>242</span>    }
 <span data-nosnippet>243</span>}
 <span data-nosnippet>244</span>
-<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;T, A&gt;
+<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;<a href="../algebra/action.rs.html#39">T</a>, A&gt;
 <span data-nosnippet>246</span><span class="kw">where
 <span data-nosnippet>247</span>    </span>T: LazyMapMonoid,
 <span data-nosnippet>248</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
@@ -798,7 +798,7 @@
 <span data-nosnippet>265</span>        <span class="self">Self</span>::default()
 <span data-nosnippet>266</span>    }
 <span data-nosnippet>267</span>
-<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>269</span>        <span class="self">Self </span>{
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
@@ -812,7 +812,7 @@
 <span data-nosnippet>279</span><span class="kw">impl</span>&lt;T, A&gt; ImplicitTreap&lt;T, A&gt;
 <span data-nosnippet>280</span><span class="kw">where
 <span data-nosnippet>281</span>    </span>T: LazyMapMonoid,
-<span data-nosnippet>282</span>    <a href="../algebra/action.rs.html#86">A</a>: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
+<span data-nosnippet>282</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
 <span data-nosnippet>283</span>{
 <span data-nosnippet>284</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: T::Key) -&gt; ImplicitTreapRoot&lt;T&gt; {
 <span data-nosnippet>285</span>        BstRoot::from_data(
@@ -926,7 +926,7 @@
 <span data-nosnippet>393</span>    {
 <span data-nosnippet>394</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.length);
 <span data-nosnippet>395</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, index..=index);
-<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.<a href="../algebra/lazy_map.rs.html#18-20">mid_datamut</a>().unwrap();
+<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.mid_datamut().unwrap();
 <span data-nosnippet>397</span>        <span class="highlight">ImplicitTreapSpec::&lt;T&gt;::top_down</span>(node.reborrow_datamut());
 <span data-nosnippet>398</span>        {
 <span data-nosnippet>399</span>            <span class="kw">let </span>data = node.data_mut();
@@ -1416,7 +1416,7 @@
 <span data-nosnippet>289</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>290</span>    {
 <span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, range);
-<span data-nosnippet>292</span>        <span class="kw">if let </span><a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(root) = split.mid_datamut() {
+<span data-nosnippet>292</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = split.mid_datamut() {
 <span data-nosnippet>293</span>            ImplicitSplayTreeSpec::reverse(root);
 <span data-nosnippet>294</span>        }
 <span data-nosnippet>295</span>    }
@@ -1429,7 +1429,7 @@
 <span data-nosnippet>302</span>        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.root.as_ref()<span class="question-mark">?</span>.reborrow().into_data().value.key)
 <span data-nosnippet>303</span>    }
 <span data-nosnippet>304</span>
-<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, f: F)
+<span data-nosnippet>305</span>    <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>, f: <a href="../algebra/action.rs.html#70">F</a>)
 <span data-nosnippet>306</span>    <span class="kw">where
 <span data-nosnippet>307</span>        </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
 <span data-nosnippet>308</span>    {
@@ -1732,7 +1732,7 @@
 <span data-nosnippet>242</span>    }
 <span data-nosnippet>243</span>}
 <span data-nosnippet>244</span>
-<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;T, A&gt;
+<span data-nosnippet>245</span><span class="kw">impl</span>&lt;T, A&gt; Drop <span class="kw">for </span>ImplicitTreap&lt;<a href="../algebra/action.rs.html#39">T</a>, A&gt;
 <span data-nosnippet>246</span><span class="kw">where
 <span data-nosnippet>247</span>    </span>T: LazyMapMonoid,
 <span data-nosnippet>248</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
@@ -1755,7 +1755,7 @@
 <span data-nosnippet>265</span>        <span class="self">Self</span>::default()
 <span data-nosnippet>266</span>    }
 <span data-nosnippet>267</span>
-<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>268</span>    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>269</span>        <span class="self">Self </span>{
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
@@ -1769,7 +1769,7 @@
 <span data-nosnippet>279</span><span class="kw">impl</span>&lt;T, A&gt; ImplicitTreap&lt;T, A&gt;
 <span data-nosnippet>280</span><span class="kw">where
 <span data-nosnippet>281</span>    </span>T: LazyMapMonoid,
-<span data-nosnippet>282</span>    <a href="../algebra/action.rs.html#86">A</a>: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
+<span data-nosnippet>282</span>    A: Allocator&lt;ImplicitTreapNode&lt;T&gt;&gt;,
 <span data-nosnippet>283</span>{
 <span data-nosnippet>284</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: T::Key) -&gt; ImplicitTreapRoot&lt;T&gt; {
 <span data-nosnippet>285</span>        BstRoot::from_data(
@@ -1883,7 +1883,7 @@
 <span data-nosnippet>393</span>    {
 <span data-nosnippet>394</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.length);
 <span data-nosnippet>395</span>        <span class="kw">let </span><span class="kw-2">mut </span>split = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, index..=index);
-<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.<a href="../algebra/lazy_map.rs.html#18-20">mid_datamut</a>().unwrap();
+<span data-nosnippet>396</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = split.mid_datamut().unwrap();
 <span data-nosnippet>397</span>        ImplicitTreapSpec::&lt;T&gt;::top_down(node.reborrow_datamut());
 <span data-nosnippet>398</span>        {
 <span data-nosnippet>399</span>            <span class="kw">let </span>data = node.data_mut();

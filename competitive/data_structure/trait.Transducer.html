@@ -284,7 +284,7 @@
 <span data-nosnippet>384</span>                <span class="kw">let </span>($(<span class="macro-nonterminal">$b</span>,)<span class="kw-2">*</span>) = state;
 <span data-nosnippet>385</span>                $(<span class="macro-nonterminal">$a</span>.accept(<span class="macro-nonterminal">$b</span>))&amp;&amp;*
 <span data-nosnippet>386</span>            }
-<span data-nosnippet>387</span>            <span class="kw">fn </span>stepout(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>387</span>            <span class="kw">fn </span><a href="../algebra/magma.rs.html#9">stepout</a>(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 <span data-nosnippet>388</span>                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
 <span data-nosnippet>389</span>                $(<span class="macro-nonterminal">$a</span>.stepout();)*
 <span data-nosnippet>390</span>            }
@@ -428,7 +428,7 @@
 <span data-nosnippet>528</span>}
 <span data-nosnippet>529</span>
 <span data-nosnippet>530</span><span class="attr">#[derive(Debug, Clone)]
-<span data-nosnippet>531</span></span><span class="kw">pub struct </span>MapTransducer&lt;<a href="../algebra/lazy_map.rs.html#157">T</a>, U, F&gt; {
+<span data-nosnippet>531</span></span><span class="kw">pub struct </span>MapTransducer&lt;T, U, F&gt; {
 <span data-nosnippet>532</span>    inner: T,
 <span data-nosnippet>533</span>    f: F,
 <span data-nosnippet>534</span>    _marker: Marker&lt;U&gt;,
@@ -501,7 +501,7 @@
 <span data-nosnippet>601</span>        input: <span class="kw-2">&amp;</span><span class="self">Self</span>::Input,
 <span data-nosnippet>602</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="self">Self</span>::State, <span class="self">Self</span>::Output)&gt; {
 <span data-nosnippet>603</span>        <span class="kw">let </span>(next_state, output) = <span class="self">self</span>.inner.relation(state, input)<span class="question-mark">?</span>;
-<span data-nosnippet>604</span>        (<a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.<a href="../algebra/lazy_map.rs.html#220">f</a>)(<span class="kw-2">&amp;</span>output).map(|output| (next_state, output))
+<span data-nosnippet>604</span>        (<span class="self">self</span>.f)(<span class="kw-2">&amp;</span>output).map(|output| (next_state, output))
 <span data-nosnippet>605</span>    }
 <span data-nosnippet>606</span>    <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; bool {
 <span data-nosnippet>607</span>        <span class="self">self</span>.inner.accept(state)
@@ -554,7 +554,7 @@
 <span data-nosnippet>654</span>    init: A,
 <span data-nosnippet>655</span>    f: F,
 <span data-nosnippet>656</span>}
-<span data-nosnippet>657</span><span class="kw">impl</span>&lt;T, A, F&gt; FoldTransducer&lt;<a href="../algebra/lazy_map.rs.html#266">T</a>, A, F&gt; {
+<span data-nosnippet>657</span><span class="kw">impl</span>&lt;T, A, F&gt; FoldTransducer&lt;T, A, F&gt; {
 <span data-nosnippet>658</span>    <span class="kw">pub fn </span>new(inner: T, init: A, f: F) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>659</span>        <span class="self">Self </span>{ inner, init, f }
 <span data-nosnippet>660</span>    }
@@ -613,7 +613,7 @@
 <span data-nosnippet>713</span>    }
 <span data-nosnippet>714</span>    <span class="kw">fn </span>relation(
 <span data-nosnippet>715</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>716</span>        (state, <a href="../num/zero_one.rs.html#15-28">acc</a>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State,
+<span data-nosnippet>716</span>        (state, acc): <span class="kw-2">&amp;</span><span class="self">Self</span>::State,
 <span data-nosnippet>717</span>        input: <span class="kw-2">&amp;</span><span class="self">Self</span>::Input,
 <span data-nosnippet>718</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="self">Self</span>::State, <span class="self">Self</span>::Output)&gt; {
 <span data-nosnippet>719</span>        <span class="kw">let </span>(next_state, output) = <span class="self">self</span>.inner.relation(state, input)<span class="question-mark">?</span>;
@@ -654,13 +654,13 @@
 <span data-nosnippet>754</span>        state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State,
 <span data-nosnippet>755</span>        input: <span class="kw-2">&amp;</span><span class="self">Self</span>::Input,
 <span data-nosnippet>756</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="self">Self</span>::State, <span class="self">Self</span>::Output)&gt; {
-<span data-nosnippet>757</span>        <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.inner.relation(state, input)
+<span data-nosnippet>757</span>        <span class="self">self</span>.inner.relation(state, input)
 <span data-nosnippet>758</span>    }
 <span data-nosnippet>759</span>    <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; bool {
 <span data-nosnippet>760</span>        <span class="self">self</span>.inner.accept(state) &amp;&amp; (<span class="self">self</span>.pred)(state)
 <span data-nosnippet>761</span>    }
 <span data-nosnippet>762</span>    <span class="kw">fn </span>stepout(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-<span data-nosnippet>763</span>        <span class="self">self</span>.inner.<span class="highlight">stepout</span>();
+<span data-nosnippet>763</span>        <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.inner.<span class="highlight">stepout</span>();
 <span data-nosnippet>764</span>    }</code></pre></div></div></div></details><section id="method.dp" class="method"><a class="src rightside" href="../../src/competitive/data_structure/transducer.rs.html#31-37">Source</a><h4 class="code-header">fn <a href="#method.dp" class="fn">dp</a>&lt;M&gt;(self, init: M::<a class="associatedtype" href="../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>) -&gt; <a class="struct" href="struct.InitTransducerDp.html" title="struct competitive::data_structure::InitTransducerDp">InitTransducerDp</a>&lt;M, Self&gt;<div class="where">where
     Self: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,
     M: <a class="trait" href="../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,</div></h4></section><section id="method.intersection" class="method"><a class="src rightside" href="../../src/competitive/data_structure/transducer.rs.html#39-45">Source</a><h4 class="code-header">fn <a href="#method.intersection" class="fn">intersection</a>&lt;U&gt;(self, other: U) -&gt; <a class="struct" href="struct.IntersectionTransducer.html" title="struct competitive::data_structure::IntersectionTransducer">IntersectionTransducer</a>&lt;(Self, U)&gt;<div class="where">where

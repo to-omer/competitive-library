@@ -289,7 +289,7 @@
 <span data-nosnippet>363</span>
 <span data-nosnippet>364</span>    <span class="attr">#[inline]
 <span data-nosnippet>365</span>    </span><span class="kw">unsafe fn </span>pull_top(node: TopPtr&lt;S, A&gt;) {
-<span data-nosnippet>366</span>        <span class="kw">unsafe </span>{ TopBstSpec::&lt;S, <a href="../algebra/lazy_map.rs.html#44">A</a>&gt;::bottom_up(BstDataMutRef::new_unchecked(node)) };
+<span data-nosnippet>366</span>        <span class="kw">unsafe </span>{ TopBstSpec::&lt;S, A&gt;::bottom_up(BstDataMutRef::new_unchecked(node)) };
 <span data-nosnippet>367</span>    }
 <span data-nosnippet>368</span>
 <span data-nosnippet>369</span>    <span class="attr">#[inline]
@@ -449,7 +449,7 @@
 <span data-nosnippet>523</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>524</span>            (<span class="kw-2">*</span>child.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(parent);
 <span data-nosnippet>525</span>            <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>child.as_ref().data.sum);
-<span data-nosnippet>526</span>            <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(parent.as_ref().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">data</a>.light, point);
+<span data-nosnippet>526</span>            <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(parent.as_ref().data.light, point);
 <span data-nosnippet>527</span>            parent.as_mut().data.light = <span class="prelude-val">Some</span>(light);
 <span data-nosnippet>528</span>            (<span class="kw-2">*</span>child.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
 <span data-nosnippet>529</span>            <span class="self">Self</span>::pull_top(parent);
@@ -487,12 +487,12 @@
 <span data-nosnippet>561</span>        }
 <span data-nosnippet>562</span>    }
 <span data-nosnippet>563</span>
-<span data-nosnippet>564</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../algebra/lazy_map.rs.html#320">u</a>: usize, v: usize) -&gt; bool {
+<span data-nosnippet>564</span>    <span class="kw">pub fn </span>is_connected(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; bool {
 <span data-nosnippet>565</span>        <span class="self">self</span>.root(u) == <span class="self">self</span>.root(v)
 <span data-nosnippet>566</span>    }
 <span data-nosnippet>567</span>
 <span data-nosnippet>568</span>    <span class="doccomment">/// `u` and `v` must be connected.
-<span data-nosnippet>569</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; S::Path {
+<span data-nosnippet>569</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../algebra/lazy_map.rs.html#320">u</a>: usize, v: usize) -&gt; S::Path {
 <span data-nosnippet>570</span>        <span class="self">self</span>.reroot(u);
 <span data-nosnippet>571</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
 <span data-nosnippet>572</span>        <span class="self">self</span>.access_node(v);
@@ -768,7 +768,7 @@
 <span data-nosnippet>294</span>    A: TopTreeAction&lt;S&gt;,
 <span data-nosnippet>295</span>{
 <span data-nosnippet>296</span>    nodes: Vec&lt;TopPtr&lt;S, A&gt;&gt;,
-<span data-nosnippet>297</span>    node_allocator: MemoryPool&lt;TopNode&lt;<a href="../algebra/action.rs.html#14">S</a>, <a href="../algebra/action.rs.html#14">A</a>&gt;&gt;,
+<span data-nosnippet>297</span>    node_allocator: MemoryPool&lt;TopNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>298</span>    rake_allocator: MemoryPool&lt;RakeNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>299</span>}
 <span data-nosnippet>300</span>
@@ -923,7 +923,7 @@
 <span data-nosnippet>449</span>                <span class="kw">unsafe </span>{
 <span data-nosnippet>450</span>                    <span class="self">Self</span>::splay_rake(root);
 <span data-nosnippet>451</span>                    root.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(right);
-<span data-nosnippet>452</span>                    (<span class="kw-2">*</span>right.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(root);
+<span data-nosnippet>452</span>                    (<span class="kw-2">*</span>right.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">as_ptr</a>()).parent.parent = <span class="prelude-val">Some</span>(root);
 <span data-nosnippet>453</span>                    <span class="self">Self</span>::pull_rake(root);
 <span data-nosnippet>454</span>                }
 <span data-nosnippet>455</span>                <span class="prelude-val">Some</span>(root)
@@ -962,7 +962,7 @@
 <span data-nosnippet>488</span>                previous = <span class="prelude-val">Some</span>(cursor);
 <span data-nosnippet>489</span>                current = next;
 <span data-nosnippet>490</span>            }
-<span data-nosnippet>491</span>            <span class="self">Self</span>::splay_top(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">node</a>);
+<span data-nosnippet>491</span>            <span class="self">Self</span>::splay_top(node);
 <span data-nosnippet>492</span>        }
 <span data-nosnippet>493</span>    }
 <span data-nosnippet>494</span>
@@ -1132,7 +1132,7 @@
 <span data-nosnippet>294</span>    A: TopTreeAction&lt;S&gt;,
 <span data-nosnippet>295</span>{
 <span data-nosnippet>296</span>    nodes: Vec&lt;TopPtr&lt;S, A&gt;&gt;,
-<span data-nosnippet>297</span>    node_allocator: MemoryPool&lt;TopNode&lt;<a href="../algebra/action.rs.html#14">S</a>, <a href="../algebra/action.rs.html#14">A</a>&gt;&gt;,
+<span data-nosnippet>297</span>    node_allocator: MemoryPool&lt;TopNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>298</span>    rake_allocator: MemoryPool&lt;RakeNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>299</span>}
 <span data-nosnippet>300</span>
@@ -1287,7 +1287,7 @@
 <span data-nosnippet>449</span>                <span class="kw">unsafe </span>{
 <span data-nosnippet>450</span>                    <span class="self">Self</span>::splay_rake(root);
 <span data-nosnippet>451</span>                    root.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(right);
-<span data-nosnippet>452</span>                    (<span class="kw-2">*</span>right.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(root);
+<span data-nosnippet>452</span>                    (<span class="kw-2">*</span>right.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">as_ptr</a>()).parent.parent = <span class="prelude-val">Some</span>(root);
 <span data-nosnippet>453</span>                    <span class="self">Self</span>::pull_rake(root);
 <span data-nosnippet>454</span>                }
 <span data-nosnippet>455</span>                <span class="prelude-val">Some</span>(root)
@@ -1326,7 +1326,7 @@
 <span data-nosnippet>488</span>                previous = <span class="prelude-val">Some</span>(cursor);
 <span data-nosnippet>489</span>                current = next;
 <span data-nosnippet>490</span>            }
-<span data-nosnippet>491</span>            <span class="self">Self</span>::splay_top(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">node</a>);
+<span data-nosnippet>491</span>            <span class="self">Self</span>::splay_top(node);
 <span data-nosnippet>492</span>        }
 <span data-nosnippet>493</span>    }
 <span data-nosnippet>494</span>
@@ -1404,7 +1404,7 @@
 <span data-nosnippet>566</span>    }
 <span data-nosnippet>567</span>
 <span data-nosnippet>568</span>    <span class="doccomment">/// `u` and `v` must be connected.
-<span data-nosnippet>569</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; S::Path {
+<span data-nosnippet>569</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; <a href="../algebra/lazy_map.rs.html#292">S</a>::Path {
 <span data-nosnippet>570</span>        <span class="self">self</span>.reroot(u);
 <span data-nosnippet>571</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
 <span data-nosnippet>572</span>        <span class="self">self</span>.access_node(v);
@@ -1565,7 +1565,7 @@
 <span data-nosnippet>569</span>    </span><span class="kw">pub fn </span>fold_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) -&gt; S::Path {
 <span data-nosnippet>570</span>        <span class="self">self</span>.reroot(u);
 <span data-nosnippet>571</span>        <span class="kw">let </span>v = <span class="self">self</span>.node(v);
-<span data-nosnippet>572</span>        <span class="self">self</span>.access_node(v);
+<span data-nosnippet>572</span>        <span class="self">self</span>.<a href="../algebra/mod.rs.html#39">access_node</a>(v);
 <span data-nosnippet>573</span>        <span class="kw">unsafe </span>{ v.as_ref().data.sum.clone() }
 <span data-nosnippet>574</span>    }
 <span data-nosnippet>575</span>
@@ -1582,7 +1582,7 @@
 <span data-nosnippet>586</span>    <span class="kw">fn </span>detach_left&lt;R&gt;(<span class="kw-2">mut </span>node: TopPtr&lt;S, A&gt;, f: <span class="kw">impl </span>FnOnce(TopPtr&lt;S, A&gt;) -&gt; R) -&gt; R {
 <span data-nosnippet>587</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>588</span>            <span class="kw">let </span>left = node.as_mut().child[<span class="number">0</span>].take();
-<span data-nosnippet>589</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = <a href="../algebra/ring.rs.html#1-135">left</a> {
+<span data-nosnippet>589</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>left) = left {
 <span data-nosnippet>590</span>                left.as_mut().parent.parent = <span class="prelude-val">None</span>;
 <span data-nosnippet>591</span>            }
 <span data-nosnippet>592</span>            <span class="self">Self</span>::pull_top(node);
@@ -1608,7 +1608,7 @@
 <span data-nosnippet>612</span>    </span><span class="kw">pub fn </span>update_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize, action: <span class="kw-2">&amp;</span>A::Action) {
 <span data-nosnippet>613</span>        <span class="self">self</span>.reroot(parent);
 <span data-nosnippet>614</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(node);
-<span data-nosnippet>615</span>        <span class="self">self</span>.access_node(node);
+<span data-nosnippet>615</span>        <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">access_node</a>(node);
 <span data-nosnippet>616</span>        <span class="self">Self</span>::detach_left(node, |node| <span class="kw">unsafe </span>{
 <span data-nosnippet>617</span>            <span class="highlight">TopBstSpec::&lt;S, A&gt;::apply_all</span>(node, action);
 <span data-nosnippet>618</span>            TopBstSpec::&lt;S, A&gt;::top_down(BstDataMutRef::new_unchecked(node));

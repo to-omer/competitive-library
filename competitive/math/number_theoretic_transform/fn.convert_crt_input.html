@@ -180,7 +180,7 @@
 <span data-nosnippet>770</span>        }
 <span data-nosnippet>771</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>772</span>        <span class="kw">if </span>len.next_power_of_two() &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">21 </span>{
-<span data-nosnippet>773</span>            <span class="kw">let </span>factor = Xorshift::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">new</a>().rand64() | <span class="number">1</span>;
+<span data-nosnippet>773</span>            <span class="kw">let </span>factor = Xorshift::new().rand64() | <span class="number">1</span>;
 <span data-nosnippet>774</span>            <span class="kw">let </span><span class="kw-2">mut </span>inverse = factor;
 <span data-nosnippet>775</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">5 </span>{
 <span data-nosnippet>776</span>                inverse = inverse.wrapping_mul(<span class="number">2u64</span>.wrapping_sub(factor.wrapping_mul(inverse)));
@@ -188,7 +188,7 @@
 <span data-nosnippet>778</span>            <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">return unsafe </span>{
 <span data-nosnippet>779</span>                <span class="kw">super</span>::mint_fft_convolve::convolve_u64_avx2(a, b, factor, inverse)
 <span data-nosnippet>780</span>            }, ());
-<span data-nosnippet>781</span>            <span class="kw">return </span>convolve_u64_fft_scalar(a, b, factor, inverse);
+<span data-nosnippet>781</span>            <span class="kw">return </span>convolve_u64_fft_scalar(<a href="../algebra/action.rs.html#14">a</a>, b, factor, inverse);
 <span data-nosnippet>782</span>        }
 <span data-nosnippet>783</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
 <span data-nosnippet>784</span>        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
@@ -276,7 +276,7 @@
 <span data-nosnippet>866</span>        p_flat: <span class="self">Self</span>::T,
 <span data-nosnippet>867</span>        q_flat: <span class="self">Self</span>::T,
 <span data-nosnippet>868</span>        n: usize,
-<span data-nosnippet>869</span>        py: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>,
+<span data-nosnippet>869</span>        py: usize,
 <span data-nosnippet>870</span>        qy: usize,
 <span data-nosnippet>871</span>    ) -&gt; (<span class="self">Self</span>::T, <span class="self">Self</span>::T) {
 <span data-nosnippet>872</span>        <span class="kw">let </span>base = n * <span class="number">2</span>;
@@ -332,19 +332,19 @@
 <span data-nosnippet>922</span>        f
 <span data-nosnippet>923</span>    }
 <span data-nosnippet>924</span>
-<span data-nosnippet>925</span>    <span class="kw">fn </span>even_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#131">F</a>) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>926</span>        <span class="macro">assert_eq!</span>(f.len(), <a href="../algebra/lazy_map.rs.html#131">g</a>.len());
+<span data-nosnippet>925</span>    <span class="kw">fn </span>even_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>926</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>927</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
 <span data-nosnippet>928</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
 <span data-nosnippet>929</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>930</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
 <span data-nosnippet>931</span>        (<span class="number">0</span>..n)
-<span data-nosnippet>932</span>            .map(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
+<span data-nosnippet>932</span>            .map(|i| (f[<a href="../algebra/lazy_map.rs.html#131">i</a> &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
 <span data-nosnippet>933</span>            .collect()
 <span data-nosnippet>934</span>    }
 <span data-nosnippet>935</span>
 <span data-nosnippet>936</span>    <span class="kw">fn </span>odd_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>937</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
+<span data-nosnippet>937</span>        <span class="macro">assert_eq!</span>(f.<a href="../num/zero_one.rs.html#15-28">len</a>(), g.len());
 <span data-nosnippet>938</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
 <span data-nosnippet>939</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
 <span data-nosnippet>940</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
@@ -354,7 +354,7 @@
 <span data-nosnippet>944</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
 <span data-nosnippet>945</span>        BIT_REVERSE.with(|br| {
 <span data-nosnippet>946</span>            <span class="kw">let </span>br = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>br.get() };
-<span data-nosnippet>947</span>            <span class="kw">if </span>br.len() &lt; k {
+<span data-nosnippet>947</span>            <span class="kw">if </span>br.len() &lt; <a href="../algebra/lazy_map.rs.html#157">k</a> {
 <span data-nosnippet>948</span>                br.resize_with(k, Default::default);
 <span data-nosnippet>949</span>            }
 <span data-nosnippet>950</span>            <span class="kw">let </span>k = k - <span class="number">1</span>;
@@ -440,8 +440,8 @@
 <span data-nosnippet>1030</span>        intt_batch(<span class="kw-2">&amp;mut </span>qr, half);
 <span data-nosnippet>1031</span>        intt_rows(<span class="kw-2">&amp;mut </span>qr, half);
 <span data-nosnippet>1032</span>
-<span data-nosnippet>1033</span>        <span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/marker/derive.Copy.html">Some</a>(q_high) = q_high {
-<span data-nosnippet>1034</span>            <span class="kw">let </span><span class="kw-2">mut </span>q_high_even = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
+<span data-nosnippet>1033</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q_high) = q_high {
+<span data-nosnippet>1034</span>            <span class="kw">let </span><span class="kw-2">mut </span>q_high_even = <span class="macro">vec!</span>[MInt::&lt;<a href="../algebra/lazy_map.rs.html#266">M</a>&gt;::zero(); half];
 <span data-nosnippet>1035</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..half {
 <span data-nosnippet>1036</span>                q_high_even[i] = q_high[i &lt;&lt; <span class="number">1</span>] * q_high[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>];
 <span data-nosnippet>1037</span>            }

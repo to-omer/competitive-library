@@ -427,7 +427,7 @@
 <span data-nosnippet>162</span>    <span class="kw">where
 <span data-nosnippet>163</span>        </span>Spec: BstSpec&lt;Data: BstDataAccess&lt;marker::LazyMap, Value = <span class="self">Self</span>&gt;&gt;,
 <span data-nosnippet>164</span>    {
-<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().<a href="../../num/zero_one.rs.html#15-28">act</a>) {
+<span data-nosnippet>165</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().bst_data().act) {
 <span data-nosnippet>166</span>            <span class="kw">return</span>;
 <span data-nosnippet>167</span>        }
 <span data-nosnippet>168</span>        <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().bst_data_mut().act, L::act_unit());
@@ -602,7 +602,7 @@
 <span data-nosnippet>287</span>
 <span data-nosnippet>288</span><span class="kw">impl</span>&lt;BorrowType, Spec, Data&gt; BstNodeRef&lt;BorrowType, Spec&gt;
 <span data-nosnippet>289</span><span class="kw">where
-<span data-nosnippet>290</span>    </span><a href="../../algebra/ring.rs.html#1-135">Spec</a>: BstSpec&lt;Data = Data, Parent = WithParent&lt;Data&gt;&gt;,
+<span data-nosnippet>290</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithParent&lt;Data&gt;&gt;,
 <span data-nosnippet>291</span>    BorrowType: marker::BorrowType,
 <span data-nosnippet>292</span>{
 <span data-nosnippet>293</span>    <span class="kw">pub fn </span>ascend(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BstNodeRef&lt;BorrowType, Spec&gt;, <span class="self">Self</span>&gt; {
@@ -652,7 +652,7 @@
 <span data-nosnippet>337</span>            _marker: PhantomData,
 <span data-nosnippet>338</span>        }
 <span data-nosnippet>339</span>    }
-<span data-nosnippet>340</span>    <span class="kw">pub fn </span>from_data&lt;A&gt;(data: Spec::Data, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
+<span data-nosnippet>340</span>    <span class="kw">pub fn </span><a href="../../../../../../../algebra/struct.LinearAct.html">from_data</a>&lt;A&gt;(data: Spec::Data, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
 <span data-nosnippet>341</span>    </span><span class="kw">where
 <span data-nosnippet>342</span>        </span>A: Allocator&lt;BstNode&lt;Spec::Data, Spec::Parent&gt;&gt;,
 <span data-nosnippet>343</span>    {
@@ -702,7 +702,7 @@
 <span data-nosnippet>387</span>    <span class="kw">pub fn </span>leftmost(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>388</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>;
 <span data-nosnippet>389</span>        <span class="kw">while let </span><span class="prelude-val">Ok</span>(left) = node.left().<span class="highlight">descend</span>() {
-<span data-nosnippet>390</span>            <a href="../../algebra/magma.rs.html#56">node</a> = left;
+<span data-nosnippet>390</span>            node = left;
 <span data-nosnippet>391</span>        }
 <span data-nosnippet>392</span>        node
 <span data-nosnippet>393</span>    }
@@ -1008,7 +1008,7 @@
 <span data-nosnippet>270</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>271</span>            length: <span class="number">0</span>,
 <span data-nosnippet>272</span>            rng: Xorshift::new(),
-<span data-nosnippet>273</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
+<span data-nosnippet>273</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(<a href="../../../../../../../algebra/struct.EmptyAct.html">capacity</a>)),
 <span data-nosnippet>274</span>            _marker: PhantomData,
 <span data-nosnippet>275</span>        }
 <span data-nosnippet>276</span>    }
@@ -1031,7 +1031,7 @@
 <span data-nosnippet>293</span>        )
 <span data-nosnippet>294</span>    }
 <span data-nosnippet>295</span>
-<span data-nosnippet>296</span>    <span class="kw">fn </span>build&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; (<span class="prelude-ty">Option</span>&lt;ImplicitTreapRoot&lt;T&gt;&gt;, usize)
+<span data-nosnippet>296</span>    <span class="kw">fn </span>build&lt;<a href="../algebra/action.rs.html#54">I</a>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; (<span class="prelude-ty">Option</span>&lt;ImplicitTreapRoot&lt;T&gt;&gt;, usize)
 <span data-nosnippet>297</span>    <span class="kw">where
 <span data-nosnippet>298</span>        </span>I: IntoIterator&lt;Item = T::Key&gt;,
 <span data-nosnippet>299</span>    {
@@ -1513,7 +1513,7 @@
 <span data-nosnippet>297</span>            }
 <span data-nosnippet>298</span>            Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
 <span data-nosnippet>299</span>            Ordering::Less =&gt; {
-<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/mod.rs.html#1-86">child</a>) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().<span class="highlight">take</span>() }) <span class="kw">else </span>{
+<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>child) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().<span class="highlight">take</span>() }) <span class="kw">else </span>{
 <span data-nosnippet>301</span>                    <span class="kw">break </span>Ordering::Less;
 <span data-nosnippet>302</span>                };
 <span data-nosnippet>303</span>                Spec::top_down(child.borrow_datamut());
@@ -1608,10 +1608,10 @@
 <span data-nosnippet>392</span>    root: <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;,
 <span data-nosnippet>393</span>    seeker: Seeker,
 <span data-nosnippet>394</span>    equal_side: EqualSide,
-<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;<a href="../algebra/magma.rs.html#56">Spec</a>&gt;&gt;)
+<span data-nosnippet>395</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;, <span class="prelude-ty">Option</span>&lt;BstRoot&lt;Spec&gt;&gt;)
 <span data-nosnippet>396</span><span class="kw">where
 <span data-nosnippet>397</span>    </span>Spec: BstSpec&lt;Data = Data, Parent = WithNoParent&lt;Data&gt;&gt;,
-<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;<a href="../algebra/magma.rs.html#56">Spec</a> = Spec&gt;,
+<span data-nosnippet>398</span>    Seeker: BstSeeker&lt;Spec = Spec&gt;,
 <span data-nosnippet>399</span>{
 <span data-nosnippet>400</span>    <span class="kw">let </span><span class="prelude-val">Some</span>(root) = root <span class="kw">else </span>{
 <span data-nosnippet>401</span>        <span class="kw">return </span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
@@ -2006,7 +2006,7 @@
 <span data-nosnippet>297</span>            }
 <span data-nosnippet>298</span>            Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
 <span data-nosnippet>299</span>            Ordering::Less =&gt; {
-<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/mod.rs.html#1-86">child</a>) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().take() }) <span class="kw">else </span>{
+<span data-nosnippet>300</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>child) = (<span class="kw">unsafe </span>{ root.borrow_mut().right_mut().take() }) <span class="kw">else </span>{
 <span data-nosnippet>301</span>                    <span class="kw">break </span>Ordering::Less;
 <span data-nosnippet>302</span>                };
 <span data-nosnippet>303</span>                Spec::top_down(child.borrow_datamut());
