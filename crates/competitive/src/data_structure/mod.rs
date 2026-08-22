@@ -5,7 +5,7 @@ use crate::algebra::{
     Magma, MaxOperation, MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceBisectExt, SliceSortExt};
-use crate::num::{Bounded, RangeBoundsExt};
+use crate::num::{Bounded, IntBase, RangeBoundsExt, Zero};
 use crate::tools::{Comparator, Xorshift, comparator};
 
 #[codesnip::entry("Accumulate")]
@@ -59,6 +59,8 @@ pub use self::kdtree::Static2DTree;
 pub use self::lazy_segment_tree::LazySegmentTree;
 #[codesnip::entry("LazySegmentTreeMap")]
 pub use self::lazy_segment_tree_map::LazySegmentTreeMap;
+#[codesnip::entry("LiChaoTree")]
+pub use self::li_chao_tree::{LiChaoLine, LiChaoTree, OfflineLiChaoTree};
 #[codesnip::entry("LineSet")]
 pub use self::line_set::LineSet;
 #[codesnip::entry("PairingHeap")]
@@ -177,6 +179,11 @@ mod lazy_segment_tree;
     )
 )]
 mod lazy_segment_tree_map;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("LiChaoTree", include("bounded", "integer", "sort", "zero_one"))
+)]
+mod li_chao_tree;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
 mod line_set;
 #[cfg_attr(
