@@ -42,6 +42,59 @@ pub fn floor_sum(n: u64, a: u64, b: u64, m: u64) -> u64 {
     ans.0
 }
 
+/// $$\min(\{(a\times i+b)\bmod m\mid0\leq i<n\}\cup\{m\})$$
+pub fn min_of_mod_of_linear(mut n: u64, mut a: u64, mut b: u64, mut m: u64) -> u64 {
+    if n == 0 {
+        return m;
+    }
+    if a >= m {
+        a %= m;
+    }
+    if b >= m {
+        b %= m;
+    }
+    let mut ans = Wrapping(0u64);
+    let mut pos = true;
+    let mut p = 1;
+    let mut q = 1;
+    while a != 0 {
+        let e = if pos { a } else { m } - 1;
+        let r = m % a;
+        let d = m - b;
+        if if pos { b + 1 } else { d } > a {
+            let t = (d - 1) / a + u64::from(pos);
+            let c = (t - u64::from(pos)) * p + if pos { q } else { 0 };
+            if n <= c {
+                if !pos {
+                    ans -= Wrapping(a) * Wrapping((n - 1) / p);
+                }
+                break;
+            }
+            n -= c;
+            if pos {
+                b = a * t - d;
+            } else {
+                b += a * t;
+            }
+        }
+        if r != 0 {
+            let x = m / a * p + q;
+            q = x;
+            p = x - p;
+        }
+        if pos {
+            ans += e;
+        } else {
+            ans -= e;
+        }
+        m = a;
+        a = r;
+        b = e - b;
+        pos = !pos;
+    }
+    if pos { (ans + b).0 } else { (ans - b).0 }
+}
+
 /// Sum of Floor of Linear mod 2^64
 ///
 /// $$\sum_{i=l}^{r-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
@@ -433,6 +486,10 @@ mod tests {
             let (n, a, b, m) = rng.random((..A, ..A, ..A, 1..A));
             let expected: u64 = (0..n).map(|i| (a * i + b) / m).sum();
             let result = floor_sum(n, a, b, m);
+            assert_eq!(expected, result);
+
+            let expected = (0..n).map(|i| (a * i + b) % m).min().unwrap_or(m);
+            let result = min_of_mod_of_linear(n, a, b, m);
             assert_eq!(expected, result);
 
             let (mut l, mut r, a, b) = rng.random((-B..B, -B..B, -B..B, -B..B));

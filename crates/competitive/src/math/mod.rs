@@ -48,7 +48,7 @@ pub use self::fast_prime_mod::FastPrimeMod;
 #[codesnip::entry("floor_sum")]
 pub use self::floor_sum::{
     floor_power_sum, floor_sum, floor_sum_i64, floor_sum_polynomial, floor_sum_polynomial_i64,
-    floor_sum_range_freq,
+    floor_sum_range_freq, min_of_mod_of_linear,
 };
 #[codesnip::entry("FormalPowerSeries")]
 pub use self::formal_power_series::{
