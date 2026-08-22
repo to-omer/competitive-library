@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Branch","LiChaoEvent"],"fn":["place_line"],"struct":["IndexedLiChaoTree","LiChaoNode","LiChaoSegment","LiChaoTree","OfflineLiChaoTree"],"trait":["LiChaoLine"]};

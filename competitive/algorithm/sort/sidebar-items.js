@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["bubble_sort","insertion_sort","merge","merge_sort"],"trait":["SliceSortExt"]};
+window.SIDEBAR_ITEMS = {"fn":["bubble_sort","insertion_sort","merge","merge_sort","radix_sort_by_key"],"macro":[["signed_radix_sort_key",1],["unsigned_radix_sort_key",1]],"trait":["RadixSortKey","SliceSortExt"]};

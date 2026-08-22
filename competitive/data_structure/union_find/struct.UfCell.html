@@ -1,0 +1,1584 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `UfCell` struct in crate `competitive`."><title>UfCell in competitive::data_structure::union_find - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (c656540d6 2026-08-21)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">UfCell</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">UfCell</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.data" title="data">data</a></li><li><a href="#structfield.parent_or_info" title="parent_or_info">parent_or_info</a></li><li><a href="#structfield.potential" title="potential">potential</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.root" title="root">root</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.data" title="data">data</a></li><li><a href="#method.data_mut" title="data_mut">data_mut</a></li><li><a href="#method.is_root" title="is_root">is_root</a></li><li><a href="#method.parent" title="parent">parent</a></li><li><a href="#method.root_info" title="root_info">root_info</a></li><li><a href="#method.set_child" title="set_child">set_child</a></li><li><a href="#method.set_root_info" title="set_root_info">set_root_info</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-UfCell%3CD,+P%3E" title="Clone">Clone</a></li><li><a href="#impl-Debug-for-UfCell%3CD,+P%3E" title="Debug">Debug</a></li><li><a href="#impl-Drop-for-UfCell%3CD,+P%3E" title="Drop">Drop</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Freeze-for-UfCell%3CD,+P%3E" title="Freeze">Freeze</a></li><li><a href="#impl-RefUnwindSafe-for-UfCell%3CD,+P%3E" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-UfCell%3CD,+P%3E" title="Send">Send</a></li><li><a href="#impl-Sync-for-UfCell%3CD,+P%3E" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-UfCell%3CD,+P%3E" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-UfCell%3CD,+P%3E" title="UnsafeUnpin">UnsafeUnpin</a></li><li><a href="#impl-UnwindSafe-for-UfCell%3CD,+P%3E" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>union_<wbr>find</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">data_structure</a>::<wbr><a href="index.html">union_find</a></div><h1>Struct <span class="struct">UfCell</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/data_structure/union_find.rs.html#57-65">Source</a> </span></div><pre class="rust item-decl"><code>pub struct UfCell&lt;D, P&gt;<div class="where">where
+    P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,</div>{
+    parent_or_info: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>,
+    data: <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;,
+    potential: P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>,
+}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.parent_or_info" class="structfield section-header"><a href="#structfield.parent_or_info" class="anchor field">§</a><code>parent_or_info: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></span><span id="structfield.data" class="structfield section-header"><a href="#structfield.data" class="anchor field">§</a><code>data: <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;</code></span><span id="structfield.potential" class="structfield section-header"><a href="#structfield.potential" class="anchor field">§</a><code>potential: P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-UfCell%3CD,+P%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#107-150">Source</a><a href="#impl-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#111-117">Source</a><h4 class="code-header">fn <a href="#method.root" class="fn">root</a>(info: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, data: D) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#309&#34;,&#34;line 309&#34;],[[10,10],&#34;../../../src/competitive/data_structure/union_find.rs.html#318&#34;,&#34;line 318&#34;],[[24,24],&#34;../../../src/competitive/data_structure/union_find.rs.html#332&#34;,&#34;line 332&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#309">line 309</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>308</span>    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>309</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| <span class="highlight focus">UfCell::root</span>(U::single_info(), ())).collect();
+<span data-nosnippet>310</span>        <span class="self">Self </span>{
+<span data-nosnippet>311</span>            cells,
+<span data-nosnippet>312</span>            merger: (),
+<span data-nosnippet>313</span>            history: Default::default(),
+<span data-nosnippet>314</span>            _marker: PhantomData,
+<span data-nosnippet>315</span>        }
+<span data-nosnippet>316</span>    }
+<span data-nosnippet>317</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>318</span>        <span class="self">self</span>.cells.push(<span class="highlight">UfCell::root</span>(U::single_info(), ()));
+<span data-nosnippet>319</span>    }
+<span data-nosnippet>320</span>}
+<span data-nosnippet>321</span>
+<span data-nosnippet>322</span><span class="kw">impl</span>&lt;U, F, T, Merge, P, H&gt; UnionFindBase&lt;U, F, FnMerger&lt;T, Merge&gt;, P, H&gt;
+<span data-nosnippet>323</span><span class="kw">where
+<span data-nosnippet>324</span>    </span>U: UnionStrategy,
+<span data-nosnippet>325</span>    F: FindStrategy,
+<span data-nosnippet>326</span>    Merge: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>327</span>    P: Monoid,
+<span data-nosnippet>328</span>    H: UndoStrategy&lt;UfCell&lt;T, P&gt;&gt;,
+<span data-nosnippet>329</span>{
+<span data-nosnippet>330</span>    <span class="kw">pub fn </span>new_with_merger(n: usize, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(usize) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>331</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<span data-nosnippet>332</span>            .map(|i| <span class="highlight">UfCell::root</span>(U::single_info(), init(i)))
+<span data-nosnippet>333</span>            .collect();
+<span data-nosnippet>334</span>        <span class="self">Self </span>{
+<span data-nosnippet>335</span>            cells,
+<span data-nosnippet>336</span>            merger: FnMerger {
+<span data-nosnippet>337</span>                f: merge,
+<span data-nosnippet>338</span>                _marker: PhantomData,
+<span data-nosnippet>339</span>            },
+<span data-nosnippet>340</span>            history: Default::default(),
+<span data-nosnippet>341</span>            _marker: PhantomData,
+<span data-nosnippet>342</span>        }
+<span data-nosnippet>343</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.root_info" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#119-121">Source</a><h4 class="code-header">fn <a href="#method.root_info" class="fn">root_info</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#97&#34;,&#34;line 97&#34;],[[272,272],&#34;../../../src/competitive/data_structure/union_find.rs.html#368&#34;,&#34;line 368&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#97">line 97</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<span data-nosnippet>97</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = <span class="self">self</span>.<span class="highlight focus">root_info</span>() {
+<span data-nosnippet>98</span>            f.debug_tuple(<span class="string">"Root"</span>).field(<span class="kw-2">&amp;</span>(info, <span class="self">self</span>.data())).finish()
+<span data-nosnippet>99</span>        } <span class="kw">else </span>{
+<span data-nosnippet>100</span>            f.debug_tuple(<span class="string">"Child"</span>)
+<span data-nosnippet>101</span>                .field(<span class="kw-2">&amp;</span>(<span class="self">self</span>.parent().unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.potential))
+<span data-nosnippet>102</span>                .finish()
+<span data-nosnippet>103</span>        }
+<span data-nosnippet>104</span>    }
+<span data-nosnippet>105</span>}
+<span data-nosnippet>106</span>
+<span data-nosnippet>107</span><span class="kw">impl</span>&lt;D, P&gt; UfCell&lt;D, P&gt;
+<span data-nosnippet>108</span><span class="kw">where
+<span data-nosnippet>109</span>    </span>P: Monoid,
+<span data-nosnippet>110</span>{
+<span data-nosnippet>111</span>    <span class="kw">fn </span>root(info: u32, data: D) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>112</span>        <span class="self">Self </span>{
+<span data-nosnippet>113</span>            parent_or_info: !(info <span class="kw">as </span>i32),
+<span data-nosnippet>114</span>            data: MaybeUninit::new(data),
+<span data-nosnippet>115</span>            potential: P::unit(),
+<span data-nosnippet>116</span>        }
+<span data-nosnippet>117</span>    }
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>120</span>        (<span class="self">self</span>.parent_or_info &lt; <span class="number">0</span>).then_some((!<span class="self">self</span>.parent_or_info) <span class="kw">as </span>u32)
+<span data-nosnippet>121</span>    }
+<span data-nosnippet>122</span>
+<span data-nosnippet>123</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: u32) {
+<span data-nosnippet>124</span>        <span class="self">self</span>.parent_or_info = !(info <span class="kw">as </span>i32);
+<span data-nosnippet>125</span>    }
+<span data-nosnippet>126</span>
+<span data-nosnippet>127</span>    <span class="kw">fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>128</span>        (<span class="self">self</span>.parent_or_info &gt;= <span class="number">0</span>).then_some(<span class="self">self</span>.parent_or_info <span class="kw">as </span>usize)
+<span data-nosnippet>129</span>    }
+<span data-nosnippet>130</span>
+<span data-nosnippet>131</span>    <span class="kw">fn </span>set_child(<span class="kw-2">&amp;mut </span><span class="self">self</span>, parent: usize, potential: P::T) {
+<span data-nosnippet>132</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.is_root() {
+<span data-nosnippet>133</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>134</span>        }
+<span data-nosnippet>135</span>        <span class="self">self</span>.parent_or_info = parent <span class="kw">as </span>i32;
+<span data-nosnippet>136</span>        <span class="self">self</span>.potential = potential;
+<span data-nosnippet>137</span>    }
+<span data-nosnippet>138</span>
+<span data-nosnippet>139</span>    <span class="kw">fn </span>is_root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>140</span>        <span class="self">self</span>.parent_or_info &lt; <span class="number">0
+<span data-nosnippet>141</span>    </span>}
+<span data-nosnippet>142</span>
+<span data-nosnippet>143</span>    <span class="kw">fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>D {
+<span data-nosnippet>144</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_ref() }
+<span data-nosnippet>145</span>    }
+<span data-nosnippet>146</span>
+<span data-nosnippet>147</span>    <span class="kw">fn </span>data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>D {
+<span data-nosnippet>148</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_mut() }
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>}
+<span data-nosnippet>151</span>
+<span data-nosnippet>152</span><span class="kw">impl</span>&lt;D, P&gt; Drop <span class="kw">for </span>UfCell&lt;D, P&gt;
+<span data-nosnippet>153</span><span class="kw">where
+<span data-nosnippet>154</span>    </span>P: Monoid,
+<span data-nosnippet>155</span>{
+<span data-nosnippet>156</span>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>157</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.is_root() {
+<span data-nosnippet>158</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>159</span>        }
+<span data-nosnippet>160</span>    }
+<span data-nosnippet>161</span>}
+<span data-nosnippet>162</span>
+<span data-nosnippet>163</span><span class="kw">pub trait </span>FindStrategy {
+<span data-nosnippet>164</span>    <span class="kw">const </span>CHENGE_ROOT: bool;
+<span data-nosnippet>165</span>}
+<span data-nosnippet>166</span>
+<span data-nosnippet>167</span><span class="kw">pub enum </span>PathCompression {}
+<span data-nosnippet>168</span>
+<span data-nosnippet>169</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>PathCompression {
+<span data-nosnippet>170</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>171</span>}
+<span data-nosnippet>172</span>
+<span data-nosnippet>173</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>() {
+<span data-nosnippet>174</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>175</span>}
+<span data-nosnippet>176</span>
+<span data-nosnippet>177</span><span class="kw">pub trait </span>UnionStrategy {
+<span data-nosnippet>178</span>    <span class="kw">fn </span>single_info() -&gt; u32;
+<span data-nosnippet>179</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool;
+<span data-nosnippet>180</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32;
+<span data-nosnippet>181</span>}
+<span data-nosnippet>182</span>
+<span data-nosnippet>183</span><span class="kw">pub enum </span>UnionBySize {}
+<span data-nosnippet>184</span>
+<span data-nosnippet>185</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionBySize {
+<span data-nosnippet>186</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>187</span>        <span class="number">1
+<span data-nosnippet>188</span>    </span>}
+<span data-nosnippet>189</span>
+<span data-nosnippet>190</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>191</span>        parent &gt;= child
+<span data-nosnippet>192</span>    }
+<span data-nosnippet>193</span>
+<span data-nosnippet>194</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>195</span>        parent + child
+<span data-nosnippet>196</span>    }
+<span data-nosnippet>197</span>}
+<span data-nosnippet>198</span>
+<span data-nosnippet>199</span><span class="kw">pub enum </span>UnionByRank {}
+<span data-nosnippet>200</span>
+<span data-nosnippet>201</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionByRank {
+<span data-nosnippet>202</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>203</span>        <span class="number">0
+<span data-nosnippet>204</span>    </span>}
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>207</span>        parent &gt;= child
+<span data-nosnippet>208</span>    }
+<span data-nosnippet>209</span>
+<span data-nosnippet>210</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>211</span>        parent + (parent == child) <span class="kw">as </span>u32
+<span data-nosnippet>212</span>    }
+<span data-nosnippet>213</span>}
+<span data-nosnippet>214</span>
+<span data-nosnippet>215</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>() {
+<span data-nosnippet>216</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>217</span>        <span class="number">0
+<span data-nosnippet>218</span>    </span>}
+<span data-nosnippet>219</span>
+<span data-nosnippet>220</span>    <span class="kw">fn </span>check_directoin(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>221</span>        <span class="bool-val">false
+<span data-nosnippet>222</span>    </span>}
+<span data-nosnippet>223</span>
+<span data-nosnippet>224</span>    <span class="kw">fn </span>unite(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>225</span>        <span class="number">0
+<span data-nosnippet>226</span>    </span>}
+<span data-nosnippet>227</span>}
+<span data-nosnippet>228</span>
+<span data-nosnippet>229</span><span class="kw">pub trait </span>UfMergeSpec {
+<span data-nosnippet>230</span>    <span class="kw">type </span>Data;
+<span data-nosnippet>231</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data);
+<span data-nosnippet>232</span>}
+<span data-nosnippet>233</span>
+<span data-nosnippet>234</span><span class="attr">#[derive(Debug, Clone)]
+<span data-nosnippet>235</span></span><span class="kw">pub struct </span>FnMerger&lt;T, F&gt; {
+<span data-nosnippet>236</span>    f: F,
+<span data-nosnippet>237</span>    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+<span data-nosnippet>238</span>}
+<span data-nosnippet>239</span>
+<span data-nosnippet>240</span><span class="kw">impl</span>&lt;T, F&gt; UfMergeSpec <span class="kw">for </span>FnMerger&lt;T, F&gt;
+<span data-nosnippet>241</span><span class="kw">where
+<span data-nosnippet>242</span>    </span>F: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>243</span>{
+<span data-nosnippet>244</span>    <span class="kw">type </span>Data = T;
+<span data-nosnippet>245</span>
+<span data-nosnippet>246</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {
+<span data-nosnippet>247</span>        (<span class="self">self</span>.f)(to, from)
+<span data-nosnippet>248</span>    }
+<span data-nosnippet>249</span>}
+<span data-nosnippet>250</span>
+<span data-nosnippet>251</span><span class="kw">impl </span>UfMergeSpec <span class="kw">for </span>() {
+<span data-nosnippet>252</span>    <span class="kw">type </span>Data = ();
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, _from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {}
+<span data-nosnippet>255</span>}
+<span data-nosnippet>256</span>
+<span data-nosnippet>257</span><span class="kw">pub trait </span>UndoStrategy&lt;T&gt; {
+<span data-nosnippet>258</span>    <span class="kw">const </span><a href="../geometry/mod.rs.html#1-36">UNDOABLE</a>: bool;
+<span data-nosnippet>259</span>
+<span data-nosnippet>260</span>    <span class="kw">type </span>History: Default;
+<span data-nosnippet>261</span>
+<span data-nosnippet>262</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]);
+<span data-nosnippet>263</span>
+<span data-nosnippet>264</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]);
+<span data-nosnippet>265</span>}
+<span data-nosnippet>266</span>
+<span data-nosnippet>267</span><span class="kw">pub enum </span>Undoable {}
+<span data-nosnippet>268</span>
+<span data-nosnippet>269</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>Undoable
+<span data-nosnippet>270</span><span class="kw">where
+<span data-nosnippet>271</span>    </span>T: Clone,
+<span data-nosnippet>272</span>{
+<span data-nosnippet>273</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>274</span>
+<span data-nosnippet>275</span>    <span class="kw">type </span>History = Vec&lt;[(usize, T); <span class="number">2</span>]&gt;;
+<span data-nosnippet>276</span>
+<span data-nosnippet>277</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]) {
+<span data-nosnippet>278</span>        <span class="kw">let </span>cx = cells[x].clone();
+<span data-nosnippet>279</span>        <span class="kw">let </span>cy = cells[y].clone();
+<span data-nosnippet>280</span>        history.push([(x, cx), (y, cy)]);
+<span data-nosnippet>281</span>    }
+<span data-nosnippet>282</span>
+<span data-nosnippet>283</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>284</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>([(x, cx), (y, cy)]) = history.pop() {
+<span data-nosnippet>285</span>            cells[x] = cx;
+<span data-nosnippet>286</span>            cells[y] = cy;
+<span data-nosnippet>287</span>        }
+<span data-nosnippet>288</span>    }
+<span data-nosnippet>289</span>}
+<span data-nosnippet>290</span>
+<span data-nosnippet>291</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>() {
+<span data-nosnippet>292</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>293</span>
+<span data-nosnippet>294</span>    <span class="kw">type </span>History = ();
+<span data-nosnippet>295</span>
+<span data-nosnippet>296</span>    <span class="kw">fn </span>unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _x: usize, _y: usize, _cells: <span class="kw-2">&amp;</span>[T]) {}
+<span data-nosnippet>297</span>
+<span data-nosnippet>298</span>    <span class="kw">fn </span>undo_unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _cells: <span class="kw-2">&amp;mut </span>[T]) {}
+<span data-nosnippet>299</span>}
+<span data-nosnippet>300</span>
+<span data-nosnippet>301</span><span class="kw">impl</span>&lt;U, F, P, H&gt; UnionFindBase&lt;U, F, (), P, H&gt;
+<span data-nosnippet>302</span><span class="kw">where
+<span data-nosnippet>303</span>    </span>U: UnionStrategy,
+<span data-nosnippet>304</span>    F: FindStrategy,
+<span data-nosnippet>305</span>    P: Monoid,
+<span data-nosnippet>306</span>    H: UndoStrategy&lt;UfCell&lt;(), P&gt;&gt;,
+<span data-nosnippet>307</span>{
+<span data-nosnippet>308</span>    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>309</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| UfCell::root(U::single_info(), ())).collect();
+<span data-nosnippet>310</span>        <span class="self">Self </span>{
+<span data-nosnippet>311</span>            cells,
+<span data-nosnippet>312</span>            merger: (),
+<span data-nosnippet>313</span>            history: Default::default(),
+<span data-nosnippet>314</span>            _marker: PhantomData,
+<span data-nosnippet>315</span>        }
+<span data-nosnippet>316</span>    }
+<span data-nosnippet>317</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>318</span>        <span class="self">self</span>.cells.push(UfCell::root(<a href="../algebra/action.rs.html#14">U</a>::single_info(), ()));
+<span data-nosnippet>319</span>    }
+<span data-nosnippet>320</span>}
+<span data-nosnippet>321</span>
+<span data-nosnippet>322</span><span class="kw">impl</span>&lt;U, F, T, Merge, P, H&gt; UnionFindBase&lt;U, F, FnMerger&lt;T, Merge&gt;, P, H&gt;
+<span data-nosnippet>323</span><span class="kw">where
+<span data-nosnippet>324</span>    </span>U: UnionStrategy,
+<span data-nosnippet>325</span>    F: FindStrategy,
+<span data-nosnippet>326</span>    Merge: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>327</span>    P: Monoid,
+<span data-nosnippet>328</span>    H: UndoStrategy&lt;UfCell&lt;T, P&gt;&gt;,
+<span data-nosnippet>329</span>{
+<span data-nosnippet>330</span>    <span class="kw">pub fn </span>new_with_merger(n: usize, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(usize) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>331</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<span data-nosnippet>332</span>            .map(|i| UfCell::root(U::single_info(), init(i)))
+<span data-nosnippet>333</span>            .collect();
+<span data-nosnippet>334</span>        <span class="self">Self </span>{
+<span data-nosnippet>335</span>            cells,
+<span data-nosnippet>336</span>            merger: FnMerger {
+<span data-nosnippet>337</span>                f: merge,
+<span data-nosnippet>338</span>                _marker: PhantomData,
+<span data-nosnippet>339</span>            },
+<span data-nosnippet>340</span>            history: Default::default(),
+<span data-nosnippet>341</span>            _marker: PhantomData,
+<span data-nosnippet>342</span>        }
+<span data-nosnippet>343</span>    }
+<span data-nosnippet>344</span>}
+<span data-nosnippet>345</span>
+<span data-nosnippet>346</span><span class="kw">impl</span>&lt;F, M, P, H&gt; UnionFindBase&lt;UnionBySize, F, M, P, H&gt;
+<span data-nosnippet>347</span><span class="kw">where
+<span data-nosnippet>348</span>    </span>F: FindStrategy,
+<span data-nosnippet>349</span>    M: UfMergeSpec,
+<span data-nosnippet>350</span>    P: Monoid,
+<span data-nosnippet>351</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>352</span>{
+<span data-nosnippet>353</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>354</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>355</span>        <span class="self">self</span>.root_info(root).unwrap() <span class="kw">as </span>usize
+<span data-nosnippet>356</span>    }
+<span data-nosnippet>357</span>}
+<span data-nosnippet>358</span>
+<span data-nosnippet>359</span><span class="kw">impl</span>&lt;U, F, M, P, H&gt; UnionFindBase&lt;U, F, M, P, H&gt;
+<span data-nosnippet>360</span><span class="kw">where
+<span data-nosnippet>361</span>    </span>U: UnionStrategy,
+<span data-nosnippet>362</span>    F: FindStrategy,
+<span data-nosnippet>363</span>    M: UfMergeSpec,
+<span data-nosnippet>364</span>    P: Monoid,
+<span data-nosnippet>365</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>366</span>{
+<span data-nosnippet>367</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>, x: usize) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>368</span>        <span class="self">self</span>.cells[x].<span class="highlight">root_info</span>()
+<span data-nosnippet>369</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.set_root_info" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#123-125">Source</a><h4 class="code-header">fn <a href="#method.set_root_info" class="fn">set_root_info</a>(&amp;mut self, info: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#372&#34;,&#34;line 372&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#372">line 372</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>371</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, info: u32) {
+<span data-nosnippet>372</span>        <span class="self">self</span>.cells[x].<span class="highlight focus">set_root_info</span>(info);
+<span data-nosnippet>373</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.parent" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#127-129">Source</a><h4 class="code-header">fn <a href="#method.parent" class="fn">parent</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/union_find.rs.html#101&#34;,&#34;line 101&#34;],[[309,309],&#34;../../../src/competitive/data_structure/union_find.rs.html#405&#34;,&#34;line 405&#34;],[[313,313],&#34;../../../src/competitive/data_structure/union_find.rs.html#409&#34;,&#34;line 409&#34;],[[325,325],&#34;../../../src/competitive/data_structure/union_find.rs.html#421&#34;,&#34;line 421&#34;],[[327,327],&#34;../../../src/competitive/data_structure/union_find.rs.html#423&#34;,&#34;line 423&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#101">line 101</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<span data-nosnippet>97</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = <span class="self">self</span>.root_info() {
+<span data-nosnippet>98</span>            f.debug_tuple(<span class="string">"Root"</span>).field(<span class="kw-2">&amp;</span>(info, <span class="self">self</span>.data())).finish()
+<span data-nosnippet>99</span>        } <span class="kw">else </span>{
+<span data-nosnippet>100</span>            f.debug_tuple(<span class="string">"Child"</span>)
+<span data-nosnippet>101</span>                .field(<span class="kw-2">&amp;</span>(<span class="self">self</span>.<span class="highlight focus">parent</span>().unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.potential))
+<span data-nosnippet>102</span>                .finish()
+<span data-nosnippet>103</span>        }
+<span data-nosnippet>104</span>    }
+<span data-nosnippet>105</span>}
+<span data-nosnippet>106</span>
+<span data-nosnippet>107</span><span class="kw">impl</span>&lt;D, P&gt; UfCell&lt;D, P&gt;
+<span data-nosnippet>108</span><span class="kw">where
+<span data-nosnippet>109</span>    </span>P: Monoid,
+<span data-nosnippet>110</span>{
+<span data-nosnippet>111</span>    <span class="kw">fn </span>root(info: u32, data: D) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>112</span>        <span class="self">Self </span>{
+<span data-nosnippet>113</span>            parent_or_info: !(info <span class="kw">as </span>i32),
+<span data-nosnippet>114</span>            data: MaybeUninit::new(data),
+<span data-nosnippet>115</span>            potential: P::unit(),
+<span data-nosnippet>116</span>        }
+<span data-nosnippet>117</span>    }
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>120</span>        (<span class="self">self</span>.parent_or_info &lt; <span class="number">0</span>).then_some((!<span class="self">self</span>.parent_or_info) <span class="kw">as </span>u32)
+<span data-nosnippet>121</span>    }
+<span data-nosnippet>122</span>
+<span data-nosnippet>123</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: u32) {
+<span data-nosnippet>124</span>        <span class="self">self</span>.parent_or_info = !(info <span class="kw">as </span>i32);
+<span data-nosnippet>125</span>    }
+<span data-nosnippet>126</span>
+<span data-nosnippet>127</span>    <span class="kw">fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>128</span>        (<span class="self">self</span>.parent_or_info &gt;= <span class="number">0</span>).then_some(<span class="self">self</span>.parent_or_info <span class="kw">as </span>usize)
+<span data-nosnippet>129</span>    }
+<span data-nosnippet>130</span>
+<span data-nosnippet>131</span>    <span class="kw">fn </span>set_child(<span class="kw-2">&amp;mut </span><span class="self">self</span>, parent: usize, potential: P::T) {
+<span data-nosnippet>132</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.is_root() {
+<span data-nosnippet>133</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>134</span>        }
+<span data-nosnippet>135</span>        <span class="self">self</span>.parent_or_info = parent <span class="kw">as </span>i32;
+<span data-nosnippet>136</span>        <span class="self">self</span>.potential = potential;
+<span data-nosnippet>137</span>    }
+<span data-nosnippet>138</span>
+<span data-nosnippet>139</span>    <span class="kw">fn </span>is_root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>140</span>        <span class="self">self</span>.parent_or_info &lt; <span class="number">0
+<span data-nosnippet>141</span>    </span>}
+<span data-nosnippet>142</span>
+<span data-nosnippet>143</span>    <span class="kw">fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>D {
+<span data-nosnippet>144</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_ref() }
+<span data-nosnippet>145</span>    }
+<span data-nosnippet>146</span>
+<span data-nosnippet>147</span>    <span class="kw">fn </span>data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>D {
+<span data-nosnippet>148</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_mut() }
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>}
+<span data-nosnippet>151</span>
+<span data-nosnippet>152</span><span class="kw">impl</span>&lt;D, P&gt; Drop <span class="kw">for </span>UfCell&lt;D, P&gt;
+<span data-nosnippet>153</span><span class="kw">where
+<span data-nosnippet>154</span>    </span>P: Monoid,
+<span data-nosnippet>155</span>{
+<span data-nosnippet>156</span>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>157</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.is_root() {
+<span data-nosnippet>158</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>159</span>        }
+<span data-nosnippet>160</span>    }
+<span data-nosnippet>161</span>}
+<span data-nosnippet>162</span>
+<span data-nosnippet>163</span><span class="kw">pub trait </span>FindStrategy {
+<span data-nosnippet>164</span>    <span class="kw">const </span>CHENGE_ROOT: bool;
+<span data-nosnippet>165</span>}
+<span data-nosnippet>166</span>
+<span data-nosnippet>167</span><span class="kw">pub enum </span>PathCompression {}
+<span data-nosnippet>168</span>
+<span data-nosnippet>169</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>PathCompression {
+<span data-nosnippet>170</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>171</span>}
+<span data-nosnippet>172</span>
+<span data-nosnippet>173</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>() {
+<span data-nosnippet>174</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>175</span>}
+<span data-nosnippet>176</span>
+<span data-nosnippet>177</span><span class="kw">pub trait </span>UnionStrategy {
+<span data-nosnippet>178</span>    <span class="kw">fn </span>single_info() -&gt; u32;
+<span data-nosnippet>179</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool;
+<span data-nosnippet>180</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32;
+<span data-nosnippet>181</span>}
+<span data-nosnippet>182</span>
+<span data-nosnippet>183</span><span class="kw">pub enum </span>UnionBySize {}
+<span data-nosnippet>184</span>
+<span data-nosnippet>185</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionBySize {
+<span data-nosnippet>186</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>187</span>        <span class="number">1
+<span data-nosnippet>188</span>    </span>}
+<span data-nosnippet>189</span>
+<span data-nosnippet>190</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>191</span>        parent &gt;= child
+<span data-nosnippet>192</span>    }
+<span data-nosnippet>193</span>
+<span data-nosnippet>194</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>195</span>        parent + child
+<span data-nosnippet>196</span>    }
+<span data-nosnippet>197</span>}
+<span data-nosnippet>198</span>
+<span data-nosnippet>199</span><span class="kw">pub enum </span>UnionByRank {}
+<span data-nosnippet>200</span>
+<span data-nosnippet>201</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionByRank {
+<span data-nosnippet>202</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>203</span>        <span class="number">0
+<span data-nosnippet>204</span>    </span>}
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>207</span>        parent &gt;= child
+<span data-nosnippet>208</span>    }
+<span data-nosnippet>209</span>
+<span data-nosnippet>210</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>211</span>        parent + (parent == child) <span class="kw">as </span>u32
+<span data-nosnippet>212</span>    }
+<span data-nosnippet>213</span>}
+<span data-nosnippet>214</span>
+<span data-nosnippet>215</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>() {
+<span data-nosnippet>216</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>217</span>        <span class="number">0
+<span data-nosnippet>218</span>    </span>}
+<span data-nosnippet>219</span>
+<span data-nosnippet>220</span>    <span class="kw">fn </span>check_directoin(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>221</span>        <span class="bool-val">false
+<span data-nosnippet>222</span>    </span>}
+<span data-nosnippet>223</span>
+<span data-nosnippet>224</span>    <span class="kw">fn </span>unite(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>225</span>        <span class="number">0
+<span data-nosnippet>226</span>    </span>}
+<span data-nosnippet>227</span>}
+<span data-nosnippet>228</span>
+<span data-nosnippet>229</span><span class="kw">pub trait </span>UfMergeSpec {
+<span data-nosnippet>230</span>    <span class="kw">type </span>Data;
+<span data-nosnippet>231</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data);
+<span data-nosnippet>232</span>}
+<span data-nosnippet>233</span>
+<span data-nosnippet>234</span><span class="attr">#[derive(Debug, Clone)]
+<span data-nosnippet>235</span></span><span class="kw">pub struct </span>FnMerger&lt;T, F&gt; {
+<span data-nosnippet>236</span>    f: F,
+<span data-nosnippet>237</span>    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+<span data-nosnippet>238</span>}
+<span data-nosnippet>239</span>
+<span data-nosnippet>240</span><span class="kw">impl</span>&lt;T, F&gt; UfMergeSpec <span class="kw">for </span>FnMerger&lt;T, F&gt;
+<span data-nosnippet>241</span><span class="kw">where
+<span data-nosnippet>242</span>    </span>F: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>243</span>{
+<span data-nosnippet>244</span>    <span class="kw">type </span>Data = T;
+<span data-nosnippet>245</span>
+<span data-nosnippet>246</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {
+<span data-nosnippet>247</span>        (<span class="self">self</span>.f)(to, from)
+<span data-nosnippet>248</span>    }
+<span data-nosnippet>249</span>}
+<span data-nosnippet>250</span>
+<span data-nosnippet>251</span><span class="kw">impl </span>UfMergeSpec <span class="kw">for </span>() {
+<span data-nosnippet>252</span>    <span class="kw">type </span>Data = ();
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, _from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {}
+<span data-nosnippet>255</span>}
+<span data-nosnippet>256</span>
+<span data-nosnippet>257</span><span class="kw">pub trait </span>UndoStrategy&lt;T&gt; {
+<span data-nosnippet>258</span>    <span class="kw">const </span><a href="../geometry/mod.rs.html#1-36">UNDOABLE</a>: bool;
+<span data-nosnippet>259</span>
+<span data-nosnippet>260</span>    <span class="kw">type </span>History: Default;
+<span data-nosnippet>261</span>
+<span data-nosnippet>262</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]);
+<span data-nosnippet>263</span>
+<span data-nosnippet>264</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]);
+<span data-nosnippet>265</span>}
+<span data-nosnippet>266</span>
+<span data-nosnippet>267</span><span class="kw">pub enum </span>Undoable {}
+<span data-nosnippet>268</span>
+<span data-nosnippet>269</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>Undoable
+<span data-nosnippet>270</span><span class="kw">where
+<span data-nosnippet>271</span>    </span>T: Clone,
+<span data-nosnippet>272</span>{
+<span data-nosnippet>273</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>274</span>
+<span data-nosnippet>275</span>    <span class="kw">type </span>History = Vec&lt;[(usize, T); <span class="number">2</span>]&gt;;
+<span data-nosnippet>276</span>
+<span data-nosnippet>277</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]) {
+<span data-nosnippet>278</span>        <span class="kw">let </span>cx = cells[x].clone();
+<span data-nosnippet>279</span>        <span class="kw">let </span>cy = cells[y].clone();
+<span data-nosnippet>280</span>        history.push([(x, cx), (y, cy)]);
+<span data-nosnippet>281</span>    }
+<span data-nosnippet>282</span>
+<span data-nosnippet>283</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>284</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>([(x, cx), (y, cy)]) = history.pop() {
+<span data-nosnippet>285</span>            cells[x] = cx;
+<span data-nosnippet>286</span>            cells[y] = cy;
+<span data-nosnippet>287</span>        }
+<span data-nosnippet>288</span>    }
+<span data-nosnippet>289</span>}
+<span data-nosnippet>290</span>
+<span data-nosnippet>291</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>() {
+<span data-nosnippet>292</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>293</span>
+<span data-nosnippet>294</span>    <span class="kw">type </span>History = ();
+<span data-nosnippet>295</span>
+<span data-nosnippet>296</span>    <span class="kw">fn </span>unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _x: usize, _y: usize, _cells: <span class="kw-2">&amp;</span>[T]) {}
+<span data-nosnippet>297</span>
+<span data-nosnippet>298</span>    <span class="kw">fn </span>undo_unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _cells: <span class="kw-2">&amp;mut </span>[T]) {}
+<span data-nosnippet>299</span>}
+<span data-nosnippet>300</span>
+<span data-nosnippet>301</span><span class="kw">impl</span>&lt;U, F, P, H&gt; UnionFindBase&lt;U, F, (), P, H&gt;
+<span data-nosnippet>302</span><span class="kw">where
+<span data-nosnippet>303</span>    </span>U: UnionStrategy,
+<span data-nosnippet>304</span>    F: FindStrategy,
+<span data-nosnippet>305</span>    P: Monoid,
+<span data-nosnippet>306</span>    H: UndoStrategy&lt;UfCell&lt;(), P&gt;&gt;,
+<span data-nosnippet>307</span>{
+<span data-nosnippet>308</span>    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>309</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| UfCell::root(U::single_info(), ())).collect();
+<span data-nosnippet>310</span>        <span class="self">Self </span>{
+<span data-nosnippet>311</span>            cells,
+<span data-nosnippet>312</span>            merger: (),
+<span data-nosnippet>313</span>            history: Default::default(),
+<span data-nosnippet>314</span>            _marker: PhantomData,
+<span data-nosnippet>315</span>        }
+<span data-nosnippet>316</span>    }
+<span data-nosnippet>317</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>318</span>        <span class="self">self</span>.cells.push(UfCell::root(<a href="../algebra/action.rs.html#14">U</a>::single_info(), ()));
+<span data-nosnippet>319</span>    }
+<span data-nosnippet>320</span>}
+<span data-nosnippet>321</span>
+<span data-nosnippet>322</span><span class="kw">impl</span>&lt;U, F, T, Merge, P, H&gt; UnionFindBase&lt;U, F, FnMerger&lt;T, Merge&gt;, P, H&gt;
+<span data-nosnippet>323</span><span class="kw">where
+<span data-nosnippet>324</span>    </span>U: UnionStrategy,
+<span data-nosnippet>325</span>    F: FindStrategy,
+<span data-nosnippet>326</span>    Merge: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>327</span>    P: Monoid,
+<span data-nosnippet>328</span>    H: UndoStrategy&lt;UfCell&lt;T, P&gt;&gt;,
+<span data-nosnippet>329</span>{
+<span data-nosnippet>330</span>    <span class="kw">pub fn </span>new_with_merger(n: usize, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(usize) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>331</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<span data-nosnippet>332</span>            .map(|i| UfCell::root(U::single_info(), init(i)))
+<span data-nosnippet>333</span>            .collect();
+<span data-nosnippet>334</span>        <span class="self">Self </span>{
+<span data-nosnippet>335</span>            cells,
+<span data-nosnippet>336</span>            merger: FnMerger {
+<span data-nosnippet>337</span>                f: merge,
+<span data-nosnippet>338</span>                _marker: PhantomData,
+<span data-nosnippet>339</span>            },
+<span data-nosnippet>340</span>            history: Default::default(),
+<span data-nosnippet>341</span>            _marker: PhantomData,
+<span data-nosnippet>342</span>        }
+<span data-nosnippet>343</span>    }
+<span data-nosnippet>344</span>}
+<span data-nosnippet>345</span>
+<span data-nosnippet>346</span><span class="kw">impl</span>&lt;F, M, P, H&gt; UnionFindBase&lt;UnionBySize, F, M, P, H&gt;
+<span data-nosnippet>347</span><span class="kw">where
+<span data-nosnippet>348</span>    </span>F: FindStrategy,
+<span data-nosnippet>349</span>    M: UfMergeSpec,
+<span data-nosnippet>350</span>    P: Monoid,
+<span data-nosnippet>351</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>352</span>{
+<span data-nosnippet>353</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>354</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>355</span>        <span class="self">self</span>.root_info(root).unwrap() <span class="kw">as </span>usize
+<span data-nosnippet>356</span>    }
+<span data-nosnippet>357</span>}
+<span data-nosnippet>358</span>
+<span data-nosnippet>359</span><span class="kw">impl</span>&lt;U, F, M, P, H&gt; UnionFindBase&lt;U, F, M, P, H&gt;
+<span data-nosnippet>360</span><span class="kw">where
+<span data-nosnippet>361</span>    </span>U: UnionStrategy,
+<span data-nosnippet>362</span>    F: FindStrategy,
+<span data-nosnippet>363</span>    M: UfMergeSpec,
+<span data-nosnippet>364</span>    P: Monoid,
+<span data-nosnippet>365</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>366</span>{
+<span data-nosnippet>367</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>, x: usize) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>368</span>        <span class="self">self</span>.cells[x].root_info()
+<span data-nosnippet>369</span>    }
+<span data-nosnippet>370</span>
+<span data-nosnippet>371</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, info: u32) {
+<span data-nosnippet>372</span>        <span class="self">self</span>.cells[x].set_root_info(info);
+<span data-nosnippet>373</span>    }
+<span data-nosnippet>374</span>
+<span data-nosnippet>375</span>    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+<span data-nosnippet>376</span>        <span class="self">self</span>.find_root(x) == <span class="self">self</span>.find_root(y)
+<span data-nosnippet>377</span>    }
+<span data-nosnippet>378</span>
+<span data-nosnippet>379</span>    <span class="kw">pub fn </span>merge_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; <span class="kw-2">&amp;</span><a href="../algebra/action.rs.html#86">M</a>::Data {
+<span data-nosnippet>380</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>381</span>        <span class="self">self</span>.cells[root].data()
+<span data-nosnippet>382</span>    }
+<span data-nosnippet>383</span>
+<span data-nosnippet>384</span>    <span class="kw">pub fn </span>merge_data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; <span class="kw-2">&amp;mut </span>M::Data {
+<span data-nosnippet>385</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>386</span>        <span class="self">self</span>.cells[root].data_mut()
+<span data-nosnippet>387</span>    }
+<span data-nosnippet>388</span>
+<span data-nosnippet>389</span>    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = usize&gt; + <span class="lifetime">'_ </span>{
+<span data-nosnippet>390</span>        (<span class="number">0</span>..<span class="self">self</span>.cells.len()).filter(|<span class="kw-2">&amp;</span>x| <span class="self">self</span>.cells[x].is_root())
+<span data-nosnippet>391</span>    }
+<span data-nosnippet>392</span>
+<span data-nosnippet>393</span>    <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;usize, Vec&lt;usize&gt;&gt; {
+<span data-nosnippet>394</span>        <span class="kw">let </span><span class="kw-2">mut </span>groups_map = HashMap::new();
+<span data-nosnippet>395</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.cells.len() {
+<span data-nosnippet>396</span>            <span class="kw">let </span>r = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>397</span>            groups_map.entry(r).or_insert_with(Vec::new).push(x);
+<span data-nosnippet>398</span>        }
+<span data-nosnippet>399</span>        groups_map
+<span data-nosnippet>400</span>    }
+<span data-nosnippet>401</span>
+<span data-nosnippet>402</span>    <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; (usize, P::T) {
+<span data-nosnippet>403</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = x;
+<span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>potential = P::unit();
+<span data-nosnippet>405</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.cells[current].<span class="highlight">parent</span>() {
+<span data-nosnippet>406</span>            <span class="kw">let </span>current_potential = <span class="self">self</span>.cells[current].potential.clone();
+<span data-nosnippet>407</span>            potential = P::operate(<span class="kw-2">&amp;</span>current_potential, <span class="kw-2">&amp;</span>potential);
+<span data-nosnippet>408</span>            <span class="kw">if </span>F::CHENGE_ROOT
+<span data-nosnippet>409</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(parent_parent) = <span class="self">self</span>.cells[parent].<span class="highlight">parent</span>()
+<span data-nosnippet>410</span>            {
+<span data-nosnippet>411</span>                <span class="kw">let </span>potential = P::operate(<span class="kw-2">&amp;</span><span class="self">self</span>.cells[parent].potential, <span class="kw-2">&amp;</span>current_potential);
+<span data-nosnippet>412</span>                <span class="self">self</span>.cells[current].set_child(parent_parent, potential);
+<span data-nosnippet>413</span>            }
+<span data-nosnippet>414</span>            current = parent;
+<span data-nosnippet>415</span>        }
+<span data-nosnippet>416</span>        (current, potential)
+<span data-nosnippet>417</span>    }
+<span data-nosnippet>418</span>
+<span data-nosnippet>419</span>    <span class="kw">pub fn </span>find_root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = x;
+<span data-nosnippet>421</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.cells[current].<span class="highlight">parent</span>() {
+<span data-nosnippet>422</span>            <span class="kw">if </span>F::CHENGE_ROOT
+<span data-nosnippet>423</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(parent_parent) = <span class="self">self</span>.cells[parent].<span class="highlight">parent</span>()
+<span data-nosnippet>424</span>            {
+<span data-nosnippet>425</span>                <span class="kw">let </span>potential = P::operate(
+<span data-nosnippet>426</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.cells[parent].potential,
+<span data-nosnippet>427</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.cells[current].potential,
+<span data-nosnippet>428</span>                );
+<span data-nosnippet>429</span>                <span class="self">self</span>.cells[current].set_child(parent_parent, potential);
+<span data-nosnippet>430</span>            }
+<span data-nosnippet>431</span>            current = parent;
+<span data-nosnippet>432</span>        }
+<span data-nosnippet>433</span>        current
+<span data-nosnippet>434</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.set_child" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#131-137">Source</a><h4 class="code-header">fn <a href="#method.set_child" class="fn">set_child</a>(&amp;mut self, parent: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, potential: P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/data_structure/union_find.rs.html#412&#34;,&#34;line 412&#34;],[[27,27],&#34;../../../src/competitive/data_structure/union_find.rs.html#429&#34;,&#34;line 429&#34;],[[48,48],&#34;../../../src/competitive/data_structure/union_find.rs.html#450&#34;,&#34;line 450&#34;],[[96,96],&#34;../../../src/competitive/data_structure/union_find.rs.html#498&#34;,&#34;line 498&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#412">line 412</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>402</span>    <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; (usize, P::T) {
+<span data-nosnippet>403</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = x;
+<span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>potential = P::unit();
+<span data-nosnippet>405</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.cells[current].parent() {
+<span data-nosnippet>406</span>            <span class="kw">let </span>current_potential = <span class="self">self</span>.cells[current].potential.clone();
+<span data-nosnippet>407</span>            potential = P::operate(<span class="kw-2">&amp;</span>current_potential, <span class="kw-2">&amp;</span>potential);
+<span data-nosnippet>408</span>            <span class="kw">if </span>F::CHENGE_ROOT
+<span data-nosnippet>409</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(parent_parent) = <span class="self">self</span>.cells[parent].parent()
+<span data-nosnippet>410</span>            {
+<span data-nosnippet>411</span>                <span class="kw">let </span>potential = P::operate(<span class="kw-2">&amp;</span><span class="self">self</span>.cells[parent].potential, <span class="kw-2">&amp;</span>current_potential);
+<span data-nosnippet>412</span>                <span class="self">self</span>.cells[current].<span class="highlight focus">set_child</span>(parent_parent, potential);
+<span data-nosnippet>413</span>            }
+<span data-nosnippet>414</span>            current = parent;
+<span data-nosnippet>415</span>        }
+<span data-nosnippet>416</span>        (current, potential)
+<span data-nosnippet>417</span>    }
+<span data-nosnippet>418</span>
+<span data-nosnippet>419</span>    <span class="kw">pub fn </span>find_root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = x;
+<span data-nosnippet>421</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.cells[current].parent() {
+<span data-nosnippet>422</span>            <span class="kw">if </span>F::CHENGE_ROOT
+<span data-nosnippet>423</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(parent_parent) = <span class="self">self</span>.cells[parent].parent()
+<span data-nosnippet>424</span>            {
+<span data-nosnippet>425</span>                <span class="kw">let </span>potential = P::operate(
+<span data-nosnippet>426</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.cells[parent].potential,
+<span data-nosnippet>427</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.cells[current].potential,
+<span data-nosnippet>428</span>                );
+<span data-nosnippet>429</span>                <span class="self">self</span>.cells[current].<span class="highlight">set_child</span>(parent_parent, potential);
+<span data-nosnippet>430</span>            }
+<span data-nosnippet>431</span>            current = parent;
+<span data-nosnippet>432</span>        }
+<span data-nosnippet>433</span>        current
+<span data-nosnippet>434</span>    }
+<span data-nosnippet>435</span>
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>unite_noninv(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize, potential: P::T) -&gt; bool {
+<span data-nosnippet>437</span>        <span class="kw">let </span>(rx, potx) = <span class="self">self</span>.find(x);
+<span data-nosnippet>438</span>        <span class="kw">let </span>ry = <span class="self">self</span>.find_root(y);
+<span data-nosnippet>439</span>        <span class="kw">if </span>rx == ry || y != ry {
+<span data-nosnippet>440</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>441</span>        }
+<span data-nosnippet>442</span>        H::unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>.history, rx, ry, <span class="kw-2">&amp;</span><span class="self">self</span>.cells);
+<span data-nosnippet>443</span>        {
+<span data-nosnippet>444</span>            <span class="kw">let </span>ptr = <span class="self">self</span>.cells.as_mut_ptr();
+<span data-nosnippet>445</span>            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span>ptr.add(rx), <span class="kw-2">&amp;mut *</span>ptr.add(ry)) };
+<span data-nosnippet>446</span>            <span class="self">self</span>.merger.merge(cx.data_mut(), cy.data_mut());
+<span data-nosnippet>447</span>        }
+<span data-nosnippet>448</span>        <span class="kw">let </span>info = U::unite(<span class="kw-2">&amp;</span><span class="self">self</span>.root_info(rx).unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.root_info(ry).unwrap());
+<span data-nosnippet>449</span>        <span class="self">self</span>.set_root_info(rx, info);
+<span data-nosnippet>450</span>        <span class="self">self</span>.cells[ry].<span class="highlight">set_child</span>(rx, P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>potential));
+<span data-nosnippet>451</span>        <span class="bool-val">true
+<span data-nosnippet>452</span>    </span>}
+<span data-nosnippet>453</span>}
+<span data-nosnippet>454</span>
+<span data-nosnippet>455</span><span class="kw">impl</span>&lt;U, F, M, P, H&gt; UnionFindBase&lt;U, F, M, P, H&gt;
+<span data-nosnippet>456</span><span class="kw">where
+<span data-nosnippet>457</span>    </span>U: UnionStrategy,
+<span data-nosnippet>458</span>    F: FindStrategy,
+<span data-nosnippet>459</span>    M: UfMergeSpec,
+<span data-nosnippet>460</span>    P: Group,
+<span data-nosnippet>461</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>462</span>{
+<span data-nosnippet>463</span>    <span class="kw">pub fn </span>difference(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; <span class="prelude-ty">Option</span>&lt;P::T&gt; {
+<span data-nosnippet>464</span>        <span class="kw">let </span>(rx, potx) = <span class="self">self</span>.find(x);
+<span data-nosnippet>465</span>        <span class="kw">let </span>(ry, poty) = <span class="self">self</span>.find(y);
+<span data-nosnippet>466</span>        <span class="kw">if </span>rx == ry {
+<span data-nosnippet>467</span>            <span class="prelude-val">Some</span>(P::operate(<span class="kw-2">&amp;</span>P::inverse(<span class="kw-2">&amp;</span>potx), <span class="kw-2">&amp;</span>poty))
+<span data-nosnippet>468</span>        } <span class="kw">else </span>{
+<span data-nosnippet>469</span>            <span class="prelude-val">None
+<span data-nosnippet>470</span>        </span>}
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>
+<span data-nosnippet>473</span>    <span class="kw">pub fn </span>unite_with(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize, potential: P::T) -&gt; bool {
+<span data-nosnippet>474</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>rx, potx) = <span class="self">self</span>.find(x);
+<span data-nosnippet>475</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>ry, poty) = <span class="self">self</span>.find(y);
+<span data-nosnippet>476</span>        <span class="kw">if </span>rx == ry {
+<span data-nosnippet>477</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>478</span>        }
+<span data-nosnippet>479</span>        <span class="kw">let </span><span class="kw-2">mut </span>xinfo = <span class="self">self</span>.root_info(rx).unwrap();
+<span data-nosnippet>480</span>        <span class="kw">let </span><span class="kw-2">mut </span>yinfo = <span class="self">self</span>.root_info(ry).unwrap();
+<span data-nosnippet>481</span>        <span class="kw">let </span>inverse = !U::check_directoin(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo);
+<span data-nosnippet>482</span>        <span class="kw">let </span>potential = <span class="kw">if </span>inverse {
+<span data-nosnippet>483</span>            P::rinv_operate(<span class="kw-2">&amp;</span>poty, <span class="kw-2">&amp;</span>P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>potential))
+<span data-nosnippet>484</span>        } <span class="kw">else </span>{
+<span data-nosnippet>485</span>            P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>P::rinv_operate(<span class="kw-2">&amp;</span>potential, <span class="kw-2">&amp;</span>poty))
+<span data-nosnippet>486</span>        };
+<span data-nosnippet>487</span>        <span class="kw">if </span>inverse {
+<span data-nosnippet>488</span>            swap(<span class="kw-2">&amp;mut </span>rx, <span class="kw-2">&amp;mut </span>ry);
+<span data-nosnippet>489</span>            swap(<span class="kw-2">&amp;mut </span>xinfo, <span class="kw-2">&amp;mut </span>yinfo);
+<span data-nosnippet>490</span>        }
+<span data-nosnippet>491</span>        H::unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>.history, rx, ry, <span class="kw-2">&amp;</span><span class="self">self</span>.cells);
+<span data-nosnippet>492</span>        {
+<span data-nosnippet>493</span>            <span class="kw">let </span>ptr = <span class="self">self</span>.cells.as_mut_ptr();
+<span data-nosnippet>494</span>            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span>ptr.add(rx), <span class="kw-2">&amp;mut *</span>ptr.add(ry)) };
+<span data-nosnippet>495</span>            <span class="self">self</span>.merger.merge(cx.data_mut(), cy.data_mut());
+<span data-nosnippet>496</span>        }
+<span data-nosnippet>497</span>        <span class="self">self</span>.set_root_info(rx, U::unite(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo));
+<span data-nosnippet>498</span>        <span class="self">self</span>.cells[ry].<span class="highlight">set_child</span>(rx, potential);
+<span data-nosnippet>499</span>        <span class="bool-val">true
+<span data-nosnippet>500</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.is_root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#139-141">Source</a><h4 class="code-header">fn <a href="#method.is_root" class="fn">is_root</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#73&#34;,&#34;line 73&#34;],[[60,60],&#34;../../../src/competitive/data_structure/union_find.rs.html#132&#34;,&#34;line 132&#34;],[[85,85],&#34;../../../src/competitive/data_structure/union_find.rs.html#157&#34;,&#34;line 157&#34;],[[318,318],&#34;../../../src/competitive/data_structure/union_find.rs.html#390&#34;,&#34;line 390&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#73">line 73</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>72</span>    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>73</span>        <span class="kw">let </span>is_root = <span class="self">self</span>.<span class="highlight focus">is_root</span>();
+<span data-nosnippet>74</span>        <span class="kw">let </span>potential = <span class="kw">if </span>is_root {
+<span data-nosnippet>75</span>            P::unit()
+<span data-nosnippet>76</span>        } <span class="kw">else </span>{
+<span data-nosnippet>77</span>            <span class="self">self</span>.potential.clone()
+<span data-nosnippet>78</span>        };
+<span data-nosnippet>79</span>        <span class="self">Self </span>{
+<span data-nosnippet>80</span>            parent_or_info: <span class="self">self</span>.parent_or_info,
+<span data-nosnippet>81</span>            data: <span class="kw">if </span>is_root {
+<span data-nosnippet>82</span>                MaybeUninit::new(<span class="self">self</span>.data().clone())
+<span data-nosnippet>83</span>            } <span class="kw">else </span>{
+<span data-nosnippet>84</span>                MaybeUninit::uninit()
+<span data-nosnippet>85</span>            },
+<span data-nosnippet>86</span>            potential,
+<span data-nosnippet>87</span>        }
+<span data-nosnippet>88</span>    }
+<span data-nosnippet>89</span>}
+<span data-nosnippet>90</span>
+<span data-nosnippet>91</span><span class="kw">impl</span>&lt;D, P&gt; Debug <span class="kw">for </span>UfCell&lt;D, P&gt;
+<span data-nosnippet>92</span><span class="kw">where
+<span data-nosnippet>93</span>    </span>D: Debug,
+<span data-nosnippet>94</span>    P: Monoid&lt;T: Debug&gt;,
+<span data-nosnippet>95</span>{
+<span data-nosnippet>96</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<span data-nosnippet>97</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = <span class="self">self</span>.root_info() {
+<span data-nosnippet>98</span>            f.debug_tuple(<span class="string">"Root"</span>).field(<span class="kw-2">&amp;</span>(info, <span class="self">self</span>.data())).finish()
+<span data-nosnippet>99</span>        } <span class="kw">else </span>{
+<span data-nosnippet>100</span>            f.debug_tuple(<span class="string">"Child"</span>)
+<span data-nosnippet>101</span>                .field(<span class="kw-2">&amp;</span>(<span class="self">self</span>.parent().unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.potential))
+<span data-nosnippet>102</span>                .finish()
+<span data-nosnippet>103</span>        }
+<span data-nosnippet>104</span>    }
+<span data-nosnippet>105</span>}
+<span data-nosnippet>106</span>
+<span data-nosnippet>107</span><span class="kw">impl</span>&lt;D, P&gt; UfCell&lt;D, P&gt;
+<span data-nosnippet>108</span><span class="kw">where
+<span data-nosnippet>109</span>    </span>P: Monoid,
+<span data-nosnippet>110</span>{
+<span data-nosnippet>111</span>    <span class="kw">fn </span>root(info: u32, data: D) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>112</span>        <span class="self">Self </span>{
+<span data-nosnippet>113</span>            parent_or_info: !(info <span class="kw">as </span>i32),
+<span data-nosnippet>114</span>            data: MaybeUninit::new(data),
+<span data-nosnippet>115</span>            potential: P::unit(),
+<span data-nosnippet>116</span>        }
+<span data-nosnippet>117</span>    }
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>120</span>        (<span class="self">self</span>.parent_or_info &lt; <span class="number">0</span>).then_some((!<span class="self">self</span>.parent_or_info) <span class="kw">as </span>u32)
+<span data-nosnippet>121</span>    }
+<span data-nosnippet>122</span>
+<span data-nosnippet>123</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: u32) {
+<span data-nosnippet>124</span>        <span class="self">self</span>.parent_or_info = !(info <span class="kw">as </span>i32);
+<span data-nosnippet>125</span>    }
+<span data-nosnippet>126</span>
+<span data-nosnippet>127</span>    <span class="kw">fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>128</span>        (<span class="self">self</span>.parent_or_info &gt;= <span class="number">0</span>).then_some(<span class="self">self</span>.parent_or_info <span class="kw">as </span>usize)
+<span data-nosnippet>129</span>    }
+<span data-nosnippet>130</span>
+<span data-nosnippet>131</span>    <span class="kw">fn </span>set_child(<span class="kw-2">&amp;mut </span><span class="self">self</span>, parent: usize, potential: P::T) {
+<span data-nosnippet>132</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.<span class="highlight">is_root</span>() {
+<span data-nosnippet>133</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>134</span>        }
+<span data-nosnippet>135</span>        <span class="self">self</span>.parent_or_info = parent <span class="kw">as </span>i32;
+<span data-nosnippet>136</span>        <span class="self">self</span>.potential = potential;
+<span data-nosnippet>137</span>    }
+<span data-nosnippet>138</span>
+<span data-nosnippet>139</span>    <span class="kw">fn </span>is_root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>140</span>        <span class="self">self</span>.parent_or_info &lt; <span class="number">0
+<span data-nosnippet>141</span>    </span>}
+<span data-nosnippet>142</span>
+<span data-nosnippet>143</span>    <span class="kw">fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>D {
+<span data-nosnippet>144</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_ref() }
+<span data-nosnippet>145</span>    }
+<span data-nosnippet>146</span>
+<span data-nosnippet>147</span>    <span class="kw">fn </span>data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>D {
+<span data-nosnippet>148</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_mut() }
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>}
+<span data-nosnippet>151</span>
+<span data-nosnippet>152</span><span class="kw">impl</span>&lt;D, P&gt; Drop <span class="kw">for </span>UfCell&lt;D, P&gt;
+<span data-nosnippet>153</span><span class="kw">where
+<span data-nosnippet>154</span>    </span>P: Monoid,
+<span data-nosnippet>155</span>{
+<span data-nosnippet>156</span>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>157</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.<span class="highlight">is_root</span>() {
+<span data-nosnippet>158</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>159</span>        }
+<span data-nosnippet>160</span>    }
+<span data-nosnippet>161</span>}
+<span data-nosnippet>162</span>
+<span data-nosnippet>163</span><span class="kw">pub trait </span>FindStrategy {
+<span data-nosnippet>164</span>    <span class="kw">const </span>CHENGE_ROOT: bool;
+<span data-nosnippet>165</span>}
+<span data-nosnippet>166</span>
+<span data-nosnippet>167</span><span class="kw">pub enum </span>PathCompression {}
+<span data-nosnippet>168</span>
+<span data-nosnippet>169</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>PathCompression {
+<span data-nosnippet>170</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>171</span>}
+<span data-nosnippet>172</span>
+<span data-nosnippet>173</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>() {
+<span data-nosnippet>174</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>175</span>}
+<span data-nosnippet>176</span>
+<span data-nosnippet>177</span><span class="kw">pub trait </span>UnionStrategy {
+<span data-nosnippet>178</span>    <span class="kw">fn </span>single_info() -&gt; u32;
+<span data-nosnippet>179</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool;
+<span data-nosnippet>180</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32;
+<span data-nosnippet>181</span>}
+<span data-nosnippet>182</span>
+<span data-nosnippet>183</span><span class="kw">pub enum </span>UnionBySize {}
+<span data-nosnippet>184</span>
+<span data-nosnippet>185</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionBySize {
+<span data-nosnippet>186</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>187</span>        <span class="number">1
+<span data-nosnippet>188</span>    </span>}
+<span data-nosnippet>189</span>
+<span data-nosnippet>190</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>191</span>        parent &gt;= child
+<span data-nosnippet>192</span>    }
+<span data-nosnippet>193</span>
+<span data-nosnippet>194</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>195</span>        parent + child
+<span data-nosnippet>196</span>    }
+<span data-nosnippet>197</span>}
+<span data-nosnippet>198</span>
+<span data-nosnippet>199</span><span class="kw">pub enum </span>UnionByRank {}
+<span data-nosnippet>200</span>
+<span data-nosnippet>201</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionByRank {
+<span data-nosnippet>202</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>203</span>        <span class="number">0
+<span data-nosnippet>204</span>    </span>}
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>207</span>        parent &gt;= child
+<span data-nosnippet>208</span>    }
+<span data-nosnippet>209</span>
+<span data-nosnippet>210</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>211</span>        parent + (parent == child) <span class="kw">as </span>u32
+<span data-nosnippet>212</span>    }
+<span data-nosnippet>213</span>}
+<span data-nosnippet>214</span>
+<span data-nosnippet>215</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>() {
+<span data-nosnippet>216</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>217</span>        <span class="number">0
+<span data-nosnippet>218</span>    </span>}
+<span data-nosnippet>219</span>
+<span data-nosnippet>220</span>    <span class="kw">fn </span>check_directoin(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>221</span>        <span class="bool-val">false
+<span data-nosnippet>222</span>    </span>}
+<span data-nosnippet>223</span>
+<span data-nosnippet>224</span>    <span class="kw">fn </span>unite(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>225</span>        <span class="number">0
+<span data-nosnippet>226</span>    </span>}
+<span data-nosnippet>227</span>}
+<span data-nosnippet>228</span>
+<span data-nosnippet>229</span><span class="kw">pub trait </span>UfMergeSpec {
+<span data-nosnippet>230</span>    <span class="kw">type </span>Data;
+<span data-nosnippet>231</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data);
+<span data-nosnippet>232</span>}
+<span data-nosnippet>233</span>
+<span data-nosnippet>234</span><span class="attr">#[derive(Debug, Clone)]
+<span data-nosnippet>235</span></span><span class="kw">pub struct </span>FnMerger&lt;T, F&gt; {
+<span data-nosnippet>236</span>    f: F,
+<span data-nosnippet>237</span>    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+<span data-nosnippet>238</span>}
+<span data-nosnippet>239</span>
+<span data-nosnippet>240</span><span class="kw">impl</span>&lt;T, F&gt; UfMergeSpec <span class="kw">for </span>FnMerger&lt;T, F&gt;
+<span data-nosnippet>241</span><span class="kw">where
+<span data-nosnippet>242</span>    </span>F: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>243</span>{
+<span data-nosnippet>244</span>    <span class="kw">type </span>Data = T;
+<span data-nosnippet>245</span>
+<span data-nosnippet>246</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {
+<span data-nosnippet>247</span>        (<span class="self">self</span>.f)(to, from)
+<span data-nosnippet>248</span>    }
+<span data-nosnippet>249</span>}
+<span data-nosnippet>250</span>
+<span data-nosnippet>251</span><span class="kw">impl </span>UfMergeSpec <span class="kw">for </span>() {
+<span data-nosnippet>252</span>    <span class="kw">type </span>Data = ();
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, _from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {}
+<span data-nosnippet>255</span>}
+<span data-nosnippet>256</span>
+<span data-nosnippet>257</span><span class="kw">pub trait </span>UndoStrategy&lt;T&gt; {
+<span data-nosnippet>258</span>    <span class="kw">const </span>UNDOABLE: bool;
+<span data-nosnippet>259</span>
+<span data-nosnippet>260</span>    <span class="kw">type </span>History: Default;
+<span data-nosnippet>261</span>
+<span data-nosnippet>262</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]);
+<span data-nosnippet>263</span>
+<span data-nosnippet>264</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]);
+<span data-nosnippet>265</span>}
+<span data-nosnippet>266</span>
+<span data-nosnippet>267</span><span class="kw">pub enum </span>Undoable {}
+<span data-nosnippet>268</span>
+<span data-nosnippet>269</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>Undoable
+<span data-nosnippet>270</span><span class="kw">where
+<span data-nosnippet>271</span>    </span>T: Clone,
+<span data-nosnippet>272</span>{
+<span data-nosnippet>273</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>274</span>
+<span data-nosnippet>275</span>    <span class="kw">type </span>History = Vec&lt;[(usize, T); <span class="number">2</span>]&gt;;
+<span data-nosnippet>276</span>
+<span data-nosnippet>277</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]) {
+<span data-nosnippet>278</span>        <span class="kw">let </span>cx = cells[x].clone();
+<span data-nosnippet>279</span>        <span class="kw">let </span>cy = cells[y].clone();
+<span data-nosnippet>280</span>        history.push([(x, cx), (y, cy)]);
+<span data-nosnippet>281</span>    }
+<span data-nosnippet>282</span>
+<span data-nosnippet>283</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>284</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>([(x, cx), (y, cy)]) = history.pop() {
+<span data-nosnippet>285</span>            cells[x] = cx;
+<span data-nosnippet>286</span>            cells[y] = cy;
+<span data-nosnippet>287</span>        }
+<span data-nosnippet>288</span>    }
+<span data-nosnippet>289</span>}
+<span data-nosnippet>290</span>
+<span data-nosnippet>291</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>() {
+<span data-nosnippet>292</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>293</span>
+<span data-nosnippet>294</span>    <span class="kw">type </span>History = ();
+<span data-nosnippet>295</span>
+<span data-nosnippet>296</span>    <span class="kw">fn </span>unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _x: usize, _y: usize, _cells: <span class="kw-2">&amp;</span>[T]) {}
+<span data-nosnippet>297</span>
+<span data-nosnippet>298</span>    <span class="kw">fn </span>undo_unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _cells: <span class="kw-2">&amp;mut </span>[T]) {}
+<span data-nosnippet>299</span>}
+<span data-nosnippet>300</span>
+<span data-nosnippet>301</span><span class="kw">impl</span>&lt;U, F, P, H&gt; UnionFindBase&lt;U, F, (), P, H&gt;
+<span data-nosnippet>302</span><span class="kw">where
+<span data-nosnippet>303</span>    </span>U: UnionStrategy,
+<span data-nosnippet>304</span>    F: FindStrategy,
+<span data-nosnippet>305</span>    P: Monoid,
+<span data-nosnippet>306</span>    H: UndoStrategy&lt;UfCell&lt;(), P&gt;&gt;,
+<span data-nosnippet>307</span>{
+<span data-nosnippet>308</span>    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>309</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| UfCell::root(U::single_info(), ())).collect();
+<span data-nosnippet>310</span>        <span class="self">Self </span>{
+<span data-nosnippet>311</span>            cells,
+<span data-nosnippet>312</span>            merger: (),
+<span data-nosnippet>313</span>            history: Default::default(),
+<span data-nosnippet>314</span>            _marker: PhantomData,
+<span data-nosnippet>315</span>        }
+<span data-nosnippet>316</span>    }
+<span data-nosnippet>317</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>318</span>        <span class="self">self</span>.cells.push(UfCell::root(U::single_info(), ()));
+<span data-nosnippet>319</span>    }
+<span data-nosnippet>320</span>}
+<span data-nosnippet>321</span>
+<span data-nosnippet>322</span><span class="kw">impl</span>&lt;U, F, T, Merge, P, <a href="../algebra/action.rs.html#39">H</a>&gt; UnionFindBase&lt;U, F, FnMerger&lt;T, Merge&gt;, P, H&gt;
+<span data-nosnippet>323</span><span class="kw">where
+<span data-nosnippet>324</span>    </span>U: UnionStrategy,
+<span data-nosnippet>325</span>    F: FindStrategy,
+<span data-nosnippet>326</span>    Merge: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>327</span>    P: Monoid,
+<span data-nosnippet>328</span>    H: UndoStrategy&lt;UfCell&lt;T, P&gt;&gt;,
+<span data-nosnippet>329</span>{
+<span data-nosnippet>330</span>    <span class="kw">pub fn </span>new_with_merger(n: usize, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(usize) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>331</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<span data-nosnippet>332</span>            .map(|i| UfCell::root(U::single_info(), init(i)))
+<span data-nosnippet>333</span>            .collect();
+<span data-nosnippet>334</span>        <span class="self">Self </span>{
+<span data-nosnippet>335</span>            cells,
+<span data-nosnippet>336</span>            merger: FnMerger {
+<span data-nosnippet>337</span>                f: merge,
+<span data-nosnippet>338</span>                _marker: PhantomData,
+<span data-nosnippet>339</span>            },
+<span data-nosnippet>340</span>            history: Default::default(),
+<span data-nosnippet>341</span>            _marker: PhantomData,
+<span data-nosnippet>342</span>        }
+<span data-nosnippet>343</span>    }
+<span data-nosnippet>344</span>}
+<span data-nosnippet>345</span>
+<span data-nosnippet>346</span><span class="kw">impl</span>&lt;F, M, P, H&gt; UnionFindBase&lt;UnionBySize, F, M, P, H&gt;
+<span data-nosnippet>347</span><span class="kw">where
+<span data-nosnippet>348</span>    </span>F: FindStrategy,
+<span data-nosnippet>349</span>    M: UfMergeSpec,
+<span data-nosnippet>350</span>    P: Monoid,
+<span data-nosnippet>351</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>352</span>{
+<span data-nosnippet>353</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>354</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>355</span>        <span class="self">self</span>.root_info(root).unwrap() <span class="kw">as </span>usize
+<span data-nosnippet>356</span>    }
+<span data-nosnippet>357</span>}
+<span data-nosnippet>358</span>
+<span data-nosnippet>359</span><span class="kw">impl</span>&lt;U, F, M, P, H&gt; UnionFindBase&lt;U, F, M, P, H&gt;
+<span data-nosnippet>360</span><span class="kw">where
+<span data-nosnippet>361</span>    </span>U: UnionStrategy,
+<span data-nosnippet>362</span>    F: FindStrategy,
+<span data-nosnippet>363</span>    M: UfMergeSpec,
+<span data-nosnippet>364</span>    P: Monoid,
+<span data-nosnippet>365</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>366</span>{
+<span data-nosnippet>367</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>, x: usize) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>368</span>        <span class="self">self</span>.cells[x].root_info()
+<span data-nosnippet>369</span>    }
+<span data-nosnippet>370</span>
+<span data-nosnippet>371</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, info: u32) {
+<span data-nosnippet>372</span>        <span class="self">self</span>.cells[x].set_root_info(info);
+<span data-nosnippet>373</span>    }
+<span data-nosnippet>374</span>
+<span data-nosnippet>375</span>    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+<span data-nosnippet>376</span>        <span class="self">self</span>.find_root(x) == <span class="self">self</span>.find_root(y)
+<span data-nosnippet>377</span>    }
+<span data-nosnippet>378</span>
+<span data-nosnippet>379</span>    <span class="kw">pub fn </span>merge_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; <span class="kw-2">&amp;</span>M::Data {
+<span data-nosnippet>380</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>381</span>        <span class="self">self</span>.cells[root].data()
+<span data-nosnippet>382</span>    }
+<span data-nosnippet>383</span>
+<span data-nosnippet>384</span>    <span class="kw">pub fn </span>merge_data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; <span class="kw-2">&amp;mut </span>M::Data {
+<span data-nosnippet>385</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>386</span>        <span class="self">self</span>.cells[root].data_mut()
+<span data-nosnippet>387</span>    }
+<span data-nosnippet>388</span>
+<span data-nosnippet>389</span>    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = usize&gt; + <span class="lifetime">'_ </span>{
+<span data-nosnippet>390</span>        (<span class="number">0</span>..<span class="self">self</span>.cells.len()).filter(|<span class="kw-2">&amp;</span>x| <span class="self">self</span>.cells[x].<span class="highlight">is_root</span>())
+<span data-nosnippet>391</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.data" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#143-145">Source</a><h4 class="code-header">fn <a href="#method.data" class="fn">data</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;D</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/data_structure/union_find.rs.html#82&#34;,&#34;line 82&#34;],[[26,26],&#34;../../../src/competitive/data_structure/union_find.rs.html#98&#34;,&#34;line 98&#34;],[[309,309],&#34;../../../src/competitive/data_structure/union_find.rs.html#381&#34;,&#34;line 381&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#82">line 82</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>72</span>    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>73</span>        <span class="kw">let </span>is_root = <span class="self">self</span>.is_root();
+<span data-nosnippet>74</span>        <span class="kw">let </span>potential = <span class="kw">if </span>is_root {
+<span data-nosnippet>75</span>            P::unit()
+<span data-nosnippet>76</span>        } <span class="kw">else </span>{
+<span data-nosnippet>77</span>            <span class="self">self</span>.potential.clone()
+<span data-nosnippet>78</span>        };
+<span data-nosnippet>79</span>        <span class="self">Self </span>{
+<span data-nosnippet>80</span>            parent_or_info: <span class="self">self</span>.parent_or_info,
+<span data-nosnippet>81</span>            data: <span class="kw">if </span>is_root {
+<span data-nosnippet>82</span>                MaybeUninit::new(<span class="self">self</span>.<span class="highlight focus">data</span>().clone())
+<span data-nosnippet>83</span>            } <span class="kw">else </span>{
+<span data-nosnippet>84</span>                MaybeUninit::uninit()
+<span data-nosnippet>85</span>            },
+<span data-nosnippet>86</span>            potential,
+<span data-nosnippet>87</span>        }
+<span data-nosnippet>88</span>    }
+<span data-nosnippet>89</span>}
+<span data-nosnippet>90</span>
+<span data-nosnippet>91</span><span class="kw">impl</span>&lt;D, P&gt; Debug <span class="kw">for </span>UfCell&lt;D, P&gt;
+<span data-nosnippet>92</span><span class="kw">where
+<span data-nosnippet>93</span>    </span>D: Debug,
+<span data-nosnippet>94</span>    P: Monoid&lt;T: Debug&gt;,
+<span data-nosnippet>95</span>{
+<span data-nosnippet>96</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<span data-nosnippet>97</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = <span class="self">self</span>.root_info() {
+<span data-nosnippet>98</span>            f.debug_tuple(<span class="string">"Root"</span>).field(<span class="kw-2">&amp;</span>(info, <span class="self">self</span>.<span class="highlight">data</span>())).finish()
+<span data-nosnippet>99</span>        } <span class="kw">else </span>{
+<span data-nosnippet>100</span>            f.debug_tuple(<span class="string">"Child"</span>)
+<span data-nosnippet>101</span>                .field(<span class="kw-2">&amp;</span>(<span class="self">self</span>.parent().unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.potential))
+<span data-nosnippet>102</span>                .finish()
+<span data-nosnippet>103</span>        }
+<span data-nosnippet>104</span>    }
+<span data-nosnippet>105</span>}
+<span data-nosnippet>106</span>
+<span data-nosnippet>107</span><span class="kw">impl</span>&lt;D, P&gt; UfCell&lt;D, P&gt;
+<span data-nosnippet>108</span><span class="kw">where
+<span data-nosnippet>109</span>    </span>P: Monoid,
+<span data-nosnippet>110</span>{
+<span data-nosnippet>111</span>    <span class="kw">fn </span>root(info: u32, data: D) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>112</span>        <span class="self">Self </span>{
+<span data-nosnippet>113</span>            parent_or_info: !(info <span class="kw">as </span>i32),
+<span data-nosnippet>114</span>            data: MaybeUninit::new(data),
+<span data-nosnippet>115</span>            potential: P::unit(),
+<span data-nosnippet>116</span>        }
+<span data-nosnippet>117</span>    }
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>120</span>        (<span class="self">self</span>.parent_or_info &lt; <span class="number">0</span>).then_some((!<span class="self">self</span>.parent_or_info) <span class="kw">as </span>u32)
+<span data-nosnippet>121</span>    }
+<span data-nosnippet>122</span>
+<span data-nosnippet>123</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: u32) {
+<span data-nosnippet>124</span>        <span class="self">self</span>.parent_or_info = !(info <span class="kw">as </span>i32);
+<span data-nosnippet>125</span>    }
+<span data-nosnippet>126</span>
+<span data-nosnippet>127</span>    <span class="kw">fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+<span data-nosnippet>128</span>        (<span class="self">self</span>.parent_or_info &gt;= <span class="number">0</span>).then_some(<span class="self">self</span>.parent_or_info <span class="kw">as </span>usize)
+<span data-nosnippet>129</span>    }
+<span data-nosnippet>130</span>
+<span data-nosnippet>131</span>    <span class="kw">fn </span>set_child(<span class="kw-2">&amp;mut </span><span class="self">self</span>, parent: usize, potential: P::T) {
+<span data-nosnippet>132</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.is_root() {
+<span data-nosnippet>133</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>134</span>        }
+<span data-nosnippet>135</span>        <span class="self">self</span>.parent_or_info = parent <span class="kw">as </span>i32;
+<span data-nosnippet>136</span>        <span class="self">self</span>.potential = potential;
+<span data-nosnippet>137</span>    }
+<span data-nosnippet>138</span>
+<span data-nosnippet>139</span>    <span class="kw">fn </span>is_root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>140</span>        <span class="self">self</span>.parent_or_info &lt; <span class="number">0
+<span data-nosnippet>141</span>    </span>}
+<span data-nosnippet>142</span>
+<span data-nosnippet>143</span>    <span class="kw">fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>D {
+<span data-nosnippet>144</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_ref() }
+<span data-nosnippet>145</span>    }
+<span data-nosnippet>146</span>
+<span data-nosnippet>147</span>    <span class="kw">fn </span>data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>D {
+<span data-nosnippet>148</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_mut() }
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>}
+<span data-nosnippet>151</span>
+<span data-nosnippet>152</span><span class="kw">impl</span>&lt;D, P&gt; Drop <span class="kw">for </span>UfCell&lt;D, P&gt;
+<span data-nosnippet>153</span><span class="kw">where
+<span data-nosnippet>154</span>    </span>P: Monoid,
+<span data-nosnippet>155</span>{
+<span data-nosnippet>156</span>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>157</span>        <span class="kw">if </span>needs_drop::&lt;D&gt;() &amp;&amp; <span class="self">self</span>.is_root() {
+<span data-nosnippet>158</span>            <span class="kw">unsafe </span>{ <span class="self">self</span>.data.assume_init_drop() };
+<span data-nosnippet>159</span>        }
+<span data-nosnippet>160</span>    }
+<span data-nosnippet>161</span>}
+<span data-nosnippet>162</span>
+<span data-nosnippet>163</span><span class="kw">pub trait </span>FindStrategy {
+<span data-nosnippet>164</span>    <span class="kw">const </span>CHENGE_ROOT: bool;
+<span data-nosnippet>165</span>}
+<span data-nosnippet>166</span>
+<span data-nosnippet>167</span><span class="kw">pub enum </span>PathCompression {}
+<span data-nosnippet>168</span>
+<span data-nosnippet>169</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>PathCompression {
+<span data-nosnippet>170</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>171</span>}
+<span data-nosnippet>172</span>
+<span data-nosnippet>173</span><span class="kw">impl </span>FindStrategy <span class="kw">for </span>() {
+<span data-nosnippet>174</span>    <span class="kw">const </span>CHENGE_ROOT: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>175</span>}
+<span data-nosnippet>176</span>
+<span data-nosnippet>177</span><span class="kw">pub trait </span>UnionStrategy {
+<span data-nosnippet>178</span>    <span class="kw">fn </span>single_info() -&gt; u32;
+<span data-nosnippet>179</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool;
+<span data-nosnippet>180</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32;
+<span data-nosnippet>181</span>}
+<span data-nosnippet>182</span>
+<span data-nosnippet>183</span><span class="kw">pub enum </span>UnionBySize {}
+<span data-nosnippet>184</span>
+<span data-nosnippet>185</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionBySize {
+<span data-nosnippet>186</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>187</span>        <span class="number">1
+<span data-nosnippet>188</span>    </span>}
+<span data-nosnippet>189</span>
+<span data-nosnippet>190</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>191</span>        parent &gt;= child
+<span data-nosnippet>192</span>    }
+<span data-nosnippet>193</span>
+<span data-nosnippet>194</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>195</span>        parent + child
+<span data-nosnippet>196</span>    }
+<span data-nosnippet>197</span>}
+<span data-nosnippet>198</span>
+<span data-nosnippet>199</span><span class="kw">pub enum </span>UnionByRank {}
+<span data-nosnippet>200</span>
+<span data-nosnippet>201</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>UnionByRank {
+<span data-nosnippet>202</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>203</span>        <span class="number">0
+<span data-nosnippet>204</span>    </span>}
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="kw">fn </span>check_directoin(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>207</span>        parent &gt;= child
+<span data-nosnippet>208</span>    }
+<span data-nosnippet>209</span>
+<span data-nosnippet>210</span>    <span class="kw">fn </span>unite(parent: <span class="kw-2">&amp;</span>u32, child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>211</span>        parent + (parent == child) <span class="kw">as </span>u32
+<span data-nosnippet>212</span>    }
+<span data-nosnippet>213</span>}
+<span data-nosnippet>214</span>
+<span data-nosnippet>215</span><span class="kw">impl </span>UnionStrategy <span class="kw">for </span>() {
+<span data-nosnippet>216</span>    <span class="kw">fn </span>single_info() -&gt; u32 {
+<span data-nosnippet>217</span>        <span class="number">0
+<span data-nosnippet>218</span>    </span>}
+<span data-nosnippet>219</span>
+<span data-nosnippet>220</span>    <span class="kw">fn </span>check_directoin(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; bool {
+<span data-nosnippet>221</span>        <span class="bool-val">false
+<span data-nosnippet>222</span>    </span>}
+<span data-nosnippet>223</span>
+<span data-nosnippet>224</span>    <span class="kw">fn </span>unite(_parent: <span class="kw-2">&amp;</span>u32, _child: <span class="kw-2">&amp;</span>u32) -&gt; u32 {
+<span data-nosnippet>225</span>        <span class="number">0
+<span data-nosnippet>226</span>    </span>}
+<span data-nosnippet>227</span>}
+<span data-nosnippet>228</span>
+<span data-nosnippet>229</span><span class="kw">pub trait </span>UfMergeSpec {
+<span data-nosnippet>230</span>    <span class="kw">type </span>Data;
+<span data-nosnippet>231</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data);
+<span data-nosnippet>232</span>}
+<span data-nosnippet>233</span>
+<span data-nosnippet>234</span><span class="attr">#[derive(Debug, Clone)]
+<span data-nosnippet>235</span></span><span class="kw">pub struct </span>FnMerger&lt;T, F&gt; {
+<span data-nosnippet>236</span>    f: F,
+<span data-nosnippet>237</span>    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+<span data-nosnippet>238</span>}
+<span data-nosnippet>239</span>
+<span data-nosnippet>240</span><span class="kw">impl</span>&lt;T, F&gt; UfMergeSpec <span class="kw">for </span>FnMerger&lt;T, F&gt;
+<span data-nosnippet>241</span><span class="kw">where
+<span data-nosnippet>242</span>    </span>F: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>243</span>{
+<span data-nosnippet>244</span>    <span class="kw">type </span>Data = T;
+<span data-nosnippet>245</span>
+<span data-nosnippet>246</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {
+<span data-nosnippet>247</span>        (<span class="self">self</span>.f)(to, from)
+<span data-nosnippet>248</span>    }
+<span data-nosnippet>249</span>}
+<span data-nosnippet>250</span>
+<span data-nosnippet>251</span><span class="kw">impl </span>UfMergeSpec <span class="kw">for </span>() {
+<span data-nosnippet>252</span>    <span class="kw">type </span>Data = ();
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _to: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, _from: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data) {}
+<span data-nosnippet>255</span>}
+<span data-nosnippet>256</span>
+<span data-nosnippet>257</span><span class="kw">pub trait </span>UndoStrategy&lt;T&gt; {
+<span data-nosnippet>258</span>    <span class="kw">const </span>UNDOABLE: bool;
+<span data-nosnippet>259</span>
+<span data-nosnippet>260</span>    <span class="kw">type </span>History: Default;
+<span data-nosnippet>261</span>
+<span data-nosnippet>262</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]);
+<span data-nosnippet>263</span>
+<span data-nosnippet>264</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]);
+<span data-nosnippet>265</span>}
+<span data-nosnippet>266</span>
+<span data-nosnippet>267</span><span class="kw">pub enum </span>Undoable {}
+<span data-nosnippet>268</span>
+<span data-nosnippet>269</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>Undoable
+<span data-nosnippet>270</span><span class="kw">where
+<span data-nosnippet>271</span>    </span>T: Clone,
+<span data-nosnippet>272</span>{
+<span data-nosnippet>273</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">true</span>;
+<span data-nosnippet>274</span>
+<span data-nosnippet>275</span>    <span class="kw">type </span>History = Vec&lt;[(usize, T); <span class="number">2</span>]&gt;;
+<span data-nosnippet>276</span>
+<span data-nosnippet>277</span>    <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: usize, y: usize, cells: <span class="kw-2">&amp;</span>[T]) {
+<span data-nosnippet>278</span>        <span class="kw">let </span>cx = cells[x].clone();
+<span data-nosnippet>279</span>        <span class="kw">let </span>cy = cells[y].clone();
+<span data-nosnippet>280</span>        history.push([(x, cx), (y, cy)]);
+<span data-nosnippet>281</span>    }
+<span data-nosnippet>282</span>
+<span data-nosnippet>283</span>    <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>284</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>([(x, cx), (y, cy)]) = history.pop() {
+<span data-nosnippet>285</span>            cells[x] = cx;
+<span data-nosnippet>286</span>            cells[y] = cy;
+<span data-nosnippet>287</span>        }
+<span data-nosnippet>288</span>    }
+<span data-nosnippet>289</span>}
+<span data-nosnippet>290</span>
+<span data-nosnippet>291</span><span class="kw">impl</span>&lt;T&gt; UndoStrategy&lt;T&gt; <span class="kw">for </span>() {
+<span data-nosnippet>292</span>    <span class="kw">const </span>UNDOABLE: bool = <span class="bool-val">false</span>;
+<span data-nosnippet>293</span>
+<span data-nosnippet>294</span>    <span class="kw">type </span>History = ();
+<span data-nosnippet>295</span>
+<span data-nosnippet>296</span>    <span class="kw">fn </span>unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _x: usize, _y: usize, _cells: <span class="kw-2">&amp;</span>[T]) {}
+<span data-nosnippet>297</span>
+<span data-nosnippet>298</span>    <span class="kw">fn </span>undo_unite(_history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, _cells: <span class="kw-2">&amp;mut </span>[T]) {}
+<span data-nosnippet>299</span>}
+<span data-nosnippet>300</span>
+<span data-nosnippet>301</span><span class="kw">impl</span>&lt;U, F, P, H&gt; UnionFindBase&lt;U, F, (), P, H&gt;
+<span data-nosnippet>302</span><span class="kw">where
+<span data-nosnippet>303</span>    </span>U: UnionStrategy,
+<span data-nosnippet>304</span>    F: FindStrategy,
+<span data-nosnippet>305</span>    P: Monoid,
+<span data-nosnippet>306</span>    H: UndoStrategy&lt;UfCell&lt;(), P&gt;&gt;,
+<span data-nosnippet>307</span>{
+<span data-nosnippet>308</span>    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>309</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| UfCell::root(U::single_info(), ())).collect();
+<span data-nosnippet>310</span>        <span class="self">Self </span>{
+<span data-nosnippet>311</span>            cells,
+<span data-nosnippet>312</span>            merger: (),
+<span data-nosnippet>313</span>            history: Default::default(),
+<span data-nosnippet>314</span>            _marker: PhantomData,
+<span data-nosnippet>315</span>        }
+<span data-nosnippet>316</span>    }
+<span data-nosnippet>317</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>318</span>        <span class="self">self</span>.cells.push(UfCell::root(U::single_info(), ()));
+<span data-nosnippet>319</span>    }
+<span data-nosnippet>320</span>}
+<span data-nosnippet>321</span>
+<span data-nosnippet>322</span><span class="kw">impl</span>&lt;U, F, T, Merge, P, <a href="../algebra/action.rs.html#39">H</a>&gt; UnionFindBase&lt;U, F, FnMerger&lt;T, Merge&gt;, P, H&gt;
+<span data-nosnippet>323</span><span class="kw">where
+<span data-nosnippet>324</span>    </span>U: UnionStrategy,
+<span data-nosnippet>325</span>    F: FindStrategy,
+<span data-nosnippet>326</span>    Merge: FnMut(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T),
+<span data-nosnippet>327</span>    P: Monoid,
+<span data-nosnippet>328</span>    H: UndoStrategy&lt;UfCell&lt;T, P&gt;&gt;,
+<span data-nosnippet>329</span>{
+<span data-nosnippet>330</span>    <span class="kw">pub fn </span>new_with_merger(n: usize, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(usize) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>331</span>        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<span data-nosnippet>332</span>            .map(|i| UfCell::root(U::single_info(), init(i)))
+<span data-nosnippet>333</span>            .collect();
+<span data-nosnippet>334</span>        <span class="self">Self </span>{
+<span data-nosnippet>335</span>            cells,
+<span data-nosnippet>336</span>            merger: FnMerger {
+<span data-nosnippet>337</span>                f: merge,
+<span data-nosnippet>338</span>                _marker: PhantomData,
+<span data-nosnippet>339</span>            },
+<span data-nosnippet>340</span>            history: Default::default(),
+<span data-nosnippet>341</span>            _marker: PhantomData,
+<span data-nosnippet>342</span>        }
+<span data-nosnippet>343</span>    }
+<span data-nosnippet>344</span>}
+<span data-nosnippet>345</span>
+<span data-nosnippet>346</span><span class="kw">impl</span>&lt;F, M, P, H&gt; UnionFindBase&lt;UnionBySize, F, M, P, H&gt;
+<span data-nosnippet>347</span><span class="kw">where
+<span data-nosnippet>348</span>    </span>F: FindStrategy,
+<span data-nosnippet>349</span>    M: UfMergeSpec,
+<span data-nosnippet>350</span>    P: Monoid,
+<span data-nosnippet>351</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>352</span>{
+<span data-nosnippet>353</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>354</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>355</span>        <span class="self">self</span>.root_info(root).unwrap() <span class="kw">as </span>usize
+<span data-nosnippet>356</span>    }
+<span data-nosnippet>357</span>}
+<span data-nosnippet>358</span>
+<span data-nosnippet>359</span><span class="kw">impl</span>&lt;U, F, M, P, H&gt; UnionFindBase&lt;U, F, M, P, H&gt;
+<span data-nosnippet>360</span><span class="kw">where
+<span data-nosnippet>361</span>    </span>U: UnionStrategy,
+<span data-nosnippet>362</span>    F: FindStrategy,
+<span data-nosnippet>363</span>    M: UfMergeSpec,
+<span data-nosnippet>364</span>    P: Monoid,
+<span data-nosnippet>365</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>366</span>{
+<span data-nosnippet>367</span>    <span class="kw">fn </span>root_info(<span class="kw-2">&amp;</span><span class="self">self</span>, x: usize) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+<span data-nosnippet>368</span>        <span class="self">self</span>.cells[x].root_info()
+<span data-nosnippet>369</span>    }
+<span data-nosnippet>370</span>
+<span data-nosnippet>371</span>    <span class="kw">fn </span>set_root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, info: u32) {
+<span data-nosnippet>372</span>        <span class="self">self</span>.cells[x].set_root_info(info);
+<span data-nosnippet>373</span>    }
+<span data-nosnippet>374</span>
+<span data-nosnippet>375</span>    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+<span data-nosnippet>376</span>        <span class="self">self</span>.find_root(x) == <span class="self">self</span>.find_root(y)
+<span data-nosnippet>377</span>    }
+<span data-nosnippet>378</span>
+<span data-nosnippet>379</span>    <span class="kw">pub fn </span>merge_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; <span class="kw-2">&amp;</span>M::Data {
+<span data-nosnippet>380</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>381</span>        <span class="self">self</span>.cells[root].<span class="highlight">data</span>()
+<span data-nosnippet>382</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.data_mut" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#147-149">Source</a><h4 class="code-header">fn <a href="#method.data_mut" class="fn">data_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut D</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/data_structure/union_find.rs.html#386&#34;,&#34;line 386&#34;],[[62,62],&#34;../../../src/competitive/data_structure/union_find.rs.html#446&#34;,&#34;line 446&#34;],[[62,62],&#34;../../../src/competitive/data_structure/union_find.rs.html#446&#34;,&#34;line 446&#34;],[[111,111],&#34;../../../src/competitive/data_structure/union_find.rs.html#495&#34;,&#34;line 495&#34;],[[111,111],&#34;../../../src/competitive/data_structure/union_find.rs.html#495&#34;,&#34;line 495&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#386">line 386</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>384</span>    <span class="kw">pub fn </span>merge_data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; <span class="kw-2">&amp;mut </span>M::Data {
+<span data-nosnippet>385</span>        <span class="kw">let </span>root = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>386</span>        <span class="self">self</span>.cells[root].<span class="highlight focus">data_mut</span>()
+<span data-nosnippet>387</span>    }
+<span data-nosnippet>388</span>
+<span data-nosnippet>389</span>    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = usize&gt; + <span class="lifetime">'_ </span>{
+<span data-nosnippet>390</span>        (<span class="number">0</span>..<span class="self">self</span>.cells.len()).filter(|<span class="kw-2">&amp;</span>x| <span class="self">self</span>.cells[x].is_root())
+<span data-nosnippet>391</span>    }
+<span data-nosnippet>392</span>
+<span data-nosnippet>393</span>    <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;usize, Vec&lt;usize&gt;&gt; {
+<span data-nosnippet>394</span>        <span class="kw">let </span><span class="kw-2">mut </span>groups_map = HashMap::new();
+<span data-nosnippet>395</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.cells.len() {
+<span data-nosnippet>396</span>            <span class="kw">let </span>r = <span class="self">self</span>.find_root(x);
+<span data-nosnippet>397</span>            groups_map.entry(r).or_insert_with(Vec::new).push(x);
+<span data-nosnippet>398</span>        }
+<span data-nosnippet>399</span>        groups_map
+<span data-nosnippet>400</span>    }
+<span data-nosnippet>401</span>
+<span data-nosnippet>402</span>    <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; (usize, P::T) {
+<span data-nosnippet>403</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = x;
+<span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>potential = P::unit();
+<span data-nosnippet>405</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.cells[current].parent() {
+<span data-nosnippet>406</span>            <span class="kw">let </span>current_potential = <span class="self">self</span>.cells[current].potential.clone();
+<span data-nosnippet>407</span>            potential = P::operate(<span class="kw-2">&amp;</span>current_potential, <span class="kw-2">&amp;</span>potential);
+<span data-nosnippet>408</span>            <span class="kw">if </span>F::CHENGE_ROOT
+<span data-nosnippet>409</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(parent_parent) = <span class="self">self</span>.cells[parent].parent()
+<span data-nosnippet>410</span>            {
+<span data-nosnippet>411</span>                <span class="kw">let </span>potential = P::operate(<span class="kw-2">&amp;</span><span class="self">self</span>.cells[parent].potential, <span class="kw-2">&amp;</span>current_potential);
+<span data-nosnippet>412</span>                <span class="self">self</span>.cells[current].set_child(parent_parent, potential);
+<span data-nosnippet>413</span>            }
+<span data-nosnippet>414</span>            current = parent;
+<span data-nosnippet>415</span>        }
+<span data-nosnippet>416</span>        (current, potential)
+<span data-nosnippet>417</span>    }
+<span data-nosnippet>418</span>
+<span data-nosnippet>419</span>    <span class="kw">pub fn </span>find_root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = x;
+<span data-nosnippet>421</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.cells[current].parent() {
+<span data-nosnippet>422</span>            <span class="kw">if </span>F::CHENGE_ROOT
+<span data-nosnippet>423</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(parent_parent) = <span class="self">self</span>.cells[parent].parent()
+<span data-nosnippet>424</span>            {
+<span data-nosnippet>425</span>                <span class="kw">let </span>potential = P::operate(
+<span data-nosnippet>426</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.cells[parent].potential,
+<span data-nosnippet>427</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.cells[current].potential,
+<span data-nosnippet>428</span>                );
+<span data-nosnippet>429</span>                <span class="self">self</span>.cells[current].set_child(parent_parent, potential);
+<span data-nosnippet>430</span>            }
+<span data-nosnippet>431</span>            current = parent;
+<span data-nosnippet>432</span>        }
+<span data-nosnippet>433</span>        current
+<span data-nosnippet>434</span>    }
+<span data-nosnippet>435</span>
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>unite_noninv(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize, potential: P::T) -&gt; bool {
+<span data-nosnippet>437</span>        <span class="kw">let </span>(rx, potx) = <span class="self">self</span>.find(x);
+<span data-nosnippet>438</span>        <span class="kw">let </span>ry = <span class="self">self</span>.find_root(y);
+<span data-nosnippet>439</span>        <span class="kw">if </span>rx == ry || y != ry {
+<span data-nosnippet>440</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>441</span>        }
+<span data-nosnippet>442</span>        H::unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>.history, rx, ry, <span class="kw-2">&amp;</span><span class="self">self</span>.cells);
+<span data-nosnippet>443</span>        {
+<span data-nosnippet>444</span>            <span class="kw">let </span>ptr = <span class="self">self</span>.cells.as_mut_ptr();
+<span data-nosnippet>445</span>            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span>ptr.add(rx), <span class="kw-2">&amp;mut *</span>ptr.add(ry)) };
+<span data-nosnippet>446</span>            <span class="self">self</span>.merger.merge(cx.<span class="highlight">data_mut</span>(), cy.<span class="highlight">data_mut</span>());
+<span data-nosnippet>447</span>        }
+<span data-nosnippet>448</span>        <span class="kw">let </span>info = U::unite(<span class="kw-2">&amp;</span><span class="self">self</span>.root_info(rx).unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.root_info(ry).unwrap());
+<span data-nosnippet>449</span>        <span class="self">self</span>.set_root_info(rx, info);
+<span data-nosnippet>450</span>        <span class="self">self</span>.cells[ry].set_child(rx, P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>potential));
+<span data-nosnippet>451</span>        <span class="bool-val">true
+<span data-nosnippet>452</span>    </span>}
+<span data-nosnippet>453</span>}
+<span data-nosnippet>454</span>
+<span data-nosnippet>455</span><span class="kw">impl</span>&lt;U, F, M, P, H&gt; UnionFindBase&lt;U, F, M, P, H&gt;
+<span data-nosnippet>456</span><span class="kw">where
+<span data-nosnippet>457</span>    </span>U: UnionStrategy,
+<span data-nosnippet>458</span>    F: FindStrategy,
+<span data-nosnippet>459</span>    M: UfMergeSpec,
+<span data-nosnippet>460</span>    P: Group,
+<span data-nosnippet>461</span>    H: UndoStrategy&lt;UfCell&lt;M::Data, P&gt;&gt;,
+<span data-nosnippet>462</span>{
+<span data-nosnippet>463</span>    <span class="kw">pub fn </span>difference(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; <span class="prelude-ty">Option</span>&lt;P::T&gt; {
+<span data-nosnippet>464</span>        <span class="kw">let </span>(rx, potx) = <span class="self">self</span>.find(x);
+<span data-nosnippet>465</span>        <span class="kw">let </span>(ry, poty) = <span class="self">self</span>.find(y);
+<span data-nosnippet>466</span>        <span class="kw">if </span>rx == ry {
+<span data-nosnippet>467</span>            <span class="prelude-val">Some</span>(P::operate(<span class="kw-2">&amp;</span>P::inverse(<span class="kw-2">&amp;</span>potx), <span class="kw-2">&amp;</span>poty))
+<span data-nosnippet>468</span>        } <span class="kw">else </span>{
+<span data-nosnippet>469</span>            <span class="prelude-val">None
+<span data-nosnippet>470</span>        </span>}
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>
+<span data-nosnippet>473</span>    <span class="kw">pub fn </span>unite_with(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize, potential: P::T) -&gt; bool {
+<span data-nosnippet>474</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>rx, potx) = <span class="self">self</span>.find(x);
+<span data-nosnippet>475</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>ry, poty) = <span class="self">self</span>.find(y);
+<span data-nosnippet>476</span>        <span class="kw">if </span>rx == ry {
+<span data-nosnippet>477</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>478</span>        }
+<span data-nosnippet>479</span>        <span class="kw">let </span><span class="kw-2">mut </span>xinfo = <span class="self">self</span>.root_info(rx).unwrap();
+<span data-nosnippet>480</span>        <span class="kw">let </span><span class="kw-2">mut </span>yinfo = <span class="self">self</span>.root_info(ry).unwrap();
+<span data-nosnippet>481</span>        <span class="kw">let </span>inverse = !U::check_directoin(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo);
+<span data-nosnippet>482</span>        <span class="kw">let </span>potential = <span class="kw">if </span>inverse {
+<span data-nosnippet>483</span>            P::rinv_operate(<span class="kw-2">&amp;</span>poty, <span class="kw-2">&amp;</span>P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>potential))
+<span data-nosnippet>484</span>        } <span class="kw">else </span>{
+<span data-nosnippet>485</span>            P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>P::rinv_operate(<span class="kw-2">&amp;</span>potential, <span class="kw-2">&amp;</span>poty))
+<span data-nosnippet>486</span>        };
+<span data-nosnippet>487</span>        <span class="kw">if </span>inverse {
+<span data-nosnippet>488</span>            swap(<span class="kw-2">&amp;mut </span>rx, <span class="kw-2">&amp;mut </span>ry);
+<span data-nosnippet>489</span>            swap(<span class="kw-2">&amp;mut </span>xinfo, <span class="kw-2">&amp;mut </span>yinfo);
+<span data-nosnippet>490</span>        }
+<span data-nosnippet>491</span>        H::unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>.history, rx, ry, <span class="kw-2">&amp;</span><span class="self">self</span>.cells);
+<span data-nosnippet>492</span>        {
+<span data-nosnippet>493</span>            <span class="kw">let </span>ptr = <span class="self">self</span>.cells.as_mut_ptr();
+<span data-nosnippet>494</span>            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span>ptr.add(rx), <span class="kw-2">&amp;mut *</span>ptr.add(ry)) };
+<span data-nosnippet>495</span>            <span class="self">self</span>.merger.merge(cx.<span class="highlight">data_mut</span>(), cy.<span class="highlight">data_mut</span>());
+<span data-nosnippet>496</span>        }
+<span data-nosnippet>497</span>        <span class="self">self</span>.set_root_info(rx, U::unite(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo));
+<span data-nosnippet>498</span>        <span class="self">self</span>.cells[ry].set_child(rx, potential);
+<span data-nosnippet>499</span>        <span class="bool-val">true
+<span data-nosnippet>500</span>    </span>}</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-UfCell%3CD,+P%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#67-89">Source</a><a href="#impl-Clone-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    D: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#72-88">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; Self</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0, const unstable">1.0.0 (const: <a href="https://github.com/rust-lang/rust/issues/142757" title="Tracking issue for const_clone">unstable</a>)</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-UfCell%3CD,+P%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#91-105">Source</a><a href="#impl-Debug-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    D: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>,
+    P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#96-104">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Drop-for-UfCell%3CD,+P%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#152-161">Source</a><a href="#impl-Drop-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html" title="trait core::ops::drop::Drop">Drop</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.drop" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#156-160">Source</a><a href="#method.drop" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.drop" class="fn">drop</a>(&amp;mut self)</h4></section></summary><div class='docblock'>Executes the destructor for this type. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.drop">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.pin_drop" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/ops/drop.rs.html#267">Source</a><a href="#method.pin_drop" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.pin_drop" class="fn">pin_drop</a>(self: <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;&amp;mut Self&gt;)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>pin_ergonomics</code>)</span></div></span><div class='docblock'>Execute the destructor for this type, but different to <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.drop" title="method core::ops::drop::Drop::drop"><code>Drop::drop</code></a>, it requires <code>self</code>
+to be pinned. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.pin_drop">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-Freeze-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,</div></h3></section><section id="impl-RefUnwindSafe-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-RefUnwindSafe-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,</div></h3></section><section id="impl-Send-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-Send-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,</div></h3></section><section id="impl-Sync-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-Sync-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a>,</div></h3></section><section id="impl-Unpin-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-Unpin-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a>,</div></h3></section><section id="impl-UnsafeUnpin-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-UnsafeUnpin-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a>,</div></h3></section><section id="impl-UnwindSafe-for-UfCell%3CD,+P%3E" class="impl"><a href="#impl-UnwindSafe-for-UfCell%3CD,+P%3E" class="anchor">§</a><h3 class="code-header">impl&lt;D, P&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;D, P&gt;<div class="where">where
+    <a class="union" href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html" title="union core::mem::maybe_uninit::MaybeUninit">MaybeUninit</a>&lt;D&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a>,
+    &lt;P as <a class="trait" href="../../algebra/trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a>,</div></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#141">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#142">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#222">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-CloneToUninit-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#648">Source</a><a href="#impl-CloneToUninit-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html" title="trait core::clone::CloneToUninit">CloneToUninit</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone_to_uninit" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#650">Source</a><a href="#method.clone_to_uninit" class="anchor">§</a><h4 class="code-header">unsafe fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit" class="fn">clone_to_uninit</a>(&amp;self, dest: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>clone_to_uninit</code>)</span></div></span><div class='docblock'>Performs copy-assignment from <code>self</code> to <code>dest</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#788">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#791">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#770-772">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#780">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToArrayVecScalar-for-T" class="impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#20-24">Source</a><a href="#impl-ToArrayVecScalar-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../../math/trait.ToArrayVecScalar.html" title="trait competitive::math::ToArrayVecScalar">ToArrayVecScalar</a> for T</h3></section></summary><div class="impl-items"><section id="method.to_array_vec_scalar" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#21-23">Source</a><a href="#method.to_array_vec_scalar" class="anchor">§</a><h4 class="code-header">fn <a href="../../math/trait.ToArrayVecScalar.html#tymethod.to_array_vec_scalar" class="fn">to_array_vec_scalar</a>(self) -&gt; <a class="struct" href="../../math/array_vec/struct.ArrayVecScalar.html" title="struct competitive::math::array_vec::ArrayVecScalar">ArrayVecScalar</a>&lt;T&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToOwned-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#72-74">Source</a><a href="#impl-ToOwned-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Owned" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#76">Source</a><a href="#associatedtype.Owned" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'>The resulting type after obtaining ownership.</div></details><details class="toggle method-toggle" open><summary><section id="method.to_owned" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#77">Source</a><a href="#method.to_owned" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned" class="fn">to_owned</a>(&amp;self) -&gt; T</h4></section></summary><div class='docblock'>Creates owned data from borrowed data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#81">Source</a><a href="#method.clone_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into" class="fn">clone_into</a>(&amp;self, target: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a>)</h4></section></summary><div class='docblock'>Uses borrowed data to replace owned data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#830-832">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#834">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#837">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#814-816">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#818">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#821">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details></div></section></div></main></body></html>

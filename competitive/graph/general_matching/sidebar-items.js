@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["mark_path"],"struct":["GeneralMatching"]};
+window.SIDEBAR_ITEMS = {"struct":["GeneralMatching"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["taylor_shift"],"trait":["MIntMatrix"]};
+window.SIDEBAR_ITEMS = {"fn":["frobenius_decomposition","generate_frobenius_block","taylor_shift"],"struct":["EchelonRow","FrobeniusDecomposition","Polynomial"],"trait":["MIntMatrix"]};

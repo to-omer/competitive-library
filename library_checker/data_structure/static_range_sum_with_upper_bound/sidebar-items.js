@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["static_range_sum_with_upper_bound","test_static_range_sum_with_upper_bound"]};
+window.SIDEBAR_ITEMS = {"fn":["static_range_sum_with_upper_bound","static_range_sum_with_upper_bound_wavelet_matrix","test_static_range_sum_with_upper_bound","test_static_range_sum_with_upper_bound_wavelet_matrix"]};

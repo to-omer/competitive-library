@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["IndependentSubSet"]};
+window.SIDEBAR_ITEMS = {"fn":["chromatic_number","greedy_coloring","search_coloring","select_vertex"]};

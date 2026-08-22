@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["point_add_rectangle_sum","test_point_add_rectangle_sum"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["point_add_rectangle_sum","point_add_rectangle_sum_compressed_segment_tree","test_point_add_rectangle_sum","test_point_add_rectangle_sum_compressed_segment_tree"]};

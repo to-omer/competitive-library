@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["segment_add_get_min","test_segment_add_get_min"]};
