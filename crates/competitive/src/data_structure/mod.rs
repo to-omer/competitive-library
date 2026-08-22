@@ -106,7 +106,7 @@ pub use self::union_find::{
 #[codesnip::entry("VecMap")]
 pub use self::vec_map::{FixedVecMapFactory, VecMap, VecMapFactory, VecMapFactoryWithCapacity};
 #[codesnip::entry("WaveletMatrix")]
-pub use self::wavelet_matrix::WaveletMatrix;
+pub use self::wavelet_matrix::{WaveletMatrix, WaveletMatrixPointAdd};
 
 #[cfg_attr(
     nightly,
@@ -282,6 +282,9 @@ pub mod union_find;
 mod vec_map;
 #[cfg_attr(
     nightly,
-    codesnip::entry("WaveletMatrix", include("BitVector", "compress", "algebra"))
+    codesnip::entry(
+        "WaveletMatrix",
+        include("BinaryIndexedTree", "BitVector", "compress", "algebra")
+    )
 )]
 mod wavelet_matrix;

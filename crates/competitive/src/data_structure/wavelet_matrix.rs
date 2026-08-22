@@ -1,4 +1,6 @@
-use super::{AbelianGroup, BitVector, Compressor, RankSelectDictionaries, VecCompress};
+use super::{
+    AbelianGroup, BinaryIndexedTree, BitVector, Compressor, RankSelectDictionaries, VecCompress,
+};
 use std::{
     mem::{self, MaybeUninit},
     ops::Range,
@@ -96,6 +98,29 @@ where
 
     fn rank0(&self, level: usize, k: usize) -> usize {
         k - self.rank1(level, k)
+    }
+
+    fn reorder<U>(&self, level: usize, current: Vec<U>, mut visit: impl FnMut(&U)) -> Vec<U> {
+        assert_eq!(current.len(), self.len);
+        let mut next = Vec::with_capacity(self.len);
+        next.resize_with(self.len, MaybeUninit::uninit);
+        let mut zero = 0;
+        let mut one = self.zeros[level];
+        for (i, value) in current.into_iter().enumerate() {
+            visit(&value);
+            if self.bit_vectors[level].access(i) {
+                next[one].write(value);
+                one += 1;
+            } else {
+                next[zero].write(value);
+                zero += 1;
+            }
+        }
+        // SAFETY: the partition counts fill every slot once, and `MaybeUninit<U>` has `U`'s layout.
+        unsafe {
+            let mut next = mem::ManuallyDrop::new(next);
+            Vec::from_raw_parts(next.as_mut_ptr().cast(), next.len(), next.capacity())
+        }
     }
 
     fn rank_by_index(&self, idx: usize, mut range: Range<usize>) -> usize {
@@ -292,34 +317,12 @@ where
         let mut prefix = Vec::with_capacity((self.bit_length + 1) * (len + 1));
         let mut current: Vec<M::T> = weights.to_vec();
         for level in 0..self.bit_length {
-            let zeros = self.zeros[level];
-            let mut next: Vec<MaybeUninit<M::T>> = Vec::with_capacity(len);
-            next.resize_with(len, MaybeUninit::uninit);
-            let mut zero_pos = 0;
-            let mut one_pos = zeros;
             let mut acc = M::unit();
             prefix.push(acc.clone());
-            for (i, w) in current.into_iter().enumerate() {
-                acc = M::operate(&acc, &w);
+            current = self.reorder(level, current, |w| {
+                acc = M::operate(&acc, w);
                 prefix.push(acc.clone());
-                if self.bit_vectors[level].access(i) {
-                    next[one_pos].write(w);
-                    one_pos += 1;
-                } else {
-                    next[zero_pos].write(w);
-                    zero_pos += 1;
-                }
-            }
-            debug_assert_eq!(zero_pos, zeros);
-            debug_assert_eq!(one_pos, len);
-            let next = unsafe {
-                let mut next = mem::ManuallyDrop::new(next);
-                let ptr = next.as_mut_ptr() as *mut M::T;
-                let len = next.len();
-                let cap = next.capacity();
-                Vec::from_raw_parts(ptr, len, cap)
-            };
-            current = next;
+            });
         }
         let mut acc = M::unit();
         prefix.push(acc.clone());
@@ -331,6 +334,70 @@ where
             wavelet_matrix: self,
             prefix,
         }
+    }
+
+    pub fn build_point_add<M>(&self, weights: &[M::T]) -> WaveletMatrixPointAdd<'_, T, M>
+    where
+        M: AbelianGroup,
+    {
+        assert_eq!(weights.len(), self.len);
+        let mut current = weights.to_vec();
+        let mut bits = Vec::with_capacity(self.bit_length);
+        for level in 0..self.bit_length {
+            current = self.reorder(level, current, |_| {});
+            bits.push(BinaryIndexedTree::from_slice(&current));
+        }
+        WaveletMatrixPointAdd {
+            wavelet_matrix: self,
+            bits,
+        }
+    }
+}
+
+pub struct WaveletMatrixPointAdd<'a, T, M>
+where
+    T: Ord + Clone,
+    M: AbelianGroup,
+{
+    wavelet_matrix: &'a WaveletMatrix<T>,
+    bits: Vec<BinaryIndexedTree<M>>,
+}
+
+impl<'a, T, M> WaveletMatrixPointAdd<'a, T, M>
+where
+    T: Ord + Clone,
+    M: AbelianGroup,
+{
+    pub fn update(&mut self, mut index: usize, value: M::T) {
+        debug_assert!(index < self.wavelet_matrix.len);
+        for d in (0..self.wavelet_matrix.bit_length).rev() {
+            let level = self.wavelet_matrix.level(d);
+            if self.wavelet_matrix.bit_vectors[level].access(index) {
+                index = self.wavelet_matrix.zeros[level] + self.wavelet_matrix.rank1(level, index);
+            } else {
+                index = self.wavelet_matrix.rank0(level, index);
+            }
+            self.bits[level].update(index, value.clone());
+        }
+    }
+
+    pub fn fold_lessthan(&self, value: T, range: Range<usize>) -> M::T {
+        let mut result = M::unit();
+        self.wavelet_matrix
+            .query_less_than(value, range, |d, range| {
+                M::operate_assign(
+                    &mut result,
+                    &self.bits[self.wavelet_matrix.level(d)].fold(range.start, range.end),
+                );
+            });
+        result
+    }
+
+    pub fn fold_range(&self, values: Range<T>, range: Range<usize>) -> M::T {
+        M::rinv_operate(
+            &self.fold_lessthan(values.end, range.clone()),
+            &self.fold_lessthan(values.start, range),
+        )
     }
 }
 
@@ -423,6 +490,9 @@ mod tests {
         crate::rand!(rng, w: [-B..B; N]);
         let wm = WaveletMatrix::new(v.clone());
         let fold = wm.build_fold::<AdditiveOperation<i64>>(&w);
+        let mut dynamic_weights = w.clone();
+        let mut dynamic: WaveletMatrixPointAdd<_, AdditiveOperation<i64>> =
+            wm.build_point_add(&dynamic_weights);
         for (i, v) in v.iter().cloned().enumerate() {
             assert_eq!(wm.access(i), v);
         }
@@ -445,6 +515,9 @@ mod tests {
             .collect();
         assert_eq!(wm.quantile_batch(quantile_queries), expected);
         for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
+            let (i, value) = rng.random((..N, -B..B));
+            dynamic.update(i, value);
+            dynamic_weights[i] += value;
             assert_eq!(
                 wm.rank(a, l..r),
                 v[l..r].iter().filter(|&&x| x == a).count()
@@ -496,6 +569,15 @@ mod tests {
             }
             assert_eq!(fold.fold_lessthan_with_count(a, l..r), (count_lt, sum_lt));
             assert_eq!(fold.fold_lessthan(A, l..r), w[l..r].iter().sum::<i64>());
+            assert_eq!(
+                dynamic.fold_lessthan(a, l..r),
+                v[l..r]
+                    .iter()
+                    .zip(&dynamic_weights[l..r])
+                    .filter(|&(&value, _)| value < a)
+                    .map(|(_, &weight)| weight)
+                    .sum()
+            );
 
             let (p, q) = rng.random(Nes(A - 1));
             assert_eq!(
@@ -511,6 +593,15 @@ mod tests {
                 }
             }
             assert_eq!(fold.fold_range(p..q, l..r), sum_range);
+            assert_eq!(
+                dynamic.fold_range(p..q, l..r),
+                v[l..r]
+                    .iter()
+                    .zip(&dynamic_weights[l..r])
+                    .filter(|&(&value, _)| p <= value && value < q)
+                    .map(|(_, &weight)| weight)
+                    .sum()
+            );
             assert_eq!(
                 fold.fold_range_with_count(p..q, l..r),
                 (count_range, sum_range)
