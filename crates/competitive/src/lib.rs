@@ -2,6 +2,8 @@
 #![allow(unknown_lints)]
 #![allow(clippy::missing_safety_doc)]
 #![allow(deprecated)] // FIXME: Remove this (supported since 1.95.0)
+#![allow(clippy::approx_constant)] // FIXME: Remove this (supported since 1.94.0)
+#![allow(clippy::manual_isolate_lowest_one)] // FIXME: Remove this (supported since 1.98.0)
 
 //! [github]
 //!
