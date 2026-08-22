@@ -202,7 +202,10 @@ mod persistent_segment_tree;
 mod range_ap_add;
 #[cfg_attr(
     nightly,
-    codesnip::entry("RangeFrequency", include("BinaryIndexedTree", "AdditiveOperation"))
+    codesnip::entry(
+        "RangeFrequency",
+        include("BinaryIndexedTree", "AdditiveOperation", "FibonacciHash")
+    )
 )]
 mod range_frequency;
 #[cfg_attr(nightly, codesnip::entry("RangeMap"))]

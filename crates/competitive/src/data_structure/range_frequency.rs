@@ -1,5 +1,9 @@
-use super::{AdditiveOperation, BinaryIndexedTree};
-use std::{collections::HashMap, hash::Hash, mem::replace};
+use super::{AdditiveOperation, BinaryIndexedTree, FibHashMap};
+use std::{
+    collections::{HashMap, hash_map::Entry},
+    hash::Hash,
+    mem::replace,
+};
 
 #[derive(Debug, Clone)]
 enum RangeFrequencyQuery {
@@ -23,6 +27,7 @@ where
 {
     array: Vec<T>,
     queries: HashMap<T, Vec<RangeFrequencyQuery>>,
+    static_queries: Option<Vec<(usize, usize, T)>>,
     output_size: usize,
 }
 
@@ -31,21 +36,33 @@ where
     T: Clone + Eq + Hash,
 {
     pub fn new(array: Vec<T>) -> Self {
-        let mut queries = HashMap::<T, Vec<RangeFrequencyQuery>>::new();
-        for (index, value) in array.iter().cloned().enumerate() {
-            queries
-                .entry(value)
-                .or_default()
-                .push(RangeFrequencyQuery::Add { index });
-        }
         Self {
             array,
-            queries,
+            queries: HashMap::new(),
+            static_queries: Some(Vec::new()),
             output_size: 0,
         }
     }
 
     pub fn set(&mut self, index: usize, value: T) {
+        if let Some(queries) = self.static_queries.take() {
+            for (index, value) in self.array.iter().cloned().enumerate() {
+                self.queries
+                    .entry(value)
+                    .or_default()
+                    .push(RangeFrequencyQuery::Add { index });
+            }
+            for (output_index, (left, right, value)) in queries.into_iter().enumerate() {
+                self.queries
+                    .entry(value)
+                    .or_default()
+                    .push(RangeFrequencyQuery::Query {
+                        left,
+                        right,
+                        output_index,
+                    });
+            }
+        }
         let old_value = replace(&mut self.array[index], value);
         self.queries
             .entry(old_value)
@@ -59,19 +76,85 @@ where
 
     pub fn query(&mut self, left: usize, right: usize, value: T) -> usize {
         let output_index = self.output_size;
-        self.queries
-            .entry(value)
-            .or_default()
-            .push(RangeFrequencyQuery::Query {
-                left,
-                right,
-                output_index,
-            });
+        if let Some(queries) = &mut self.static_queries {
+            queries.push((left, right, value));
+        } else {
+            self.queries
+                .entry(value)
+                .or_default()
+                .push(RangeFrequencyQuery::Query {
+                    left,
+                    right,
+                    output_index,
+                });
+        }
         self.output_size += 1;
         output_index
     }
 
     pub fn execute_with_callback(mut self, mut callback: impl FnMut(usize, usize)) {
+        if let Some(mut queries) = self.static_queries.take() {
+            let n = self.array.len();
+            if queries.is_empty() {
+                return;
+            }
+            let mut offsets = vec![0; n + 2];
+            for &(left, right, _) in &queries {
+                if left < right {
+                    offsets[left + 1] += 1;
+                    offsets[right + 1] += 1;
+                }
+            }
+            for i in 0..=n {
+                offsets[i + 1] += offsets[i];
+            }
+            let mut next = offsets.clone();
+            let mut events = vec![0; 2 * queries.len()];
+            for (i, &(left, right, _)) in queries.iter().enumerate() {
+                if left >= right {
+                    callback(i, 0);
+                    continue;
+                }
+                for (side, position) in [left, right].into_iter().enumerate() {
+                    events[next[position]] = 2 * i + side;
+                    next[position] += 1;
+                }
+            }
+            let mut index = FibHashMap::with_capacity_and_hasher(n, Default::default());
+            let mut count = Vec::with_capacity(n);
+            let mut array = Vec::with_capacity(n);
+            for value in self.array {
+                let id = match index.entry(value) {
+                    Entry::Occupied(entry) => *entry.get(),
+                    Entry::Vacant(entry) => {
+                        let id = count.len();
+                        entry.insert(id);
+                        count.push(0usize);
+                        id
+                    }
+                };
+                array.push(id);
+            }
+            for query in &mut queries {
+                query.0 = index.get(&query.2).copied().unwrap_or(!0);
+            }
+            for position in 0..=n {
+                for &endpoint in &events[offsets[position]..offsets[position + 1]] {
+                    let query = endpoint >> 1;
+                    let id = queries[query].0;
+                    let frequency = if id == !0 { 0 } else { count[id] };
+                    if endpoint & 1 == 0 {
+                        queries[query].1 = frequency;
+                    } else {
+                        callback(query, frequency - queries[query].1);
+                    }
+                }
+                if position < n {
+                    count[array[position]] += 1;
+                }
+            }
+            return;
+        }
         let mut processor = RangeFrequencyProcessor::new(self.array.len());
         for (index, value) in self.array.into_iter().enumerate() {
             self.queries
@@ -168,7 +251,7 @@ mod tests {
         for _ in 0..100 {
             rand!(rng, n: 1..200, mut a: [0..10; n]);
             let mut rf = RangeFrequency::new(a.clone());
-            for _ in 0..100 {
+            for _ in 0..if rng.gen_bool(0.5) { 0 } else { 100 } {
                 rand!(rng, i: 0..n, v: 0..10);
                 rf.set(i, v);
                 a[i] = v;
