@@ -10,6 +10,8 @@ use crate::{
 
 #[codesnip::entry("AdjacencyListGraph")]
 pub use self::adjacency_list::{AdjacencyListGraph, AdjacencyListGraphScanner};
+#[codesnip::entry("minimum_assignment")]
+pub use self::assignment::minimum_assignment;
 #[codesnip::entry("BipartiteMatching")]
 pub use self::bipartite_matching::BipartiteMatching;
 #[codesnip::entry("ClosureGraph")]
@@ -49,6 +51,8 @@ pub use self::two_satisfiability::TwoSatisfiability;
 
 #[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph", include("scanner")))]
 mod adjacency_list;
+#[cfg_attr(nightly, codesnip::entry("minimum_assignment"))]
+mod assignment;
 #[cfg_attr(nightly, codesnip::entry("BipartiteMatching"))]
 mod bipartite_matching;
 #[cfg_attr(nightly, codesnip::entry("ClosureGraph", include("GraphBase")))]
