@@ -1,5 +1,9 @@
 use competitive::prelude::*;
-use competitive::{algebra::AddMulOperation, math::Matrix, num::montgomery::MInt998244353};
+use competitive::{
+    algebra::AddMulOperation,
+    math::{MIntMatrix, Matrix},
+    num::mint_basic::MInt998244353,
+};
 
 #[verify::library_checker("pow_of_matrix")]
 pub fn pow_of_matrix(reader: impl Read, mut writer: impl Write) {
@@ -7,7 +11,7 @@ pub fn pow_of_matrix(reader: impl Read, mut writer: impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, k, a: [[MInt998244353; n]; n]);
     let a = Matrix::<AddMulOperation<_>>::from_vec(a);
-    let b = a.pow(k);
+    let b = a.pow_frobenius(k);
     iter_print!(writer, @it2d b.data);
 }
 
