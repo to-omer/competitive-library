@@ -1,22 +1,18 @@
 use super::{AdditiveOperation, BinaryIndexedTree, FibHashMap};
-use std::{
-    collections::{HashMap, hash_map::Entry},
-    hash::Hash,
-    mem::replace,
-};
+use std::{collections::hash_map::Entry, hash::Hash, mem::replace};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 enum RangeFrequencyQuery {
     Add {
-        index: usize,
+        index: u32,
     },
     Remove {
-        index: usize,
+        index: u32,
     },
     Query {
-        left: usize,
-        right: usize,
-        output_index: usize,
+        left: u32,
+        right: u32,
+        output_index: u32,
     },
 }
 
@@ -25,9 +21,12 @@ pub struct RangeFrequency<T>
 where
     T: Clone + Eq + Hash,
 {
-    array: Vec<T>,
-    queries: HashMap<T, Vec<RangeFrequencyQuery>>,
-    static_queries: Option<Vec<(usize, usize, T)>>,
+    array: Vec<u32>,
+    values: FibHashMap<T, u32>,
+    events: Vec<(u32, RangeFrequencyQuery)>,
+    queried: Vec<u8>,
+    static_queries: Option<Vec<(u32, u32, u32, u32)>>,
+    zero_queries: Vec<u32>,
     output_size: usize,
 }
 
@@ -36,134 +35,173 @@ where
     T: Clone + Eq + Hash,
 {
     pub fn new(array: Vec<T>) -> Self {
-        Self {
-            array,
-            queries: HashMap::new(),
+        let mut result = Self {
+            array: Vec::with_capacity(array.len()),
+            values: FibHashMap::with_capacity_and_hasher(array.len(), Default::default()),
+            events: Vec::new(),
+            queried: Vec::new(),
             static_queries: Some(Vec::new()),
+            zero_queries: Vec::new(),
             output_size: 0,
+        };
+        for value in array {
+            let value = result.value_id(value);
+            result.array.push(value);
+        }
+        result
+    }
+
+    fn value_id(&mut self, value: T) -> u32 {
+        match self.values.entry(value) {
+            Entry::Occupied(entry) => *entry.get(),
+            Entry::Vacant(entry) => {
+                let id = self.queried.len() as u32;
+                entry.insert(id);
+                self.queried.push(0);
+                id
+            }
         }
     }
 
     pub fn set(&mut self, index: usize, value: T) {
         if let Some(queries) = self.static_queries.take() {
-            for (index, value) in self.array.iter().cloned().enumerate() {
-                self.queries
-                    .entry(value)
-                    .or_default()
-                    .push(RangeFrequencyQuery::Add { index });
+            self.events.reserve(self.array.len() + queries.len() + 2);
+            for (index, &value) in self.array.iter().enumerate() {
+                self.events.push((
+                    value,
+                    RangeFrequencyQuery::Add {
+                        index: index as u32,
+                    },
+                ));
             }
-            for (output_index, (left, right, value)) in queries.into_iter().enumerate() {
-                self.queries
-                    .entry(value)
-                    .or_default()
-                    .push(RangeFrequencyQuery::Query {
+            for (left, right, value, output_index) in queries {
+                self.events.push((
+                    value,
+                    RangeFrequencyQuery::Query {
                         left,
                         right,
                         output_index,
-                    });
+                    },
+                ));
             }
         }
+        let value = self.value_id(value);
         let old_value = replace(&mut self.array[index], value);
-        self.queries
-            .entry(old_value)
-            .or_default()
-            .push(RangeFrequencyQuery::Remove { index });
-        self.queries
-            .entry(self.array[index].clone())
-            .or_default()
-            .push(RangeFrequencyQuery::Add { index });
+        self.events.push((
+            old_value,
+            RangeFrequencyQuery::Remove {
+                index: index as u32,
+            },
+        ));
+        self.events.push((
+            value,
+            RangeFrequencyQuery::Add {
+                index: index as u32,
+            },
+        ));
     }
 
     pub fn query(&mut self, left: usize, right: usize, value: T) -> usize {
         let output_index = self.output_size;
-        if let Some(queries) = &mut self.static_queries {
-            queries.push((left, right, value));
+        if let Some(&value) = self.values.get(&value) {
+            self.queried[value as usize] = 1;
+            if let Some(queries) = &mut self.static_queries {
+                queries.push((left as u32, right as u32, value, output_index as u32));
+            } else {
+                self.events.push((
+                    value,
+                    RangeFrequencyQuery::Query {
+                        left: left as u32,
+                        right: right as u32,
+                        output_index: output_index as u32,
+                    },
+                ));
+            }
         } else {
-            self.queries
-                .entry(value)
-                .or_default()
-                .push(RangeFrequencyQuery::Query {
-                    left,
-                    right,
-                    output_index,
-                });
+            self.zero_queries.push(output_index as u32);
         }
         self.output_size += 1;
         output_index
     }
 
     pub fn execute_with_callback(mut self, mut callback: impl FnMut(usize, usize)) {
+        for output_index in self.zero_queries {
+            callback(output_index as usize, 0);
+        }
         if let Some(mut queries) = self.static_queries.take() {
             let n = self.array.len();
             if queries.is_empty() {
                 return;
             }
             let mut offsets = vec![0; n + 2];
-            for &(left, right, _) in &queries {
+            for &(left, right, _, _) in &queries {
                 if left < right {
-                    offsets[left + 1] += 1;
-                    offsets[right + 1] += 1;
+                    offsets[left as usize + 1] += 1;
+                    offsets[right as usize + 1] += 1;
                 }
             }
             for i in 0..=n {
                 offsets[i + 1] += offsets[i];
             }
             let mut next = offsets.clone();
-            let mut events = vec![0; 2 * queries.len()];
-            for (i, &(left, right, _)) in queries.iter().enumerate() {
+            let mut events = vec![0u32; 2 * queries.len()];
+            for (i, &(left, right, _, output_index)) in queries.iter().enumerate() {
                 if left >= right {
-                    callback(i, 0);
+                    callback(output_index as usize, 0);
                     continue;
                 }
                 for (side, position) in [left, right].into_iter().enumerate() {
-                    events[next[position]] = 2 * i + side;
-                    next[position] += 1;
+                    events[next[position as usize]] = (2 * i + side) as u32;
+                    next[position as usize] += 1;
                 }
             }
-            let mut index = FibHashMap::with_capacity_and_hasher(n, Default::default());
-            let mut count = Vec::with_capacity(n);
-            let mut array = Vec::with_capacity(n);
-            for value in self.array {
-                let id = match index.entry(value) {
-                    Entry::Occupied(entry) => *entry.get(),
-                    Entry::Vacant(entry) => {
-                        let id = count.len();
-                        entry.insert(id);
-                        count.push(0usize);
-                        id
-                    }
-                };
-                array.push(id);
-            }
-            for query in &mut queries {
-                query.0 = index.get(&query.2).copied().unwrap_or(!0);
-            }
+            let mut count = vec![0u32; self.values.len()];
             for position in 0..=n {
                 for &endpoint in &events[offsets[position]..offsets[position + 1]] {
-                    let query = endpoint >> 1;
-                    let id = queries[query].0;
-                    let frequency = if id == !0 { 0 } else { count[id] };
+                    let query = (endpoint >> 1) as usize;
+                    let frequency = count[queries[query].2 as usize];
                     if endpoint & 1 == 0 {
-                        queries[query].1 = frequency;
+                        queries[query].0 = frequency;
                     } else {
-                        callback(query, frequency - queries[query].1);
+                        callback(
+                            queries[query].3 as usize,
+                            (frequency - queries[query].0) as usize,
+                        );
                     }
                 }
                 if position < n {
-                    count[array[position]] += 1;
+                    count[self.array[position] as usize] += 1;
                 }
             }
             return;
         }
         let mut processor = RangeFrequencyProcessor::new(self.array.len());
         for (index, value) in self.array.into_iter().enumerate() {
-            self.queries
-                .entry(value)
-                .or_default()
-                .push(RangeFrequencyQuery::Remove { index });
+            self.events.push((
+                value,
+                RangeFrequencyQuery::Remove {
+                    index: index as u32,
+                },
+            ));
         }
-        for (_, queries) in self.queries {
-            for query in queries {
+        let mut offsets = vec![0; self.queried.len() + 1];
+        for &(value, _) in &self.events {
+            offsets[value as usize + 1] += self.queried[value as usize] as usize;
+        }
+        for i in 0..self.queried.len() {
+            offsets[i + 1] += offsets[i];
+        }
+        let mut next = offsets.clone();
+        let mut events = vec![RangeFrequencyQuery::Add { index: 0 }; *offsets.last().unwrap()];
+        for (value, event) in self.events {
+            let value = value as usize;
+            if self.queried[value] != 0 {
+                events[next[value]] = event;
+                next[value] += 1;
+            }
+        }
+        for range in offsets.windows(2) {
+            for &query in &events[range[0]..range[1]] {
                 match query {
                     RangeFrequencyQuery::Add { index } => {
                         processor.add(index);
@@ -176,7 +214,7 @@ where
                         right,
                         output_index,
                     } => {
-                        callback(output_index, processor.query(left, right));
+                        callback(output_index as usize, processor.query(left, right));
                     }
                 }
             }
@@ -204,25 +242,27 @@ impl RangeFrequencyProcessor {
         }
     }
 
-    fn add(&mut self, index: usize) {
+    fn add(&mut self, index: u32) {
+        let index = index as usize;
         let (block, bit) = (index / 64, index % 64);
         assert!(self.data[block] & (1 << bit) == 0);
         self.data[block] |= 1 << bit;
         self.bit.update(block, 1);
     }
 
-    fn remove(&mut self, index: usize) {
+    fn remove(&mut self, index: u32) {
+        let index = index as usize;
         let (i, j) = (index / 64, index % 64);
         assert!(self.data[i] & (1 << j) != 0);
         self.data[i] &= !(1 << j);
         self.bit.update(i, -1);
     }
 
-    fn query(&self, left: usize, right: usize) -> usize {
+    fn query(&self, left: u32, right: u32) -> usize {
         if left >= right {
             return 0;
         }
-        let right = right - 1;
+        let (left, right) = (left as usize, right as usize - 1);
         let (li, lj) = (left / 64, left % 64);
         let (ri, rj) = (right / 64, right % 64);
         let rj_r = 63 - rj;
@@ -249,17 +289,18 @@ mod tests {
     fn test_range_frequency() {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
-            rand!(rng, n: 1..200, mut a: [0..10; n]);
+            rand!(rng, n: 1..200, mut a: [0..20; n]);
             let mut rf = RangeFrequency::new(a.clone());
-            for _ in 0..if rng.gen_bool(0.5) { 0 } else { 100 } {
-                rand!(rng, i: 0..n, v: 0..10);
-                rf.set(i, v);
-                a[i] = v;
-            }
             let mut expected = vec![];
+            let dynamic = rng.gen_bool(0.5);
             for _ in 0..100 {
+                if dynamic && rng.gen_bool(0.5) {
+                    rand!(rng, i: 0..n, v: 0..20);
+                    rf.set(i, v);
+                    a[i] = v;
+                }
                 let (l, r) = rng.random(Nes(n));
-                for v in 0..10 {
+                for v in 0..20 {
                     expected.push(a[l..r].iter().filter(|&&x| x == v).count());
                     rf.query(l, r, v);
                 }
