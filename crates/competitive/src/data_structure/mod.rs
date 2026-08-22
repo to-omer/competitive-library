@@ -4,7 +4,7 @@ use crate::algebra::{
     AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapMonoid,
     Magma, MaxOperation, MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
 };
-use crate::algorithm::{BitDpExt, SliceBisectExt};
+use crate::algorithm::{BitDpExt, RadixSortKey, SliceBisectExt, SliceSortExt};
 use crate::num::{Bounded, RangeBoundsExt};
 use crate::tools::{Comparator, Xorshift, comparator};
 
@@ -69,6 +69,8 @@ pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriority
 pub use self::persistent_segment_tree::PersistentSegmentTree;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
+#[codesnip::entry("RangeFoldWithUpperBound")]
+pub use self::range_fold_with_upper_bound::RangeFoldWithUpperBound;
 #[codesnip::entry("RangeFrequency")]
 pub use self::range_frequency::RangeFrequency;
 #[codesnip::entry("RangeMap")]
@@ -200,6 +202,11 @@ pub mod partially_retroactive_priority_queue;
 mod persistent_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
 mod range_ap_add;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("RangeFoldWithUpperBound", include("BinaryIndexedTree", "sort"))
+)]
+mod range_fold_with_upper_bound;
 #[cfg_attr(
     nightly,
     codesnip::entry(
