@@ -6,6 +6,8 @@ use crate::algebra::{
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceBisectExt, SliceSortExt};
 use crate::num::{Bounded, IntBase, RangeBoundsExt, Zero};
+#[cfg(target_arch = "x86_64")]
+use crate::tools::avx512_enabled;
 use crate::tools::{Comparator, Xorshift, comparator};
 
 #[codesnip::entry("Accumulate")]
@@ -133,7 +135,7 @@ pub mod binary_search_tree;
 mod binary_trie;
 #[cfg_attr(nightly, codesnip::entry("BitVector"))]
 mod bit_vector;
-#[cfg_attr(nightly, codesnip::entry("BitSet"))]
+#[cfg_attr(nightly, codesnip::entry("BitSet", include("avx_helper")))]
 mod bitset;
 #[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
 mod compress;
