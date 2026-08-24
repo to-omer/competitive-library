@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BitSet"]};
+window.SIDEBAR_ITEMS = {"constant":["BIT_AND","BIT_OR","BIT_XOR","SIMD_MIN_BLOCKS"],"mod":["simd"],"struct":["BitSet","Block"]};

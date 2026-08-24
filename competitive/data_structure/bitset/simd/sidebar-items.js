@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["all_avx2","all_avx512","bitop_avx2","bitop_avx512","count_ones_avx2","count_ones_avx512","none_avx2","none_avx512","shift_left_avx2","shift_left_avx512","shift_right_avx2","shift_right_avx512"]};
