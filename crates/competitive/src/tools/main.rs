@@ -10,7 +10,7 @@ pub fn solve() {
     sc!(_n);
 }
 
-crate::main!();
+crate::main!("library: https://github.com/to-omer/competitive-library, bundled with codesnip");
 
 #[allow(unused_imports)]
 use std::{
@@ -89,12 +89,7 @@ mod main_macros {
     }
     #[macro_export]
     macro_rules! main {
-        () => {
-            fn main() {
-                solve();
-            }
-        };
-        (avx2) => {
+        (avx2; $($t:tt)*) => {
             fn main() {
                 #[target_feature(enable = "avx2")]
                 unsafe fn solve_avx2() {
@@ -103,7 +98,7 @@ mod main_macros {
                 unsafe { solve_avx2() }
             }
         };
-        (large_stack) => {
+        (large_stack; $($t:tt)*) => {
             fn main() {
                 const STACK_SIZE: usize = 512 * 1024 * 1024;
                 ::std::thread::Builder::new()
@@ -112,6 +107,11 @@ mod main_macros {
                     .unwrap()
                     .join()
                     .unwrap();
+            }
+        };
+        ($($t:tt)*) => {
+            fn main() {
+                solve();
             }
         };
     }
