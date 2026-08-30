@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/static_top_tree.rs`."><title>static_top_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (17fd5b8a3 2026-08-28)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/static_top_tree.rs`."><title>static_top_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (fd7ed57df 2026-08-29)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -52,7 +52,7 @@
   });
 </script>
 
-</head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/tree/</div>static_top_tree.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="../algebra/magma.rs.html#4-18">Magma</a>, <a href="../algebra/magma.rs.html#145-172">Monoid</a>, <a href="../graph/sparse_graph.rs.html#165">UndirectedSparseGraph</a>, <a href="../algebra/magma.rs.html#54-81">Unital</a>};
+</head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/tree/</div>static_top_tree.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="../graph/graph_base.rs.html#23-36">Graph</a>, <a href="../algebra/magma.rs.html#4-18">Magma</a>, <a href="../algebra/magma.rs.html#145-172">Monoid</a>, <a href="../graph/sparse_graph.rs.html#149">UndirectedSparseGraph</a>, <a href="../algebra/magma.rs.html#54-81">Unital</a>};
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/mem/maybe_uninit/union.MaybeUninit.html">std::mem::MaybeUninit</a>;
 <a href=#3 id=3 data-nosnippet>3</a>
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">pub trait </span><a href="../../../competitive/tree/trait.MonoidCluster.html">MonoidCluster</a> {
@@ -199,15 +199,15 @@
 <a href=#145 id=145 data-nosnippet>145</a>    parent_edge: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 <a href=#146 id=146 data-nosnippet>146</a>}
 <a href=#147 id=147 data-nosnippet>147</a>
-<a href=#148 id=148 data-nosnippet>148</a><span class="kw">impl </span><a href="../graph/sparse_graph.rs.html#165">UndirectedSparseGraph</a> {
+<a href=#148 id=148 data-nosnippet>148</a><span class="kw">impl </span><a href="../graph/sparse_graph.rs.html#149">UndirectedSparseGraph</a> {
 <a href=#149 id=149 data-nosnippet>149</a>    <span class="kw">pub fn </span>static_top_tree(<span class="kw-2">&amp;</span><span class="self">self</span>, root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="#81-91">StaticTopTree</a> {
 <a href=#150 id=150 data-nosnippet>150</a>        <a href="#81-91">StaticTopTree</a>::<a href="#155-257">new</a>(<a href="#149">root</a>, <a class="self" href="#149">self</a>)
 <a href=#151 id=151 data-nosnippet>151</a>    }
 <a href=#152 id=152 data-nosnippet>152</a>}
 <a href=#153 id=153 data-nosnippet>153</a>
 <a href=#154 id=154 data-nosnippet>154</a><span class="kw">impl </span><a href="#81-91">StaticTopTree</a> {
-<a href=#155 id=155 data-nosnippet>155</a>    <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#165">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
-<a href=#156 id=156 data-nosnippet>156</a>        <span class="kw">let </span>n = <a href="#155">graph</a>.<a href="../graph/sparse_graph.rs.html#39-41">vertices_size</a>();
+<a href=#155 id=155 data-nosnippet>155</a>    <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#149">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
+<a href=#156 id=156 data-nosnippet>156</a>        <span class="kw">let </span>n = <a href="#155">graph</a>.<a href="../graph/sparse_graph.rs.html#25-27">vertices_size</a>();
 <a href=#157 id=157 data-nosnippet>157</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(n &gt; <span class="number">0</span>);
 <a href=#158 id=158 data-nosnippet>158</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(root &lt; n);
 <a href=#159 id=159 data-nosnippet>159</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(graph.edges_size() + <span class="number">1</span>, n);
@@ -805,8 +805,8 @@
 <a href=#751 id=751 data-nosnippet>751</a>    <span class="kw">if </span><a href="#750">x</a> &lt;= <span class="number">1 </span>{ <span class="number">1 </span>} <span class="kw">else </span>{ <a href="#750">x</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.u64.html#method.next_power_of_two">next_power_of_two</a>() }
 <a href=#752 id=752 data-nosnippet>752</a>}
 <a href=#753 id=753 data-nosnippet>753</a>
-<a href=#754 id=754 data-nosnippet>754</a><span class="kw">fn </span><a href="../../../competitive/tree/static_top_tree/fn.rooted_children.html">rooted_children</a>(graph: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#165">UndirectedSparseGraph</a>, root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="#140-146">RootedInfo</a> {
-<a href=#755 id=755 data-nosnippet>755</a>    <span class="kw">let </span>n = <a href="#754">graph</a>.<a href="../graph/sparse_graph.rs.html#39-41">vertices_size</a>();
+<a href=#754 id=754 data-nosnippet>754</a><span class="kw">fn </span><a href="../../../competitive/tree/static_top_tree/fn.rooted_children.html">rooted_children</a>(graph: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#149">UndirectedSparseGraph</a>, root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="#140-146">RootedInfo</a> {
+<a href=#755 id=755 data-nosnippet>755</a>    <span class="kw">let </span>n = <a href="#754">graph</a>.<a href="../graph/sparse_graph.rs.html#25-27">vertices_size</a>();
 <a href=#756 id=756 data-nosnippet>756</a>    <span class="kw">let </span><span class="kw-2">mut </span>order = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#755">n</a>);
 <a href=#757 id=757 data-nosnippet>757</a>    <span class="kw">let </span><span class="kw-2">mut </span>parent = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[usize::MAX; n];
 <a href=#758 id=758 data-nosnippet>758</a>    <span class="kw">let </span><span class="kw-2">mut </span>parent_edge = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[usize::MAX; n];
@@ -815,13 +815,13 @@
 <a href=#761 id=761 data-nosnippet>761</a>    <a href="#757">parent</a>[<a href="#754">root</a>] = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>::<a href="https://doc.rust-lang.org/nightly/core/primitive.usize.html#associatedconstant.MAX">MAX</a>;
 <a href=#762 id=762 data-nosnippet>762</a>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
 <a href=#763 id=763 data-nosnippet>763</a>        <span class="kw">let </span>u = order[i];
-<a href=#764 id=764 data-nosnippet>764</a>        <span class="kw">for </span>a <span class="kw">in </span>graph.adjacencies(u) {
+<a href=#764 id=764 data-nosnippet>764</a>        <span class="kw">for </span>a <span class="kw">in </span>graph.neighbors(u) {
 <a href=#765 id=765 data-nosnippet>765</a>            <span class="kw">if </span>a.to == parent[u] {
 <a href=#766 id=766 data-nosnippet>766</a>                <span class="kw">continue</span>;
 <a href=#767 id=767 data-nosnippet>767</a>            }
 <a href=#768 id=768 data-nosnippet>768</a>            parent[a.to] = u;
-<a href=#769 id=769 data-nosnippet>769</a>            parent_edge[a.to] = a.id;
-<a href=#770 id=770 data-nosnippet>770</a>            edge_child[a.id] = a.to;
+<a href=#769 id=769 data-nosnippet>769</a>            parent_edge[a.to] = a.label;
+<a href=#770 id=770 data-nosnippet>770</a>            edge_child[a.label] = a.to;
 <a href=#771 id=771 data-nosnippet>771</a>            order.push(a.to);
 <a href=#772 id=772 data-nosnippet>772</a>        }
 <a href=#773 id=773 data-nosnippet>773</a>    }
@@ -1156,11 +1156,11 @@
 <a href=#1102 id=1102 data-nosnippet>1102</a>            in_edge: <span class="prelude-ty">Option</span>&lt;usize&gt;,
 <a href=#1103 id=1103 data-nosnippet>1103</a>        ) -&gt; Point {
 <a href=#1104 id=1104 data-nosnippet>1104</a>            <span class="kw">let </span><span class="kw-2">mut </span>point = PointMonoid::unit();
-<a href=#1105 id=1105 data-nosnippet>1105</a>            <span class="kw">for </span>a <span class="kw">in </span>graph.adjacencies(u) {
+<a href=#1105 id=1105 data-nosnippet>1105</a>            <span class="kw">for </span>a <span class="kw">in </span>graph.neighbors(u) {
 <a href=#1106 id=1106 data-nosnippet>1106</a>                <span class="kw">if </span>a.to != p {
 <a href=#1107 id=1107 data-nosnippet>1107</a>                    point = PointMonoid::operate(
 <a href=#1108 id=1108 data-nosnippet>1108</a>                        <span class="kw-2">&amp;</span>point,
-<a href=#1109 id=1109 data-nosnippet>1109</a>                        <span class="kw-2">&amp;</span>dfs(graph, vertices, edges, a.to, u, <span class="prelude-val">Some</span>(a.id)),
+<a href=#1109 id=1109 data-nosnippet>1109</a>                        <span class="kw-2">&amp;</span>dfs(graph, vertices, edges, a.to, u, <span class="prelude-val">Some</span>(a.label)),
 <a href=#1110 id=1110 data-nosnippet>1110</a>                    );
 <a href=#1111 id=1111 data-nosnippet>1111</a>                }
 <a href=#1112 id=1112 data-nosnippet>1112</a>            }

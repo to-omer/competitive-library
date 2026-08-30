@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Adjacency","AdjacencyListGraph","AdjacencyListGraphScanner"]};
+window.SIDEBAR_ITEMS = {"struct":["AdjacencyListGraph","AdjacencyListGraphScanner"]};
