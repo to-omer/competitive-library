@@ -193,8 +193,8 @@ where
             }
             let d = R::inv(&self[r][c]);
             if normalize {
-                for j in c..m {
-                    R::mul_assign(&mut self[r][j], &d);
+                for value in &mut self[r][c..m] {
+                    R::mul_assign(value, &d);
                 }
             }
             for i in (0..n).filter(|&i| i != r) {

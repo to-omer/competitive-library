@@ -1148,8 +1148,8 @@ where
     pub fn taylor_shift(mut self, a: T) -> Self {
         let f = T::memorized_factorial(self.length());
         let n = self.length();
-        for i in 0..n {
-            self.data[i] *= T::memorized_fact(&f)[i].clone();
+        for (i, coef) in self.data.iter_mut().enumerate() {
+            *coef *= T::memorized_fact(&f)[i].clone();
         }
         self.data.reverse();
         let mut b = a.clone();
@@ -1161,8 +1161,8 @@ where
         self *= g;
         self.truncate(n);
         self.data.reverse();
-        for i in 0..n {
-            self.data[i] *= T::memorized_inv_fact(&f)[i].clone();
+        for (i, coef) in self.data.iter_mut().enumerate() {
+            *coef *= T::memorized_inv_fact(&f)[i].clone();
         }
         self
     }

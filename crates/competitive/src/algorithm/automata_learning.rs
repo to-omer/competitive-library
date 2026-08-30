@@ -657,8 +657,8 @@ where
             for j in 1..self.suffixes.len() {
                 if !F::is_zero(&h[0][j]) {
                     self.suffixes.swap(0, j);
-                    for i in 0..self.prefixes.len() {
-                        h.data[i].swap(0, j);
+                    for row in &mut h.data {
+                        row.swap(0, j);
                     }
                     break;
                 }

@@ -39,8 +39,7 @@ impl GeneralWeightedMatching {
     pub fn maximum_weight_matching(&mut self) -> (i64, Vec<(usize, usize)>) {
         self.compute();
         let mut res = Vec::with_capacity(self.size / 2);
-        for v in 0..self.size {
-            let u = self.mate[v];
+        for (v, &u) in self.mate.iter().enumerate() {
             if u != !0 && v < u {
                 res.push((v, u));
             }
