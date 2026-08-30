@@ -52,83 +52,83 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">use_block_ntt</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">use_<wbr>block_<wbr>ntt</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#333-338">Source</a> </span></div><pre class="rust item-decl"><code>fn use_block_ntt&lt;M&gt;(len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><div class="where">where
-    M: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#503&#34;,&#34;line 503&#34;],[[12,12],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#512&#34;,&#34;line 512&#34;],[[24,24],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#524&#34;,&#34;line 524&#34;],[[61,61],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#561&#34;,&#34;line 561&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#503">line 503</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>500</span>    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>501</span>        t.resize_with(len.max(<span class="number">1</span>).next_power_of_two(), Zero::zero);
-<span data-nosnippet>502</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>503</span>        </span><span class="kw">if </span><span class="highlight focus">use_block_ntt::&lt;M&gt;</span>(t.len()) {
-<span data-nosnippet>504</span>            <span class="kw">unsafe </span>{ ntt_simd::transform_blocks_avx2(<span class="kw-2">&amp;mut </span>t) };
-<span data-nosnippet>505</span>            <span class="kw">return </span>t;
-<span data-nosnippet>506</span>        }
-<span data-nosnippet>507</span>        ntt(<span class="kw-2">&amp;mut </span>t);
-<span data-nosnippet>508</span>        t
-<span data-nosnippet>509</span>    }
-<span data-nosnippet>510</span>    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>511</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>512</span>        </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(f.len()) {
-<span data-nosnippet>513</span>            <span class="kw">unsafe </span>{ ntt_simd::inverse_transform_blocks_avx2(<span class="kw-2">&amp;mut </span>f) };
-<span data-nosnippet>514</span>            f.truncate(len);
-<span data-nosnippet>515</span>            <span class="kw">return </span>f;
-<span data-nosnippet>516</span>        }
-<span data-nosnippet>517</span>        intt(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>518</span>        f.truncate(len);
-<span data-nosnippet>519</span>        f
-<span data-nosnippet>520</span>    }
-<span data-nosnippet>521</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-<span data-nosnippet>522</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
-<span data-nosnippet>523</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>524</span>        </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(f.len()) {
-<span data-nosnippet>525</span>            <span class="kw">unsafe </span>{ ntt_simd::multiply_blocks_avx2(f, g) };
-<span data-nosnippet>526</span>            <span class="kw">return</span>;
-<span data-nosnippet>527</span>        }
-<span data-nosnippet>528</span>        pointwise_multiply(f, g);
-<span data-nosnippet>529</span>    }
-<span data-nosnippet>530</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>531</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">100 </span>{
-<span data-nosnippet>532</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>533</span>        }
-<span data-nosnippet>534</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
-<span data-nosnippet>535</span>            <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>536</span>        }
-<span data-nosnippet>537</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
-<span data-nosnippet>538</span>        <span class="kw">let </span>size = len.max(<span class="number">1</span>).next_power_of_two();
-<span data-nosnippet>539</span>        <span class="kw">if </span>size &gt; <span class="number">1usize </span>&lt;&lt; M::RANK {
-<span data-nosnippet>540</span>            <span class="kw">return </span>convolve_large_ntt(a, b);
-<span data-nosnippet>541</span>        }
-<span data-nosnippet>542</span>        <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
-<span data-nosnippet>543</span>            <span class="kw">let </span>xa = a.pop().unwrap();
-<span data-nosnippet>544</span>            <span class="kw">let </span>xb = b.pop().unwrap();
-<span data-nosnippet>545</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); len];
-<span data-nosnippet>546</span>            <span class="kw-2">*</span>c.last_mut().unwrap() = xa * xb;
-<span data-nosnippet>547</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[b.len()..]) {
-<span data-nosnippet>548</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>a * xb;
-<span data-nosnippet>549</span>            }
-<span data-nosnippet>550</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>b.iter().zip(<span class="kw-2">&amp;mut </span>c[a.len()..]) {
-<span data-nosnippet>551</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>b * xa;
-<span data-nosnippet>552</span>            }
-<span data-nosnippet>553</span>            <span class="kw">let </span>d = <span class="self">Self</span>::convolve(a, b);
-<span data-nosnippet>554</span>            <span class="kw">for </span>(d, c) <span class="kw">in </span>d.into_iter().zip(<span class="kw-2">&amp;mut </span>c) {
-<span data-nosnippet>555</span>                <span class="kw-2">*</span>c += d;
-<span data-nosnippet>556</span>            }
-<span data-nosnippet>557</span>            <span class="kw">return </span>c;
-<span data-nosnippet>558</span>        }
-<span data-nosnippet>559</span>        <span class="kw">let </span>same = a == b;
-<span data-nosnippet>560</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>561</span>        </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(size) {
-<span data-nosnippet>562</span>            a.resize_with(size, Zero::zero);
-<span data-nosnippet>563</span>            b.resize_with(size, Zero::zero);
-<span data-nosnippet>564</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b, same) };
-<span data-nosnippet>565</span>            a.truncate(len);
-<span data-nosnippet>566</span>            <span class="kw">return </span>a;
-<span data-nosnippet>567</span>        }
-<span data-nosnippet>568</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
-<span data-nosnippet>569</span>        <span class="kw">if </span>same {
-<span data-nosnippet>570</span>            <span class="kw">for </span>a <span class="kw">in </span>a.iter_mut() {
-<span data-nosnippet>571</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>a;
-<span data-nosnippet>572</span>            }
-<span data-nosnippet>573</span>        } <span class="kw">else </span>{
-<span data-nosnippet>574</span>            <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
-<span data-nosnippet>575</span>            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>576</span>        }
-<span data-nosnippet>577</span>        <span class="self">Self</span>::inverse_transform(a, len)
-<span data-nosnippet>578</span>    }</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">use_block_ntt</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">use_<wbr>block_<wbr>ntt</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#396-401">Source</a> </span></div><pre class="rust item-decl"><code>fn use_block_ntt&lt;M&gt;(len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><div class="where">where
+    M: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#566&#34;,&#34;line 566&#34;],[[12,12],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#575&#34;,&#34;line 575&#34;],[[24,24],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#587&#34;,&#34;line 587&#34;],[[61,61],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#624&#34;,&#34;line 624&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#566">line 566</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>563</span>    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>564</span>        t.resize_with(len.max(<span class="number">1</span>).next_power_of_two(), Zero::zero);
+<span data-nosnippet>565</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>566</span>        </span><span class="kw">if </span><span class="highlight focus">use_block_ntt::&lt;M&gt;</span>(t.len()) {
+<span data-nosnippet>567</span>            <span class="kw">unsafe </span>{ ntt_simd::transform_blocks_avx2(<span class="kw-2">&amp;mut </span>t) };
+<span data-nosnippet>568</span>            <span class="kw">return </span>t;
+<span data-nosnippet>569</span>        }
+<span data-nosnippet>570</span>        ntt(<span class="kw-2">&amp;mut </span>t);
+<span data-nosnippet>571</span>        t
+<span data-nosnippet>572</span>    }
+<span data-nosnippet>573</span>    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>574</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>575</span>        </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(f.len()) {
+<span data-nosnippet>576</span>            <span class="kw">unsafe </span>{ ntt_simd::inverse_transform_blocks_avx2(<span class="kw-2">&amp;mut </span>f) };
+<span data-nosnippet>577</span>            f.truncate(len);
+<span data-nosnippet>578</span>            <span class="kw">return </span>f;
+<span data-nosnippet>579</span>        }
+<span data-nosnippet>580</span>        intt(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>581</span>        f.truncate(len);
+<span data-nosnippet>582</span>        f
+<span data-nosnippet>583</span>    }
+<span data-nosnippet>584</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>585</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
+<span data-nosnippet>586</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>587</span>        </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(f.len()) {
+<span data-nosnippet>588</span>            <span class="kw">unsafe </span>{ ntt_simd::multiply_blocks_avx2(f, g) };
+<span data-nosnippet>589</span>            <span class="kw">return</span>;
+<span data-nosnippet>590</span>        }
+<span data-nosnippet>591</span>        pointwise_multiply(f, g);
+<span data-nosnippet>592</span>    }
+<span data-nosnippet>593</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>594</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">100 </span>{
+<span data-nosnippet>595</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>596</span>        }
+<span data-nosnippet>597</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
+<span data-nosnippet>598</span>            <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>599</span>        }
+<span data-nosnippet>600</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>601</span>        <span class="kw">let </span>size = len.max(<span class="number">1</span>).next_power_of_two();
+<span data-nosnippet>602</span>        <span class="kw">if </span>size &gt; <span class="number">1usize </span>&lt;&lt; M::RANK {
+<span data-nosnippet>603</span>            <span class="kw">return </span>convolve_large_ntt(a, b);
+<span data-nosnippet>604</span>        }
+<span data-nosnippet>605</span>        <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
+<span data-nosnippet>606</span>            <span class="kw">let </span>xa = a.pop().unwrap();
+<span data-nosnippet>607</span>            <span class="kw">let </span>xb = b.pop().unwrap();
+<span data-nosnippet>608</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); len];
+<span data-nosnippet>609</span>            <span class="kw-2">*</span>c.last_mut().unwrap() = xa * xb;
+<span data-nosnippet>610</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[b.len()..]) {
+<span data-nosnippet>611</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>a * xb;
+<span data-nosnippet>612</span>            }
+<span data-nosnippet>613</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>b.iter().zip(<span class="kw-2">&amp;mut </span>c[a.len()..]) {
+<span data-nosnippet>614</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>b * xa;
+<span data-nosnippet>615</span>            }
+<span data-nosnippet>616</span>            <span class="kw">let </span>d = <span class="self">Self</span>::convolve(a, b);
+<span data-nosnippet>617</span>            <span class="kw">for </span>(d, c) <span class="kw">in </span>d.into_iter().zip(<span class="kw-2">&amp;mut </span>c) {
+<span data-nosnippet>618</span>                <span class="kw-2">*</span>c += d;
+<span data-nosnippet>619</span>            }
+<span data-nosnippet>620</span>            <span class="kw">return </span>c;
+<span data-nosnippet>621</span>        }
+<span data-nosnippet>622</span>        <span class="kw">let </span>same = a == b;
+<span data-nosnippet>623</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>624</span>        </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(size) {
+<span data-nosnippet>625</span>            a.resize_with(size, Zero::zero);
+<span data-nosnippet>626</span>            b.resize_with(size, Zero::zero);
+<span data-nosnippet>627</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b, same) };
+<span data-nosnippet>628</span>            a.truncate(len);
+<span data-nosnippet>629</span>            <span class="kw">return </span>a;
+<span data-nosnippet>630</span>        }
+<span data-nosnippet>631</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
+<span data-nosnippet>632</span>        <span class="kw">if </span>same {
+<span data-nosnippet>633</span>            <span class="kw">for </span>a <span class="kw">in </span>a.iter_mut() {
+<span data-nosnippet>634</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>a;
+<span data-nosnippet>635</span>            }
+<span data-nosnippet>636</span>        } <span class="kw">else </span>{
+<span data-nosnippet>637</span>            <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
+<span data-nosnippet>638</span>            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>639</span>        }
+<span data-nosnippet>640</span>        <span class="self">Self</span>::inverse_transform(a, len)
+<span data-nosnippet>641</span>    }</code></pre></div></div></div></section></div></main></body></html>

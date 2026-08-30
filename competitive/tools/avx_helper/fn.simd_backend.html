@@ -52,30 +52,363 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">simd_backend</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>tools::<wbr>avx_<wbr>helper</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">tools</a>::<wbr><a href="index.html">avx_helper</a></div><h1>Function <span class="fn">simd_<wbr>backend</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/tools/avx_helper.rs.html#40-51">Source</a> </span></div><pre class="rust item-decl"><code>pub fn simd_backend() -&gt; <a class="enum" href="../enum.SimdBackend.html" title="enum competitive::tools::SimdBackend">SimdBackend</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#291&#34;,&#34;line 291&#34;],[[19,19],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#305&#34;,&#34;line 305&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#291">line 291</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>286</span><span class="kw">fn </span>ntt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
-<span data-nosnippet>287</span><span class="kw">where
-<span data-nosnippet>288</span>    </span>M: Montgomery32NttModulus,
-<span data-nosnippet>289</span>{
-<span data-nosnippet>290</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>291</span>    </span><span class="kw">match </span><span class="highlight focus">simd_backend</span>() {
-<span data-nosnippet>292</span>        SimdBackend::Avx512 =&gt; <span class="kw">unsafe </span>{ ntt_simd::ntt_avx512(a) },
-<span data-nosnippet>293</span>        SimdBackend::Avx2 =&gt; <span class="kw">unsafe </span>{ ntt_simd::ntt_avx2(a) },
-<span data-nosnippet>294</span>        SimdBackend::Scalar =&gt; ntt_scalar(a),
-<span data-nosnippet>295</span>    }
-<span data-nosnippet>296</span>    <span class="attr">#[cfg(not(target_arch = <span class="string">"x86_64"</span>))]
-<span data-nosnippet>297</span>    </span>ntt_scalar(a);
-<span data-nosnippet>298</span>}
-<span data-nosnippet>299</span>
-<span data-nosnippet>300</span><span class="kw">fn </span>intt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
-<span data-nosnippet>301</span><span class="kw">where
-<span data-nosnippet>302</span>    </span>M: Montgomery32NttModulus,
-<span data-nosnippet>303</span>{
-<span data-nosnippet>304</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>305</span>    </span><span class="kw">match </span><span class="highlight">simd_backend</span>() {
-<span data-nosnippet>306</span>        SimdBackend::Avx512 =&gt; <span class="kw">unsafe </span>{ ntt_simd::intt_avx512(a) },
-<span data-nosnippet>307</span>        SimdBackend::Avx2 =&gt; <span class="kw">unsafe </span>{ ntt_simd::intt_avx2(a) },
-<span data-nosnippet>308</span>        SimdBackend::Scalar =&gt; intt_scalar(a),
-<span data-nosnippet>309</span>    }
-<span data-nosnippet>310</span>    <span class="attr">#[cfg(not(target_arch = <span class="string">"x86_64"</span>))]
-<span data-nosnippet>311</span>    </span>intt_scalar(a);
-<span data-nosnippet>312</span>}</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">simd_backend</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>tools::<wbr>avx_<wbr>helper</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">tools</a>::<wbr><a href="index.html">avx_helper</a></div><h1>Function <span class="fn">simd_<wbr>backend</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/tools/avx_helper.rs.html#40-51">Source</a> </span></div><pre class="rust item-decl"><code>pub fn simd_backend() -&gt; <a class="enum" href="../enum.SimdBackend.html" title="enum competitive::tools::SimdBackend">SimdBackend</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#27&#34;,&#34;line 27&#34;],[[338,338],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#354&#34;,&#34;line 354&#34;],[[352,352],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#368&#34;,&#34;line 368&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#27">line 27</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">fn </span>batch_ntt_simd_backend(len: usize, width: usize) -&gt; SimdBackend {
+<span data-nosnippet>17</span>    <span class="comment">// power_projection uses power-of-two widths; SIMD scalar tails regress for some other widths.
+<span data-nosnippet>18</span>    </span><span class="kw">if </span>width &lt; <span class="number">8 </span>|| !width.is_power_of_two() || len &lt; width * <span class="number">4 </span>{
+<span data-nosnippet>19</span>        SimdBackend::Scalar
+<span data-nosnippet>20</span>    } <span class="kw">else if </span>width == <span class="number">8 </span>{
+<span data-nosnippet>21</span>        <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
+<span data-nosnippet>22</span>            SimdBackend::Avx2
+<span data-nosnippet>23</span>        } <span class="kw">else </span>{
+<span data-nosnippet>24</span>            SimdBackend::Scalar
+<span data-nosnippet>25</span>        }
+<span data-nosnippet>26</span>    } <span class="kw">else </span>{
+<span data-nosnippet>27</span>        <span class="highlight focus">simd_backend</span>()
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}
+<span data-nosnippet>30</span>
+<span data-nosnippet>31</span><span class="kw">pub struct </span>Convolve&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
+<span data-nosnippet>32</span><span class="kw">pub type </span>Convolve998244353 = Convolve&lt;Modulo998244353&gt;;
+<span data-nosnippet>33</span><span class="kw">pub type </span>MIntConvolve&lt;M&gt; = Convolve&lt;(M, (Modulo167772161, Modulo469762049, Modulo754974721))&gt;;
+<span data-nosnippet>34</span><span class="kw">pub type </span>U64Convolve = Convolve&lt;(u64, (Modulo167772161, Modulo469762049, Modulo754974721))&gt;;
+<span data-nosnippet>35</span>
+<span data-nosnippet>36</span><span class="macro">macro_rules!</span> impl_ntt_modulus {
+<span data-nosnippet>37</span>    ($([<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$g</span>:expr]),<span class="kw-2">*</span>) =&gt; {
+<span data-nosnippet>38</span>        $(
+<span data-nosnippet>39</span>            <span class="kw">impl </span>Montgomery32NttModulus <span class="kw">for </span><span class="macro-nonterminal">$name </span>{}
+<span data-nosnippet>40</span>        )*
+<span data-nosnippet>41</span>    };
+<span data-nosnippet>42</span>}
+<span data-nosnippet>43</span><span class="macro">impl_ntt_modulus!</span>(
+<span data-nosnippet>44</span>    [Modulo167772161, <span class="number">3</span>],
+<span data-nosnippet>45</span>    [Modulo469762049, <span class="number">3</span>],
+<span data-nosnippet>46</span>    [Modulo754974721, <span class="number">11</span>],
+<span data-nosnippet>47</span>    [Modulo998244353, <span class="number">3</span>]
+<span data-nosnippet>48</span>);
+<span data-nosnippet>49</span>
+<span data-nosnippet>50</span><span class="kw">const fn </span>reduce(z: u64, p: u32, r: u32) -&gt; u32 {
+<span data-nosnippet>51</span>    <span class="kw">let </span><span class="kw-2">mut </span>z = ((z + r.wrapping_mul(z <span class="kw">as </span>u32) <span class="kw">as </span>u64 * p <span class="kw">as </span>u64) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span>u32;
+<span data-nosnippet>52</span>    <span class="kw">if </span>z &gt;= p {
+<span data-nosnippet>53</span>        z -= p;
+<span data-nosnippet>54</span>    }
+<span data-nosnippet>55</span>    z
+<span data-nosnippet>56</span>}
+<span data-nosnippet>57</span><span class="kw">const fn </span>mod_mul(x: u32, y: u32, p: u32, r: u32) -&gt; u32 {
+<span data-nosnippet>58</span>    reduce(x <span class="kw">as </span>u64 * y <span class="kw">as </span>u64, p, r)
+<span data-nosnippet>59</span>}
+<span data-nosnippet>60</span><span class="kw">const fn </span>mod_pow(<span class="kw-2">mut </span>x: u32, <span class="kw-2">mut </span>y: u32, p: u32, r: u32, <span class="kw-2">mut </span>z: u32) -&gt; u32 {
+<span data-nosnippet>61</span>    <span class="kw">while </span>y &gt; <span class="number">0 </span>{
+<span data-nosnippet>62</span>        <span class="kw">if </span>y &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>63</span>            z = mod_mul(z, x, p, r);
+<span data-nosnippet>64</span>        }
+<span data-nosnippet>65</span>        x = mod_mul(x, x, p, r);
+<span data-nosnippet>66</span>        y &gt;&gt;= <span class="number">1</span>;
+<span data-nosnippet>67</span>    }
+<span data-nosnippet>68</span>    z
+<span data-nosnippet>69</span>}
+<span data-nosnippet>70</span>
+<span data-nosnippet>71</span><span class="kw">pub trait </span>Montgomery32NttModulus: Sized + MontgomeryReduction32 {
+<span data-nosnippet>72</span>    <span class="kw">const </span>PRIMITIVE_ROOT: u32 = {
+<span data-nosnippet>73</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = <span class="number">3u32</span>;
+<span data-nosnippet>74</span>        <span class="kw">loop </span>{
+<span data-nosnippet>75</span>            <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="bool-val">true</span>;
+<span data-nosnippet>76</span>            <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="number">1u32</span>;
+<span data-nosnippet>77</span>            <span class="kw">while </span>d * d &lt; <span class="self">Self</span>::MOD {
+<span data-nosnippet>78</span>                <span class="kw">if </span>(<span class="self">Self</span>::MOD - <span class="number">1</span>) % d == <span class="number">0 </span>{
+<span data-nosnippet>79</span>                    <span class="kw">let </span>ds = [d, (<span class="self">Self</span>::MOD - <span class="number">1</span>) / d];
+<span data-nosnippet>80</span>                    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>81</span>                    <span class="kw">while </span>i &lt; <span class="number">2 </span>{
+<span data-nosnippet>82</span>                        ok &amp;= ds[i] == <span class="self">Self</span>::MOD - <span class="number">1
+<span data-nosnippet>83</span>                            </span>|| mod_pow(
+<span data-nosnippet>84</span>                                reduce(g <span class="kw">as </span>u64 * <span class="self">Self</span>::N2 <span class="kw">as </span>u64, <span class="self">Self</span>::MOD, <span class="self">Self</span>::R),
+<span data-nosnippet>85</span>                                ds[i],
+<span data-nosnippet>86</span>                                <span class="self">Self</span>::MOD,
+<span data-nosnippet>87</span>                                <span class="self">Self</span>::R,
+<span data-nosnippet>88</span>                                <span class="self">Self</span>::N1,
+<span data-nosnippet>89</span>                            ) != <span class="self">Self</span>::N1;
+<span data-nosnippet>90</span>                        i += <span class="number">1</span>;
+<span data-nosnippet>91</span>                    }
+<span data-nosnippet>92</span>                }
+<span data-nosnippet>93</span>                d += <span class="number">1</span>;
+<span data-nosnippet>94</span>            }
+<span data-nosnippet>95</span>            <span class="kw">if </span>ok {
+<span data-nosnippet>96</span>                <span class="kw">break</span>;
+<span data-nosnippet>97</span>            }
+<span data-nosnippet>98</span>            g += <span class="number">2</span>;
+<span data-nosnippet>99</span>        }
+<span data-nosnippet>100</span>        g
+<span data-nosnippet>101</span>    };
+<span data-nosnippet>102</span>    <span class="kw">const </span>RANK: u32 = (<span class="self">Self</span>::MOD - <span class="number">1</span>).trailing_zeros();
+<span data-nosnippet>103</span>    <span class="kw">const </span>INFO: NttInfo = NttInfo::new::&lt;<span class="self">Self</span>&gt;();
+<span data-nosnippet>104</span>}
+<span data-nosnippet>105</span>
+<span data-nosnippet>106</span><span class="attr">#[derive(Debug, PartialEq)]
+<span data-nosnippet>107</span></span><span class="kw">pub struct </span>NttInfo {
+<span data-nosnippet>108</span>    root: [u32; <span class="number">32</span>],
+<span data-nosnippet>109</span>    inv_root: [u32; <span class="number">32</span>],
+<span data-nosnippet>110</span>    rate3: [u32; <span class="number">32</span>],
+<span data-nosnippet>111</span>    inv_rate3: [u32; <span class="number">32</span>],
+<span data-nosnippet>112</span>    rate3_packed: [[u32; <span class="number">8</span>]; <span class="number">32</span>],
+<span data-nosnippet>113</span>    inv_rate3_packed: [[u32; <span class="number">8</span>]; <span class="number">32</span>],
+<span data-nosnippet>114</span>}
+<span data-nosnippet>115</span><span class="kw">impl </span>NttInfo {
+<span data-nosnippet>116</span>    <span class="kw">const fn </span>new&lt;M&gt;() -&gt; <span class="self">Self
+<span data-nosnippet>117</span>    </span><span class="kw">where
+<span data-nosnippet>118</span>        </span>M: Montgomery32NttModulus,
+<span data-nosnippet>119</span>    {
+<span data-nosnippet>120</span>        <span class="kw">let </span><span class="kw-2">mut </span>root = [<span class="number">0</span>; <span class="number">32</span>];
+<span data-nosnippet>121</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv_root = [<span class="number">0</span>; <span class="number">32</span>];
+<span data-nosnippet>122</span>        <span class="kw">let </span><span class="kw-2">mut </span>rate3 = [<span class="number">0</span>; <span class="number">32</span>];
+<span data-nosnippet>123</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv_rate3 = [<span class="number">0</span>; <span class="number">32</span>];
+<span data-nosnippet>124</span>        <span class="kw">let </span><span class="kw-2">mut </span>rate3_packed = [[<span class="number">0</span>; <span class="number">8</span>]; <span class="number">32</span>];
+<span data-nosnippet>125</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv_rate3_packed = [[<span class="number">0</span>; <span class="number">8</span>]; <span class="number">32</span>];
+<span data-nosnippet>126</span>        <span class="kw">let </span>rank = M::RANK <span class="kw">as </span>usize;
+<span data-nosnippet>127</span>
+<span data-nosnippet>128</span>        <span class="kw">let </span>g = reduce(M::PRIMITIVE_ROOT <span class="kw">as </span>u64 * M::N2 <span class="kw">as </span>u64, M::MOD, M::R);
+<span data-nosnippet>129</span>        root[rank] = mod_pow(g, (M::MOD - <span class="number">1</span>) &gt;&gt; rank, M::MOD, M::R, M::N1);
+<span data-nosnippet>130</span>        inv_root[rank] = mod_pow(root[rank], M::MOD - <span class="number">2</span>, M::MOD, M::R, M::N1);
+<span data-nosnippet>131</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = rank - <span class="number">1</span>;
+<span data-nosnippet>132</span>        <span class="kw">loop </span>{
+<span data-nosnippet>133</span>            root[i] = mod_mul(root[i + <span class="number">1</span>], root[i + <span class="number">1</span>], M::MOD, M::R);
+<span data-nosnippet>134</span>            inv_root[i] = mod_mul(inv_root[i + <span class="number">1</span>], inv_root[i + <span class="number">1</span>], M::MOD, M::R);
+<span data-nosnippet>135</span>            <span class="kw">if </span>i == <span class="number">0 </span>{
+<span data-nosnippet>136</span>                <span class="kw">break</span>;
+<span data-nosnippet>137</span>            }
+<span data-nosnippet>138</span>            i -= <span class="number">1</span>;
+<span data-nosnippet>139</span>        }
+<span data-nosnippet>140</span>
+<span data-nosnippet>141</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>i, <span class="kw-2">mut </span>prod, <span class="kw-2">mut </span>inv_prod) = (<span class="number">0</span>, M::N1, M::N1);
+<span data-nosnippet>142</span>        <span class="kw">while </span>i &lt; rank - <span class="number">2 </span>{
+<span data-nosnippet>143</span>            rate3[i] = mod_mul(root[i + <span class="number">3</span>], prod, M::MOD, M::R);
+<span data-nosnippet>144</span>            <span class="kw">let </span>rate3_2 = mod_mul(rate3[i], rate3[i], M::MOD, M::R);
+<span data-nosnippet>145</span>            <span class="kw">let </span>rate3_3 = mod_mul(rate3_2, rate3[i], M::MOD, M::R);
+<span data-nosnippet>146</span>            inv_rate3[i] = mod_mul(inv_root[i + <span class="number">3</span>], inv_prod, M::MOD, M::R);
+<span data-nosnippet>147</span>            <span class="kw">let </span>inv_rate3_2 = mod_mul(inv_rate3[i], inv_rate3[i], M::MOD, M::R);
+<span data-nosnippet>148</span>            <span class="kw">let </span>inv_rate3_3 = mod_mul(inv_rate3_2, inv_rate3[i], M::MOD, M::R);
+<span data-nosnippet>149</span>            rate3_packed[i] = [
+<span data-nosnippet>150</span>                rate3[i].wrapping_mul(M::R),
+<span data-nosnippet>151</span>                rate3[i],
+<span data-nosnippet>152</span>                rate3_2.wrapping_mul(M::R),
+<span data-nosnippet>153</span>                rate3_2,
+<span data-nosnippet>154</span>                rate3_3.wrapping_mul(M::R),
+<span data-nosnippet>155</span>                rate3_3,
+<span data-nosnippet>156</span>                <span class="number">0</span>,
+<span data-nosnippet>157</span>                <span class="number">0</span>,
+<span data-nosnippet>158</span>            ];
+<span data-nosnippet>159</span>            inv_rate3_packed[i] = [
+<span data-nosnippet>160</span>                inv_rate3[i].wrapping_mul(M::R),
+<span data-nosnippet>161</span>                inv_rate3[i],
+<span data-nosnippet>162</span>                inv_rate3_2.wrapping_mul(M::R),
+<span data-nosnippet>163</span>                inv_rate3_2,
+<span data-nosnippet>164</span>                inv_rate3_3.wrapping_mul(M::R),
+<span data-nosnippet>165</span>                inv_rate3_3,
+<span data-nosnippet>166</span>                <span class="number">0</span>,
+<span data-nosnippet>167</span>                <span class="number">0</span>,
+<span data-nosnippet>168</span>            ];
+<span data-nosnippet>169</span>            prod = mod_mul(prod, inv_root[i + <span class="number">3</span>], M::MOD, M::R);
+<span data-nosnippet>170</span>            inv_prod = mod_mul(inv_prod, root[i + <span class="number">3</span>], M::MOD, M::R);
+<span data-nosnippet>171</span>            <a href="../algebra/action.rs.html#14">i</a> += <span class="number">1</span>;
+<span data-nosnippet>172</span>        }
+<span data-nosnippet>173</span>
+<span data-nosnippet>174</span>        NttInfo {
+<span data-nosnippet>175</span>            root,
+<span data-nosnippet>176</span>            inv_root,
+<span data-nosnippet>177</span>            rate3,
+<span data-nosnippet>178</span>            inv_rate3,
+<span data-nosnippet>179</span>            rate3_packed,
+<span data-nosnippet>180</span>            inv_rate3_packed,
+<span data-nosnippet>181</span>        }
+<span data-nosnippet>182</span>    }
+<span data-nosnippet>183</span>}
+<span data-nosnippet>184</span>
+<span data-nosnippet>185</span><span class="kw">fn </span>ntt_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span data-nosnippet>186</span><span class="kw">where
+<span data-nosnippet>187</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>188</span>{
+<span data-nosnippet>189</span>    ntt_batch_scalar(a, <span class="number">1</span>);
+<span data-nosnippet>190</span>}
+<span data-nosnippet>191</span>
+<span data-nosnippet>192</span><span class="kw">fn </span>ntt_batch&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>193</span><span class="kw">where
+<span data-nosnippet>194</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>195</span>{
+<span data-nosnippet>196</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>197</span>    </span>{
+<span data-nosnippet>198</span>        <span class="kw">match </span>batch_ntt_simd_backend(a.len(), width) {
+<span data-nosnippet>199</span>            SimdBackend::Avx512 =&gt; {
+<span data-nosnippet>200</span>                <span class="comment">// SAFETY: backend detection checked all required AVX-512 features.
+<span data-nosnippet>201</span>                </span><span class="kw">unsafe </span>{ ntt_simd::ntt_batch_avx512(a, width) };
+<span data-nosnippet>202</span>                <span class="kw">return</span>;
+<span data-nosnippet>203</span>            }
+<span data-nosnippet>204</span>            SimdBackend::Avx2 =&gt; {
+<span data-nosnippet>205</span>                <span class="comment">// SAFETY: backend detection checked AVX2.
+<span data-nosnippet>206</span>                </span><span class="kw">unsafe </span>{ ntt_simd::ntt_batch_avx2(a, width) };
+<span data-nosnippet>207</span>                <span class="kw">return</span>;
+<span data-nosnippet>208</span>            }
+<span data-nosnippet>209</span>            SimdBackend::Scalar =&gt; {}
+<span data-nosnippet>210</span>        }
+<span data-nosnippet>211</span>    }
+<span data-nosnippet>212</span>    ntt_batch_scalar(a, width);
+<span data-nosnippet>213</span>}
+<span data-nosnippet>214</span>
+<span data-nosnippet>215</span><span class="kw">fn </span>ntt_batch_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>216</span><span class="kw">where
+<span data-nosnippet>217</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>218</span>{
+<span data-nosnippet>219</span>    <span class="kw">let </span>n = a.len() / width;
+<span data-nosnippet>220</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>221</span>        <span class="kw">return</span>;
+<span data-nosnippet>222</span>    }
+<span data-nosnippet>223</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = n / <span class="number">2</span>;
+<span data-nosnippet>224</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>225</span>        <span class="kw">let </span>(l, r) = a.split_at_mut(v * width);
+<span data-nosnippet>226</span>        <span class="kw">for </span>(x0, x1) <span class="kw">in </span>l.iter_mut().zip(r) {
+<span data-nosnippet>227</span>            <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>228</span>            <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>229</span>            <span class="kw-2">*</span>x0 = a0 + a1;
+<span data-nosnippet>230</span>            <span class="kw-2">*</span>x1 = a0 - a1;
+<span data-nosnippet>231</span>        }
+<span data-nosnippet>232</span>        v &gt;&gt;= <span class="number">1</span>;
+<span data-nosnippet>233</span>    }
+<span data-nosnippet>234</span>    <span class="kw">let </span>imag = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[<span class="number">2</span>]);
+<span data-nosnippet>235</span>    <span class="kw">while </span>v &gt; <span class="number">1 </span>{
+<span data-nosnippet>236</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = MInt::&lt;M&gt;<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">::one</a>();
+<span data-nosnippet>237</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">1</span>) * width).enumerate() {
+<span data-nosnippet>238</span>            <span class="kw">let </span>(l, r) = a.split_at_mut(v * width);
+<span data-nosnippet>239</span>            <span class="kw">let </span>(ll, lr) = l.split_at_mut((v &gt;&gt; <span class="number">1</span>) * width);
+<span data-nosnippet>240</span>            <span class="kw">let </span>(rl, rr) = r.split_at_mut((v &gt;&gt; <span class="number">1</span>) * width);
+<span data-nosnippet>241</span>            <span class="kw">let </span>w2 = w1 * w1;
+<span data-nosnippet>242</span>            <span class="kw">let </span>w3 = w1 * w2;
+<span data-nosnippet>243</span>            <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+<span data-nosnippet>244</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>245</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1 * w1;
+<span data-nosnippet>246</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2 * w2;
+<span data-nosnippet>247</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3 * w3;
+<span data-nosnippet>248</span>                <span class="kw">let </span>a0pa2 = a0 + a2;
+<span data-nosnippet>249</span>                <span class="kw">let </span>a0na2 = a0 - a2;
+<span data-nosnippet>250</span>                <span class="kw">let </span>a1pa3 = a1 + a3;
+<span data-nosnippet>251</span>                <span class="kw">let </span>a1na3imag = (a1 - a3) * imag;
+<span data-nosnippet>252</span>                <span class="kw-2">*</span>x0 = a0pa2 + a1pa3;
+<span data-nosnippet>253</span>                <span class="kw-2">*</span>x1 = a0pa2 - a1pa3;
+<span data-nosnippet>254</span>                <span class="kw-2">*</span>x2 = a0na2 + a1na3imag;
+<span data-nosnippet>255</span>                <span class="kw-2">*</span>x3 = a0na2 - a1na3imag;
+<span data-nosnippet>256</span>            }
+<span data-nosnippet>257</span>            w1 <span class="kw-2">*</span>= MInt::&lt;M&gt;::new_unchecked(M::INFO.rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>258</span>        }
+<span data-nosnippet>259</span>        v &gt;&gt;= <span class="number">2</span>;
+<span data-nosnippet>260</span>    }
+<span data-nosnippet>261</span>}
+<span data-nosnippet>262</span>
+<span data-nosnippet>263</span><span class="kw">fn </span>intt_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span data-nosnippet>264</span><span class="kw">where
+<span data-nosnippet>265</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>266</span>{
+<span data-nosnippet>267</span>    intt_batch_scalar(a, <span class="number">1</span>);
+<span data-nosnippet>268</span>}
+<span data-nosnippet>269</span>
+<span data-nosnippet>270</span><span class="kw">fn </span>intt_batch&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>271</span><span class="kw">where
+<span data-nosnippet>272</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>273</span>{
+<span data-nosnippet>274</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>275</span>    </span>{
+<span data-nosnippet>276</span>        <span class="kw">match </span>batch_ntt_simd_backend(a.len(), width) {
+<span data-nosnippet>277</span>            SimdBackend::Avx512 =&gt; {
+<span data-nosnippet>278</span>                <span class="comment">// SAFETY: backend detection checked all required AVX-512 features.
+<span data-nosnippet>279</span>                </span><span class="kw">unsafe </span>{ ntt_simd::intt_batch_avx512(a, width) };
+<span data-nosnippet>280</span>                <span class="kw">return</span>;
+<span data-nosnippet>281</span>            }
+<span data-nosnippet>282</span>            SimdBackend::Avx2 =&gt; {
+<span data-nosnippet>283</span>                <span class="comment">// SAFETY: backend detection checked AVX2.
+<span data-nosnippet>284</span>                </span><span class="kw">unsafe </span>{ ntt_simd::intt_batch_avx2(a, width) };
+<span data-nosnippet>285</span>                <span class="kw">return</span>;
+<span data-nosnippet>286</span>            }
+<span data-nosnippet>287</span>            SimdBackend::Scalar =&gt; {}
+<span data-nosnippet>288</span>        }
+<span data-nosnippet>289</span>    }
+<span data-nosnippet>290</span>    intt_batch_scalar(a, width);
+<span data-nosnippet>291</span>}
+<span data-nosnippet>292</span>
+<span data-nosnippet>293</span><span class="kw">fn </span>intt_batch_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>294</span><span class="kw">where
+<span data-nosnippet>295</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>296</span>{
+<span data-nosnippet>297</span>    <span class="kw">let </span>n = a.len() / width;
+<span data-nosnippet>298</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>299</span>        <span class="kw">return</span>;
+<span data-nosnippet>300</span>    }
+<span data-nosnippet>301</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
+<span data-nosnippet>302</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>303</span>        n / <span class="number">2
+<span data-nosnippet>304</span>    </span>} <span class="kw">else </span>{
+<span data-nosnippet>305</span>        n
+<span data-nosnippet>306</span>    };
+<span data-nosnippet>307</span>    <span class="kw">let </span>iimag = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[<span class="number">2</span>]);
+<span data-nosnippet>308</span>    <span class="kw">while </span>v &lt; limit {
+<span data-nosnippet>309</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = MInt::&lt;M&gt;::one();
+<span data-nosnippet>310</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
+<span data-nosnippet>311</span>            <span class="kw">let </span>(l, r) = a.split_at_mut((v &lt;&lt; <span class="number">1</span>) * width);
+<span data-nosnippet>312</span>            <span class="kw">let </span>(ll, lr) = l.split_at_mut(v * width);
+<span data-nosnippet>313</span>            <span class="kw">let </span>(rl, rr) = r.split_at_mut(v * width);
+<span data-nosnippet>314</span>            <span class="kw">let </span>w2 = w1 * w1;
+<span data-nosnippet>315</span>            <span class="kw">let </span>w3 = w1 * w2;
+<span data-nosnippet>316</span>            <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+<span data-nosnippet>317</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>318</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>319</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2;
+<span data-nosnippet>320</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3;
+<span data-nosnippet>321</span>                <span class="kw">let </span>a0pa1 = a0 + a1;
+<span data-nosnippet>322</span>                <span class="kw">let </span>a0na1 = a0 - a1;
+<span data-nosnippet>323</span>                <span class="kw">let </span>a2pa3 = a2 + a3;
+<span data-nosnippet>324</span>                <span class="kw">let </span>a2na3iimag = (a2 - a3) * iimag;
+<span data-nosnippet>325</span>                <span class="kw-2">*</span>x0 = a0pa1 + a2pa3;
+<span data-nosnippet>326</span>                <span class="kw-2">*</span>x1 = (a0na1 + a2na3iimag) * w1;
+<span data-nosnippet>327</span>                <span class="kw-2">*</span>x2 = (a0pa1 - a2pa3) * w2;
+<span data-nosnippet>328</span>                <span class="kw-2">*</span>x3 = (a0na1 - a2na3iimag) * w3;
+<span data-nosnippet>329</span>            }
+<span data-nosnippet>330</span>            w1 <span class="kw-2">*</span>= MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>331</span>        }
+<span data-nosnippet>332</span>        v &lt;&lt;= <span class="number">2</span>;
+<span data-nosnippet>333</span>    }
+<span data-nosnippet>334</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>335</span>        <span class="kw">let </span>(l, r) = a.split_at_mut(n / <span class="number">2 </span>* width);
+<span data-nosnippet>336</span>        <span class="kw">for </span>(x0, x1) <span class="kw">in </span>l.iter_mut().zip(r) {
+<span data-nosnippet>337</span>            <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>338</span>            <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>339</span>            <span class="kw-2">*</span>x0 = a0 + a1;
+<span data-nosnippet>340</span>            <span class="kw-2">*</span>x1 = a0 - a1;
+<span data-nosnippet>341</span>        }
+<span data-nosnippet>342</span>    }
+<span data-nosnippet>343</span>    <span class="kw">let </span>inv = MInt::&lt;M&gt;::from(n <span class="kw">as </span>u32).inv();
+<span data-nosnippet>344</span>    <span class="kw">for </span>a <span class="kw">in </span>a {
+<span data-nosnippet>345</span>        <span class="kw-2">*</span>a <span class="kw-2">*</span>= inv;
+<span data-nosnippet>346</span>    }
+<span data-nosnippet>347</span>}
+<span data-nosnippet>348</span>
+<span data-nosnippet>349</span><span class="kw">fn </span>ntt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span data-nosnippet>350</span><span class="kw">where
+<span data-nosnippet>351</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>352</span>{
+<span data-nosnippet>353</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>354</span>    </span><span class="kw">match </span><span class="highlight">simd_backend</span>() {
+<span data-nosnippet>355</span>        SimdBackend::Avx512 =&gt; <span class="kw">unsafe </span>{ ntt_simd::ntt_avx512(a) },
+<span data-nosnippet>356</span>        SimdBackend::Avx2 =&gt; <span class="kw">unsafe </span>{ ntt_simd::ntt_avx2(a) },
+<span data-nosnippet>357</span>        SimdBackend::Scalar =&gt; ntt_scalar(a),
+<span data-nosnippet>358</span>    }
+<span data-nosnippet>359</span>    <span class="attr">#[cfg(not(target_arch = <span class="string">"x86_64"</span>))]
+<span data-nosnippet>360</span>    </span>ntt_scalar(a);
+<span data-nosnippet>361</span>}
+<span data-nosnippet>362</span>
+<span data-nosnippet>363</span><span class="kw">fn </span>intt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span data-nosnippet>364</span><span class="kw">where
+<span data-nosnippet>365</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>366</span>{
+<span data-nosnippet>367</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>368</span>    </span><span class="kw">match </span><span class="highlight">simd_backend</span>() {
+<span data-nosnippet>369</span>        SimdBackend::Avx512 =&gt; <span class="kw">unsafe </span>{ ntt_simd::intt_avx512(a) },
+<span data-nosnippet>370</span>        SimdBackend::Avx2 =&gt; <span class="kw">unsafe </span>{ ntt_simd::intt_avx2(a) },
+<span data-nosnippet>371</span>        SimdBackend::Scalar =&gt; intt_scalar(a),
+<span data-nosnippet>372</span>    }
+<span data-nosnippet>373</span>    <span class="attr">#[cfg(not(target_arch = <span class="string">"x86_64"</span>))]
+<span data-nosnippet>374</span>    </span>intt_scalar(a);
+<span data-nosnippet>375</span>}</code></pre></div></div></div></section></div></main></body></html>

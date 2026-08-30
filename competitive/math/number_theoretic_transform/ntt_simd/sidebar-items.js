@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["LAZY_THRESHOLD"],"mod":["convolution_avx2","ntt_avx2","ntt_avx512"]};
+window.SIDEBAR_ITEMS = {"constant":["LAZY_THRESHOLD"],"fn":["normalize_scalar"],"mod":["convolution_avx2","ntt_avx2","ntt_avx512"]};
