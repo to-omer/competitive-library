@@ -14,8 +14,7 @@ where
         i += 16;
     }
     while i < a.len() {
-        let x = a[i];
-        a[i] = if x >= M::MOD { x - M::MOD } else { x };
+        a[i] = normalize_scalar::<M>(a[i]);
         i += 1;
     }
 }
@@ -299,10 +298,10 @@ where
                 i += 16;
             }
             while i < half {
-                let a0 = *ll.add(i);
-                let a1 = M::mod_mul(*lr.add(i), w1);
-                let a2 = M::mod_mul(*rl.add(i), w2);
-                let a3 = M::mod_mul(*rr.add(i), w3);
+                let a0 = normalize_scalar::<M>(*ll.add(i));
+                let a1 = M::mod_mul(normalize_scalar::<M>(*lr.add(i)), w1);
+                let a2 = M::mod_mul(normalize_scalar::<M>(*rl.add(i)), w2);
+                let a3 = M::mod_mul(normalize_scalar::<M>(*rr.add(i)), w3);
                 let a0pa2 = M::mod_add(a0, a2);
                 let a0na2 = M::mod_sub(a0, a2);
                 let a1pa3 = M::mod_add(a1, a3);
@@ -519,10 +518,10 @@ where
                 i += 16;
             }
             while i < quarter {
-                let a0 = *ll.add(i);
-                let a1 = *lr.add(i);
-                let a2 = *rl.add(i);
-                let a3 = *rr.add(i);
+                let a0 = normalize_scalar::<M>(*ll.add(i));
+                let a1 = normalize_scalar::<M>(*lr.add(i));
+                let a2 = normalize_scalar::<M>(*rl.add(i));
+                let a3 = normalize_scalar::<M>(*rr.add(i));
                 let a0pa1 = M::mod_add(a0, a1);
                 let a0na1 = M::mod_sub(a0, a1);
                 let a2pa3 = M::mod_add(a2, a3);
@@ -550,8 +549,8 @@ where
             i += 16;
         }
         while i < half {
-            let x0 = a[i];
-            let x1 = a[half + i];
+            let x0 = normalize_scalar::<M>(a[i]);
+            let x1 = normalize_scalar::<M>(a[half + i]);
             a[i] = M::mod_add(x0, x1);
             a[half + i] = M::mod_sub(x0, x1);
             i += 1;

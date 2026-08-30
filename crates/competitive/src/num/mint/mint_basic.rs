@@ -155,7 +155,7 @@ macro_rules! define_basic_mintbase {
         {
             if $x.len() >= 64 {
                 if $x.len() >= 512
-                    && $crate::tools::avx512_enabled()
+                    && avx512_enabled()
                     && is_x86_feature_detected!("avx512f")
                 {
                     // SAFETY: feature detection checked AVX-512F.

@@ -3,6 +3,14 @@ use std::arch::x86_64::*;
 
 const LAZY_THRESHOLD: u32 = 1 << 30;
 
+#[inline]
+fn normalize_scalar<M>(x: u32) -> u32
+where
+    M: Montgomery32NttModulus,
+{
+    if x >= M::MOD { x - M::MOD } else { x }
+}
+
 mod convolution_avx2;
 mod ntt_avx2;
 mod ntt_avx512;

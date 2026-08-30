@@ -1,5 +1,7 @@
 //! modint
 
+#[cfg(target_arch = "x86_64")]
+use crate::tools::avx512_enabled;
 use crate::{
     algebra::DotProduct,
     num::{BarrettReduction, One, Zero},
@@ -14,7 +16,7 @@ mod mint_base;
 
 #[cfg_attr(
     nightly,
-    codesnip::entry("MInt", include("MIntBase", "BarrettReduction"))
+    codesnip::entry("MInt", include("MIntBase", "BarrettReduction", "avx_helper"))
 )]
 pub mod mint_basic;
 
