@@ -1,4 +1,4 @@
-use crate::graph::UndirectedSparseGraph;
+use crate::graph::{Graph, UndirectedSparseGraph};
 
 #[codesnip::entry("tree_dp", include("SparseGraph"))]
 impl UndirectedSparseGraph {
@@ -10,7 +10,7 @@ impl UndirectedSparseGraph {
         where
             F: FnMut(&mut T, &T),
         {
-            for a in g.adjacencies(u) {
+            for a in g.neighbors(u) {
                 if a.to != p {
                     dfs(g, a.to, u, dp, f);
                     assert_ne!(u, a.to);
@@ -29,7 +29,7 @@ impl UndirectedSparseGraph {
         where
             F: FnMut(&mut T, &T),
         {
-            for a in g.adjacencies(u) {
+            for a in g.neighbors(u) {
                 if a.to != p {
                     assert_ne!(u, a.to);
                     let ptr = dp.as_mut_ptr();

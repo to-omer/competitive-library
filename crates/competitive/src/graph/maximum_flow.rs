@@ -1,4 +1,4 @@
-use super::{BidirectionalSparseGraph, Bounded, Zero};
+use super::{BidirectionalSparseGraph, Bounded, Graph, Zero};
 use std::{
     collections::VecDeque,
     ops::{Add, AddAssign, Sub, SubAssign},
@@ -77,8 +77,8 @@ where
         self.deq.clear();
         self.deq.push_back(s);
         while let Some(u) = self.deq.pop_front() {
-            for a in self.graph.adjacencies(u) {
-                if self.capacities[a.id] > C::zero() && self.level[a.to] == usize::MAX {
+            for a in self.graph.neighbors(u) {
+                if self.capacities[a.label] > C::zero() && self.level[a.to] == usize::MAX {
                     self.level[a.to] = self.level[u] + 1;
                     if a.to == t {
                         return false;
@@ -94,12 +94,12 @@ where
             return upper;
         }
         let mut res = C::zero();
-        for a in self.graph.adjacencies(u).skip(self.iter[u]) {
-            if self.level[u] > self.level[a.to] && self.capacities[a.id ^ 1] > C::zero() {
-                let d = self.dfs(s, a.to, (upper - res).min(self.capacities[a.id ^ 1]));
+        for a in self.graph.neighbors(u).skip(self.iter[u]) {
+            if self.level[u] > self.level[a.to] && self.capacities[a.label ^ 1] > C::zero() {
+                let d = self.dfs(s, a.to, (upper - res).min(self.capacities[a.label ^ 1]));
                 if d > C::zero() {
-                    self.capacities[a.id ^ 1] -= d;
-                    self.capacities[a.id] += d;
+                    self.capacities[a.label ^ 1] -= d;
+                    self.capacities[a.label] += d;
                     res += d;
                     if upper == res {
                         break;
@@ -137,8 +137,8 @@ where
         self.deq.clear();
         self.deq.push_back(s);
         while let Some(u) = self.deq.pop_front() {
-            for a in self.graph.adjacencies(u) {
-                if self.capacities[a.id] > C::zero() && !visited[a.to] {
+            for a in self.graph.neighbors(u) {
+                if self.capacities[a.label] > C::zero() && !visited[a.to] {
                     visited[a.to] = true;
                     self.deq.push_back(a.to);
                 }

@@ -641,7 +641,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::LastOperation,
-        graph::UndirectedSparseGraph,
+        graph::{Graph, UndirectedSparseGraph},
         tools::Xorshift,
         tree::{MixedTree, PathTree, StarTree},
     };
@@ -841,7 +841,7 @@ mod tests {
         let n = graph.vertices_size();
         let mut adjacency = graph
             .vertices()
-            .map(|u| graph.adjacencies(u).map(|a| a.to).collect::<Vec<_>>())
+            .map(|u| graph.neighbors(u).map(|a| a.to).collect::<Vec<_>>())
             .collect::<Vec<_>>();
         let mut edges = graph.edges.clone();
         let mut values = (0..n).map(|_| rng.random(-20i64..=20)).collect::<Vec<_>>();
@@ -930,7 +930,7 @@ mod tests {
         let n = graph.vertices_size();
         let mut adjacency = graph
             .vertices()
-            .map(|u| graph.adjacencies(u).map(|a| a.to).collect::<Vec<_>>())
+            .map(|u| graph.neighbors(u).map(|a| a.to).collect::<Vec<_>>())
             .collect::<Vec<_>>();
         let mut edges = graph.edges.clone();
         let mut values = (0..n)

@@ -1,19 +1,13 @@
-use super::{
-    AdjacencyIndex, AdjacencyIndexWithValue, AdjacencyView, BitDpExt, PartialIgnoredOrd,
-    ShortestPathSemiRing, VertexMap, Vertices,
-};
+use super::{BitDpExt, Graph, PartialIgnoredOrd, ShortestPathSemiRing, VertexMap};
 use std::{cmp::Reverse, collections::BinaryHeap, iter::repeat_with};
 
-pub trait SteinerTreeExt: Vertices {
-    fn steiner_tree<'a, S, M, I>(
-        &self,
-        terminals: I,
-        weight: &'a M,
-    ) -> SteinerTreeOutput<'_, S, Self>
+pub trait SteinerTreeExt: Graph {
+    fn steiner_tree<S, M, I>(&self, terminals: I, weight: &M) -> SteinerTreeOutput<'_, S, Self>
     where
-        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        Self: VertexMap<S::T>,
         S: ShortestPathSemiRing,
-        I: IntoIterator<Item = Self::VIndex> + ExactSizeIterator,
+        M: Fn(Self::Label) -> S::T + ?Sized,
+        I: IntoIterator<Item = Self::Vertex> + ExactSizeIterator,
     {
         let tsize = terminals.len();
         if tsize == 0 {
@@ -47,9 +41,10 @@ pub trait SteinerTreeExt: Vertices {
                 if self.vmap_get(dp, u) != &d {
                     continue;
                 }
-                for a in self.aviews(weight, u) {
-                    let v = a.vindex();
-                    let nd = S::mul(&d, &a.avalue());
+                for neighbor in self.neighbors(u) {
+                    let v = neighbor.to;
+                    let weight = weight(neighbor.label);
+                    let nd = S::mul(&d, &weight);
                     if S::add_assign(self.vmap_get_mut(dp, v), &nd) {
                         heap.push(PartialIgnoredOrd(Reverse(nd), v));
                     }
@@ -59,10 +54,10 @@ pub trait SteinerTreeExt: Vertices {
         SteinerTreeOutput { g: self, dp }
     }
 }
-impl<G> SteinerTreeExt for G where G: Vertices {}
+impl<G> SteinerTreeExt for G where G: Graph + ?Sized {}
 pub struct SteinerTreeOutput<'g, S, G>
 where
-    G: VertexMap<S::T> + ?Sized,
+    G: Graph + VertexMap<S::T> + ?Sized,
     S: ShortestPathSemiRing,
 {
     g: &'g G,
@@ -70,10 +65,10 @@ where
 }
 impl<S, G> SteinerTreeOutput<'_, S, G>
 where
-    G: VertexMap<S::T> + ?Sized,
+    G: Graph + VertexMap<S::T> + ?Sized,
     S: ShortestPathSemiRing,
 {
-    pub fn minimum_from_source(&self, source: G::VIndex) -> S::T {
+    pub fn minimum_from_source(&self, source: G::Vertex) -> S::T {
         match self.dp.last() {
             Some(dp) => self.g.vmap_get(dp, source).clone(),
             None => S::source(),

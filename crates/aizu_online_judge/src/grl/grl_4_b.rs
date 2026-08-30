@@ -1,4 +1,4 @@
-use competitive::graph::DirectedGraphScanner;
+use competitive::graph::{DirectedGraphScanner, TopologicalSortExt};
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("GRL_4_B", judge = "judge_grl_4_b")]

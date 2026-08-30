@@ -1,4 +1,4 @@
-use crate::graph::UndirectedSparseGraph;
+use crate::graph::{Graph, UndirectedSparseGraph};
 
 #[codesnip::entry("tree_center")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -13,9 +13,9 @@ impl UndirectedSparseGraph {
         let n = self.vertices_size();
         assert_ne!(n, 0);
         let mut deq = std::collections::VecDeque::with_capacity(n);
-        let mut deg: Vec<_> = self.vertices().map(|u| self.adjacencies(u).len()).collect();
+        let mut deg: Vec<_> = self.vertices().map(|u| self.neighbors(u).len()).collect();
         for u in self.vertices() {
-            if self.adjacencies(u).len() <= 1 {
+            if self.neighbors(u).len() <= 1 {
                 deq.push_back(u);
             }
         }
@@ -25,7 +25,7 @@ impl UndirectedSparseGraph {
             k = deq.len();
             'outer: while let Some(u) = deq.pop_front() {
                 k -= 1;
-                for a in self.adjacencies(u) {
+                for a in self.neighbors(u) {
                     deg[a.to] -= 1;
                     if deg[a.to] == 1 {
                         deq.push_back(a.to);

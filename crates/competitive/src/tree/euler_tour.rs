@@ -1,4 +1,4 @@
-use super::{RangeMinimumQuery, UndirectedSparseGraph};
+use super::{Graph, RangeMinimumQuery, UndirectedSparseGraph};
 use std::{marker::PhantomData, ops::Range};
 
 pub trait EulerTourKind {
@@ -95,11 +95,11 @@ where
         self.vidx[u][0] = self.pos;
         trace(u);
         self.pos += 1;
-        for a in self.tree.adjacencies(u) {
+        for a in self.tree.neighbors(u) {
             if a.to != parent {
-                self.eidx[a.id][0] = self.pos;
+                self.eidx[a.label][0] = self.pos;
                 self.dfs(a.to, u, trace);
-                self.eidx[a.id][1] = self.pos;
+                self.eidx[a.label][1] = self.pos;
                 if K::USE_VISIT {
                     trace(u);
                     self.pos += 1;
@@ -393,7 +393,7 @@ mod tests {
                                 if b {
                                     expected += a[v];
                                 }
-                                for a in tree.adjacencies(v) {
+                                for a in tree.neighbors(v) {
                                     if a.to != p {
                                         dfs!(a.to, v, b);
                                     }
@@ -412,7 +412,7 @@ mod tests {
                                 if b {
                                     a[v] += x;
                                 }
-                                for a in tree.adjacencies(v) {
+                                for a in tree.neighbors(v) {
                                     if a.to != p {
                                         dfs!(a.to, v, b);
                                     }
@@ -463,7 +463,7 @@ mod tests {
                                     expected += a[v];
                                     return true;
                                 }
-                                for adj in tree.adjacencies(v) {
+                                for adj in tree.neighbors(v) {
                                     if adj.to != p && dfs!(adj.to, v) {
                                         expected += a[v];
                                         return true;
@@ -500,7 +500,7 @@ mod tests {
                         if w == v {
                             found[1] = true;
                         }
-                        for adj in tree.adjacencies(w) {
+                        for adj in tree.neighbors(w) {
                             if adj.to != p {
                                 match dfs!(adj.to, w) {
                                     Ok(lca) => return Ok(lca),

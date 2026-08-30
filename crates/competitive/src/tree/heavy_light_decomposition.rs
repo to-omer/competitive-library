@@ -1,4 +1,4 @@
-use super::{Monoid, UndirectedSparseGraph};
+use super::{Graph, Monoid, UndirectedSparseGraph};
 use std::ops::Range;
 
 #[derive(Clone, Debug)]
@@ -34,7 +34,7 @@ impl HeavyLightDecomposition {
     fn dfs_size(&mut self, u: usize, p: usize, graph: &UndirectedSparseGraph) {
         self.parent[u] = p;
         self.size[u] = 1;
-        for a in graph.adjacencies(u) {
+        for a in graph.neighbors(u) {
             if a.to != p {
                 self.dfs_size(a.to, u, graph);
                 self.size[u] += self.size[a.to];
@@ -55,7 +55,7 @@ impl HeavyLightDecomposition {
         if heavy != graph.vertices_size() {
             self.dfs_hld(heavy, u, head, graph);
         }
-        for a in graph.adjacencies(u) {
+        for a in graph.neighbors(u) {
             if a.to != p && a.to != heavy {
                 self.dfs_hld(a.to, u, a.to, graph);
             }
@@ -285,7 +285,7 @@ mod tests {
         let mut depth = vec![0; n];
         let mut stack = vec![root];
         while let Some(u) = stack.pop() {
-            for a in graph.adjacencies(u) {
+            for a in graph.neighbors(u) {
                 if a.to != parent[u] {
                     parent[a.to] = u;
                     depth[a.to] = depth[u] + 1;

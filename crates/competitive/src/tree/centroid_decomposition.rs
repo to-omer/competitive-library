@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, U64Convolve, UndirectedSparseGraph};
+use super::{ConvolveSteps, Graph, U64Convolve, UndirectedSparseGraph};
 use std::mem::swap;
 
 #[derive(Debug, Clone)]
@@ -235,7 +235,7 @@ impl From<&UndirectedSparseGraph> for RootedTree {
         vs.push(0usize);
         for i in 0..n {
             let u = vs[i];
-            for a in graph.adjacencies(u) {
+            for a in graph.neighbors(u) {
                 if a.to != parent[u] {
                     vs.push(a.to);
                     parent[a.to] = u;

@@ -24,10 +24,10 @@ pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
 pub use self::general_matching::GeneralMatching;
 #[codesnip::entry("GeneralWeightedMatching")]
 pub use self::general_weighted_matching::GeneralWeightedMatching;
-#[codesnip::entry("GraphBase")]
+#[codesnip::entry("Graph")]
 pub use self::graph_base::*;
 #[codesnip::entry("GridGraph")]
-pub use self::grid::GridGraph;
+pub use self::grid::{Adj4, Adj8, GridAdjacency, GridDirection, GridGraph};
 #[codesnip::entry("LowLink")]
 pub use self::low_link::LowLink;
 #[codesnip::entry("Dinic")]
@@ -36,6 +36,8 @@ pub use self::maximum_flow::{Dinic, DinicBuilder};
 pub use self::minimum_cost_flow::{PrimalDual, PrimalDualBuilder};
 #[codesnip::entry("NetworkSimplex")]
 pub use self::network_simplex::NetworkSimplex;
+#[codesnip::entry("graph_order")]
+pub use self::order::GraphOrderExt;
 #[codesnip::entry("ProjectSelectionProblem")]
 pub use self::project_selection_problem::ProjectSelectionProblem;
 #[codesnip::entry("shortest_path")]
@@ -46,16 +48,21 @@ pub use self::sparse_graph::*;
 pub use self::steiner_tree::{SteinerTreeExt, SteinerTreeOutput};
 #[codesnip::entry("StronglyConnectedComponent")]
 pub use self::strongly_connected_component::StronglyConnectedComponent;
+#[codesnip::entry("topological_sort")]
+pub use self::topological_sort::TopologicalSortExt;
 #[codesnip::entry("TwoSatisfiability")]
 pub use self::two_satisfiability::TwoSatisfiability;
 
-#[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph", include("scanner")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("AdjacencyListGraph", include("scanner", "Graph"))
+)]
 mod adjacency_list;
 #[cfg_attr(nightly, codesnip::entry("minimum_assignment"))]
 mod assignment;
 #[cfg_attr(nightly, codesnip::entry("BipartiteMatching"))]
 mod bipartite_matching;
-#[cfg_attr(nightly, codesnip::entry("ClosureGraph", include("GraphBase")))]
+#[cfg_attr(nightly, codesnip::entry("ClosureGraph", include("Graph")))]
 mod closure;
 #[cfg_attr(
     nightly,
@@ -71,11 +78,11 @@ mod edge_list;
 mod general_matching;
 #[cfg_attr(nightly, codesnip::entry("GeneralWeightedMatching"))]
 mod general_weighted_matching;
-#[cfg_attr(nightly, codesnip::entry("GraphBase"))]
+#[cfg_attr(nightly, codesnip::entry("Graph"))]
 mod graph_base;
 #[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
 mod graphvis;
-#[cfg_attr(nightly, codesnip::entry("GridGraph", include("GraphBase")))]
+#[cfg_attr(nightly, codesnip::entry("GridGraph", include("Graph")))]
 mod grid;
 #[cfg_attr(nightly, codesnip::entry("LowLink", include("SparseGraph")))]
 mod low_link;
@@ -101,6 +108,7 @@ mod minimum_spanning_arborescence;
 mod minimum_spanning_tree;
 #[cfg_attr(nightly, codesnip::entry("NetworkSimplex", include("zero_one")))]
 mod network_simplex;
+#[cfg_attr(nightly, codesnip::entry("graph_order", include("Graph")))]
 mod order;
 #[cfg_attr(nightly, codesnip::entry("ProjectSelectionProblem", include("Dinic")))]
 mod project_selection_problem;
@@ -108,14 +116,11 @@ mod project_selection_problem;
     nightly,
     codesnip::entry(
         "shortest_path",
-        include("GraphBase", "ring", "PartialIgnoredOrd", "bounded")
+        include("Graph", "ring", "PartialIgnoredOrd", "bounded")
     )
 )]
 pub mod shortest_path;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("SparseGraph", include("scanner", "GraphBase"))
-)]
+#[cfg_attr(nightly, codesnip::entry("SparseGraph", include("scanner", "Graph")))]
 mod sparse_graph;
 #[cfg_attr(
     nightly,
@@ -127,7 +132,7 @@ mod steiner_tree;
     codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))
 )]
 mod strongly_connected_component;
-#[cfg_attr(nightly, codesnip::entry("topological_sort", include("SparseGraph")))]
+#[cfg_attr(nightly, codesnip::entry("topological_sort", include("Graph")))]
 mod topological_sort;
 #[cfg_attr(
     nightly,

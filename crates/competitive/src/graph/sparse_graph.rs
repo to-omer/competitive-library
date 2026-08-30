@@ -1,9 +1,5 @@
-use super::{
-    Adjacencies, AdjacenciesWithEindex, AdjacencyIndex, AdjacencyIndexWithEindex, AdjacencyView,
-    AdjacencyViewIterFromEindex, EIndexedGraph, EdgeMap, EdgeSize, EdgeView, GraphBase, IterScan,
-    MarkedIterScan, VertexMap, VertexSize, VertexView, Vertices,
-};
-use std::{iter::Cloned, marker::PhantomData, ops, slice};
+use super::{DirectedGraph, EdgeMap, Graph, IterScan, MarkedIterScan, Neighbor, VertexMap};
+use std::{iter::Copied, marker::PhantomData, ops, slice};
 
 type Marker<T> = PhantomData<fn() -> T>;
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -13,43 +9,31 @@ pub enum UndirectedEdge {}
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum BidirectionalEdge {}
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Adjacency {
-    pub id: usize,
-    pub to: usize,
-}
-impl Adjacency {
-    pub fn new(id: usize, to: usize) -> Adjacency {
-        Adjacency { id, to }
-    }
-}
-
 /// Static Sparse Graph represented as Compressed Sparse Row.
 #[derive(Debug, Clone)]
 pub struct SparseGraph<D> {
     vsize: usize,
-    pub start: Vec<usize>,
-    pub elist: Vec<Adjacency>,
+    start: Vec<usize>,
+    neighbors: Vec<Neighbor<usize, usize>>,
     pub edges: Vec<(usize, usize)>,
     _marker: Marker<D>,
 }
 
 impl<D> SparseGraph<D> {
     /// Return the number of vertices.
+    #[inline]
     pub fn vertices_size(&self) -> usize {
         self.vsize
     }
     /// Return the number of edges.
+    #[inline]
     pub fn edges_size(&self) -> usize {
         self.edges.len()
     }
     /// Return an iterator over graph vertices.
+    #[inline]
     pub fn vertices(&self) -> ops::Range<usize> {
         0..self.vertices_size()
-    }
-    /// Return a slice of adjacency vertices.
-    pub fn adjacencies(&self, v: usize) -> slice::Iter<'_, Adjacency> {
-        self.elist[self.start[v]..self.start[v + 1]].iter()
     }
     pub fn builder<T>(vsize: usize) -> SparseGraphBuilder<T, D> {
         SparseGraphBuilder::new(vsize)
@@ -86,17 +70,17 @@ impl SparseGraphConstruction for DirectedEdge {
         for i in 1..=vsize {
             start[i] += start[i - 1];
         }
-        let mut elist = Vec::<Adjacency>::with_capacity(edges.len());
-        let ptr = elist.as_mut_ptr();
+        let mut neighbors = Vec::<Neighbor<usize, usize>>::with_capacity(edges.len());
+        let ptr = neighbors.as_mut_ptr();
         for (id, (from, to)) in edges.iter().cloned().enumerate() {
             start[from] -= 1;
-            unsafe { ptr.add(start[from]).write(Adjacency::new(id, to)) };
+            unsafe { ptr.add(start[from]).write(Neighbor::new(to, id)) };
         }
-        unsafe { elist.set_len(edges.len()) };
+        unsafe { neighbors.set_len(edges.len()) };
         SparseGraph {
             vsize,
             start,
-            elist,
+            neighbors,
             edges,
             _marker: PhantomData,
         }
@@ -113,19 +97,19 @@ impl SparseGraphConstruction for UndirectedEdge {
         for i in 1..=vsize {
             start[i] += start[i - 1];
         }
-        let mut elist = Vec::<Adjacency>::with_capacity(edges.len() * 2);
-        let ptr = elist.as_mut_ptr();
+        let mut neighbors = Vec::<Neighbor<usize, usize>>::with_capacity(edges.len() * 2);
+        let ptr = neighbors.as_mut_ptr();
         for (id, (from, to)) in edges.iter().cloned().enumerate() {
             start[from] -= 1;
-            unsafe { ptr.add(start[from]).write(Adjacency::new(id, to)) };
+            unsafe { ptr.add(start[from]).write(Neighbor::new(to, id)) };
             start[to] -= 1;
-            unsafe { ptr.add(start[to]).write(Adjacency::new(id, from)) };
+            unsafe { ptr.add(start[to]).write(Neighbor::new(from, id)) };
         }
-        unsafe { elist.set_len(edges.len() * 2) };
+        unsafe { neighbors.set_len(edges.len() * 2) };
         SparseGraph {
             vsize,
             start,
-            elist,
+            neighbors,
             edges,
             _marker: PhantomData,
         }
@@ -142,19 +126,19 @@ impl SparseGraphConstruction for BidirectionalEdge {
         for i in 1..=vsize {
             start[i] += start[i - 1];
         }
-        let mut elist = Vec::<Adjacency>::with_capacity(edges.len() * 2);
-        let ptr = elist.as_mut_ptr();
+        let mut neighbors = Vec::<Neighbor<usize, usize>>::with_capacity(edges.len() * 2);
+        let ptr = neighbors.as_mut_ptr();
         for (id, (from, to)) in edges.iter().cloned().enumerate() {
             start[from] -= 1;
-            unsafe { ptr.add(start[from]).write(Adjacency::new(id * 2, to)) };
+            unsafe { ptr.add(start[from]).write(Neighbor::new(to, id * 2)) };
             start[to] -= 1;
-            unsafe { ptr.add(start[to]).write(Adjacency::new(id * 2 + 1, from)) };
+            unsafe { ptr.add(start[to]).write(Neighbor::new(from, id * 2 + 1)) };
         }
-        unsafe { elist.set_len(edges.len() * 2) };
+        unsafe { neighbors.set_len(edges.len() * 2) };
         SparseGraph {
             vsize,
             start,
-            elist,
+            neighbors,
             edges,
             _marker: PhantomData,
         }
@@ -278,73 +262,95 @@ where
     }
 }
 
-impl<D> GraphBase for SparseGraph<D> {
-    type VIndex = usize;
-}
-impl<D> EIndexedGraph for SparseGraph<D> {
-    type EIndex = usize;
-}
-
-impl<D> VertexSize for SparseGraph<D> {
-    fn vsize(&self) -> usize {
-        self.vsize
-    }
-}
-impl<D> EdgeSize for SparseGraph<D> {
-    fn esize(&self) -> usize {
-        self.edges.len()
-    }
-}
-
-impl<D> Vertices for SparseGraph<D> {
-    type VIter<'g>
+impl<D> Graph for SparseGraph<D>
+where
+    D: SparseGraphConstruction,
+{
+    type Vertex = usize;
+    type Label = usize;
+    type Vertices<'g>
         = ops::Range<usize>
     where
         D: 'g;
-    fn vertices(&self) -> Self::VIter<'_> {
+    type Neighbors<'g>
+        = Copied<slice::Iter<'g, Neighbor<usize, usize>>>
+    where
+        D: 'g;
+
+    #[inline]
+    fn vsize(&self) -> usize {
+        self.vsize
+    }
+
+    #[inline]
+    fn vertices(&self) -> Self::Vertices<'_> {
         0..self.vsize
     }
-}
-impl<D> Adjacencies for SparseGraph<D> {
-    type AIndex = Adjacency;
-    type AIter<'g>
-        = Cloned<slice::Iter<'g, Adjacency>>
-    where
-        D: 'g;
-    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
-        self.elist[self.start[vid]..self.start[vid + 1]]
+
+    #[inline]
+    fn neighbors(&self, vertex: Self::Vertex) -> Self::Neighbors<'_> {
+        self.neighbors[self.start[vertex]..self.start[vertex + 1]]
             .iter()
-            .cloned()
-    }
-}
-impl<D> AdjacenciesWithEindex for SparseGraph<D> {
-    type AIndex = Adjacency;
-    type AIter<'g>
-        = Cloned<slice::Iter<'g, Adjacency>>
-    where
-        D: 'g;
-    fn adjacencies_with_eindex(&self, vid: Self::VIndex) -> Self::AIter<'_> {
-        self.elist[self.start[vid]..self.start[vid + 1]]
-            .iter()
-            .cloned()
+            .copied()
     }
 }
 
-impl AdjacencyIndex for Adjacency {
-    type VIndex = usize;
-    fn vindex(&self) -> Self::VIndex {
-        self.to
+impl DirectedGraph for SparseGraph<DirectedEdge> {}
+
+impl<T> EdgeMap<T> for SparseGraph<DirectedEdge> {
+    type Emap = Vec<T>;
+
+    #[inline]
+    fn construct_emap<F>(&self, f: F) -> Self::Emap
+    where
+        F: FnMut() -> T,
+    {
+        let mut map = Vec::with_capacity(self.edges.len());
+        map.resize_with(self.edges.len(), f);
+        map
     }
-}
-impl AdjacencyIndexWithEindex for Adjacency {
-    type EIndex = usize;
-    fn eindex(&self) -> Self::EIndex {
-        self.id
+
+    #[inline]
+    fn emap_get<'a>(&self, map: &'a Self::Emap, eid: Self::Label) -> &'a T {
+        &map[eid]
+    }
+
+    #[inline]
+    fn emap_get_mut<'a>(&self, map: &'a mut Self::Emap, eid: Self::Label) -> &'a mut T {
+        &mut map[eid]
     }
 }
 
-impl<D, T> VertexMap<T> for SparseGraph<D> {
+impl<T> EdgeMap<T> for SparseGraph<UndirectedEdge> {
+    type Emap = Vec<T>;
+
+    #[inline]
+    fn construct_emap<F>(&self, f: F) -> Self::Emap
+    where
+        F: FnMut() -> T,
+    {
+        let mut map = Vec::with_capacity(self.edges.len());
+        map.resize_with(self.edges.len(), f);
+        map
+    }
+
+    #[inline]
+    fn emap_get<'a>(&self, map: &'a Self::Emap, eid: Self::Label) -> &'a T {
+        &map[eid]
+    }
+
+    #[inline]
+    fn emap_get_mut<'a>(&self, map: &'a mut Self::Emap, eid: Self::Label) -> &'a mut T {
+        &mut map[eid]
+    }
+}
+
+impl<D, T> VertexMap<T> for SparseGraph<D>
+where
+    D: SparseGraphConstruction,
+{
     type Vmap = Vec<T>;
+    #[inline]
     fn construct_vmap<F>(&self, f: F) -> Self::Vmap
     where
         F: FnMut() -> T,
@@ -353,85 +359,66 @@ impl<D, T> VertexMap<T> for SparseGraph<D> {
         v.resize_with(self.vsize, f);
         v
     }
-    fn vmap_get<'a>(&self, map: &'a Self::Vmap, vid: Self::VIndex) -> &'a T {
-        assert!(vid < self.vsize, "expected 0..{}, but {}", self.vsize, vid);
-        unsafe { map.get_unchecked(vid) }
+    #[inline]
+    fn vmap_get<'a>(&self, map: &'a Self::Vmap, vid: Self::Vertex) -> &'a T {
+        &map[vid]
     }
-    fn vmap_get_mut<'a>(&self, map: &'a mut Self::Vmap, vid: Self::VIndex) -> &'a mut T {
-        assert!(vid < self.vsize, "expected 0..{}, but {}", self.vsize, vid);
-        unsafe { map.get_unchecked_mut(vid) }
-    }
-}
-impl<D, T> VertexView<Vec<T>, T> for SparseGraph<D>
-where
-    T: Clone,
-{
-    fn vview(&self, map: &Vec<T>, vid: Self::VIndex) -> T {
-        self.vmap_get(map, vid).clone()
-    }
-}
-impl<D, T> VertexView<[T], T> for SparseGraph<D>
-where
-    T: Clone,
-{
-    fn vview(&self, map: &[T], vid: Self::VIndex) -> T {
-        assert!(vid < self.vsize, "expected 0..{}, but {}", self.vsize, vid);
-        unsafe { map.get_unchecked(vid) }.clone()
+    #[inline]
+    fn vmap_get_mut<'a>(&self, map: &'a mut Self::Vmap, vid: Self::Vertex) -> &'a mut T {
+        &mut map[vid]
     }
 }
 
-impl<D, T> EdgeMap<T> for SparseGraph<D> {
-    type Emap = Vec<T>;
-    fn construct_emap<F>(&self, f: F) -> Self::Emap
-    where
-        F: FnMut() -> T,
-    {
-        let mut v = Vec::with_capacity(self.vsize);
-        v.resize_with(self.vsize, f);
-        v
-    }
-    fn emap_get<'a>(&self, map: &'a Self::Emap, eid: Self::EIndex) -> &'a T {
-        let esize = self.edges.len();
-        assert!(eid < esize, "expected 0..{}, but {}", esize, eid);
-        unsafe { map.get_unchecked(eid) }
-    }
-    fn emap_get_mut<'a>(&self, map: &'a mut Self::Emap, eid: Self::EIndex) -> &'a mut T {
-        let esize = self.edges.len();
-        assert!(eid < esize, "expected 0..{}, but {}", esize, eid);
-        unsafe { map.get_unchecked_mut(eid) }
-    }
-}
-impl<D, T> EdgeView<Vec<T>, T> for SparseGraph<D>
-where
-    T: Clone,
-{
-    fn eview(&self, map: &Vec<T>, eid: Self::EIndex) -> T {
-        self.emap_get(map, eid).clone()
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{rand, tools::Xorshift};
 
-impl<D, T> EdgeView<[T], T> for SparseGraph<D>
-where
-    T: Clone,
-{
-    fn eview(&self, map: &[T], eid: Self::EIndex) -> T {
-        let esize = self.edges.len();
-        assert!(eid < esize, "expected 0..{}, but {}", esize, eid);
-        unsafe { map.get_unchecked(eid) }.clone()
-    }
-}
+    #[test]
+    fn test_sparse_graph() {
+        const Q: usize = 1_000;
+        const N: usize = 8;
+        const M: usize = 20;
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            rand!(rng, n: 1..=N, m: 0..=M, edges: [(0..n, 0..n); m]);
 
-impl<'a, D, M, T> AdjacencyView<'a, M, T> for SparseGraph<D>
-where
-    Self: AdjacenciesWithEindex + EdgeView<M, T>,
-    T: Clone,
-    M: 'a,
-{
-    type AViewIter<'g>
-        = AdjacencyViewIterFromEindex<'g, 'a, Self, M, T>
-    where
-        D: 'g;
-    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
-        AdjacencyViewIterFromEindex::new(self.adjacencies_with_eindex(vid), self, map)
+            let directed = DirectedSparseGraph::from_edges(n, edges.clone());
+            let mut occurrences = vec![0; m];
+            for u in directed.vertices() {
+                for neighbor in directed.neighbors(u) {
+                    assert_eq!(edges[neighbor.label], (u, neighbor.to));
+                    occurrences[neighbor.label] += 1;
+                }
+            }
+            assert!(occurrences.into_iter().all(|count| count == 1));
+
+            let undirected = UndirectedSparseGraph::from_edges(n, edges.clone());
+            let mut occurrences = vec![0; m];
+            for u in undirected.vertices() {
+                for neighbor in undirected.neighbors(u) {
+                    let (from, to) = edges[neighbor.label];
+                    assert!((u == from && neighbor.to == to) || (u == to && neighbor.to == from));
+                    occurrences[neighbor.label] += 1;
+                }
+            }
+            assert!(occurrences.into_iter().all(|count| count == 2));
+
+            let bidirectional = BidirectionalSparseGraph::from_edges(n, edges.clone());
+            let mut occurrences = vec![0; m * 2];
+            for u in bidirectional.vertices() {
+                for neighbor in bidirectional.neighbors(u) {
+                    let (from, to) = edges[neighbor.label / 2];
+                    let expected = if neighbor.label % 2 == 0 {
+                        (from, to)
+                    } else {
+                        (to, from)
+                    };
+                    assert_eq!((u, neighbor.to), expected);
+                    occurrences[neighbor.label] += 1;
+                }
+            }
+            assert!(occurrences.into_iter().all(|count| count == 1));
+        }
     }
 }

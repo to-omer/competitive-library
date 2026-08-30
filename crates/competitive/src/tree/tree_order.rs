@@ -1,7 +1,10 @@
-use crate::graph::SparseGraph;
+use crate::graph::{Graph, SparseGraph, SparseGraphConstruction};
 
 #[codesnip::entry("tree_order", include("SparseGraph"))]
-impl<D> SparseGraph<D> {
+impl<D> SparseGraph<D>
+where
+    D: SparseGraphConstruction,
+{
     /// (order, parents)
     pub fn tree_order(&self, root: usize) -> (Vec<usize>, Vec<usize>) {
         let n = self.vertices_size();
@@ -11,7 +14,7 @@ impl<D> SparseGraph<D> {
         stack.push(root);
         while let Some(u) = stack.pop() {
             order.push(u);
-            for a in self.adjacencies(u).rev() {
+            for a in self.neighbors(u).rev() {
                 if a.to != parents[u] {
                     parents[a.to] = u;
                     stack.push(a.to);

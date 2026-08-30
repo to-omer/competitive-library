@@ -95,6 +95,7 @@ fn from_prufer_sequence(n: usize, prufer: &[usize]) -> Vec<(usize, usize)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::graph::Graph;
 
     fn is_connected(g: &UndirectedSparseGraph) -> bool {
         let n = g.vertices_size();
@@ -107,7 +108,7 @@ mod tests {
         vis[0] = true;
         while let Some(u) = stack.pop() {
             acc += 1;
-            for a in g.adjacencies(u) {
+            for a in g.neighbors(u) {
                 if !vis[a.to] {
                     vis[a.to] = true;
                     stack.push(a.to);

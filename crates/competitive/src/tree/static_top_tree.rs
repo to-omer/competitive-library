@@ -1,4 +1,4 @@
-use super::{Magma, Monoid, UndirectedSparseGraph, Unital};
+use super::{Graph, Magma, Monoid, UndirectedSparseGraph, Unital};
 use std::mem::MaybeUninit;
 
 pub trait MonoidCluster {
@@ -761,13 +761,13 @@ fn rooted_children(graph: &UndirectedSparseGraph, root: usize) -> RootedInfo {
     parent[root] = usize::MAX;
     for i in 0..n {
         let u = order[i];
-        for a in graph.adjacencies(u) {
+        for a in graph.neighbors(u) {
             if a.to == parent[u] {
                 continue;
             }
             parent[a.to] = u;
-            parent_edge[a.to] = a.id;
-            edge_child[a.id] = a.to;
+            parent_edge[a.to] = a.label;
+            edge_child[a.label] = a.to;
             order.push(a.to);
         }
     }
@@ -1102,11 +1102,11 @@ mod tests {
             in_edge: Option<usize>,
         ) -> Point {
             let mut point = PointMonoid::unit();
-            for a in graph.adjacencies(u) {
+            for a in graph.neighbors(u) {
                 if a.to != p {
                     point = PointMonoid::operate(
                         &point,
-                        &dfs(graph, vertices, edges, a.to, u, Some(a.id)),
+                        &dfs(graph, vertices, edges, a.to, u, Some(a.label)),
                     );
                 }
             }

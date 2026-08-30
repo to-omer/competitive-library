@@ -1,4 +1,8 @@
-use crate::{graph::UndirectedSparseGraph, tools::Xorshift, tree::TreeCenter};
+use crate::{
+    graph::{Graph, UndirectedSparseGraph},
+    tools::Xorshift,
+    tree::TreeCenter,
+};
 
 #[codesnip::entry("tree_hash", include("Xorshift", "tree_center"))]
 #[derive(Default, Debug)]
@@ -63,7 +67,7 @@ impl TreeHasher {
         if self.rv.len() <= d {
             self.rv.push(Self::mersenne_mod(self.rng.rand64()));
         }
-        for a in g.adjacencies(u) {
+        for a in g.neighbors(u) {
             if a.to != p {
                 s = Self::mersenne_mul_mod(s, self.hash_rec(g, a.to, u, d + 1));
             }
@@ -114,7 +118,7 @@ mod tests {
         }
         fn canonical_dfs(&self, u: usize, p: usize) -> Vec<bool> {
             let mut v = vec![vec![false]];
-            for a in self.adjacencies(u) {
+            for a in self.neighbors(u) {
                 if a.to != p {
                     v.push(self.canonical_dfs(a.to, u));
                 }

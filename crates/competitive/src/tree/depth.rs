@@ -1,11 +1,11 @@
 use crate::algebra::Monoid;
-use crate::graph::UndirectedSparseGraph;
+use crate::graph::{Graph, UndirectedSparseGraph};
 
 #[codesnip::entry("tree_depth", include("SparseGraph"))]
 impl UndirectedSparseGraph {
     fn depth_dfs(&self, u: usize, p: usize, d: u64, depth: &mut Vec<u64>) {
         depth[u] = d;
-        for a in self.adjacencies(u).filter(|a| a.to != p) {
+        for a in self.neighbors(u).filter(|a| a.to != p) {
             self.depth_dfs(a.to, u, d + 1, depth);
         }
     }
@@ -29,8 +29,8 @@ impl UndirectedSparseGraph {
         M: Monoid,
         F: Fn(usize) -> M::T,
     {
-        for a in self.adjacencies(u).filter(|a| a.to != p) {
-            let nd = M::operate(&d, &weight(a.id));
+        for a in self.neighbors(u).filter(|a| a.to != p) {
+            let nd = M::operate(&d, &weight(a.label));
             self.weighted_depth_dfs::<M, _>(a.to, u, nd, depth, weight);
         }
         depth[u] = d;
@@ -50,7 +50,7 @@ impl UndirectedSparseGraph {
 impl UndirectedSparseGraph {
     fn size_dfs(&self, u: usize, p: usize, size: &mut Vec<u64>) {
         size[u] = 1;
-        for a in self.adjacencies(u).filter(|a| a.to != p) {
+        for a in self.neighbors(u).filter(|a| a.to != p) {
             self.size_dfs(a.to, u, size);
             size[u] += size[a.to];
         }

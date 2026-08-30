@@ -1,21 +1,11 @@
-use super::{IterScan, MarkedIterScan};
-use std::{marker::PhantomData, ops::Range};
+use super::{EdgeMap, Graph, IterScan, MarkedIterScan, Neighbor, VertexMap};
+use std::{iter::Copied, marker::PhantomData, ops::Range, slice};
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Adjacency {
-    pub id: usize,
-    pub to: usize,
-}
-impl Adjacency {
-    pub fn new(id: usize, to: usize) -> Adjacency {
-        Adjacency { id, to }
-    }
-}
 #[derive(Clone, Debug, Default)]
 pub struct AdjacencyListGraph {
     pub vsize: usize,
     pub esize: usize,
-    pub graph: Vec<Vec<Adjacency>>,
+    pub graph: Vec<Vec<Neighbor<usize, usize>>>,
 }
 impl AdjacencyListGraph {
     pub fn new(vsize: usize) -> AdjacencyListGraph {
@@ -26,19 +16,86 @@ impl AdjacencyListGraph {
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize) {
-        self.graph[from].push(Adjacency::new(self.esize, to));
+        self.graph[from].push(Neighbor::new(to, self.esize));
         self.esize += 1;
     }
     pub fn add_undirected_edge(&mut self, u: usize, v: usize) {
-        self.graph[u].push(Adjacency::new(self.esize, v));
-        self.graph[v].push(Adjacency::new(self.esize, u));
+        self.graph[u].push(Neighbor::new(v, self.esize));
+        self.graph[v].push(Neighbor::new(u, self.esize));
         self.esize += 1;
     }
     pub fn vertices(&self) -> Range<usize> {
         0..self.vsize
     }
-    pub fn adjacency(&self, from: usize) -> &Vec<Adjacency> {
-        &self.graph[from]
+}
+
+impl Graph for AdjacencyListGraph {
+    type Vertex = usize;
+    type Label = usize;
+    type Vertices<'g> = Range<usize>;
+    type Neighbors<'g> = Copied<slice::Iter<'g, Neighbor<usize, usize>>>;
+
+    #[inline]
+    fn vsize(&self) -> usize {
+        self.vsize
+    }
+
+    #[inline]
+    fn vertices(&self) -> Self::Vertices<'_> {
+        0..self.vsize
+    }
+
+    #[inline]
+    fn neighbors(&self, vertex: Self::Vertex) -> Self::Neighbors<'_> {
+        self.graph[vertex].iter().copied()
+    }
+}
+
+impl<T> EdgeMap<T> for AdjacencyListGraph {
+    type Emap = Vec<T>;
+
+    #[inline]
+    fn construct_emap<F>(&self, f: F) -> Self::Emap
+    where
+        F: FnMut() -> T,
+    {
+        let mut map = Vec::with_capacity(self.esize);
+        map.resize_with(self.esize, f);
+        map
+    }
+
+    #[inline]
+    fn emap_get<'a>(&self, map: &'a Self::Emap, eid: Self::Label) -> &'a T {
+        &map[eid]
+    }
+
+    #[inline]
+    fn emap_get_mut<'a>(&self, map: &'a mut Self::Emap, eid: Self::Label) -> &'a mut T {
+        &mut map[eid]
+    }
+}
+
+impl<T> VertexMap<T> for AdjacencyListGraph {
+    type Vmap = Vec<T>;
+
+    #[inline]
+    fn construct_vmap<F>(&self, f: F) -> Self::Vmap
+    where
+        F: FnMut() -> T,
+    {
+        let mut map = Vec::with_capacity(self.vsize);
+        map.resize_with(self.vsize, f);
+        map
+    }
+
+    #[inline]
+    fn vmap_get<'a>(&self, map: &'a Self::Vmap, vertex: Self::Vertex) -> &'a T {
+        &map[vertex]
+    }
+
+    #[inline]
+    fn vmap_get_mut<'a>(&self, map: &'a mut Self::Vmap, vertex: Self::Vertex) -> &'a mut T {
+        &mut map[vertex]
     }
 }
 

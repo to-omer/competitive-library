@@ -527,7 +527,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{Invertible, LinearOperation, Magma, Unital},
-        graph::UndirectedSparseGraph,
+        graph::{Graph, UndirectedSparseGraph},
         num::mint_basic::MInt998244353 as M,
         rand,
         tools::Xorshift,
@@ -556,9 +556,9 @@ mod tests {
     ) {
         vis[u] = true;
         f(u);
-        for a in g.adjacencies(u) {
+        for a in g.neighbors(u) {
             if !vis[a.to] {
-                f2(u, a.to, a.id);
+                f2(u, a.to, a.label);
                 dfs(g, a.to, vis, f, f2);
             }
         }
@@ -693,9 +693,9 @@ mod tests {
                                 assert_eq!(uf.same(x, y), uf2.same(x, y));
                             }
                         }
-                        for a in g.adjacencies(u) {
+                        for a in g.neighbors(u) {
                             if !vis[a.to] {
-                                let (x, y) = p[a.id];
+                                let (x, y) = p[a.label];
                                 let mut uf = uf.clone();
                                 uf.unite(x, y);
                                 let merged = uf2.unite(x, y);

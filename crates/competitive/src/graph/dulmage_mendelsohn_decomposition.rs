@@ -1,4 +1,4 @@
-use super::{BipartiteMatching, DirectedSparseGraph, StronglyConnectedComponent};
+use super::{BipartiteMatching, DirectedSparseGraph, Graph, StronglyConnectedComponent};
 
 pub fn dulmage_mendelsohn_decomposition(
     l: usize,
@@ -28,7 +28,7 @@ pub fn dulmage_mendelsohn_decomposition(
             stack.push(u);
             while let Some(u) = stack.pop() {
                 cmap[scc[u]] = !0;
-                for a in g.adjacencies(u) {
+                for a in g.neighbors(u) {
                     if !visited[a.to] {
                         visited[a.to] = true;
                         stack.push(a.to);
@@ -43,7 +43,7 @@ pub fn dulmage_mendelsohn_decomposition(
             stack.push(u);
             while let Some(u) = stack.pop() {
                 cmap[scc[u]] = 0;
-                for a in rg.adjacencies(u) {
+                for a in rg.neighbors(u) {
                     if !visited[a.to] {
                         visited[a.to] = true;
                         stack.push(a.to);

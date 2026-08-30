@@ -1,4 +1,4 @@
-use super::UndirectedSparseGraph;
+use super::{Graph, UndirectedSparseGraph};
 
 impl UndirectedSparseGraph {
     pub fn tree_centroid(&self) -> usize {
@@ -6,7 +6,7 @@ impl UndirectedSparseGraph {
             let n = g.vertices_size();
             let mut size = 1;
             let mut ok = true;
-            for a in g.adjacencies(u) {
+            for a in g.neighbors(u) {
                 if a.to != p {
                     let (s, c) = dfs(g, a.to, u);
                     if c != !0 {

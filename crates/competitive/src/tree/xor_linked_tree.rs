@@ -946,7 +946,7 @@ impl XorEIndexedAccumulator {
 mod tests {
     use super::*;
     use crate::{
-        graph::UndirectedSparseGraph,
+        graph::{Graph, UndirectedSparseGraph},
         scan,
         tools::{Scanner, Xorshift},
         tree::MixedTree,
@@ -961,7 +961,7 @@ mod tests {
         let mut depth = vec![0usize; n];
         let mut stack = vec![root];
         while let Some(u) = stack.pop() {
-            for a in graph.adjacencies(u) {
+            for a in graph.neighbors(u) {
                 if a.to != parent[u] {
                     parent[a.to] = u;
                     depth[a.to] = depth[u] + 1;

@@ -1,4 +1,4 @@
-use super::DirectedSparseGraph;
+use super::{DirectedSparseGraph, Graph};
 
 #[derive(Debug, Clone)]
 pub struct StronglyConnectedComponent<'a> {
@@ -43,7 +43,7 @@ impl StronglyConnectedComponent<'_> {
         self.ord[u] = *now_ord;
         *now_ord += 1;
         self.visited.push(u);
-        for a in self.graph.adjacencies(u) {
+        for a in self.graph.neighbors(u) {
             if self.ord[a.to] == usize::MAX {
                 self.dfs(a.to, now_ord);
                 self.low[u] = self.low[u].min(self.low[a.to]);
@@ -66,7 +66,7 @@ impl StronglyConnectedComponent<'_> {
         let mut used = std::collections::HashSet::new();
         let mut edges = vec![];
         for u in self.graph.vertices() {
-            for a in self.graph.adjacencies(u) {
+            for a in self.graph.neighbors(u) {
                 if self.comp[u] != self.comp[a.to] {
                     let (x, y) = (self.comp[u], self.comp[a.to]);
                     if !used.contains(&(x, y)) {

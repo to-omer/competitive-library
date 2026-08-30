@@ -1,7 +1,4 @@
-use super::{
-    Adjacencies, AdjacenciesWithValue, AdjacencyView, AdjacencyViewIterFromValue, GraphBase,
-    VIndexWithValue, VertexMap, VertexView, Vertices,
-};
+use super::{DirectedGraph, Graph, Neighbor, VertexMap};
 use std::{collections::HashMap, hash::Hash, iter::Map, marker::PhantomData, ops::Range};
 
 pub struct UsizeGraph<Fa> {
@@ -14,55 +11,46 @@ impl<Fa> UsizeGraph<Fa> {
     }
 }
 
-impl<Fa> GraphBase for UsizeGraph<Fa> {
-    type VIndex = usize;
-}
-
-impl<Fa> Vertices for UsizeGraph<Fa> {
-    type VIter<'g>
+impl<Fa, I, T> Graph for UsizeGraph<Fa>
+where
+    I: Iterator<Item = (usize, T)>,
+    Fa: Fn(usize) -> I,
+{
+    type Vertex = usize;
+    type Label = T;
+    type Vertices<'g>
         = Range<usize>
     where
         Fa: 'g;
-    fn vertices(&self) -> Self::VIter<'_> {
+    type Neighbors<'g>
+        = Map<I, fn((usize, T)) -> Neighbor<usize, T>>
+    where
+        Fa: 'g;
+
+    #[inline]
+    fn vsize(&self) -> usize {
+        self.vsize
+    }
+
+    #[inline]
+    fn vertices(&self) -> Self::Vertices<'_> {
         0..self.vsize
     }
-}
 
-impl<Fa, I, T> Adjacencies for UsizeGraph<Fa>
-where
-    I: Iterator<Item = (usize, T)>,
-    Fa: Fn(usize) -> I,
-    T: Clone,
-{
-    type AIndex = VIndexWithValue<usize, T>;
-    type AIter<'g>
-        = Map<I, fn((usize, T)) -> VIndexWithValue<usize, T>>
-    where
-        Fa: 'g;
-
-    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
-        (self.adj)(vid).map(|a| a.into())
-    }
-}
-impl<Fa, I, T> AdjacenciesWithValue<T> for UsizeGraph<Fa>
-where
-    I: Iterator<Item = (usize, T)>,
-    Fa: Fn(usize) -> I,
-    T: Clone,
-{
-    type AIndex = VIndexWithValue<usize, T>;
-    type AIter<'g>
-        = Map<I, fn((usize, T)) -> VIndexWithValue<usize, T>>
-    where
-        Fa: 'g;
-
-    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_> {
-        (self.adj)(vid).map(|a| a.into())
+    #[inline]
+    fn neighbors(&self, vertex: Self::Vertex) -> Self::Neighbors<'_> {
+        (self.adj)(vertex).map(Into::into)
     }
 }
 
-impl<Fa, T> VertexMap<T> for UsizeGraph<Fa> {
+impl<Fa> DirectedGraph for UsizeGraph<Fa> where UsizeGraph<Fa>: Graph {}
+
+impl<Fa, T> VertexMap<T> for UsizeGraph<Fa>
+where
+    Self: Graph<Vertex = usize>,
+{
     type Vmap = Vec<T>;
+    #[inline]
     fn construct_vmap<F>(&self, f: F) -> Self::Vmap
     where
         F: FnMut() -> T,
@@ -71,45 +59,13 @@ impl<Fa, T> VertexMap<T> for UsizeGraph<Fa> {
         v.resize_with(self.vsize, f);
         v
     }
-    fn vmap_get<'a>(&self, map: &'a Self::Vmap, vid: Self::VIndex) -> &'a T {
-        assert!(vid < self.vsize, "expected 0..{}, but {}", self.vsize, vid);
-        unsafe { map.get_unchecked(vid) }
+    #[inline]
+    fn vmap_get<'a>(&self, map: &'a Self::Vmap, vid: Self::Vertex) -> &'a T {
+        &map[vid]
     }
-    fn vmap_get_mut<'a>(&self, map: &'a mut Self::Vmap, vid: Self::VIndex) -> &'a mut T {
-        assert!(vid < self.vsize, "expected 0..{}, but {}", self.vsize, vid);
-        unsafe { map.get_unchecked_mut(vid) }
-    }
-}
-impl<Fa, T> VertexView<Vec<T>, T> for UsizeGraph<Fa>
-where
-    T: Clone,
-{
-    fn vview(&self, map: &Vec<T>, vid: Self::VIndex) -> T {
-        self.vmap_get(map, vid).clone()
-    }
-}
-impl<Fa, T> VertexView<[T], T> for UsizeGraph<Fa>
-where
-    T: Clone,
-{
-    fn vview(&self, map: &[T], vid: Self::VIndex) -> T {
-        assert!(vid < self.vsize, "expected 0..{}, but {}", self.vsize, vid);
-        unsafe { map.get_unchecked(vid) }.clone()
-    }
-}
-impl<'a, Fa, M, I, T, U> AdjacencyView<'a, M, U> for UsizeGraph<Fa>
-where
-    I: Iterator<Item = (usize, T)>,
-    Fa: Fn(usize) -> I,
-    T: Clone,
-    M: 'a + Fn(T) -> U,
-{
-    type AViewIter<'g>
-        = AdjacencyViewIterFromValue<'g, 'a, Self, M, T, U>
-    where
-        Fa: 'g;
-    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
-        AdjacencyViewIterFromValue::new(self.adjacencies_with_value(vid), map)
+    #[inline]
+    fn vmap_get_mut<'a>(&self, map: &'a mut Self::Vmap, vid: Self::Vertex) -> &'a mut T {
+        &mut map[vid]
     }
 }
 
@@ -129,113 +85,68 @@ impl<V, Fv, Fa> ClosureGraph<V, Fv, Fa> {
     }
 }
 
-impl<V, Fv, Fa> GraphBase for ClosureGraph<V, Fv, Fa>
-where
-    V: Eq + Copy,
-{
-    type VIndex = V;
-}
-
-impl<V, Fv, Fa, Iv> Vertices for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa, Iv, Ia, T> Graph for ClosureGraph<V, Fv, Fa>
 where
     V: Eq + Copy,
     Iv: Iterator<Item = V>,
     Fv: Fn() -> Iv,
+    Ia: Iterator<Item = (V, T)>,
+    Fa: Fn(V) -> Ia,
 {
-    type VIter<'g>
+    type Vertex = V;
+    type Label = T;
+    type Vertices<'g>
         = Iv
     where
         V: 'g,
         Fv: 'g,
         Fa: 'g;
-    fn vertices(&self) -> Self::VIter<'_> {
+    type Neighbors<'g>
+        = Map<Ia, fn((V, T)) -> Neighbor<V, T>>
+    where
+        V: 'g,
+        Fv: 'g,
+        Fa: 'g;
+
+    #[inline]
+    fn vsize(&self) -> usize {
+        (self.vs)().count()
+    }
+
+    #[inline]
+    fn vertices(&self) -> Self::Vertices<'_> {
         (self.vs)()
     }
-}
 
-impl<V, Fv, Fa, Ia, T> Adjacencies for ClosureGraph<V, Fv, Fa>
-where
-    V: Eq + Copy,
-    Ia: Iterator<Item = (V, T)>,
-    Fa: Fn(V) -> Ia,
-    T: Clone,
-{
-    type AIndex = VIndexWithValue<V, T>;
-    type AIter<'g>
-        = Map<Ia, fn((V, T)) -> VIndexWithValue<V, T>>
-    where
-        V: 'g,
-        Fv: 'g,
-        Fa: 'g;
-
-    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
-        (self.adj)(vid).map(|a| a.into())
+    #[inline]
+    fn neighbors(&self, vertex: Self::Vertex) -> Self::Neighbors<'_> {
+        (self.adj)(vertex).map(Into::into)
     }
 }
-impl<V, Fv, Fa, Ia, T> AdjacenciesWithValue<T> for ClosureGraph<V, Fv, Fa>
-where
-    V: Eq + Copy,
-    Ia: Iterator<Item = (V, T)>,
-    Fa: Fn(V) -> Ia,
-    T: Clone,
-{
-    type AIndex = VIndexWithValue<V, T>;
-    type AIter<'g>
-        = Map<Ia, fn((V, T)) -> VIndexWithValue<V, T>>
-    where
-        V: 'g,
-        Fv: 'g,
-        Fa: 'g;
 
-    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_> {
-        (self.adj)(vid).map(|a| a.into())
-    }
-}
+impl<V, Fv, Fa> DirectedGraph for ClosureGraph<V, Fv, Fa> where Self: Graph {}
 
 impl<V, Fv, Fa, T> VertexMap<T> for ClosureGraph<V, Fv, Fa>
 where
     V: Eq + Copy + Hash,
     T: Clone,
+    Self: Graph<Vertex = V>,
 {
     type Vmap = (HashMap<V, T>, T);
+    #[inline]
     fn construct_vmap<F>(&self, mut f: F) -> Self::Vmap
     where
         F: FnMut() -> T,
     {
         (HashMap::new(), f())
     }
-    fn vmap_get<'a>(&self, (map, val): &'a Self::Vmap, vid: Self::VIndex) -> &'a T {
+    #[inline]
+    fn vmap_get<'a>(&self, (map, val): &'a Self::Vmap, vid: Self::Vertex) -> &'a T {
         map.get(&vid).unwrap_or(val)
     }
-    fn vmap_get_mut<'a>(&self, (map, val): &'a mut Self::Vmap, vid: Self::VIndex) -> &'a mut T {
+    #[inline]
+    fn vmap_get_mut<'a>(&self, (map, val): &'a mut Self::Vmap, vid: Self::Vertex) -> &'a mut T {
         map.entry(vid).or_insert_with(|| val.clone())
-    }
-}
-impl<V, Fv, Fa, T> VertexView<(HashMap<V, T>, T), T> for ClosureGraph<V, Fv, Fa>
-where
-    V: Eq + Copy + Hash,
-    T: Clone,
-{
-    fn vview(&self, map: &(HashMap<V, T>, T), vid: Self::VIndex) -> T {
-        self.vmap_get(map, vid).clone()
-    }
-}
-impl<'a, V, Fv, Fa, M, Ia, T, U> AdjacencyView<'a, M, U> for ClosureGraph<V, Fv, Fa>
-where
-    V: Eq + Copy,
-    Ia: Iterator<Item = (V, T)>,
-    Fa: Fn(V) -> Ia,
-    T: Clone,
-    M: 'a + Fn(T) -> U,
-{
-    type AViewIter<'g>
-        = AdjacencyViewIterFromValue<'g, 'a, Self, M, T, U>
-    where
-        Fa: 'g,
-        Fv: 'g,
-        V: 'g;
-    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
-        AdjacencyViewIterFromValue::new(self.adjacencies_with_value(vid), map)
     }
 }
 
@@ -266,7 +177,7 @@ mod tests {
         let g = GridGraph::new_adj8(h, w);
         let g1 = UsizeGraph::new(h * w, |u| {
             g.adj8(g.unflat(u)).filter_map(|a| {
-                if *g.vmap_get(&visitable, a.0) {
+                if visitable[a.0.0][a.0.1] {
                     Some((g.flat(a.0), a.1))
                 } else {
                     None
@@ -289,10 +200,10 @@ mod tests {
                 }
                 let cost1 = g1
                     .standard_sp_additive()
-                    .dijkstra([g.flat((i, j))], &|dir| weight[dir as usize]);
+                    .dijkstra([g.flat((i, j))], |dir| weight[dir as usize]);
                 let cost2 = g2
                     .standard_sp_additive()
-                    .dijkstra([(i, j)], &|dir| weight[dir as usize]);
+                    .dijkstra([(i, j)], |dir| weight[dir as usize]);
                 for ni in 0..h {
                     for nj in 0..w {
                         assert_eq!(
@@ -317,12 +228,12 @@ mod tests {
             .collect();
 
         let g = GridGraph::new_adj4(h, w);
-        let cost: Vec<Vec<Vec<Vec<_>>>> = (0..h)
+        let cost: Vec<Vec<Vec<_>>> = (0..h)
             .map(|i| {
                 (0..w)
                     .map(|j| {
                         g.standard_sp_additive()
-                            .dijkstra([(i, j)], &|dir| weight[dir as usize])
+                            .dijkstra([(i, j)], |dir| weight[dir as usize])
                     })
                     .collect()
             })
@@ -333,13 +244,13 @@ mod tests {
         );
         let cost2 = g2
             .standard_sp_additive()
-            .warshall_floyd_ap(&|dir| weight[dir as usize]);
-        for i in 0..h {
-            for j in 0..w {
+            .warshall_floyd_ap(|dir| weight[dir as usize]);
+        for (i, row) in cost.iter().enumerate() {
+            for (j, source_cost) in row.iter().enumerate() {
                 for ni in 0..h {
                     for nj in 0..w {
                         assert_eq!(
-                            g.vmap_get(g.vmap_get(&cost, (i, j)), (ni, nj)),
+                            g.vmap_get(source_cost, (ni, nj)),
                             g2.vmap_get(g2.vmap_get(&cost2, (i, j)), (ni, nj))
                         );
                     }

@@ -123,7 +123,7 @@ impl LevelAncestor {
 
 #[cfg(test)]
 mod tests {
-    use crate::{tools::Xorshift, tree::MixedTree};
+    use crate::{graph::Graph, tools::Xorshift, tree::MixedTree};
 
     #[test]
     fn test_level_ancestor() {
@@ -137,7 +137,7 @@ mod tests {
             let mut stack = vec![(root, None)];
             while let Some((u, p)) = stack.pop() {
                 parent[u] = p;
-                for a in tree.adjacencies(u) {
+                for a in tree.neighbors(u) {
                     if Some(a.to) != p {
                         stack.push((a.to, Some(u)));
                     }

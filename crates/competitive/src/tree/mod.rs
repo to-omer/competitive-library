@@ -5,7 +5,7 @@ use crate::{
     data_structure::{
         Allocator, MemoryPool, RangeMinimumQuery, binary_search_tree, splay_operations,
     },
-    graph::UndirectedSparseGraph,
+    graph::{Graph, UndirectedSparseGraph},
     math::{ConvolveSteps, U64Convolve},
     tools::{IterScan, MarkedIterScan, RandomSpec, Xorshift},
 };

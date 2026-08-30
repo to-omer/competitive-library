@@ -1,4 +1,4 @@
-use super::BidirectionalSparseGraph;
+use super::{BidirectionalSparseGraph, Graph};
 
 #[derive(Debug, Clone)]
 pub struct PrimalDualBuilder {
@@ -80,9 +80,9 @@ impl PrimalDual<'_> {
         for _ in 1..self.graph.vertices_size() {
             let mut end = true;
             for u in self.graph.vertices() {
-                for a in self.graph.adjacencies(u) {
-                    let ncost = self.potential[u].saturating_add(self.costs[a.id]);
-                    if self.capacities[a.id] > 0 && self.potential[a.to] > ncost {
+                for a in self.graph.neighbors(u) {
+                    let ncost = self.potential[u].saturating_add(self.costs[a.label]);
+                    if self.capacities[a.label] > 0 && self.potential[a.to] > ncost {
                         self.potential[a.to] = ncost;
                         end = false;
                     }
@@ -107,13 +107,13 @@ impl PrimalDual<'_> {
             if !self.has_negedge && u == t {
                 break;
             }
-            for a in self.graph.adjacencies(u) {
-                let ncost = (self.dist[u].saturating_add(self.costs[a.id]))
+            for a in self.graph.neighbors(u) {
+                let ncost = (self.dist[u].saturating_add(self.costs[a.label]))
                     .saturating_add(self.potential[u].saturating_sub(self.potential[a.to]));
-                if self.capacities[a.id] > 0 && self.dist[a.to] > ncost {
+                if self.capacities[a.label] > 0 && self.dist[a.to] > ncost {
                     self.dist[a.to] = ncost;
                     self.prev_vertex[a.to] = u;
-                    self.prev_edge[a.to] = a.id;
+                    self.prev_edge[a.to] = a.label;
                     heap.push((Reverse(ncost), a.to));
                 }
             }

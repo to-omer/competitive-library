@@ -530,7 +530,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{Associative, EmptyAct, Magma, RangeSumRangeLinear, Unital},
-        graph::UndirectedSparseGraph,
+        graph::{Graph, UndirectedSparseGraph},
         tools::Xorshift,
         tree::{MixedTree, PathTree, StarTree},
     };
@@ -538,7 +538,7 @@ mod tests {
     fn adjacency(graph: &UndirectedSparseGraph) -> Vec<Vec<usize>> {
         graph
             .vertices()
-            .map(|u| graph.adjacencies(u).map(|a| a.to).collect())
+            .map(|u| graph.neighbors(u).map(|a| a.to).collect())
             .collect()
     }
 

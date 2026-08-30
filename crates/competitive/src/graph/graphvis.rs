@@ -1,4 +1,4 @@
-use super::{BidirectionalSparseGraph, DirectedSparseGraph, UndirectedSparseGraph};
+use super::{BidirectionalSparseGraph, DirectedSparseGraph, Graph, UndirectedSparseGraph};
 use std::{fmt::Display, fmt::Write};
 
 impl DirectedSparseGraph {
@@ -15,8 +15,8 @@ impl DirectedSparseGraph {
             writeln!(s, "    {} [{}];", u, node_attr(u)).ok();
         }
         for u in self.vertices() {
-            for a in self.adjacencies(u) {
-                writeln!(s, "    {} -> {} [{}];", u, a.to, edge_attr(a.id)).ok();
+            for a in self.neighbors(u) {
+                writeln!(s, "    {} -> {} [{}];", u, a.to, edge_attr(a.label)).ok();
             }
         }
         s.push('}');
@@ -59,8 +59,8 @@ impl BidirectionalSparseGraph {
             writeln!(s, "    {} [{}];", u, node_attr(u)).ok();
         }
         for u in self.vertices() {
-            for a in self.adjacencies(u) {
-                writeln!(s, "    {} -> {} [{}];", u, a.to, edge_attr(a.id)).ok();
+            for a in self.neighbors(u) {
+                writeln!(s, "    {} -> {} [{}];", u, a.to, edge_attr(a.label)).ok();
             }
         }
         s.push('}');
