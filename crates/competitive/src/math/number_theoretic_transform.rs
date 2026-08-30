@@ -11,6 +11,23 @@ use std::{
     ops::{AddAssign, Mul, SubAssign},
 };
 
+#[cfg(target_arch = "x86_64")]
+#[inline]
+fn batch_ntt_simd_backend(len: usize, width: usize) -> SimdBackend {
+    // power_projection uses power-of-two widths; SIMD scalar tails regress for some other widths.
+    if width < 8 || !width.is_power_of_two() || len < width * 4 {
+        SimdBackend::Scalar
+    } else if width == 8 {
+        if is_x86_feature_detected!("avx2") {
+            SimdBackend::Avx2
+        } else {
+            SimdBackend::Scalar
+        }
+    } else {
+        simd_backend()
+    }
+}
+
 pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
 pub type MIntConvolve<M> = Convolve<(M, (Modulo167772161, Modulo469762049, Modulo754974721))>;
@@ -169,10 +186,33 @@ fn ntt_scalar<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
-    ntt_batch(a, 1);
+    ntt_batch_scalar(a, 1);
 }
 
 fn ntt_batch<M>(a: &mut [MInt<M>], width: usize)
+where
+    M: Montgomery32NttModulus,
+{
+    #[cfg(target_arch = "x86_64")]
+    {
+        match batch_ntt_simd_backend(a.len(), width) {
+            SimdBackend::Avx512 => {
+                // SAFETY: backend detection checked all required AVX-512 features.
+                unsafe { ntt_simd::ntt_batch_avx512(a, width) };
+                return;
+            }
+            SimdBackend::Avx2 => {
+                // SAFETY: backend detection checked AVX2.
+                unsafe { ntt_simd::ntt_batch_avx2(a, width) };
+                return;
+            }
+            SimdBackend::Scalar => {}
+        }
+    }
+    ntt_batch_scalar(a, width);
+}
+
+fn ntt_batch_scalar<M>(a: &mut [MInt<M>], width: usize)
 where
     M: Montgomery32NttModulus,
 {
@@ -224,10 +264,33 @@ fn intt_scalar<M>(a: &mut [MInt<M>])
 where
     M: Montgomery32NttModulus,
 {
-    intt_batch(a, 1);
+    intt_batch_scalar(a, 1);
 }
 
 fn intt_batch<M>(a: &mut [MInt<M>], width: usize)
+where
+    M: Montgomery32NttModulus,
+{
+    #[cfg(target_arch = "x86_64")]
+    {
+        match batch_ntt_simd_backend(a.len(), width) {
+            SimdBackend::Avx512 => {
+                // SAFETY: backend detection checked all required AVX-512 features.
+                unsafe { ntt_simd::intt_batch_avx512(a, width) };
+                return;
+            }
+            SimdBackend::Avx2 => {
+                // SAFETY: backend detection checked AVX2.
+                unsafe { ntt_simd::intt_batch_avx2(a, width) };
+                return;
+            }
+            SimdBackend::Scalar => {}
+        }
+    }
+    intt_batch_scalar(a, width);
+}
+
+fn intt_batch_scalar<M>(a: &mut [MInt<M>], width: usize)
 where
     M: Montgomery32NttModulus,
 {
@@ -1180,6 +1243,47 @@ mod tests {
     use super::*;
     use crate::num::{mint_basic::Modulo1000000009, montgomery::MInt998244353};
     use crate::tools::Xorshift;
+
+    #[test]
+    fn test_ntt_batch() {
+        let mut rng = Xorshift::default();
+        for log_n in 0..=5 {
+            let n = 1 << log_n;
+            for width in 1..=64 {
+                let input: Vec<MInt998244353> = rng.random_iter(..).take(n * width).collect();
+                let mut expected = input.clone();
+                ntt_batch_scalar(&mut expected, width);
+
+                let mut actual = input.clone();
+                ntt_batch(&mut actual, width);
+                assert_eq!(actual, expected);
+                intt_batch(&mut actual, width);
+                assert_eq!(actual, input);
+
+                #[cfg(target_arch = "x86_64")]
+                if is_x86_feature_detected!("avx2") {
+                    let mut actual = input.clone();
+                    // SAFETY: feature detection checked AVX2.
+                    unsafe { ntt_simd::ntt_batch_avx2(&mut actual, width) };
+                    assert_eq!(actual, expected);
+                    // SAFETY: feature detection checked AVX2.
+                    unsafe { ntt_simd::intt_batch_avx2(&mut actual, width) };
+                    assert_eq!(actual, input);
+                }
+
+                #[cfg(target_arch = "x86_64")]
+                if avx512_supported() {
+                    let mut actual = input.clone();
+                    // SAFETY: feature detection checked all required AVX-512 features.
+                    unsafe { ntt_simd::ntt_batch_avx512(&mut actual, width) };
+                    assert_eq!(actual, expected);
+                    // SAFETY: feature detection checked all required AVX-512 features.
+                    unsafe { ntt_simd::intt_batch_avx512(&mut actual, width) };
+                    assert_eq!(actual, input);
+                }
+            }
+        }
+    }
 
     #[test]
     fn test_convolve_naive() {
