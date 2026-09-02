@@ -544,6 +544,7 @@ use std::cmp::Reverse as BenchReverse;
 use std::collections::BinaryHeap as BenchBinaryHeap;
 use std::hint::black_box as bench_black_box;
 use std::io::{self as bench_io, Read as BenchRead};
+use std::num::Wrapping;
 use std::time::Instant as BenchInstant;
 
 const BENCH_SEED: u64 = 0x243f_6a88_85a3_08d3;
@@ -680,7 +681,7 @@ fn bench_header(suite: usize) {
     #[cfg(not(target_arch = "x86_64"))]
     let (bmi2, avx2, avx512f, avx512vl) = (false, false, false, false);
     println!(
-        "benchmark=competitive_simd_methods_v3 suite={suite} seed={BENCH_SEED} rounds={BENCH_ROUNDS} warmups=1 order=alternating arch={} os={} pointer_bits={} bmi2={bmi2} avx2={avx2} avx512f={avx512f} avx512vl={avx512vl}",
+        "benchmark=competitive_simd_methods_v4 suite={suite} seed={BENCH_SEED} rounds={BENCH_ROUNDS} warmups=1 order=alternating arch={} os={} pointer_bits={} bmi2={bmi2} avx2={avx2} avx512f={avx512f} avx512vl={avx512vl}",
         std::env::consts::ARCH,
         std::env::consts::OS,
         usize::BITS,
@@ -3770,124 +3771,13 @@ fn bench_dary_u128_variants() {
     );
 }
 
-trait BenchUnsigned: Copy + Default + Ord {
-    fn wrapping_add(self, other: Self) -> Self;
-    fn wrapping_sub(self, other: Self) -> Self;
-}
-
-impl BenchUnsigned for u32 {
-    fn wrapping_add(self, other: Self) -> Self {
-        self.wrapping_add(other)
-    }
-
-    fn wrapping_sub(self, other: Self) -> Self {
-        self.wrapping_sub(other)
-    }
-}
-
-impl BenchUnsigned for u64 {
-    fn wrapping_add(self, other: Self) -> Self {
-        self.wrapping_add(other)
-    }
-
-    fn wrapping_sub(self, other: Self) -> Self {
-        self.wrapping_sub(other)
-    }
-}
-
-#[derive(Clone)]
-struct BenchFenwick<T: BenchUnsigned> {
-    bit: Vec<T>,
-}
-
-impl<T: BenchUnsigned> BenchFenwick<T> {
-    fn zeroed(len: usize) -> Self {
-        Self {
-            bit: vec![T::default(); len + 1],
-        }
-    }
-
-    fn from_slice(values: &[T]) -> Self {
-        let mut bit = vec![T::default(); values.len() + 1];
-        for (index, &value) in values.iter().enumerate() {
-            let position = index + 1;
-            bit[position] = bit[position].wrapping_add(value);
-            let parent = position + (position & position.wrapping_neg());
-            if parent <= values.len() {
-                bit[parent] = bit[parent].wrapping_add(bit[position]);
-            }
-        }
-        Self { bit }
-    }
-
-    fn len(&self) -> usize {
-        self.bit.len() - 1
-    }
-
-    #[inline]
-    fn update(&mut self, index: usize, value: T) {
-        let mut position = index + 1;
-        while position < self.bit.len() {
-            self.bit[position] = self.bit[position].wrapping_add(value);
-            position += position & position.wrapping_neg();
-        }
-    }
-
-    #[inline]
-    fn accumulate0(&self, mut end: usize) -> T {
-        let mut result = T::default();
-        while end != 0 {
-            result = result.wrapping_add(self.bit[end]);
-            end -= end & end.wrapping_neg();
-        }
-        result
-    }
-
-    #[inline]
-    fn accumulate(&self, index: usize) -> T {
-        self.accumulate0(index + 1)
-    }
-
-    #[inline]
-    fn fold(&self, left: usize, right: usize) -> T {
-        self.accumulate0(right).wrapping_sub(self.accumulate0(left))
-    }
-
-    #[inline]
-    fn get(&self, index: usize) -> T {
-        self.fold(index, index + 1)
-    }
-
-    #[inline]
-    fn set(&mut self, index: usize, value: T) {
-        self.update(index, value.wrapping_sub(self.get(index)));
-    }
-
-    #[inline]
-    fn partition_point_acc(&self, target: T) -> usize {
-        let mut position = 0;
-        let mut sum = T::default();
-        let mut step = self.len().next_power_of_two();
-        while step != 0 {
-            if position + step <= self.len() {
-                let next = sum.wrapping_add(self.bit[position + step]);
-                if next <= target {
-                    position += step;
-                    sum = next;
-                }
-            }
-            step >>= 1;
-        }
-        position
-    }
-}
-
 macro_rules! bench_wide_prefix_type {
     ($name:literal, $wide:ty, $value:ty, $n:expr, $q:expr) => {{
         let n = $n;
         let q = $q;
         let mut rng = BenchRng::new(BENCH_SEED ^ <$value>::BITS as u64 ^ 0x7000);
         let values: Vec<$value> = (0..n).map(|_| (rng.next() % 8) as $value).collect();
+        let wrapped_values: Vec<_> = values.iter().copied().map(Wrapping).collect();
         let indices: Vec<_> = (0..q).map(|_| rng.index(n)).collect();
         let deltas: Vec<$value> = (0..q).map(|_| (rng.next() % 8) as $value).collect();
         let replacements: Vec<$value> = (0..q).map(|_| (rng.next() % 64) as $value).collect();
@@ -3915,10 +3805,10 @@ macro_rules! bench_wide_prefix_type {
             "binary_indexed_tree",
             Box::new(|| {
                 let start = BenchInstant::now();
-                let tree = BenchFenwick::<$value>::zeroed(n);
+                let tree = BinaryIndexedTree::<AdditiveOperation<Wrapping<$value>>>::new(n);
                 bench_black_box(&tree);
                 let elapsed = start.elapsed().as_nanos();
-                (elapsed, tree.accumulate0(n) as u64)
+                (elapsed, tree.accumulate0(n).0 as u64)
             }),
         )];
         for backend in bench_backends() {
@@ -3940,12 +3830,12 @@ macro_rules! bench_wide_prefix_type {
         let mut cases: Vec<BenchCase<'_>> = vec![(
             "binary_indexed_tree",
             Box::new(|| {
-                let input = values.clone();
+                let input = wrapped_values.clone();
                 let start = BenchInstant::now();
-                let tree = BenchFenwick::<$value>::from_slice(&input);
+                let tree = BinaryIndexedTree::<AdditiveOperation<Wrapping<$value>>>::from_slice(&input);
                 bench_black_box(&tree);
                 let elapsed = start.elapsed().as_nanos();
-                (elapsed, tree.accumulate0(n) as u64)
+                (elapsed, tree.accumulate0(n).0 as u64)
             }),
         )];
         for backend in bench_backends() {
@@ -3969,13 +3859,13 @@ macro_rules! bench_wide_prefix_type {
         let mut cases: Vec<BenchCase<'_>> = vec![(
             "binary_indexed_tree",
             Box::new(|| {
-                let mut tree = BenchFenwick::<$value>::from_slice(&values);
+                let mut tree = BinaryIndexedTree::<AdditiveOperation<Wrapping<$value>>>::from_slice(&wrapped_values);
                 let start = BenchInstant::now();
                 for (&index, &value) in indices.iter().zip(&deltas) {
-                    tree.update(index, value);
+                    tree.update(index, Wrapping(value));
                 }
                 let elapsed = start.elapsed().as_nanos();
-                (elapsed, tree.accumulate0(n) as u64)
+                (elapsed, tree.accumulate0(n).0 as u64)
             }),
         )];
         for backend in bench_backends() {
@@ -4002,13 +3892,13 @@ macro_rules! bench_wide_prefix_type {
         let mut cases: Vec<BenchCase<'_>> = vec![(
             "binary_indexed_tree",
             Box::new(|| {
-                let mut tree = BenchFenwick::<$value>::from_slice(&values);
+                let mut tree = BinaryIndexedTree::<AdditiveOperation<Wrapping<$value>>>::from_slice(&wrapped_values);
                 let start = BenchInstant::now();
                 for (&index, &value) in indices.iter().zip(&replacements) {
-                    tree.set(index, value);
+                    tree.set(index, Wrapping(value));
                 }
                 let elapsed = start.elapsed().as_nanos();
-                (elapsed, tree.accumulate0(n) as u64)
+                (elapsed, tree.accumulate0(n).0 as u64)
             }),
         )];
         for backend in bench_backends() {
@@ -4043,25 +3933,25 @@ macro_rules! bench_wide_prefix_type {
             let mut cases: Vec<BenchCase<'_>> = vec![(
                 "binary_indexed_tree",
                 Box::new(|| {
-                    let tree = BenchFenwick::<$value>::from_slice(&values);
+                    let tree = BinaryIndexedTree::<AdditiveOperation<Wrapping<$value>>>::from_slice(&wrapped_values);
                     bench_timed(|| match operation {
                         "accumulate0" => ends
                             .iter()
-                            .fold(0, |sum, &end| bench_mix(sum, tree.accumulate0(end) as u64)),
+                            .fold(0, |sum, &end| bench_mix(sum, tree.accumulate0(end).0 as u64)),
                         "accumulate" => indices.iter().fold(0, |sum, &index| {
-                            bench_mix(sum, tree.accumulate(index) as u64)
+                            bench_mix(sum, tree.accumulate(index).0 as u64)
                         }),
                         "fold" => ranges.iter().fold(0, |sum, &(left, right)| {
-                            bench_mix(sum, tree.fold(left, right) as u64)
+                            bench_mix(sum, tree.fold(left, right).0 as u64)
                         }),
                         "get" => indices
                             .iter()
-                            .fold(0, |sum, &index| bench_mix(sum, tree.get(index) as u64)),
+                            .fold(0, |sum, &index| bench_mix(sum, tree.get(index).0 as u64)),
                         "fold_all" => {
-                            (0..q).fold(0, |sum, _| bench_mix(sum, tree.accumulate0(n) as u64))
+                            (0..q).fold(0, |sum, _| bench_mix(sum, tree.accumulate0(n).0 as u64))
                         }
                         "partition_point" => targets.iter().fold(0, |sum, &target| {
-                            bench_mix(sum, tree.partition_point_acc(target) as u64)
+                            bench_mix(sum, tree.partition_point_acc(|sum| sum.0 <= target) as u64)
                         }),
                         _ => unreachable!(),
                     })
