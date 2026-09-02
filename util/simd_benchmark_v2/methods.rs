@@ -680,7 +680,7 @@ fn bench_header(suite: usize) {
     #[cfg(not(target_arch = "x86_64"))]
     let (bmi2, avx2, avx512f, avx512vl) = (false, false, false, false);
     println!(
-        "benchmark=competitive_simd_methods_v2 suite={suite} seed={BENCH_SEED} rounds={BENCH_ROUNDS} warmups=1 order=alternating arch={} os={} pointer_bits={} bmi2={bmi2} avx2={avx2} avx512f={avx512f} avx512vl={avx512vl}",
+        "benchmark=competitive_simd_methods_v3 suite={suite} seed={BENCH_SEED} rounds={BENCH_ROUNDS} warmups=1 order=alternating arch={} os={} pointer_bits={} bmi2={bmi2} avx2={avx2} avx512f={avx512f} avx512vl={avx512vl}",
         std::env::consts::ARCH,
         std::env::consts::OS,
         usize::BITS,
@@ -3205,8 +3205,10 @@ macro_rules! bench_bucket_type {
                         let mut queue = BenchBinaryHeap::from(values.clone());
                         bench_timed(|| {
                             updates.iter().fold(0, |checksum, &value| {
-                                let removed = queue.pop().unwrap();
-                                queue.push(value);
+                                let mut maximum = queue.peek_mut().unwrap();
+                                let removed = *maximum;
+                                *maximum = value;
+                                drop(maximum);
                                 bench_mix(checksum, removed as u64)
                             })
                         })
@@ -3237,8 +3239,10 @@ macro_rules! bench_bucket_type {
                         let mut queue = BenchBinaryHeap::from(values.clone());
                         bench_timed(|| {
                             (0..q).fold(0, |checksum, _| {
-                                let value = queue.pop().unwrap();
-                                queue.push(value);
+                                let mut maximum = queue.peek_mut().unwrap();
+                                let value = *maximum;
+                                *maximum = value;
+                                drop(maximum);
                                 bench_mix(checksum, value as u64)
                             })
                         })
@@ -3527,8 +3531,10 @@ macro_rules! bench_dary_type {
                     bench_timed(|| {
                         if operation == "replace_same_max" {
                             return (0..q).fold(0, |checksum, _| {
-                                let value = heap.pop().unwrap();
-                                heap.push(value);
+                                let mut maximum = heap.peek_mut().unwrap();
+                                let value = *maximum;
+                                *maximum = value;
+                                drop(maximum);
                                 bench_mix(checksum, bench_integer_hash(value as u128))
                             });
                         }
@@ -3536,8 +3542,17 @@ macro_rules! bench_dary_type {
                             if operation == "top_k" && value >= *heap.peek().unwrap() {
                                 bench_mix(checksum, 0)
                             } else {
-                                let removed = heap.pop().unwrap();
-                                heap.push(value);
+                                let removed = if operation == "pop_push" {
+                                    let removed = heap.pop().unwrap();
+                                    heap.push(value);
+                                    removed
+                                } else {
+                                    let mut maximum = heap.peek_mut().unwrap();
+                                    let removed = *maximum;
+                                    *maximum = value;
+                                    drop(maximum);
+                                    removed
+                                };
                                 bench_mix(checksum, bench_integer_hash(removed as u128))
                             }
                         })
@@ -4658,7 +4673,7 @@ fn bench_radix_methods() {
             true,
             vec![
                 (
-                    "binary_heap",
+                    "binary_heap_pop_push",
                     Box::new(|| {
                         let mut queue: BenchBinaryHeap<_> =
                             initial.iter().copied().map(BenchReverse).collect();
@@ -4672,7 +4687,23 @@ fn bench_radix_methods() {
                     }),
                 ),
                 (
-                    "radix_u64",
+                    "binary_heap_replace",
+                    Box::new(|| {
+                        let mut queue: BenchBinaryHeap<_> =
+                            initial.iter().copied().map(BenchReverse).collect();
+                        bench_timed(|| {
+                            deltas.iter().fold(0, |checksum, &delta| {
+                                let mut minimum = queue.peek_mut().unwrap();
+                                let BenchReverse(key) = *minimum;
+                                *minimum = BenchReverse(key + delta);
+                                drop(minimum);
+                                bench_mix(checksum, key)
+                            })
+                        })
+                    }),
+                ),
+                (
+                    "radix_u64_pop_push",
                     Box::new(|| {
                         let mut queue = RadixHeapU64::new();
                         for &key in &initial {
@@ -4920,7 +4951,7 @@ macro_rules! bench_radix_monotone_group {
 
         let mut cases: Vec<BenchCase<'_>> = vec![
             (
-                "binary_heap",
+                "binary_heap_pop_push",
                 Box::new(|| {
                     let mut queue: BenchBinaryHeap<_> = initial_values
                         .iter()
@@ -4937,7 +4968,26 @@ macro_rules! bench_radix_monotone_group {
                 }),
             ),
             (
-                "radix_candidate",
+                "binary_heap_replace",
+                Box::new(|| {
+                    let mut queue: BenchBinaryHeap<_> = initial_values
+                        .iter()
+                        .copied()
+                        .map(BenchReverse)
+                        .collect();
+                    bench_timed(|| {
+                        delta_values.iter().fold(0, |checksum, &delta| {
+                            let mut minimum = queue.peek_mut().unwrap();
+                            let BenchReverse(key) = *minimum;
+                            *minimum = BenchReverse(key + delta);
+                            drop(minimum);
+                            bench_mix(checksum, bench_integer_hash(key as u128))
+                        })
+                    })
+                }),
+            ),
+            (
+                "radix_candidate_pop_push",
                 Box::new(|| {
                     let mut queue = <$radix>::new();
                     for &key in initial_values {
@@ -4955,7 +5005,7 @@ macro_rules! bench_radix_monotone_group {
         ];
         $(
             cases.push((
-                "bucket_queue",
+                "bucket_queue_pop_push",
                 Box::new(|| {
                     let transformed: Vec<$key> = initial_values
                         .iter()
@@ -4971,16 +5021,33 @@ macro_rules! bench_radix_monotone_group {
                     })
                 }),
             ));
+            cases.push((
+                "bucket_queue_replace",
+                Box::new(|| {
+                    let transformed: Vec<$key> = initial_values
+                        .iter()
+                        .map(|&key| <$key>::MAX - key)
+                        .collect();
+                    let mut queue = <$bucket>::from(transformed);
+                    bench_timed(|| {
+                        delta_values.iter().fold(0, |checksum, &delta| {
+                            let key = <$key>::MAX - queue.peek().unwrap();
+                            queue.replace(<$key>::MAX - (key + delta)).unwrap();
+                            bench_mix(checksum, bench_integer_hash(key as u128))
+                        })
+                    })
+                }),
+            ));
         )?
         $(
             for backend in bench_backends() {
-                let name = match backend {
-                    SimdBackend::Scalar => "dary_scalar",
-                    SimdBackend::Avx2 => "dary_avx2",
-                    SimdBackend::Avx512 => "dary_avx512",
+                let (pop_push_name, replace_name) = match backend {
+                    SimdBackend::Scalar => ("dary_scalar_pop_push", "dary_scalar_replace"),
+                    SimdBackend::Avx2 => ("dary_avx2_pop_push", "dary_avx2_replace"),
+                    SimdBackend::Avx512 => ("dary_avx512_pop_push", "dary_avx512_replace"),
                 };
                 cases.push((
-                    name,
+                    pop_push_name,
                     Box::new(move || {
                         let transformed: Vec<$key> = initial_values
                             .iter()
@@ -4991,6 +5058,23 @@ macro_rules! bench_radix_monotone_group {
                             delta_values.iter().fold(0, |checksum, &delta| {
                                 let key = <$key>::MAX - queue.pop().unwrap();
                                 queue.push(<$key>::MAX - (key + delta));
+                                bench_mix(checksum, bench_integer_hash(key as u128))
+                            })
+                        })
+                    }),
+                ));
+                cases.push((
+                    replace_name,
+                    Box::new(move || {
+                        let transformed: Vec<$key> = initial_values
+                            .iter()
+                            .map(|&key| <$key>::MAX - key)
+                            .collect();
+                        let mut queue = <$dary>::benchmark_build(transformed, backend);
+                        bench_timed(|| {
+                            delta_values.iter().fold(0, |checksum, &delta| {
+                                let key = <$key>::MAX - queue.peek().unwrap();
+                                queue.replace(<$key>::MAX - (key + delta)).unwrap();
                                 bench_mix(checksum, bench_integer_hash(key as u128))
                             })
                         })
@@ -5124,7 +5208,7 @@ macro_rules! bench_radix_signed_monotone_group {
             true,
             vec![
                 (
-                    "binary_heap",
+                    "binary_heap_pop_push",
                     Box::new(|| {
                         let mut queue: BenchBinaryHeap<_> = initial_values
                             .iter()
@@ -5141,7 +5225,26 @@ macro_rules! bench_radix_signed_monotone_group {
                     }),
                 ),
                 (
-                    "radix_candidate_signed",
+                    "binary_heap_replace",
+                    Box::new(|| {
+                        let mut queue: BenchBinaryHeap<_> = initial_values
+                            .iter()
+                            .copied()
+                            .map(BenchReverse)
+                            .collect();
+                        bench_timed(|| {
+                            delta_values.iter().fold(0, |checksum, &delta| {
+                                let mut minimum = queue.peek_mut().unwrap();
+                                let BenchReverse(key) = *minimum;
+                                *minimum = BenchReverse(key + delta);
+                                drop(minimum);
+                                bench_mix(checksum, bench_integer_hash(key as u128))
+                            })
+                        })
+                    }),
+                ),
+                (
+                    "radix_candidate_signed_pop_push",
                     Box::new(|| {
                         let mut queue = <$radix>::new();
                         for &key in initial_values {
@@ -5466,8 +5569,17 @@ fn bench_pairing_heap_baseline() {
                                 if operation == "top_k" && value >= *heap.peek().unwrap() {
                                     return bench_mix(checksum, 0);
                                 }
-                                let removed = heap.pop().unwrap();
-                                heap.push(value);
+                                let removed = if operation == "pop_push" {
+                                    let removed = heap.pop().unwrap();
+                                    heap.push(value);
+                                    removed
+                                } else {
+                                    let mut maximum = heap.peek_mut().unwrap();
+                                    let removed = *maximum;
+                                    *maximum = value;
+                                    drop(maximum);
+                                    removed
+                                };
                                 bench_mix(checksum, bench_integer_hash(removed))
                             })
                         })
@@ -5542,7 +5654,7 @@ fn bench_queue_contracts() {
         let label = format!("min_queue_contract_{distribution}");
         let mut cases: Vec<BenchCase<'_>> = vec![
             (
-                "binary_heap",
+                "binary_heap_pop_push",
                 Box::new(|| {
                     let mut queue: BenchBinaryHeap<_> =
                         initial.iter().copied().map(BenchReverse).collect();
@@ -5556,7 +5668,23 @@ fn bench_queue_contracts() {
                 }),
             ),
             (
-                "radix_u64",
+                "binary_heap_replace",
+                Box::new(|| {
+                    let mut queue: BenchBinaryHeap<_> =
+                        initial.iter().copied().map(BenchReverse).collect();
+                    bench_timed(|| {
+                        deltas.iter().fold(0, |checksum, &delta| {
+                            let mut minimum = queue.peek_mut().unwrap();
+                            let BenchReverse(key) = *minimum;
+                            *minimum = BenchReverse(key + delta);
+                            drop(minimum);
+                            bench_mix(checksum, key)
+                        })
+                    })
+                }),
+            ),
+            (
+                "radix_u64_pop_push",
                 Box::new(|| {
                     let mut queue = RadixHeapU64::new();
                     for &key in &initial {
@@ -5573,15 +5701,15 @@ fn bench_queue_contracts() {
             ),
         ];
         for backend in bench_backends() {
-            let name = match backend {
-                SimdBackend::Scalar => "dary_scalar",
-                SimdBackend::Avx2 => "dary_avx2",
-                SimdBackend::Avx512 => "dary_avx512",
+            let (pop_push_name, replace_name) = match backend {
+                SimdBackend::Scalar => ("dary_scalar_pop_push", "dary_scalar_replace"),
+                SimdBackend::Avx2 => ("dary_avx2_pop_push", "dary_avx2_replace"),
+                SimdBackend::Avx512 => ("dary_avx512_pop_push", "dary_avx512_replace"),
             };
             let initial = &initial;
             let deltas = &deltas;
             cases.push((
-                name,
+                pop_push_name,
                 Box::new(move || {
                     let transformed: Vec<_> = initial.iter().map(|&key| u64::MAX - key).collect();
                     let mut queue = DaryHeapU64::benchmark_build(transformed, backend);
@@ -5589,6 +5717,20 @@ fn bench_queue_contracts() {
                         deltas.iter().fold(0, |checksum, &delta| {
                             let key = u64::MAX - queue.pop().unwrap();
                             queue.push(u64::MAX - (key + delta));
+                            bench_mix(checksum, key)
+                        })
+                    })
+                }),
+            ));
+            cases.push((
+                replace_name,
+                Box::new(move || {
+                    let transformed: Vec<_> = initial.iter().map(|&key| u64::MAX - key).collect();
+                    let mut queue = DaryHeapU64::benchmark_build(transformed, backend);
+                    bench_timed(|| {
+                        deltas.iter().fold(0, |checksum, &delta| {
+                            let key = u64::MAX - queue.peek().unwrap();
+                            queue.replace(u64::MAX - (key + delta)).unwrap();
                             bench_mix(checksum, key)
                         })
                     })
