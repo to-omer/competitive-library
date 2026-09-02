@@ -545,10 +545,24 @@ use std::collections::BinaryHeap as BenchBinaryHeap;
 use std::hint::black_box as bench_black_box;
 use std::io::{self as bench_io, Read as BenchRead};
 use std::num::Wrapping;
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 use std::time::Instant as BenchInstant;
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[repr(C)]
+struct BenchTimespec {
+    seconds: std::ffi::c_long,
+    nanoseconds: std::ffi::c_long,
+}
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+unsafe extern "C" {
+    fn clock_gettime(clock: std::ffi::c_int, time: *mut BenchTimespec) -> std::ffi::c_int;
+}
 
 const BENCH_SEED: u64 = 0x243f_6a88_85a3_08d3;
 const BENCH_ROUNDS: usize = 5;
+const BENCH_TARGET_SAMPLE_NS: u128 = 2_000_000;
 
 #[derive(Clone)]
 struct BenchRng(u64);
@@ -585,31 +599,105 @@ fn bench_integer_hash(value: u128) -> u64 {
     value as u64 ^ ((value >> 64) as u64).rotate_left(29)
 }
 
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[inline]
+fn bench_timestamp() -> u128 {
+    #[cfg(target_os = "linux")]
+    const CLOCK_THREAD_CPUTIME_ID: std::ffi::c_int = 3;
+    #[cfg(target_os = "macos")]
+    const CLOCK_THREAD_CPUTIME_ID: std::ffi::c_int = 16;
+    let mut time = BenchTimespec {
+        seconds: 0,
+        nanoseconds: 0,
+    };
+    // SAFETY: `time` points to writable storage with the platform `timespec` layout.
+    assert_eq!(unsafe { clock_gettime(CLOCK_THREAD_CPUTIME_ID, &mut time) }, 0);
+    time.seconds as u128 * 1_000_000_000 + time.nanoseconds as u128
+}
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+struct BenchInstant(u128);
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+impl BenchInstant {
+    #[inline]
+    fn now() -> Self {
+        Self(bench_timestamp())
+    }
+
+    #[inline]
+    fn elapsed(&self) -> BenchDuration {
+        BenchDuration(bench_timestamp() - self.0)
+    }
+}
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+struct BenchDuration(u128);
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+impl BenchDuration {
+    #[inline]
+    fn as_nanos(&self) -> u128 {
+        self.0
+    }
+}
+
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
+#[inline]
+fn bench_timestamp() -> BenchInstant {
+    BenchInstant::now()
+}
+
 fn bench_timed(mut operation: impl FnMut() -> u64) -> (u128, u64) {
-    let start = BenchInstant::now();
+    let start = bench_timestamp();
     let checksum = bench_black_box(operation());
-    (start.elapsed().as_nanos(), checksum)
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    let elapsed = bench_timestamp() - start;
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    let elapsed = start.elapsed().as_nanos();
+    (elapsed, checksum)
 }
 
 type BenchCase<'a> = (&'a str, Box<dyn FnMut() -> (u128, u64) + 'a>);
 
+fn bench_repeat(case: &mut BenchCase<'_>, repetitions: usize) -> (u128, u64) {
+    let mut elapsed = 0;
+    let mut checksum = None;
+    for _ in 0..repetitions {
+        let (current_elapsed, current_checksum) = case.1.as_mut()();
+        elapsed += current_elapsed;
+        assert!(checksum.is_none_or(|checksum| checksum == current_checksum));
+        checksum = Some(current_checksum);
+    }
+    (elapsed, checksum.unwrap())
+}
+
 fn bench_group(label: &str, units: usize, compare_checksums: bool, mut cases: Vec<BenchCase<'_>>) {
     assert!(!cases.is_empty());
-    for (_, case) in &mut cases {
-        let _ = case();
+    let mut repetitions = 1;
+    loop {
+        let minimum = cases
+            .iter_mut()
+            .map(|case| bench_repeat(case, repetitions).0)
+            .min()
+            .unwrap();
+        if minimum >= BENCH_TARGET_SAMPLE_NS {
+            break;
+        }
+        repetitions = repetitions.checked_mul(2).expect("benchmark repetition overflow");
     }
     let mut samples = vec![[0_u128; BENCH_ROUNDS]; cases.len()];
     let mut checksums = vec![[0_u64; BENCH_ROUNDS]; cases.len()];
     for round in 0..BENCH_ROUNDS {
         if round % 2 == 0 {
             for index in 0..cases.len() {
-                let (elapsed, checksum) = cases[index].1.as_mut()();
+                let (elapsed, checksum) = bench_repeat(&mut cases[index], repetitions);
                 samples[index][round] = elapsed;
                 checksums[index][round] = checksum;
             }
         } else {
             for index in (0..cases.len()).rev() {
-                let (elapsed, checksum) = cases[index].1.as_mut()();
+                let (elapsed, checksum) = bench_repeat(&mut cases[index], repetitions);
                 samples[index][round] = elapsed;
                 checksums[index][round] = checksum;
             }
@@ -636,12 +724,14 @@ fn bench_group(label: &str, units: usize, compare_checksums: bool, mut cases: Ve
             .collect::<Vec<_>>()
             .join(",");
         println!(
-            "case={label} impl={} units={units} raw_ns={raw} median_ns={} min_ns={} max_ns={} ns/unit={:.3} checksum={}",
+            "case={label} impl={} units={} repetitions={repetitions} raw_ns={raw} median_ns={} min_ns={} max_ns={} ns/unit={:.3} checksum={}",
             cases[index].0,
+            units.saturating_mul(repetitions),
             sorted[BENCH_ROUNDS / 2],
             sorted[0],
             sorted[BENCH_ROUNDS - 1],
-            sorted[BENCH_ROUNDS / 2] as f64 / units.max(1) as f64,
+            sorted[BENCH_ROUNDS / 2] as f64
+                / units.saturating_mul(repetitions).max(1) as f64,
             checksums[index][0],
         );
     }
@@ -671,6 +761,10 @@ fn bench_backend_name(backend: SimdBackend) -> &'static str {
 }
 
 fn bench_header(suite: usize) {
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    let timer = "thread_cpu_time";
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    let timer = "monotonic_wall_time";
     #[cfg(target_arch = "x86_64")]
     let (bmi2, avx2, avx512f, avx512vl) = (
         is_x86_feature_detected!("bmi2"),
@@ -681,7 +775,7 @@ fn bench_header(suite: usize) {
     #[cfg(not(target_arch = "x86_64"))]
     let (bmi2, avx2, avx512f, avx512vl) = (false, false, false, false);
     println!(
-        "benchmark=competitive_simd_methods_v4 suite={suite} seed={BENCH_SEED} rounds={BENCH_ROUNDS} warmups=1 order=alternating arch={} os={} pointer_bits={} bmi2={bmi2} avx2={avx2} avx512f={avx512f} avx512vl={avx512vl}",
+        "benchmark=competitive_simd_methods_v5 suite={suite} seed={BENCH_SEED} rounds={BENCH_ROUNDS} calibration_target_ns={BENCH_TARGET_SAMPLE_NS} timer={timer} order=alternating arch={} os={} pointer_bits={} bmi2={bmi2} avx2={avx2} avx512f={avx512f} avx512vl={avx512vl}",
         std::env::consts::ARCH,
         std::env::consts::OS,
         usize::BITS,
@@ -2999,13 +3093,16 @@ where
     }
 }
 
-fn bench_static_small() {
+fn bench_static_small(type_name: &str) {
     let n = (1 << 18) + 123;
     let q = 60_000;
-    bench_static_type("u8", n, q, |low, _| low as u8);
-    bench_static_type("i8", n, q, |low, _| low as i8);
-    bench_static_type("u16", n, q, |low, _| low as u16);
-    bench_static_type("i16", n, q, |low, _| low as i16);
+    match type_name {
+        "u8" => bench_static_type("u8", n, q, |low, _| low as u8),
+        "i8" => bench_static_type("i8", n, q, |low, _| low as i8),
+        "u16" => bench_static_type("u16", n, q, |low, _| low as u16),
+        "i16" => bench_static_type("i16", n, q, |low, _| low as i16),
+        _ => unreachable!(),
+    }
 }
 
 fn bench_static_medium() {
@@ -5751,9 +5848,12 @@ fn main() {
         13 => bench_wavelet_batch(),
         14 => bench_wavelet_fold(),
         15 => bench_wavelet_existing_baseline(),
-        20 => bench_static_small(),
-        21 => bench_static_medium(),
-        22 => bench_static_large(),
+        20 => bench_static_small("u8"),
+        21 => bench_static_small("i8"),
+        22 => bench_static_small("u16"),
+        23 => bench_static_small("i16"),
+        24 => bench_static_medium(),
+        25 => bench_static_large(),
         30 => bench_bucket_queue(),
         31 => bench_dary_u32_small(),
         32 => bench_dary_u64_small(),

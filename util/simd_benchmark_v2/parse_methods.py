@@ -4,7 +4,7 @@ import csv
 import re
 
 
-HEADER = re.compile(r"^benchmark=competitive_simd_methods_v[234] suite=(\d+)\b")
+HEADER = re.compile(r"^benchmark=competitive_simd_methods_v5 suite=(\d+)\b")
 
 
 def fields(line):
@@ -46,6 +46,7 @@ def main():
                 "case",
                 "impl",
                 "units",
+                "repetitions",
                 "raw_ns",
                 "median_ns",
                 "min_ns",
@@ -62,6 +63,15 @@ def main():
                 raise ValueError(f"median mismatch: {line}")
             if int(item["min_ns"]) != min(raw) or int(item["max_ns"]) != max(raw):
                 raise ValueError(f"range mismatch: {line}")
+            units = int(item["units"])
+            repetitions = int(item["repetitions"])
+            if repetitions <= 0 or units <= 0 or units % repetitions != 0:
+                raise ValueError(f"invalid calibrated units: {line}")
+            if int(item["median_ns"]) < 1_000_000:
+                raise ValueError(f"sample shorter than one millisecond: {line}")
+            expected_per_unit = int(item["median_ns"]) / units
+            if abs(float(item["ns/unit"]) - expected_per_unit) > 0.000_501:
+                raise ValueError(f"ns/unit mismatch: {line}")
             rows.append(
                 {
                     "environment": args.environment,
@@ -69,6 +79,8 @@ def main():
                     "case": item["case"],
                     "implementation": item["impl"],
                     "units": item["units"],
+                    "base_units": units // repetitions,
+                    "repetitions": item["repetitions"],
                     "raw_ns": item["raw_ns"],
                     "median_ns": item["median_ns"],
                     "min_ns": item["min_ns"],
