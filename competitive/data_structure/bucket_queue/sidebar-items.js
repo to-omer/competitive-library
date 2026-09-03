@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["define_bucket_queue",1]],"struct":["BucketQueue16","BucketQueue8","BucketQueueI16","BucketQueueI8","BucketQueueU16","BucketQueueU8"]};

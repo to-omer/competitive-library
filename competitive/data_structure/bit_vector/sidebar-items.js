@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":[["impl_rank_select_for_bits",1]],"struct":["BitVector"],"trait":["RankSelectDictionaries"]};
+window.SIDEBAR_ITEMS = {"fn":["select_word_scalar"],"macro":[["impl_rank_select_for_bits",1]],"mod":["simd"],"struct":["BitVector"],"trait":["RankSelectDictionaries"]};

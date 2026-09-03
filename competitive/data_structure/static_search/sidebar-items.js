@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DirectStaticSearch","StaticSearchStorage"],"fn":["build_direct_positions","search_batch","static_search_backend"],"macro":[["impl_signed_simd_key",1],["impl_static_search_tree",1],["impl_unsigned_simd_key",1]],"struct":["SearchBlock","StaticSearch","StaticSearchTree"],"trait":["SimdKey"]};
