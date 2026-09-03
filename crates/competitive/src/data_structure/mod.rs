@@ -169,13 +169,13 @@ mod compressed_segment_tree;
 mod container;
 #[cfg_attr(nightly, codesnip::entry("Counter"))]
 mod counter;
-#[cfg_attr(nightly, codesnip::entry("DaryHeap", include("simd")))]
+#[cfg_attr(nightly, codesnip::entry("DaryHeap", include("_simd")))]
 mod dary_heap;
-#[cfg_attr(nightly, codesnip::entry("DaryPrefixSumTree", include("simd")))]
+#[cfg_attr(nightly, codesnip::entry("DaryPrefixSumTree", include("_simd")))]
 mod dary_prefix_sum_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("DarySegmentTree", include("simd", "discrete_steps"))
+    codesnip::entry("DarySegmentTree", include("_simd", "discrete_steps"))
 )]
 mod dary_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
@@ -271,8 +271,8 @@ mod segment_tree;
     )
 )]
 mod segment_tree_map;
-#[cfg_attr(nightly, codesnip::entry("simd", include("avx_helper")))]
-mod simd;
+#[cfg_attr(nightly, codesnip::entry("_simd", include("avx_helper")))]
+pub mod simd;
 #[cfg_attr(
     nightly,
     codesnip::entry("sliding_window_aggregation", include("algebra"))
@@ -294,7 +294,7 @@ mod splay_tree;
     codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))
 )]
 mod static_range_product;
-#[cfg_attr(nightly, codesnip::entry("StaticSearch", include("simd")))]
+#[cfg_attr(nightly, codesnip::entry("StaticSearch", include("_simd")))]
 mod static_search;
 #[cfg_attr(
     nightly,
