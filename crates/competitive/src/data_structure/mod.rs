@@ -8,7 +8,7 @@ use crate::algorithm::{BitDpExt, RadixSortKey, SliceBisectExt, SliceSortExt};
 use crate::num::{Bounded, IntBase, RangeBoundsExt, Zero};
 #[cfg(target_arch = "x86_64")]
 use crate::tools::avx512_enabled;
-use crate::tools::{Comparator, Xorshift, comparator};
+use crate::tools::{Comparator, SimdBackend, Xorshift, comparator, simd_backend};
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
@@ -24,6 +24,8 @@ pub use self::binary_trie::BinaryTrie;
 pub use self::bit_vector::{BitVector, RankSelectDictionaries};
 #[codesnip::entry("BitSet")]
 pub use self::bitset::BitSet;
+#[codesnip::entry("BucketQueue")]
+pub use self::bucket_queue::{BucketQueueI8, BucketQueueI16, BucketQueueU8, BucketQueueU16};
 #[codesnip::entry("compress")]
 pub use self::compress::{Compressor, HashCompress, VecCompress};
 #[codesnip::entry("CompressedBinaryIndexedTree")]
@@ -43,6 +45,17 @@ pub use self::container::{
 };
 #[codesnip::entry("Counter")]
 pub use self::counter::{BTreeCounter, HashCounter};
+#[codesnip::entry("DaryHeap")]
+pub use self::dary_heap::{
+    DaryHeapI32, DaryHeapI64, DaryHeapI128, DaryHeapU32, DaryHeapU64, DaryHeapU128,
+};
+#[codesnip::entry("DaryPrefixSumTree")]
+pub use self::dary_prefix_sum_tree::{DaryPrefixSumTreeU32, DaryPrefixSumTreeU64};
+#[codesnip::entry("DarySegmentTree")]
+pub use self::dary_segment_tree::{
+    DarySegmentTreeAddI32, DarySegmentTreeAddI64, DarySegmentTreeMaxI32, DarySegmentTreeMaxI64,
+    DarySegmentTreeMinI32, DarySegmentTreeMinI64,
+};
 #[codesnip::entry("DisjointSparseTable")]
 pub use self::disjoint_sparse_table::DisjointSparseTable;
 #[codesnip::entry("DoublyLinkedList")]
@@ -71,6 +84,8 @@ pub use self::pairing_heap::PairingHeap;
 pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriorityQueue;
 #[codesnip::entry("PersistentSegmentTree")]
 pub use self::persistent_segment_tree::PersistentSegmentTree;
+#[codesnip::entry("RadixHeap")]
+pub use self::radix_heap::{RadixHeapU32, RadixHeapU64};
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 #[codesnip::entry("RangeFoldWithUpperBound")]
@@ -95,6 +110,8 @@ pub use self::sparse_set::SparseSet;
 pub use self::splay_tree::SplayTree;
 #[codesnip::entry("StaticRangeProduct")]
 pub use self::static_range_product::StaticRangeProduct;
+#[codesnip::entry("StaticSearch")]
+pub use self::static_search::{SimdKey, StaticSearch};
 #[codesnip::entry("SubmaskRangeQuery")]
 pub use self::submask_range_query::SubmaskRangeQuery;
 #[codesnip::entry("transducer")]
@@ -137,6 +154,8 @@ mod binary_trie;
 mod bit_vector;
 #[cfg_attr(nightly, codesnip::entry("BitSet", include("avx_helper")))]
 mod bitset;
+#[cfg_attr(nightly, codesnip::entry("BucketQueue"))]
+mod bucket_queue;
 #[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
 mod compress;
 #[cfg_attr(
@@ -150,6 +169,15 @@ mod compressed_segment_tree;
 mod container;
 #[cfg_attr(nightly, codesnip::entry("Counter"))]
 mod counter;
+#[cfg_attr(nightly, codesnip::entry("DaryHeap", include("simd")))]
+mod dary_heap;
+#[cfg_attr(nightly, codesnip::entry("DaryPrefixSumTree", include("simd")))]
+mod dary_prefix_sum_tree;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("DarySegmentTree", include("simd", "discrete_steps"))
+)]
+mod dary_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
 mod disjoint_sparse_table;
 #[cfg_attr(nightly, codesnip::entry("DoublyLinkedList"))]
@@ -209,6 +237,8 @@ pub mod partially_retroactive_priority_queue;
     )
 )]
 mod persistent_segment_tree;
+#[cfg_attr(nightly, codesnip::entry("RadixHeap"))]
+mod radix_heap;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
 mod range_ap_add;
 #[cfg_attr(
@@ -241,6 +271,8 @@ mod segment_tree;
     )
 )]
 mod segment_tree_map;
+#[cfg_attr(nightly, codesnip::entry("simd", include("avx_helper")))]
+mod simd;
 #[cfg_attr(
     nightly,
     codesnip::entry("sliding_window_aggregation", include("algebra"))
@@ -262,6 +294,8 @@ mod splay_tree;
     codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))
 )]
 mod static_range_product;
+#[cfg_attr(nightly, codesnip::entry("StaticSearch", include("simd")))]
+mod static_search;
 #[cfg_attr(
     nightly,
     codesnip::entry("SubmaskRangeQuery", include("algebra", "BitDp", "Xorshift"))

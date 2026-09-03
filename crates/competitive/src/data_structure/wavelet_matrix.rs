@@ -69,18 +69,14 @@ where
         F: FnMut(usize, usize, T),
     {
         let this = Self::new(v.clone());
-        let indices: Vec<usize> = v
-            .iter()
-            .map(|value| this.compress.index_exact(value).unwrap())
-            .collect();
         for (mut k, value) in v.into_iter().enumerate() {
-            let idx = indices[k];
             for d in (0..this.bit_length).rev() {
                 let level = this.level(d);
-                if ((idx >> d) & 1) != 0 {
-                    k = this.zeros[level] + this.rank1(level, k);
+                let (bit, rank1) = this.bit_vectors[level].access_rank1(k);
+                if bit {
+                    k = this.zeros[level] + rank1;
                 } else {
-                    k = this.rank0(level, k);
+                    k -= rank1;
                 }
                 f(d, k, value.clone());
             }
@@ -126,12 +122,14 @@ where
     fn rank_by_index(&self, idx: usize, mut range: Range<usize>) -> usize {
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
+            let start1 = self.rank1(level, range.start);
+            let end1 = self.rank1(level, range.end);
             if ((idx >> d) & 1) != 0 {
-                range.start = self.zeros[level] + self.rank1(level, range.start);
-                range.end = self.zeros[level] + self.rank1(level, range.end);
+                range.start = self.zeros[level] + start1;
+                range.end = self.zeros[level] + end1;
             } else {
-                range.start = self.rank0(level, range.start);
-                range.end = self.rank0(level, range.end);
+                range.start -= start1;
+                range.end -= end1;
             }
         }
         range.end - range.start
@@ -142,14 +140,56 @@ where
         let mut idx = 0;
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
-            if self.bit_vectors[level].access(k) {
+            let (bit, rank1) = self.bit_vectors[level].access_rank1(k);
+            if bit {
                 idx |= 1 << d;
-                k = self.zeros[level] + self.rank1(level, k);
+                k = self.zeros[level] + rank1;
             } else {
-                k = self.rank0(level, k);
+                k -= rank1;
             }
         }
         self.compress.values()[idx].clone()
+    }
+
+    /// Returns the values at `indices`, traversing queries together in groups of 16.
+    pub fn access_batch(&self, indices: impl IntoIterator<Item = usize>) -> Vec<T> {
+        let indices: Vec<_> = indices.into_iter().collect();
+        if indices.len() < 8 || self.len > u32::MAX as usize {
+            return indices
+                .into_iter()
+                .map(|index| self.access(index))
+                .collect();
+        }
+        let mut result = Vec::with_capacity(indices.len());
+        for indices in indices.chunks(16) {
+            if indices.len() < 8 {
+                result.extend(indices.iter().map(|&index| self.access(index)));
+                continue;
+            }
+            let mut states = [[0_u32; 2]; 16];
+            for (state, &index) in states.iter_mut().zip(indices) {
+                state[0] = index as u32;
+            }
+            for d in (0..self.bit_length).rev() {
+                let level = self.level(d);
+                for state in &mut states[..indices.len()] {
+                    let position = state[0] as usize;
+                    let (bit, rank1) = self.bit_vectors[level].access_rank1(position);
+                    if bit {
+                        state[0] = (self.zeros[level] + rank1) as u32;
+                        state[1] |= 1 << d;
+                    } else {
+                        state[0] = (position - rank1) as u32;
+                    }
+                }
+            }
+            result.extend(
+                states[..indices.len()]
+                    .iter()
+                    .map(|state| self.compress.values()[state[1] as usize].clone()),
+            );
+        }
+        result
     }
 
     /// the number of val in range
@@ -158,6 +198,56 @@ where
             Some(idx) => self.rank_by_index(idx, range),
             None => 0,
         }
+    }
+
+    /// Returns the number of exact matches for each `(value, range)` query.
+    pub fn rank_batch(&self, queries: impl IntoIterator<Item = (T, Range<usize>)>) -> Vec<usize> {
+        let queries: Vec<_> = queries.into_iter().collect();
+        if queries.len() < 8 || self.len > u32::MAX as usize {
+            return queries
+                .into_iter()
+                .map(|(value, range)| self.rank(value, range))
+                .collect();
+        }
+        let mut result = vec![0; queries.len()];
+        let mut active = Vec::new();
+        for (output, (value, range)) in queries.into_iter().enumerate() {
+            if let Some(index) = self.compress.index_exact(&value) {
+                active.push((output, index, range));
+            }
+        }
+        for queries in active.chunks(16) {
+            if queries.len() < 8 {
+                for (output, index, range) in queries {
+                    result[*output] = self.rank_by_index(*index, range.clone());
+                }
+                continue;
+            }
+            let mut states = [[0_u32; 3]; 16];
+            for (state, (_, index, range)) in states.iter_mut().zip(queries) {
+                *state = [range.start as u32, range.end as u32, *index as u32];
+            }
+            for d in (0..self.bit_length).rev() {
+                let level = self.level(d);
+                for state in &mut states[..queries.len()] {
+                    let start = state[0] as usize;
+                    let end = state[1] as usize;
+                    let start1 = self.rank1(level, start);
+                    let end1 = self.rank1(level, end);
+                    if ((state[2] >> d) & 1) != 0 {
+                        state[0] = (self.zeros[level] + start1) as u32;
+                        state[1] = (self.zeros[level] + end1) as u32;
+                    } else {
+                        state[0] = (start - start1) as u32;
+                        state[1] = (end - end1) as u32;
+                    }
+                }
+            }
+            for ((output, _, _), state) in queries.iter().zip(&states) {
+                result[*output] = (state[1] - state[0]) as usize;
+            }
+        }
+        result
     }
 
     /// index of k-th val
@@ -193,15 +283,19 @@ where
         let mut idx = 0;
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
-            let z = self.rank0(level, range.end) - self.rank0(level, range.start);
+            let start1 = self.rank1(level, range.start);
+            let end1 = self.rank1(level, range.end);
+            let start0 = range.start - start1;
+            let end0 = range.end - end1;
+            let z = end0 - start0;
             if z <= k {
                 k -= z;
                 idx |= 1 << d;
-                range.start = self.zeros[level] + self.rank1(level, range.start);
-                range.end = self.zeros[level] + self.rank1(level, range.end);
+                range.start = self.zeros[level] + start1;
+                range.end = self.zeros[level] + end1;
             } else {
-                range.start = self.rank0(level, range.start);
-                range.end = self.rank0(level, range.end);
+                range.start = start0;
+                range.end = end0;
             }
         }
         self.compress.values()[idx].clone()
@@ -211,31 +305,52 @@ where
         &self,
         queries: impl IntoIterator<Item = (Range<usize>, usize)>,
     ) -> Vec<T> {
-        let mut queries: Vec<_> = queries
-            .into_iter()
-            .map(|(range, k)| [range.start as u32, range.end as u32, k as u32, 0])
-            .collect();
-        for d in (0..self.bit_length).rev() {
-            let level = self.level(d);
-            for query in &mut queries {
-                let start = query[0] as usize;
-                let end = query[1] as usize;
-                let start1 = self.rank1(level, start);
-                let end1 = self.rank1(level, end);
-                let start0 = (start - start1) as u32;
-                let end0 = (end - end1) as u32;
-                let zeros = end0 - start0;
-                let mask = 0u32.wrapping_sub((query[2] >= zeros) as u32);
-                query[0] = (start0 & !mask) | ((self.zeros[level] as u32 + start1 as u32) & mask);
-                query[1] = (end0 & !mask) | ((self.zeros[level] as u32 + end1 as u32) & mask);
-                query[2] -= zeros & mask;
-                query[3] |= (1u32 << d) & mask;
-            }
+        let queries: Vec<_> = queries.into_iter().collect();
+        if queries.len() < 8 || self.len > u32::MAX as usize {
+            return queries
+                .into_iter()
+                .map(|(range, k)| self.quantile(range, k))
+                .collect();
         }
-        queries
-            .into_iter()
-            .map(|query| self.compress.values()[query[3] as usize].clone())
-            .collect()
+        let mut result = Vec::with_capacity(queries.len());
+        for queries in queries.chunks(16) {
+            if queries.len() < 8 {
+                result.extend(
+                    queries
+                        .iter()
+                        .map(|(range, k)| self.quantile(range.clone(), *k)),
+                );
+                continue;
+            }
+            let mut states = [[0_u32; 4]; 16];
+            for (state, (range, k)) in states.iter_mut().zip(queries) {
+                *state = [range.start as u32, range.end as u32, *k as u32, 0];
+            }
+            for d in (0..self.bit_length).rev() {
+                let level = self.level(d);
+                for state in &mut states[..queries.len()] {
+                    let start = state[0] as usize;
+                    let end = state[1] as usize;
+                    let start1 = self.rank1(level, start);
+                    let end1 = self.rank1(level, end);
+                    let start0 = (start - start1) as u32;
+                    let end0 = (end - end1) as u32;
+                    let zeros = end0 - start0;
+                    let mask = 0u32.wrapping_sub((state[2] >= zeros) as u32);
+                    state[0] =
+                        (start0 & !mask) | ((self.zeros[level] as u32 + start1 as u32) & mask);
+                    state[1] = (end0 & !mask) | ((self.zeros[level] as u32 + end1 as u32) & mask);
+                    state[2] -= zeros & mask;
+                    state[3] |= (1u32 << d) & mask;
+                }
+            }
+            result.extend(
+                states[..queries.len()]
+                    .iter()
+                    .map(|state| self.compress.values()[state[3] as usize].clone()),
+            );
+        }
+        result
     }
 
     /// get k-th smallest value out of range
@@ -244,21 +359,27 @@ where
         let mut orange = 0..self.len;
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
-            let z = self.rank0(level, orange.end) - self.rank0(level, orange.start)
-                + self.rank0(level, range.start)
-                - self.rank0(level, range.end);
+            let range_start1 = self.rank1(level, range.start);
+            let range_end1 = self.rank1(level, range.end);
+            let outer_start1 = self.rank1(level, orange.start);
+            let outer_end1 = self.rank1(level, orange.end);
+            let range_start0 = range.start - range_start1;
+            let range_end0 = range.end - range_end1;
+            let outer_start0 = orange.start - outer_start1;
+            let outer_end0 = orange.end - outer_end1;
+            let z = (outer_end0 - outer_start0) - (range_end0 - range_start0);
             if z <= k {
                 k -= z;
                 idx |= 1 << d;
-                range.start = self.zeros[level] + self.rank1(level, range.start);
-                range.end = self.zeros[level] + self.rank1(level, range.end);
-                orange.start = self.zeros[level] + self.rank1(level, orange.start);
-                orange.end = self.zeros[level] + self.rank1(level, orange.end);
+                range.start = self.zeros[level] + range_start1;
+                range.end = self.zeros[level] + range_end1;
+                orange.start = self.zeros[level] + outer_start1;
+                orange.end = self.zeros[level] + outer_end1;
             } else {
-                range.start = self.rank0(level, range.start);
-                range.end = self.rank0(level, range.end);
-                orange.start = self.rank0(level, orange.start);
-                orange.end = self.rank0(level, orange.end);
+                range.start = range_start0;
+                range.end = range_end0;
+                orange.start = outer_start0;
+                orange.end = outer_end0;
             }
         }
         self.compress.values()[idx].clone()
@@ -270,13 +391,15 @@ where
         let mut res = 0;
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
+            let start1 = self.rank1(level, range.start);
+            let end1 = self.rank1(level, range.end);
             if ((idx >> d) & 1) != 0 {
-                res += self.rank0(level, range.end) - self.rank0(level, range.start);
-                range.start = self.zeros[level] + self.rank1(level, range.start);
-                range.end = self.zeros[level] + self.rank1(level, range.end);
+                res += (range.end - end1) - (range.start - start1);
+                range.start = self.zeros[level] + start1;
+                range.end = self.zeros[level] + end1;
             } else {
-                range.start = self.rank0(level, range.start);
-                range.end = self.rank0(level, range.end);
+                range.start -= start1;
+                range.end -= end1;
             }
         }
         res
@@ -294,16 +417,17 @@ where
         let idx = self.compress.index_lower_bound(&val);
         for d in (0..self.bit_length).rev() {
             let level = self.level(d);
+            let start1 = self.rank1(level, range.start);
+            let end1 = self.rank1(level, range.end);
+            let start0 = range.start - start1;
+            let end0 = range.end - end1;
             if ((idx >> d) & 1) != 0 {
-                f(
-                    d,
-                    self.rank0(level, range.start)..self.rank0(level, range.end),
-                );
-                range.start = self.zeros[level] + self.rank1(level, range.start);
-                range.end = self.zeros[level] + self.rank1(level, range.end);
+                f(d, start0..end0);
+                range.start = self.zeros[level] + start1;
+                range.end = self.zeros[level] + end1;
             } else {
-                range.start = self.rank0(level, range.start);
-                range.end = self.rank0(level, range.end);
+                range.start = start0;
+                range.end = end0;
             }
         }
     }
@@ -372,10 +496,11 @@ where
         debug_assert!(index < self.wavelet_matrix.len);
         for d in (0..self.wavelet_matrix.bit_length).rev() {
             let level = self.wavelet_matrix.level(d);
-            if self.wavelet_matrix.bit_vectors[level].access(index) {
-                index = self.wavelet_matrix.zeros[level] + self.wavelet_matrix.rank1(level, index);
+            let (bit, rank1) = self.wavelet_matrix.bit_vectors[level].access_rank1(index);
+            if bit {
+                index = self.wavelet_matrix.zeros[level] + rank1;
             } else {
-                index = self.wavelet_matrix.rank0(level, index);
+                index -= rank1;
             }
             self.bits[level].update(index, value.clone());
         }
@@ -416,6 +541,70 @@ where
     T: Ord + Clone,
     M: AbelianGroup,
 {
+    pub fn fold_lessthan(&self, val: T, range: Range<usize>) -> M::T {
+        self.fold_lessthan_with_count(val, range).1
+    }
+
+    pub fn fold_lessthan_with_count(&self, val: T, range: Range<usize>) -> (usize, M::T) {
+        debug_assert!(range.end <= self.wavelet_matrix.len);
+        self.fold_lessthan_index_with_count(
+            self.wavelet_matrix.compress.index_lower_bound(&val),
+            range,
+            self.wavelet_matrix.bit_length,
+        )
+    }
+
+    pub fn fold_range(&self, valrange: Range<T>, range: Range<usize>) -> M::T {
+        self.fold_range_with_count(valrange, range).1
+    }
+
+    pub fn fold_range_with_count(
+        &self,
+        valrange: Range<T>,
+        mut range: Range<usize>,
+    ) -> (usize, M::T) {
+        debug_assert!(range.end <= self.wavelet_matrix.len);
+        let lower = self
+            .wavelet_matrix
+            .compress
+            .index_lower_bound(&valrange.start);
+        let upper = self
+            .wavelet_matrix
+            .compress
+            .index_lower_bound(&valrange.end);
+        if lower >= upper {
+            return (0, M::unit());
+        }
+        for d in (0..self.wavelet_matrix.bit_length).rev() {
+            let level = self.wavelet_matrix.level(d);
+            let start1 = self.wavelet_matrix.bit_vectors[level].rank1(range.start);
+            let end1 = self.wavelet_matrix.bit_vectors[level].rank1(range.end);
+            let start0 = range.start - start1;
+            let end0 = range.end - end1;
+            if ((lower >> d) & 1) == ((upper >> d) & 1) {
+                if ((lower >> d) & 1) == 0 {
+                    range = start0..end0;
+                } else {
+                    range = self.wavelet_matrix.zeros[level] + start1
+                        ..self.wavelet_matrix.zeros[level] + end1;
+                }
+                continue;
+            }
+            let zero_range = start0..end0;
+            let one_range =
+                self.wavelet_matrix.zeros[level] + start1..self.wavelet_matrix.zeros[level] + end1;
+            let (lower_count, lower_sum) =
+                self.fold_lessthan_index_with_count(lower, zero_range.clone(), d);
+            let (upper_count, upper_sum) = self.fold_lessthan_index_with_count(upper, one_range, d);
+            let zero_sum = self.range_sum(level + 1, zero_range.clone());
+            return (
+                zero_range.len() - lower_count + upper_count,
+                M::operate(&M::rinv_operate(&zero_sum, &lower_sum), &upper_sum),
+            );
+        }
+        (0, M::unit())
+    }
+
     #[inline]
     fn range_sum(&self, level: usize, range: Range<usize>) -> M::T {
         let offset = level * (self.wavelet_matrix.len + 1);
@@ -427,46 +616,31 @@ where
         }
     }
 
-    pub fn fold_lessthan(&self, val: T, range: Range<usize>) -> M::T {
-        self.fold_lessthan_with_count(val, range).1
-    }
-
-    pub fn fold_lessthan_with_count(&self, val: T, mut range: Range<usize>) -> (usize, M::T) {
-        debug_assert!(range.end <= self.wavelet_matrix.len);
-        let idx = self.wavelet_matrix.compress.index_lower_bound(&val);
+    fn fold_lessthan_index_with_count(
+        &self,
+        idx: usize,
+        mut range: Range<usize>,
+        bits: usize,
+    ) -> (usize, M::T) {
         let mut count = 0;
         let mut sum = M::unit();
-        for d in (0..self.wavelet_matrix.bit_length).rev() {
+        for d in (0..bits).rev() {
             let level = self.wavelet_matrix.level(d);
-            let start0 = self.wavelet_matrix.rank0(level, range.start);
-            let end0 = self.wavelet_matrix.rank0(level, range.end);
+            let start1 = self.wavelet_matrix.bit_vectors[level].rank1(range.start);
+            let end1 = self.wavelet_matrix.bit_vectors[level].rank1(range.end);
+            let start0 = range.start - start1;
+            let end0 = range.end - end1;
             if ((idx >> d) & 1) != 0 {
                 count += end0 - start0;
                 sum = M::operate(&sum, &self.range_sum(level + 1, start0..end0));
-                range.start = self.wavelet_matrix.zeros[level] + (range.start - start0);
-                range.end = self.wavelet_matrix.zeros[level] + (range.end - end0);
+                range.start = self.wavelet_matrix.zeros[level] + start1;
+                range.end = self.wavelet_matrix.zeros[level] + end1;
             } else {
                 range.start = start0;
                 range.end = end0;
             }
         }
         (count, sum)
-    }
-
-    pub fn fold_range(&self, valrange: Range<T>, range: Range<usize>) -> M::T {
-        M::rinv_operate(
-            &self.fold_lessthan(valrange.end, range.clone()),
-            &self.fold_lessthan(valrange.start, range),
-        )
-    }
-
-    pub fn fold_range_with_count(&self, valrange: Range<T>, range: Range<usize>) -> (usize, M::T) {
-        let (count_upper, sum_upper) = self.fold_lessthan_with_count(valrange.end, range.clone());
-        let (count_lower, sum_lower) = self.fold_lessthan_with_count(valrange.start, range);
-        (
-            count_upper - count_lower,
-            M::rinv_operate(&sum_upper, &sum_lower),
-        )
     }
 }
 
@@ -496,7 +670,11 @@ mod tests {
         for (i, v) in v.iter().cloned().enumerate() {
             assert_eq!(wm.access(i), v);
         }
+        assert_eq!(wm.access_batch(0..N), v);
+        assert_eq!(wm.access_batch(0..7), v[..7]);
         assert_eq!(fold.fold_lessthan(A, 0..N), w.iter().sum::<i64>());
+        assert_eq!(fold.fold_range(A..A, 0..N), 0);
+        assert_eq!(fold.fold_range_with_count(A..A, 0..N), (0, 0));
         let quantile_queries: Vec<_> = (0..Q)
             .map(|_| {
                 let l = rng.random(0..N);
@@ -514,6 +692,24 @@ mod tests {
             })
             .collect();
         assert_eq!(wm.quantile_batch(quantile_queries), expected);
+        let rank_queries: Vec<_> = (0..Q)
+            .map(|_| {
+                let left = rng.random(0..N);
+                let right = rng.random(left..=N);
+                (rng.random(0..A), left..right)
+            })
+            .collect();
+        let expected: Vec<_> = rank_queries
+            .iter()
+            .map(|(value, range)| v[range.clone()].iter().filter(|x| *x == value).count())
+            .collect();
+        assert_eq!(wm.rank_batch(rank_queries), expected);
+        let rank_queries: Vec<_> = (0..7).map(|value| (value, 0..N)).collect();
+        let expected: Vec<_> = rank_queries
+            .iter()
+            .map(|(value, range)| v[range.clone()].iter().filter(|x| *x == value).count())
+            .collect();
+        assert_eq!(wm.rank_batch(rank_queries), expected);
         for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
             let (i, value) = rng.random((..N, -B..B));
             dynamic.update(i, value);
