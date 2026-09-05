@@ -51,10 +51,13 @@ macro_rules! define_radix_heap {
                         .map(|&(key, _)| key)
                         .min()
                         .unwrap();
-                    let values = std::mem::take(&mut self.buckets[index]);
-                    for (key, value) in values {
-                        self.buckets[Self::bucket_index(key, self.last)].push((key, value));
+                    let mut values = std::mem::take(&mut self.buckets[index]);
+                    while let Some((key, value)) = values.pop() {
+                        let next = Self::bucket_index(key, self.last);
+                        debug_assert!(next < index);
+                        self.buckets[next].push((key, value));
                     }
+                    self.buckets[index] = values;
                 }
                 self.len -= 1;
                 self.buckets[0].pop()

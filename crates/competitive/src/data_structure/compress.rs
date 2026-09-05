@@ -1,4 +1,3 @@
-use super::SliceBisectExt;
 use std::{
     collections::HashMap,
     fmt::{self, Debug},
@@ -12,8 +11,14 @@ where
     T: Ord,
 {
     fn index_exact(&self, index: &T) -> Option<usize>;
-    fn index_lower_bound(&self, index: &T) -> usize;
     fn size(&self) -> usize;
+}
+
+pub trait OrderedCompressor<T>: Compressor<T>
+where
+    T: Ord,
+{
+    fn index_lower_bound(&self, index: &T) -> usize;
 }
 
 #[derive(Debug, Clone)]
@@ -54,12 +59,17 @@ where
         self.data.binary_search(index).ok()
     }
 
-    fn index_lower_bound(&self, index: &T) -> usize {
-        self.data.position_bisect(|x| x >= index)
-    }
-
     fn size(&self) -> usize {
         self.data.len()
+    }
+}
+
+impl<T> OrderedCompressor<T> for VecCompress<T>
+where
+    T: Ord,
+{
+    fn index_lower_bound(&self, index: &T) -> usize {
+        self.data.partition_point(|x| x < index)
     }
 }
 
@@ -101,10 +111,6 @@ where
 {
     fn index_exact(&self, index: &T) -> Option<usize> {
         self.data.get(index).copied()
-    }
-
-    fn index_lower_bound(&self, _index: &T) -> usize {
-        panic!("HashCompress does not implement index_lower_bound")
     }
 
     fn size(&self) -> usize {

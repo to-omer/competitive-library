@@ -4,7 +4,7 @@ use crate::algebra::{
     AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapMonoid,
     Magma, MaxOperation, MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
 };
-use crate::algorithm::{BitDpExt, RadixSortKey, SliceBisectExt, SliceSortExt};
+use crate::algorithm::{BitDpExt, RadixSortKey, SliceSortExt};
 use crate::num::{Bounded, IntBase, RangeBoundsExt, Zero};
 #[cfg(target_arch = "x86_64")]
 use crate::tools::avx512_enabled;
@@ -27,7 +27,7 @@ pub use self::bitset::BitSet;
 #[codesnip::entry("BucketQueue")]
 pub use self::bucket_queue::{BucketQueueI8, BucketQueueI16, BucketQueueU8, BucketQueueU16};
 #[codesnip::entry("compress")]
-pub use self::compress::{Compressor, HashCompress, VecCompress};
+pub use self::compress::{Compressor, HashCompress, OrderedCompressor, VecCompress};
 #[codesnip::entry("CompressedBinaryIndexedTree")]
 pub use self::compressed_binary_indexed_tree::{
     CompressedBinaryIndexedTree, CompressedBinaryIndexedTree1d, CompressedBinaryIndexedTree2d,
@@ -156,11 +156,11 @@ mod bit_vector;
 mod bitset;
 #[cfg_attr(nightly, codesnip::entry("BucketQueue"))]
 mod bucket_queue;
-#[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
+#[cfg_attr(nightly, codesnip::entry("compress"))]
 mod compress;
 #[cfg_attr(
     nightly,
-    codesnip::entry("CompressedBinaryIndexedTree", include("algebra", "binary_search"))
+    codesnip::entry("CompressedBinaryIndexedTree", include("algebra"))
 )]
 mod compressed_binary_indexed_tree;
 #[cfg_attr(nightly, codesnip::entry("CompressedSegmentTree", include("algebra")))]

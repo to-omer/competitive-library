@@ -1,4 +1,5 @@
 use super::{BidirectionalSparseGraph, Graph};
+use std::{cmp::Reverse, collections::BinaryHeap};
 
 #[derive(Debug, Clone)]
 pub struct PrimalDualBuilder {
@@ -47,6 +48,7 @@ impl PrimalDualBuilder {
             prev_vertex: std::iter::repeat_n(0, vsize).collect(),
             prev_edge: std::iter::repeat_n(0, vsize).collect(),
             has_negedge,
+            queue: BinaryHeap::new(),
         }
     }
 }
@@ -68,6 +70,7 @@ pub struct PrimalDual<'a> {
     prev_vertex: Vec<usize>,
     prev_edge: Vec<usize>,
     has_negedge: bool,
+    queue: BinaryHeap<(Reverse<i64>, usize)>,
 }
 impl PrimalDual<'_> {
     pub fn builder(vsize: usize, esize_expect: usize) -> PrimalDualBuilder {
@@ -80,9 +83,15 @@ impl PrimalDual<'_> {
         for _ in 1..self.graph.vertices_size() {
             let mut end = true;
             for u in self.graph.vertices() {
+                if self.potential[u] == i64::MAX {
+                    continue;
+                }
                 for a in self.graph.neighbors(u) {
+                    if self.capacities[a.label] == 0 {
+                        continue;
+                    }
                     let ncost = self.potential[u].saturating_add(self.costs[a.label]);
-                    if self.capacities[a.label] > 0 && self.potential[a.to] > ncost {
+                    if self.potential[a.to] > ncost {
                         self.potential[a.to] = ncost;
                         end = false;
                     }
@@ -94,27 +103,30 @@ impl PrimalDual<'_> {
         }
     }
     fn dijkstra(&mut self, s: usize, t: usize) -> bool {
-        use std::{cmp::Reverse, collections::BinaryHeap};
         self.dist.clear();
         self.dist.resize(self.graph.vertices_size(), i64::MAX);
         self.dist[s] = 0;
-        let mut heap = BinaryHeap::new();
-        heap.push((Reverse(0), s));
-        while let Some((Reverse(d), u)) = heap.pop() {
+        self.queue.clear();
+        self.queue.push((Reverse(0), s));
+        while let Some((Reverse(d), u)) = self.queue.pop() {
+            if d >= self.dist[t] {
+                break;
+            }
             if self.dist[u] < d {
                 continue;
             }
-            if !self.has_negedge && u == t {
-                break;
-            }
             for a in self.graph.neighbors(u) {
-                let ncost = (self.dist[u].saturating_add(self.costs[a.label]))
+                if self.capacities[a.label] == 0 {
+                    continue;
+                }
+                let ncost = (d.saturating_add(self.costs[a.label]))
                     .saturating_add(self.potential[u].saturating_sub(self.potential[a.to]));
-                if self.capacities[a.label] > 0 && self.dist[a.to] > ncost {
+                if self.dist[a.to] > ncost {
+                    debug_assert!(ncost >= d);
                     self.dist[a.to] = ncost;
                     self.prev_vertex[a.to] = u;
                     self.prev_edge[a.to] = a.label;
-                    heap.push((Reverse(ncost), a.to));
+                    self.queue.push((Reverse(ncost), a.to));
                 }
             }
         }
@@ -128,8 +140,9 @@ impl PrimalDual<'_> {
             self.bellman_ford(s);
         }
         while flow < limit && self.dijkstra(s, t) {
+            let shortest = self.dist[t];
             for (p, d) in self.potential.iter_mut().zip(self.dist.iter()) {
-                *p = p.saturating_add(*d);
+                *p = p.saturating_add((*d).min(shortest));
             }
             let mut f = limit - flow;
             let mut v = t;
@@ -138,7 +151,7 @@ impl PrimalDual<'_> {
                 v = self.prev_vertex[v];
             }
             flow += f;
-            cost += f as i64 * self.potential[t];
+            cost += f as i64 * (self.potential[t] - self.potential[s]);
             let mut v = t;
             while v != s {
                 self.capacities[self.prev_edge[v]] -= f;

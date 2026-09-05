@@ -2,7 +2,6 @@ use super::Monoid;
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
-    mem::swap,
     ops::{Bound, RangeBounds},
 };
 
@@ -80,6 +79,134 @@ where
     }
 }
 
+impl<M, X> CompressedSegmentTree<M, X, Tag<M>>
+where
+    M: Monoid,
+    X: Clone + Ord,
+{
+    fn merge_1d_coordinates(left: &Self, right: &Self) -> Self {
+        let left = &left.compress;
+        let right = &right.compress;
+        let mut compress = Vec::with_capacity(left.len() + right.len());
+        let mut l = 0;
+        let mut r = 0;
+        while l < left.len() && r < right.len() {
+            match left[l].cmp(&right[r]) {
+                std::cmp::Ordering::Less => {
+                    compress.push(left[l].clone());
+                    l += 1;
+                }
+                std::cmp::Ordering::Equal => {
+                    compress.push(left[l].clone());
+                    l += 1;
+                    r += 1;
+                }
+                std::cmp::Ordering::Greater => {
+                    compress.push(right[r].clone());
+                    r += 1;
+                }
+            }
+        }
+        compress.extend_from_slice(&left[l..]);
+        compress.extend_from_slice(&right[r..]);
+        let n = compress.len();
+        Self {
+            compress,
+            segs: vec![Tag(M::unit()); n * 2],
+            _marker: PhantomData,
+        }
+    }
+}
+
+trait MergeCoordinates<M>: Clone
+where
+    M: Monoid,
+{
+    fn empty() -> Self;
+    fn merge_coordinates(left: &Self, right: &Self) -> Self;
+}
+
+impl<M> MergeCoordinates<M> for Tag<M>
+where
+    M: Monoid,
+{
+    fn empty() -> Self {
+        Self(M::unit())
+    }
+
+    fn merge_coordinates(_: &Self, _: &Self) -> Self {
+        Self::empty()
+    }
+}
+
+impl<M, X, Inner> MergeCoordinates<M> for CompressedSegmentTree<M, X, Inner>
+where
+    M: Monoid,
+    X: Clone + Ord,
+    Inner: MergeCoordinates<M>,
+{
+    fn empty() -> Self {
+        Self::default()
+    }
+
+    fn merge_coordinates(left: &Self, right: &Self) -> Self {
+        let left_values = &left.compress;
+        let right_values = &right.compress;
+        let mut compress = Vec::with_capacity(left_values.len() + right_values.len());
+        let mut leaves = Vec::with_capacity(compress.capacity());
+        let mut l = 0;
+        let mut r = 0;
+        while l < left_values.len() && r < right_values.len() {
+            match left_values[l].cmp(&right_values[r]) {
+                std::cmp::Ordering::Less => {
+                    compress.push(left_values[l].clone());
+                    leaves.push(left.segs[left_values.len() + l].clone());
+                    l += 1;
+                }
+                std::cmp::Ordering::Equal => {
+                    compress.push(left_values[l].clone());
+                    leaves.push(Inner::merge_coordinates(
+                        &left.segs[left_values.len() + l],
+                        &right.segs[right_values.len() + r],
+                    ));
+                    l += 1;
+                    r += 1;
+                }
+                std::cmp::Ordering::Greater => {
+                    compress.push(right_values[r].clone());
+                    leaves.push(right.segs[right_values.len() + r].clone());
+                    r += 1;
+                }
+            }
+        }
+        for (coordinate, leaf) in left_values[l..]
+            .iter()
+            .zip(&left.segs[left_values.len() + l..])
+        {
+            compress.push(coordinate.clone());
+            leaves.push(leaf.clone());
+        }
+        for (coordinate, leaf) in right_values[r..]
+            .iter()
+            .zip(&right.segs[right_values.len() + r..])
+        {
+            compress.push(coordinate.clone());
+            leaves.push(leaf.clone());
+        }
+        let n = compress.len();
+        let mut segs = vec![Inner::empty(); n];
+        segs.extend(leaves);
+        for i in (1..n).rev() {
+            segs[i] = Inner::merge_coordinates(&segs[i * 2], &segs[i * 2 + 1]);
+        }
+        Self {
+            compress,
+            segs,
+            _marker: PhantomData,
+        }
+    }
+}
+
 macro_rules! impl_compressed_segment_tree {
     (@tuple ($($l:tt)*) ($($r:tt)*) $T:ident) => {
         ($($l)* $T $($r)*,)
@@ -104,25 +231,72 @@ macro_rules! impl_compressed_segment_tree {
             _marker: PhantomData,
         }
     }};
-    (@from_iter $M:ident $points:ident $T:ident $U:ident $($Rest:ident)*) => {{
-        let mut compress: Vec<_> = $points.clone().into_iter().map(|t| t.0.clone()).collect();
-        compress.sort_unstable();
-        compress.dedup();
-        let n = compress.len();
-        let mut segs = vec![CompressedSegmentTree::default(); n * 2];
-        let mut ps = vec![vec![]; n * 2];
-        for (x, q) in $points {
-            let i = compress.binary_search(x).unwrap();
-            ps[i + n].push(q);
+    (@from_iter $M:ident $points:ident $T:ident $U:ident) => {{
+        let mut points: Vec<_> = $points.into_iter().collect();
+        points.sort_unstable_by(|left, right| left.0.cmp(&right.0));
+        let mut compress = Vec::new();
+        let mut offsets = vec![0];
+        let mut start = 0;
+        while start < points.len() {
+            let mut end = start + 1;
+            while end < points.len() && points[end].0 == points[start].0 {
+                end += 1;
+            }
+            compress.push(points[start].0.clone());
+            offsets.push(end);
+            start = end;
         }
-        for i in (n..n * 2).rev() {
-            segs[i] = CompressedSegmentTree::<_, _, impl_compressed_segment_tree!(@cst $M $($Rest)*)>::from_iter(ps[i].iter().cloned());
+        let n = compress.len();
+        let mut segs: Vec<impl_compressed_segment_tree!(@cst $M $U)> =
+            vec![Default::default(); n];
+        for i in 0..n {
+            segs.push(<impl_compressed_segment_tree!(@cst $M $U)>::from_iter(
+                points[offsets[i]..offsets[i + 1]]
+                    .iter()
+                    .map(|point| &point.1),
+            ));
         }
         for i in (1..n).rev() {
-            let [p, l, r] = ps.get_disjoint_mut([i, i * 2, i * 2 + 1]).unwrap();
-            swap(p, l);
-            p.append(r);
-            segs[i] = CompressedSegmentTree::<_, _, impl_compressed_segment_tree!(@cst $M $($Rest)*)>::from_iter(ps[i].iter().cloned());
+            segs[i] = CompressedSegmentTree::merge_1d_coordinates(
+                &segs[i * 2],
+                &segs[i * 2 + 1],
+            );
+        }
+        Self {
+            compress,
+            segs,
+            _marker: PhantomData,
+        }
+    }};
+    (@from_iter $M:ident $points:ident $T:ident $U:ident $($Rest:ident)*) => {{
+        let mut points: Vec<_> = $points.into_iter().collect();
+        points.sort_unstable_by(|left, right| left.0.cmp(&right.0));
+        let mut compress = Vec::new();
+        let mut offsets = vec![0];
+        let mut start = 0;
+        while start < points.len() {
+            let mut end = start + 1;
+            while end < points.len() && points[end].0 == points[start].0 {
+                end += 1;
+            }
+            compress.push(points[start].0.clone());
+            offsets.push(end);
+            start = end;
+        }
+        let n = compress.len();
+        let mut segs: Vec<impl_compressed_segment_tree!(@cst $M $U $($Rest)*)> =
+            vec![Default::default(); n];
+        for i in 0..n {
+            segs.push(<impl_compressed_segment_tree!(
+                @cst $M $U $($Rest)*
+            )>::from_iter(
+                points[offsets[i]..offsets[i + 1]]
+                    .iter()
+                    .map(|point| &point.1),
+            ));
+        }
+        for i in (1..n).rev() {
+            segs[i] = MergeCoordinates::merge_coordinates(&segs[i * 2], &segs[i * 2 + 1]);
         }
         Self {
             compress,
@@ -449,9 +623,10 @@ mod tests {
             let left = rng.random(A);
             let target = rng.random(1..A.end * Q as u64);
             let mut expected_acc = 0;
-            let mut expected_pos = seg.compress.partition_point(|x| x < &left);
-            while expected_pos < seg.compress.len() {
-                let nacc = expected_acc + values[&seg.compress[expected_pos]];
+            let compress = &seg.compress;
+            let mut expected_pos = compress.partition_point(|x| x < &left);
+            while expected_pos < compress.len() {
+                let nacc = expected_acc + values[&compress[expected_pos]];
                 if nacc < target {
                     expected_acc = nacc;
                     expected_pos += 1;
@@ -460,14 +635,14 @@ mod tests {
                 }
             }
             let (pos, acc) = seg.partition_point_acc(&left, |&acc| acc < target);
-            assert_eq!((pos, acc), (seg.compress.get(expected_pos), expected_acc));
+            assert_eq!((pos, acc), (compress.get(expected_pos), expected_acc));
 
             let right = rng.random(A);
             let target = rng.random(1..A.end * Q as u64);
             let mut expected_acc = 0;
-            let mut expected_pos = seg.compress.partition_point(|x| x < &right);
+            let mut expected_pos = compress.partition_point(|x| x < &right);
             while expected_pos > 0 {
-                let nacc = values[&seg.compress[expected_pos - 1]] + expected_acc;
+                let nacc = values[&compress[expected_pos - 1]] + expected_acc;
                 if nacc < target {
                     expected_acc = nacc;
                     expected_pos -= 1;
@@ -476,13 +651,45 @@ mod tests {
                 }
             }
             let (pos, acc) = seg.rpartition_point_acc(&right, |&acc| acc < target);
-            assert_eq!((pos, acc), (seg.compress.get(expected_pos), expected_acc));
+            assert_eq!((pos, acc), (compress.get(expected_pos), expected_acc));
         }
     }
 
     #[test]
-    fn test_seg4d() {
+    fn test_seg2d_and_4d() {
         let mut rng = Xorshift::default();
+        for _ in 0..12 {
+            let radius = rng.rand(128) as i64 + 1;
+            let point_count = rng.rand(96) as usize + 1;
+            let registered: Vec<_> = rng
+                .random_iter((-radius..radius, (-radius..radius,)))
+                .take(point_count)
+                .collect();
+            let mut points = registered.clone();
+            points.sort_unstable();
+            points.dedup();
+            let mut values: HashMap<_, _> =
+                points.iter().copied().map(|point| (point, 0i64)).collect();
+            let mut seg = CompressedSegmentTree2d::<AdditiveOperation<i64>, _, _>::new(&registered);
+            let query_count = rng.rand(300) as usize + 300;
+            for _ in 0..query_count {
+                let point = &points[rng.rand(points.len() as u64) as usize];
+                let value = rng.rand((radius * 2) as u64) as i64 - radius;
+                *values.get_mut(point).unwrap() += value;
+                seg.update(point, &value);
+
+                let range = rng.random((RR::new(-radius..radius), (RR::new(-radius..radius),)));
+                let expected = values
+                    .iter()
+                    .filter_map(|((x, (y,)), value)| {
+                        (RangeBounds::contains(&range.0, x) && RangeBounds::contains(&range.1.0, y))
+                            .then_some(*value)
+                    })
+                    .sum();
+                assert_eq!(seg.fold(&range), expected);
+            }
+        }
+
         const N: usize = 100;
         const Q: usize = 5000;
         const A: Range<i64> = -1_000..1_000;
@@ -537,21 +744,22 @@ mod tests {
 
             let inner_ranges = rng.random((RR::new(A), (RR::new(A), (RR::new(A),))));
             let (r1, (r2, (r3,))) = &inner_ranges;
-            let mut groups = vec![0; seg.compress.len()];
+            let compress = &seg.compress;
+            let mut groups = vec![0; compress.len()];
             for ((p0, (p1, (p2, (p3,)))), x) in &values {
                 if RangeBounds::contains(r1, p1)
                     && RangeBounds::contains(r2, p2)
                     && RangeBounds::contains(r3, p3)
                 {
-                    groups[seg.compress.binary_search(p0).unwrap()] += *x;
+                    groups[compress.binary_search(p0).unwrap()] += *x;
                 }
             }
 
             let left = rng.random(A);
             let target = rng.random(1..A.end * Q as u64);
             let mut expected_acc = 0;
-            let mut expected_pos = seg.compress.partition_point(|x| x < &left);
-            while expected_pos < seg.compress.len() {
+            let mut expected_pos = compress.partition_point(|x| x < &left);
+            while expected_pos < compress.len() {
                 let nacc = expected_acc + groups[expected_pos];
                 if nacc < target {
                     expected_acc = nacc;
@@ -561,12 +769,12 @@ mod tests {
                 }
             }
             let (pos, acc) = seg.partition_point_acc(&left, &inner_ranges, |&acc| acc < target);
-            assert_eq!((pos, acc), (seg.compress.get(expected_pos), expected_acc));
+            assert_eq!((pos, acc), (compress.get(expected_pos), expected_acc));
 
             let right = rng.random(A);
             let target = rng.random(1..A.end * Q as u64);
             let mut expected_acc = 0;
-            let mut expected_pos = seg.compress.partition_point(|x| x < &right);
+            let mut expected_pos = compress.partition_point(|x| x < &right);
             while expected_pos > 0 {
                 let nacc = groups[expected_pos - 1] + expected_acc;
                 if nacc < target {
@@ -577,7 +785,7 @@ mod tests {
                 }
             }
             let (pos, acc) = seg.rpartition_point_acc(&right, &inner_ranges, |&acc| acc < target);
-            assert_eq!((pos, acc), (seg.compress.get(expected_pos), expected_acc));
+            assert_eq!((pos, acc), (compress.get(expected_pos), expected_acc));
         }
     }
 }

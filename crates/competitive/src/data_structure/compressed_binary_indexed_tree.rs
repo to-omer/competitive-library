@@ -1,4 +1,4 @@
-use super::{Monoid, SliceBisectExt};
+use super::Monoid;
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
@@ -98,23 +98,30 @@ macro_rules! impl_compressed_binary_indexed_tree {
         }
     }};
     (@from_iter $M:ident $points:ident $T:ident $U:ident $($Rest:ident)*) => {{
-        let mut compress: Vec<_> = $points.clone().into_iter().map(|t| t.0.clone()).collect();
-        compress.sort_unstable();
-        compress.dedup();
-        let n = compress.len();
-        let mut bits = vec![CompressedBinaryIndexedTree::default(); n + 1];
-        let mut ps = vec![vec![]; n + 1];
-        for (x, q) in $points {
-            let i = compress.position_bisect(|c| x <= c);
-            ps[i + 1].push(q);
-        }
-        for i in 1..=n {
-            bits[i] = CompressedBinaryIndexedTree::<_, _, impl_compressed_binary_indexed_tree!(@cst $M $($Rest)*)>::from_iter(ps[i].iter().cloned());
-            let j = i + (i & (!i + 1));
-            if j <= n {
-                let [s, ns] = ps.get_disjoint_mut([i, j]).unwrap();
-                ns.append(s);
+        let mut points: Vec<_> = $points.into_iter().collect();
+        points.sort_unstable_by(|left, right| left.0.cmp(&right.0));
+        let mut compress = Vec::new();
+        let mut offsets = vec![0];
+        let mut start = 0;
+        while start < points.len() {
+            let mut end = start + 1;
+            while end < points.len() && points[end].0 == points[start].0 {
+                end += 1;
             }
+            compress.push(points[start].0.clone());
+            offsets.push(end);
+            start = end;
+        }
+        let n = compress.len();
+        let mut bits: Vec<impl_compressed_binary_indexed_tree!(@cst $M $U $($Rest)*)> =
+            vec![Default::default(); n + 1];
+        for i in 1..=n {
+            let start = i - (i & (!i + 1));
+            bits[i] = <impl_compressed_binary_indexed_tree!(@cst $M $U $($Rest)*)>::from_iter(
+                points[offsets[start]..offsets[i]]
+                    .iter()
+                    .map(|point| &point.1),
+            );
         }
         Self {
             compress,
@@ -217,8 +224,8 @@ macro_rules! impl_compressed_binary_indexed_tree {
                     _ => panic!("expected `Bound::Unbounded`"),
                 };
                 let mut k = match range.0.end_bound() {
-                    Bound::Included(index) => self.compress.position_bisect(|x| x > &index),
-                    Bound::Excluded(index) => self.compress.position_bisect(|x| x >= &index),
+                    Bound::Included(index) => self.compress.partition_point(|x| x <= index),
+                    Bound::Excluded(index) => self.compress.partition_point(|x| x < index),
                     Bound::Unbounded => self.compress.len(),
                 };
                 let mut x = M::unit();
@@ -321,8 +328,39 @@ mod tests {
     }
 
     #[test]
-    fn test_bit4d() {
+    fn test_bit2d_and_4d() {
         let mut rng = Xorshift::default();
+        for _ in 0..12 {
+            let domain = rng.rand(128) + 1;
+            let point_count = rng.rand(96) as usize + 1;
+            let registered: Vec<_> = rng
+                .random_iter((..domain, (..domain,)))
+                .take(point_count)
+                .collect();
+            let mut points = registered.clone();
+            points.sort_unstable();
+            points.dedup();
+            let mut values: HashMap<_, _> =
+                points.iter().copied().map(|point| (point, 0u64)).collect();
+            let mut bit =
+                CompressedBinaryIndexedTree2d::<AdditiveOperation<u64>, _, _>::new(&registered);
+            let query_count = rng.rand(300) as usize + 300;
+            for _ in 0..query_count {
+                let point = &points[rng.rand(points.len() as u64) as usize];
+                let value = rng.rand(domain);
+                *values.get_mut(point).unwrap() += value;
+                bit.update(point, &value);
+
+                let end_x = rng.rand(domain + 1);
+                let end_y = rng.rand(domain + 1);
+                let expected = values
+                    .iter()
+                    .filter_map(|((x, (y,)), value)| (*x < end_x && *y < end_y).then_some(*value))
+                    .sum();
+                assert_eq!(bit.accumulate(&(..end_x, (..end_y,))), expected);
+            }
+        }
+
         const N: usize = 100;
         const Q: usize = 5000;
         const A: RangeTo<u64> = ..1_000;

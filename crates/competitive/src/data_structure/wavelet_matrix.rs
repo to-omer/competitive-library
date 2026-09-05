@@ -1,5 +1,6 @@
 use super::{
-    AbelianGroup, BinaryIndexedTree, BitVector, Compressor, RankSelectDictionaries, VecCompress,
+    AbelianGroup, BinaryIndexedTree, BitVector, Compressor, OrderedCompressor,
+    RankSelectDictionaries, VecCompress,
 };
 use std::{
     mem::{self, MaybeUninit},
@@ -519,10 +520,61 @@ where
     }
 
     pub fn fold_range(&self, values: Range<T>, range: Range<usize>) -> M::T {
-        M::rinv_operate(
-            &self.fold_lessthan(values.end, range.clone()),
-            &self.fold_lessthan(values.start, range),
-        )
+        let lower = self
+            .wavelet_matrix
+            .compress
+            .index_lower_bound(&values.start);
+        let upper = self.wavelet_matrix.compress.index_lower_bound(&values.end);
+        if lower >= upper {
+            return M::unit();
+        }
+        let mut range = range;
+        for d in (0..self.wavelet_matrix.bit_length).rev() {
+            let level = self.wavelet_matrix.level(d);
+            let start1 = self.wavelet_matrix.bit_vectors[level].rank1(range.start);
+            let end1 = self.wavelet_matrix.bit_vectors[level].rank1(range.end);
+            let start0 = range.start - start1;
+            let end0 = range.end - end1;
+            if ((lower >> d) & 1) == ((upper >> d) & 1) {
+                if ((lower >> d) & 1) == 0 {
+                    range = start0..end0;
+                } else {
+                    range = self.wavelet_matrix.zeros[level] + start1
+                        ..self.wavelet_matrix.zeros[level] + end1;
+                }
+                continue;
+            }
+            let zero_range = start0..end0;
+            let one_range =
+                self.wavelet_matrix.zeros[level] + start1..self.wavelet_matrix.zeros[level] + end1;
+            let lower_sum = self.fold_lessthan_index(lower, zero_range.clone(), d);
+            let upper_sum = self.fold_lessthan_index(upper, one_range, d);
+            let zero_sum = self.bits[level].fold(zero_range.start, zero_range.end);
+            let mut result = M::rinv_operate(&zero_sum, &lower_sum);
+            M::operate_assign(&mut result, &upper_sum);
+            return result;
+        }
+        M::unit()
+    }
+
+    fn fold_lessthan_index(&self, idx: usize, mut range: Range<usize>, bits: usize) -> M::T {
+        let mut result = M::unit();
+        for d in (0..bits).rev() {
+            let level = self.wavelet_matrix.level(d);
+            let start1 = self.wavelet_matrix.bit_vectors[level].rank1(range.start);
+            let end1 = self.wavelet_matrix.bit_vectors[level].rank1(range.end);
+            let start0 = range.start - start1;
+            let end0 = range.end - end1;
+            if ((idx >> d) & 1) != 0 {
+                M::operate_assign(&mut result, &self.bits[level].fold(start0, end0));
+                range.start = self.wavelet_matrix.zeros[level] + start1;
+                range.end = self.wavelet_matrix.zeros[level] + end1;
+            } else {
+                range.start = start0;
+                range.end = end0;
+            }
+        }
+        result
     }
 }
 
@@ -675,6 +727,8 @@ mod tests {
         assert_eq!(fold.fold_lessthan(A, 0..N), w.iter().sum::<i64>());
         assert_eq!(fold.fold_range(A..A, 0..N), 0);
         assert_eq!(fold.fold_range_with_count(A..A, 0..N), (0, 0));
+        assert_eq!(dynamic.fold_range(A..A, 0..N), 0);
+        assert_eq!(dynamic.fold_range(0..A, 0..N), w.iter().sum());
         let quantile_queries: Vec<_> = (0..Q)
             .map(|_| {
                 let l = rng.random(0..N);
