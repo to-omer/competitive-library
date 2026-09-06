@@ -156,6 +156,53 @@ where
     positions
 }
 
+// Expand normalization inside the AVX-512 function so LLVM can optimize the whole batch.
+macro_rules! bound_batch {
+    (lower, $this:ident, $values:ident, $search:expr) => {{
+        if $this.len == 0 {
+            return [0; 16];
+        }
+        let mut $values = *$values;
+        let mut beyond = [false; 16];
+        for index in 0..16 {
+            beyond[index] = $values[index] > $this.maximum;
+            $values[index] = $values[index].min($this.maximum);
+        }
+        let mut result = $search;
+        for index in 0..16 {
+            if beyond[index] {
+                result[index] = $this.len;
+            }
+        }
+        result
+    }};
+    (upper, $this:ident, $values:ident, $search:expr) => {{
+        if $this.len == 0 {
+            return [0; 16];
+        }
+        let mut $values = *$values;
+        let mut beyond = [false; 16];
+        for index in 0..16 {
+            beyond[index] = $values[index] >= $this.maximum;
+        }
+        let Some(value) = $values.iter().copied().find(|&value| value < $this.maximum) else {
+            return [$this.len; 16];
+        };
+        for index in 0..16 {
+            if beyond[index] {
+                $values[index] = value;
+            }
+        }
+        let mut result = $search;
+        for index in 0..16 {
+            if beyond[index] {
+                result[index] = $this.len;
+            }
+        }
+        result
+    }};
+}
+
 #[repr(C, align(64))]
 #[derive(Clone, Debug)]
 struct SearchBlock<T, const B: usize>([T; B]);
@@ -368,67 +415,44 @@ macro_rules! impl_static_search_tree {
 
             #[inline]
             fn lower_bound_batch(&self, values: &[$value; 16]) -> [usize; 16] {
-                if self.len == 0 {
-                    return [0; 16];
-                }
-                let mut values = *values;
-                let mut beyond = [false; 16];
-                for index in 0..16 {
-                    beyond[index] = values[index] > self.maximum;
-                    values[index] = values[index].min(self.maximum);
-                }
                 #[cfg(target_arch = "x86_64")]
-                let mut result = match self.backend {
-                    SimdBackend::Scalar => self.lower_bound_batch_scalar(&values),
-                    // SAFETY: `simd_backend` only selects supported instruction sets.
-                    SimdBackend::Avx2 => unsafe { self.lower_bound_batch_avx2(&values) },
-                    // SAFETY: same as above.
-                    SimdBackend::Avx512 => unsafe { self.lower_bound_batch_avx512(&values) },
-                };
-                #[cfg(not(target_arch = "x86_64"))]
-                let mut result = self.lower_bound_batch_scalar(&values);
-                for index in 0..16 {
-                    if beyond[index] {
-                        result[index] = self.len;
-                    }
+                if self.backend == SimdBackend::Avx512 {
+                    // SAFETY: construction selects a supported instruction set.
+                    return unsafe { self.lower_bound_batch_avx512(values) };
                 }
-                result
+                bound_batch!(lower, self, values, {
+                    #[cfg(target_arch = "x86_64")]
+                    let result = if self.backend == SimdBackend::Avx2 {
+                        // SAFETY: same as above.
+                        unsafe { self.lower_bound_batch_avx2(&values) }
+                    } else {
+                        self.lower_bound_batch_scalar(&values)
+                    };
+                    #[cfg(not(target_arch = "x86_64"))]
+                    let result = self.lower_bound_batch_scalar(&values);
+                    result
+                })
             }
 
             #[inline]
             fn upper_bound_batch(&self, values: &[$value; 16]) -> [usize; 16] {
-                if self.len == 0 {
-                    return [0; 16];
-                }
-                let mut values = *values;
-                let mut beyond = [false; 16];
-                for index in 0..16 {
-                    beyond[index] = values[index] >= self.maximum;
-                }
-                let Some(value) = values.iter().copied().find(|&value| value < self.maximum) else {
-                    return [self.len; 16];
-                };
-                for index in 0..16 {
-                    if beyond[index] {
-                        values[index] = value;
-                    }
-                }
                 #[cfg(target_arch = "x86_64")]
-                let mut result = match self.backend {
-                    SimdBackend::Scalar => self.upper_bound_batch_scalar(&values),
-                    // SAFETY: `simd_backend` only selects supported instruction sets.
-                    SimdBackend::Avx2 => unsafe { self.upper_bound_batch_avx2(&values) },
-                    // SAFETY: same as above.
-                    SimdBackend::Avx512 => unsafe { self.upper_bound_batch_avx512(&values) },
-                };
-                #[cfg(not(target_arch = "x86_64"))]
-                let mut result = self.upper_bound_batch_scalar(&values);
-                for index in 0..16 {
-                    if beyond[index] {
-                        result[index] = self.len;
-                    }
+                if self.backend == SimdBackend::Avx512 {
+                    // SAFETY: construction selects a supported instruction set.
+                    return unsafe { self.upper_bound_batch_avx512(values) };
                 }
-                result
+                bound_batch!(upper, self, values, {
+                    #[cfg(target_arch = "x86_64")]
+                    let result = if self.backend == SimdBackend::Avx2 {
+                        // SAFETY: same as above.
+                        unsafe { self.upper_bound_batch_avx2(&values) }
+                    } else {
+                        self.upper_bound_batch_scalar(&values)
+                    };
+                    #[cfg(not(target_arch = "x86_64"))]
+                    let result = self.upper_bound_batch_scalar(&values);
+                    result
+                })
             }
 
             #[cfg(target_arch = "x86_64")]
@@ -482,17 +506,27 @@ macro_rules! impl_static_search_tree {
             #[cfg(target_arch = "x86_64")]
             #[target_feature(enable = $avx512_features)]
             unsafe fn lower_bound_batch_avx512(&self, values: &[$value; 16]) -> [usize; 16] {
-                self.descend_batch(values, |values, value| unsafe {
-                    simd::$first_ge_avx512(values, value)
-                })
+                bound_batch!(
+                    lower,
+                    self,
+                    values,
+                    self.descend_batch(&values, |values, value| unsafe {
+                        simd::$first_ge_avx512(values, value)
+                    })
+                )
             }
 
             #[cfg(target_arch = "x86_64")]
             #[target_feature(enable = $avx512_features)]
             unsafe fn upper_bound_batch_avx512(&self, values: &[$value; 16]) -> [usize; 16] {
-                self.descend_batch(values, |values, value| unsafe {
-                    simd::$first_gt_avx512(values, value)
-                })
+                bound_batch!(
+                    upper,
+                    self,
+                    values,
+                    self.descend_batch(&values, |values, value| unsafe {
+                        simd::$first_gt_avx512(values, value)
+                    })
+                )
             }
         }
     };
@@ -563,59 +597,32 @@ impl StaticSearchTree<u128, 4> {
 
     #[inline]
     fn lower_bound_batch(&self, values: &[u128; 16]) -> [usize; 16] {
-        if self.len == 0 {
-            return [0; 16];
-        }
-        let mut values = *values;
-        let mut beyond = [false; 16];
-        for index in 0..16 {
-            beyond[index] = values[index] > self.maximum;
-            values[index] = values[index].min(self.maximum);
-        }
-        let mut result = self.descend_batch(&values, |values, value| {
-            (values[0] < value) as usize
-                + (values[1] < value) as usize
-                + (values[2] < value) as usize
-                + (values[3] < value) as usize
-        });
-        for index in 0..16 {
-            if beyond[index] {
-                result[index] = self.len;
-            }
-        }
-        result
+        bound_batch!(
+            lower,
+            self,
+            values,
+            self.descend_batch(&values, |values, value| {
+                (values[0] < value) as usize
+                    + (values[1] < value) as usize
+                    + (values[2] < value) as usize
+                    + (values[3] < value) as usize
+            })
+        )
     }
 
     #[inline]
     fn upper_bound_batch(&self, values: &[u128; 16]) -> [usize; 16] {
-        if self.len == 0 {
-            return [0; 16];
-        }
-        let mut values = *values;
-        let mut beyond = [false; 16];
-        for index in 0..16 {
-            beyond[index] = values[index] >= self.maximum;
-        }
-        let Some(value) = values.iter().copied().find(|&value| value < self.maximum) else {
-            return [self.len; 16];
-        };
-        for index in 0..16 {
-            if beyond[index] {
-                values[index] = value;
-            }
-        }
-        let mut result = self.descend_batch(&values, |values, value| {
-            (values[0] <= value) as usize
-                + (values[1] <= value) as usize
-                + (values[2] <= value) as usize
-                + (values[3] <= value) as usize
-        });
-        for index in 0..16 {
-            if beyond[index] {
-                result[index] = self.len;
-            }
-        }
-        result
+        bound_batch!(
+            upper,
+            self,
+            values,
+            self.descend_batch(&values, |values, value| {
+                (values[0] <= value) as usize
+                    + (values[1] <= value) as usize
+                    + (values[2] <= value) as usize
+                    + (values[3] <= value) as usize
+            })
+        )
     }
 }
 

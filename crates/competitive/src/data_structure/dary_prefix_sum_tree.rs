@@ -102,12 +102,49 @@ macro_rules! define_dary_prefix_sum_tree {
             #[inline]
             pub fn fold(&self, left: usize, right: usize) -> $value {
                 assert!(left <= right && right <= self.len);
-                self.accumulate0(right).wrapping_sub(self.accumulate0(left))
+                if right == self.len {
+                    return self.total.wrapping_sub(self.accumulate0(left));
+                }
+                let mut left = left;
+                let mut right = right;
+                let mut result: $value = 0;
+                // Both endpoints are below len here; ancestors remain in the stored levels.
+                for level in &self.levels {
+                    if left == right {
+                        break;
+                    }
+                    if right % $branch != 0 {
+                        result = result.wrapping_add(unsafe {
+                            *level
+                                .get_unchecked(right / $branch)
+                                .0
+                                .get_unchecked(right % $branch - 1)
+                        });
+                    }
+                    if left % $branch != 0 {
+                        result = result.wrapping_sub(unsafe {
+                            *level
+                                .get_unchecked(left / $branch)
+                                .0
+                                .get_unchecked(left % $branch - 1)
+                        });
+                    }
+                    left /= $branch;
+                    right /= $branch;
+                }
+                result
             }
 
             #[inline]
             pub fn get(&self, index: usize) -> $value {
-                self.fold(index, index + 1)
+                assert!(index < self.len);
+                let prefix = &self.levels[0][index / $branch].0;
+                let lane = index % $branch;
+                if lane == 0 {
+                    prefix[0]
+                } else {
+                    prefix[lane].wrapping_sub(prefix[lane - 1])
+                }
             }
 
             #[inline]
@@ -401,15 +438,35 @@ mod tests {
         for backend in backends() {
             let mut actual = DaryPrefixSumTreeU64::build(&values, backend);
             let mut expected = values.clone();
-            for _ in 0..1000 {
+            for step in 0..1000 {
                 let index = rng.rand(expected.len() as u64) as usize;
-                let value = rng.rand(16);
-                actual.update(index, value);
-                expected[index] += value;
+                let value = rng.rand64();
+                if step % 2 == 0 {
+                    actual.set(index, value);
+                    expected[index] = value;
+                } else {
+                    actual.update(index, value);
+                    expected[index] = expected[index].wrapping_add(value);
+                }
+                assert_eq!(actual.get(index), expected[index]);
                 let end = rng.rand(expected.len() as u64 + 1) as usize;
-                assert_eq!(actual.accumulate0(end), expected[..end].iter().sum());
+                let start = rng.rand(end as u64 + 1) as usize;
+                assert_eq!(
+                    actual.fold(start, end),
+                    expected[start..end]
+                        .iter()
+                        .copied()
+                        .fold(0, u64::wrapping_add)
+                );
+                assert_eq!(
+                    actual.accumulate0(end),
+                    expected[..end].iter().copied().fold(0, u64::wrapping_add)
+                );
             }
-            assert_eq!(actual.fold_all(), expected.iter().sum());
+            assert_eq!(
+                actual.fold_all(),
+                expected.iter().copied().fold(0, u64::wrapping_add)
+            );
         }
     }
 }

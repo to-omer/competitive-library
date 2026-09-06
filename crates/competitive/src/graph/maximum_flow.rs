@@ -1,8 +1,5 @@
 use super::{BidirectionalSparseGraph, Bounded, Graph, Zero};
-use std::{
-    collections::VecDeque,
-    ops::{Add, AddAssign, Sub, SubAssign},
-};
+use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 #[derive(Debug, Clone)]
 pub struct DinicBuilder<C> {
@@ -40,7 +37,7 @@ impl<C> DinicBuilder<C> {
             capacities,
             iter: Vec::with_capacity(vsize),
             level: Vec::with_capacity(vsize),
-            deq: VecDeque::with_capacity(vsize),
+            deq: Vec::with_capacity(vsize),
         }
     }
 }
@@ -61,7 +58,7 @@ pub struct Dinic<'a, C> {
     capacities: Vec<C>,
     iter: Vec<usize>,
     level: Vec<usize>,
-    deq: VecDeque<usize>,
+    deq: Vec<usize>,
 }
 impl<'a, C> Dinic<'a, C>
 where
@@ -75,15 +72,18 @@ where
         self.level.resize(self.graph.vertices_size(), usize::MAX);
         self.level[s] = 0;
         self.deq.clear();
-        self.deq.push_back(s);
-        while let Some(u) = self.deq.pop_front() {
+        self.deq.push(s);
+        let mut head = 0;
+        while head < self.deq.len() {
+            let u = self.deq[head];
+            head += 1;
             for a in self.graph.neighbors(u) {
                 if self.capacities[a.label] > C::zero() && self.level[a.to] == usize::MAX {
                     self.level[a.to] = self.level[u] + 1;
                     if a.to == t {
                         return false;
                     }
-                    self.deq.push_back(a.to);
+                    self.deq.push(a.to);
                 }
             }
         }
@@ -135,12 +135,15 @@ where
         let mut visited = vec![false; self.graph.vertices_size()];
         visited[s] = true;
         self.deq.clear();
-        self.deq.push_back(s);
-        while let Some(u) = self.deq.pop_front() {
+        self.deq.push(s);
+        let mut head = 0;
+        while head < self.deq.len() {
+            let u = self.deq[head];
+            head += 1;
             for a in self.graph.neighbors(u) {
                 if self.capacities[a.label] > C::zero() && !visited[a.to] {
                     visited[a.to] = true;
-                    self.deq.push_back(a.to);
+                    self.deq.push(a.to);
                 }
             }
         }

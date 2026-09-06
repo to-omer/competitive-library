@@ -245,12 +245,12 @@ unsafe fn max_epu64(left: __m256i, right: __m256i) -> __m256i {
 #[target_feature(enable = "avx2")]
 #[inline]
 pub unsafe fn max_index_u64x8_avx2(values: &[u64; 8]) -> usize {
-    let low = _mm256_loadu_si256(values.as_ptr().cast());
-    let high = _mm256_loadu_si256(values.as_ptr().add(4).cast());
-    let mut maximum = max_epu64(low, high);
-    maximum = max_epu64(maximum, _mm256_permute4x64_epi64::<0x4e>(maximum));
-    maximum = max_epu64(maximum, _mm256_permute4x64_epi64::<0xb1>(maximum));
-    let maximum = _mm256_set1_epi64x(_mm256_extract_epi64::<0>(maximum));
+    let sign = _mm256_set1_epi64x(i64::MIN);
+    let low = _mm256_xor_si256(_mm256_loadu_si256(values.as_ptr().cast()), sign);
+    let high = _mm256_xor_si256(_mm256_loadu_si256(values.as_ptr().add(4).cast()), sign);
+    let mut maximum = max_i64x4(low, high);
+    maximum = max_i64x4(maximum, _mm256_permute4x64_epi64::<0x4e>(maximum));
+    maximum = max_i64x4(maximum, _mm256_permute4x64_epi64::<0xb1>(maximum));
     let low = _mm256_movemask_pd(_mm256_castsi256_pd(_mm256_cmpeq_epi64(low, maximum)));
     let high = _mm256_movemask_pd(_mm256_castsi256_pd(_mm256_cmpeq_epi64(high, maximum)));
     ((low as u32 | ((high as u32) << 4)) as u8).trailing_zeros() as usize

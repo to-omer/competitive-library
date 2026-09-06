@@ -580,7 +580,23 @@ mod simd {
         let zero = _mm256_setzero_si256();
         let mut sum = zero;
         let ptr = bits.as_ptr().cast::<__m256i>();
-        for i in 0..bits.len() * 2 {
+        let mut i = 0;
+        while i + 16 <= bits.len() * 2 {
+            // Sixteen vectors contribute at most 128 set bits to each byte.
+            let mut counts = zero;
+            for offset in 0..16 {
+                let value = _mm256_load_si256(ptr.add(i + offset));
+                let low = _mm256_shuffle_epi8(table, _mm256_and_si256(value, low_mask));
+                let high = _mm256_shuffle_epi8(
+                    table,
+                    _mm256_and_si256(_mm256_srli_epi16::<4>(value), low_mask),
+                );
+                counts = _mm256_add_epi8(counts, _mm256_add_epi8(low, high));
+            }
+            sum = _mm256_add_epi64(sum, _mm256_sad_epu8(counts, zero));
+            i += 16;
+        }
+        while i < bits.len() * 2 {
             let value = _mm256_load_si256(ptr.add(i));
             let low = _mm256_shuffle_epi8(table, _mm256_and_si256(value, low_mask));
             let high = _mm256_shuffle_epi8(
@@ -588,6 +604,7 @@ mod simd {
                 _mm256_and_si256(_mm256_srli_epi16::<4>(value), low_mask),
             );
             sum = _mm256_add_epi64(sum, _mm256_sad_epu8(_mm256_add_epi8(low, high), zero));
+            i += 1;
         }
         let mut lanes = [0; 4];
         _mm256_storeu_si256(lanes.as_mut_ptr().cast(), sum);
@@ -651,8 +668,12 @@ mod simd {
     pub unsafe fn all_avx2(bits: &[Block]) -> bool {
         let ones = _mm256_set1_epi64x(-1);
         let ptr = bits.as_ptr().cast::<__m256i>();
-        for i in 0..bits.len() * 2 {
-            if _mm256_movemask_epi8(_mm256_cmpeq_epi64(_mm256_load_si256(ptr.add(i)), ones)) != -1 {
+        for i in 0..bits.len() {
+            let value = _mm256_and_si256(
+                _mm256_load_si256(ptr.add(i * 2)),
+                _mm256_load_si256(ptr.add(i * 2 + 1)),
+            );
+            if _mm256_movemask_epi8(_mm256_cmpeq_epi64(value, ones)) != -1 {
                 return false;
             }
         }
@@ -907,7 +928,9 @@ mod tests {
     use crate::tools::Xorshift;
     use std::panic::{AssertUnwindSafe, catch_unwind};
 
-    const SIZES: [usize; 13] = [0, 1, 2, 63, 64, 65, 255, 256, 257, 511, 512, 513, 4097];
+    const SIZES: [usize; 16] = [
+        0, 1, 2, 63, 64, 65, 255, 256, 257, 511, 512, 513, 3584, 4096, 4097, 8193,
+    ];
 
     fn bitset(model: &[bool]) -> BitSet {
         model.iter().copied().collect()

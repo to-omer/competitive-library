@@ -266,7 +266,7 @@ impl BucketQueue16 {
     }
 
     fn clear(&mut self) {
-        self.counts.fill(0);
+        self.counts[..=self.maximum as usize].fill(0);
         self.occupied.fill(0);
         self.summary.fill(0);
         self.top = 0;

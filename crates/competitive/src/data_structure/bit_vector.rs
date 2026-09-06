@@ -248,28 +248,30 @@ impl BitVector {
     #[inline]
     fn locate_zero(&self, mut rank: usize) -> (usize, usize) {
         let mut block = 0;
-        let mut right = self.super_prefix.len();
-        while right - block > 1 {
-            let middle = block.midpoint(right);
-            if middle * Self::SUPER_WORDS * Self::WORD_SIZE - self.super_prefix[middle] <= rank {
-                block = middle;
+        let mut size = self.super_prefix.len();
+        while size > 1 {
+            let half = size / 2;
+            let middle = block + half;
+            block = if middle * Self::SUPER_WORDS * Self::WORD_SIZE - self.super_prefix[middle]
+                <= rank
+            {
+                middle
             } else {
-                right = middle;
-            }
+                block
+            };
+            size -= half;
         }
         rank -= block * Self::SUPER_WORDS * Self::WORD_SIZE - self.super_prefix[block];
         let word_start = block * Self::SUPER_WORDS;
         let word_end = (word_start + Self::SUPER_WORDS).min(self.words.len() - 1);
         let mut word = word_start;
-        let mut right = word_end;
-        while right - word > 1 {
-            let middle = word.midpoint(right);
+        let mut size = word_end - word_start;
+        while size > 1 {
+            let half = size / 2;
+            let middle = word + half;
             let zeros = (middle - word_start) * Self::WORD_SIZE - self.sub_prefix[middle] as usize;
-            if zeros <= rank {
-                word = middle;
-            } else {
-                right = middle;
-            }
+            word = if zeros <= rank { middle } else { word };
+            size -= half;
         }
         rank -= (word - word_start) * Self::WORD_SIZE - self.sub_prefix[word] as usize;
         (word, rank)
@@ -285,6 +287,7 @@ impl RankSelectDictionaries for BitVector {
         debug_assert!(k < self.len);
         self.words[k / Self::WORD_SIZE] & (1u64 << (k % Self::WORD_SIZE)) != 0
     }
+    #[inline]
     fn access_rank1(&self, k: usize) -> (bool, usize) {
         debug_assert!(k <= self.len);
         let word = k / Self::WORD_SIZE;
@@ -297,6 +300,7 @@ impl RankSelectDictionaries for BitVector {
                 + (bits & !(u64::MAX << offset)).count_ones() as usize,
         )
     }
+    #[inline]
     fn rank1(&self, k: usize) -> usize {
         self.access_rank1(k).1
     }

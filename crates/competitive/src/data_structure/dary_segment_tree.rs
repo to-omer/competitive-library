@@ -16,7 +16,7 @@ macro_rules! define_dary_segment_tree {
         $unit:expr,
         $operation:ident,
         $backend:expr,
-        $simd_set:literal,
+        $sum:literal,
         $reduce_avx2:ident,
         $reduce_range_avx2:ident,
         $reduce_avx512:ident,
@@ -33,7 +33,21 @@ macro_rules! define_dary_segment_tree {
 
         impl $name {
             pub fn new(len: usize) -> Self {
-                Self::from_vec(vec![$unit; len])
+                let mut levels = Vec::new();
+                let mut current = len.max(1);
+                loop {
+                    levels.push(vec![Block([$unit; $branch]); current.div_ceil($branch)]);
+                    if current == 1 {
+                        break;
+                    }
+                    current = current.div_ceil($branch);
+                }
+                Self {
+                    levels,
+                    len,
+                    #[cfg(target_arch = "x86_64")]
+                    backend: $backend,
+                }
             }
 
             pub fn from_vec(values: Vec<$value>) -> Self {
@@ -140,8 +154,15 @@ macro_rules! define_dary_segment_tree {
                 if self.levels[0][index / $branch].0[index % $branch] == value {
                     return;
                 }
-                if !$simd_set {
-                    self.set_by(index, value, Self::reduce_scalar);
+                if $sum {
+                    let delta =
+                        value.wrapping_sub(self.levels[0][index / $branch].0[index % $branch]);
+                    let mut index = index;
+                    for level in &mut self.levels {
+                        let current = &mut level[index / $branch].0[index % $branch];
+                        *current = current.wrapping_add(delta);
+                        index /= $branch;
+                    }
                     return;
                 }
                 #[cfg(target_arch = "x86_64")]
@@ -267,7 +288,7 @@ define_dary_segment_tree!(
     i32::MAX,
     min,
     simd_backend(),
-    true,
+    false,
     minimum_i32x16_avx2,
     minimum_range_i32x16_avx2,
     minimum_i32x16_avx512,
@@ -281,7 +302,7 @@ define_dary_segment_tree!(
     i32::MIN,
     max,
     simd_backend(),
-    true,
+    false,
     maximum_i32x16_avx2,
     maximum_range_i32x16_avx2,
     maximum_i32x16_avx512,
@@ -295,7 +316,7 @@ define_dary_segment_tree!(
     i64::MAX,
     min,
     simd_backend(),
-    true,
+    false,
     minimum_i64x8_avx2,
     minimum_range_i64x8_avx2,
     minimum_i64x8_avx512,
@@ -309,7 +330,7 @@ define_dary_segment_tree!(
     i64::MIN,
     max,
     simd_backend(),
-    true,
+    false,
     maximum_i64x8_avx2,
     maximum_range_i64x8_avx2,
     maximum_i64x8_avx512,
@@ -323,7 +344,7 @@ define_dary_segment_tree!(
     0,
     wrapping_add,
     simd_backend(),
-    false,
+    true,
     sum_i32x16_avx2,
     sum_range_i32x16_avx2,
     sum_i32x16_avx512,
@@ -337,7 +358,7 @@ define_dary_segment_tree!(
     0,
     wrapping_add,
     simd_backend(),
-    false,
+    true,
     sum_i64x8_avx2,
     sum_range_i64x8_avx2,
     sum_i64x8_avx512,
@@ -387,13 +408,40 @@ mod tests {
                     if let Some(value) = values.get_mut(2) {
                         *value = <$value>::MAX;
                     }
-                    for backend in backends() {
-                        let mut minimum = <$minimum>::build(values.clone(), backend);
-                        let mut maximum = <$maximum>::build(values.clone(), backend);
-                        let mut sum = <$sum>::build(values.clone(), backend);
-                        let mut expected_minimum = values.clone();
-                        let mut expected_maximum = values.clone();
-                        let mut expected_sum = values.clone();
+                    for (backend, from_values) in backends()
+                        .into_iter()
+                        .flat_map(|backend| [(backend, false), (backend, true)])
+                    {
+                        let mut minimum = if from_values {
+                            <$minimum>::build(values.clone(), backend)
+                        } else {
+                            <$minimum>::new(len)
+                        };
+                        let mut maximum = if from_values {
+                            <$maximum>::build(values.clone(), backend)
+                        } else {
+                            <$maximum>::new(len)
+                        };
+                        let mut sum = if from_values {
+                            <$sum>::build(values.clone(), backend)
+                        } else {
+                            <$sum>::new(len)
+                        };
+                        let mut expected_minimum = if from_values {
+                            values.clone()
+                        } else {
+                            vec![<$value>::MAX; len]
+                        };
+                        let mut expected_maximum = if from_values {
+                            values.clone()
+                        } else {
+                            vec![<$value>::MIN; len]
+                        };
+                        let mut expected_sum = if from_values {
+                            values.clone()
+                        } else {
+                            vec![0; len]
+                        };
                         assert_eq!(minimum.len(), len);
                         assert_eq!(maximum.len(), len);
                         assert_eq!(sum.len(), len);

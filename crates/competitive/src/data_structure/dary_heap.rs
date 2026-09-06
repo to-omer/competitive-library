@@ -58,10 +58,13 @@ impl U128HeapBlock {
 }
 
 #[inline(always)]
-fn max_index<T: Ord, const D: usize>(values: &[T; D]) -> usize {
+fn max_index<T: Copy + Ord, const D: usize>(values: &[T; D]) -> usize {
+    // Track the value separately to avoid dependent array loads.
+    let mut maximum = values[0];
     let mut result = 0;
-    for index in 1..D {
-        if values[index] > values[result] {
+    for (index, &value) in values.iter().enumerate().skip(1) {
+        if value > maximum {
+            maximum = value;
             result = index;
         }
     }
