@@ -1,4 +1,4 @@
-use super::{Group, Monoid};
+use super::{AbelianGroup, Group, Monoid};
 use std::fmt::{self, Debug, Formatter};
 
 pub struct BinaryIndexedTree<M>
@@ -111,6 +111,29 @@ impl<G: Group> BinaryIndexedTree<G> {
         G::operate(&G::inverse(&self.accumulate0(l)), &self.accumulate0(r))
     }
     #[inline]
+    pub fn fold_abelian(&self, mut l: usize, mut r: usize) -> G::T
+    where
+        G: AbelianGroup,
+    {
+        debug_assert!(l <= self.n && r <= self.n);
+        if l == r {
+            return G::unit();
+        }
+        // The prefix above the highest differing bit cancels in an Abelian group.
+        let common = l & !(usize::MAX >> (l ^ r).leading_zeros());
+        let mut left = G::unit();
+        let mut right = G::unit();
+        while l != common {
+            G::operate_assign(&mut left, &self.bit[l]);
+            l &= l - 1;
+        }
+        while r != common {
+            G::operate_assign(&mut right, &self.bit[r]);
+            r &= r - 1;
+        }
+        G::rinv_operate(&right, &left)
+    }
+    #[inline]
     pub fn get(&self, k: usize) -> G::T {
         self.fold(k, k + 1)
     }
@@ -176,12 +199,12 @@ mod tests {
         for i in 0..N - 1 {
             arr[i + 1] += arr[i];
         }
-        for i in 0..N {
-            for j in i + 1..N + 1 {
-                assert_eq!(
-                    bit.fold(i, j),
-                    arr[j - 1] - if i == 0 { 0 } else { arr[i - 1] }
-                );
+        for i in 0..=N {
+            for j in i..=N {
+                let expected =
+                    if j == 0 { 0 } else { arr[j - 1] } - if i == 0 { 0 } else { arr[i - 1] };
+                assert_eq!(bit.fold(i, j), expected);
+                assert_eq!(bit.fold_abelian(i, j), expected);
             }
         }
     }

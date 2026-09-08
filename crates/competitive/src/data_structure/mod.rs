@@ -21,7 +21,7 @@ pub use self::binary_indexed_tree_2d::BinaryIndexedTree2D;
 #[codesnip::entry("BinaryTrie")]
 pub use self::binary_trie::BinaryTrie;
 #[codesnip::entry("BitVector")]
-pub use self::bit_vector::{BitVector, RankSelectDictionaries};
+pub use self::bit_vector::{BitVector, BitVectorBlock, RankSelectDictionaries};
 #[codesnip::entry("BitSet")]
 pub use self::bitset::BitSet;
 #[codesnip::entry("BucketQueue")]
@@ -327,7 +327,7 @@ mod vec_map;
     nightly,
     codesnip::entry(
         "WaveletMatrix",
-        include("BinaryIndexedTree", "BitVector", "compress", "algebra")
+        include("BinaryIndexedTree", "BitVector", "compress", "algebra", "avx_helper")
     )
 )]
 mod wavelet_matrix;

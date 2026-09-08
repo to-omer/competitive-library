@@ -129,154 +129,117 @@ mod simd {
     }
 }
 
-/// An append-only rank/select dictionary with 256-word prefix blocks.
-///
-/// The layout reduces metadata and improves large or select-heavy workloads. A compact
-/// rank-only workload can be faster with an absolute prefix stored beside every word.
+#[derive(Debug, Clone)]
+#[repr(C)]
+pub struct BitVectorBlock {
+    pub bits: u64,
+    pub rank: usize,
+}
+
 #[derive(Debug, Clone)]
 pub struct BitVector {
-    words: Vec<u64>,
-    super_prefix: Vec<usize>,
-    sub_prefix: Vec<u16>,
-    sum: usize,
+    blocks: Vec<BitVectorBlock>,
     len: usize,
-    #[cfg(target_arch = "x86_64")]
-    bmi2: bool,
+    sum: usize,
+    select_samples: [Vec<usize>; 2],
 }
+
 impl BitVector {
     const WORD_SIZE: usize = u64::BITS as usize;
-    const SUPER_WORDS: usize = 256;
+
+    /// Builds a bit vector from low-bit-first words. `words.len()` must equal
+    /// `len.div_ceil(64)`. Unused high bits in the final word are ignored.
+    pub fn from_words(words: &[u64], len: usize) -> Self {
+        assert_eq!(words.len(), len.div_ceil(Self::WORD_SIZE));
+        let mut sum = 0;
+        let mut blocks = Vec::with_capacity(len / Self::WORD_SIZE + 1);
+        for (i, &bits) in words.iter().enumerate() {
+            let count = (len - i * Self::WORD_SIZE).min(Self::WORD_SIZE);
+            let bits = if count == Self::WORD_SIZE {
+                bits
+            } else {
+                bits & ((1u64 << count) - 1)
+            };
+            blocks.push(BitVectorBlock { bits, rank: sum });
+            sum += bits.count_ones() as usize;
+        }
+        if len.is_multiple_of(Self::WORD_SIZE) {
+            blocks.push(BitVectorBlock { bits: 0, rank: sum });
+        }
+        Self::from_blocks(blocks, len, sum)
+    }
+
+    fn from_blocks(blocks: Vec<BitVectorBlock>, len: usize, sum: usize) -> Self {
+        let mut select_samples = [Vec::new(), Vec::new()];
+        for (i, block) in blocks
+            .iter()
+            .enumerate()
+            .take(len.div_ceil(Self::WORD_SIZE))
+        {
+            let start = [i * Self::WORD_SIZE - block.rank, block.rank];
+            let end1 = blocks.get(i + 1).map_or(sum, |next| next.rank);
+            let end = [((i + 1) * Self::WORD_SIZE).min(len) - end1, end1];
+            for bit in 0..2 {
+                if start[bit].div_ceil(256) != end[bit].div_ceil(256) {
+                    select_samples[bit].push(i);
+                }
+            }
+        }
+        Self {
+            blocks,
+            len,
+            sum,
+            select_samples,
+        }
+    }
 
     pub fn with_capacity(bits: usize) -> Self {
-        let words = bits.div_ceil(Self::WORD_SIZE);
-        let mut word_values = Vec::with_capacity(words + 1);
-        word_values.push(0);
-        let mut super_prefix = Vec::with_capacity(words / Self::SUPER_WORDS + 1);
-        super_prefix.push(0);
-        let mut sub_prefix = Vec::with_capacity(words + 1);
-        sub_prefix.push(0);
+        let mut blocks = Vec::with_capacity(bits.div_ceil(Self::WORD_SIZE) + 1);
+        blocks.push(BitVectorBlock { bits: 0, rank: 0 });
         Self {
-            words: word_values,
-            super_prefix,
-            sub_prefix,
-            sum: 0,
+            blocks,
             len: 0,
-            #[cfg(target_arch = "x86_64")]
-            bmi2: is_x86_feature_detected!("bmi2"),
+            sum: 0,
+            select_samples: [Vec::new(), Vec::new()],
         }
     }
 
     pub fn push(&mut self, bit: bool) {
         let word = self.len / Self::WORD_SIZE;
-        let offset = self.len % Self::WORD_SIZE;
-        if offset == 0 {
-            self.words.push(0);
-            self.sub_prefix.push(0);
+        let rank = if bit { self.sum } else { self.len - self.sum };
+        if rank.is_multiple_of(256) {
+            self.select_samples[bit as usize].push(word);
         }
-        if bit {
-            self.words[word] |= 1u64 << offset;
-            self.sum += 1;
-        }
+        self.blocks[word].bits |= (bit as u64) << (self.len % Self::WORD_SIZE);
+        self.sum += bit as usize;
         self.len += 1;
         if self.len.is_multiple_of(Self::WORD_SIZE) {
-            let word = self.len / Self::WORD_SIZE;
-            if word.is_multiple_of(Self::SUPER_WORDS) {
-                if let Some(prefix) = self.super_prefix.get_mut(word / Self::SUPER_WORDS) {
-                    *prefix = self.sum;
-                } else {
-                    self.super_prefix.push(self.sum);
-                }
-            }
-            self.sub_prefix[word] = (self.sum - self.super_prefix[word / Self::SUPER_WORDS]) as u16;
+            self.blocks.push(BitVectorBlock {
+                bits: 0,
+                rank: self.sum,
+            });
         }
     }
 
-    fn from_words(mut words: Vec<u64>, len: usize) -> Self {
-        let mut super_prefix = Vec::with_capacity(words.len().div_ceil(Self::SUPER_WORDS));
-        let mut sub_prefix = Vec::with_capacity(words.len() + 1);
-        let mut sum = 0;
-        let mut super_sum = 0;
-        for index in 0..=words.len() {
-            if index.is_multiple_of(Self::SUPER_WORDS) {
-                if index < words.len() || len.is_multiple_of(Self::WORD_SIZE) {
-                    super_sum = sum;
-                    super_prefix.push(sum);
-                }
-                sub_prefix.push(0);
-            } else {
-                sub_prefix.push((sum - super_sum) as u16);
-            }
-            if let Some(&word) = words.get(index) {
-                sum += word.count_ones() as usize;
-            }
-        }
-        words.push(0);
-        Self {
-            words,
-            super_prefix,
-            sub_prefix,
-            sum,
-            len,
-            #[cfg(target_arch = "x86_64")]
-            bmi2: is_x86_feature_detected!("bmi2"),
-        }
+    /// Words paired with the number of ones preceding each word. The last block
+    /// is partial, or an empty sentinel when the bit length is a multiple of 64.
+    pub fn blocks(&self) -> &[BitVectorBlock] {
+        &self.blocks
     }
 
+    /// Returns the position of the zero-based occurrence `rank` in `bits`.
+    /// `rank` must be less than the number of set bits.
     #[inline]
-    fn select_word(&self, word: u64, rank: usize) -> usize {
+    pub fn select_word(bits: u64, rank: usize) -> usize {
         #[cfg(target_arch = "x86_64")]
-        if self.bmi2 {
-            // SAFETY: support for BMI2 was cached during construction.
-            return unsafe { simd::select_word(word, rank) };
+        if is_x86_feature_detected!("bmi2") {
+            // SAFETY: BMI2 is available and the caller checked the occurrence count.
+            return unsafe { simd::select_word(bits, rank) };
         }
-        select_word_scalar(word, rank)
-    }
-
-    #[inline]
-    fn locate_one(&self, mut rank: usize) -> (usize, usize) {
-        let block = self.super_prefix.partition_point(|&sum| sum <= rank) - 1;
-        rank -= self.super_prefix[block];
-        let word_start = block * Self::SUPER_WORDS;
-        let word_end = (word_start + Self::SUPER_WORDS).min(self.words.len() - 1);
-        let lane =
-            self.sub_prefix[word_start..word_end].partition_point(|&sum| sum as usize <= rank) - 1;
-        let word = word_start + lane;
-        rank -= self.sub_prefix[word] as usize;
-        (word, rank)
-    }
-
-    #[inline]
-    fn locate_zero(&self, mut rank: usize) -> (usize, usize) {
-        let mut block = 0;
-        let mut size = self.super_prefix.len();
-        while size > 1 {
-            let half = size / 2;
-            let middle = block + half;
-            block = if middle * Self::SUPER_WORDS * Self::WORD_SIZE - self.super_prefix[middle]
-                <= rank
-            {
-                middle
-            } else {
-                block
-            };
-            size -= half;
-        }
-        rank -= block * Self::SUPER_WORDS * Self::WORD_SIZE - self.super_prefix[block];
-        let word_start = block * Self::SUPER_WORDS;
-        let word_end = (word_start + Self::SUPER_WORDS).min(self.words.len() - 1);
-        let mut word = word_start;
-        let mut size = word_end - word_start;
-        while size > 1 {
-            let half = size / 2;
-            let middle = word + half;
-            let zeros = (middle - word_start) * Self::WORD_SIZE - self.sub_prefix[middle] as usize;
-            word = if zeros <= rank { middle } else { word };
-            size -= half;
-        }
-        rank -= (word - word_start) * Self::WORD_SIZE - self.sub_prefix[word] as usize;
-        (word, rank)
+        select_word_scalar(bits, rank)
     }
 }
+
 impl RankSelectDictionaries for BitVector {
     fn bit_length(&self) -> usize {
         self.len
@@ -284,71 +247,85 @@ impl RankSelectDictionaries for BitVector {
 
     #[inline]
     fn access(&self, k: usize) -> bool {
-        debug_assert!(k < self.len);
-        self.words[k / Self::WORD_SIZE] & (1u64 << (k % Self::WORD_SIZE)) != 0
+        self.blocks[k / Self::WORD_SIZE].bits & (1u64 << (k % Self::WORD_SIZE)) != 0
     }
+
     #[inline]
     fn access_rank1(&self, k: usize) -> (bool, usize) {
-        debug_assert!(k <= self.len);
-        let word = k / Self::WORD_SIZE;
+        let block = &self.blocks[k / Self::WORD_SIZE];
         let offset = k % Self::WORD_SIZE;
-        let bits = self.words[word];
         (
-            bits & (1u64 << offset) != 0,
-            self.super_prefix[word / Self::SUPER_WORDS]
-                + self.sub_prefix[word] as usize
-                + (bits & !(u64::MAX << offset)).count_ones() as usize,
+            block.bits & (1u64 << offset) != 0,
+            block.rank + (block.bits & !(u64::MAX << offset)).count_ones() as usize,
         )
     }
+
     #[inline]
     fn rank1(&self, k: usize) -> usize {
         self.access_rank1(k).1
     }
+
     fn select1(&self, k: usize) -> Option<usize> {
-        if self.sum <= k {
+        if k >= self.sum {
             return None;
         }
-        let (word, rank) = self.locate_one(k);
-        Some(word * Self::WORD_SIZE + self.select_word(self.words[word], rank))
+        let sample = k / 256;
+        let start = self.select_samples[1][sample];
+        let end = self.select_samples[1]
+            .get(sample + 1)
+            .map_or(self.blocks.len(), |&word| word + 1);
+        let word = start + self.blocks[start..end].partition_point(|block| block.rank <= k) - 1;
+        let rank = k - self.blocks[word].rank;
+        Some(word * Self::WORD_SIZE + Self::select_word(self.blocks[word].bits, rank))
     }
+
     fn select0(&self, k: usize) -> Option<usize> {
-        if self.len - self.sum <= k {
+        if k >= self.len - self.sum {
             return None;
         }
-        let (word, rank) = self.locate_zero(k);
-        let mut bits = !self.words[word];
-        if word + 1 == self.words.len() - 1 && !self.len.is_multiple_of(Self::WORD_SIZE) {
-            bits &= u64::MAX >> (Self::WORD_SIZE - self.len % Self::WORD_SIZE);
+        let sample = k / 256;
+        let mut word = self.select_samples[0][sample];
+        let end = self.select_samples[0]
+            .get(sample + 1)
+            .map_or(self.blocks.len(), |&word| word + 1);
+        let mut size = end - word;
+        while size > 1 {
+            let half = size / 2;
+            let middle = word + half;
+            word = if middle * Self::WORD_SIZE - self.blocks[middle].rank <= k {
+                middle
+            } else {
+                word
+            };
+            size -= half;
         }
-        Some(word * Self::WORD_SIZE + self.select_word(bits, rank))
+        let rank = k - (word * Self::WORD_SIZE - self.blocks[word].rank);
+        Some(word * Self::WORD_SIZE + Self::select_word(!self.blocks[word].bits, rank))
     }
 }
+
 impl FromIterator<bool> for BitVector {
-    fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
+    fn from_iter<I: IntoIterator<Item = bool>>(iter: I) -> Self {
         let iter = iter.into_iter();
-        let (lower, upper) = iter.size_hint();
-        let capacity = match upper {
-            Some(upper) => upper,
-            None => lower,
-        };
-        let mut words = Vec::with_capacity(capacity.div_ceil(Self::WORD_SIZE) + 1);
-        let mut word = 0u64;
-        let mut word_len = 0;
-        let mut len = 0;
-        for bit in iter {
-            word |= (bit as u64) << word_len;
-            word_len += 1;
-            len += 1;
-            if word_len == Self::WORD_SIZE {
-                words.push(word);
-                word = 0;
-                word_len = 0;
+        let mut blocks = Vec::with_capacity(iter.size_hint().0 / Self::WORD_SIZE + 1);
+        let mut len = 0usize;
+        let mut sum = 0;
+        let mut iter = iter.fuse();
+        while let Some(first) = iter.next() {
+            let mut bits = first as u64;
+            let mut count = 1;
+            for (i, bit) in iter.by_ref().take(Self::WORD_SIZE - 1).enumerate() {
+                bits |= (bit as u64) << (i + 1);
+                count += 1;
             }
+            blocks.push(BitVectorBlock { bits, rank: sum });
+            len += count;
+            sum += bits.count_ones() as usize;
         }
-        if word_len != 0 {
-            words.push(word);
+        if len.is_multiple_of(Self::WORD_SIZE) {
+            blocks.push(BitVectorBlock { bits: 0, rank: sum });
         }
-        Self::from_words(words, len)
+        Self::from_blocks(blocks, len, sum)
     }
 }
 
@@ -364,12 +341,11 @@ mod tests {
         const WORD_SIZE: usize = u64::BITS as usize;
         let mut rng = Xorshift::default();
         for x in rng.random_iter(0u64..).take(Q) {
-            let word = x;
             for k in 0..=WORD_SIZE {
                 assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());
                 assert_eq!(x.rank0(k), (0..k).filter(|&i| !x.access(i)).count());
-                if k < word.count_ones() as usize {
-                    assert_eq!(select_word_scalar(word, k), word.select1(k).unwrap());
+                if k < x.count_ones() as usize {
+                    assert_eq!(select_word_scalar(x, k), x.select1(k).unwrap());
                 }
                 if let Some(i) = x.select1(k) {
                     assert_eq!((0..i).filter(|&j| x.access(j)).count(), k);
@@ -389,6 +365,10 @@ mod tests {
 
     #[test]
     fn test_rank_select_bit_vector() {
+        let mut events = [Some(true), None, Some(false)].into_iter();
+        let collected: BitVector = std::iter::from_fn(|| events.next().flatten()).collect();
+        assert_eq!(collected.bit_length(), 1);
+        assert_eq!(collected.rank1(1), 1);
         let mut rng = Xorshift::default();
         for len in [
             0,
@@ -396,66 +376,64 @@ mod tests {
             BitVector::WORD_SIZE - 1,
             BitVector::WORD_SIZE,
             BitVector::WORD_SIZE + 1,
-            BitVector::WORD_SIZE * BitVector::SUPER_WORDS - 1,
-            BitVector::WORD_SIZE * BitVector::SUPER_WORDS,
-            BitVector::WORD_SIZE * BitVector::SUPER_WORDS + 1,
-            BitVector::WORD_SIZE * (BitVector::SUPER_WORDS * 2 + 17),
+            16384 - 1,
+            16384,
+            16384 + 1,
+            65537,
         ] {
-            for pattern in 0..3 {
+            for pattern in 0..7 {
                 let bits: Vec<_> = (0..len)
                     .map(|index| match pattern {
                         0 => rng.rand(5) != 0,
                         1 => index.is_multiple_of(BitVector::WORD_SIZE * 3 + 1),
-                        _ => !index.is_multiple_of(BitVector::WORD_SIZE * 3 + 1),
+                        2 => !index.is_multiple_of(BitVector::WORD_SIZE * 3 + 1),
+                        3 => false,
+                        4 => true,
+                        5 => index % 8193 == 8192,
+                        _ => index % 8193 != 8192,
                     })
                     .collect();
-                let mut pushed = BitVector::with_capacity(len);
-                for &bit in &bits {
-                    pushed.push(bit);
-                }
-                let collected: BitVector = bits.iter().copied().collect();
-                let split = len / 2;
-                let mut extended: BitVector = bits[..split].iter().copied().collect();
-                for &bit in &bits[split..] {
-                    extended.push(bit);
-                }
-                let split = len.saturating_sub(1);
-                let mut appended: BitVector = bits[..split].iter().copied().collect();
-                for &bit in &bits[split..] {
-                    appended.push(bit);
-                }
-                for actual in [pushed, collected, extended, appended] {
-                    let mut rank1 = 0;
-                    for (index, &bit) in bits.iter().enumerate() {
-                        assert_eq!(actual.access(index), bit);
-                        assert_eq!(actual.access_rank1(index), (bit, rank1));
-                        rank1 += bit as usize;
+                let mut words = vec![u64::MAX; len.div_ceil(64)];
+                let mut positions = [Vec::new(), Vec::new()];
+                for (i, &bit) in bits.iter().enumerate() {
+                    positions[bit as usize].push(i);
+                    if !bit {
+                        words[i / 64] &= !(1 << (i % 64));
                     }
-                    for end in [0, len / 3, len / 2, len] {
-                        assert_eq!(
-                            actual.rank1(end),
-                            bits[..end].iter().filter(|&&bit| bit).count()
-                        );
-                        assert_eq!(
-                            actual.rank0(end),
-                            bits[..end].iter().filter(|&&bit| !bit).count()
-                        );
+                }
+                for split in [0, len / 2, len.saturating_sub(1), len] {
+                    let mut pushed = BitVector::with_capacity(len);
+                    for &bit in &bits[..split] {
+                        pushed.push(bit);
                     }
-                    let ones: Vec<_> = bits
-                        .iter()
-                        .enumerate()
-                        .filter_map(|(index, &bit)| bit.then_some(index))
-                        .collect();
-                    let zeros: Vec<_> = bits
-                        .iter()
-                        .enumerate()
-                        .filter_map(|(index, &bit)| (!bit).then_some(index))
-                        .collect();
-                    for rank in 0..=ones.len() {
-                        assert_eq!(actual.select1(rank), ones.get(rank).copied());
-                    }
-                    for rank in 0..=zeros.len() {
-                        assert_eq!(actual.select0(rank), zeros.get(rank).copied());
+                    let collected: BitVector = bits[..split].iter().copied().collect();
+                    let packed = BitVector::from_words(&words[..split.div_ceil(64)], split);
+                    for mut actual in [pushed, collected, packed] {
+                        for &bit in &bits[split..] {
+                            actual.push(bit);
+                        }
+                        let mut rank1 = 0;
+                        for (index, &bit) in bits.iter().enumerate() {
+                            assert_eq!(actual.access(index), bit);
+                            assert_eq!(actual.access_rank1(index), (bit, rank1));
+                            rank1 += bit as usize;
+                        }
+                        for end in [0, len / 3, len / 2, len] {
+                            assert_eq!(
+                                actual.rank1(end),
+                                bits[..end].iter().filter(|&&bit| bit).count()
+                            );
+                            assert_eq!(
+                                actual.rank0(end),
+                                bits[..end].iter().filter(|&&bit| !bit).count()
+                            );
+                        }
+                        for rank in 0..=positions[1].len() {
+                            assert_eq!(actual.select1(rank), positions[1].get(rank).copied());
+                        }
+                        for rank in 0..=positions[0].len() {
+                            assert_eq!(actual.select0(rank), positions[0].get(rank).copied());
+                        }
                     }
                 }
             }
