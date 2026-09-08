@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["gather_avx512","greater_avx512","pack_words","partition_avx2","popcount_avx2","quad_avx512","rank_lessthan_avx2","rank_lessthan_avx512"],"macro":[["rank_lessthan",1]]};

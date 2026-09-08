@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/binary_indexed_tree.rs`."><title>binary_indexed_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (5a2be9f5f 2026-09-06)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/binary_indexed_tree.rs`."><title>binary_indexed_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (cea272fa3 2026-09-07)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -52,7 +52,7 @@
   });
 </script>
 
-</head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/data_structure/</div>binary_indexed_tree.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="../algebra/magma.rs.html#219-228">Group</a>, <a href="../algebra/magma.rs.html#145-172">Monoid</a>};
+</head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/data_structure/</div>binary_indexed_tree.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="../algebra/magma.rs.html#249">AbelianGroup</a>, <a href="../algebra/magma.rs.html#219-228">Group</a>, <a href="../algebra/magma.rs.html#145-172">Monoid</a>};
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span>std::fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>};
 <a href=#3 id=3 data-nosnippet>3</a>
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.BinaryIndexedTree.html">BinaryIndexedTree</a>&lt;M&gt;
@@ -165,99 +165,122 @@
 <a href=#111 id=111 data-nosnippet>111</a>        G::<a href="../algebra/magma.rs.html#9">operate</a>(<span class="kw-2">&amp;</span>G::<a href="../algebra/magma.rs.html#179">inverse</a>(<span class="kw-2">&amp;</span><a class="self" href="#109">self</a>.<a href="#61-69">accumulate0</a>(<a href="#109">l</a>)), <span class="kw-2">&amp;</span><a class="self" href="#109">self</a>.<a href="#61-69">accumulate0</a>(<a href="#109">r</a>))
 <a href=#112 id=112 data-nosnippet>112</a>    }
 <a href=#113 id=113 data-nosnippet>113</a>    <span class="attr">#[inline]
-<a href=#114 id=114 data-nosnippet>114</a>    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::T {
-<a href=#115 id=115 data-nosnippet>115</a>        <a class="self" href="#114">self</a>.<a href="#109-112">fold</a>(<a href="#114">k</a>, <a href="#114">k</a> + <span class="number">1</span>)
-<a href=#116 id=116 data-nosnippet>116</a>    }
-<a href=#117 id=117 data-nosnippet>117</a>    <span class="attr">#[inline]
-<a href=#118 id=118 data-nosnippet>118</a>    </span><span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: G::T) {
-<a href=#119 id=119 data-nosnippet>119</a>        <a class="self" href="#118">self</a>.<a href="#76-83">update</a>(<a href="#118">k</a>, G::<a href="../algebra/magma.rs.html#9">operate</a>(<span class="kw-2">&amp;</span>G::<a href="../algebra/magma.rs.html#179">inverse</a>(<span class="kw-2">&amp;</span><a class="self" href="#118">self</a>.<a href="#114-116">get</a>(<a href="#118">k</a>)), <span class="kw-2">&amp;</span><a href="#118">x</a>));
-<a href=#120 id=120 data-nosnippet>120</a>    }
-<a href=#121 id=121 data-nosnippet>121</a>}
-<a href=#122 id=122 data-nosnippet>122</a>
-<a href=#123 id=123 data-nosnippet>123</a><span class="attr">#[cfg(test)]
-<a href=#124 id=124 data-nosnippet>124</a></span><span class="kw">mod </span>tests {
-<a href=#125 id=125 data-nosnippet>125</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#126 id=126 data-nosnippet>126</a>    <span class="kw">use crate</span>::{
-<a href=#127 id=127 data-nosnippet>127</a>        algebra::{AdditiveOperation, MaxOperation},
-<a href=#128 id=128 data-nosnippet>128</a>        tools::Xorshift,
-<a href=#129 id=129 data-nosnippet>129</a>    };
-<a href=#130 id=130 data-nosnippet>130</a>
-<a href=#131 id=131 data-nosnippet>131</a>    <span class="kw">const </span>N: usize = <span class="number">10_000</span>;
-<a href=#132 id=132 data-nosnippet>132</a>    <span class="kw">const </span>Q: usize = <span class="number">100_000</span>;
-<a href=#133 id=133 data-nosnippet>133</a>    <span class="kw">const </span>A: u64 = <span class="number">1_000_000_000</span>;
-<a href=#134 id=134 data-nosnippet>134</a>    <span class="kw">const </span>B: i64 = <span class="number">1_000_000_000</span>;
-<a href=#135 id=135 data-nosnippet>135</a>
-<a href=#136 id=136 data-nosnippet>136</a>    <span class="attr">#[test]
-<a href=#137 id=137 data-nosnippet>137</a>    </span><span class="kw">fn </span>test_binary_indexed_tree() {
-<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#139 id=139 data-nosnippet>139</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(..A).take(N).collect();
-<a href=#140 id=140 data-nosnippet>140</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
-<a href=#141 id=141 data-nosnippet>141</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, ..A)).take(Q) {
-<a href=#142 id=142 data-nosnippet>142</a>            bit.update(k, v);
-<a href=#143 id=143 data-nosnippet>143</a>            arr[k] += v;
-<a href=#144 id=144 data-nosnippet>144</a>        }
-<a href=#145 id=145 data-nosnippet>145</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
-<a href=#146 id=146 data-nosnippet>146</a>            arr[i + <span class="number">1</span>] += arr[i];
-<a href=#147 id=147 data-nosnippet>147</a>        }
-<a href=#148 id=148 data-nosnippet>148</a>        <span class="kw">for </span>(i, a) <span class="kw">in </span>arr.iter().cloned().enumerate() {
-<a href=#149 id=149 data-nosnippet>149</a>            <span class="macro">assert_eq!</span>(bit.accumulate(i), a);
-<a href=#150 id=150 data-nosnippet>150</a>        }
-<a href=#151 id=151 data-nosnippet>151</a>
-<a href=#152 id=152 data-nosnippet>152</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(..A).take(N).collect();
-<a href=#153 id=153 data-nosnippet>153</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;MaxOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
-<a href=#154 id=154 data-nosnippet>154</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, ..A)).take(Q) {
-<a href=#155 id=155 data-nosnippet>155</a>            bit.update(k, v);
-<a href=#156 id=156 data-nosnippet>156</a>            arr[k] = std::cmp::max(arr[k], v);
-<a href=#157 id=157 data-nosnippet>157</a>        }
-<a href=#158 id=158 data-nosnippet>158</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
-<a href=#159 id=159 data-nosnippet>159</a>            arr[i + <span class="number">1</span>] = std::cmp::max(arr[i], arr[i + <span class="number">1</span>]);
-<a href=#160 id=160 data-nosnippet>160</a>        }
-<a href=#161 id=161 data-nosnippet>161</a>        <span class="kw">for </span>(i, a) <span class="kw">in </span>arr.iter().cloned().enumerate() {
-<a href=#162 id=162 data-nosnippet>162</a>            <span class="macro">assert_eq!</span>(bit.accumulate(i), a);
-<a href=#163 id=163 data-nosnippet>163</a>        }
-<a href=#164 id=164 data-nosnippet>164</a>    }
-<a href=#165 id=165 data-nosnippet>165</a>
-<a href=#166 id=166 data-nosnippet>166</a>    <span class="attr">#[test]
-<a href=#167 id=167 data-nosnippet>167</a>    </span><span class="kw">fn </span>test_group_binary_indexed_tree() {
-<a href=#168 id=168 data-nosnippet>168</a>        <span class="kw">const </span>N: usize = <span class="number">2_000</span>;
-<a href=#169 id=169 data-nosnippet>169</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#170 id=170 data-nosnippet>170</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(-B..B).take(N).collect();
-<a href=#171 id=171 data-nosnippet>171</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
-<a href=#172 id=172 data-nosnippet>172</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, -B..B)).take(Q) {
-<a href=#173 id=173 data-nosnippet>173</a>            bit.set(k, v);
-<a href=#174 id=174 data-nosnippet>174</a>            arr[k] = v;
-<a href=#175 id=175 data-nosnippet>175</a>        }
-<a href=#176 id=176 data-nosnippet>176</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
-<a href=#177 id=177 data-nosnippet>177</a>            arr[i + <span class="number">1</span>] += arr[i];
-<a href=#178 id=178 data-nosnippet>178</a>        }
-<a href=#179 id=179 data-nosnippet>179</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N {
-<a href=#180 id=180 data-nosnippet>180</a>            <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..N + <span class="number">1 </span>{
-<a href=#181 id=181 data-nosnippet>181</a>                <span class="macro">assert_eq!</span>(
-<a href=#182 id=182 data-nosnippet>182</a>                    bit.fold(i, j),
-<a href=#183 id=183 data-nosnippet>183</a>                    arr[j - <span class="number">1</span>] - <span class="kw">if </span>i == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ arr[i - <span class="number">1</span>] }
-<a href=#184 id=184 data-nosnippet>184</a>                );
-<a href=#185 id=185 data-nosnippet>185</a>            }
+<a href=#114 id=114 data-nosnippet>114</a>    </span><span class="kw">pub fn </span>fold_abelian(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::T
+<a href=#115 id=115 data-nosnippet>115</a>    <span class="kw">where
+<a href=#116 id=116 data-nosnippet>116</a>        </span>G: <a href="../algebra/magma.rs.html#249">AbelianGroup</a>,
+<a href=#117 id=117 data-nosnippet>117</a>    {
+<a href=#118 id=118 data-nosnippet>118</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(l &lt;= <span class="self">self</span>.n &amp;&amp; r &lt;= <span class="self">self</span>.n);
+<a href=#119 id=119 data-nosnippet>119</a>        <span class="kw">if </span><a href="#114">l</a> == <a href="#114">r</a> {
+<a href=#120 id=120 data-nosnippet>120</a>            <span class="kw">return </span>G::<a href="../algebra/magma.rs.html#56">unit</a>();
+<a href=#121 id=121 data-nosnippet>121</a>        }
+<a href=#122 id=122 data-nosnippet>122</a>        <span class="comment">// The prefix above the highest differing bit cancels in an Abelian group.
+<a href=#123 id=123 data-nosnippet>123</a>        </span><span class="kw">let </span>common = <a href="#114">l</a> &amp; !(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>::<a href="https://doc.rust-lang.org/nightly/core/primitive.usize.html#associatedconstant.MAX">MAX</a> &gt;&gt; (<a href="#114">l</a> ^ <a href="#114">r</a>).<a href="https://doc.rust-lang.org/nightly/core/primitive.usize.html#method.leading_zeros">leading_zeros</a>());
+<a href=#124 id=124 data-nosnippet>124</a>        <span class="kw">let </span><span class="kw-2">mut </span>left = G::<a href="../algebra/magma.rs.html#56">unit</a>();
+<a href=#125 id=125 data-nosnippet>125</a>        <span class="kw">let </span><span class="kw-2">mut </span>right = G::<a href="../algebra/magma.rs.html#56">unit</a>();
+<a href=#126 id=126 data-nosnippet>126</a>        <span class="kw">while </span>l != common {
+<a href=#127 id=127 data-nosnippet>127</a>            G::operate_assign(<span class="kw-2">&amp;mut </span>left, <span class="kw-2">&amp;</span><span class="self">self</span>.bit[l]);
+<a href=#128 id=128 data-nosnippet>128</a>            l &amp;= l - <span class="number">1</span>;
+<a href=#129 id=129 data-nosnippet>129</a>        }
+<a href=#130 id=130 data-nosnippet>130</a>        <span class="kw">while </span>r != common {
+<a href=#131 id=131 data-nosnippet>131</a>            G::operate_assign(<span class="kw-2">&amp;mut </span>right, <span class="kw-2">&amp;</span><span class="self">self</span>.bit[r]);
+<a href=#132 id=132 data-nosnippet>132</a>            r &amp;= r - <span class="number">1</span>;
+<a href=#133 id=133 data-nosnippet>133</a>        }
+<a href=#134 id=134 data-nosnippet>134</a>        G::<a href="../algebra/magma.rs.html#181-183">rinv_operate</a>(<span class="kw-2">&amp;</span><a href="#125">right</a>, <span class="kw-2">&amp;</span><a href="#124">left</a>)
+<a href=#135 id=135 data-nosnippet>135</a>    }
+<a href=#136 id=136 data-nosnippet>136</a>    <span class="attr">#[inline]
+<a href=#137 id=137 data-nosnippet>137</a>    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::T {
+<a href=#138 id=138 data-nosnippet>138</a>        <a class="self" href="#137">self</a>.<a href="#109-112">fold</a>(<a href="#137">k</a>, <a href="#137">k</a> + <span class="number">1</span>)
+<a href=#139 id=139 data-nosnippet>139</a>    }
+<a href=#140 id=140 data-nosnippet>140</a>    <span class="attr">#[inline]
+<a href=#141 id=141 data-nosnippet>141</a>    </span><span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: G::T) {
+<a href=#142 id=142 data-nosnippet>142</a>        <a class="self" href="#141">self</a>.<a href="#76-83">update</a>(<a href="#141">k</a>, G::<a href="../algebra/magma.rs.html#9">operate</a>(<span class="kw-2">&amp;</span>G::<a href="../algebra/magma.rs.html#179">inverse</a>(<span class="kw-2">&amp;</span><a class="self" href="#141">self</a>.<a href="#137-139">get</a>(<a href="#141">k</a>)), <span class="kw-2">&amp;</span><a href="#141">x</a>));
+<a href=#143 id=143 data-nosnippet>143</a>    }
+<a href=#144 id=144 data-nosnippet>144</a>}
+<a href=#145 id=145 data-nosnippet>145</a>
+<a href=#146 id=146 data-nosnippet>146</a><span class="attr">#[cfg(test)]
+<a href=#147 id=147 data-nosnippet>147</a></span><span class="kw">mod </span>tests {
+<a href=#148 id=148 data-nosnippet>148</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#149 id=149 data-nosnippet>149</a>    <span class="kw">use crate</span>::{
+<a href=#150 id=150 data-nosnippet>150</a>        algebra::{AdditiveOperation, MaxOperation},
+<a href=#151 id=151 data-nosnippet>151</a>        tools::Xorshift,
+<a href=#152 id=152 data-nosnippet>152</a>    };
+<a href=#153 id=153 data-nosnippet>153</a>
+<a href=#154 id=154 data-nosnippet>154</a>    <span class="kw">const </span>N: usize = <span class="number">10_000</span>;
+<a href=#155 id=155 data-nosnippet>155</a>    <span class="kw">const </span>Q: usize = <span class="number">100_000</span>;
+<a href=#156 id=156 data-nosnippet>156</a>    <span class="kw">const </span>A: u64 = <span class="number">1_000_000_000</span>;
+<a href=#157 id=157 data-nosnippet>157</a>    <span class="kw">const </span>B: i64 = <span class="number">1_000_000_000</span>;
+<a href=#158 id=158 data-nosnippet>158</a>
+<a href=#159 id=159 data-nosnippet>159</a>    <span class="attr">#[test]
+<a href=#160 id=160 data-nosnippet>160</a>    </span><span class="kw">fn </span>test_binary_indexed_tree() {
+<a href=#161 id=161 data-nosnippet>161</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#162 id=162 data-nosnippet>162</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(..A).take(N).collect();
+<a href=#163 id=163 data-nosnippet>163</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
+<a href=#164 id=164 data-nosnippet>164</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, ..A)).take(Q) {
+<a href=#165 id=165 data-nosnippet>165</a>            bit.update(k, v);
+<a href=#166 id=166 data-nosnippet>166</a>            arr[k] += v;
+<a href=#167 id=167 data-nosnippet>167</a>        }
+<a href=#168 id=168 data-nosnippet>168</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
+<a href=#169 id=169 data-nosnippet>169</a>            arr[i + <span class="number">1</span>] += arr[i];
+<a href=#170 id=170 data-nosnippet>170</a>        }
+<a href=#171 id=171 data-nosnippet>171</a>        <span class="kw">for </span>(i, a) <span class="kw">in </span>arr.iter().cloned().enumerate() {
+<a href=#172 id=172 data-nosnippet>172</a>            <span class="macro">assert_eq!</span>(bit.accumulate(i), a);
+<a href=#173 id=173 data-nosnippet>173</a>        }
+<a href=#174 id=174 data-nosnippet>174</a>
+<a href=#175 id=175 data-nosnippet>175</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(..A).take(N).collect();
+<a href=#176 id=176 data-nosnippet>176</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;MaxOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
+<a href=#177 id=177 data-nosnippet>177</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, ..A)).take(Q) {
+<a href=#178 id=178 data-nosnippet>178</a>            bit.update(k, v);
+<a href=#179 id=179 data-nosnippet>179</a>            arr[k] = std::cmp::max(arr[k], v);
+<a href=#180 id=180 data-nosnippet>180</a>        }
+<a href=#181 id=181 data-nosnippet>181</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
+<a href=#182 id=182 data-nosnippet>182</a>            arr[i + <span class="number">1</span>] = std::cmp::max(arr[i], arr[i + <span class="number">1</span>]);
+<a href=#183 id=183 data-nosnippet>183</a>        }
+<a href=#184 id=184 data-nosnippet>184</a>        <span class="kw">for </span>(i, a) <span class="kw">in </span>arr.iter().cloned().enumerate() {
+<a href=#185 id=185 data-nosnippet>185</a>            <span class="macro">assert_eq!</span>(bit.accumulate(i), a);
 <a href=#186 id=186 data-nosnippet>186</a>        }
 <a href=#187 id=187 data-nosnippet>187</a>    }
 <a href=#188 id=188 data-nosnippet>188</a>
 <a href=#189 id=189 data-nosnippet>189</a>    <span class="attr">#[test]
-<a href=#190 id=190 data-nosnippet>190</a>    </span><span class="kw">fn </span>test_binary_indexed_tree_partition_point_acc() {
-<a href=#191 id=191 data-nosnippet>191</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#192 id=192 data-nosnippet>192</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(<span class="number">1</span>..B).take(N).collect();
-<a href=#193 id=193 data-nosnippet>193</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
-<a href=#194 id=194 data-nosnippet>194</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, <span class="number">1</span>..B)).take(Q) {
-<a href=#195 id=195 data-nosnippet>195</a>            bit.set(k, v);
-<a href=#196 id=196 data-nosnippet>196</a>            arr[k] = v;
-<a href=#197 id=197 data-nosnippet>197</a>        }
-<a href=#198 id=198 data-nosnippet>198</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
-<a href=#199 id=199 data-nosnippet>199</a>            arr[i + <span class="number">1</span>] += arr[i];
-<a href=#200 id=200 data-nosnippet>200</a>        }
-<a href=#201 id=201 data-nosnippet>201</a>        <span class="kw">for </span>x <span class="kw">in </span>rng.random_iter(<span class="number">1</span>..B * N <span class="kw">as </span>i64).take(Q) {
-<a href=#202 id=202 data-nosnippet>202</a>            <span class="macro">assert_eq!</span>(
-<a href=#203 id=203 data-nosnippet>203</a>                bit.partition_point_acc(|<span class="kw-2">&amp;</span>a| a &lt; x),
-<a href=#204 id=204 data-nosnippet>204</a>                arr.partition_point(|<span class="kw-2">&amp;</span>a| a &lt; x)
-<a href=#205 id=205 data-nosnippet>205</a>            );
-<a href=#206 id=206 data-nosnippet>206</a>        }
-<a href=#207 id=207 data-nosnippet>207</a>    }
-<a href=#208 id=208 data-nosnippet>208</a>}
+<a href=#190 id=190 data-nosnippet>190</a>    </span><span class="kw">fn </span>test_group_binary_indexed_tree() {
+<a href=#191 id=191 data-nosnippet>191</a>        <span class="kw">const </span>N: usize = <span class="number">2_000</span>;
+<a href=#192 id=192 data-nosnippet>192</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#193 id=193 data-nosnippet>193</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(-B..B).take(N).collect();
+<a href=#194 id=194 data-nosnippet>194</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
+<a href=#195 id=195 data-nosnippet>195</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, -B..B)).take(Q) {
+<a href=#196 id=196 data-nosnippet>196</a>            bit.set(k, v);
+<a href=#197 id=197 data-nosnippet>197</a>            arr[k] = v;
+<a href=#198 id=198 data-nosnippet>198</a>        }
+<a href=#199 id=199 data-nosnippet>199</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
+<a href=#200 id=200 data-nosnippet>200</a>            arr[i + <span class="number">1</span>] += arr[i];
+<a href=#201 id=201 data-nosnippet>201</a>        }
+<a href=#202 id=202 data-nosnippet>202</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=N {
+<a href=#203 id=203 data-nosnippet>203</a>            <span class="kw">for </span>j <span class="kw">in </span>i..=N {
+<a href=#204 id=204 data-nosnippet>204</a>                <span class="kw">let </span>expected =
+<a href=#205 id=205 data-nosnippet>205</a>                    <span class="kw">if </span>j == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ arr[j - <span class="number">1</span>] } - <span class="kw">if </span>i == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ arr[i - <span class="number">1</span>] };
+<a href=#206 id=206 data-nosnippet>206</a>                <span class="macro">assert_eq!</span>(bit.fold(i, j), expected);
+<a href=#207 id=207 data-nosnippet>207</a>                <span class="macro">assert_eq!</span>(bit.fold_abelian(i, j), expected);
+<a href=#208 id=208 data-nosnippet>208</a>            }
+<a href=#209 id=209 data-nosnippet>209</a>        }
+<a href=#210 id=210 data-nosnippet>210</a>    }
+<a href=#211 id=211 data-nosnippet>211</a>
+<a href=#212 id=212 data-nosnippet>212</a>    <span class="attr">#[test]
+<a href=#213 id=213 data-nosnippet>213</a>    </span><span class="kw">fn </span>test_binary_indexed_tree_partition_point_acc() {
+<a href=#214 id=214 data-nosnippet>214</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#215 id=215 data-nosnippet>215</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.random_iter(<span class="number">1</span>..B).take(N).collect();
+<a href=#216 id=216 data-nosnippet>216</a>        <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
+<a href=#217 id=217 data-nosnippet>217</a>        <span class="kw">for </span>(k, v) <span class="kw">in </span>rng.random_iter((..N, <span class="number">1</span>..B)).take(Q) {
+<a href=#218 id=218 data-nosnippet>218</a>            bit.set(k, v);
+<a href=#219 id=219 data-nosnippet>219</a>            arr[k] = v;
+<a href=#220 id=220 data-nosnippet>220</a>        }
+<a href=#221 id=221 data-nosnippet>221</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N - <span class="number">1 </span>{
+<a href=#222 id=222 data-nosnippet>222</a>            arr[i + <span class="number">1</span>] += arr[i];
+<a href=#223 id=223 data-nosnippet>223</a>        }
+<a href=#224 id=224 data-nosnippet>224</a>        <span class="kw">for </span>x <span class="kw">in </span>rng.random_iter(<span class="number">1</span>..B * N <span class="kw">as </span>i64).take(Q) {
+<a href=#225 id=225 data-nosnippet>225</a>            <span class="macro">assert_eq!</span>(
+<a href=#226 id=226 data-nosnippet>226</a>                bit.partition_point_acc(|<span class="kw-2">&amp;</span>a| a &lt; x),
+<a href=#227 id=227 data-nosnippet>227</a>                arr.partition_point(|<span class="kw-2">&amp;</span>a| a &lt; x)
+<a href=#228 id=228 data-nosnippet>228</a>            );
+<a href=#229 id=229 data-nosnippet>229</a>        }
+<a href=#230 id=230 data-nosnippet>230</a>    }
+<a href=#231 id=231 data-nosnippet>231</a>}
 </code></pre></div></section></main></body></html>

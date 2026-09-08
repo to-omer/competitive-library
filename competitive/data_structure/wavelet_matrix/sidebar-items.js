@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["WaveletMatrix","WaveletMatrixFold","WaveletMatrixPointAdd"]};
+window.SIDEBAR_ITEMS = {"constant":["ACCESS","QUANTILE","RANK","RANK_LESSTHAN"],"mod":["simd"],"struct":["WaveletMatrix","WaveletMatrixFold","WaveletMatrixPointAdd","WaveletMatrixQuadBlock","WaveletMatrixQuadVector"]};

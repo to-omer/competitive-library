@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `gather_avx512` fn in crate `competitive`."><title>gather_avx512 in competitive::data_structure::wavelet_matrix::simd - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (cea272fa3 2026-09-07)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../../static.files/main-1814ead3.js"></script><script defer src="../../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">gather_avx512</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>wavelet_<wbr>matrix::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">wavelet_matrix</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">gather_<wbr>avx512</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/wavelet_matrix.rs.html#246-248">Source</a> </span></div><pre class="rust item-decl"><code>unsafe fn gather_avx512&lt;const SCALE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>&gt;(
+    base: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>,
+    index: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m512i.html" title="struct core::core_arch::x86::__m512i">__m512i</a>,
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m512i.html" title="struct core::core_arch::x86::__m512i">__m512i</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[33,33],&#34;../../../../src/competitive/data_structure/wavelet_matrix.rs.html#373&#34;,&#34;line 373&#34;],[[35,35],&#34;../../../../src/competitive/data_structure/wavelet_matrix.rs.html#375&#34;,&#34;line 375&#34;],[[39,39],&#34;../../../../src/competitive/data_structure/wavelet_matrix.rs.html#379&#34;,&#34;line 379&#34;],[[40,40],&#34;../../../../src/competitive/data_structure/wavelet_matrix.rs.html#380&#34;,&#34;line 380&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/wavelet_matrix.rs (<a href="../../../../src/competitive/data_structure/wavelet_matrix.rs.html#373">line 373</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>340</span>    <span class="kw">pub unsafe fn </span>quad_avx512(
+<span data-nosnippet>341</span>        layers: <span class="kw-2">&amp;</span>[<span class="kw">super</span>::WaveletMatrixQuadVector],
+<span data-nosnippet>342</span>        states: <span class="kw-2">&amp;mut </span>[[usize; <span class="number">4</span>]],
+<span data-nosnippet>343</span>    ) {
+<span data-nosnippet>344</span>        <span class="kw">for </span>chunk <span class="kw">in </span>states.chunks_exact_mut(<span class="number">8</span>) {
+<span data-nosnippet>345</span>            <span class="kw">let </span><span class="kw-2">mut </span>starts = [<span class="number">0u64</span>; <span class="number">8</span>];
+<span data-nosnippet>346</span>            <span class="kw">let </span><span class="kw-2">mut </span>ends = [<span class="number">0u64</span>; <span class="number">8</span>];
+<span data-nosnippet>347</span>            <span class="kw">let </span><span class="kw-2">mut </span>keys = [<span class="number">0u64</span>; <span class="number">8</span>];
+<span data-nosnippet>348</span>            <span class="kw">let </span><span class="kw-2">mut </span>result = [<span class="number">0u64</span>; <span class="number">8</span>];
+<span data-nosnippet>349</span>            <span class="kw">for </span>(i, s) <span class="kw">in </span>chunk.iter().enumerate() {
+<span data-nosnippet>350</span>                starts[i] = s[<span class="number">0</span>] <span class="kw">as </span>u64;
+<span data-nosnippet>351</span>                ends[i] = s[<span class="number">1</span>] <span class="kw">as </span>u64;
+<span data-nosnippet>352</span>                keys[i] = s[<span class="number">2</span>] <span class="kw">as </span>u64;
+<span data-nosnippet>353</span>            }
+<span data-nosnippet>354</span>            <span class="kw">let </span><span class="kw-2">mut </span>start = _mm512_loadu_si512(starts.as_ptr().cast());
+<span data-nosnippet>355</span>            <span class="kw">let </span><span class="kw-2">mut </span>end = _mm512_loadu_si512(ends.as_ptr().cast());
+<span data-nosnippet>356</span>            <span class="kw">let </span><span class="kw-2">mut </span>key = _mm512_loadu_si512(keys.as_ptr().cast());
+<span data-nosnippet>357</span>            <span class="kw">let </span><span class="kw-2">mut </span>code = _mm512_set1_epi64(<span class="number">0</span>);
+<span data-nosnippet>358</span>            <span class="kw">let </span>one = _mm512_set1_epi64(<span class="number">1</span>);
+<span data-nosnippet>359</span>            <span class="macro">macro_rules!</span> blend {
+<span data-nosnippet>360</span>                (<span class="macro-nonterminal">$m</span>:expr,<span class="macro-nonterminal">$x</span>:expr,<span class="macro-nonterminal">$y</span>:expr) =&gt; {
+<span data-nosnippet>361</span>                    _mm512_or_si512(_mm512_andnot_si512(<span class="macro-nonterminal">$m</span>, <span class="macro-nonterminal">$x</span>), _mm512_and_si512(<span class="macro-nonterminal">$m</span>, <span class="macro-nonterminal">$y</span>))
+<span data-nosnippet>362</span>                };
+<span data-nosnippet>363</span>            }
+<span data-nosnippet>364</span>            <span class="kw">for </span>layer <span class="kw">in </span>layers {
+<span data-nosnippet>365</span>                <span class="kw">let </span>base = layer.blocks.as_ptr().cast::&lt;i64&gt;();
+<span data-nosnippet>366</span>                <span class="kw">let </span>ranks = |pos| {
+<span data-nosnippet>367</span>                    <span class="kw">let </span>offset = _mm512_and_si512(pos, _mm512_set1_epi64(<span class="number">63</span>));
+<span data-nosnippet>368</span>                    <span class="kw">let </span>mask = _mm512_sub_epi64(_mm512_sllv_epi64(one, offset), one);
+<span data-nosnippet>369</span>                    <span class="kw">let </span>i = _mm512_sllv_epi64(
+<span data-nosnippet>370</span>                        _mm512_srlv_epi64(pos, _mm512_set1_epi64(<span class="number">6</span>)),
+<span data-nosnippet>371</span>                        _mm512_set1_epi64(<span class="number">2</span>),
+<span data-nosnippet>372</span>                    );
+<span data-nosnippet>373</span>                    <span class="kw">let </span>lo = _mm512_and_si512(<span class="highlight focus">gather_avx512::&lt;<span class="number">8</span>&gt;</span>(base, i), mask);
+<span data-nosnippet>374</span>                    <span class="kw">let </span>hi =
+<span data-nosnippet>375</span>                        _mm512_and_si512(<span class="highlight">gather_avx512::&lt;<span class="number">8</span>&gt;</span>(base, _mm512_add_epi64(i, one)), mask);
+<span data-nosnippet>376</span>                    <span class="kw">let </span>a = _mm512_popcnt_epi64(lo);
+<span data-nosnippet>377</span>                    <span class="kw">let </span>b = _mm512_popcnt_epi64(hi);
+<span data-nosnippet>378</span>                    <span class="kw">let </span>c = _mm512_popcnt_epi64(_mm512_and_si512(lo, hi));
+<span data-nosnippet>379</span>                    <span class="kw">let </span>p01 = <span class="highlight">gather_avx512::&lt;<span class="number">8</span>&gt;</span>(base, _mm512_add_epi64(i, _mm512_set1_epi64(<span class="number">2</span>)));
+<span data-nosnippet>380</span>                    <span class="kw">let </span>p23 = <span class="highlight">gather_avx512::&lt;<span class="number">8</span>&gt;</span>(base, _mm512_add_epi64(i, _mm512_set1_epi64(<span class="number">3</span>)));
+<span data-nosnippet>381</span>                    <span class="kw">let </span>r0 = _mm512_add_epi64(
+<span data-nosnippet>382</span>                        _mm512_and_si512(p01, _mm512_set1_epi64(u32::MAX <span class="kw">as </span>i64)),
+<span data-nosnippet>383</span>                        _mm512_add_epi64(_mm512_sub_epi64(_mm512_sub_epi64(offset, a), b), c),
+<span data-nosnippet>384</span>                    );
+<span data-nosnippet>385</span>                    <span class="kw">let </span>r1 = _mm512_add_epi64(
+<span data-nosnippet>386</span>                        _mm512_srlv_epi64(p01, _mm512_set1_epi64(<span class="number">32</span>)),
+<span data-nosnippet>387</span>                        _mm512_sub_epi64(a, c),
+<span data-nosnippet>388</span>                    );
+<span data-nosnippet>389</span>                    <span class="kw">let </span>r2 = _mm512_add_epi64(
+<span data-nosnippet>390</span>                        _mm512_and_si512(p23, _mm512_set1_epi64(u32::MAX <span class="kw">as </span>i64)),
+<span data-nosnippet>391</span>                        _mm512_sub_epi64(b, c),
+<span data-nosnippet>392</span>                    );
+<span data-nosnippet>393</span>                    <span class="kw">let </span>r3 = _mm512_sub_epi64(_mm512_sub_epi64(_mm512_sub_epi64(pos, r0), r1), r2);
+<span data-nosnippet>394</span>                    [r0, r1, r2, r3]
+<span data-nosnippet>395</span>                };
+<span data-nosnippet>396</span>                <span class="kw">let </span>l = ranks(start);
+<span data-nosnippet>397</span>                <span class="kw">let </span>r = ranks(end);
+<span data-nosnippet>398</span>                <span class="kw">let </span>low_count =
+<span data-nosnippet>399</span>                    _mm512_sub_epi64(_mm512_add_epi64(r[<span class="number">0</span>], r[<span class="number">1</span>]), _mm512_add_epi64(l[<span class="number">0</span>], l[<span class="number">1</span>]));
+<span data-nosnippet>400</span>                <span class="kw">let </span>high = greater_avx512(key, _mm512_sub_epi64(low_count, one));
+<span data-nosnippet>401</span>                key = _mm512_sub_epi64(key, _mm512_and_si512(high, low_count));
+<span data-nosnippet>402</span>                <span class="kw">let </span>l0 = <span class="macro">blend!</span>(high, l[<span class="number">0</span>], l[<span class="number">2</span>]);
+<span data-nosnippet>403</span>                <span class="kw">let </span>r0 = <span class="macro">blend!</span>(high, r[<span class="number">0</span>], r[<span class="number">2</span>]);
+<span data-nosnippet>404</span>                <span class="kw">let </span>l1 = <span class="macro">blend!</span>(high, l[<span class="number">1</span>], l[<span class="number">3</span>]);
+<span data-nosnippet>405</span>                <span class="kw">let </span>r1 = <span class="macro">blend!</span>(high, r[<span class="number">1</span>], r[<span class="number">3</span>]);
+<span data-nosnippet>406</span>                <span class="kw">let </span>count0 = _mm512_sub_epi64(r0, l0);
+<span data-nosnippet>407</span>                <span class="kw">let </span>low = greater_avx512(key, _mm512_sub_epi64(count0, one));
+<span data-nosnippet>408</span>                key = _mm512_sub_epi64(key, _mm512_and_si512(low, count0));
+<span data-nosnippet>409</span>                <span class="kw">let </span>base0 = <span class="macro">blend!</span>(
+<span data-nosnippet>410</span>                    high,
+<span data-nosnippet>411</span>                    _mm512_set1_epi64(layer.starts[<span class="number">0</span>] <span class="kw">as </span>i64),
+<span data-nosnippet>412</span>                    _mm512_set1_epi64(layer.starts[<span class="number">2</span>] <span class="kw">as </span>i64)
+<span data-nosnippet>413</span>                );
+<span data-nosnippet>414</span>                <span class="kw">let </span>base1 = <span class="macro">blend!</span>(
+<span data-nosnippet>415</span>                    high,
+<span data-nosnippet>416</span>                    _mm512_set1_epi64(layer.starts[<span class="number">1</span>] <span class="kw">as </span>i64),
+<span data-nosnippet>417</span>                    _mm512_set1_epi64(layer.starts[<span class="number">3</span>] <span class="kw">as </span>i64)
+<span data-nosnippet>418</span>                );
+<span data-nosnippet>419</span>                <span class="kw">let </span>offset = <span class="macro">blend!</span>(low, base0, base1);
+<span data-nosnippet>420</span>                start = _mm512_add_epi64(offset, <span class="macro">blend!</span>(low, l0, l1));
+<span data-nosnippet>421</span>                end = _mm512_add_epi64(offset, <span class="macro">blend!</span>(low, r0, r1));
+<span data-nosnippet>422</span>                code = _mm512_or_si512(
+<span data-nosnippet>423</span>                    _mm512_sllv_epi64(code, _mm512_set1_epi64(<span class="number">2</span>)),
+<span data-nosnippet>424</span>                    _mm512_or_si512(
+<span data-nosnippet>425</span>                        _mm512_and_si512(high, _mm512_set1_epi64(<span class="number">2</span>)),
+<span data-nosnippet>426</span>                        _mm512_and_si512(low, one),
+<span data-nosnippet>427</span>                    ),
+<span data-nosnippet>428</span>                );
+<span data-nosnippet>429</span>            }
+<span data-nosnippet>430</span>            _mm512_storeu_si512(result.as_mut_ptr().cast(), code);
+<span data-nosnippet>431</span>            <span class="kw">for </span>(i, s) <span class="kw">in </span>chunk.iter_mut().enumerate() {
+<span data-nosnippet>432</span>                s[<span class="number">3</span>] = result[i] <span class="kw">as </span>usize;
+<span data-nosnippet>433</span>            }
+<span data-nosnippet>434</span>        }
+<span data-nosnippet>435</span>    }</code></pre></div></div></div></section></div></main></body></html>
