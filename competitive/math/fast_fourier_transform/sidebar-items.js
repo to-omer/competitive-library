@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ConvolveRealFft","RotateCache"],"fn":["bit_reverse","fft","ifft","inverse_transform_real","middle_product_f64_scalar","real_twiddles","transform_real"],"mod":["simd"]};
+window.SIDEBAR_ITEMS = {"enum":["ConvolveRealFft","RotateCache"],"fn":["bit_reverse","convolve_i64_naive","fft","fft_avx2","fft_avx512","fft_dispatch","ifft","inverse_transform_real","middle_product_f64_scalar","real_twiddles","transform_real"],"macro":[["fft_kernel",1]],"mod":["simd"]};
