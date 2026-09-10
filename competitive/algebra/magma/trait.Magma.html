@@ -72,203 +72,203 @@
 <span data-nosnippet>56</span>        <span class="highlight">&lt;<span class="self">Self</span>::Multiplicative <span class="kw">as </span>Magma&gt;::operate_assign</span>(x, y);
 <span data-nosnippet>57</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/tree/top_tree.rs.html#104&#34;,&#34;line 104&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/top_tree.rs (<a href="../../../src/competitive/tree/top_tree.rs.html#104">line 104</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>103</span>    <span class="kw">fn </span>compose(target: <span class="kw-2">&amp;mut </span>A::Action, action: <span class="kw-2">&amp;</span>A::Action) {
 <span data-nosnippet>104</span>        <span class="highlight focus">&lt;A::ActionMonoid <span class="kw">as </span>Magma&gt;::operate_assign</span>(target, action);
-<span data-nosnippet>105</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,7],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1504-1507&#34;,&#34;lines 1504-1507&#34;],[[44,44],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1544&#34;,&#34;line 1544&#34;],[[59,59],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1559&#34;,&#34;line 1559&#34;],[[186,186],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1686&#34;,&#34;line 1686&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/wavelet_matrix.rs (<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#1504-1507">lines 1504-1507</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>1500</span>    <span class="kw">pub fn </span>fold_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, value: T, range: Range&lt;usize&gt;) -&gt; M::T {
-<span data-nosnippet>1501</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = M::unit();
-<span data-nosnippet>1502</span>        <span class="self">self</span>.wavelet_matrix
-<span data-nosnippet>1503</span>            .query_less_than(value, range, |d, range| {
-<span data-nosnippet>1504</span>                <span class="highlight focus">M::operate_assign</span>(
-<span data-nosnippet>1505</span>                    <span class="kw-2">&amp;mut </span>result,
-<span data-nosnippet>1506</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.bits[<span class="self">self</span>.wavelet_matrix.level(d)].fold_abelian(range.start, range.end),
-<span data-nosnippet>1507</span>                );
-<span data-nosnippet>1508</span>            });
-<span data-nosnippet>1509</span>        result
-<span data-nosnippet>1510</span>    }
-<span data-nosnippet>1511</span>
-<span data-nosnippet>1512</span>    <span class="kw">pub fn </span>fold_range(<span class="kw-2">&amp;</span><span class="self">self</span>, values: Range&lt;T&gt;, range: Range&lt;usize&gt;) -&gt; M::T {
-<span data-nosnippet>1513</span>        <span class="kw">let </span>lower = <span class="self">self
-<span data-nosnippet>1514</span>            </span>.wavelet_matrix
-<span data-nosnippet>1515</span>            .compress
-<span data-nosnippet>1516</span>            .index_lower_bound(<span class="kw-2">&amp;</span>values.start);
-<span data-nosnippet>1517</span>        <span class="kw">let </span>upper = <span class="self">self</span>.wavelet_matrix.compress.index_lower_bound(<span class="kw-2">&amp;</span>values.end);
-<span data-nosnippet>1518</span>        <span class="kw">if </span>lower &gt;= upper {
-<span data-nosnippet>1519</span>            <span class="kw">return </span>M::unit();
-<span data-nosnippet>1520</span>        }
-<span data-nosnippet>1521</span>        <span class="kw">let </span><span class="kw-2">mut </span>range = range;
-<span data-nosnippet>1522</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.wavelet_matrix.bit_length).rev() {
-<span data-nosnippet>1523</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
-<span data-nosnippet>1524</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
-<span data-nosnippet>1525</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
-<span data-nosnippet>1526</span>            <span class="kw">let </span>start0 = range.start - start1;
-<span data-nosnippet>1527</span>            <span class="kw">let </span>end0 = range.end - end1;
-<span data-nosnippet>1528</span>            <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == ((upper &gt;&gt; d) &amp; <span class="number">1</span>) {
-<span data-nosnippet>1529</span>                <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == <span class="number">0 </span>{
-<span data-nosnippet>1530</span>                    range = start0..end0;
-<span data-nosnippet>1531</span>                } <span class="kw">else </span>{
-<span data-nosnippet>1532</span>                    range = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1
-<span data-nosnippet>1533</span>                        ..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
-<span data-nosnippet>1534</span>                }
-<span data-nosnippet>1535</span>                <span class="kw">continue</span>;
-<span data-nosnippet>1536</span>            }
-<span data-nosnippet>1537</span>            <span class="kw">let </span>zero_range = start0..end0;
-<span data-nosnippet>1538</span>            <span class="kw">let </span>one_range =
-<span data-nosnippet>1539</span>                <span class="self">self</span>.wavelet_matrix.zeros[level] + start1..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
-<span data-nosnippet>1540</span>            <span class="kw">let </span>lower_sum = <span class="self">self</span>.fold_lessthan_index(lower, zero_range.clone(), d);
-<span data-nosnippet>1541</span>            <span class="kw">let </span>upper_sum = <span class="self">self</span>.fold_lessthan_index(upper, one_range, d);
-<span data-nosnippet>1542</span>            <span class="kw">let </span>zero_sum = <span class="self">self</span>.bits[level].fold_abelian(zero_range.start, zero_range.end);
-<span data-nosnippet>1543</span>            <span class="kw">let </span><span class="kw-2">mut </span>result = M::rinv_operate(<span class="kw-2">&amp;</span>zero_sum, <span class="kw-2">&amp;</span>lower_sum);
-<span data-nosnippet>1544</span>            <span class="highlight">M::operate_assign</span>(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>upper_sum);
-<span data-nosnippet>1545</span>            <span class="kw">return </span>result;
-<span data-nosnippet>1546</span>        }
-<span data-nosnippet>1547</span>        M::unit()
-<span data-nosnippet>1548</span>    }
-<span data-nosnippet>1549</span>
-<span data-nosnippet>1550</span>    <span class="kw">fn </span>fold_lessthan_index(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, bits: usize) -&gt; M::T {
-<span data-nosnippet>1551</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = M::unit();
-<span data-nosnippet>1552</span>        <span class="kw">for </span>d <span class="kw">in </span>(idx.trailing_zeros() <span class="kw">as </span>usize..bits).rev() {
-<span data-nosnippet>1553</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
-<span data-nosnippet>1554</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
-<span data-nosnippet>1555</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
-<span data-nosnippet>1556</span>            <span class="kw">let </span>start0 = range.start - start1;
-<span data-nosnippet>1557</span>            <span class="kw">let </span>end0 = range.end - end1;
-<span data-nosnippet>1558</span>            <span class="kw">if </span>((idx &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
-<span data-nosnippet>1559</span>                <span class="highlight">M::operate_assign</span>(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span><span class="self">self</span>.bits[level].fold_abelian(start0, end0));
-<span data-nosnippet>1560</span>                range.start = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1;
-<span data-nosnippet>1561</span>                range.end = <span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
-<span data-nosnippet>1562</span>            } <span class="kw">else </span>{
-<span data-nosnippet>1563</span>                range.start = start0;
-<span data-nosnippet>1564</span>                range.end = end0;
-<span data-nosnippet>1565</span>            }
-<span data-nosnippet>1566</span>        }
-<span data-nosnippet>1567</span>        result
-<span data-nosnippet>1568</span>    }
-<span data-nosnippet>1569</span>}
-<span data-nosnippet>1570</span>
-<span data-nosnippet>1571</span><span class="attr">#[derive(Debug, Clone)]
-<span data-nosnippet>1572</span></span><span class="kw">pub struct </span>WaveletMatrixFold&lt;<span class="lifetime">'a</span>, T, M&gt;
-<span data-nosnippet>1573</span><span class="kw">where
-<span data-nosnippet>1574</span>    </span>T: Ord + Clone,
-<span data-nosnippet>1575</span>    M: AbelianGroup,
-<span data-nosnippet>1576</span>{
-<span data-nosnippet>1577</span>    wavelet_matrix: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>WaveletMatrix&lt;T&gt;,
-<span data-nosnippet>1578</span>    prefix: Vec&lt;M::T&gt;,
-<span data-nosnippet>1579</span>    offsets: Vec&lt;usize&gt;,
-<span data-nosnippet>1580</span>}
-<span data-nosnippet>1581</span>
-<span data-nosnippet>1582</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T, M&gt; WaveletMatrixFold&lt;<span class="lifetime">'a</span>, T, M&gt;
-<span data-nosnippet>1583</span><span class="kw">where
-<span data-nosnippet>1584</span>    </span>T: Ord + Clone,
-<span data-nosnippet>1585</span>    M: AbelianGroup,
-<span data-nosnippet>1586</span>{
-<span data-nosnippet>1587</span>    <span class="kw">pub fn </span>fold_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, range: Range&lt;usize&gt;) -&gt; M::T {
-<span data-nosnippet>1588</span>        <span class="self">self</span>.fold_lessthan_with_count(val, range).<span class="number">1
-<span data-nosnippet>1589</span>    </span>}
-<span data-nosnippet>1590</span>
-<span data-nosnippet>1591</span>    <span class="kw">pub fn </span>fold_lessthan_with_count(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, range: Range&lt;usize&gt;) -&gt; (usize, M::T) {
-<span data-nosnippet>1592</span>        <span class="macro">debug_assert!</span>(range.end &lt;= <span class="self">self</span>.wavelet_matrix.len);
-<span data-nosnippet>1593</span>        <span class="kw">let </span>[result] = <span class="self">self</span>.fold_lessthan_indices_with_count(
-<span data-nosnippet>1594</span>            [<span class="self">self</span>.wavelet_matrix.compress.index_lower_bound(<span class="kw-2">&amp;</span>val)],
-<span data-nosnippet>1595</span>            [range],
-<span data-nosnippet>1596</span>            <span class="self">self</span>.wavelet_matrix.bit_length,
-<span data-nosnippet>1597</span>        );
-<span data-nosnippet>1598</span>        result
-<span data-nosnippet>1599</span>    }
-<span data-nosnippet>1600</span>
-<span data-nosnippet>1601</span>    <span class="kw">pub fn </span>fold_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;T&gt;, range: Range&lt;usize&gt;) -&gt; M::T {
-<span data-nosnippet>1602</span>        <span class="self">self</span>.fold_range_with_count(valrange, range).<span class="number">1
-<span data-nosnippet>1603</span>    </span>}
-<span data-nosnippet>1604</span>
-<span data-nosnippet>1605</span>    <span class="kw">pub fn </span>fold_range_with_count(
-<span data-nosnippet>1606</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>1607</span>        valrange: Range&lt;T&gt;,
-<span data-nosnippet>1608</span>        <span class="kw-2">mut </span>range: Range&lt;usize&gt;,
-<span data-nosnippet>1609</span>    ) -&gt; (usize, M::T) {
-<span data-nosnippet>1610</span>        <span class="macro">debug_assert!</span>(range.end &lt;= <span class="self">self</span>.wavelet_matrix.len);
-<span data-nosnippet>1611</span>        <span class="kw">let </span>lower = <span class="self">self
-<span data-nosnippet>1612</span>            </span>.wavelet_matrix
-<span data-nosnippet>1613</span>            .compress
-<span data-nosnippet>1614</span>            .index_lower_bound(<span class="kw-2">&amp;</span>valrange.start);
-<span data-nosnippet>1615</span>        <span class="kw">let </span>upper = <span class="self">self
-<span data-nosnippet>1616</span>            </span>.wavelet_matrix
-<span data-nosnippet>1617</span>            .compress
-<span data-nosnippet>1618</span>            .index_lower_bound(<span class="kw-2">&amp;</span>valrange.end);
-<span data-nosnippet>1619</span>        <span class="kw">if </span>lower &gt;= upper {
-<span data-nosnippet>1620</span>            <span class="kw">return </span>(<span class="number">0</span>, M::unit());
-<span data-nosnippet>1621</span>        }
-<span data-nosnippet>1622</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.wavelet_matrix.bit_length).rev() {
-<span data-nosnippet>1623</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
-<span data-nosnippet>1624</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
-<span data-nosnippet>1625</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
-<span data-nosnippet>1626</span>            <span class="kw">let </span>start0 = range.start - start1;
-<span data-nosnippet>1627</span>            <span class="kw">let </span>end0 = range.end - end1;
-<span data-nosnippet>1628</span>            <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == ((upper &gt;&gt; d) &amp; <span class="number">1</span>) {
-<span data-nosnippet>1629</span>                <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == <span class="number">0 </span>{
-<span data-nosnippet>1630</span>                    range = start0..end0;
-<span data-nosnippet>1631</span>                } <span class="kw">else </span>{
-<span data-nosnippet>1632</span>                    range = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1
-<span data-nosnippet>1633</span>                        ..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
-<span data-nosnippet>1634</span>                }
-<span data-nosnippet>1635</span>                <span class="kw">continue</span>;
-<span data-nosnippet>1636</span>            }
-<span data-nosnippet>1637</span>            <span class="kw">let </span>zero_range = start0..end0;
-<span data-nosnippet>1638</span>            <span class="kw">let </span>one_range =
-<span data-nosnippet>1639</span>                <span class="self">self</span>.wavelet_matrix.zeros[level] + start1..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
-<span data-nosnippet>1640</span>            <span class="kw">let </span>[(lower_count, lower_sum), (upper_count, upper_sum)] = <span class="self">self
-<span data-nosnippet>1641</span>                </span>.fold_lessthan_indices_with_count(
-<span data-nosnippet>1642</span>                    [lower, upper],
-<span data-nosnippet>1643</span>                    [zero_range.clone(), one_range],
-<span data-nosnippet>1644</span>                    d,
-<span data-nosnippet>1645</span>                );
-<span data-nosnippet>1646</span>            <span class="kw">let </span>zero_sum = <span class="self">self</span>.range_sum(level, zero_range.clone());
-<span data-nosnippet>1647</span>            <span class="kw">return </span>(
-<span data-nosnippet>1648</span>                zero_range.len() - lower_count + upper_count,
-<span data-nosnippet>1649</span>                M::operate(<span class="kw-2">&amp;</span>M::rinv_operate(<span class="kw-2">&amp;</span>zero_sum, <span class="kw-2">&amp;</span>lower_sum), <span class="kw-2">&amp;</span>upper_sum),
-<span data-nosnippet>1650</span>            );
-<span data-nosnippet>1651</span>        }
-<span data-nosnippet>1652</span>        (<span class="number">0</span>, M::unit())
-<span data-nosnippet>1653</span>    }
-<span data-nosnippet>1654</span>
-<span data-nosnippet>1655</span>    <span class="attr">#[inline]
-<span data-nosnippet>1656</span>    </span><span class="kw">fn </span>range_sum(<span class="kw-2">&amp;</span><span class="self">self</span>, level: usize, range: Range&lt;usize&gt;) -&gt; M::T {
-<span data-nosnippet>1657</span>        <span class="kw">let </span>offset = <span class="self">self</span>.offsets[level];
-<span data-nosnippet>1658</span>        M::rinv_operate(
-<span data-nosnippet>1659</span>            <span class="kw-2">&amp;</span><span class="self">self</span>.prefix[offset + range.end],
-<span data-nosnippet>1660</span>            <span class="kw-2">&amp;</span><span class="self">self</span>.prefix[offset + range.start],
-<span data-nosnippet>1661</span>        )
-<span data-nosnippet>1662</span>    }
-<span data-nosnippet>1663</span>
-<span data-nosnippet>1664</span>    <span class="kw">fn </span>fold_lessthan_indices_with_count&lt;<span class="kw">const </span>N: usize&gt;(
-<span data-nosnippet>1665</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>1666</span>        indices: [usize; N],
-<span data-nosnippet>1667</span>        <span class="kw-2">mut </span>ranges: [Range&lt;usize&gt;; N],
-<span data-nosnippet>1668</span>        bits: usize,
-<span data-nosnippet>1669</span>    ) -&gt; [(usize, M::T); N] {
-<span data-nosnippet>1670</span>        <span class="kw">let </span><span class="kw-2">mut </span>results = std::array::from_fn(|<span class="kw">_</span>| (<span class="number">0</span>, M::unit()));
-<span data-nosnippet>1671</span>        <span class="kw">let </span>last = indices
-<span data-nosnippet>1672</span>            .iter()
-<span data-nosnippet>1673</span>            .map(|index| index.trailing_zeros() <span class="kw">as </span>usize)
-<span data-nosnippet>1674</span>            .min()
-<span data-nosnippet>1675</span>            .unwrap_or(bits);
-<span data-nosnippet>1676</span>        <span class="kw">for </span>d <span class="kw">in </span>(last..bits).rev() {
-<span data-nosnippet>1677</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
-<span data-nosnippet>1678</span>            <span class="kw">for </span>((<span class="kw-2">&amp;</span>index, range), (count, sum)) <span class="kw">in </span>indices.iter().zip(<span class="kw-2">&amp;mut </span>ranges).zip(<span class="kw-2">&amp;mut </span>results)
-<span data-nosnippet>1679</span>            {
-<span data-nosnippet>1680</span>                <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
-<span data-nosnippet>1681</span>                <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
-<span data-nosnippet>1682</span>                <span class="kw">let </span>start0 = range.start - start1;
-<span data-nosnippet>1683</span>                <span class="kw">let </span>end0 = range.end - end1;
-<span data-nosnippet>1684</span>                <span class="kw">if </span>((index &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
-<span data-nosnippet>1685</span>                    <span class="kw-2">*</span>count += end0 - start0;
-<span data-nosnippet>1686</span>                    <span class="highlight">M::operate_assign</span>(sum, <span class="kw-2">&amp;</span><span class="self">self</span>.range_sum(level, start0..end0));
-<span data-nosnippet>1687</span>                    range.start = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1;
-<span data-nosnippet>1688</span>                    range.end = <span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
-<span data-nosnippet>1689</span>                } <span class="kw">else </span>{
-<span data-nosnippet>1690</span>                    range.start = start0;
-<span data-nosnippet>1691</span>                    range.end = end0;
-<span data-nosnippet>1692</span>                }
-<span data-nosnippet>1693</span>            }
-<span data-nosnippet>1694</span>        }
-<span data-nosnippet>1695</span>        results
-<span data-nosnippet>1696</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/binary_indexed_tree.rs.html#51&#34;,&#34;line 51&#34;],[[81,81],&#34;../../../src/competitive/data_structure/binary_indexed_tree.rs.html#127&#34;,&#34;line 127&#34;],[[85,85],&#34;../../../src/competitive/data_structure/binary_indexed_tree.rs.html#131&#34;,&#34;line 131&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../../src/competitive/data_structure/binary_indexed_tree.rs.html#51">line 51</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>46</span>    <span class="kw">pub fn </span>from_slice(slice: <span class="kw-2">&amp;</span>[M::T]) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>105</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,7],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1506-1509&#34;,&#34;lines 1506-1509&#34;],[[44,44],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1546&#34;,&#34;line 1546&#34;],[[59,59],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1561&#34;,&#34;line 1561&#34;],[[186,186],&#34;../../../src/competitive/data_structure/wavelet_matrix.rs.html#1688&#34;,&#34;line 1688&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/wavelet_matrix.rs (<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#1506-1509">lines 1506-1509</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>1502</span>    <span class="kw">pub fn </span>fold_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, value: T, range: Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>1503</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = M::unit();
+<span data-nosnippet>1504</span>        <span class="self">self</span>.wavelet_matrix
+<span data-nosnippet>1505</span>            .query_less_than(value, range, |d, range| {
+<span data-nosnippet>1506</span>                <span class="highlight focus">M::operate_assign</span>(
+<span data-nosnippet>1507</span>                    <span class="kw-2">&amp;mut </span>result,
+<span data-nosnippet>1508</span>                    <span class="kw-2">&amp;</span><span class="self">self</span>.bits[<span class="self">self</span>.wavelet_matrix.level(d)].fold_abelian(range.start, range.end),
+<span data-nosnippet>1509</span>                );
+<span data-nosnippet>1510</span>            });
+<span data-nosnippet>1511</span>        result
+<span data-nosnippet>1512</span>    }
+<span data-nosnippet>1513</span>
+<span data-nosnippet>1514</span>    <span class="kw">pub fn </span>fold_range(<span class="kw-2">&amp;</span><span class="self">self</span>, values: Range&lt;T&gt;, range: Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>1515</span>        <span class="kw">let </span>lower = <span class="self">self
+<span data-nosnippet>1516</span>            </span>.wavelet_matrix
+<span data-nosnippet>1517</span>            .compress
+<span data-nosnippet>1518</span>            .index_lower_bound(<span class="kw-2">&amp;</span>values.start);
+<span data-nosnippet>1519</span>        <span class="kw">let </span>upper = <span class="self">self</span>.wavelet_matrix.compress.index_lower_bound(<span class="kw-2">&amp;</span>values.end);
+<span data-nosnippet>1520</span>        <span class="kw">if </span>lower &gt;= upper {
+<span data-nosnippet>1521</span>            <span class="kw">return </span>M::unit();
+<span data-nosnippet>1522</span>        }
+<span data-nosnippet>1523</span>        <span class="kw">let </span><span class="kw-2">mut </span>range = range;
+<span data-nosnippet>1524</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.wavelet_matrix.bit_length).rev() {
+<span data-nosnippet>1525</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
+<span data-nosnippet>1526</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
+<span data-nosnippet>1527</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
+<span data-nosnippet>1528</span>            <span class="kw">let </span>start0 = range.start - start1;
+<span data-nosnippet>1529</span>            <span class="kw">let </span>end0 = range.end - end1;
+<span data-nosnippet>1530</span>            <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == ((upper &gt;&gt; d) &amp; <span class="number">1</span>) {
+<span data-nosnippet>1531</span>                <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == <span class="number">0 </span>{
+<span data-nosnippet>1532</span>                    range = start0..end0;
+<span data-nosnippet>1533</span>                } <span class="kw">else </span>{
+<span data-nosnippet>1534</span>                    range = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1
+<span data-nosnippet>1535</span>                        ..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
+<span data-nosnippet>1536</span>                }
+<span data-nosnippet>1537</span>                <span class="kw">continue</span>;
+<span data-nosnippet>1538</span>            }
+<span data-nosnippet>1539</span>            <span class="kw">let </span>zero_range = start0..end0;
+<span data-nosnippet>1540</span>            <span class="kw">let </span>one_range =
+<span data-nosnippet>1541</span>                <span class="self">self</span>.wavelet_matrix.zeros[level] + start1..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
+<span data-nosnippet>1542</span>            <span class="kw">let </span>lower_sum = <span class="self">self</span>.fold_lessthan_index(lower, zero_range.clone(), d);
+<span data-nosnippet>1543</span>            <span class="kw">let </span>upper_sum = <span class="self">self</span>.fold_lessthan_index(upper, one_range, d);
+<span data-nosnippet>1544</span>            <span class="kw">let </span>zero_sum = <span class="self">self</span>.bits[level].fold_abelian(zero_range.start, zero_range.end);
+<span data-nosnippet>1545</span>            <span class="kw">let </span><span class="kw-2">mut </span>result = M::rinv_operate(<span class="kw-2">&amp;</span>zero_sum, <span class="kw-2">&amp;</span>lower_sum);
+<span data-nosnippet>1546</span>            <span class="highlight">M::operate_assign</span>(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>upper_sum);
+<span data-nosnippet>1547</span>            <span class="kw">return </span>result;
+<span data-nosnippet>1548</span>        }
+<span data-nosnippet>1549</span>        M::unit()
+<span data-nosnippet>1550</span>    }
+<span data-nosnippet>1551</span>
+<span data-nosnippet>1552</span>    <span class="kw">fn </span>fold_lessthan_index(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, bits: usize) -&gt; M::T {
+<span data-nosnippet>1553</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = M::unit();
+<span data-nosnippet>1554</span>        <span class="kw">for </span>d <span class="kw">in </span>(idx.trailing_zeros() <span class="kw">as </span>usize..bits).rev() {
+<span data-nosnippet>1555</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
+<span data-nosnippet>1556</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
+<span data-nosnippet>1557</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
+<span data-nosnippet>1558</span>            <span class="kw">let </span>start0 = range.start - start1;
+<span data-nosnippet>1559</span>            <span class="kw">let </span>end0 = range.end - end1;
+<span data-nosnippet>1560</span>            <span class="kw">if </span>((idx &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
+<span data-nosnippet>1561</span>                <span class="highlight">M::operate_assign</span>(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span><span class="self">self</span>.bits[level].fold_abelian(start0, end0));
+<span data-nosnippet>1562</span>                range.start = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1;
+<span data-nosnippet>1563</span>                range.end = <span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
+<span data-nosnippet>1564</span>            } <span class="kw">else </span>{
+<span data-nosnippet>1565</span>                range.start = start0;
+<span data-nosnippet>1566</span>                range.end = end0;
+<span data-nosnippet>1567</span>            }
+<span data-nosnippet>1568</span>        }
+<span data-nosnippet>1569</span>        result
+<span data-nosnippet>1570</span>    }
+<span data-nosnippet>1571</span>}
+<span data-nosnippet>1572</span>
+<span data-nosnippet>1573</span><span class="attr">#[derive(Debug, Clone)]
+<span data-nosnippet>1574</span></span><span class="kw">pub struct </span>WaveletMatrixFold&lt;<span class="lifetime">'a</span>, T, M&gt;
+<span data-nosnippet>1575</span><span class="kw">where
+<span data-nosnippet>1576</span>    </span>T: Ord + Clone,
+<span data-nosnippet>1577</span>    M: AbelianGroup,
+<span data-nosnippet>1578</span>{
+<span data-nosnippet>1579</span>    wavelet_matrix: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>WaveletMatrix&lt;T&gt;,
+<span data-nosnippet>1580</span>    prefix: Vec&lt;M::T&gt;,
+<span data-nosnippet>1581</span>    offsets: Vec&lt;usize&gt;,
+<span data-nosnippet>1582</span>}
+<span data-nosnippet>1583</span>
+<span data-nosnippet>1584</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T, M&gt; WaveletMatrixFold&lt;<span class="lifetime">'a</span>, T, M&gt;
+<span data-nosnippet>1585</span><span class="kw">where
+<span data-nosnippet>1586</span>    </span>T: Ord + Clone,
+<span data-nosnippet>1587</span>    M: AbelianGroup,
+<span data-nosnippet>1588</span>{
+<span data-nosnippet>1589</span>    <span class="kw">pub fn </span>fold_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, range: Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>1590</span>        <span class="self">self</span>.fold_lessthan_with_count(val, range).<span class="number">1
+<span data-nosnippet>1591</span>    </span>}
+<span data-nosnippet>1592</span>
+<span data-nosnippet>1593</span>    <span class="kw">pub fn </span>fold_lessthan_with_count(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, range: Range&lt;usize&gt;) -&gt; (usize, M::T) {
+<span data-nosnippet>1594</span>        <span class="macro">debug_assert!</span>(range.end &lt;= <span class="self">self</span>.wavelet_matrix.len);
+<span data-nosnippet>1595</span>        <span class="kw">let </span>[result] = <span class="self">self</span>.fold_lessthan_indices_with_count(
+<span data-nosnippet>1596</span>            [<span class="self">self</span>.wavelet_matrix.compress.index_lower_bound(<span class="kw-2">&amp;</span>val)],
+<span data-nosnippet>1597</span>            [range],
+<span data-nosnippet>1598</span>            <span class="self">self</span>.wavelet_matrix.bit_length,
+<span data-nosnippet>1599</span>        );
+<span data-nosnippet>1600</span>        result
+<span data-nosnippet>1601</span>    }
+<span data-nosnippet>1602</span>
+<span data-nosnippet>1603</span>    <span class="kw">pub fn </span>fold_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;T&gt;, range: Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>1604</span>        <span class="self">self</span>.fold_range_with_count(valrange, range).<span class="number">1
+<span data-nosnippet>1605</span>    </span>}
+<span data-nosnippet>1606</span>
+<span data-nosnippet>1607</span>    <span class="kw">pub fn </span>fold_range_with_count(
+<span data-nosnippet>1608</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>1609</span>        valrange: Range&lt;T&gt;,
+<span data-nosnippet>1610</span>        <span class="kw-2">mut </span>range: Range&lt;usize&gt;,
+<span data-nosnippet>1611</span>    ) -&gt; (usize, M::T) {
+<span data-nosnippet>1612</span>        <span class="macro">debug_assert!</span>(range.end &lt;= <span class="self">self</span>.wavelet_matrix.len);
+<span data-nosnippet>1613</span>        <span class="kw">let </span>lower = <span class="self">self
+<span data-nosnippet>1614</span>            </span>.wavelet_matrix
+<span data-nosnippet>1615</span>            .compress
+<span data-nosnippet>1616</span>            .index_lower_bound(<span class="kw-2">&amp;</span>valrange.start);
+<span data-nosnippet>1617</span>        <span class="kw">let </span>upper = <span class="self">self
+<span data-nosnippet>1618</span>            </span>.wavelet_matrix
+<span data-nosnippet>1619</span>            .compress
+<span data-nosnippet>1620</span>            .index_lower_bound(<span class="kw-2">&amp;</span>valrange.end);
+<span data-nosnippet>1621</span>        <span class="kw">if </span>lower &gt;= upper {
+<span data-nosnippet>1622</span>            <span class="kw">return </span>(<span class="number">0</span>, M::unit());
+<span data-nosnippet>1623</span>        }
+<span data-nosnippet>1624</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.wavelet_matrix.bit_length).rev() {
+<span data-nosnippet>1625</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
+<span data-nosnippet>1626</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
+<span data-nosnippet>1627</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
+<span data-nosnippet>1628</span>            <span class="kw">let </span>start0 = range.start - start1;
+<span data-nosnippet>1629</span>            <span class="kw">let </span>end0 = range.end - end1;
+<span data-nosnippet>1630</span>            <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == ((upper &gt;&gt; d) &amp; <span class="number">1</span>) {
+<span data-nosnippet>1631</span>                <span class="kw">if </span>((lower &gt;&gt; d) &amp; <span class="number">1</span>) == <span class="number">0 </span>{
+<span data-nosnippet>1632</span>                    range = start0..end0;
+<span data-nosnippet>1633</span>                } <span class="kw">else </span>{
+<span data-nosnippet>1634</span>                    range = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1
+<span data-nosnippet>1635</span>                        ..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
+<span data-nosnippet>1636</span>                }
+<span data-nosnippet>1637</span>                <span class="kw">continue</span>;
+<span data-nosnippet>1638</span>            }
+<span data-nosnippet>1639</span>            <span class="kw">let </span>zero_range = start0..end0;
+<span data-nosnippet>1640</span>            <span class="kw">let </span>one_range =
+<span data-nosnippet>1641</span>                <span class="self">self</span>.wavelet_matrix.zeros[level] + start1..<span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
+<span data-nosnippet>1642</span>            <span class="kw">let </span>[(lower_count, lower_sum), (upper_count, upper_sum)] = <span class="self">self
+<span data-nosnippet>1643</span>                </span>.fold_lessthan_indices_with_count(
+<span data-nosnippet>1644</span>                    [lower, upper],
+<span data-nosnippet>1645</span>                    [zero_range.clone(), one_range],
+<span data-nosnippet>1646</span>                    d,
+<span data-nosnippet>1647</span>                );
+<span data-nosnippet>1648</span>            <span class="kw">let </span>zero_sum = <span class="self">self</span>.range_sum(level, zero_range.clone());
+<span data-nosnippet>1649</span>            <span class="kw">return </span>(
+<span data-nosnippet>1650</span>                zero_range.len() - lower_count + upper_count,
+<span data-nosnippet>1651</span>                M::operate(<span class="kw-2">&amp;</span>M::rinv_operate(<span class="kw-2">&amp;</span>zero_sum, <span class="kw-2">&amp;</span>lower_sum), <span class="kw-2">&amp;</span>upper_sum),
+<span data-nosnippet>1652</span>            );
+<span data-nosnippet>1653</span>        }
+<span data-nosnippet>1654</span>        (<span class="number">0</span>, M::unit())
+<span data-nosnippet>1655</span>    }
+<span data-nosnippet>1656</span>
+<span data-nosnippet>1657</span>    <span class="attr">#[inline]
+<span data-nosnippet>1658</span>    </span><span class="kw">fn </span>range_sum(<span class="kw-2">&amp;</span><span class="self">self</span>, level: usize, range: Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>1659</span>        <span class="kw">let </span>offset = <span class="self">self</span>.offsets[level];
+<span data-nosnippet>1660</span>        M::rinv_operate(
+<span data-nosnippet>1661</span>            <span class="kw-2">&amp;</span><span class="self">self</span>.prefix[offset + range.end],
+<span data-nosnippet>1662</span>            <span class="kw-2">&amp;</span><span class="self">self</span>.prefix[offset + range.start],
+<span data-nosnippet>1663</span>        )
+<span data-nosnippet>1664</span>    }
+<span data-nosnippet>1665</span>
+<span data-nosnippet>1666</span>    <span class="kw">fn </span>fold_lessthan_indices_with_count&lt;<span class="kw">const </span>N: usize&gt;(
+<span data-nosnippet>1667</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>1668</span>        indices: [usize; N],
+<span data-nosnippet>1669</span>        <span class="kw-2">mut </span>ranges: [Range&lt;usize&gt;; N],
+<span data-nosnippet>1670</span>        bits: usize,
+<span data-nosnippet>1671</span>    ) -&gt; [(usize, M::T); N] {
+<span data-nosnippet>1672</span>        <span class="kw">let </span><span class="kw-2">mut </span>results = std::array::from_fn(|<span class="kw">_</span>| (<span class="number">0</span>, M::unit()));
+<span data-nosnippet>1673</span>        <span class="kw">let </span>last = indices
+<span data-nosnippet>1674</span>            .iter()
+<span data-nosnippet>1675</span>            .map(|index| index.trailing_zeros() <span class="kw">as </span>usize)
+<span data-nosnippet>1676</span>            .min()
+<span data-nosnippet>1677</span>            .unwrap_or(bits);
+<span data-nosnippet>1678</span>        <span class="kw">for </span>d <span class="kw">in </span>(last..bits).rev() {
+<span data-nosnippet>1679</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
+<span data-nosnippet>1680</span>            <span class="kw">for </span>((<span class="kw-2">&amp;</span>index, range), (count, sum)) <span class="kw">in </span>indices.iter().zip(<span class="kw-2">&amp;mut </span>ranges).zip(<span class="kw-2">&amp;mut </span>results)
+<span data-nosnippet>1681</span>            {
+<span data-nosnippet>1682</span>                <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
+<span data-nosnippet>1683</span>                <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
+<span data-nosnippet>1684</span>                <span class="kw">let </span>start0 = range.start - start1;
+<span data-nosnippet>1685</span>                <span class="kw">let </span>end0 = range.end - end1;
+<span data-nosnippet>1686</span>                <span class="kw">if </span>((index &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
+<span data-nosnippet>1687</span>                    <span class="kw-2">*</span>count += end0 - start0;
+<span data-nosnippet>1688</span>                    <span class="highlight">M::operate_assign</span>(sum, <span class="kw-2">&amp;</span><span class="self">self</span>.range_sum(level, start0..end0));
+<span data-nosnippet>1689</span>                    range.start = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1;
+<span data-nosnippet>1690</span>                    range.end = <span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
+<span data-nosnippet>1691</span>                } <span class="kw">else </span>{
+<span data-nosnippet>1692</span>                    range.start = start0;
+<span data-nosnippet>1693</span>                    range.end = end0;
+<span data-nosnippet>1694</span>                }
+<span data-nosnippet>1695</span>            }
+<span data-nosnippet>1696</span>        }
+<span data-nosnippet>1697</span>        results
+<span data-nosnippet>1698</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/binary_indexed_tree.rs.html#51&#34;,&#34;line 51&#34;],[[81,81],&#34;../../../src/competitive/data_structure/binary_indexed_tree.rs.html#127&#34;,&#34;line 127&#34;],[[85,85],&#34;../../../src/competitive/data_structure/binary_indexed_tree.rs.html#131&#34;,&#34;line 131&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../../src/competitive/data_structure/binary_indexed_tree.rs.html#51">line 51</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>46</span>    <span class="kw">pub fn </span>from_slice(slice: <span class="kw-2">&amp;</span>[M::T]) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>47</span>        <span class="kw">let </span>n = slice.len();
 <span data-nosnippet>48</span>        <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="macro">vec!</span>[M::unit(); n + <span class="number">1</span>];
 <span data-nosnippet>49</span>        <span class="kw">for </span>(i, x) <span class="kw">in </span>slice.iter().enumerate() {
