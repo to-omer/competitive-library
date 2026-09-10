@@ -1,4 +1,6 @@
 use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
+#[cfg(target_arch = "x86_64")]
+use super::{SimdBackend, simd_backend};
 
 pub enum ConvolveRealFft {}
 
@@ -298,13 +300,12 @@ pub mod simd {
     }
 
     #[target_feature(enable = "avx2,fma")]
-    pub unsafe fn middle_product_f64_avx2(
+    pub unsafe fn convolve_f64_avx2(
         a: impl ExactSizeIterator<Item = f64>,
         b: impl ExactSizeIterator<Item = f64>,
+        range: std::ops::Range<usize>,
     ) -> Vec<f64> {
-        let a_len = a.len();
-        let b_len = b.len();
-        let n = (a_len.next_power_of_two() / 2).max(4);
+        let n = (range.end.next_power_of_two() / 2).max(4);
         let mut fa = pack_f64(a, n);
         let mut fb = pack_f64(b, n);
         fft_soa(&mut fa);
@@ -312,7 +313,7 @@ pub mod simd {
         dot_one_soa(&mut fa, &fb);
         drop(fb);
         ifft_soa(&mut fa);
-        (b_len - 1..a_len)
+        range
             .map(|i| {
                 if i < n {
                     fa[i >> 2].re[i & 3]
@@ -321,6 +322,14 @@ pub mod simd {
                 }
             })
             .collect()
+    }
+    #[target_feature(enable = "avx2")]
+    pub unsafe fn convolve_i64_avx2(a: Vec<i64>, b: Vec<i64>, len: usize) -> Vec<i64> {
+        super::convolve_i64_naive(a, b, len)
+    }
+    #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
+    pub unsafe fn convolve_i64_avx512(a: Vec<i64>, b: Vec<i64>, len: usize) -> Vec<i64> {
+        super::convolve_i64_naive(a, b, len)
     }
 }
 
@@ -410,6 +419,24 @@ pub fn inverse_transform_real(mut f: Vec<Complex<f64>>, len: usize) -> Vec<f64> 
         .collect()
 }
 
+#[inline(always)]
+fn convolve_i64_naive(a: Vec<i64>, b: Vec<i64>, len: usize) -> Vec<i64> {
+    let (a, b) = if a.len() < b.len() { (b, a) } else { (a, b) };
+    if b.len() == 1 {
+        return a.into_iter().map(|a| a * b[0]).collect();
+    }
+    let mut c = vec![0; len];
+    for (i, a) in a.chunks(1024).enumerate() {
+        for (j, b) in b.iter().enumerate() {
+            let start = i * 1024 + j;
+            for (c, a) in c[start..start + a.len()].iter_mut().zip(a) {
+                *c += *a * *b;
+            }
+        }
+    }
+    c
+}
+
 impl ConvolveSteps for ConvolveRealFft {
     type T = Vec<i64>;
     type F = Vec<Complex<f64>>;
@@ -424,6 +451,49 @@ impl ConvolveSteps for ConvolveRealFft {
             .into_iter()
             .map(|value| value.round() as i64)
             .collect()
+    }
+    fn convolve(a: Self::T, b: Self::T) -> Self::T {
+        let len = (a.len() + b.len()).saturating_sub(1);
+        // Keep accumulation overflow-free and exact in the FFT's f64 representation.
+        if (a.len().min(b.len()) <= 32 || {
+            let size = len.next_power_of_two();
+            let log = size.ilog2();
+            let limit = crate::avx_helper!(@dispatch simd_backend, SimdBackend;
+                3 * log + 16, 2 * log + 16, 4 * log + 16
+            );
+            2 * a.len() as u128 * b.len() as u128 <= limit as u128 * size as u128
+        }) && a.iter().map(|x| x.unsigned_abs()).max().unwrap_or(0) as u128
+            * b.iter().map(|x| x.unsigned_abs()).max().unwrap_or(0) as u128
+            <= (1u128 << 53) / a.len().min(b.len()).max(1) as u128
+        {
+            return crate::avx_helper!(@dispatch simd_backend, SimdBackend;
+                unsafe {
+                    if a.len().max(b.len()) < 32 {
+                        simd::convolve_i64_avx2(a, b, len)
+                    } else {
+                        simd::convolve_i64_avx512(a, b, len)
+                    }
+                },
+                unsafe { simd::convolve_i64_avx2(a, b, len) },
+                convolve_i64_naive(a, b, len)
+            );
+        }
+        if !a.is_empty() && !b.is_empty() {
+            crate::avx_helper!(@dispatch_avx2_fma return unsafe {
+                simd::convolve_f64_avx2(
+                    a.into_iter().map(|x| x as f64),
+                    b.into_iter().map(|x| x as f64),
+                    0..len,
+                )
+                .into_iter()
+                .map(|x| x.round() as i64)
+                .collect()
+            }, ());
+        }
+        let mut a = Self::transform(a, len);
+        let b = Self::transform(b, len);
+        Self::multiply(&mut a, &b);
+        Self::inverse_transform(a, len)
     }
     fn multiply(f: &mut Self::F, g: &Self::F) {
         assert_eq!(f.len(), g.len());
@@ -457,75 +527,207 @@ impl ConvolveRealFft {
     ) -> Vec<f64> {
         assert!(0 < b.len() && b.len() <= a.len());
         crate::avx_helper!(@dispatch_avx2_fma return unsafe {
-            simd::middle_product_f64_avx2(a, b)
+            let range = b.len() - 1..a.len();
+            simd::convolve_f64_avx2(a, b, range)
         }, ());
         middle_product_f64_scalar(a, b)
     }
 }
 
-pub fn fft(a: &mut [Complex<f64>]) {
-    let n = a.len();
-    RotateCache::ensure(n / 2);
-    RotateCache::with(|cache| {
-        let mut v = n / 2;
-        while v >= 2 {
-            let l = v / 2;
-            for (q, block) in a.chunks_exact_mut(l * 4).enumerate() {
-                let (a, rest) = block.split_at_mut(l);
-                let (b, rest) = rest.split_at_mut(l);
-                let (c, d) = rest.split_at_mut(l);
-                let w0 = cache[q];
-                let w1 = cache[q << 1];
-                let w2 = cache[q << 1 | 1];
-                for i in 0..l {
-                    let cv = c[i] * w0;
-                    let dv = d[i] * w0;
-                    let ac0 = a[i] + cv;
-                    let ac1 = a[i] - cv;
-                    let bd0 = (b[i] + dv) * w1;
-                    let bd1 = (b[i] - dv) * w2;
-                    a[i] = ac0 + bd0;
-                    b[i] = ac0 - bd0;
-                    c[i] = ac1 + bd1;
-                    d[i] = ac1 - bd1;
+macro_rules! fft_kernel {
+    ($a:expr, $cache:expr, $inverse:expr) => {{
+        let a = $a;
+        let cache = $cache;
+        let n = a.len();
+        if $inverse {
+            let mut v = 1;
+            if n.trailing_zeros() & 1 == 1 {
+                for (a, w) in a.as_chunks_mut::<2>().0.iter_mut().zip(cache) {
+                    let y = (a[0] - a[1]) * w.conjugate();
+                    a[0] += a[1];
+                    a[1] = y;
+                }
+                v = 2;
+            }
+            while v < n {
+                for (q, block) in a.chunks_exact_mut(v * 4).enumerate() {
+                    let (a, rest) = block.split_at_mut(v);
+                    let (b, rest) = rest.split_at_mut(v);
+                    let (c, d) = rest.split_at_mut(v);
+                    let w0 = cache[q].conjugate();
+                    let w1 = cache[q << 1].conjugate();
+                    let w3 = w0 * w1;
+                    for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
+                        let ac0 = *a + *b;
+                        let ac1 = *c + *d;
+                        let bd0 = *a - *b;
+                        let bd1 = *c - *d;
+                        let bd1 = Complex::new(-bd1.im, bd1.re);
+                        *a = ac0 + ac1;
+                        *b = (bd0 + bd1) * w1;
+                        *c = (ac0 - ac1) * w0;
+                        *d = (bd0 - bd1) * w3;
+                    }
+                }
+                v <<= 2;
+            }
+        } else {
+            let mut v = n / 2;
+            while v >= 2 {
+                let l = v / 2;
+                for (q, block) in a.chunks_exact_mut(l * 4).enumerate() {
+                    let (a, rest) = block.split_at_mut(l);
+                    let (b, rest) = rest.split_at_mut(l);
+                    let (c, d) = rest.split_at_mut(l);
+                    let w0 = cache[q];
+                    let w1 = cache[q << 1];
+                    let w3 = w0 * w1;
+                    for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
+                        let bv = *b * w1;
+                        let cv = *c * w0;
+                        let dv = *d * w3;
+                        let ac0 = *a + cv;
+                        let ac1 = *a - cv;
+                        let bd0 = bv + dv;
+                        let bd1 = bv - dv;
+                        let bd1 = Complex::new(bd1.im, -bd1.re);
+                        *a = ac0 + bd0;
+                        *b = ac0 - bd0;
+                        *c = ac1 + bd1;
+                        *d = ac1 - bd1;
+                    }
+                }
+                v >>= 2;
+            }
+            if v == 1 {
+                for (a, w) in a.as_chunks_mut::<2>().0.iter_mut().zip(cache) {
+                    let y = a[1] * *w;
+                    a[1] = a[0] - y;
+                    a[0] += y;
                 }
             }
-            v >>= 2;
         }
-        if v == 1 {
-            for (a, w) in a.as_chunks_mut::<2>().0.iter_mut().zip(cache) {
-                let y = a[1] * *w;
-                a[1] = a[0] - y;
-                a[0] += y;
-            }
-        }
-    });
+    }};
+}
+
+pub fn fft(a: &mut [Complex<f64>]) {
+    fft_dispatch::<false>(a);
 }
 
 pub fn ifft(a: &mut [Complex<f64>]) {
-    let n = a.len();
-    RotateCache::ensure(n / 2);
+    fft_dispatch::<true>(a);
+}
+
+fn fft_dispatch<const INVERSE: bool>(a: &mut [Complex<f64>]) {
+    RotateCache::ensure(a.len() / 2);
     RotateCache::with(|cache| {
-        let mut v = 1;
-        while v < n {
-            for (a, wj) in a.chunks_exact_mut(v << 1).zip(cache) {
-                let (l, r) = a.split_at_mut(v);
-                let wj = wj.conjugate();
-                for (x, y) in l.iter_mut().zip(r) {
-                    let ajv = *x - *y;
-                    *x += *y;
-                    *y = wj * ajv;
+        #[cfg(target_arch = "x86_64")]
+        if a.len() >= 16 {
+            match simd_backend() {
+                SimdBackend::Avx512 => {
+                    return unsafe { fft_avx512::<INVERSE>(a, cache) };
                 }
+                SimdBackend::Avx2 => return unsafe { fft_avx2::<INVERSE>(a, cache) },
+                SimdBackend::Scalar => {}
             }
-            v <<= 1;
         }
+        fft_kernel!(a, cache, INVERSE);
     });
+}
+
+#[cfg(target_arch = "x86_64")]
+#[target_feature(enable = "avx2")]
+unsafe fn fft_avx2<const INVERSE: bool>(a: &mut [Complex<f64>], cache: &[Complex<f64>]) {
+    fft_kernel!(a, cache, INVERSE);
+}
+
+#[cfg(target_arch = "x86_64")]
+#[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
+unsafe fn fft_avx512<const INVERSE: bool>(a: &mut [Complex<f64>], cache: &[Complex<f64>]) {
+    fft_kernel!(a, cache, INVERSE);
 }
 
 #[test]
 fn test_convolve_fft() {
     use crate::{rand, tools::Xorshift};
     let mut rng = Xorshift::default();
+    for log_n in 1..=16 {
+        let n = 1 << log_n;
+        let input: Vec<_> = (0..n)
+            .map(|_| {
+                Complex::new(
+                    (rng.randf() - 0.5) * 200_000.,
+                    (rng.randf() - 0.5) * 200_000.,
+                )
+            })
+            .collect();
+        let mut actual = input.clone();
+        fft(&mut actual);
+        if n <= 64 {
+            for k in 0..n {
+                let mut expected: Complex<f64> = Complex::zero();
+                for (j, value) in input.iter().enumerate() {
+                    let angle = -std::f64::consts::TAU * (j * k) as f64 / n as f64;
+                    expected += *value * Complex::new(angle.cos(), angle.sin());
+                }
+                let actual = actual[k.reverse_bits() >> (usize::BITS - log_n)];
+                assert!((actual.re - expected.re).abs() < 1e-6);
+                assert!((actual.im - expected.im).abs() < 1e-6);
+            }
+        }
+        ifft(&mut actual);
+        for (actual, expected) in actual.into_iter().zip(input) {
+            assert!((actual.re / n as f64 - expected.re).abs() < 1e-7);
+            assert!((actual.im / n as f64 - expected.im).abs() < 1e-7);
+        }
+    }
+    for log_n in 10..=16 {
+        let size = 1 << log_n;
+        for n in size - 1..=size + 1 {
+            let m = rng.random(1..=size + 1);
+            let a: Vec<i64> = rng.random_iter(-128..=128).take(n).collect();
+            let factor = rng.random(1i64..=256) * if rng.gen_bool(0.5) { 1 } else { -1 };
+            let b: Vec<_> = (0..m)
+                .map(|i| if i & 1 == 0 { factor } else { -factor })
+                .collect();
+            let mut prefix = vec![0; n + 1];
+            for (i, value) in a.iter().enumerate() {
+                prefix[i + 1] = prefix[i] + if i & 1 == 0 { *value } else { -*value };
+            }
+            let expected: Vec<_> = (0..n + m - 1)
+                .map(|i| {
+                    (prefix[(i + 1).min(n)] - prefix[(i + 1).saturating_sub(m)])
+                        * if i & 1 == 0 { factor } else { -factor }
+                })
+                .collect();
+            assert_eq!(ConvolveRealFft::convolve(a.clone(), b.clone()), expected);
+            assert_eq!(ConvolveRealFft::convolve(b, a), expected);
+        }
+    }
+    for m in 1..=32 {
+        for n in [
+            rng.random(1..=64),
+            1023,
+            1024,
+            1025,
+            rng.random(1026..=3073),
+        ] {
+            let factor = rng.random(1i64..=16);
+            let limit = (1i64 << 53) / m as i64 / factor;
+            let a: Vec<_> = (0..n)
+                .map(|_| (limit - rng.random(0i64..=128)) * if rng.gen_bool(0.5) { 1 } else { -1 })
+                .collect();
+            let b: Vec<i64> = rng.random_iter(-factor..=factor).take(m).collect();
+            let mut expected = vec![0; n + m - 1];
+            for (i, a) in a.iter().enumerate() {
+                for (j, b) in b.iter().enumerate() {
+                    expected[i + j] += a * b;
+                }
+            }
+            assert_eq!(ConvolveRealFft::convolve(a.clone(), b.clone()), expected);
+            assert_eq!(ConvolveRealFft::convolve(b, a), expected);
+        }
+    }
     for n in 0..10 {
         for m in 0..10 {
             for rn in 0..2 {

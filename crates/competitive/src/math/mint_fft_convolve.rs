@@ -36,7 +36,7 @@ where
     for i in (0..values.len()).step_by(4) {
         let mut centered = [0i32; 4];
         for lane in 0..4.min(values.len() - i) {
-            let mut value = <M as MIntConvert<u32>>::into(values[i + lane].inner()) as i64;
+            let mut value = u32::from(values[i + lane]) as i64;
             if value * 2 > modulus {
                 value -= modulus;
             }

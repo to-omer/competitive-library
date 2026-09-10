@@ -91,7 +91,7 @@ where
             C::F: Clone,
         {
             if fps.length() <= length / 2 {
-                C::ntt_doubling(frequency)
+                C::ntt_doubling(frequency, false)
             } else {
                 reduced_transform(fps, length)
             }
