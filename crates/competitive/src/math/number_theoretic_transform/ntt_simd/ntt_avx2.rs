@@ -85,7 +85,7 @@ where
             roots[2] as i32,
         )
     };
-    for (s, a) in a.chunks_exact_mut(8).enumerate() {
+    for (s, a) in a.as_chunks_mut::<8>().0.iter_mut().enumerate() {
         let mut x = _mm256_loadu_si256(a.as_ptr().cast());
         if !INVERSE {
             x = simd32::montgomery_mul_256(x, twiddle, r, modulus);

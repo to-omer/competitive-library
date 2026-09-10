@@ -341,7 +341,7 @@ mod simd {
         layers: &[super::WaveletMatrixQuadVector],
         states: &mut [[usize; 4]],
     ) {
-        for chunk in states.chunks_exact_mut(8) {
+        for chunk in states.as_chunks_mut::<8>().0 {
             let mut starts = [0u64; 8];
             let mut ends = [0u64; 8];
             let mut keys = [0u64; 8];
@@ -1369,7 +1369,9 @@ where
             self.batch::<RANK_LESSTHAN>(&mut states, queries.len() * 2);
             result.extend(
                 states[..queries.len() * 2]
-                    .chunks_exact(2)
+                    .as_chunks::<2>()
+                    .0
+                    .iter()
                     .map(|pair| pair[1][3] - pair[0][3]),
             );
         }
