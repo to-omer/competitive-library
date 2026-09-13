@@ -1,12 +1,15 @@
 use std::{
-    ffi::{c_int, c_void},
     fs::File,
     io::{Read, StdoutLock, Write, stdout},
-    os::fd::FromRawFd,
+    os::fd::AsFd,
     ptr,
     str::FromStr,
 };
 
+#[cfg(target_os = "linux")]
+use std::ffi::{c_int, c_void};
+
+#[cfg(target_os = "linux")]
 unsafe extern "C" {
     fn mmap(
         addr: *mut c_void,
@@ -16,32 +19,69 @@ unsafe extern "C" {
         fd: c_int,
         offset: isize,
     ) -> *mut c_void;
+    fn munmap(addr: *mut c_void, len: usize) -> c_int;
+    fn getpagesize() -> c_int;
 }
 
+/// Token reader for little-endian targets. Integer reads require a decimal
+/// representation that fits the requested type, with at most that type's maximum
+/// number of digits and an optional `-` for signed types.
+///
+/// Each read must start at a token and consumes exactly one trailing ASCII
+/// whitespace byte. `parse` additionally requires UTF-8. `bytes` returns a slice
+/// whose lifetime must not exceed that of the input allocation.
+///
+/// On x86-64, enabling `ssse3` at compile time selects SIMD for `u64` tokens.
 pub struct FastInput {
     ptr: *const u8,
 }
 
 impl FastInput {
+    /// Reads all of stdin and retains its storage until process exit.
+    ///
+    /// # Safety
+    /// Call before any other stdin reads. A mapped input file must not be modified
+    /// while its contents or slices returned by this reader are in use.
     pub unsafe fn stdin() -> Self {
+        let mut stdin = File::from(std::io::stdin().as_fd().try_clone_to_owned().unwrap());
+        #[cfg(target_os = "linux")]
         unsafe {
-            let mut stdin = File::from_raw_fd(0);
-            let ptr = if let Ok(metadata) = stdin.metadata() {
+            if let Ok(metadata) = stdin.metadata()
+                && metadata.is_file()
+                && metadata.len() != 0
+            {
                 let len = metadata.len() as usize;
-                mmap(ptr::null_mut(), len, 1, 2, 0, 0) as *const u8
-            } else {
-                let mut buf = vec![];
-                stdin.read_to_end(&mut buf).unwrap();
-                Box::into_raw(buf.into_boxed_slice()) as *const u8
-            };
-            FastInput { ptr }
+                let page = getpagesize() as usize;
+                let mapped = len.div_ceil(page) * page;
+                let reserved = mapped + page;
+                // MAP_PRIVATE | MAP_ANONYMOUS reserves an initialized page after EOF.
+                let region = mmap(ptr::null_mut(), reserved, 1, 2 | 0x20, -1, 0);
+                if region as isize != -1 {
+                    // MAP_FIXED replaces only the file portion of our own reservation.
+                    if mmap(region, len, 1, 2 | 0x10, 0, 0) as isize != -1 {
+                        return FastInput { ptr: region.cast() };
+                    }
+                    assert_eq!(munmap(region, reserved), 0);
+                }
+            }
+        }
+        let mut buf = Vec::new();
+        stdin.read_to_end(&mut buf).unwrap();
+        buf.resize(buf.len() + 16, b' ');
+        FastInput {
+            ptr: Box::into_raw(buf.into_boxed_slice()).cast(),
         }
     }
 
+    /// # Safety
+    /// `s` must contain at least 16 initialized padding bytes after its final
+    /// token delimiter. Its allocation must remain valid and unchanged while
+    /// this reader or any slices returned by it are in use.
     pub unsafe fn from_slice(s: &[u8]) -> Self {
         FastInput { ptr: s.as_ptr() }
     }
 
+    #[inline]
     unsafe fn fetch_ud4(&mut self) -> u16 {
         unsafe {
             let mut x: u32 = ptr::read_unaligned(self.ptr as *const u32);
@@ -55,6 +95,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     unsafe fn fetch_ud8(&mut self) -> u32 {
         unsafe {
             let mut x: u64 = ptr::read_unaligned(self.ptr as *const u64);
@@ -69,68 +110,110 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn u8(&mut self) -> u8 {
         unsafe { self.fetch_ud4() as u8 }
     }
 
+    #[inline]
     pub unsafe fn u16(&mut self) -> u16 {
         unsafe { self.fetch_ud8() as u16 }
     }
 
     /// 0..=99_999_999
+    #[inline]
     pub unsafe fn u32_small(&mut self) -> u32 {
         unsafe { self.fetch_ud8() }
     }
 
+    #[inline]
     pub unsafe fn u32(&mut self) -> u32 {
         unsafe {
-            let mut res = 0u32;
-            let mut buf: [u64; 2] = ptr::read_unaligned(self.ptr as *const [u64; 2]);
-            buf[0] ^= 0x3030303030303030;
-            buf[1] ^= 0x3030303030303030;
-            let mut rem;
-            {
-                let mut x = buf[0];
-                rem = x;
-                if (x & 0xf0f0f0f0f0f0f0f0) == 0 {
-                    rem = buf[1];
-                    x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff00ff00ff;
-                    x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff0000ffff;
-                    x = x.wrapping_mul(10000).wrapping_add(x >> 32) & 0x00000000ffffffff;
-                    res = x as u32;
-                    self.ptr = self.ptr.add(8);
+            let mut x = u64::from_le(ptr::read_unaligned(self.ptr.cast())) ^ 0x3030303030303030;
+            let mask = x & 0xf0f0f0f0f0f0f0f0;
+            if mask != 0 {
+                let len = mask.trailing_zeros() >> 3;
+                x <<= 64 - len * 8;
+                self.ptr = self.ptr.add(len as usize + 1);
+                x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff00ff00ff;
+                x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff0000ffff;
+                x = x.wrapping_mul(10000).wrapping_add(x >> 32) & 0xffffffff;
+                x as u32
+            } else {
+                x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff00ff00ff;
+                x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff0000ffff;
+                x = x.wrapping_mul(10000).wrapping_add(x >> 32) & 0xffffffff;
+                let y = u16::from_le(ptr::read_unaligned(self.ptr.add(8).cast())) ^ 0x3030;
+                if y & 0xf0f0 == 0 {
+                    self.ptr = self.ptr.add(11);
+                    x as u32 * 100 + ((y.wrapping_mul(10).wrapping_add(y >> 8)) & 0xff) as u32
+                } else if y & 0xf0 == 0 {
+                    self.ptr = self.ptr.add(10);
+                    x as u32 * 10 + (y & 0xff) as u32
+                } else {
+                    self.ptr = self.ptr.add(9);
+                    x as u32
                 }
             }
-            {
-                let mut x = (rem & 0xffffffff) as u32;
-                if (x & 0xf0f0f0f0) == 0 {
-                    rem >>= 32;
-                    x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff;
-                    x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff;
-                    res = res.wrapping_mul(10000).wrapping_add(x);
-                    self.ptr = self.ptr.add(4);
-                }
-            }
-            {
-                let mut x = (rem & 0xffff) as u16;
-                if (x & 0xf0f0) == 0 {
-                    rem >>= 16;
-                    x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff;
-                    res = res.wrapping_mul(100).wrapping_add(x as u32);
-                    self.ptr = self.ptr.add(2);
-                }
-            }
-            {
-                let x = (rem & 0xf0) == 0;
-                if x {
-                    res = res.wrapping_mul(10).wrapping_add((rem & 0xff) as u32);
-                }
-                self.ptr = self.ptr.add(x as usize + 1);
-            }
-            res
         }
     }
 
+    #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
+    #[inline]
+    pub unsafe fn u64(&mut self) -> u64 {
+        use std::arch::x86_64::*;
+        #[inline]
+        unsafe fn parse16(digits: __m128i) -> u64 {
+            unsafe {
+                let pairs = _mm_maddubs_epi16(digits, _mm_set1_epi16(0x010a));
+                let quads = _mm_madd_epi16(pairs, _mm_set1_epi32(0x00010064));
+                let octets = _mm_add_epi64(
+                    _mm_mul_epu32(quads, _mm_set1_epi64x(10000)),
+                    _mm_srli_epi64::<32>(quads),
+                );
+                (_mm_cvtsi128_si64(octets) as u64) * 100000000
+                    + (_mm_cvtsi128_si64(_mm_srli_si128::<8>(octets)) as u64)
+            }
+        }
+        const SHUFFLE: [[u8; 16]; 16] = const {
+            let mut table = [[128; 16]; 16];
+            let mut n = 1;
+            while n < 16 {
+                let mut i = 16 - n;
+                while i < 16 {
+                    table[n][i] = (i + n - 16) as u8;
+                    i += 1;
+                }
+                n += 1;
+            }
+            table
+        };
+        unsafe {
+            let mut digits =
+                _mm_sub_epi8(_mm_loadu_si128(self.ptr.cast()), _mm_set1_epi8(b'0' as i8));
+            let mask = _mm_movemask_epi8(digits) as u32;
+            if mask != 0 {
+                let len = mask.trailing_zeros();
+                digits = _mm_shuffle_epi8(
+                    digits,
+                    _mm_loadu_si128(SHUFFLE[len as usize].as_ptr().cast()),
+                );
+                self.ptr = self.ptr.add(len as usize + 1);
+                return parse16(digits);
+            }
+            self.ptr = self.ptr.add(16);
+            let mut x = parse16(digits);
+            while *self.ptr >= b'0' {
+                x = x * 10 + (*self.ptr - b'0') as u64;
+                self.ptr = self.ptr.add(1);
+            }
+            self.ptr = self.ptr.add(1);
+            x
+        }
+    }
+
+    #[cfg(not(all(target_arch = "x86_64", target_feature = "ssse3")))]
+    #[inline]
     pub unsafe fn u64(&mut self) -> u64 {
         unsafe {
             let mut res;
@@ -210,6 +293,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn u128(&mut self) -> u128 {
         unsafe {
             let mut res = 0u128;
@@ -265,10 +349,12 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn usize(&mut self) -> usize {
         unsafe { self.u64() as usize }
     }
 
+    #[inline]
     pub unsafe fn i8(&mut self) -> i8 {
         unsafe {
             let b = *self.ptr == b'-';
@@ -281,6 +367,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn i16(&mut self) -> i16 {
         unsafe {
             let b = *self.ptr == b'-';
@@ -293,6 +380,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn i32(&mut self) -> i32 {
         unsafe {
             let b = *self.ptr == b'-';
@@ -305,6 +393,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn i64(&mut self) -> i64 {
         unsafe {
             let b = *self.ptr == b'-';
@@ -317,6 +406,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn i128(&mut self) -> i128 {
         unsafe {
             let b = *self.ptr == b'-';
@@ -329,10 +419,12 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn isize(&mut self) -> isize {
         unsafe { self.i64() as isize }
     }
 
+    #[inline]
     pub unsafe fn byte(&mut self) -> u8 {
         unsafe {
             let c = *self.ptr;
@@ -341,6 +433,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn bytes<'a>(&mut self) -> &'a [u8] {
         unsafe {
             let start = self.ptr;
@@ -353,6 +446,7 @@ impl FastInput {
         }
     }
 
+    #[inline]
     pub unsafe fn parse<T>(&mut self) -> T
     where
         T: FromStr,
@@ -375,6 +469,18 @@ static DIGIT4: [[u8; 4]; 10000] = const {
             arr[i][j] = b'0' + (x % 10) as u8;
             x /= 10;
         }
+        i += 1;
+    }
+    arr
+};
+
+// The top two bits store the digit count minus one; the rest holds little-endian ASCII.
+static DIGIT4_TRIMMED: [u32; 10000] = const {
+    let mut arr = [0; 10000];
+    let mut i = 0;
+    while i < 10000 {
+        let off = (i < 10) as usize + (i < 100) as usize + (i < 1000) as usize;
+        arr[i] = (u32::from_le_bytes(DIGIT4[i]) >> (8 * off)) | (((3 - off) as u32) << 30);
         i += 1;
     }
     arr
@@ -462,15 +568,14 @@ where
 
     #[inline]
     unsafe fn write_digit4_trimmed_unchecked(&mut self, x: usize) {
-        debug_assert!(x < 10000);
-        let off = (x < 10) as usize + (x < 100) as usize + (x < 1000) as usize;
         unsafe {
+            let word = *DIGIT4_TRIMMED.get_unchecked(x);
             ptr::write_unaligned(
-                self.buf.as_mut_ptr().add(self.pos) as *mut u32,
-                ptr::read_unaligned((DIGIT4.as_ptr() as *const u8).add(4 * x + off) as *const u32),
+                self.buf.as_mut_ptr().add(self.pos).cast::<u32>(),
+                (word & 0x3fffffff).to_le(),
             );
+            self.pos += (word >> 30) as usize + 1;
         }
-        self.pos += 4 - off;
     }
 
     #[inline]
@@ -520,59 +625,66 @@ where
     #[inline]
     unsafe fn write_u64_unchecked(&mut self, x: u64) {
         unsafe {
+            if x < 10000 {
+                self.write_digit4_trimmed_unchecked(x as usize);
+                return;
+            }
             if x >= 1_0000_0000_0000_0000 {
                 let d = x / 10000;
-                let c = d / 10000;
-                let b = c / 10000;
-                let a = b / 10000;
+                let c = x / 100000000;
+                let b = x / 1000000000000;
+                let a = x / 10000000000000000;
                 self.write_digit4_trimmed_unchecked(a as usize);
-                self.write_digit4_unchecked((b % 10000) as usize);
-                self.write_digit4_unchecked((c % 10000) as usize);
-                self.write_digit4_unchecked((d % 10000) as usize);
+                self.write_digit4_unchecked((b - a * 10000) as usize);
+                self.write_digit4_unchecked((c - b * 10000) as usize);
+                self.write_digit4_unchecked((d - c * 10000) as usize);
                 self.write_digit4_unchecked((x % 10000) as usize);
             } else if x >= 1_0000_0000_0000 {
                 let c = x / 10000;
-                let b = c / 10000;
-                let a = b / 10000;
+                let b = x / 100000000;
+                let a = x / 1000000000000;
                 self.write_digit4_trimmed_unchecked(a as usize);
-                self.write_digit4_unchecked((b % 10000) as usize);
-                self.write_digit4_unchecked((c % 10000) as usize);
+                self.write_digit4_unchecked((b - a * 10000) as usize);
+                self.write_digit4_unchecked((c - b * 10000) as usize);
                 self.write_digit4_unchecked((x % 10000) as usize);
             } else if x >= 1_0000_0000 {
                 let b = x / 10000;
-                let a = b / 10000;
+                let a = x / 100000000;
                 self.write_digit4_trimmed_unchecked(a as usize);
-                self.write_digit4_unchecked((b % 10000) as usize);
-                self.write_digit4_unchecked((x % 10000) as usize);
-            } else if x >= 10000 {
-                self.write_digit4_trimmed_unchecked((x / 10000) as usize);
+                self.write_digit4_unchecked((b - a * 10000) as usize);
                 self.write_digit4_unchecked((x % 10000) as usize);
             } else {
-                self.write_digit4_trimmed_unchecked(x as usize);
+                self.write_digit4_trimmed_unchecked((x / 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
             }
         }
     }
 
+    #[inline]
     pub fn u8(&mut self, x: u8) {
         self.ensure_capacity(4);
         unsafe { self.write_u8_unchecked(x) }
     }
 
+    #[inline]
     pub fn u16(&mut self, x: u16) {
         self.ensure_capacity(5);
         unsafe { self.write_u16_unchecked(x) }
     }
 
+    #[inline]
     pub fn u32(&mut self, x: u32) {
         self.ensure_capacity(10);
         unsafe { self.write_u32_unchecked(x) }
     }
 
+    #[inline]
     pub fn u64(&mut self, x: u64) {
         self.ensure_capacity(20);
         unsafe { self.write_u64_unchecked(x) }
     }
 
+    #[inline]
     pub fn i8(&mut self, x: i8) {
         if x < 0 {
             self.ensure_capacity(5);
@@ -585,6 +697,7 @@ where
         }
     }
 
+    #[inline]
     pub fn i16(&mut self, x: i16) {
         if x < 0 {
             self.ensure_capacity(6);
@@ -597,6 +710,7 @@ where
         }
     }
 
+    #[inline]
     pub fn i32(&mut self, x: i32) {
         if x < 0 {
             self.ensure_capacity(11);
@@ -609,6 +723,7 @@ where
         }
     }
 
+    #[inline]
     pub fn i64(&mut self, x: i64) {
         if x < 0 {
             self.ensure_capacity(21);
@@ -621,6 +736,7 @@ where
         }
     }
 
+    #[inline]
     pub fn byte(&mut self, b: u8) {
         self.ensure_capacity(1);
         unsafe { self.write_byte_unchecked(b) }
@@ -646,6 +762,67 @@ mod tests {
     use crate::tools::Xorshift;
 
     #[test]
+    fn test_fast_input_decimal_boundaries() {
+        macro_rules! check {
+            ($ty:ty, $method:ident, $max:expr) => {{
+                let mut values: Vec<$ty> = vec![0, 1, $max];
+                let mut power: $ty = 1;
+                while let Some(next) = power.checked_mul(10).filter(|&x| x <= $max) {
+                    values.extend([next - 1, next]);
+                    if next < $max {
+                        values.push(next + 1);
+                    }
+                    power = next;
+                }
+                for offset in 0..32 {
+                    let mut input = vec![b' '; offset];
+                    for (i, x) in values.iter().enumerate() {
+                        write!(input, "{}{}", x, if i % 2 == 0 { ' ' } else { '\n' }).unwrap();
+                    }
+                    input.extend_from_slice(&[b' '; 32]);
+                    let mut fi = unsafe { FastInput::from_slice(&input[offset..]) };
+                    for &x in &values {
+                        assert_eq!(unsafe { fi.$method() }, x, "offset={offset}");
+                    }
+                }
+            }};
+        }
+        check!(u8, u8, u8::MAX);
+        check!(u16, u16, u16::MAX);
+        check!(u32, u32_small, 99_999_999);
+        check!(u32, u32, u32::MAX);
+        check!(u64, u64, u64::MAX);
+        check!(u128, u128, u128::MAX);
+    }
+
+    #[test]
+    fn test_fast_output_buffer_boundaries() {
+        let mut rng = Xorshift::default();
+        for capacity in 0..=80 {
+            let mut output = Vec::new();
+            let mut expected = String::new();
+            {
+                let mut fo = FastOutput::with_capacity(capacity, &mut output);
+                for i in 0..1000 {
+                    let x = match i % 5 {
+                        0 => 0,
+                        1 => u64::MAX,
+                        2 => i64::MIN as u64,
+                        3 => 10u64.pow(rng.random(0..=19)) - 1,
+                        _ => rng.rand64(),
+                    };
+                    fo.u64(x);
+                    fo.byte(b' ');
+                    fo.i64(x as i64);
+                    fo.byte(b'\n');
+                    expected.push_str(&format!("{} {}\n", x, x as i64));
+                }
+            }
+            assert_eq!(output, expected.as_bytes(), "capacity={capacity}");
+        }
+    }
+
+    #[test]
     fn test_past_input_u8() {
         let mut a = vec![];
         let mut s = String::new();
@@ -653,6 +830,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.u8() };
@@ -668,6 +846,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.u16() };
@@ -686,6 +865,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.u32() };
@@ -704,6 +884,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.u64() };
@@ -722,6 +903,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.u128() };
@@ -737,6 +919,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.i8() };
@@ -752,6 +935,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.i16() };
@@ -772,6 +956,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.i32() };
@@ -792,6 +977,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.i64() };
@@ -812,6 +998,7 @@ mod tests {
             a.push(i);
             s.push_str(&format!("{}\n", i));
         }
+        s.push_str("                                ");
         let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
         for a in a {
             let x = unsafe { fi.i128() };

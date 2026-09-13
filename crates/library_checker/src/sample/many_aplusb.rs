@@ -13,7 +13,8 @@ pub fn many_aplusb(reader: impl Read, mut writer: impl Write) {
 
 #[verify::library_checker("many_aplusb")]
 pub fn many_aplusb_fast(reader: impl Read, writer: impl Write) {
-    let s = read_all_unchecked(reader);
+    let mut s = read_all_unchecked(reader);
+    s.push_str("                ");
     let mut writer = FastOutput::new(writer);
     let mut scanner = unsafe { FastInput::from_slice(s.as_bytes()) };
     let t = unsafe { scanner.u64() };
