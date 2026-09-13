@@ -159,7 +159,13 @@ mod factorial;
     nightly,
     codesnip::entry(
         "fast_fourier_transform",
-        include("Complex", "AssociatedValue", "ConvolveSteps", "avx_helper")
+        include(
+            "Complex",
+            "AssociatedValue",
+            "ConvolveSteps",
+            "avx_helper",
+            "_huge_pages"
+        )
     )
 )]
 mod fast_fourier_transform;
@@ -199,6 +205,8 @@ mod gcd;
     codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))
 )]
 mod gcd_convolve;
+#[cfg_attr(nightly, codesnip::entry("_huge_pages"))]
+mod huge_pages;
 #[cfg_attr(
     nightly,
     codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))
@@ -242,7 +250,13 @@ mod mod_sqrt;
     nightly,
     codesnip::entry(
         "NumberTheoreticTransform",
-        include("montgomery", "ConvolveSteps", "avx_helper", "fast_fourier_transform")
+        include(
+            "montgomery",
+            "ConvolveSteps",
+            "avx_helper",
+            "fast_fourier_transform",
+            "_huge_pages"
+        )
     )
 )]
 mod number_theoretic_transform;
@@ -276,7 +290,7 @@ mod quotient_array;
 mod relaxed_convolution;
 #[cfg_attr(
     nightly,
-    codesnip::entry("SubsetConvolve", include("BitwiseorConvolve"))
+    codesnip::entry("SubsetConvolve", include("BitwiseorConvolve", "_huge_pages"))
 )]
 mod subset_convolve;
 

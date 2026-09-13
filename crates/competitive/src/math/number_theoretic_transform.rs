@@ -1,9 +1,13 @@
 use super::{
     ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, fast_fourier_transform::ConvolveRealFft,
-    montgomery::*,
+    huge_pages::advise_huge_pages, montgomery::*,
 };
 #[cfg(target_arch = "x86_64")]
-use super::{SimdBackend, simd_backend};
+use super::{
+    SimdBackend,
+    mint_fft_convolve::{convolve_mint_avx2, convolve_u64_avx2},
+    simd_backend,
+};
 use std::{
     cell::UnsafeCell,
     marker::PhantomData,
@@ -582,18 +586,17 @@ where
     let ntt_len = 1usize << M::RANK;
     let block_len = ntt_len / 2;
     let same = a == b;
-    let fa: Vec<_> = a
-        .chunks(block_len)
-        .map(|a| Convolve::<M>::transform_ntt(a.to_vec(), ntt_len))
-        .collect();
+    let transform = |a: &[MInt<M>]| {
+        let mut f = Vec::with_capacity(ntt_len);
+        advise_huge_pages(&mut f);
+        f.extend_from_slice(a);
+        Convolve::<M>::transform_ntt(f, ntt_len)
+    };
+    let fa: Vec<_> = a.chunks(block_len).map(transform).collect();
     let fb: Option<Vec<_>> = if same {
         None
     } else {
-        Some(
-            b.chunks(block_len)
-                .map(|b| Convolve::<M>::transform_ntt(b.to_vec(), ntt_len))
-                .collect(),
-        )
+        Some(b.chunks(block_len).map(transform).collect())
     };
     let b_blocks = fb.as_ref().map_or(fa.len(), Vec::len);
     let mut result = vec![MInt::<M>::zero(); len];
@@ -716,6 +719,10 @@ where
         let same = a == b;
         #[cfg(target_arch = "x86_64")]
         if use_block_ntt::<M>(size) {
+            a.reserve(size - a.len());
+            b.reserve(size - b.len());
+            advise_huge_pages(&mut a);
+            advise_huge_pages(&mut b);
             a.resize_with(size, Zero::zero);
             b.resize_with(size, Zero::zero);
             unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same) };
@@ -749,6 +756,9 @@ where
         MVec::<N2>::with_capacity(capacity),
         MVec::<N3>::with_capacity(capacity),
     );
+    advise_huge_pages(&mut f.0);
+    advise_huge_pages(&mut f.1);
+    advise_huge_pages(&mut f.2);
     for t in t {
         let t: u32 = t.into();
         f.0.push(t.into());
@@ -844,7 +854,7 @@ where
             }
             if fft_len <= fft_limit {
                 crate::avx_helper!(@dispatch_avx2_fma return unsafe {
-                    super::mint_fft_convolve::convolve_mint_avx2(a, b)
+                    convolve_mint_avx2(a, b)
                 }, ());
             }
             convolve_mint_crt::<M, N1, N2, N3>(a, b)
@@ -1104,7 +1114,7 @@ where
 fn convolve_u64_fft(a: Vec<u64>, b: Vec<u64>) -> Vec<u64> {
     // Keep limb convolutions below 2^47 at the 2^21 FFT limit.
     crate::avx_helper!(@dispatch_avx2_fma return unsafe {
-        super::mint_fft_convolve::convolve_u64_avx2(a, b)
+        convolve_u64_avx2(a, b)
     }, ());
     convolve_u64_fft_scalar(a, b)
 }

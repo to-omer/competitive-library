@@ -1,6 +1,6 @@
 use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
 #[cfg(target_arch = "x86_64")]
-use super::{SimdBackend, simd_backend};
+use super::{SimdBackend, huge_pages::advise_huge_pages, simd_backend};
 
 pub enum ConvolveRealFft {}
 
@@ -41,7 +41,7 @@ pub mod simd {
     // These primitives are called only after AVX2 and FMA have been detected.
     #![allow(clippy::missing_safety_doc, unsafe_op_in_unsafe_fn)]
 
-    use super::{AssociatedValue, Complex, RotateCache};
+    use super::{AssociatedValue, Complex, RotateCache, advise_huge_pages};
     use std::arch::x86_64::*;
 
     #[derive(Clone, Copy, Default)]
@@ -288,7 +288,9 @@ pub mod simd {
 
     #[inline]
     fn pack_f64(values: impl Iterator<Item = f64>, n: usize) -> Vec<Complex4> {
-        let mut result = vec![Complex4::default(); n / 4];
+        let mut result = Vec::with_capacity(n / 4);
+        advise_huge_pages(&mut result);
+        result.resize(n / 4, Complex4::default());
         for (i, value) in values.enumerate() {
             if i < n {
                 result[i >> 2].re[i & 3] = value;

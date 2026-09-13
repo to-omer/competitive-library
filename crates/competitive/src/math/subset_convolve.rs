@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Invertible, Ring};
+use super::{ConvolveSteps, Invertible, Ring, huge_pages::advise_huge_pages};
 use std::marker::PhantomData;
 
 pub struct SubsetConvolve<M> {
@@ -11,7 +11,9 @@ where
 {
     fn ranked(t: Vec<R::T>, len: usize) -> (Vec<R::T>, usize) {
         let width = len.trailing_zeros() as usize + 1;
-        let mut ranked = vec![R::zero(); len * width];
+        let mut ranked = Vec::with_capacity(len * width);
+        advise_huge_pages(&mut ranked);
+        ranked.resize(len * width, R::zero());
         for (i, value) in t.into_iter().enumerate() {
             ranked[i * width + i.count_ones() as usize] = value;
         }

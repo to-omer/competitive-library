@@ -3,6 +3,7 @@
 use super::{
     AssociatedValue, MInt, MIntConvert,
     fast_fourier_transform::{RotateCache, simd::*},
+    huge_pages::advise_huge_pages,
 };
 use std::arch::x86_64::*;
 
@@ -40,28 +41,8 @@ where
 {
     let mut low = Vec::<Complex4>::with_capacity(n / 4);
     let mut high = Vec::<Complex4>::with_capacity(n / 4);
-    #[cfg(target_os = "linux")]
-    {
-        unsafe extern "C" {
-            fn madvise(
-                addr: *mut std::ffi::c_void,
-                len: usize,
-                advice: std::ffi::c_int,
-            ) -> std::ffi::c_int;
-        }
-        const PAGE_SIZE: usize = 1 << 12;
-        const MADV_HUGEPAGE: std::ffi::c_int = 14;
-        for values in [&mut low, &mut high] {
-            let ptr = values.as_mut_ptr().cast::<u8>();
-            let offset = ptr.align_offset(PAGE_SIZE);
-            let len = (values.capacity() * size_of::<Complex4>()).saturating_sub(offset)
-                & !(PAGE_SIZE - 1);
-            if len >= 1 << 20 {
-                // The hint covers only owned pages; initialization also works without it.
-                let _ = madvise(ptr.add(offset).cast(), len, MADV_HUGEPAGE);
-            }
-        }
-    }
+    advise_huge_pages(&mut low);
+    advise_huge_pages(&mut high);
     let divisor = _mm256_set1_pd(split as f64);
     let split = _mm256_set1_pd(split as f64);
     for i in (0..values.len()).step_by(4) {
@@ -139,18 +120,30 @@ unsafe fn dot_soa(a0: &mut [Complex4], a1: &mut [Complex4], b0: &mut [Complex4],
 
 #[target_feature(enable = "avx2,fma")]
 unsafe fn split_u64_coefficients(values: &[u64], n: usize) -> [Vec<Complex4>; 5] {
-    let mut result = std::array::from_fn(|_| vec![Complex4::default(); n / 4]);
-    for (i, mut value) in values.iter().copied().enumerate() {
-        let (i, imag) = if i < n { (i, false) } else { (i - n, true) };
-        for part in &mut result {
-            let digit = ((value << 51) as i64) >> 51;
-            value = (value >> 13).wrapping_add(u64::from(digit < 0));
-            if imag {
-                part[i >> 2].im[i & 3] = digit as f64;
-            } else {
-                part[i >> 2].re[i & 3] = digit as f64;
+    let mut result: [Vec<Complex4>; 5] = std::array::from_fn(|_| {
+        let mut part = Vec::with_capacity(n / 4);
+        advise_huge_pages(&mut part);
+        part
+    });
+    for (i, chunk) in values.chunks(4).enumerate() {
+        let mut parts = [Complex4::default(); 5];
+        for (lane, mut value) in chunk.iter().copied().enumerate() {
+            for part in &mut parts {
+                let digit = ((value << 51) as i64) >> 51;
+                value = (value >> 13).wrapping_add(u64::from(digit < 0));
+                part.re[lane] = digit as f64;
             }
         }
+        for (result, part) in result.iter_mut().zip(parts) {
+            if i < n / 4 {
+                result.push(part);
+            } else {
+                result[i - n / 4].im = part.re;
+            }
+        }
+    }
+    for part in &mut result {
+        part.resize(n / 4, Complex4::default());
     }
     result
 }
