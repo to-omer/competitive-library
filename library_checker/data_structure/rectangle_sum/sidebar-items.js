@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["rectangle_sum","test_rectangle_sum"]};
