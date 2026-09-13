@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["mmap"],"static":["DIGIT4"],"struct":["FastInput","FastOutput"]};
+window.SIDEBAR_ITEMS = {"fn":["getpagesize","mmap","munmap"],"static":["DIGIT4","DIGIT4_TRIMMED"],"struct":["FastInput","FastOutput"]};
