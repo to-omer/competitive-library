@@ -38,8 +38,30 @@ unsafe fn split_coefficients<M>(
 where
     M: MIntConvert + MIntConvert<u32>,
 {
-    let mut low = vec![Complex4::default(); n / 4];
-    let mut high = low.clone();
+    let mut low = Vec::<Complex4>::with_capacity(n / 4);
+    let mut high = Vec::<Complex4>::with_capacity(n / 4);
+    #[cfg(target_os = "linux")]
+    {
+        unsafe extern "C" {
+            fn madvise(
+                addr: *mut std::ffi::c_void,
+                len: usize,
+                advice: std::ffi::c_int,
+            ) -> std::ffi::c_int;
+        }
+        const PAGE_SIZE: usize = 1 << 12;
+        const MADV_HUGEPAGE: std::ffi::c_int = 14;
+        for values in [&mut low, &mut high] {
+            let ptr = values.as_mut_ptr().cast::<u8>();
+            let offset = ptr.align_offset(PAGE_SIZE);
+            let len = (values.capacity() * size_of::<Complex4>()).saturating_sub(offset)
+                & !(PAGE_SIZE - 1);
+            if len >= 1 << 20 {
+                // The hint covers only owned pages; initialization also works without it.
+                let _ = madvise(ptr.add(offset).cast(), len, MADV_HUGEPAGE);
+            }
+        }
+    }
     let divisor = _mm256_set1_pd(split as f64);
     let split = _mm256_set1_pd(split as f64);
     for i in (0..values.len()).step_by(4) {
@@ -57,13 +79,19 @@ where
         );
         let lower = _mm256_fnmadd_pd(upper, split, value);
         if i < n {
-            _mm256_store_pd(low[i >> 2].re.as_mut_ptr(), lower);
-            _mm256_store_pd(high[i >> 2].re.as_mut_ptr(), upper);
+            let mut lo = Complex4::default();
+            let mut hi = Complex4::default();
+            _mm256_store_pd(lo.re.as_mut_ptr(), lower);
+            _mm256_store_pd(hi.re.as_mut_ptr(), upper);
+            low.push(lo);
+            high.push(hi);
         } else {
             _mm256_store_pd(low[(i - n) >> 2].im.as_mut_ptr(), lower);
             _mm256_store_pd(high[(i - n) >> 2].im.as_mut_ptr(), upper);
         }
     }
+    low.resize(n / 4, Complex4::default());
+    high.resize(n / 4, Complex4::default());
     (low, high)
 }
 
@@ -295,7 +323,14 @@ where
             for (lane, value) in lanes.into_iter().enumerate() {
                 let i = block * 4 + lane + part * n;
                 if i < len {
-                    result[i] = MInt::<M>::from(value as u32);
+                    let value = value as u32;
+                    let modulus = <M as MIntConvert<u32>>::mod_into();
+                    // Expose the reduced range to the conversion's remainder operation.
+                    result[i] = MInt::<M>::from(if value < modulus {
+                        value
+                    } else {
+                        value % modulus
+                    });
                 }
             }
         }

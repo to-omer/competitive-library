@@ -1844,6 +1844,31 @@ mod tests {
                 assert_eq!(u32::from(actual), expected);
             }
         }
+        for (modulus, log_n) in [(1_000_000_007, 19), (u32::MAX, 17)] {
+            DynModuloU32::set_mod(modulus);
+            let n = (1 << log_n) - rng.random(0usize..1024);
+            let m = rng.random(n / 2..=n);
+            let a: Vec<u32> = rng.random_iter(0..modulus).take(n).collect();
+            let y = rng.random(1..modulus);
+            let actual = MIntConvolve::<DynModuloU32>::convolve(
+                a.iter().copied().map(DynMIntU32::from).collect(),
+                vec![DynMIntU32::from(y); m],
+            );
+            assert_eq!(actual.len(), n + m - 1);
+            let mut sum = 0u128;
+            for (i, actual) in actual.into_iter().enumerate() {
+                if i < n {
+                    sum += a[i] as u128;
+                }
+                if i >= m && i - m < n {
+                    sum -= a[i - m] as u128;
+                }
+                assert_eq!(
+                    u32::from(actual),
+                    (sum * y as u128 % modulus as u128) as u32
+                );
+            }
+        }
         DynModuloU32::set_mod(1_000_000_007);
     }
 
