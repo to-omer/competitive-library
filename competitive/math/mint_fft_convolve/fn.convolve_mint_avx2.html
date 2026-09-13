@@ -52,31 +52,48 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">convolve_mint_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>mint_<wbr>fft_<wbr>convolve</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">mint_fft_convolve</a></div><h1>Function <span class="fn">convolve_<wbr>mint_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/mint_fft_convolve.rs.html#219-261">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn convolve_mint_avx2&lt;M&gt;(
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">convolve_mint_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>mint_<wbr>fft_<wbr>convolve</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">mint_fft_convolve</a></div><h1>Function <span class="fn">convolve_<wbr>mint_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/mint_fft_convolve.rs.html#237-304">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn convolve_mint_avx2&lt;M&gt;(
     a: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;&gt;,
     b: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;&gt;,
 ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;&gt;<div class="where">where
-    M: <a class="trait" href="../../num/trait.MIntConvert.html" title="trait competitive::num::MIntConvert">MIntConvert</a> + <a class="trait" href="../../num/trait.MIntConvert.html" title="trait competitive::num::MIntConvert">MIntConvert</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#816&#34;,&#34;line 816&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#816">line 816</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>805</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>806</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">300 </span>{
-<span data-nosnippet>807</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>808</span>        }
-<span data-nosnippet>809</span>        <span class="kw">let </span>fft_len = (a.len() + b.len() - <span class="number">1</span>).next_power_of_two();
-<span data-nosnippet>810</span>        <span class="kw">let </span>threshold = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">if </span>fft_len &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">13 </span>{ <span class="number">22 </span>} <span class="kw">else if </span>fft_len &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">17 </span>{ <span class="number">45 </span>} <span class="kw">else if </span>fft_len &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{ <span class="number">50 </span>} <span class="kw">else </span>{ <span class="number">60 </span>}, <span class="number">60</span>);
-<span data-nosnippet>811</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= threshold {
-<span data-nosnippet>812</span>            <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>813</span>        }
-<span data-nosnippet>814</span>        <span class="kw">if </span>fft_len &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
-<span data-nosnippet>815</span>            <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">return unsafe </span>{
-<span data-nosnippet>816</span>                <span class="highlight focus"><span class="kw">super</span>::mint_fft_convolve::convolve_mint_avx2</span>(a, b)
-<span data-nosnippet>817</span>            }, ());
-<span data-nosnippet>818</span>        }
-<span data-nosnippet>819</span>        <span class="kw">let </span>a_len = a.len();
-<span data-nosnippet>820</span>        <span class="kw">let </span>b_len = b.len();
-<span data-nosnippet>821</span>        <span class="kw">let </span>a = convert_crt_input(a, a_len);
-<span data-nosnippet>822</span>        <span class="kw">let </span>b = convert_crt_input(b, b_len);
-<span data-nosnippet>823</span>        reconstruct_mint_crt((
-<span data-nosnippet>824</span>            Convolve::&lt;N1&gt;::convolve(a.<span class="number">0</span>, b.<span class="number">0</span>),
-<span data-nosnippet>825</span>            Convolve::&lt;N2&gt;::convolve(a.<span class="number">1</span>, b.<span class="number">1</span>),
-<span data-nosnippet>826</span>            Convolve::&lt;N3&gt;::convolve(a.<span class="number">2</span>, b.<span class="number">2</span>),
-<span data-nosnippet>827</span>        ))
-<span data-nosnippet>828</span>    }</code></pre></div></div></div></section></div></main></body></html>
+    M: <a class="trait" href="../../num/trait.MIntConvert.html" title="trait competitive::num::MIntConvert">MIntConvert</a> + <a class="trait" href="../../num/trait.MIntConvert.html" title="trait competitive::num::MIntConvert">MIntConvert</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[17,17],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#847&#34;,&#34;line 847&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#847">line 847</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>830</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>831</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
+<span data-nosnippet>832</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
+<span data-nosnippet>833</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">30</span>, <span class="number">10</span>), (<span class="number">384</span>, <span class="number">128</span>));
+<span data-nosnippet>834</span>        <span class="kw">if </span>max_len &lt;= balanced || min_len &lt;= short {
+<span data-nosnippet>835</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>836</span>        }
+<span data-nosnippet>837</span>        <span class="comment">// Limit coefficient growth to leave headroom for FFT roundoff.
+<span data-nosnippet>838</span>        </span><span class="kw">let </span>fft_limit = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma
+<span data-nosnippet>839</span>            <span class="number">1usize </span>&lt;&lt; ((<span class="number">1u64 </span>&lt;&lt; <span class="number">50</span>) / &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64).ilog2().min(<span class="number">20</span>), <span class="number">0</span>);
+<span data-nosnippet>840</span>        <span class="kw">let </span>convolve = |a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T| {
+<span data-nosnippet>841</span>            <span class="kw">let </span>fft_len = (a.len() + b.len() - <span class="number">1</span>).next_power_of_two();
+<span data-nosnippet>842</span>            <span class="kw">if </span>fft_len &lt;= <span class="number">256 </span>&amp;&amp; a.len() * b.len() &lt;= fft_len * <span class="number">8 </span>{
+<span data-nosnippet>843</span>                <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>844</span>            }
+<span data-nosnippet>845</span>            <span class="kw">if </span>fft_len &lt;= fft_limit {
+<span data-nosnippet>846</span>                <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">return unsafe </span>{
+<span data-nosnippet>847</span>                    <span class="highlight focus"><span class="kw">super</span>::mint_fft_convolve::convolve_mint_avx2</span>(a, b)
+<span data-nosnippet>848</span>                }, ());
+<span data-nosnippet>849</span>            }
+<span data-nosnippet>850</span>            convolve_mint_crt::&lt;M, N1, N2, N3&gt;(a, b)
+<span data-nosnippet>851</span>        };
+<span data-nosnippet>852</span>        <span class="kw">let </span>block_len = min_len.next_power_of_two() * <span class="number">8 </span>- min_len + <span class="number">1</span>;
+<span data-nosnippet>853</span>        <span class="kw">let </span>block_len = <span class="kw">if </span>min_len &lt;= fft_limit / <span class="number">2 </span>{
+<span data-nosnippet>854</span>            block_len.min(fft_limit - min_len + <span class="number">1</span>)
+<span data-nosnippet>855</span>        } <span class="kw">else </span>{
+<span data-nosnippet>856</span>            block_len
+<span data-nosnippet>857</span>        };
+<span data-nosnippet>858</span>        <span class="kw">if </span>max_len &lt;= block_len {
+<span data-nosnippet>859</span>            <span class="kw">return </span>convolve(a, b);
+<span data-nosnippet>860</span>        }
+<span data-nosnippet>861</span>        <span class="kw">let </span>(a, b) = <span class="kw">if </span>a.len() &gt;= b.len() { (a, b) } <span class="kw">else </span>{ (b, a) };
+<span data-nosnippet>862</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
+<span data-nosnippet>863</span>        <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
+<span data-nosnippet>864</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.clone());
+<span data-nosnippet>865</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[i * block_len..].iter_mut().zip(product) {
+<span data-nosnippet>866</span>                <span class="kw-2">*</span>value += product;
+<span data-nosnippet>867</span>            }
+<span data-nosnippet>868</span>        }
+<span data-nosnippet>869</span>        result
+<span data-nosnippet>870</span>    }</code></pre></div></div></div></section></div></main></body></html>

@@ -52,68 +52,68 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">add_scalar</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">add_<wbr>scalar</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#186-197">Source</a> </span></div><pre class="rust item-decl"><code>fn add_scalar&lt;M&gt;(x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><div class="where">where
-    M: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[31,31],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#367&#34;,&#34;line 367&#34;],[[33,33],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#369&#34;,&#34;line 369&#34;],[[35,35],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#371&#34;,&#34;line 371&#34;],[[36,36],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#372&#34;,&#34;line 372&#34;],[[52,52],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#388&#34;,&#34;line 388&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#367">line 367</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>336</span><span class="kw">fn </span>intt_batch_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
-<span data-nosnippet>337</span><span class="kw">where
-<span data-nosnippet>338</span>    </span>M: Montgomery32NttModulus,
-<span data-nosnippet>339</span>{
-<span data-nosnippet>340</span>    <span class="kw">let </span>n = a.len() / width;
-<span data-nosnippet>341</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
-<span data-nosnippet>342</span>        <span class="kw">return</span>;
-<span data-nosnippet>343</span>    }
-<span data-nosnippet>344</span>    <span class="comment">// MInt is transparent over u32; lazy residues stay below 2 * MOD and are
-<span data-nosnippet>345</span>    // normalized before the typed slice is used again.
-<span data-nosnippet>346</span>    </span><span class="kw">let </span>a = <span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(a.as_mut_ptr().cast::&lt;u32&gt;(), a.len()) };
-<span data-nosnippet>347</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
-<span data-nosnippet>348</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>349</span>        n / <span class="number">2
-<span data-nosnippet>350</span>    </span>} <span class="kw">else </span>{
-<span data-nosnippet>351</span>        n
-<span data-nosnippet>352</span>    };
-<span data-nosnippet>353</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
-<span data-nosnippet>354</span>    <span class="kw">while </span>v &lt; limit {
-<span data-nosnippet>355</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
-<span data-nosnippet>356</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
-<span data-nosnippet>357</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
-<span data-nosnippet>358</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
-<span data-nosnippet>359</span>            <span class="kw">let </span>(l, r) = a.split_at_mut((v &lt;&lt; <span class="number">1</span>) * width);
-<span data-nosnippet>360</span>            <span class="kw">let </span>(ll, lr) = l.split_at_mut(v * width);
-<span data-nosnippet>361</span>            <span class="kw">let </span>(rl, rr) = r.split_at_mut(v * width);
-<span data-nosnippet>362</span>            <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
-<span data-nosnippet>363</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
-<span data-nosnippet>364</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
-<span data-nosnippet>365</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2;
-<span data-nosnippet>366</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3;
-<span data-nosnippet>367</span>                <span class="kw">let </span>a0pa1 = <span class="highlight focus">add_scalar::&lt;M&gt;</span>(a0, a1);
-<span data-nosnippet>368</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>369</span>                <span class="kw">let </span>a2pa3 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a2, a3);
-<span data-nosnippet>370</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a2, a3), iimag);
-<span data-nosnippet>371</span>                <span class="kw-2">*</span>x0 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0pa1, a2pa3);
-<span data-nosnippet>372</span>                <span class="kw-2">*</span>x1 = mul_scalar::&lt;M&gt;(<span class="highlight">add_scalar::&lt;M&gt;</span>(a0na1, a2na3iimag), w1);
-<span data-nosnippet>373</span>                <span class="kw-2">*</span>x2 = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
-<span data-nosnippet>374</span>                <span class="kw-2">*</span>x3 = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
-<span data-nosnippet>375</span>            }
-<span data-nosnippet>376</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
-<span data-nosnippet>377</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
-<span data-nosnippet>378</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
-<span data-nosnippet>379</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
-<span data-nosnippet>380</span>        }
-<span data-nosnippet>381</span>        v &lt;&lt;= <span class="number">2</span>;
-<span data-nosnippet>382</span>    }
-<span data-nosnippet>383</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>384</span>        <span class="kw">let </span>(l, r) = a.split_at_mut(n / <span class="number">2 </span>* width);
-<span data-nosnippet>385</span>        <span class="kw">for </span>(x0, x1) <span class="kw">in </span>l.iter_mut().zip(r) {
-<span data-nosnippet>386</span>            <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
-<span data-nosnippet>387</span>            <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
-<span data-nosnippet>388</span>            <span class="kw-2">*</span>x0 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0, a1);
-<span data-nosnippet>389</span>            <span class="kw-2">*</span>x1 = sub_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>390</span>        }
-<span data-nosnippet>391</span>    }
-<span data-nosnippet>392</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
-<span data-nosnippet>393</span>    <span class="kw">for </span>a <span class="kw">in </span>a {
-<span data-nosnippet>394</span>        <span class="kw-2">*</span>a = M::mod_mul(<span class="kw-2">*</span>a, inv);
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">add_scalar</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">add_<wbr>scalar</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#190-201">Source</a> </span></div><pre class="rust item-decl"><code>fn add_scalar&lt;M&gt;(x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><div class="where">where
+    M: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[31,31],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#371&#34;,&#34;line 371&#34;],[[33,33],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#373&#34;,&#34;line 373&#34;],[[35,35],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#375&#34;,&#34;line 375&#34;],[[36,36],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#376&#34;,&#34;line 376&#34;],[[52,52],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#392&#34;,&#34;line 392&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#371">line 371</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>340</span><span class="kw">fn </span>intt_batch_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>341</span><span class="kw">where
+<span data-nosnippet>342</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>343</span>{
+<span data-nosnippet>344</span>    <span class="kw">let </span>n = a.len() / width;
+<span data-nosnippet>345</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>346</span>        <span class="kw">return</span>;
+<span data-nosnippet>347</span>    }
+<span data-nosnippet>348</span>    <span class="comment">// MInt is transparent over u32; lazy residues stay below 2 * MOD and are
+<span data-nosnippet>349</span>    // normalized before the typed slice is used again.
+<span data-nosnippet>350</span>    </span><span class="kw">let </span>a = <span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(a.as_mut_ptr().cast::&lt;u32&gt;(), a.len()) };
+<span data-nosnippet>351</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
+<span data-nosnippet>352</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>353</span>        n / <span class="number">2
+<span data-nosnippet>354</span>    </span>} <span class="kw">else </span>{
+<span data-nosnippet>355</span>        n
+<span data-nosnippet>356</span>    };
+<span data-nosnippet>357</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
+<span data-nosnippet>358</span>    <span class="kw">while </span>v &lt; limit {
+<span data-nosnippet>359</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>360</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
+<span data-nosnippet>361</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
+<span data-nosnippet>362</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
+<span data-nosnippet>363</span>            <span class="kw">let </span>(l, r) = a.split_at_mut((v &lt;&lt; <span class="number">1</span>) * width);
+<span data-nosnippet>364</span>            <span class="kw">let </span>(ll, lr) = l.split_at_mut(v * width);
+<span data-nosnippet>365</span>            <span class="kw">let </span>(rl, rr) = r.split_at_mut(v * width);
+<span data-nosnippet>366</span>            <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+<span data-nosnippet>367</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>368</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>369</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2;
+<span data-nosnippet>370</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3;
+<span data-nosnippet>371</span>                <span class="kw">let </span>a0pa1 = <span class="highlight focus">add_scalar::&lt;M&gt;</span>(a0, a1);
+<span data-nosnippet>372</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>373</span>                <span class="kw">let </span>a2pa3 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a2, a3);
+<span data-nosnippet>374</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a2, a3), iimag);
+<span data-nosnippet>375</span>                <span class="kw-2">*</span>x0 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0pa1, a2pa3);
+<span data-nosnippet>376</span>                <span class="kw-2">*</span>x1 = mul_scalar::&lt;M&gt;(<span class="highlight">add_scalar::&lt;M&gt;</span>(a0na1, a2na3iimag), w1);
+<span data-nosnippet>377</span>                <span class="kw-2">*</span>x2 = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
+<span data-nosnippet>378</span>                <span class="kw-2">*</span>x3 = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
+<span data-nosnippet>379</span>            }
+<span data-nosnippet>380</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
+<span data-nosnippet>381</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
+<span data-nosnippet>382</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
+<span data-nosnippet>383</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
+<span data-nosnippet>384</span>        }
+<span data-nosnippet>385</span>        v &lt;&lt;= <span class="number">2</span>;
+<span data-nosnippet>386</span>    }
+<span data-nosnippet>387</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>388</span>        <span class="kw">let </span>(l, r) = a.split_at_mut(n / <span class="number">2 </span>* width);
+<span data-nosnippet>389</span>        <span class="kw">for </span>(x0, x1) <span class="kw">in </span>l.iter_mut().zip(r) {
+<span data-nosnippet>390</span>            <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>391</span>            <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>392</span>            <span class="kw-2">*</span>x0 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0, a1);
+<span data-nosnippet>393</span>            <span class="kw-2">*</span>x1 = sub_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>394</span>        }
 <span data-nosnippet>395</span>    }
-<span data-nosnippet>396</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[33,33],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#270&#34;,&#34;line 270&#34;],[[99,99],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#336&#34;,&#34;line 336&#34;],[[101,101],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#338&#34;,&#34;line 338&#34;],[[104,104],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#341&#34;,&#34;line 341&#34;],[[106,106],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#343&#34;,&#34;line 343&#34;],[[204,204],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#441&#34;,&#34;line 441&#34;],[[206,206],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#443&#34;,&#34;line 443&#34;],[[208,208],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#445&#34;,&#34;line 445&#34;],[[209,209],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#446&#34;,&#34;line 446&#34;],[[237,237],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#474&#34;,&#34;line 474&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs (<a href="../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#270">line 270</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>237</span><span class="kw">pub unsafe fn </span>ntt_batch_avx2&lt;M, <span class="kw">const </span>PARTIAL: bool&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>396</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
+<span data-nosnippet>397</span>    <span class="kw">for </span>a <span class="kw">in </span>a {
+<span data-nosnippet>398</span>        <span class="kw-2">*</span>a = M::mod_mul(<span class="kw-2">*</span>a, inv);
+<span data-nosnippet>399</span>    }
+<span data-nosnippet>400</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[33,33],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#270&#34;,&#34;line 270&#34;],[[99,99],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#336&#34;,&#34;line 336&#34;],[[101,101],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#338&#34;,&#34;line 338&#34;],[[104,104],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#341&#34;,&#34;line 341&#34;],[[106,106],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#343&#34;,&#34;line 343&#34;],[[204,204],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#441&#34;,&#34;line 441&#34;],[[206,206],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#443&#34;,&#34;line 443&#34;],[[208,208],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#445&#34;,&#34;line 445&#34;],[[209,209],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#446&#34;,&#34;line 446&#34;],[[237,237],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#474&#34;,&#34;line 474&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs (<a href="../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#270">line 270</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>237</span><span class="kw">pub unsafe fn </span>ntt_batch_avx2&lt;M, <span class="kw">const </span>PARTIAL: bool&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
 <span data-nosnippet>238</span><span class="kw">where
 <span data-nosnippet>239</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>240</span>{
@@ -368,134 +368,135 @@
 <span data-nosnippet>489</span>        a[i] = M::mod_mul(a[i], inv);
 <span data-nosnippet>490</span>        i += <span class="number">1</span>;
 <span data-nosnippet>491</span>    }
-<span data-nosnippet>492</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[80,80],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#299&#34;,&#34;line 299&#34;],[[82,82],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#301&#34;,&#34;line 301&#34;],[[84,84],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#303&#34;,&#34;line 303&#34;],[[85,85],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#304&#34;,&#34;line 304&#34;],[[112,112],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#331&#34;,&#34;line 331&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs (<a href="../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#299">line 299</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>219</span><span class="kw">pub unsafe fn </span>intt_batch_avx512&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>492</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[81,81],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#300&#34;,&#34;line 300&#34;],[[83,83],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#302&#34;,&#34;line 302&#34;],[[85,85],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#304&#34;,&#34;line 304&#34;],[[86,86],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#305&#34;,&#34;line 305&#34;],[[113,113],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#332&#34;,&#34;line 332&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs (<a href="../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx512.rs.html#300">line 300</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>219</span><span class="kw">pub unsafe fn </span>intt_batch_avx512&lt;M, <span class="kw">const </span>SINGLE: bool&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
 <span data-nosnippet>220</span><span class="kw">where
 <span data-nosnippet>221</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>222</span>{
-<span data-nosnippet>223</span>    <span class="kw">let </span>n = a.len() / width;
-<span data-nosnippet>224</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
-<span data-nosnippet>225</span>        <span class="kw">return</span>;
-<span data-nosnippet>226</span>    }
-<span data-nosnippet>227</span>    <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
-<span data-nosnippet>228</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, a.len());
-<span data-nosnippet>229</span>    <span class="kw">let </span>mod_vec = _mm512_set1_epi32(M::MOD <span class="kw">as </span>i32);
-<span data-nosnippet>230</span>    <span class="kw">let </span>mod2_vec = _mm512_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
-<span data-nosnippet>231</span>    <span class="kw">let </span>r_vec = _mm512_set1_epi32(M::R <span class="kw">as </span>i32);
-<span data-nosnippet>232</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
-<span data-nosnippet>233</span>    <span class="kw">let </span>iimag_vec = _mm512_set1_epi32(iimag <span class="kw">as </span>i32);
-<span data-nosnippet>234</span>
-<span data-nosnippet>235</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
-<span data-nosnippet>236</span>    <span class="kw">if </span>width == <span class="number">1 </span>&amp;&amp; a.len() &gt;= <span class="number">8 </span>&amp;&amp; M::MOD &lt; LAZY_THRESHOLD {
-<span data-nosnippet>237</span>        ntt_avx2::ntt_four_avx2::&lt;M, <span class="bool-val">true</span>&gt;(a);
-<span data-nosnippet>238</span>        v = <span class="number">4</span>;
-<span data-nosnippet>239</span>    }
-<span data-nosnippet>240</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>241</span>        n / <span class="number">2
-<span data-nosnippet>242</span>    </span>} <span class="kw">else </span>{
-<span data-nosnippet>243</span>        n
-<span data-nosnippet>244</span>    };
-<span data-nosnippet>245</span>    <span class="kw">while </span>v &lt; limit {
-<span data-nosnippet>246</span>        <span class="kw">let </span>quarter = v * width;
-<span data-nosnippet>247</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
-<span data-nosnippet>248</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
-<span data-nosnippet>249</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
-<span data-nosnippet>250</span>        <span class="kw">for </span>(s, block) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
-<span data-nosnippet>251</span>            <span class="kw">let </span>base = block.as_mut_ptr();
-<span data-nosnippet>252</span>            <span class="kw">let </span>ll = base;
-<span data-nosnippet>253</span>            <span class="kw">let </span>lr = base.add(quarter);
-<span data-nosnippet>254</span>            <span class="kw">let </span>rl = base.add(quarter * <span class="number">2</span>);
-<span data-nosnippet>255</span>            <span class="kw">let </span>rr = base.add(quarter * <span class="number">3</span>);
-<span data-nosnippet>256</span>            <span class="kw">let </span>w1v = _mm512_set1_epi32(w1 <span class="kw">as </span>i32);
-<span data-nosnippet>257</span>            <span class="kw">let </span>w2v = _mm512_set1_epi32(w2 <span class="kw">as </span>i32);
-<span data-nosnippet>258</span>            <span class="kw">let </span>w3v = _mm512_set1_epi32(w3 <span class="kw">as </span>i32);
-<span data-nosnippet>259</span>
-<span data-nosnippet>260</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-<span data-nosnippet>261</span>            <span class="kw">while </span>i + <span class="number">16 </span>&lt;= quarter {
-<span data-nosnippet>262</span>                <span class="kw">let </span>x0 = _mm512_loadu_si512(ll.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>263</span>                <span class="kw">let </span>x1 = _mm512_loadu_si512(lr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>264</span>                <span class="kw">let </span>x2 = _mm512_loadu_si512(rl.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>265</span>                <span class="kw">let </span>x3 = _mm512_loadu_si512(rr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>266</span>
-<span data-nosnippet>267</span>                <span class="kw">let </span>a0pa1 = add_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
-<span data-nosnippet>268</span>                <span class="kw">let </span>a0na1 = sub_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
-<span data-nosnippet>269</span>                <span class="kw">let </span>a2pa3 = add_vec_avx512::&lt;M&gt;(x2, x3, mod_vec, mod2_vec);
-<span data-nosnippet>270</span>                <span class="kw">let </span>a2na3 = sub_vec_avx512::&lt;M&gt;(x2, x3, mod_vec, mod2_vec);
-<span data-nosnippet>271</span>                <span class="kw">let </span>a2na3iimag = mul_vec_avx512::&lt;M&gt;(a2na3, iimag_vec, r_vec, mod_vec);
-<span data-nosnippet>272</span>
-<span data-nosnippet>273</span>                <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec);
-<span data-nosnippet>274</span>                <span class="kw">let </span>y1 = add_vec_avx512::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec);
-<span data-nosnippet>275</span>                <span class="kw">let </span>y2 = sub_vec_avx512::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec);
-<span data-nosnippet>276</span>                <span class="kw">let </span>y3 = sub_vec_avx512::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec);
-<span data-nosnippet>277</span>
-<span data-nosnippet>278</span>                <span class="kw">let </span>(y1, y2, y3) = <span class="kw">if </span>s == <span class="number">0 </span>{
-<span data-nosnippet>279</span>                    (y1, y2, y3)
-<span data-nosnippet>280</span>                } <span class="kw">else </span>{
-<span data-nosnippet>281</span>                    (
-<span data-nosnippet>282</span>                        mul_vec_avx512::&lt;M&gt;(y1, w1v, r_vec, mod_vec),
-<span data-nosnippet>283</span>                        mul_vec_avx512::&lt;M&gt;(y2, w2v, r_vec, mod_vec),
-<span data-nosnippet>284</span>                        mul_vec_avx512::&lt;M&gt;(y3, w3v, r_vec, mod_vec),
-<span data-nosnippet>285</span>                    )
-<span data-nosnippet>286</span>                };
-<span data-nosnippet>287</span>
-<span data-nosnippet>288</span>                _mm512_storeu_si512(ll.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y0);
-<span data-nosnippet>289</span>                _mm512_storeu_si512(lr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y1);
-<span data-nosnippet>290</span>                _mm512_storeu_si512(rl.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y2);
-<span data-nosnippet>291</span>                _mm512_storeu_si512(rr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y3);
-<span data-nosnippet>292</span>                i += <span class="number">16</span>;
-<span data-nosnippet>293</span>            }
-<span data-nosnippet>294</span>            <span class="kw">while </span>i &lt; quarter {
-<span data-nosnippet>295</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>ll.add(i);
-<span data-nosnippet>296</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>lr.add(i);
-<span data-nosnippet>297</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>rl.add(i);
-<span data-nosnippet>298</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>rr.add(i);
-<span data-nosnippet>299</span>                <span class="kw">let </span>a0pa1 = <span class="highlight focus">add_scalar::&lt;M&gt;</span>(a0, a1);
-<span data-nosnippet>300</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>301</span>                <span class="kw">let </span>a2pa3 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a2, a3);
-<span data-nosnippet>302</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a2, a3), iimag);
-<span data-nosnippet>303</span>                <span class="kw-2">*</span>ll.add(i) = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0pa1, a2pa3);
-<span data-nosnippet>304</span>                <span class="kw-2">*</span>lr.add(i) = mul_scalar::&lt;M&gt;(<span class="highlight">add_scalar::&lt;M&gt;</span>(a0na1, a2na3iimag), w1);
-<span data-nosnippet>305</span>                <span class="kw-2">*</span>rl.add(i) = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
-<span data-nosnippet>306</span>                <span class="kw-2">*</span>rr.add(i) = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
-<span data-nosnippet>307</span>                i += <span class="number">1</span>;
-<span data-nosnippet>308</span>            }
-<span data-nosnippet>309</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
-<span data-nosnippet>310</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
-<span data-nosnippet>311</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
-<span data-nosnippet>312</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
-<span data-nosnippet>313</span>        }
-<span data-nosnippet>314</span>        v &lt;&lt;= <span class="number">2</span>;
-<span data-nosnippet>315</span>    }
-<span data-nosnippet>316</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>317</span>        <span class="kw">let </span>half = n / <span class="number">2 </span>* width;
-<span data-nosnippet>318</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-<span data-nosnippet>319</span>        <span class="kw">while </span>i + <span class="number">16 </span>&lt;= half {
-<span data-nosnippet>320</span>            <span class="kw">let </span>x0 = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>321</span>            <span class="kw">let </span>x1 = _mm512_loadu_si512(a.as_ptr().add(half + i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>322</span>            <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
-<span data-nosnippet>323</span>            <span class="kw">let </span>y1 = sub_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
-<span data-nosnippet>324</span>            _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y0);
-<span data-nosnippet>325</span>            _mm512_storeu_si512(a.as_mut_ptr().add(half + i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y1);
-<span data-nosnippet>326</span>            i += <span class="number">16</span>;
-<span data-nosnippet>327</span>        }
-<span data-nosnippet>328</span>        <span class="kw">while </span>i &lt; half {
-<span data-nosnippet>329</span>            <span class="kw">let </span>x0 = a[i];
-<span data-nosnippet>330</span>            <span class="kw">let </span>x1 = a[half + i];
-<span data-nosnippet>331</span>            a[i] = <span class="highlight">add_scalar::&lt;M&gt;</span>(x0, x1);
-<span data-nosnippet>332</span>            a[half + i] = sub_scalar::&lt;M&gt;(x0, x1);
-<span data-nosnippet>333</span>            i += <span class="number">1</span>;
-<span data-nosnippet>334</span>        }
-<span data-nosnippet>335</span>    }
-<span data-nosnippet>336</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
-<span data-nosnippet>337</span>    <span class="kw">let </span>inv_vec = _mm512_set1_epi32(inv <span class="kw">as </span>i32);
-<span data-nosnippet>338</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-<span data-nosnippet>339</span>    <span class="kw">while </span>i + <span class="number">16 </span>&lt;= a.len() {
-<span data-nosnippet>340</span>        <span class="kw">let </span>x = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>341</span>        <span class="kw">let </span>y = simd32::montgomery_mul_512_canon(x, inv_vec, r_vec, mod_vec);
-<span data-nosnippet>342</span>        _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y);
-<span data-nosnippet>343</span>        i += <span class="number">16</span>;
-<span data-nosnippet>344</span>    }
-<span data-nosnippet>345</span>    <span class="kw">while </span>i &lt; a.len() {
-<span data-nosnippet>346</span>        a[<a href="../../../algebra/action.rs.html#23">i</a>] = M::mod_mul(a[i], inv);
-<span data-nosnippet>347</span>        i += <span class="number">1</span>;
-<span data-nosnippet>348</span>    }
-<span data-nosnippet>349</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
+<span data-nosnippet>223</span>    <span class="kw">let </span>width = <span class="kw">if </span>SINGLE { <span class="number">1 </span>} <span class="kw">else </span>{ width };
+<span data-nosnippet>224</span>    <span class="kw">let </span>n = a.len() / width;
+<span data-nosnippet>225</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>226</span>        <span class="kw">return</span>;
+<span data-nosnippet>227</span>    }
+<span data-nosnippet>228</span>    <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
+<span data-nosnippet>229</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, a.len());
+<span data-nosnippet>230</span>    <span class="kw">let </span>mod_vec = _mm512_set1_epi32(M::MOD <span class="kw">as </span>i32);
+<span data-nosnippet>231</span>    <span class="kw">let </span>mod2_vec = _mm512_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
+<span data-nosnippet>232</span>    <span class="kw">let </span>r_vec = _mm512_set1_epi32(M::R <span class="kw">as </span>i32);
+<span data-nosnippet>233</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
+<span data-nosnippet>234</span>    <span class="kw">let </span>iimag_vec = _mm512_set1_epi32(iimag <span class="kw">as </span>i32);
+<span data-nosnippet>235</span>
+<span data-nosnippet>236</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
+<span data-nosnippet>237</span>    <span class="kw">if </span>width == <span class="number">1 </span>&amp;&amp; a.len() &gt;= <span class="number">8 </span>&amp;&amp; M::MOD &lt; LAZY_THRESHOLD {
+<span data-nosnippet>238</span>        ntt_avx2::ntt_four_avx2::&lt;M, <span class="bool-val">true</span>&gt;(a);
+<span data-nosnippet>239</span>        v = <span class="number">4</span>;
+<span data-nosnippet>240</span>    }
+<span data-nosnippet>241</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>242</span>        n / <span class="number">2
+<span data-nosnippet>243</span>    </span>} <span class="kw">else </span>{
+<span data-nosnippet>244</span>        n
+<span data-nosnippet>245</span>    };
+<span data-nosnippet>246</span>    <span class="kw">while </span>v &lt; limit {
+<span data-nosnippet>247</span>        <span class="kw">let </span>quarter = v * width;
+<span data-nosnippet>248</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>249</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
+<span data-nosnippet>250</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
+<span data-nosnippet>251</span>        <span class="kw">for </span>(s, block) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
+<span data-nosnippet>252</span>            <span class="kw">let </span>base = block.as_mut_ptr();
+<span data-nosnippet>253</span>            <span class="kw">let </span>ll = base;
+<span data-nosnippet>254</span>            <span class="kw">let </span>lr = base.add(quarter);
+<span data-nosnippet>255</span>            <span class="kw">let </span>rl = base.add(quarter * <span class="number">2</span>);
+<span data-nosnippet>256</span>            <span class="kw">let </span>rr = base.add(quarter * <span class="number">3</span>);
+<span data-nosnippet>257</span>            <span class="kw">let </span>w1v = _mm512_set1_epi32(w1 <span class="kw">as </span>i32);
+<span data-nosnippet>258</span>            <span class="kw">let </span>w2v = _mm512_set1_epi32(w2 <span class="kw">as </span>i32);
+<span data-nosnippet>259</span>            <span class="kw">let </span>w3v = _mm512_set1_epi32(w3 <span class="kw">as </span>i32);
+<span data-nosnippet>260</span>
+<span data-nosnippet>261</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>262</span>            <span class="kw">while </span>i + <span class="number">16 </span>&lt;= quarter {
+<span data-nosnippet>263</span>                <span class="kw">let </span>x0 = _mm512_loadu_si512(ll.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>264</span>                <span class="kw">let </span>x1 = _mm512_loadu_si512(lr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>265</span>                <span class="kw">let </span>x2 = _mm512_loadu_si512(rl.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>266</span>                <span class="kw">let </span>x3 = _mm512_loadu_si512(rr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>267</span>
+<span data-nosnippet>268</span>                <span class="kw">let </span>a0pa1 = add_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
+<span data-nosnippet>269</span>                <span class="kw">let </span>a0na1 = sub_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
+<span data-nosnippet>270</span>                <span class="kw">let </span>a2pa3 = add_vec_avx512::&lt;M&gt;(x2, x3, mod_vec, mod2_vec);
+<span data-nosnippet>271</span>                <span class="kw">let </span>a2na3 = sub_vec_avx512::&lt;M&gt;(x2, x3, mod_vec, mod2_vec);
+<span data-nosnippet>272</span>                <span class="kw">let </span>a2na3iimag = mul_vec_avx512::&lt;M&gt;(a2na3, iimag_vec, r_vec, mod_vec);
+<span data-nosnippet>273</span>
+<span data-nosnippet>274</span>                <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec);
+<span data-nosnippet>275</span>                <span class="kw">let </span>y1 = add_vec_avx512::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec);
+<span data-nosnippet>276</span>                <span class="kw">let </span>y2 = sub_vec_avx512::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec);
+<span data-nosnippet>277</span>                <span class="kw">let </span>y3 = sub_vec_avx512::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec);
+<span data-nosnippet>278</span>
+<span data-nosnippet>279</span>                <span class="kw">let </span>(y1, y2, y3) = <span class="kw">if </span>s == <span class="number">0 </span>{
+<span data-nosnippet>280</span>                    (y1, y2, y3)
+<span data-nosnippet>281</span>                } <span class="kw">else </span>{
+<span data-nosnippet>282</span>                    (
+<span data-nosnippet>283</span>                        mul_vec_avx512::&lt;M&gt;(y1, w1v, r_vec, mod_vec),
+<span data-nosnippet>284</span>                        mul_vec_avx512::&lt;M&gt;(y2, w2v, r_vec, mod_vec),
+<span data-nosnippet>285</span>                        mul_vec_avx512::&lt;M&gt;(y3, w3v, r_vec, mod_vec),
+<span data-nosnippet>286</span>                    )
+<span data-nosnippet>287</span>                };
+<span data-nosnippet>288</span>
+<span data-nosnippet>289</span>                _mm512_storeu_si512(ll.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y0);
+<span data-nosnippet>290</span>                _mm512_storeu_si512(lr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y1);
+<span data-nosnippet>291</span>                _mm512_storeu_si512(rl.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y2);
+<span data-nosnippet>292</span>                _mm512_storeu_si512(rr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y3);
+<span data-nosnippet>293</span>                i += <span class="number">16</span>;
+<span data-nosnippet>294</span>            }
+<span data-nosnippet>295</span>            <span class="kw">while </span>i &lt; quarter {
+<span data-nosnippet>296</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>ll.add(i);
+<span data-nosnippet>297</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>lr.add(i);
+<span data-nosnippet>298</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>rl.add(i);
+<span data-nosnippet>299</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>rr.add(i);
+<span data-nosnippet>300</span>                <span class="kw">let </span>a0pa1 = <span class="highlight focus">add_scalar::&lt;M&gt;</span>(a0, a1);
+<span data-nosnippet>301</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>302</span>                <span class="kw">let </span>a2pa3 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a2, a3);
+<span data-nosnippet>303</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a2, a3), iimag);
+<span data-nosnippet>304</span>                <span class="kw-2">*</span>ll.add(i) = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0pa1, a2pa3);
+<span data-nosnippet>305</span>                <span class="kw-2">*</span>lr.add(i) = mul_scalar::&lt;M&gt;(<span class="highlight">add_scalar::&lt;M&gt;</span>(a0na1, a2na3iimag), w1);
+<span data-nosnippet>306</span>                <span class="kw-2">*</span>rl.add(i) = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
+<span data-nosnippet>307</span>                <span class="kw-2">*</span>rr.add(i) = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
+<span data-nosnippet>308</span>                i += <span class="number">1</span>;
+<span data-nosnippet>309</span>            }
+<span data-nosnippet>310</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
+<span data-nosnippet>311</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
+<span data-nosnippet>312</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
+<span data-nosnippet>313</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
+<span data-nosnippet>314</span>        }
+<span data-nosnippet>315</span>        v &lt;&lt;= <span class="number">2</span>;
+<span data-nosnippet>316</span>    }
+<span data-nosnippet>317</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>318</span>        <span class="kw">let </span>half = n / <span class="number">2 </span>* width;
+<span data-nosnippet>319</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>320</span>        <span class="kw">while </span>i + <span class="number">16 </span>&lt;= half {
+<span data-nosnippet>321</span>            <span class="kw">let </span>x0 = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>322</span>            <span class="kw">let </span>x1 = _mm512_loadu_si512(a.as_ptr().add(half + i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>323</span>            <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
+<span data-nosnippet>324</span>            <span class="kw">let </span>y1 = sub_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
+<span data-nosnippet>325</span>            _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y0);
+<span data-nosnippet>326</span>            _mm512_storeu_si512(a.as_mut_ptr().add(half + i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y1);
+<span data-nosnippet>327</span>            i += <span class="number">16</span>;
+<span data-nosnippet>328</span>        }
+<span data-nosnippet>329</span>        <span class="kw">while </span>i &lt; half {
+<span data-nosnippet>330</span>            <span class="kw">let </span>x0 = a[i];
+<span data-nosnippet>331</span>            <span class="kw">let </span>x1 = a[half + i];
+<span data-nosnippet>332</span>            a[i] = <span class="highlight">add_scalar::&lt;M&gt;</span>(x0, x1);
+<span data-nosnippet>333</span>            a[half + i] = sub_scalar::&lt;M&gt;(x0, x1);
+<span data-nosnippet>334</span>            i += <span class="number">1</span>;
+<span data-nosnippet>335</span>        }
+<span data-nosnippet>336</span>    }
+<span data-nosnippet>337</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
+<span data-nosnippet>338</span>    <span class="kw">let </span>inv_vec = _mm512_set1_epi32(inv <span class="kw">as </span>i32);
+<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>340</span>    <span class="kw">while </span>i + <span class="number">16 </span>&lt;= a.len() {
+<span data-nosnippet>341</span>        <span class="kw">let </span>x = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>342</span>        <span class="kw">let </span>y = simd32::montgomery_mul_512_canon(x, inv_vec, r_vec, mod_vec);
+<span data-nosnippet>343</span>        _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y);
+<span data-nosnippet>344</span>        i += <span class="number">16</span>;
+<span data-nosnippet>345</span>    }
+<span data-nosnippet>346</span>    <span class="kw">while </span>i &lt; a.len() {
+<span data-nosnippet>347</span>        a[i] = M::mod_mul(a[i], inv);
+<span data-nosnippet>348</span>        i += <span class="number">1</span>;
+<span data-nosnippet>349</span>    }
+<span data-nosnippet>350</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
