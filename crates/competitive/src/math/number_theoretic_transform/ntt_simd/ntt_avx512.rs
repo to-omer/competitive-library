@@ -216,10 +216,11 @@ where
 
 #[inline]
 #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-pub unsafe fn intt_batch_avx512<M>(a: &mut [MInt<M>], width: usize)
+pub unsafe fn intt_batch_avx512<M, const SINGLE: bool>(a: &mut [MInt<M>], width: usize)
 where
     M: Montgomery32NttModulus,
 {
+    let width = if SINGLE { 1 } else { width };
     let n = a.len() / width;
     if n <= 1 {
         return;

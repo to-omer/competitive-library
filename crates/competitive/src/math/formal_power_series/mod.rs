@@ -1,6 +1,6 @@
 use super::{
     Convolve998244353, ConvolveSteps, MInt, MIntConvert, MIntConvolve, MemorizedFactorial,
-    NttReuse, One, PartialIgnoredOrd, Zero, montgomery::MInt998244353,
+    NttReuse, One, PartialIgnoredOrd, Zero, gcd, montgomery::MInt998244353,
 };
 use std::{
     fmt::{self, Debug},

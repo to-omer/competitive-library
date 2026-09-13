@@ -245,20 +245,30 @@ where
     C: ConvolveSteps<T = Vec<T>>,
 {
     #[inline]
-    fn is_sparse(&self, deg: usize, factor: usize) -> bool {
-        self.data
-            .iter()
-            .take(deg)
-            .filter(|x| !x.is_zero())
-            .nth(deg.next_power_of_two().trailing_zeros() as usize * factor)
-            .is_none()
+    fn sparse_stride(&self, deg: usize, factor: usize) -> Option<usize> {
+        let limit = deg.next_power_of_two().trailing_zeros() as usize * factor;
+        let mut count = 0;
+        let mut step = 0;
+        for (i, value) in self.iter().take(deg).enumerate() {
+            if value.is_zero() {
+                continue;
+            }
+            count += 1;
+            if step != 1 {
+                step = gcd(step, i as u64);
+            }
+            if count > limit {
+                return None;
+            }
+        }
+        Some(step.max(1) as usize)
     }
     pub fn inv(&self, deg: usize) -> Self {
         if deg == 0 {
             return Self::zero();
         }
         debug_assert!(!self[0].is_zero());
-        if self.is_sparse(deg, 6) {
+        if let Some(step) = self.sparse_stride(deg, 6) {
             let inv = T::one() / self[0].clone();
             let pos: Vec<_> = self
                 .data
@@ -271,7 +281,7 @@ where
                 .collect();
             let mut f = Self::zeros(deg);
             f[0] = inv;
-            for i in pos.first().map_or(deg, |x| x.0)..deg {
+            for i in (pos.first().map_or(deg, |x| x.0)..deg).step_by(step) {
                 let mut tot = T::zero();
                 for (j, coefficient) in &pos {
                     if *j > i {
@@ -331,7 +341,7 @@ where
             return Self::zero();
         }
         debug_assert!(self[0].is_zero());
-        if self.is_sparse(deg, if deg <= 256 { 16 } else { 8 }) {
+        if let Some(step) = self.sparse_stride(deg, if deg <= 256 { 16 } else { 8 }) {
             let diff = self.prefix_ref(deg).diff();
             let pos: Vec<_> = diff
                 .data
@@ -345,7 +355,7 @@ where
                 return f;
             }
             let mf = T::memorized_factorial(deg);
-            for i in pos.first().map_or(deg, |j| j + 1)..deg {
+            for i in (pos.first().map_or(deg, |j| j + 1)..deg).step_by(step) {
                 let mut tot = T::zero();
                 for &j in &pos {
                     if j > i - 1 {
@@ -568,7 +578,7 @@ where
         if deg == 1 {
             return Self::zeros(1);
         }
-        if self.is_sparse(deg, 2) {
+        if let Some(step) = self.sparse_stride(deg, 2) {
             let pos: Vec<_> = self
                 .iter()
                 .take(deg)
@@ -578,7 +588,7 @@ where
                 .collect();
             let mut derivative = Self::zeros(deg);
             let inverse = T::one() / self[0].clone();
-            for i in pos.first().copied().unwrap_or(deg)..deg {
+            for i in (pos.first().copied().unwrap_or(deg)..deg).step_by(step) {
                 let mut value = self.coeff(i) * T::from(i);
                 for &j in &pos {
                     if j >= i {
@@ -656,8 +666,8 @@ where
             let deg = deg - k * rhs;
             let x0 = self[k].clone();
             let mut f = (self.prefix_ref(k + deg) >> k) / &x0;
-            if f.is_sparse(deg, 12) {
-                f = f.pow_sparse1(T::from(rhs), deg);
+            if let Some(step) = f.sparse_stride(deg, 12) {
+                f = f.pow_sparse1(T::from(rhs), deg, step);
             } else if rhs <= 4 {
                 let squared = (&f * &f).prefix(deg);
                 f = match rhs {
@@ -676,7 +686,7 @@ where
             Self::zeros(deg)
         }
     }
-    fn pow_sparse1(&self, rhs: T, deg: usize) -> Self {
+    fn pow_sparse1(&self, rhs: T, deg: usize, step: usize) -> Self {
         debug_assert!(!self[0].is_zero());
         let mut pos: Vec<_> = self
             .data
@@ -693,7 +703,10 @@ where
             return f;
         }
         let mf = T::memorized_factorial(deg);
-        for i in pos.first().map_or(deg, |x| x.0)..deg {
+        for (_, coefficient, _) in &mut pos {
+            *coefficient *= T::from(step);
+        }
+        for i in (pos.first().map_or(deg, |x| x.0)..deg).step_by(step) {
             let mut tot = T::zero();
             for (j, coefficient, weight) in &mut pos {
                 if *j > i {
@@ -881,10 +894,10 @@ where
             if deg <= 1 {
                 return Some(Self::from(s).prefix(deg));
             }
-            if self.is_sparse(deg, 4) {
+            if let Some(step) = self.sparse_stride(deg, 4) {
                 let t = self[0].clone();
                 let mut f = self.prefix_ref(deg) / t;
-                f = f.pow_sparse1(T::one() / T::from(2usize), deg);
+                f = f.pow_sparse1(T::one() / T::from(2usize), deg, step);
                 f *= s;
                 return Some(f);
             }
@@ -1418,20 +1431,27 @@ mod tests {
                 deg.max(1),
                 rng.random(deg + 1..=deg + 100),
             ] {
-                let mut f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
-                f[0] = MInt998244353::from(rng.random(1u32..998244353));
-                let mut expected = Fps998244353::zeros(deg);
-                if deg > 0 {
-                    expected[0] = f[0].inv();
-                }
-                for i in 1..deg {
-                    let mut sum = MInt998244353::zero();
-                    for j in 1..=i.min(n - 1) {
-                        sum += f[j] * expected[i - j];
+                for stride in [1, rng.random(2..=8)] {
+                    let mut f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+                    for (i, value) in f.data.iter_mut().enumerate() {
+                        if i % stride != 0 {
+                            *value = MInt998244353::zero();
+                        }
                     }
-                    expected[i] = -sum / f[0];
+                    f[0] = MInt998244353::from(rng.random(1u32..998244353));
+                    let mut expected = Fps998244353::zeros(deg);
+                    if deg > 0 {
+                        expected[0] = f[0].inv();
+                    }
+                    for i in 1..deg {
+                        let mut sum = MInt998244353::zero();
+                        for j in 1..=i.min(n - 1) {
+                            sum += f[j] * expected[i - j];
+                        }
+                        expected[i] = -sum / f[0];
+                    }
+                    assert_eq!(f.inv(deg), expected);
                 }
-                assert_eq!(f.inv(deg), expected);
             }
         }
     }
@@ -1449,26 +1469,33 @@ mod tests {
                 deg.max(1),
                 rng.random(deg + 1..=deg + 100),
             ] {
-                let mut f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
-                for value in &mut f.data[1..] {
-                    if rng.random(0..2) == 0 {
-                        *value = MInt998244353::zero();
+                for stride in [1, rng.random(2..=8)] {
+                    let mut f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+                    for (i, value) in f.data.iter_mut().enumerate() {
+                        if i % stride != 0 {
+                            *value = MInt998244353::zero();
+                        }
                     }
-                }
-                let root = MInt998244353::from(rng.random(1u32..998244353));
-                f[0] = root * root;
-                let mut expected = Fps998244353::zeros(deg);
-                if deg > 0 {
-                    expected[0] = f[0].sqrt().unwrap();
-                }
-                for i in 1..deg {
-                    let mut sum = MInt998244353::zero();
-                    for j in 1..i {
-                        sum += expected[j] * expected[i - j];
+                    for value in &mut f.data[1..] {
+                        if rng.random(0..2) == 0 {
+                            *value = MInt998244353::zero();
+                        }
                     }
-                    expected[i] = (f.coeff(i) - sum) / (expected[0] * MInt998244353::from(2));
+                    let root = MInt998244353::from(rng.random(1u32..998244353));
+                    f[0] = root * root;
+                    let mut expected = Fps998244353::zeros(deg);
+                    if deg > 0 {
+                        expected[0] = f[0].sqrt().unwrap();
+                    }
+                    for i in 1..deg {
+                        let mut sum = MInt998244353::zero();
+                        for j in 1..i {
+                            sum += expected[j] * expected[i - j];
+                        }
+                        expected[i] = (f.coeff(i) - sum) / (expected[0] * MInt998244353::from(2));
+                    }
+                    assert_eq!(f.sqrt(deg), Some(expected));
                 }
-                assert_eq!(f.sqrt(deg), Some(expected));
             }
         }
         for coefficient in (0..32u32).chain((0..100).map(|_| rng.random(0u32..998244353))) {
@@ -1563,22 +1590,24 @@ mod tests {
                 rng.random(deg + 1..=deg + 100),
             ] {
                 for step in [1, rng.random(1..=n)] {
-                    let mut f = Fps998244353::zeros(n);
-                    for value in &mut f.data {
-                        if rng.random(0..step) == 0 {
-                            *value = rng.random(..);
+                    for stride in [1, rng.random(2..=8)] {
+                        let mut f = Fps998244353::zeros(n);
+                        for value in f.data.iter_mut().step_by(stride) {
+                            if rng.random(0..step) == 0 {
+                                *value = rng.random(..);
+                            }
                         }
-                    }
-                    f[0] = MInt998244353::from(rng.random(1u32..998244353));
-                    let mut expected = Fps998244353::zeros(deg);
-                    for i in 1..deg {
-                        let mut value = f.coeff(i) * MInt998244353::from(i);
-                        for j in 1..i.min(n) {
-                            value -= f[j] * MInt998244353::from(i - j) * expected[i - j];
+                        f[0] = MInt998244353::from(rng.random(1u32..998244353));
+                        let mut expected = Fps998244353::zeros(deg);
+                        for i in 1..deg {
+                            let mut value = f.coeff(i) * MInt998244353::from(i);
+                            for j in 1..i.min(n) {
+                                value -= f[j] * MInt998244353::from(i - j) * expected[i - j];
+                            }
+                            expected[i] = value / (f[0] * MInt998244353::from(i));
                         }
-                        expected[i] = value / (f[0] * MInt998244353::from(i));
+                        assert_eq!(f.log(deg), expected, "{n}/{deg}/{step}");
                     }
-                    assert_eq!(f.log(deg), expected, "{n}/{deg}/{step}");
                 }
             }
         }
@@ -1587,10 +1616,16 @@ mod tests {
     #[test]
     fn test_exp() {
         let mut rng = Xorshift::default();
-        for _ in 0..30 {
+        for case in 0..60 {
             let deg = rng.random(0usize..=600);
             let n = rng.random(deg.max(1)..=deg + 100);
             let mut f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            let stride = if case % 2 == 0 { 1 } else { rng.random(2..=8) };
+            for (i, value) in f.data.iter_mut().enumerate() {
+                if i % stride != 0 {
+                    *value = MInt998244353::zero();
+                }
+            }
             assert_eq!(Fps998244353::zero(), f.inv(0));
             f[0] = MInt998244353::zero();
             assert_eq!(Fps998244353::zero(), f.exp(0));
@@ -1618,30 +1653,32 @@ mod tests {
             .collect();
         for (n, deg) in sizes {
             for step in [1, rng.random(1..=n.max(1))] {
-                for shift in [0, rng.random(0..=n)] {
-                    let mut f = Fps998244353::zeros(n);
-                    for value in &mut f.data[shift..] {
-                        if rng.random(0..step) == 0 {
-                            *value = rng.random(..);
-                        }
-                    }
-                    let mut expected = vec![MInt998244353::zero(); deg];
-                    if deg > 0 {
-                        expected[0] = MInt998244353::one();
-                    }
-                    for rhs in 0..=7 {
-                        assert_eq!(
-                            f.pow(rhs, deg).data,
-                            expected,
-                            "{n}/{deg}/{step}/{shift}/{rhs}"
-                        );
-                        let mut next = vec![MInt998244353::zero(); deg];
-                        for i in 0..deg {
-                            for j in 0..n.min(deg - i) {
-                                next[i + j] += expected[i] * f[j];
+                for stride in [1, rng.random(2..=8)] {
+                    for shift in [0, rng.random(0..=n)] {
+                        let mut f = Fps998244353::zeros(n);
+                        for value in f.data[shift..].iter_mut().step_by(stride) {
+                            if rng.random(0..step) == 0 {
+                                *value = rng.random(..);
                             }
                         }
-                        expected = next;
+                        let mut expected = vec![MInt998244353::zero(); deg];
+                        if deg > 0 {
+                            expected[0] = MInt998244353::one();
+                        }
+                        for rhs in 0..=7 {
+                            assert_eq!(
+                                f.pow(rhs, deg).data,
+                                expected,
+                                "{n}/{deg}/{step}/{shift}/{rhs}"
+                            );
+                            let mut next = vec![MInt998244353::zero(); deg];
+                            for i in 0..deg {
+                                for j in 0..n.min(deg - i) {
+                                    next[i + j] += expected[i] * f[j];
+                                }
+                            }
+                            expected = next;
+                        }
                     }
                 }
             }

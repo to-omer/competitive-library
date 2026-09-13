@@ -20,6 +20,15 @@ unsafe fn round4(value: &[f64; 4]) -> [i64; 4] {
 }
 
 #[target_feature(enable = "avx2,fma")]
+#[inline]
+unsafe fn reduce_mod4(value: __m256d, modulus: __m256d, inverse: __m256d) -> __m256d {
+    let quotient = _mm256_round_pd::<{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }>(
+        _mm256_mul_pd(value, inverse),
+    );
+    _mm256_fnmadd_pd(quotient, modulus, value)
+}
+
+#[target_feature(enable = "avx2,fma")]
 unsafe fn split_coefficients<M>(
     values: Vec<MInt<M>>,
     n: usize,
@@ -101,48 +110,45 @@ unsafe fn dot_soa(a0: &mut [Complex4], a1: &mut [Complex4], b0: &mut [Complex4],
 }
 
 #[target_feature(enable = "avx2,fma")]
-unsafe fn split_u64_coefficients(values: &[u64], n: usize, factor: u64) -> [Vec<Complex4>; 4] {
+unsafe fn split_u64_coefficients(values: &[u64], n: usize) -> [Vec<Complex4>; 5] {
     let mut result = std::array::from_fn(|_| vec![Complex4::default(); n / 4]);
-    let mut multiplier = 1u64;
-    for (i, &value) in values.iter().enumerate() {
-        let mut value = value.wrapping_mul(multiplier);
+    for (i, mut value) in values.iter().copied().enumerate() {
         let (i, imag) = if i < n { (i, false) } else { (i - n, true) };
         for part in &mut result {
-            let digit = value as i16;
-            value = (value >> 16).wrapping_add(u64::from(digit < 0));
+            let digit = ((value << 51) as i64) >> 51;
+            value = (value >> 13).wrapping_add(u64::from(digit < 0));
             if imag {
                 part[i >> 2].im[i & 3] = digit as f64;
             } else {
                 part[i >> 2].re[i & 3] = digit as f64;
             }
         }
-        multiplier = multiplier.wrapping_mul(factor);
     }
     result
 }
 
 #[target_feature(enable = "avx2,fma")]
-unsafe fn dot_u64_soa(a: &mut [Vec<Complex4>; 4], b: &[Vec<Complex4>; 4]) {
+unsafe fn dot_u64_soa(a: &mut [Vec<Complex4>; 5], b: &[Vec<Complex4>; 5]) {
     let n = a[0].len() * 4;
     RotateCache::ensure(n / 2);
     RotateCache::with(|cache| {
         for block in 0..a[0].len() {
-            let mut br = [_mm256_setzero_pd(); 4];
+            let mut br = [_mm256_setzero_pd(); 5];
             let mut bi = br;
             let mut rr = br;
             let mut ri = br;
-            for part in 0..4 {
+            for part in 0..5 {
                 (br[part], bi[part]) = load4(&b[part][block]);
             }
             let w = eval_twiddle(cache, 1, a[0].len(), block);
             let wr = _mm256_setr_pd(w.re, 1.0, 1.0, 1.0);
             let wi = _mm256_setr_pd(w.im, 0.0, 0.0, 0.0);
             for lane in 0..4 {
-                let ar: [__m256d; 4] =
+                let ar: [__m256d; 5] =
                     std::array::from_fn(|part| _mm256_set1_pd(a[part][block].re[lane]));
-                let ai: [__m256d; 4] =
+                let ai: [__m256d; 5] =
                     std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[lane]));
-                for part in 0..4 {
+                for part in 0..5 {
                     for left in 0..=part {
                         multiply_accumulate4(
                             &mut rr[part],
@@ -155,14 +161,14 @@ unsafe fn dot_u64_soa(a: &mut [Vec<Complex4>; 4], b: &[Vec<Complex4>; 4]) {
                     }
                 }
                 if lane != 3 {
-                    for part in 0..4 {
+                    for part in 0..5 {
                         br[part] = _mm256_permute4x64_pd::<0x93>(br[part]);
                         bi[part] = _mm256_permute4x64_pd::<0x93>(bi[part]);
                         (br[part], bi[part]) = mul4(br[part], bi[part], wr, wi);
                     }
                 }
             }
-            for part in 0..4 {
+            for part in 0..5 {
                 store4(&mut a[part][block], rr[part], ri[part]);
             }
         }
@@ -170,16 +176,32 @@ unsafe fn dot_u64_soa(a: &mut [Vec<Complex4>; 4], b: &[Vec<Complex4>; 4]) {
 }
 
 #[target_feature(enable = "avx2,fma")]
-pub unsafe fn convolve_u64_avx2(a: Vec<u64>, b: Vec<u64>, factor: u64, inverse: u64) -> Vec<u64> {
+pub unsafe fn convolve_u64_avx2(a: Vec<u64>, b: Vec<u64>) -> Vec<u64> {
     let len = a.len() + b.len() - 1;
     let n = len.next_power_of_two() / 2;
-    let mut fa = split_u64_coefficients(&a, n, factor);
+    let a_parts = if a.iter().all(|&value| value <= u32::MAX as u64) {
+        3
+    } else {
+        5
+    };
+    let mut fa = split_u64_coefficients(&a, n);
     drop(a);
-    let mut fb = split_u64_coefficients(&b, n, factor);
+    let b_parts = if b.iter().all(|&value| value <= u32::MAX as u64) {
+        3
+    } else {
+        5
+    };
+    let mut fb = split_u64_coefficients(&b, n);
     drop(b);
-    for part in 0..4 {
+    for part in 0..3 {
         fft_soa(&mut fa[part]);
         fft_soa(&mut fb[part]);
+    }
+    for part in &mut fa[3..a_parts] {
+        fft_soa(part);
+    }
+    for part in &mut fb[3..b_parts] {
+        fft_soa(part);
     }
     dot_u64_soa(&mut fa, &fb);
     drop(fb);
@@ -187,29 +209,25 @@ pub unsafe fn convolve_u64_avx2(a: Vec<u64>, b: Vec<u64>, factor: u64, inverse: 
         ifft_soa(part);
     }
     let mut result = vec![0; len];
-    let mut real_multiplier = 1u64;
-    let mut imag_multiplier = inverse.wrapping_pow(n as u32);
     for (block, _) in fa[0].iter().enumerate() {
-        let real: [[i64; 4]; 4] = std::array::from_fn(|part| round4(&fa[part][block].re));
-        let imag: [[i64; 4]; 4] = std::array::from_fn(|part| round4(&fa[part][block].im));
+        let real: [[i64; 4]; 5] = std::array::from_fn(|part| round4(&fa[part][block].re));
+        let imag: [[i64; 4]; 5] = std::array::from_fn(|part| round4(&fa[part][block].im));
         for lane in 0..4 {
             let i = block * 4 + lane;
             if i < len {
                 result[i] = (real[0][lane] as u64)
-                    .wrapping_add((real[1][lane] as u64) << 16)
-                    .wrapping_add((real[2][lane] as u64) << 32)
-                    .wrapping_add((real[3][lane] as u64) << 48)
-                    .wrapping_mul(real_multiplier);
+                    .wrapping_add((real[1][lane] as u64) << 13)
+                    .wrapping_add((real[2][lane] as u64) << 26)
+                    .wrapping_add((real[3][lane] as u64) << 39)
+                    .wrapping_add((real[4][lane] as u64) << 52);
             }
-            real_multiplier = real_multiplier.wrapping_mul(inverse);
             if i + n < len {
                 result[i + n] = (imag[0][lane] as u64)
-                    .wrapping_add((imag[1][lane] as u64) << 16)
-                    .wrapping_add((imag[2][lane] as u64) << 32)
-                    .wrapping_add((imag[3][lane] as u64) << 48)
-                    .wrapping_mul(imag_multiplier);
+                    .wrapping_add((imag[1][lane] as u64) << 13)
+                    .wrapping_add((imag[2][lane] as u64) << 26)
+                    .wrapping_add((imag[3][lane] as u64) << 39)
+                    .wrapping_add((imag[4][lane] as u64) << 52);
             }
-            imag_multiplier = imag_multiplier.wrapping_mul(inverse);
         }
     }
     result
@@ -235,23 +253,48 @@ where
     ifft_soa(&mut a0);
     ifft_soa(&mut a1);
     ifft_soa(&mut b0);
-    let modulus = modulus as u64;
-    let split = split as u64;
-    let split2 = split * split % modulus;
+    let split2 = (split * split % modulus) as f64;
+    let split = _mm256_set1_pd(split as f64);
+    let split2 = _mm256_set1_pd(split2);
+    let inverse = _mm256_set1_pd(1.0 / modulus as f64);
+    let modulus = _mm256_set1_pd(modulus as f64);
+    let magic = _mm256_set1_pd((3i64 << 51) as f64);
     let mut result = vec![MInt::<M>::from(0u32); len];
     for (block, ((a0, a1), b0)) in a0.iter().zip(&a1).zip(&b0).enumerate() {
-        let values = [
-            [round4(&a0.re), round4(&a1.re), round4(&b0.re)],
-            [round4(&a0.im), round4(&a1.im), round4(&b0.im)],
-        ];
-        for (part, values) in values.into_iter().enumerate() {
-            for (lane, value0) in values[0].into_iter().enumerate() {
+        for (part, (a0, a1, b0)) in [(&a0.re, &a1.re, &b0.re), (&a0.im, &a1.im, &b0.im)]
+            .into_iter()
+            .enumerate()
+        {
+            let a0 = _mm256_round_pd::<{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }>(
+                _mm256_load_pd(a0.as_ptr()),
+            );
+            let a1 = _mm256_round_pd::<{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }>(
+                _mm256_load_pd(a1.as_ptr()),
+            );
+            let b0 = _mm256_round_pd::<{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }>(
+                _mm256_load_pd(b0.as_ptr()),
+            );
+            let a0 = reduce_mod4(a0, modulus, inverse);
+            let a1 = reduce_mod4(a1, modulus, inverse);
+            let b0 = reduce_mod4(b0, modulus, inverse);
+            let value = _mm256_fmadd_pd(b0, split2, _mm256_fmadd_pd(a1, split, a0));
+            let value = reduce_mod4(value, modulus, inverse);
+            let value = _mm256_add_pd(
+                value,
+                _mm256_and_pd(
+                    _mm256_cmp_pd::<_CMP_LT_OQ>(value, _mm256_setzero_pd()),
+                    modulus,
+                ),
+            );
+            let value = _mm256_sub_epi64(
+                _mm256_castpd_si256(_mm256_add_pd(value, magic)),
+                _mm256_castpd_si256(magic),
+            );
+            let mut lanes = [0i64; 4];
+            _mm256_storeu_si256(lanes.as_mut_ptr().cast(), value);
+            for (lane, value) in lanes.into_iter().enumerate() {
                 let i = block * 4 + lane + part * n;
                 if i < len {
-                    let value = (value0.rem_euclid(modulus as i64) as u64
-                        + values[1][lane].rem_euclid(modulus as i64) as u64 * split
-                        + values[2][lane].rem_euclid(modulus as i64) as u64 * split2)
-                        % modulus;
                     result[i] = MInt::<M>::from(value as u32);
                 }
             }

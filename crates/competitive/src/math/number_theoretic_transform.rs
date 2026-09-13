@@ -1,6 +1,6 @@
 use super::{
-    ConvolveSteps, MInt, MIntBase, MIntConvert, One, Xorshift, Zero,
-    fast_fourier_transform::ConvolveRealFft, montgomery::*,
+    ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, fast_fourier_transform::ConvolveRealFft,
+    montgomery::*,
 };
 #[cfg(target_arch = "x86_64")]
 use super::{SimdBackend, simd_backend};
@@ -30,7 +30,11 @@ fn batch_ntt_simd_backend(len: usize, width: usize) -> SimdBackend {
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
+/// Raw transforms require each integer coefficient reconstructed by CRT to be below
+/// the product of the three NTT moduli. `convolve` splits products exceeding this bound.
 pub type MIntConvolve<M> = Convolve<(M, (Modulo167772161, Modulo469762049, Modulo754974721))>;
+/// Convolution modulo 2^64. Multiply only freshly transformed operands; reconstruct
+/// and transform again before multiplying another factor.
 pub type U64Convolve = Convolve<(u64, (Modulo167772161, Modulo469762049, Modulo754974721))>;
 
 macro_rules! impl_ntt_modulus {
@@ -319,7 +323,7 @@ where
         match batch_ntt_simd_backend(a.len(), width) {
             SimdBackend::Avx512 => {
                 // SAFETY: backend detection checked all required AVX-512 features.
-                unsafe { ntt_simd::intt_batch_avx512(a, width) };
+                unsafe { ntt_simd::intt_batch_avx512::<_, false>(a, width) };
                 return;
             }
             SimdBackend::Avx2 => {
@@ -415,7 +419,7 @@ where
 {
     #[cfg(target_arch = "x86_64")]
     match simd_backend() {
-        SimdBackend::Avx512 => unsafe { ntt_simd::intt_batch_avx512(a, 1) },
+        SimdBackend::Avx512 => unsafe { ntt_simd::intt_batch_avx512::<_, true>(a, 1) },
         SimdBackend::Avx2 => unsafe { ntt_simd::intt_batch_avx2::<_, true>(a, 1) },
         SimdBackend::Scalar => intt_scalar(a),
     }
@@ -513,6 +517,20 @@ where
 {
     if a.len().min(b.len()) <= 30 {
         return convolve_naive(a, b);
+    }
+    let block_len = a.len().min(b.len()).next_power_of_two();
+    if a.len().max(b.len()) > block_len * 4 {
+        let (a, b) = if a.len() >= b.len() { (a, b) } else { (b, a) };
+        let mut result = vec![T::zero(); a.len() + b.len() - 1];
+        for (i, a) in a.chunks(block_len).enumerate() {
+            for (value, product) in result[i * block_len..]
+                .iter_mut()
+                .zip(convolve_karatsuba(a, b))
+            {
+                *value += product;
+            }
+        }
+        return result;
     }
     let m = a.len().max(b.len()).div_ceil(2);
     let (a0, a1) = if a.len() <= m {
@@ -668,7 +686,14 @@ where
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let size = len.max(1).next_power_of_two();
-        if size > 1usize << M::RANK {
+        let max_size = 1usize << M::RANK;
+        #[cfg(target_arch = "x86_64")]
+        let max_size = if use_block_ntt::<M>(size) {
+            max_size << 3
+        } else {
+            max_size
+        };
+        if size > max_size {
             return convolve_large_ntt(a, b);
         }
         if len <= size / 2 + 2 {
@@ -803,19 +828,56 @@ where
         Convolve::<N3>::multiply(&mut f.2, &g.2);
     }
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
-        if Self::length(&a).max(Self::length(&b)) <= 300 {
+        let max_len = Self::length(&a).max(Self::length(&b));
+        let min_len = Self::length(&a).min(Self::length(&b));
+        let (balanced, short) = crate::avx_helper!(@dispatch_avx2_fma (30, 10), (384, 128));
+        if max_len <= balanced || min_len <= short {
             return convolve_karatsuba(&a, &b);
         }
-        let fft_len = (a.len() + b.len() - 1).next_power_of_two();
-        let threshold = crate::avx_helper!(@dispatch_avx2_fma if fft_len <= 1 << 13 { 22 } else if fft_len <= 1 << 17 { 45 } else if fft_len <= 1 << 20 { 50 } else { 60 }, 60);
-        if Self::length(&a).min(Self::length(&b)) <= threshold {
-            return convolve_naive(&a, &b);
+        // Limit coefficient growth to leave headroom for FFT roundoff.
+        let fft_limit = crate::avx_helper!(@dispatch_avx2_fma
+            1usize << ((1u64 << 50) / <M as MIntConvert<u32>>::mod_into() as u64).ilog2().min(20), 0);
+        let convolve = |a: Self::T, b: Self::T| {
+            let fft_len = (a.len() + b.len() - 1).next_power_of_two();
+            if fft_len <= 256 && a.len() * b.len() <= fft_len * 8 {
+                return convolve_karatsuba(&a, &b);
+            }
+            if fft_len <= fft_limit {
+                crate::avx_helper!(@dispatch_avx2_fma return unsafe {
+                    super::mint_fft_convolve::convolve_mint_avx2(a, b)
+                }, ());
+            }
+            convolve_mint_crt::<M, N1, N2, N3>(a, b)
+        };
+        let block_len = min_len.next_power_of_two() * 8 - min_len + 1;
+        let block_len = if min_len <= fft_limit / 2 {
+            block_len.min(fft_limit - min_len + 1)
+        } else {
+            block_len
+        };
+        if max_len <= block_len {
+            return convolve(a, b);
         }
-        if fft_len <= 1 << 20 {
-            crate::avx_helper!(@dispatch_avx2_fma return unsafe {
-                super::mint_fft_convolve::convolve_mint_avx2(a, b)
-            }, ());
+        let (a, b) = if a.len() >= b.len() { (a, b) } else { (b, a) };
+        let mut result = vec![MInt::<M>::zero(); a.len() + b.len() - 1];
+        for (i, a) in a.chunks(block_len).enumerate() {
+            let product = convolve(a.to_vec(), b.clone());
+            for (value, product) in result[i * block_len..].iter_mut().zip(product) {
+                *value += product;
+            }
         }
+        result
+    }
+}
+
+fn convolve_mint_crt<M, N1, N2, N3>(a: MVec<M>, b: MVec<M>) -> MVec<M>
+where
+    M: MIntConvert + MIntConvert<u32>,
+    N1: Montgomery32NttModulus,
+    N2: Montgomery32NttModulus,
+    N3: Montgomery32NttModulus,
+{
+    let convolve = |a: MVec<M>, b: MVec<M>| {
         let a_len = a.len();
         let b_len = b.len();
         let a = convert_crt_input(a, a_len);
@@ -825,7 +887,26 @@ where
             Convolve::<N2>::convolve(a.1, b.1),
             Convolve::<N3>::convolve(a.2, b.2),
         ))
+    };
+    let modulus = <M as MIntConvert<u32>>::mod_into() as u128;
+    let capacity = N1::MOD as u128 * N2::MOD as u128 * N3::MOD as u128;
+    if a.len().min(b.len()) as u128 * (modulus - 1).pow(2) < capacity {
+        return convolve(a, b);
     }
+    let block_len = ((capacity - 1) / (modulus - 1).pow(2)) as usize;
+    if block_len == 0 {
+        return convolve_naive(&a, &b);
+    }
+    let mut result = vec![MInt::<M>::zero(); a.len() + b.len() - 1];
+    for (i, a) in a.chunks(block_len).enumerate() {
+        for (j, b) in b.chunks(block_len).enumerate() {
+            let product = convolve(a.to_vec(), b.to_vec());
+            for (value, product) in result[(i + j) * block_len..].iter_mut().zip(product) {
+                *value += product;
+            }
+        }
+    }
+    result
 }
 
 impl<N1, N2, N3> ConvolveSteps for Convolve<(u64, (N1, N2, N3))>
@@ -835,7 +916,7 @@ where
     N3: Montgomery32NttModulus,
 {
     type T = Vec<u64>;
-    type F = (MVec<N1>, MVec<N2>, MVec<N3>);
+    type F = ([MVec<N1>; 3], [MVec<N2>; 3], [MVec<N3>; 3]);
 
     fn length(t: &Self::T) -> usize {
         t.len()
@@ -843,59 +924,146 @@ where
 
     fn transform(t: Self::T, len: usize) -> Self::F {
         let npot = len.max(1).next_power_of_two();
-        let mut f = (
-            MVec::<N1>::with_capacity(npot),
-            MVec::<N2>::with_capacity(npot),
-            MVec::<N3>::with_capacity(npot),
+        assert!(npot <= 1usize << N1::RANK.min(N2::RANK).min(N3::RANK));
+        // The 22-bit fallback needs room for three limb products per coefficient.
+        assert!(
+            3 * npot as u128 * ((1u128 << 22) - 1).pow(2)
+                < N1::MOD as u128 * N2::MOD as u128 * N3::MOD as u128
         );
-        for t in t {
-            f.0.push(t.into());
-            f.1.push(t.into());
-            f.2.push(t.into());
+        let bits = if 2 * npot as u128 * (u32::MAX as u128).pow(2)
+            < N1::MOD as u128 * N2::MOD as u128 * N3::MOD as u128
+        {
+            32
+        } else {
+            22
+        };
+        let parts = if bits == 32 && t.iter().all(|&value| value <= u32::MAX as u64) {
+            1
+        } else {
+            64usize.div_ceil(bits)
+        };
+        fn split<M: Montgomery32NttModulus>(
+            t: &[u64],
+            len: usize,
+            bits: usize,
+            parts: usize,
+        ) -> [MVec<M>; 3] {
+            std::array::from_fn(|part| {
+                if part >= parts {
+                    return Vec::new();
+                }
+                Convolve::<M>::transform(
+                    t.iter()
+                        .map(|&t| MInt::from((t >> (part * bits)) & ((1u64 << bits) - 1)))
+                        .collect(),
+                    len,
+                )
+            })
         }
         (
-            Convolve::<N1>::transform(f.0, npot),
-            Convolve::<N2>::transform(f.1, npot),
-            Convolve::<N3>::transform(f.2, npot),
+            split(&t, npot, bits, parts),
+            split(&t, npot, bits, parts),
+            split(&t, npot, bits, parts),
         )
     }
 
     fn inverse_transform(f: Self::F, len: usize) -> Self::T {
+        let bits = if f.0[2].is_empty() { 32 } else { 22 };
         let t1 = MInt::<N2>::new(N1::get_mod()).inv();
         let m1 = N1::get_mod() as u64;
         let m1_3 = MInt::<N3>::new(N1::get_mod());
         let t2 = (m1_3 * MInt::<N3>::new(N2::get_mod())).inv();
         let m2 = m1 * N2::get_mod() as u64;
-        Convolve::<N1>::inverse_transform(f.0, len)
-            .into_iter()
-            .zip(Convolve::<N2>::inverse_transform(f.1, len))
-            .zip(Convolve::<N3>::inverse_transform(f.2, len))
-            .map(|((c1, c2), c3)| {
+        let mut result = vec![0u64; len.min(f.0[0].len())];
+        for (part, ((f1, f2), f3)) in f.0.into_iter().zip(f.1).zip(f.2).enumerate() {
+            if f1.is_empty() {
+                continue;
+            }
+            for (value, ((c1, c2), c3)) in result.iter_mut().zip(
+                Convolve::<N1>::inverse_transform(f1, len)
+                    .into_iter()
+                    .zip(Convolve::<N2>::inverse_transform(f2, len))
+                    .zip(Convolve::<N3>::inverse_transform(f3, len)),
+            ) {
                 let d1 = c1.inner();
                 let d2 = ((c2 - MInt::<N2>::from(d1)) * t1).inner();
                 let x = MInt::<N3>::new(d1) + MInt::<N3>::new(d2) * m1_3;
                 let d3 = ((c3 - x) * t2).inner();
-                (d1 as u64)
+                let limb = (d1 as u64)
                     .wrapping_add((d2 as u64).wrapping_mul(m1))
-                    .wrapping_add((d3 as u64).wrapping_mul(m2))
-            })
-            .collect()
+                    .wrapping_add((d3 as u64).wrapping_mul(m2));
+                *value = value.wrapping_add(limb << (part * bits));
+            }
+        }
+        result
     }
 
     fn multiply(f: &mut Self::F, g: &Self::F) {
-        Convolve::<N1>::multiply(&mut f.0, &g.0);
-        Convolve::<N2>::multiply(&mut f.1, &g.1);
-        Convolve::<N3>::multiply(&mut f.2, &g.2);
+        fn multiply<M: Montgomery32NttModulus>(f: &mut [MVec<M>; 3], g: &[MVec<M>; 3]) {
+            assert_eq!(f[0].len(), g[0].len());
+            if f[1].is_empty() || g[1].is_empty() {
+                if f[1].is_empty() && !g[1].is_empty() {
+                    f[1] = f[0].clone();
+                    Convolve::<M>::multiply(&mut f[1], &g[1]);
+                } else if !f[1].is_empty() {
+                    Convolve::<M>::multiply(&mut f[1], &g[0]);
+                }
+                Convolve::<M>::multiply(&mut f[0], &g[0]);
+                return;
+            }
+            #[cfg(target_arch = "x86_64")]
+            if use_block_ntt::<M>(f[0].len()) {
+                for part in (1..if f[2].is_empty() { 2 } else { 3 }).rev() {
+                    let mut sum = f[0].clone();
+                    Convolve::<M>::multiply(&mut sum, &g[part]);
+                    for left in 1..=part {
+                        let mut product = f[left].clone();
+                        Convolve::<M>::multiply(&mut product, &g[part - left]);
+                        for (value, product) in sum.iter_mut().zip(product) {
+                            // Block products contain lazy Montgomery residues.
+                            *value = MInt::new(value.inner() + product.inner());
+                        }
+                    }
+                    f[part] = sum;
+                }
+                Convolve::<M>::multiply(&mut f[0], &g[0]);
+                return;
+            }
+            if f[2].is_empty() {
+                for i in 0..f[0].len() {
+                    f[1][i] = f[0][i] * g[1][i] + f[1][i] * g[0][i];
+                    f[0][i] *= g[0][i];
+                }
+                return;
+            }
+            for i in 0..f[0].len() {
+                f[2][i] = f[0][i] * g[2][i] + f[1][i] * g[1][i] + f[2][i] * g[0][i];
+                f[1][i] = f[0][i] * g[1][i] + f[1][i] * g[0][i];
+                f[0][i] *= g[0][i];
+            }
+        }
+        multiply(&mut f.0, &g.0);
+        multiply(&mut f.1, &g.1);
+        multiply(&mut f.2, &g.2);
+    }
+
+    fn square(t: Self::T, len: usize) -> Self::T {
+        let mut f = Self::transform(t, len);
+        let g = f.clone();
+        Self::multiply(&mut f, &g);
+        Self::inverse_transform(f, len)
     }
 
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
         let max_len = Self::length(&a).max(Self::length(&b));
-        if max_len <= 300 || Self::length(&a).min(Self::length(&b)) <= 60 {
+        let min_len = Self::length(&a).min(Self::length(&b));
+        let (balanced, short) = crate::avx_helper!(@dispatch_avx2_fma (300, 64), (1536, 512));
+        if max_len <= balanced || min_len <= short {
             let a_wrapping: &[Wrapping<u64>] =
                 unsafe { std::slice::from_raw_parts(a.as_ptr().cast(), a.len()) };
             let b_wrapping: &[Wrapping<u64>] =
                 unsafe { std::slice::from_raw_parts(b.as_ptr().cast(), b.len()) };
-            let mut c = std::mem::ManuallyDrop::new(if max_len <= 300 {
+            let mut c = std::mem::ManuallyDrop::new(if max_len <= 300 || min_len > 60 {
                 convolve_karatsuba(a_wrapping, b_wrapping)
             } else {
                 convolve_naive(a_wrapping, b_wrapping)
@@ -903,46 +1071,78 @@ where
             return unsafe { Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
-        if len.next_power_of_two() <= 1 << 21 {
-            let factor = Xorshift::new().rand64() | 1;
-            let mut inverse = factor;
-            for _ in 0..5 {
-                inverse = inverse.wrapping_mul(2u64.wrapping_sub(factor.wrapping_mul(inverse)));
-            }
-            crate::avx_helper!(@dispatch_avx2_fma return unsafe {
-                super::mint_fft_convolve::convolve_u64_avx2(a, b, factor, inverse)
-            }, ());
-            return convolve_u64_fft_scalar(a, b, factor, inverse);
+        let block_len = if min_len >= 1 << 20 {
+            1 << 20
+        } else {
+            (min_len.next_power_of_two() * 8).min(1 << 21) - min_len + 1
+        };
+        if max_len <= block_len {
+            return convolve_u64_fft(a, b);
         }
-        let mut a = Self::transform(a, len);
-        let b = Self::transform(b, len);
-        Self::multiply(&mut a, &b);
-        Self::inverse_transform(a, len)
+        let mut result = vec![0u64; len];
+        for (i, a) in a.chunks(block_len).enumerate() {
+            for (j, b) in b.chunks(block_len).enumerate() {
+                if a.len().min(b.len()) <= 60 {
+                    for (x, &a) in a.iter().enumerate() {
+                        for (y, &b) in b.iter().enumerate() {
+                            let value = &mut result[(i + j) * block_len + x + y];
+                            *value = value.wrapping_add(a.wrapping_mul(b));
+                        }
+                    }
+                    continue;
+                }
+                let product = convolve_u64_fft(a.to_vec(), b.to_vec());
+                for (value, product) in result[(i + j) * block_len..].iter_mut().zip(product) {
+                    *value = value.wrapping_add(product);
+                }
+            }
+        }
+        result
     }
 }
 
-fn convolve_u64_fft_scalar(a: Vec<u64>, b: Vec<u64>, factor: u64, inverse: u64) -> Vec<u64> {
-    fn split(values: &[u64], factor: u64) -> [Vec<i64>; 4] {
+fn convolve_u64_fft(a: Vec<u64>, b: Vec<u64>) -> Vec<u64> {
+    // Keep limb convolutions below 2^47 at the 2^21 FFT limit.
+    crate::avx_helper!(@dispatch_avx2_fma return unsafe {
+        super::mint_fft_convolve::convolve_u64_avx2(a, b)
+    }, ());
+    convolve_u64_fft_scalar(a, b)
+}
+
+fn convolve_u64_fft_scalar(a: Vec<u64>, b: Vec<u64>) -> Vec<u64> {
+    fn split(values: &[u64]) -> [Vec<i64>; 5] {
         let mut result = std::array::from_fn(|_| Vec::with_capacity(values.len()));
-        let mut multiplier = 1u64;
-        for &value in values {
-            let mut value = value.wrapping_mul(multiplier);
+        for mut value in values.iter().copied() {
             for part in &mut result {
-                let digit = value as i16;
-                part.push(digit as i64);
-                value = (value >> 16).wrapping_add(u64::from(digit < 0));
+                let digit = ((value << 51) as i64) >> 51;
+                part.push(digit);
+                value = (value >> 13).wrapping_add(u64::from(digit < 0));
             }
-            multiplier = multiplier.wrapping_mul(factor);
         }
         result
     }
 
     let len = a.len() + b.len() - 1;
-    let fa = split(&a, factor).map(|a| ConvolveRealFft::transform(a, len));
+    let transform = |values: &[u64]| {
+        if values.iter().any(|&value| value > u32::MAX as u64) {
+            return split(values).map(|part| ConvolveRealFft::transform(part, len));
+        }
+        let [a, b, c, _, _] = split(values);
+        let a = ConvolveRealFft::transform(a, len);
+        let size = a.len();
+        [
+            a,
+            ConvolveRealFft::transform(b, len),
+            ConvolveRealFft::transform(c, len),
+            vec![Zero::zero(); size],
+            vec![Zero::zero(); size],
+        ]
+    };
+    let fa = transform(&a);
     drop(a);
-    let fb = split(&b, factor).map(|b| ConvolveRealFft::transform(b, len));
+    let fb = transform(&b);
     drop(b);
-    let values: [Vec<i64>; 4] = std::array::from_fn(|part| {
+    let values: [Vec<i64>; 5] = std::array::from_fn(|part| {
         let mut sum = fa[0].clone();
         ConvolveRealFft::multiply(&mut sum, &fb[part]);
         for left in 1..=part {
@@ -954,16 +1154,13 @@ fn convolve_u64_fft_scalar(a: Vec<u64>, b: Vec<u64>, factor: u64, inverse: u64) 
         }
         ConvolveRealFft::inverse_transform(sum, len)
     });
-    let mut multiplier = 1u64;
     (0..len)
         .map(|i| {
-            let value = (values[0][i] as u64)
-                .wrapping_add((values[1][i] as u64) << 16)
-                .wrapping_add((values[2][i] as u64) << 32)
-                .wrapping_add((values[3][i] as u64) << 48)
-                .wrapping_mul(multiplier);
-            multiplier = multiplier.wrapping_mul(inverse);
-            value
+            (values[0][i] as u64)
+                .wrapping_add((values[1][i] as u64) << 13)
+                .wrapping_add((values[2][i] as u64) << 26)
+                .wrapping_add((values[3][i] as u64) << 39)
+                .wrapping_add((values[4][i] as u64) << 52)
         })
         .collect()
 }
@@ -1076,6 +1273,9 @@ where
         assert_eq!(f.len(), g.len());
         assert!(f.len().is_power_of_two());
         assert!(f.len() >= 2);
+        if std::ptr::eq(f, g) {
+            return f.as_chunks::<2>().0.iter().map(|a| a[0] * a[1]).collect();
+        }
         let inv2 = MInt::<M>::from(2).inv();
         let n = f.len() / 2;
         (0..n)
@@ -1382,7 +1582,7 @@ mod tests {
                         let mut actual = input.clone();
                         unsafe { ntt_simd::ntt_batch_avx512(&mut actual, width) };
                         assert_eq!(actual, expected);
-                        unsafe { ntt_simd::intt_batch_avx512(&mut actual, width) };
+                        unsafe { ntt_simd::intt_batch_avx512::<_, false>(&mut actual, width) };
                         assert_eq!(actual, input);
                     }
                 }
@@ -1429,7 +1629,11 @@ mod tests {
     fn test_convolve_karatsuba() {
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
-            let n = rng.random(0..=200);
+            let n = if rng.gen_bool(0.1) {
+                rng.random(201..=4096)
+            } else {
+                rng.random(0..=200)
+            };
             let m = rng.random(0..=200);
             let a: Vec<u32> = rng.random_iter(0u32..1000).take(n).collect();
             let b: Vec<u32> = rng.random_iter(0u32..1000).take(m).collect();
@@ -1441,6 +1645,7 @@ mod tests {
             }
             let d = convolve_karatsuba(&a, &b);
             assert_eq!(c, d);
+            assert_eq!(c, convolve_karatsuba(&b, &a));
         }
     }
 
@@ -1484,83 +1689,267 @@ mod tests {
             const MOD: u32 = 17;
         }
         impl Montgomery32NttModulus for Modulo17 {}
-
-        let mut rng = Xorshift::default();
-        for _ in 0..100 {
-            let n = rng.random(101..=300);
-            let m = rng.random(101..=300);
-            let a: Vec<_> = rng
-                .random_iter(0u32..17)
-                .take(n)
-                .map(MInt::<Modulo17>::from)
-                .collect();
-            let b = if rng.random(0..2) == 0 {
-                a.clone()
-            } else {
-                rng.random_iter(0u32..17)
-                    .take(m)
-                    .map(MInt::<Modulo17>::from)
-                    .collect()
-            };
-            assert_eq!(convolve_naive(&a, &b), Convolve::<Modulo17>::convolve(a, b));
+        enum Modulo97 {}
+        impl MontgomeryReduction32 for Modulo97 {
+            const MOD: u32 = 97;
         }
+        impl Montgomery32NttModulus for Modulo97 {
+            const PRIMITIVE_ROOT: u32 = 5;
+        }
+        enum Modulo193 {}
+        impl MontgomeryReduction32 for Modulo193 {
+            const MOD: u32 = 193;
+        }
+        impl Montgomery32NttModulus for Modulo193 {
+            const PRIMITIVE_ROOT: u32 = 5;
+        }
+
+        fn check<M: Montgomery32NttModulus>() {
+            let mut rng = Xorshift::default();
+            for multiplier in [1, 2, 4, 8, 16] {
+                let cap = multiplier << M::RANK;
+                for _ in 0..40 {
+                    let len = rng.random(cap / 2..=cap + 2);
+                    let n = rng.random(0..=len);
+                    let m = len - n;
+                    let a: Vec<MInt<M>> = rng
+                        .random_iter(0u32..M::MOD)
+                        .take(n)
+                        .map(MInt::from)
+                        .collect();
+                    let b = if rng.gen_bool(0.25) {
+                        a.clone()
+                    } else {
+                        rng.random_iter(0u32..M::MOD)
+                            .take(m)
+                            .map(MInt::from)
+                            .collect()
+                    };
+                    assert_eq!(convolve_naive(&a, &b), Convolve::<M>::convolve(a, b));
+                }
+            }
+        }
+        check::<Modulo17>();
+        check::<Modulo97>();
+        check::<Modulo193>();
     }
 
     #[test]
     fn test_convolve3() {
-        type M = MInt<Modulo1000000009>;
+        use crate::num::mint_basic::{DynModuloU32, Modulo2};
+
+        fn check<M: MIntConvert<u32> + MIntBase<Inner = u32>>() {
+            let modulus = M::get_mod();
+            let mut rng = Xorshift::default();
+            for case in 0..1000 {
+                let n = rng.random(0..=5);
+                let n = if case == 0 {
+                    rng.random(8192..=12288)
+                } else if n == 5 {
+                    rng.random(5..=600)
+                } else {
+                    n
+                };
+                let m = rng.random(0..=5);
+                let m = if case == 0 {
+                    rng.random(257..=512)
+                } else if m == 5 {
+                    rng.random(5..=600)
+                } else {
+                    m
+                };
+                let a: Vec<u32> = rng.random_iter(0..modulus).take(n).collect();
+                let b: Vec<u32> = rng.random_iter(0..modulus).take(m).collect();
+                let mut expected = vec![0u128; (n + m).saturating_sub(1)];
+                for (i, &a) in a.iter().enumerate() {
+                    for (j, &b) in b.iter().enumerate() {
+                        expected[i + j] += a as u128 * b as u128;
+                    }
+                }
+                let expected: Vec<_> = expected
+                    .into_iter()
+                    .map(|x| (x % modulus as u128) as u32)
+                    .collect();
+                let actual = MIntConvolve::<M>::convolve(
+                    a.into_iter().map(MInt::from).collect(),
+                    b.into_iter().map(MInt::from).collect(),
+                );
+                assert_eq!(
+                    actual.into_iter().map(u32::from).collect::<Vec<_>>(),
+                    expected
+                );
+            }
+        }
+        check::<Modulo1000000009>();
+        check::<Modulo2>();
         let mut rng = Xorshift::default();
-        for _ in 0..1000 {
-            let n = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=400) } else { n };
-            let m = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=400) } else { m };
-            let a: Vec<M> = rng.random_iter(..).take(n).collect();
-            let b: Vec<M> = rng.random_iter(..).take(m).collect();
-            let mut c = vec![M::zero(); (n + m).saturating_sub(1)];
-            for i in 0..n {
-                for j in 0..m {
-                    c[i + j] += a[i] * b[j];
+        for modulus in [1, u32::MAX]
+            .into_iter()
+            .chain(rng.random_iter(1..).take(8))
+        {
+            DynModuloU32::set_mod(modulus);
+            check::<DynModuloU32>();
+        }
+        enum Modulo<const M: u32> {}
+        impl<const M: u32> MontgomeryReduction32 for Modulo<M> {
+            const MOD: u32 = M;
+        }
+        impl<const M: u32> Montgomery32NttModulus for Modulo<M> {}
+        for modulus in [1499, u32::MAX] {
+            DynModuloU32::set_mod(modulus);
+            for _ in 0..40 {
+                let n = rng.random(250..400);
+                let m = rng.random(250..400);
+                let a: Vec<u32> = rng.random_iter(modulus - 9..modulus).take(n).collect();
+                let b: Vec<u32> = rng.random_iter(modulus - 9..modulus).take(m).collect();
+                let mut expected = vec![0u128; n + m - 1];
+                for (i, &a) in a.iter().enumerate() {
+                    for (j, &b) in b.iter().enumerate() {
+                        expected[i + j] += a as u128 * b as u128;
+                    }
+                }
+                let actual =
+                    convolve_mint_crt::<DynModuloU32, Modulo<257>, Modulo<769>, Modulo<3329>>(
+                        a.into_iter().map(MInt::from).collect(),
+                        b.into_iter().map(MInt::from).collect(),
+                    );
+                assert_eq!(actual.len(), expected.len());
+                for (actual, expected) in actual.into_iter().zip(expected) {
+                    assert_eq!(u32::from(actual), (expected % modulus as u128) as u32);
                 }
             }
-            let d = MIntConvolve::<Modulo1000000009>::convolve(a, b);
-            assert_eq!(c, d);
         }
+        DynModuloU32::set_mod(1_000_000_007);
+    }
+
+    #[test]
+    fn test_convolve3_large_coefficients() {
+        use crate::num::mint_basic::{DynMIntU32, DynModuloU32};
+        let mut rng = Xorshift::default();
+        for _ in 0..3 {
+            let modulus = u32::MAX - rng.random(0u32..65536);
+            DynModuloU32::set_mod(modulus);
+            let n = (1 << 18) - rng.random(0usize..1024);
+            let m = (1 << 18) - rng.random(0usize..1024);
+            let x = modulus / 2 - rng.random(32700u32..32800);
+            let y = modulus / 2 - rng.random(32700u32..32800);
+            let actual = MIntConvolve::<DynModuloU32>::convolve(
+                vec![DynMIntU32::from(x); n],
+                vec![DynMIntU32::from(y); m],
+            );
+            assert_eq!(actual.len(), n + m - 1);
+            for (i, actual) in actual.into_iter().enumerate() {
+                let count = (i + 1).min(n).min(m).min(n + m - 1 - i);
+                let expected = (count as u128 * x as u128 * y as u128 % modulus as u128) as u32;
+                assert_eq!(u32::from(actual), expected);
+            }
+        }
+        DynModuloU32::set_mod(1_000_000_007);
     }
 
     #[test]
     fn test_convolve_u64() {
+        enum Modulo97 {}
+        impl MontgomeryReduction32 for Modulo97 {
+            const MOD: u32 = 97;
+        }
+        impl Montgomery32NttModulus for Modulo97 {}
+        type SmallCrt = Convolve<(u64, (Modulo998244353, Modulo469762049, Modulo97))>;
         let mut rng = Xorshift::default();
-        for _ in 0..1000 {
-            let wide = rng.random(0..100) == 0;
-            let (n, m) = if wide {
-                (rng.random(301..=400), rng.random(301..=400))
+        for case in 0..1000 {
+            let (n, m) = if case < 36 {
+                (case / 6, case % 6)
+            } else if rng.gen_bool(0.01) {
+                (rng.random(1537..=2000), rng.random(513..=800))
             } else {
-                let n = rng.random(0..=5);
-                let m = rng.random(0..=5);
-                (
-                    if n == 5 { rng.random(70..=400) } else { n },
-                    if m == 5 { rng.random(70..=400) } else { m },
-                )
+                (rng.random(0..=400), rng.random(0..=400))
             };
-            let a: Vec<u64> = if wide {
-                rng.random_iter(..).take(n).collect()
+            let mask = if rng.gen_bool(0.5) {
+                u32::MAX as u64
             } else {
-                rng.random_iter(0u64..1 << 24).take(n).collect()
+                u64::MAX
             };
-            let b: Vec<u64> = if wide {
-                rng.random_iter(..).take(m).collect()
+            let a: Vec<u64> = rng.random_iter(..).map(|a: u64| a & mask).take(n).collect();
+            let mask = if rng.gen_bool(0.5) {
+                u32::MAX as u64
             } else {
-                rng.random_iter(0u64..1 << 24).take(m).collect()
+                u64::MAX
             };
+            let b: Vec<u64> = rng.random_iter(..).map(|b: u64| b & mask).take(m).collect();
             let mut c = vec![0u64; (n + m).saturating_sub(1)];
             for i in 0..n {
                 for j in 0..m {
                     c[i + j] = c[i + j].wrapping_add(a[i].wrapping_mul(b[j]));
                 }
             }
-            let d = U64Convolve::convolve(a, b);
-            assert_eq!(c, d);
+            let mut f = U64Convolve::transform(a.clone(), c.len());
+            let g = U64Convolve::transform(b.clone(), c.len());
+            U64Convolve::multiply(&mut f, &g);
+            assert_eq!(U64Convolve::inverse_transform(f, c.len()), c);
+            if c.len() <= 32 {
+                let mut f = SmallCrt::transform(a.clone(), c.len());
+                let g = SmallCrt::transform(b.clone(), c.len());
+                SmallCrt::multiply(&mut f, &g);
+                assert_eq!(SmallCrt::inverse_transform(f, c.len()), c);
+            }
+            assert_eq!(U64Convolve::convolve(a.clone(), b), c);
+            let f = U64Convolve::transform(a.clone(), n);
+            assert_eq!(U64Convolve::inverse_transform(f, n), a);
+            let mut square = vec![0u64; (n * 2).saturating_sub(1)];
+            for (i, &x) in a.iter().enumerate() {
+                for (j, &y) in a.iter().enumerate() {
+                    square[i + j] = square[i + j].wrapping_add(x.wrapping_mul(y));
+                }
+            }
+            assert_eq!(U64Convolve::square(a, square.len()), square);
+        }
+
+        for shift in [12, 15] {
+            let n = (1 << 19) + rng.random(1usize..1024);
+            let m = (1 << 19) + rng.random(1usize..1024);
+            let x = (rng.rand64() | 1) << shift;
+            let y = (rng.rand64() | 1) << shift;
+            let alternating = rng.gen_bool(0.5);
+            let a = (0..n)
+                .map(|i| {
+                    if alternating && i & 1 == 1 {
+                        x.wrapping_neg()
+                    } else {
+                        x
+                    }
+                })
+                .collect();
+            let b = (0..m)
+                .map(|i| {
+                    if alternating && i & 1 == 1 {
+                        y.wrapping_neg()
+                    } else {
+                        y
+                    }
+                })
+                .collect();
+            let actual = U64Convolve::convolve(a, b);
+            assert_eq!(actual.len(), n + m - 1);
+            for (i, actual) in actual.into_iter().enumerate() {
+                let count = (i + 1).min(n).min(m).min(n + m - 1 - i) as u64;
+                let expected = count.wrapping_mul(x).wrapping_mul(y);
+                let expected = if alternating && i & 1 == 1 {
+                    expected.wrapping_neg()
+                } else {
+                    expected
+                };
+                assert_eq!(actual, expected, "{n}x{m}/{shift}/{i}");
+            }
+        }
+        let n = (1 << 21) + rng.random(1usize..1024);
+        let m = rng.random(1537usize..4096);
+        let x = rng.rand64();
+        let y = rng.rand64();
+        let actual = U64Convolve::convolve(vec![x; n], vec![y; m]);
+        assert_eq!(actual.len(), n + m - 1);
+        for (i, actual) in actual.into_iter().enumerate() {
+            let count = (i + 1).min(n).min(m).min(n + m - 1 - i) as u64;
+            assert_eq!(actual, count.wrapping_mul(x).wrapping_mul(y));
         }
     }
 

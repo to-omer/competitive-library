@@ -185,7 +185,8 @@ mod floor_sum;
             "montgomery",
             "mod_sqrt",
             "factorial",
-            "PartialIgnoredOrd"
+            "PartialIgnoredOrd",
+            "gcd"
         )
     )
 )]
@@ -241,13 +242,7 @@ mod mod_sqrt;
     nightly,
     codesnip::entry(
         "NumberTheoreticTransform",
-        include(
-            "montgomery",
-            "ConvolveSteps",
-            "avx_helper",
-            "fast_fourier_transform",
-            "Xorshift"
-        )
+        include("montgomery", "ConvolveSteps", "avx_helper", "fast_fourier_transform")
     )
 )]
 mod number_theoretic_transform;

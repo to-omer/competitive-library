@@ -41,22 +41,18 @@ macro_rules! define_basic_mintbase {
             }
             #[inline]
             fn mod_one() -> Self::Inner {
-                1
+                (Self::get_mod() != 1) as $basety
             }
             #[inline]
             fn mod_add(x: Self::Inner, y: Self::Inner) -> Self::Inner {
-                let z = x + y;
                 let m = Self::get_mod();
-                if z >= m {
-                    z - m
-                } else {
-                    z
-                }
+                let (z, borrow) = x.overflowing_sub(m - y);
+                if borrow { z.wrapping_add(m) } else { z }
             }
             #[inline]
             fn mod_sub(x: Self::Inner, y: Self::Inner) -> Self::Inner {
                 if x < y {
-                    x + Self::get_mod() - y
+                    Self::get_mod() - (y - x)
                 } else {
                     x - y
                 }
@@ -83,17 +79,19 @@ macro_rules! define_basic_mintbase {
                 }
             }
             fn mod_inv(x: Self::Inner) -> Self::Inner {
-                let p = Self::get_mod() as $signedty;
-                let (mut a, mut b) = (x as $signedty, p);
-                let (mut u, mut x) = (1, 0);
+                let (mut a, mut b) = (x, Self::get_mod());
+                let (mut u, mut v) = (1, 0);
+                let mut negative = true;
+                // b * u + a * v equals the modulus, so coefficient updates fit.
                 while a != 0 {
                     let k = b / a;
-                    x -= k * u;
+                    v += k * u;
                     b -= k * a;
-                    swap(&mut x, &mut u);
+                    swap(&mut u, &mut v);
                     swap(&mut b, &mut a);
+                    negative = !negative;
                 }
-                (if x < 0 { x + p } else { x }) as _
+                if negative { Self::mod_neg(v) } else { v }
             }
         }
         $crate::define_basic_mintbase!(@simd_functions $dot_product, $name);
@@ -114,11 +112,12 @@ macro_rules! define_basic_mintbase {
         $(impl MIntConvert<$signed> for $name {
             #[inline]
             fn from(x: $signed) -> Self::Inner {
-                let x = x % <Self as MIntBase>::get_mod() as $signed;
+                let modulus = (<Self as MIntBase>::get_mod() as $signed).cast_unsigned();
+                let value = (x.unsigned_abs() % modulus) as $basety;
                 if x < 0 {
-                    (x + <Self as MIntBase>::get_mod() as $signed) as $basety
+                    <Self as MIntBase>::mod_neg(value)
                 } else {
-                    x as $basety
+                    value
                 }
             }
             #[inline]
@@ -135,7 +134,7 @@ macro_rules! define_basic_mintbase {
         assert_eq!($x.len(), $y.len());
         let modulus = Self::get_mod() as $upperty;
         let max_value = modulus - 1;
-        let block = ((<$upperty>::MAX - max_value) / (max_value * max_value)).min(64) as usize;
+        let block = ((<$upperty>::MAX - max_value) / (max_value * max_value).max(1)).min(64) as usize;
         let mut result = 0 as $upperty;
         for (x, y) in $x.chunks(block).zip($y.chunks(block)) {
             let sum: $upperty = x
@@ -182,7 +181,7 @@ macro_rules! define_basic_mintbase {
                 let modulus = Self::get_mod() as u64;
                 let max_value = modulus - 1;
                 let max_product = max_value * max_value;
-                let products_per_lane = ((u64::MAX - max_value) / max_product) as usize;
+                let products_per_lane = ((u64::MAX - max_value) / max_product.max(1)) as usize;
                 let vectors = products_per_lane.min(18);
                 let len = x.len();
                 let x = x.as_ptr().cast::<u32>();
@@ -241,7 +240,7 @@ macro_rules! define_basic_mintbase {
                 let modulus = Self::get_mod() as u64;
                 let max_value = modulus - 1;
                 let max_product = max_value * max_value;
-                let products_per_lane = ((u64::MAX - max_value) / max_product) as usize;
+                let products_per_lane = ((u64::MAX - max_value) / max_product.max(1)) as usize;
                 let vectors = products_per_lane.min(18);
                 let len = x.len();
                 let x = x.as_ptr().cast::<u32>();
@@ -466,7 +465,7 @@ macro_rules! impl_to_mint_base_for_modulo2 {
             }
             #[inline]
             fn mod_into() -> $t {
-                1
+                2
             }
         })*
     };
@@ -521,6 +520,77 @@ mod tests {
     test_mint!(test_mint998244353 MInt998244353);
     test_mint!(test_mint1000000007 MInt1000000007);
     test_mint!(test_mint1000000009 MInt1000000009);
+
+    macro_rules! test_dyn_mint_arithmetic {
+        ($name:ident, $mint:ident, $int:ty, $signed:ty) => {
+            #[test]
+            fn $name() {
+                let mut rng = Xorshift::default();
+                let moduli: Vec<_> = [1, 2, <$int>::MAX]
+                    .into_iter()
+                    .chain(rng.random_iter(1..).take(100))
+                    .collect();
+                for modulus in moduli {
+                    $mint::set_mod(modulus);
+                    assert_eq!($mint::one().inner() as u128, 1 % modulus as u128);
+                    let values: Vec<_> = [0, modulus - 1]
+                        .into_iter()
+                        .chain(rng.random_iter(0..modulus).take(16))
+                        .collect();
+                    for &x in &values {
+                        if modulus > 1 && crate::math::gcd(x as u64, modulus as u64) == 1 {
+                            let inverse = $mint::from(x).inv().inner();
+                            assert!(inverse < modulus);
+                            assert_eq!(x as u128 * inverse as u128 % modulus as u128, 1);
+                        }
+                        for &y in &values {
+                            let a = $mint::from(x);
+                            let b = $mint::from(y);
+                            let modulus = modulus as u128;
+                            assert_eq!((a + b).inner() as u128, (x as u128 + y as u128) % modulus);
+                            assert_eq!(
+                                (a - b).inner() as u128,
+                                (x as u128 + modulus - y as u128) % modulus
+                            );
+                        }
+                    }
+                    for x in [<$signed>::MIN, -1, 0, 1, <$signed>::MAX]
+                        .into_iter()
+                        .chain(rng.random_iter(..).take(16))
+                    {
+                        assert_eq!(
+                            $mint::from(x).inner() as i128,
+                            (x as i128).rem_euclid(modulus as i128)
+                        );
+                    }
+                    for x in [i128::MIN, -1, 0, 1, i128::MAX]
+                        .into_iter()
+                        .chain(rng.random_iter(..).take(16))
+                    {
+                        assert_eq!(
+                            $mint::from(x).inner() as i128,
+                            x.rem_euclid(modulus as i128)
+                        );
+                    }
+                    let lengths: Vec<_> = [0, 1, 63, 64, 65, 511, 512, 513, 600]
+                        .into_iter()
+                        .chain(rng.random_iter(0..600).take(8))
+                        .collect();
+                    for n in lengths {
+                        let x: Vec<$mint> = rng.random_iter(..).take(n).collect();
+                        let y: Vec<$mint> = rng.random_iter(..).take(n).collect();
+                        let expected = x.iter().zip(&y).fold(0, |sum, (x, y)| {
+                            (sum + x.inner() as u128 * y.inner() as u128) % modulus as u128
+                        });
+                        assert_eq!($mint::dot_product(&x, &y).inner() as u128, expected);
+                    }
+                }
+                $mint::set_mod(1_000_000_007);
+            }
+        };
+    }
+    test_dyn_mint_arithmetic!(test_dyn_mint_u32_arithmetic, DynMIntU32, u32, i32);
+    test_dyn_mint_arithmetic!(test_dyn_mint_u64_arithmetic, DynMIntU64, u64, i64);
 
     #[test]
     fn test_dyn_mint_u32_dot_product() {
