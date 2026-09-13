@@ -17,11 +17,16 @@ pub fn many_aplusb_fast(reader: impl Read, writer: impl Write) {
     s.push_str("                ");
     let mut writer = FastOutput::new(writer);
     let mut scanner = unsafe { FastInput::from_slice(s.as_bytes()) };
-    let t = unsafe { scanner.u64() };
-    for _ in 0..t {
-        let a = unsafe { scanner.u64() };
-        let b = unsafe { scanner.u64() };
-        writer.u64(a + b);
-        writer.byte(b'\n');
+    let t = unsafe { scanner.usize() };
+    let mut sums = [0u64; 4];
+    for start in (0..t).step_by(sums.len()) {
+        let count = (t - start).min(sums.len());
+        for sum in &mut sums[..count] {
+            *sum = unsafe { scanner.u64() + scanner.u64() };
+        }
+        for &sum in &sums[..count] {
+            writer.u64(sum);
+            writer.byte(b'\n');
+        }
     }
 }
