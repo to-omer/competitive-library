@@ -52,68 +52,68 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">mul_scalar</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">mul_<wbr>scalar</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#217-227">Source</a> </span></div><pre class="rust item-decl"><code>fn mul_scalar&lt;M&gt;(x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><div class="where">where
-    M: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[34,34],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#374&#34;,&#34;line 374&#34;],[[36,36],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#376&#34;,&#34;line 376&#34;],[[37,37],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#377&#34;,&#34;line 377&#34;],[[38,38],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#378&#34;,&#34;line 378&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#374">line 374</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>340</span><span class="kw">fn </span>intt_batch_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
-<span data-nosnippet>341</span><span class="kw">where
-<span data-nosnippet>342</span>    </span>M: Montgomery32NttModulus,
-<span data-nosnippet>343</span>{
-<span data-nosnippet>344</span>    <span class="kw">let </span>n = a.len() / width;
-<span data-nosnippet>345</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
-<span data-nosnippet>346</span>        <span class="kw">return</span>;
-<span data-nosnippet>347</span>    }
-<span data-nosnippet>348</span>    <span class="comment">// MInt is transparent over u32; lazy residues stay below 2 * MOD and are
-<span data-nosnippet>349</span>    // normalized before the typed slice is used again.
-<span data-nosnippet>350</span>    </span><span class="kw">let </span>a = <span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(a.as_mut_ptr().cast::&lt;u32&gt;(), a.len()) };
-<span data-nosnippet>351</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
-<span data-nosnippet>352</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>353</span>        n / <span class="number">2
-<span data-nosnippet>354</span>    </span>} <span class="kw">else </span>{
-<span data-nosnippet>355</span>        n
-<span data-nosnippet>356</span>    };
-<span data-nosnippet>357</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
-<span data-nosnippet>358</span>    <span class="kw">while </span>v &lt; limit {
-<span data-nosnippet>359</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
-<span data-nosnippet>360</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
-<span data-nosnippet>361</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
-<span data-nosnippet>362</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
-<span data-nosnippet>363</span>            <span class="kw">let </span>(l, r) = a.split_at_mut((v &lt;&lt; <span class="number">1</span>) * width);
-<span data-nosnippet>364</span>            <span class="kw">let </span>(ll, lr) = l.split_at_mut(v * width);
-<span data-nosnippet>365</span>            <span class="kw">let </span>(rl, rr) = r.split_at_mut(v * width);
-<span data-nosnippet>366</span>            <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
-<span data-nosnippet>367</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
-<span data-nosnippet>368</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
-<span data-nosnippet>369</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2;
-<span data-nosnippet>370</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3;
-<span data-nosnippet>371</span>                <span class="kw">let </span>a0pa1 = add_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>372</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>373</span>                <span class="kw">let </span>a2pa3 = add_scalar::&lt;M&gt;(a2, a3);
-<span data-nosnippet>374</span>                <span class="kw">let </span>a2na3iimag = <span class="highlight focus">mul_scalar::&lt;M&gt;</span>(sub_scalar::&lt;M&gt;(a2, a3), iimag);
-<span data-nosnippet>375</span>                <span class="kw-2">*</span>x0 = add_scalar::&lt;M&gt;(a0pa1, a2pa3);
-<span data-nosnippet>376</span>                <span class="kw-2">*</span>x1 = <span class="highlight">mul_scalar::&lt;M&gt;</span>(add_scalar::&lt;M&gt;(a0na1, a2na3iimag), w1);
-<span data-nosnippet>377</span>                <span class="kw-2">*</span>x2 = <span class="highlight">mul_scalar::&lt;M&gt;</span>(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
-<span data-nosnippet>378</span>                <span class="kw-2">*</span>x3 = <span class="highlight">mul_scalar::&lt;M&gt;</span>(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
-<span data-nosnippet>379</span>            }
-<span data-nosnippet>380</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
-<span data-nosnippet>381</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
-<span data-nosnippet>382</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
-<span data-nosnippet>383</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
-<span data-nosnippet>384</span>        }
-<span data-nosnippet>385</span>        v &lt;&lt;= <span class="number">2</span>;
-<span data-nosnippet>386</span>    }
-<span data-nosnippet>387</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>388</span>        <span class="kw">let </span>(l, r) = a.split_at_mut(n / <span class="number">2 </span>* width);
-<span data-nosnippet>389</span>        <span class="kw">for </span>(x0, x1) <span class="kw">in </span>l.iter_mut().zip(r) {
-<span data-nosnippet>390</span>            <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
-<span data-nosnippet>391</span>            <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
-<span data-nosnippet>392</span>            <span class="kw-2">*</span>x0 = add_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>393</span>            <span class="kw-2">*</span>x1 = sub_scalar::&lt;M&gt;(a0, a1);
-<span data-nosnippet>394</span>        }
-<span data-nosnippet>395</span>    }
-<span data-nosnippet>396</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
-<span data-nosnippet>397</span>    <span class="kw">for </span>a <span class="kw">in </span>a {
-<span data-nosnippet>398</span>        <span class="kw-2">*</span>a = M::mod_mul(<span class="kw-2">*</span>a, inv);
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">mul_scalar</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">mul_<wbr>scalar</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#221-231">Source</a> </span></div><pre class="rust item-decl"><code>fn mul_scalar&lt;M&gt;(x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><div class="where">where
+    M: <a class="trait" href="trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[34,34],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#378&#34;,&#34;line 378&#34;],[[36,36],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#380&#34;,&#34;line 380&#34;],[[37,37],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#381&#34;,&#34;line 381&#34;],[[38,38],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#382&#34;,&#34;line 382&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#378">line 378</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>344</span><span class="kw">fn </span>intt_batch_scalar&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>345</span><span class="kw">where
+<span data-nosnippet>346</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>347</span>{
+<span data-nosnippet>348</span>    <span class="kw">let </span>n = a.len() / width;
+<span data-nosnippet>349</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>350</span>        <span class="kw">return</span>;
+<span data-nosnippet>351</span>    }
+<span data-nosnippet>352</span>    <span class="comment">// MInt is transparent over u32; lazy residues stay below 2 * MOD and are
+<span data-nosnippet>353</span>    // normalized before the typed slice is used again.
+<span data-nosnippet>354</span>    </span><span class="kw">let </span>a = <span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(a.as_mut_ptr().cast::&lt;u32&gt;(), a.len()) };
+<span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
+<span data-nosnippet>356</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>357</span>        n / <span class="number">2
+<span data-nosnippet>358</span>    </span>} <span class="kw">else </span>{
+<span data-nosnippet>359</span>        n
+<span data-nosnippet>360</span>    };
+<span data-nosnippet>361</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
+<span data-nosnippet>362</span>    <span class="kw">while </span>v &lt; limit {
+<span data-nosnippet>363</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
+<span data-nosnippet>365</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
+<span data-nosnippet>366</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
+<span data-nosnippet>367</span>            <span class="kw">let </span>(l, r) = a.split_at_mut((v &lt;&lt; <span class="number">1</span>) * width);
+<span data-nosnippet>368</span>            <span class="kw">let </span>(ll, lr) = l.split_at_mut(v * width);
+<span data-nosnippet>369</span>            <span class="kw">let </span>(rl, rr) = r.split_at_mut(v * width);
+<span data-nosnippet>370</span>            <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+<span data-nosnippet>371</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>372</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>373</span>                <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2;
+<span data-nosnippet>374</span>                <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3;
+<span data-nosnippet>375</span>                <span class="kw">let </span>a0pa1 = add_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>376</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>377</span>                <span class="kw">let </span>a2pa3 = add_scalar::&lt;M&gt;(a2, a3);
+<span data-nosnippet>378</span>                <span class="kw">let </span>a2na3iimag = <span class="highlight focus">mul_scalar::&lt;M&gt;</span>(sub_scalar::&lt;M&gt;(a2, a3), iimag);
+<span data-nosnippet>379</span>                <span class="kw-2">*</span>x0 = add_scalar::&lt;M&gt;(a0pa1, a2pa3);
+<span data-nosnippet>380</span>                <span class="kw-2">*</span>x1 = <span class="highlight">mul_scalar::&lt;M&gt;</span>(add_scalar::&lt;M&gt;(a0na1, a2na3iimag), w1);
+<span data-nosnippet>381</span>                <span class="kw-2">*</span>x2 = <span class="highlight">mul_scalar::&lt;M&gt;</span>(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
+<span data-nosnippet>382</span>                <span class="kw-2">*</span>x3 = <span class="highlight">mul_scalar::&lt;M&gt;</span>(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
+<span data-nosnippet>383</span>            }
+<span data-nosnippet>384</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
+<span data-nosnippet>385</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
+<span data-nosnippet>386</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
+<span data-nosnippet>387</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
+<span data-nosnippet>388</span>        }
+<span data-nosnippet>389</span>        v &lt;&lt;= <span class="number">2</span>;
+<span data-nosnippet>390</span>    }
+<span data-nosnippet>391</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>392</span>        <span class="kw">let </span>(l, r) = a.split_at_mut(n / <span class="number">2 </span>* width);
+<span data-nosnippet>393</span>        <span class="kw">for </span>(x0, x1) <span class="kw">in </span>l.iter_mut().zip(r) {
+<span data-nosnippet>394</span>            <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+<span data-nosnippet>395</span>            <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+<span data-nosnippet>396</span>            <span class="kw-2">*</span>x0 = add_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>397</span>            <span class="kw-2">*</span>x1 = sub_scalar::&lt;M&gt;(a0, a1);
+<span data-nosnippet>398</span>        }
 <span data-nosnippet>399</span>    }
-<span data-nosnippet>400</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[96,96],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#333&#34;,&#34;line 333&#34;],[[97,97],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#334&#34;,&#34;line 334&#34;],[[98,98],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#335&#34;,&#34;line 335&#34;],[[103,103],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#340&#34;,&#34;line 340&#34;],[[207,207],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#444&#34;,&#34;line 444&#34;],[[209,209],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#446&#34;,&#34;line 446&#34;],[[210,210],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#447&#34;,&#34;line 447&#34;],[[211,211],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#448&#34;,&#34;line 448&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs (<a href="../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#333">line 333</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>237</span><span class="kw">pub unsafe fn </span>ntt_batch_avx2&lt;M, <span class="kw">const </span>PARTIAL: bool&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>400</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
+<span data-nosnippet>401</span>    <span class="kw">for </span>a <span class="kw">in </span>a {
+<span data-nosnippet>402</span>        <span class="kw-2">*</span>a = M::mod_mul(<span class="kw-2">*</span>a, inv);
+<span data-nosnippet>403</span>    }
+<span data-nosnippet>404</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[96,96],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#333&#34;,&#34;line 333&#34;],[[97,97],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#334&#34;,&#34;line 334&#34;],[[98,98],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#335&#34;,&#34;line 335&#34;],[[103,103],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#340&#34;,&#34;line 340&#34;],[[207,207],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#444&#34;,&#34;line 444&#34;],[[209,209],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#446&#34;,&#34;line 446&#34;],[[210,210],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#447&#34;,&#34;line 447&#34;],[[211,211],&#34;../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#448&#34;,&#34;line 448&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs (<a href="../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#333">line 333</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>237</span><span class="kw">pub unsafe fn </span>ntt_batch_avx2&lt;M, <span class="kw">const </span>PARTIAL: bool&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
 <span data-nosnippet>238</span><span class="kw">where
 <span data-nosnippet>239</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>240</span>{

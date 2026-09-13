@@ -356,7 +356,7 @@
 <span data-nosnippet>316</span>            &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>,
 <span data-nosnippet>317</span>            &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>,
 <span data-nosnippet>318</span>        ))
-<span data-nosnippet>319</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#101&#34;,&#34;line 101&#34;],[[6,6],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#102&#34;,&#34;line 102&#34;],[[7,7],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#103&#34;,&#34;line 103&#34;],[[296,296],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#392&#34;,&#34;line 392&#34;],[[310,310],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#406&#34;,&#34;line 406&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#101">line 101</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span>    <span class="kw">pub fn </span>eval_twiddle(cache: <span class="kw-2">&amp;</span>[Complex&lt;f64&gt;], step: usize, n: usize, k: usize) -&gt; Complex&lt;f64&gt; {
+<span data-nosnippet>319</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#101&#34;,&#34;line 101&#34;],[[6,6],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#102&#34;,&#34;line 102&#34;],[[7,7],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#103&#34;,&#34;line 103&#34;],[[298,298],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#394&#34;,&#34;line 394&#34;],[[312,312],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#408&#34;,&#34;line 408&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#101">line 101</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span>    <span class="kw">pub fn </span>eval_twiddle(cache: <span class="kw-2">&amp;</span>[Complex&lt;f64&gt;], step: usize, n: usize, k: usize) -&gt; Complex&lt;f64&gt; {
 <span data-nosnippet>97</span>        <span class="kw">let </span>k = step * k;
 <span data-nosnippet>98</span>        <span class="kw">let </span>w = cache[(k &gt;&gt; <span class="number">2</span>) &lt;&lt; <span class="number">1</span>].conjugate();
 <span data-nosnippet>99</span>        <span class="kw">let </span>w = <span class="kw">match </span>k &amp; <span class="number">3 </span>{
@@ -431,7 +431,7 @@
 <span data-nosnippet>168</span>                    <span class="kw">let </span>wi = _mm256_set1_pd(w.im);
 <span data-nosnippet>169</span>                    <span class="kw">let </span>(ar, ai) = load4(<span class="kw-2">&amp;</span>a[k * <span class="number">2</span>]);
 <span data-nosnippet>170</span>                    <span class="kw">let </span>(br, bi) = load4(<span class="kw-2">&amp;</span>a[k * <span class="number">2 </span>+ <span class="number">1</span>]);
-<span data-nosnippet>171</span>                    <span class="kw">let </span>(br, bi) = <a href="mod.rs.html#1-287">mul4</a>(br, bi, wr, wi);
+<span data-nosnippet>171</span>                    <span class="kw">let </span>(br, bi) = <a href="mod.rs.html#1-301">mul4</a>(br, bi, wr, wi);
 <span data-nosnippet>172</span>                    store4(<span class="kw-2">&amp;mut </span>a[k * <span class="number">2</span>], _mm256_add_pd(ar, br), _mm256_add_pd(ai, bi));
 <span data-nosnippet>173</span>                    store4(
 <span data-nosnippet>174</span>                        <span class="kw-2">&amp;mut </span>a[k * <span class="number">2 </span>+ <span class="number">1</span>],
@@ -551,136 +551,138 @@
 <span data-nosnippet>288</span>
 <span data-nosnippet>289</span>    <span class="attr">#[inline]
 <span data-nosnippet>290</span>    </span><span class="kw">fn </span>pack_f64(values: <span class="kw">impl </span>Iterator&lt;Item = f64&gt;, n: usize) -&gt; Vec&lt;Complex4&gt; {
-<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[Complex4::default(); n / <span class="number">4</span>];
-<span data-nosnippet>292</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
-<span data-nosnippet>293</span>            <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>294</span>                result[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>] = value;
-<span data-nosnippet>295</span>            } <span class="kw">else </span>{
-<span data-nosnippet>296</span>                result[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>] = value;
-<span data-nosnippet>297</span>            }
-<span data-nosnippet>298</span>        }
-<span data-nosnippet>299</span>        result
-<span data-nosnippet>300</span>    }
-<span data-nosnippet>301</span>
-<span data-nosnippet>302</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
-<span data-nosnippet>303</span>    </span><span class="kw">pub unsafe fn </span>convolve_f64_avx2(
-<span data-nosnippet>304</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>305</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>306</span>        range: std::ops::Range&lt;usize&gt;,
-<span data-nosnippet>307</span>    ) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>308</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
-<span data-nosnippet>309</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
-<span data-nosnippet>310</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
-<span data-nosnippet>311</span>        fft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>312</span>        fft_soa(<span class="kw-2">&amp;mut </span>fb);
-<span data-nosnippet>313</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
-<span data-nosnippet>314</span>        drop(fb);
-<span data-nosnippet>315</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>316</span>        range
-<span data-nosnippet>317</span>            .map(|i| {
-<span data-nosnippet>318</span>                <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>319</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
-<span data-nosnippet>320</span>                } <span class="kw">else </span>{
-<span data-nosnippet>321</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
-<span data-nosnippet>322</span>                }
-<span data-nosnippet>323</span>            })
-<span data-nosnippet>324</span>            .collect()
-<span data-nosnippet>325</span>    }
-<span data-nosnippet>326</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
-<span data-nosnippet>327</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx2(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
-<span data-nosnippet>328</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
-<span data-nosnippet>329</span>    }
-<span data-nosnippet>330</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
-<span data-nosnippet>331</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx512(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
-<span data-nosnippet>332</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
-<span data-nosnippet>333</span>    }
-<span data-nosnippet>334</span>}
-<span data-nosnippet>335</span>
-<span data-nosnippet>336</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
-<span data-nosnippet>337</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
-<span data-nosnippet>338</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
-<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
-<span data-nosnippet>340</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
-<span data-nosnippet>341</span>        k /= <span class="number">2</span>;
-<span data-nosnippet>342</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
-<span data-nosnippet>343</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
-<span data-nosnippet>344</span>        }
-<span data-nosnippet>345</span>        m <span class="kw-2">*</span>= <span class="number">2</span>;
-<span data-nosnippet>346</span>    }
-<span data-nosnippet>347</span>    <span class="kw">if </span>m == k {
-<span data-nosnippet>348</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
-<span data-nosnippet>349</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>350</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
-<span data-nosnippet>351</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
-<span data-nosnippet>352</span>                f.swap(ji, ij);
-<span data-nosnippet>353</span>            }
-<span data-nosnippet>354</span>        }
-<span data-nosnippet>355</span>    } <span class="kw">else </span>{
-<span data-nosnippet>356</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
-<span data-nosnippet>357</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>358</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
-<span data-nosnippet>359</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
-<span data-nosnippet>360</span>                f.swap(ji, ij);
-<span data-nosnippet>361</span>                f.swap(ji + m, ij + m);
-<span data-nosnippet>362</span>            }
-<span data-nosnippet>363</span>        }
-<span data-nosnippet>364</span>    }
-<span data-nosnippet>365</span>}
-<span data-nosnippet>366</span>
-<span data-nosnippet>367</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
-<span data-nosnippet>368</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
-<span data-nosnippet>369</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
-<span data-nosnippet>370</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
-<span data-nosnippet>371</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
-<span data-nosnippet>372</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
-<span data-nosnippet>373</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
-<span data-nosnippet>374</span>            f(k, w);
-<span data-nosnippet>375</span>            w <span class="kw-2">*</span>= step;
-<span data-nosnippet>376</span>        }
-<span data-nosnippet>377</span>    }
-<span data-nosnippet>378</span>}
-<span data-nosnippet>379</span>
-<span data-nosnippet>380</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
-<span data-nosnippet>381</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>382</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
-<span data-nosnippet>383</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
-<span data-nosnippet>384</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>385</span>            f[i / <span class="number">2</span>].re = t;
-<span data-nosnippet>386</span>        } <span class="kw">else </span>{
-<span data-nosnippet>387</span>            f[i / <span class="number">2</span>].im = t;
-<span data-nosnippet>388</span>        }
-<span data-nosnippet>389</span>    }
-<span data-nosnippet>390</span>    fft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>391</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>392</span>    f[<span class="number">0</span>] = <span class="highlight">Complex::new</span>(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
-<span data-nosnippet>393</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
-<span data-nosnippet>394</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
-<span data-nosnippet>395</span>        <span class="kw">let </span>c = wk.conjugate().transpose() + <span class="number">1.</span>;
-<span data-nosnippet>396</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
-<span data-nosnippet>397</span>        f[k] -= d;
-<span data-nosnippet>398</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
-<span data-nosnippet>399</span>    });
-<span data-nosnippet>400</span>    f
-<span data-nosnippet>401</span>}
-<span data-nosnippet>402</span>
-<span data-nosnippet>403</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>404</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>405</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
-<span data-nosnippet>406</span>    f[<span class="number">0</span>] = <span class="highlight">Complex::new</span>((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
-<span data-nosnippet>407</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
-<span data-nosnippet>408</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
-<span data-nosnippet>409</span>        <span class="kw">let </span>c = wk.transpose().conjugate() + <span class="number">1.</span>;
-<span data-nosnippet>410</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
-<span data-nosnippet>411</span>        f[k] -= d;
-<span data-nosnippet>412</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
-<span data-nosnippet>413</span>    });
-<span data-nosnippet>414</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>415</span>    ifft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>416</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
-<span data-nosnippet>417</span>    (<span class="number">0</span>..len)
-<span data-nosnippet>418</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
-<span data-nosnippet>419</span>        .collect()
-<span data-nosnippet>420</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[10,10],&#34;../../src/competitive/geometry/circle.rs.html#25&#34;,&#34;line 25&#34;],[[11,11],&#34;../../src/competitive/geometry/circle.rs.html#26&#34;,&#34;line 26&#34;]]"><div class="scraped-example-title">crates/competitive/src/geometry/circle.rs (<a href="../../src/competitive/geometry/circle.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>15</span>    <span class="kw">pub fn </span>cross_circle(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(Complex&lt;T&gt;, Complex&lt;T&gt;)&gt; {
+<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::<a href="../algebra/lazy_map.rs.html#8-51">with_capacity</a>(n / <span class="number">4</span>);
+<span data-nosnippet>292</span>        advise_huge_pages(<span class="kw-2">&amp;mut </span>result);
+<span data-nosnippet>293</span>        result.resize(n / <span class="number">4</span>, Complex4::default());
+<span data-nosnippet>294</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
+<span data-nosnippet>295</span>            <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>296</span>                result[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>] = value;
+<span data-nosnippet>297</span>            } <span class="kw">else </span>{
+<span data-nosnippet>298</span>                result[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>] = value;
+<span data-nosnippet>299</span>            }
+<span data-nosnippet>300</span>        }
+<span data-nosnippet>301</span>        result
+<span data-nosnippet>302</span>    }
+<span data-nosnippet>303</span>
+<span data-nosnippet>304</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
+<span data-nosnippet>305</span>    </span><span class="kw">pub unsafe fn </span>convolve_f64_avx2(
+<span data-nosnippet>306</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>307</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>308</span>        range: std::<a href="../num/zero_one.rs.html#15-28">ops</a>::Range&lt;usize&gt;,
+<span data-nosnippet>309</span>    ) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>310</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
+<span data-nosnippet>311</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
+<span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
+<span data-nosnippet>313</span>        fft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>314</span>        fft_soa(<span class="kw-2">&amp;mut </span>fb);
+<span data-nosnippet>315</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
+<span data-nosnippet>316</span>        drop(fb);
+<span data-nosnippet>317</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>318</span>        range
+<span data-nosnippet>319</span>            .map(|i| {
+<span data-nosnippet>320</span>                <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>321</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
+<span data-nosnippet>322</span>                } <span class="kw">else </span>{
+<span data-nosnippet>323</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
+<span data-nosnippet>324</span>                }
+<span data-nosnippet>325</span>            })
+<span data-nosnippet>326</span>            .collect()
+<span data-nosnippet>327</span>    }
+<span data-nosnippet>328</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>329</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx2(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
+<span data-nosnippet>330</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
+<span data-nosnippet>331</span>    }
+<span data-nosnippet>332</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
+<span data-nosnippet>333</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx512(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
+<span data-nosnippet>334</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
+<span data-nosnippet>335</span>    }
+<span data-nosnippet>336</span>}
+<span data-nosnippet>337</span>
+<span data-nosnippet>338</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
+<span data-nosnippet>340</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
+<span data-nosnippet>341</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
+<span data-nosnippet>342</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
+<span data-nosnippet>343</span>        k /= <span class="number">2</span>;
+<span data-nosnippet>344</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
+<span data-nosnippet>345</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
+<span data-nosnippet>346</span>        }
+<span data-nosnippet>347</span>        <a href="../algebra/lazy_map.rs.html#157">m</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>348</span>    }
+<span data-nosnippet>349</span>    <span class="kw">if </span>m == k {
+<span data-nosnippet>350</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
+<span data-nosnippet>351</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
+<span data-nosnippet>352</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
+<span data-nosnippet>353</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
+<span data-nosnippet>354</span>                f.swap(ji, ij);
+<span data-nosnippet>355</span>            }
+<span data-nosnippet>356</span>        }
+<span data-nosnippet>357</span>    } <span class="kw">else </span>{
+<span data-nosnippet>358</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
+<span data-nosnippet>359</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
+<span data-nosnippet>360</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
+<span data-nosnippet>361</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
+<span data-nosnippet>362</span>                f.swap(ji, ij);
+<span data-nosnippet>363</span>                f.swap(ji + m, ij + m);
+<span data-nosnippet>364</span>            }
+<span data-nosnippet>365</span>        }
+<span data-nosnippet>366</span>    }
+<span data-nosnippet>367</span>}
+<span data-nosnippet>368</span>
+<span data-nosnippet>369</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
+<span data-nosnippet>370</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
+<span data-nosnippet>371</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
+<span data-nosnippet>372</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
+<span data-nosnippet>373</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
+<span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
+<span data-nosnippet>375</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
+<span data-nosnippet>376</span>            f(k, w);
+<span data-nosnippet>377</span>            w <span class="kw-2">*</span>= step;
+<span data-nosnippet>378</span>        }
+<span data-nosnippet>379</span>    }
+<span data-nosnippet>380</span>}
+<span data-nosnippet>381</span>
+<span data-nosnippet>382</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
+<span data-nosnippet>383</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>384</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
+<span data-nosnippet>385</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
+<span data-nosnippet>386</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>387</span>            f[i / <span class="number">2</span>].re = t;
+<span data-nosnippet>388</span>        } <span class="kw">else </span>{
+<span data-nosnippet>389</span>            f[i / <span class="number">2</span>].im = t;
+<span data-nosnippet>390</span>        }
+<span data-nosnippet>391</span>    }
+<span data-nosnippet>392</span>    fft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>393</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>394</span>    f[<span class="number">0</span>] = <span class="highlight">Complex::new</span>(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
+<span data-nosnippet>395</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
+<span data-nosnippet>396</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
+<span data-nosnippet>397</span>        <span class="kw">let </span>c = wk.conjugate().transpose() + <span class="number">1.</span>;
+<span data-nosnippet>398</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>399</span>        f[k] -= d;
+<span data-nosnippet>400</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
+<span data-nosnippet>401</span>    });
+<span data-nosnippet>402</span>    f
+<span data-nosnippet>403</span>}
+<span data-nosnippet>404</span>
+<span data-nosnippet>405</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>406</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>407</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
+<span data-nosnippet>408</span>    f[<span class="number">0</span>] = <span class="highlight">Complex::new</span>((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
+<span data-nosnippet>409</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
+<span data-nosnippet>410</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
+<span data-nosnippet>411</span>        <span class="kw">let </span>c = wk.transpose().conjugate() + <span class="number">1.</span>;
+<span data-nosnippet>412</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>413</span>        f[k] -= d;
+<span data-nosnippet>414</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
+<span data-nosnippet>415</span>    });
+<span data-nosnippet>416</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>417</span>    ifft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>418</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
+<span data-nosnippet>419</span>    (<span class="number">0</span>..len)
+<span data-nosnippet>420</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
+<span data-nosnippet>421</span>        .collect()
+<span data-nosnippet>422</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[10,10],&#34;../../src/competitive/geometry/circle.rs.html#25&#34;,&#34;line 25&#34;],[[11,11],&#34;../../src/competitive/geometry/circle.rs.html#26&#34;,&#34;line 26&#34;]]"><div class="scraped-example-title">crates/competitive/src/geometry/circle.rs (<a href="../../src/competitive/geometry/circle.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>15</span>    <span class="kw">pub fn </span>cross_circle(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(Complex&lt;T&gt;, Complex&lt;T&gt;)&gt; {
 <span data-nosnippet>16</span>        <span class="kw">let </span>d = (<span class="self">self</span>.c - other.c).abs();
 <span data-nosnippet>17</span>        <span class="kw">let </span>rc = (d * d + <span class="self">self</span>.r * <span class="self">self</span>.r - other.r * other.r) / (d + d);
 <span data-nosnippet>18</span>        <span class="kw">let </span>rs2 = <span class="self">self</span>.r * <span class="self">self</span>.r - rc * rc;
@@ -693,49 +695,49 @@
 <span data-nosnippet>25</span>            <span class="self">self</span>.c + diff * <span class="highlight focus">Complex::new</span>(rc, rs),
 <span data-nosnippet>26</span>            <span class="self">self</span>.c + diff * <span class="highlight">Complex::new</span>(rc, -rs),
 <span data-nosnippet>27</span>        ))
-<span data-nosnippet>28</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.transpose" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#18-20">Source</a><h4 class="code-header">pub fn <a href="#method.transpose" class="fn">transpose</a>(self) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[15,15],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#395&#34;,&#34;line 395&#34;],[[29,29],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#409&#34;,&#34;line 409&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#395">line 395</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>380</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
-<span data-nosnippet>381</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>382</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
-<span data-nosnippet>383</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
-<span data-nosnippet>384</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>385</span>            f[i / <span class="number">2</span>].re = t;
-<span data-nosnippet>386</span>        } <span class="kw">else </span>{
-<span data-nosnippet>387</span>            f[i / <span class="number">2</span>].im = t;
-<span data-nosnippet>388</span>        }
-<span data-nosnippet>389</span>    }
-<span data-nosnippet>390</span>    fft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>391</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>392</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
-<span data-nosnippet>393</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
-<span data-nosnippet>394</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
-<span data-nosnippet>395</span>        <span class="kw">let </span>c = wk.conjugate().<span class="highlight focus">transpose</span>() + <span class="number">1.</span>;
-<span data-nosnippet>396</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
-<span data-nosnippet>397</span>        f[k] -= d;
-<span data-nosnippet>398</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
-<span data-nosnippet>399</span>    });
-<span data-nosnippet>400</span>    f
-<span data-nosnippet>401</span>}
-<span data-nosnippet>402</span>
-<span data-nosnippet>403</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>404</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>405</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
-<span data-nosnippet>406</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
-<span data-nosnippet>407</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
-<span data-nosnippet>408</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
-<span data-nosnippet>409</span>        <span class="kw">let </span>c = wk.<span class="highlight">transpose</span>().conjugate() + <span class="number">1.</span>;
-<span data-nosnippet>410</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
-<span data-nosnippet>411</span>        f[k] -= d;
-<span data-nosnippet>412</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
-<span data-nosnippet>413</span>    });
-<span data-nosnippet>414</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>415</span>    ifft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>416</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
-<span data-nosnippet>417</span>    (<span class="number">0</span>..len)
-<span data-nosnippet>418</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
-<span data-nosnippet>419</span>        .collect()
-<span data-nosnippet>420</span>}</code></pre></div></div></div></details><section id="method.map" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#21-23">Source</a><h4 class="code-header">pub fn <a href="#method.map" class="fn">map</a>&lt;U&gt;(self, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(T) -&gt; U) -&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;U&gt;</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-1" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#41-48">Source</a><a href="#impl-Complex%3CT%3E-1" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
+<span data-nosnippet>28</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.transpose" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#18-20">Source</a><h4 class="code-header">pub fn <a href="#method.transpose" class="fn">transpose</a>(self) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[15,15],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#397&#34;,&#34;line 397&#34;],[[29,29],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#411&#34;,&#34;line 411&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#397">line 397</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>382</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
+<span data-nosnippet>383</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>384</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
+<span data-nosnippet>385</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
+<span data-nosnippet>386</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>387</span>            f[i / <span class="number">2</span>].re = t;
+<span data-nosnippet>388</span>        } <span class="kw">else </span>{
+<span data-nosnippet>389</span>            f[i / <span class="number">2</span>].im = t;
+<span data-nosnippet>390</span>        }
+<span data-nosnippet>391</span>    }
+<span data-nosnippet>392</span>    fft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>393</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>394</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
+<span data-nosnippet>395</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
+<span data-nosnippet>396</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
+<span data-nosnippet>397</span>        <span class="kw">let </span>c = wk.conjugate().<span class="highlight focus">transpose</span>() + <span class="number">1.</span>;
+<span data-nosnippet>398</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>399</span>        f[k] -= d;
+<span data-nosnippet>400</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
+<span data-nosnippet>401</span>    });
+<span data-nosnippet>402</span>    f
+<span data-nosnippet>403</span>}
+<span data-nosnippet>404</span>
+<span data-nosnippet>405</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>406</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>407</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
+<span data-nosnippet>408</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
+<span data-nosnippet>409</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
+<span data-nosnippet>410</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
+<span data-nosnippet>411</span>        <span class="kw">let </span>c = wk.<span class="highlight">transpose</span>().conjugate() + <span class="number">1.</span>;
+<span data-nosnippet>412</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].conjugate()) * <span class="number">0.5</span>;
+<span data-nosnippet>413</span>        f[k] -= d;
+<span data-nosnippet>414</span>        f[n / <span class="number">2 </span>- k] += d.conjugate();
+<span data-nosnippet>415</span>    });
+<span data-nosnippet>416</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>417</span>    ifft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>418</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
+<span data-nosnippet>419</span>    (<span class="number">0</span>..len)
+<span data-nosnippet>420</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
+<span data-nosnippet>421</span>        .collect()
+<span data-nosnippet>422</span>}</code></pre></div></div></div></details><section id="method.map" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#21-23">Source</a><h4 class="code-header">pub fn <a href="#method.map" class="fn">map</a>&lt;U&gt;(self, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(T) -&gt; U) -&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;U&gt;</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-1" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#41-48">Source</a><a href="#impl-Complex%3CT%3E-1" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
     T: <a class="trait" href="trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="trait.One.html" title="trait competitive::num::One">One</a>,</div></h3></section></summary><div class="impl-items"><section id="method.i" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#45-47">Source</a><h4 class="code-header">pub fn <a href="#method.i" class="fn">i</a>() -&gt; Self</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-2" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#49-56">Source</a><a href="#impl-Complex%3CT%3E-2" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
-    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html" title="trait core::ops::arith::Neg">Neg</a>&lt;Output = T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.conjugate" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#53-55">Source</a><h4 class="code-header">pub fn <a href="#method.conjugate" class="fn">conjugate</a>(self) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#98&#34;,&#34;line 98&#34;],[[9,9],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#105&#34;,&#34;line 105&#34;],[[96,96],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#192&#34;,&#34;line 192&#34;],[[117,117],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#213&#34;,&#34;line 213&#34;],[[297,297],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#393&#34;,&#34;line 393&#34;],[[299,299],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#395&#34;,&#34;line 395&#34;],[[300,300],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#396&#34;,&#34;line 396&#34;],[[302,302],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#398&#34;,&#34;line 398&#34;],[[311,311],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#407&#34;,&#34;line 407&#34;],[[313,313],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#409&#34;,&#34;line 409&#34;],[[314,314],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#410&#34;,&#34;line 410&#34;],[[316,316],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#412&#34;,&#34;line 412&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span>    <span class="kw">pub fn </span>eval_twiddle(cache: <span class="kw-2">&amp;</span>[Complex&lt;f64&gt;], step: usize, n: usize, k: usize) -&gt; Complex&lt;f64&gt; {
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html" title="trait core::ops::arith::Neg">Neg</a>&lt;Output = T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.conjugate" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#53-55">Source</a><h4 class="code-header">pub fn <a href="#method.conjugate" class="fn">conjugate</a>(self) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#98&#34;,&#34;line 98&#34;],[[9,9],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#105&#34;,&#34;line 105&#34;],[[96,96],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#192&#34;,&#34;line 192&#34;],[[117,117],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#213&#34;,&#34;line 213&#34;],[[299,299],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#395&#34;,&#34;line 395&#34;],[[301,301],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#397&#34;,&#34;line 397&#34;],[[302,302],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#398&#34;,&#34;line 398&#34;],[[304,304],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#400&#34;,&#34;line 400&#34;],[[313,313],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#409&#34;,&#34;line 409&#34;],[[315,315],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#411&#34;,&#34;line 411&#34;],[[316,316],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#412&#34;,&#34;line 412&#34;],[[318,318],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#414&#34;,&#34;line 414&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#98">line 98</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span>    <span class="kw">pub fn </span>eval_twiddle(cache: <span class="kw-2">&amp;</span>[Complex&lt;f64&gt;], step: usize, n: usize, k: usize) -&gt; Complex&lt;f64&gt; {
 <span data-nosnippet>97</span>        <span class="kw">let </span>k = step * k;
 <span data-nosnippet>98</span>        <span class="kw">let </span>w = cache[(k &gt;&gt; <span class="number">2</span>) &lt;&lt; <span class="number">1</span>].<span class="highlight focus">conjugate</span>();
 <span data-nosnippet>99</span>        <span class="kw">let </span>w = <span class="kw">match </span>k &amp; <span class="number">3 </span>{
@@ -810,7 +812,7 @@
 <span data-nosnippet>168</span>                    <span class="kw">let </span>wi = _mm256_set1_pd(w.im);
 <span data-nosnippet>169</span>                    <span class="kw">let </span>(ar, ai) = load4(<span class="kw-2">&amp;</span>a[k * <span class="number">2</span>]);
 <span data-nosnippet>170</span>                    <span class="kw">let </span>(br, bi) = load4(<span class="kw-2">&amp;</span>a[k * <span class="number">2 </span>+ <span class="number">1</span>]);
-<span data-nosnippet>171</span>                    <span class="kw">let </span>(br, bi) = <a href="mod.rs.html#1-287">mul4</a>(br, bi, wr, wi);
+<span data-nosnippet>171</span>                    <span class="kw">let </span>(br, bi) = <a href="mod.rs.html#1-301">mul4</a>(br, bi, wr, wi);
 <span data-nosnippet>172</span>                    store4(<span class="kw-2">&amp;mut </span>a[k * <span class="number">2</span>], _mm256_add_pd(ar, br), _mm256_add_pd(ai, bi));
 <span data-nosnippet>173</span>                    store4(
 <span data-nosnippet>174</span>                        <span class="kw-2">&amp;mut </span>a[k * <span class="number">2 </span>+ <span class="number">1</span>],
@@ -930,136 +932,138 @@
 <span data-nosnippet>288</span>
 <span data-nosnippet>289</span>    <span class="attr">#[inline]
 <span data-nosnippet>290</span>    </span><span class="kw">fn </span>pack_f64(values: <span class="kw">impl </span>Iterator&lt;Item = f64&gt;, n: usize) -&gt; Vec&lt;Complex4&gt; {
-<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[Complex4::default(); n / <span class="number">4</span>];
-<span data-nosnippet>292</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
-<span data-nosnippet>293</span>            <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>294</span>                result[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>] = value;
-<span data-nosnippet>295</span>            } <span class="kw">else </span>{
-<span data-nosnippet>296</span>                result[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>] = value;
-<span data-nosnippet>297</span>            }
-<span data-nosnippet>298</span>        }
-<span data-nosnippet>299</span>        result
-<span data-nosnippet>300</span>    }
-<span data-nosnippet>301</span>
-<span data-nosnippet>302</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
-<span data-nosnippet>303</span>    </span><span class="kw">pub unsafe fn </span>convolve_f64_avx2(
-<span data-nosnippet>304</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>305</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>306</span>        range: std::ops::Range&lt;usize&gt;,
-<span data-nosnippet>307</span>    ) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>308</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
-<span data-nosnippet>309</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
-<span data-nosnippet>310</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
-<span data-nosnippet>311</span>        fft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>312</span>        fft_soa(<span class="kw-2">&amp;mut </span>fb);
-<span data-nosnippet>313</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
-<span data-nosnippet>314</span>        drop(fb);
-<span data-nosnippet>315</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>316</span>        range
-<span data-nosnippet>317</span>            .map(|i| {
-<span data-nosnippet>318</span>                <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>319</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
-<span data-nosnippet>320</span>                } <span class="kw">else </span>{
-<span data-nosnippet>321</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
-<span data-nosnippet>322</span>                }
-<span data-nosnippet>323</span>            })
-<span data-nosnippet>324</span>            .collect()
-<span data-nosnippet>325</span>    }
-<span data-nosnippet>326</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
-<span data-nosnippet>327</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx2(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
-<span data-nosnippet>328</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
-<span data-nosnippet>329</span>    }
-<span data-nosnippet>330</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
-<span data-nosnippet>331</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx512(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
-<span data-nosnippet>332</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
-<span data-nosnippet>333</span>    }
-<span data-nosnippet>334</span>}
-<span data-nosnippet>335</span>
-<span data-nosnippet>336</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
-<span data-nosnippet>337</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
-<span data-nosnippet>338</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
-<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
-<span data-nosnippet>340</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
-<span data-nosnippet>341</span>        k /= <span class="number">2</span>;
-<span data-nosnippet>342</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
-<span data-nosnippet>343</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
-<span data-nosnippet>344</span>        }
-<span data-nosnippet>345</span>        m <span class="kw-2">*</span>= <span class="number">2</span>;
-<span data-nosnippet>346</span>    }
-<span data-nosnippet>347</span>    <span class="kw">if </span>m == k {
-<span data-nosnippet>348</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
-<span data-nosnippet>349</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>350</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
-<span data-nosnippet>351</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
-<span data-nosnippet>352</span>                f.swap(ji, ij);
-<span data-nosnippet>353</span>            }
-<span data-nosnippet>354</span>        }
-<span data-nosnippet>355</span>    } <span class="kw">else </span>{
-<span data-nosnippet>356</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
-<span data-nosnippet>357</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>358</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
-<span data-nosnippet>359</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
-<span data-nosnippet>360</span>                f.swap(ji, ij);
-<span data-nosnippet>361</span>                f.swap(ji + m, ij + m);
-<span data-nosnippet>362</span>            }
-<span data-nosnippet>363</span>        }
-<span data-nosnippet>364</span>    }
-<span data-nosnippet>365</span>}
-<span data-nosnippet>366</span>
-<span data-nosnippet>367</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
-<span data-nosnippet>368</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
-<span data-nosnippet>369</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
-<span data-nosnippet>370</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
-<span data-nosnippet>371</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
-<span data-nosnippet>372</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
-<span data-nosnippet>373</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
-<span data-nosnippet>374</span>            f(k, w);
-<span data-nosnippet>375</span>            w <span class="kw-2">*</span>= step;
-<span data-nosnippet>376</span>        }
-<span data-nosnippet>377</span>    }
-<span data-nosnippet>378</span>}
-<span data-nosnippet>379</span>
-<span data-nosnippet>380</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
-<span data-nosnippet>381</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>382</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
-<span data-nosnippet>383</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
-<span data-nosnippet>384</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
-<span data-nosnippet>385</span>            f[i / <span class="number">2</span>].re = t;
-<span data-nosnippet>386</span>        } <span class="kw">else </span>{
-<span data-nosnippet>387</span>            f[i / <span class="number">2</span>].im = t;
-<span data-nosnippet>388</span>        }
-<span data-nosnippet>389</span>    }
-<span data-nosnippet>390</span>    fft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>391</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>392</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
-<span data-nosnippet>393</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].<span class="highlight">conjugate</span>();
-<span data-nosnippet>394</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
-<span data-nosnippet>395</span>        <span class="kw">let </span>c = wk.<span class="highlight">conjugate</span>().transpose() + <span class="number">1.</span>;
-<span data-nosnippet>396</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].<span class="highlight">conjugate</span>()) * <span class="number">0.5</span>;
-<span data-nosnippet>397</span>        f[k] -= d;
-<span data-nosnippet>398</span>        f[n / <span class="number">2 </span>- k] += d.<span class="highlight">conjugate</span>();
-<span data-nosnippet>399</span>    });
-<span data-nosnippet>400</span>    f
-<span data-nosnippet>401</span>}
-<span data-nosnippet>402</span>
-<span data-nosnippet>403</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>404</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
-<span data-nosnippet>405</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
-<span data-nosnippet>406</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
-<span data-nosnippet>407</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].<span class="highlight">conjugate</span>();
-<span data-nosnippet>408</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
-<span data-nosnippet>409</span>        <span class="kw">let </span>c = wk.transpose().<span class="highlight">conjugate</span>() + <span class="number">1.</span>;
-<span data-nosnippet>410</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].<span class="highlight">conjugate</span>()) * <span class="number">0.5</span>;
-<span data-nosnippet>411</span>        f[k] -= d;
-<span data-nosnippet>412</span>        f[n / <span class="number">2 </span>- k] += d.<span class="highlight">conjugate</span>();
-<span data-nosnippet>413</span>    });
-<span data-nosnippet>414</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>415</span>    ifft(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>416</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
-<span data-nosnippet>417</span>    (<span class="number">0</span>..len)
-<span data-nosnippet>418</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
-<span data-nosnippet>419</span>        .collect()
-<span data-nosnippet>420</span>}</code></pre></div></div></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-3" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#57-64">Source</a><a href="#impl-Complex%3CT%3E-3" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
+<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::<a href="../algebra/lazy_map.rs.html#8-51">with_capacity</a>(n / <span class="number">4</span>);
+<span data-nosnippet>292</span>        advise_huge_pages(<span class="kw-2">&amp;mut </span>result);
+<span data-nosnippet>293</span>        result.resize(n / <span class="number">4</span>, Complex4::default());
+<span data-nosnippet>294</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
+<span data-nosnippet>295</span>            <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>296</span>                result[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>] = value;
+<span data-nosnippet>297</span>            } <span class="kw">else </span>{
+<span data-nosnippet>298</span>                result[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>] = value;
+<span data-nosnippet>299</span>            }
+<span data-nosnippet>300</span>        }
+<span data-nosnippet>301</span>        result
+<span data-nosnippet>302</span>    }
+<span data-nosnippet>303</span>
+<span data-nosnippet>304</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
+<span data-nosnippet>305</span>    </span><span class="kw">pub unsafe fn </span>convolve_f64_avx2(
+<span data-nosnippet>306</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>307</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>308</span>        range: std::<a href="../num/zero_one.rs.html#15-28">ops</a>::Range&lt;usize&gt;,
+<span data-nosnippet>309</span>    ) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>310</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
+<span data-nosnippet>311</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
+<span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
+<span data-nosnippet>313</span>        fft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>314</span>        fft_soa(<span class="kw-2">&amp;mut </span>fb);
+<span data-nosnippet>315</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
+<span data-nosnippet>316</span>        drop(fb);
+<span data-nosnippet>317</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>318</span>        range
+<span data-nosnippet>319</span>            .map(|i| {
+<span data-nosnippet>320</span>                <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>321</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
+<span data-nosnippet>322</span>                } <span class="kw">else </span>{
+<span data-nosnippet>323</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
+<span data-nosnippet>324</span>                }
+<span data-nosnippet>325</span>            })
+<span data-nosnippet>326</span>            .collect()
+<span data-nosnippet>327</span>    }
+<span data-nosnippet>328</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>329</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx2(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
+<span data-nosnippet>330</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
+<span data-nosnippet>331</span>    }
+<span data-nosnippet>332</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
+<span data-nosnippet>333</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx512(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
+<span data-nosnippet>334</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
+<span data-nosnippet>335</span>    }
+<span data-nosnippet>336</span>}
+<span data-nosnippet>337</span>
+<span data-nosnippet>338</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
+<span data-nosnippet>340</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
+<span data-nosnippet>341</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
+<span data-nosnippet>342</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
+<span data-nosnippet>343</span>        k /= <span class="number">2</span>;
+<span data-nosnippet>344</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
+<span data-nosnippet>345</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
+<span data-nosnippet>346</span>        }
+<span data-nosnippet>347</span>        <a href="../algebra/lazy_map.rs.html#157">m</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>348</span>    }
+<span data-nosnippet>349</span>    <span class="kw">if </span>m == k {
+<span data-nosnippet>350</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
+<span data-nosnippet>351</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
+<span data-nosnippet>352</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
+<span data-nosnippet>353</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
+<span data-nosnippet>354</span>                f.swap(ji, ij);
+<span data-nosnippet>355</span>            }
+<span data-nosnippet>356</span>        }
+<span data-nosnippet>357</span>    } <span class="kw">else </span>{
+<span data-nosnippet>358</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
+<span data-nosnippet>359</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
+<span data-nosnippet>360</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
+<span data-nosnippet>361</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
+<span data-nosnippet>362</span>                f.swap(ji, ij);
+<span data-nosnippet>363</span>                f.swap(ji + m, ij + m);
+<span data-nosnippet>364</span>            }
+<span data-nosnippet>365</span>        }
+<span data-nosnippet>366</span>    }
+<span data-nosnippet>367</span>}
+<span data-nosnippet>368</span>
+<span data-nosnippet>369</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
+<span data-nosnippet>370</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
+<span data-nosnippet>371</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
+<span data-nosnippet>372</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
+<span data-nosnippet>373</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
+<span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
+<span data-nosnippet>375</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
+<span data-nosnippet>376</span>            f(k, w);
+<span data-nosnippet>377</span>            w <span class="kw-2">*</span>= step;
+<span data-nosnippet>378</span>        }
+<span data-nosnippet>379</span>    }
+<span data-nosnippet>380</span>}
+<span data-nosnippet>381</span>
+<span data-nosnippet>382</span><span class="kw">pub fn </span>transform_real(t: <span class="kw">impl </span>IntoIterator&lt;Item = f64&gt;, len: usize) -&gt; Vec&lt;Complex&lt;f64&gt;&gt; {
+<span data-nosnippet>383</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>384</span>    <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="macro">vec!</span>[Complex::zero(); n / <span class="number">2</span>];
+<span data-nosnippet>385</span>    <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
+<span data-nosnippet>386</span>        <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
+<span data-nosnippet>387</span>            f[i / <span class="number">2</span>].re = t;
+<span data-nosnippet>388</span>        } <span class="kw">else </span>{
+<span data-nosnippet>389</span>            f[i / <span class="number">2</span>].im = t;
+<span data-nosnippet>390</span>        }
+<span data-nosnippet>391</span>    }
+<span data-nosnippet>392</span>    fft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>393</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>394</span>    f[<span class="number">0</span>] = Complex::new(f[<span class="number">0</span>].re + f[<span class="number">0</span>].im, f[<span class="number">0</span>].re - f[<span class="number">0</span>].im);
+<span data-nosnippet>395</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].<span class="highlight">conjugate</span>();
+<span data-nosnippet>396</span>    real_twiddles(n, <span class="bool-val">false</span>, |k, wk| {
+<span data-nosnippet>397</span>        <span class="kw">let </span>c = wk.<span class="highlight">conjugate</span>().transpose() + <span class="number">1.</span>;
+<span data-nosnippet>398</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].<span class="highlight">conjugate</span>()) * <span class="number">0.5</span>;
+<span data-nosnippet>399</span>        f[k] -= d;
+<span data-nosnippet>400</span>        f[n / <span class="number">2 </span>- k] += d.<span class="highlight">conjugate</span>();
+<span data-nosnippet>401</span>    });
+<span data-nosnippet>402</span>    f
+<span data-nosnippet>403</span>}
+<span data-nosnippet>404</span>
+<span data-nosnippet>405</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>406</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
+<span data-nosnippet>407</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
+<span data-nosnippet>408</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
+<span data-nosnippet>409</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].<span class="highlight">conjugate</span>();
+<span data-nosnippet>410</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
+<span data-nosnippet>411</span>        <span class="kw">let </span>c = wk.transpose().<span class="highlight">conjugate</span>() + <span class="number">1.</span>;
+<span data-nosnippet>412</span>        <span class="kw">let </span>d = c * (f[k] - f[n / <span class="number">2 </span>- k].<span class="highlight">conjugate</span>()) * <span class="number">0.5</span>;
+<span data-nosnippet>413</span>        f[k] -= d;
+<span data-nosnippet>414</span>        f[n / <span class="number">2 </span>- k] += d.<span class="highlight">conjugate</span>();
+<span data-nosnippet>415</span>    });
+<span data-nosnippet>416</span>    bit_reverse(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>417</span>    ifft(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>418</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
+<span data-nosnippet>419</span>    (<span class="number">0</span>..len)
+<span data-nosnippet>420</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
+<span data-nosnippet>421</span>        .collect()
+<span data-nosnippet>422</span>}</code></pre></div></div></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-3" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#57-64">Source</a><a href="#impl-Complex%3CT%3E-3" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
     T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html" title="trait core::ops::arith::Mul">Mul</a>&lt;Output: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.dot" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#61-63">Source</a><h4 class="code-header">pub fn <a href="#method.dot" class="fn">dot</a>(self, rhs: Self) -&gt; &lt;&lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html" title="trait core::ops::arith::Mul">Mul</a>&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html#associatedtype.Output" title="type core::ops::arith::Mul::Output">Output</a> as <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html#associatedtype.Output" title="type core::ops::arith::Add::Output">Output</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/geometry/line.rs.html#27&#34;,&#34;line 27&#34;],[[10,10],&#34;../../src/competitive/geometry/line.rs.html#36&#34;,&#34;line 36&#34;],[[45,45],&#34;../../src/competitive/geometry/line.rs.html#71&#34;,&#34;line 71&#34;],[[61,61],&#34;../../src/competitive/geometry/line.rs.html#87&#34;,&#34;line 87&#34;]]"><div class="scraped-example-title">crates/competitive/src/geometry/line.rs (<a href="../../src/competitive/geometry/line.rs.html#27">line 27</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>26</span>    <span class="kw">pub fn </span>is_orthogonal(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
 <span data-nosnippet>27</span>        Approx(<span class="self">self</span>.dir().<span class="highlight focus">dot</span>(other.dir())) == Approx(T::zero())
 <span data-nosnippet>28</span>    }
@@ -1340,18 +1344,18 @@
 <span data-nosnippet>47</span>    res
 <span data-nosnippet>48</span>}</code></pre></div></div></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-6" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#81-97">Source</a><a href="#impl-Complex%3CT%3E-6" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
     T: <a class="trait" href="trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html" title="trait core::ops::arith::Mul">Mul</a>&lt;Output: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>&gt;,</div></h3></section></summary><div class="impl-items"><section id="method.cmp_by_arg" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#85-96">Source</a><h4 class="code-header">pub fn <a href="#method.cmp_by_arg" class="fn">cmp_by_arg</a>(self, other: Self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html" title="enum core::cmp::Ordering">Ordering</a></h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Complex%3CT%3E-7" class="impl"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#98-118">Source</a><a href="#impl-Complex%3CT%3E-7" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.Complex.html" title="struct competitive::num::Complex">Complex</a>&lt;T&gt;<div class="where">where
-    T: <a class="trait" href="trait.Float.html" title="trait competitive::num::Float">Float</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.polar" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#102-104">Source</a><h4 class="code-header">pub fn <a href="#method.polar" class="fn">polar</a>(r: T, theta: T) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#372&#34;,&#34;line 372&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#372">line 372</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>367</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
-<span data-nosnippet>368</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
-<span data-nosnippet>369</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
-<span data-nosnippet>370</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
-<span data-nosnippet>371</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
-<span data-nosnippet>372</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = <span class="highlight focus">Complex::polar</span>(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
-<span data-nosnippet>373</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
-<span data-nosnippet>374</span>            f(k, w);
-<span data-nosnippet>375</span>            w <span class="kw-2">*</span>= step;
-<span data-nosnippet>376</span>        }
-<span data-nosnippet>377</span>    }
-<span data-nosnippet>378</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.primitive_nth_root_of_unity" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#105-108">Source</a><h4 class="code-header">pub fn <a href="#method.primitive_nth_root_of_unity" class="fn">primitive_nth_root_of_unity</a>(n: T) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[18,18],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#27&#34;,&#34;line 27&#34;],[[361,361],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#370&#34;,&#34;line 370&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#27">line 27</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>9</span>    <span class="kw">pub fn </span>ensure(n: usize) {
+    T: <a class="trait" href="trait.Float.html" title="trait competitive::num::Float">Float</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.polar" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#102-104">Source</a><h4 class="code-header">pub fn <a href="#method.polar" class="fn">polar</a>(r: T, theta: T) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#374&#34;,&#34;line 374&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#374">line 374</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>369</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
+<span data-nosnippet>370</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
+<span data-nosnippet>371</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
+<span data-nosnippet>372</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
+<span data-nosnippet>373</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
+<span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = <span class="highlight focus">Complex::polar</span>(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
+<span data-nosnippet>375</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
+<span data-nosnippet>376</span>            f(k, w);
+<span data-nosnippet>377</span>            w <span class="kw-2">*</span>= step;
+<span data-nosnippet>378</span>        }
+<span data-nosnippet>379</span>    }
+<span data-nosnippet>380</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.primitive_nth_root_of_unity" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#105-108">Source</a><h4 class="code-header">pub fn <a href="#method.primitive_nth_root_of_unity" class="fn">primitive_nth_root_of_unity</a>(n: T) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[18,18],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#27&#34;,&#34;line 27&#34;],[[363,363],&#34;../../src/competitive/math/fast_fourier_transform.rs.html#372&#34;,&#34;line 372&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#27">line 27</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>9</span>    <span class="kw">pub fn </span>ensure(n: usize) {
 <span data-nosnippet>10</span>        <span class="macro">assert_eq!</span>(n.count_ones(), <span class="number">1</span>, <span class="string">"call with power of two but {}"</span>, n);
 <span data-nosnippet>11</span>        <span class="self">Self</span>::modify(|cache| {
 <span data-nosnippet>12</span>            <span class="kw">let </span><span class="kw-2">mut </span>m = cache.len();
@@ -1386,7 +1390,7 @@
 <span data-nosnippet>41</span>    <span class="comment">// These primitives are called only after AVX2 and FMA have been detected.
 <span data-nosnippet>42</span>    </span><span class="attr">#![allow(clippy::missing_safety_doc, unsafe_op_in_unsafe_fn)]
 <span data-nosnippet>43</span>
-<span data-nosnippet>44</span>    </span><span class="kw">use super</span>::{AssociatedValue, Complex, RotateCache};
+<span data-nosnippet>44</span>    </span><span class="kw">use super</span>::{AssociatedValue, Complex, RotateCache, advise_huge_pages};
 <span data-nosnippet>45</span>    <span class="kw">use </span>std::arch::x86_64::<span class="kw-2">*</span>;
 <span data-nosnippet>46</span>
 <span data-nosnippet>47</span>    <span class="attr">#[derive(Clone, Copy, Default)]
@@ -1555,7 +1559,7 @@
 <span data-nosnippet>210</span>                    <span class="kw">let </span>(a, rest) = a[start..start + width * <span class="number">4</span>].split_at_mut(width);
 <span data-nosnippet>211</span>                    <span class="kw">let </span>(b, rest) = rest.split_at_mut(width);
 <span data-nosnippet>212</span>                    <span class="kw">let </span>(c, d) = rest.split_at_mut(width);
-<span data-nosnippet>213</span>                    <span class="kw">let </span>w1 = eval_twiddle(cache, <span class="number">4</span>, n &gt;&gt; level, q).conjugate();
+<span data-nosnippet>213</span>                    <span class="kw">let </span>w1 = eval_twiddle(cache, <span class="number">4</span>, <a href="../algebra/lazy_map.rs.html#48">n</a> &gt;&gt; level, q).conjugate();
 <span data-nosnippet>214</span>                    <span class="kw">let </span>w2 = w1 * w1;
 <span data-nosnippet>215</span>                    <span class="kw">let </span>w3 = w1 * w2;
 <span data-nosnippet>216</span>                    <span class="kw">let </span>(w1r, w1i) = (_mm256_set1_pd(w1.re), _mm256_set1_pd(w1.im));
@@ -1565,7 +1569,7 @@
 <span data-nosnippet>220</span>                        <span class="kw">let </span>(ar, ai) = load4(<span class="kw-2">&amp;</span>a[i]);
 <span data-nosnippet>221</span>                        <span class="kw">let </span>(br, bi) = load4(<span class="kw-2">&amp;</span>b[i]);
 <span data-nosnippet>222</span>                        <span class="kw">let </span>(cr, ci) = load4(<span class="kw-2">&amp;</span>c[i]);
-<span data-nosnippet>223</span>                        <span class="kw">let </span>(dr, di) = load4(<span class="kw-2">&amp;</span>d[i]);
+<span data-nosnippet>223</span>                        <span class="kw">let </span>(dr, di) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">load4</a>(<span class="kw-2">&amp;</span>d[i]);
 <span data-nosnippet>224</span>                        <span class="kw">let </span>abr = _mm256_add_pd(ar, br);
 <span data-nosnippet>225</span>                        <span class="kw">let </span>abi = _mm256_add_pd(ai, bi);
 <span data-nosnippet>226</span>                        <span class="kw">let </span>cdr = _mm256_add_pd(cr, dr);
@@ -1633,94 +1637,96 @@
 <span data-nosnippet>288</span>
 <span data-nosnippet>289</span>    <span class="attr">#[inline]
 <span data-nosnippet>290</span>    </span><span class="kw">fn </span>pack_f64(values: <span class="kw">impl </span>Iterator&lt;Item = f64&gt;, n: usize) -&gt; Vec&lt;Complex4&gt; {
-<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[Complex4::default(); n / <span class="number">4</span>];
-<span data-nosnippet>292</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
-<span data-nosnippet>293</span>            <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>294</span>                result[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>] = value;
-<span data-nosnippet>295</span>            } <span class="kw">else </span>{
-<span data-nosnippet>296</span>                result[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>] = value;
-<span data-nosnippet>297</span>            }
-<span data-nosnippet>298</span>        }
-<span data-nosnippet>299</span>        result
-<span data-nosnippet>300</span>    }
-<span data-nosnippet>301</span>
-<span data-nosnippet>302</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
-<span data-nosnippet>303</span>    </span><span class="kw">pub unsafe fn </span>convolve_f64_avx2(
-<span data-nosnippet>304</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>305</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>306</span>        range: std::ops::Range&lt;usize&gt;,
-<span data-nosnippet>307</span>    ) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>308</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
-<span data-nosnippet>309</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
-<span data-nosnippet>310</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
-<span data-nosnippet>311</span>        fft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>312</span>        fft_soa(<span class="kw-2">&amp;mut </span>fb);
-<span data-nosnippet>313</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
-<span data-nosnippet>314</span>        drop(fb);
-<span data-nosnippet>315</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>316</span>        range
-<span data-nosnippet>317</span>            .map(|i| {
-<span data-nosnippet>318</span>                <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>319</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
-<span data-nosnippet>320</span>                } <span class="kw">else </span>{
-<span data-nosnippet>321</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
-<span data-nosnippet>322</span>                }
-<span data-nosnippet>323</span>            })
-<span data-nosnippet>324</span>            .collect()
-<span data-nosnippet>325</span>    }
-<span data-nosnippet>326</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
-<span data-nosnippet>327</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx2(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
-<span data-nosnippet>328</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
-<span data-nosnippet>329</span>    }
-<span data-nosnippet>330</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
-<span data-nosnippet>331</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx512(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
-<span data-nosnippet>332</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
-<span data-nosnippet>333</span>    }
-<span data-nosnippet>334</span>}
-<span data-nosnippet>335</span>
-<span data-nosnippet>336</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
-<span data-nosnippet>337</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
-<span data-nosnippet>338</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
-<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
-<span data-nosnippet>340</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
-<span data-nosnippet>341</span>        k /= <span class="number">2</span>;
-<span data-nosnippet>342</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
-<span data-nosnippet>343</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
-<span data-nosnippet>344</span>        }
-<span data-nosnippet>345</span>        m <span class="kw-2">*</span>= <span class="number">2</span>;
-<span data-nosnippet>346</span>    }
-<span data-nosnippet>347</span>    <span class="kw">if </span>m == k {
-<span data-nosnippet>348</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
-<span data-nosnippet>349</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>350</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
-<span data-nosnippet>351</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
-<span data-nosnippet>352</span>                f.swap(ji, ij);
-<span data-nosnippet>353</span>            }
-<span data-nosnippet>354</span>        }
-<span data-nosnippet>355</span>    } <span class="kw">else </span>{
-<span data-nosnippet>356</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
-<span data-nosnippet>357</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>358</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
-<span data-nosnippet>359</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
-<span data-nosnippet>360</span>                f.swap(ji, ij);
-<span data-nosnippet>361</span>                f.swap(ji + m, ij + m);
-<span data-nosnippet>362</span>            }
-<span data-nosnippet>363</span>        }
-<span data-nosnippet>364</span>    }
-<span data-nosnippet>365</span>}
-<span data-nosnippet>366</span>
-<span data-nosnippet>367</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
-<span data-nosnippet>368</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
-<span data-nosnippet>369</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
-<span data-nosnippet>370</span>    <span class="kw">let </span>step = <span class="highlight">Complex::primitive_nth_root_of_unity</span>(sign * n <span class="kw">as </span>f64);
-<span data-nosnippet>371</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
-<span data-nosnippet>372</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
-<span data-nosnippet>373</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
-<span data-nosnippet>374</span>            f(k, w);
-<span data-nosnippet>375</span>            w <span class="kw-2">*</span>= step;
-<span data-nosnippet>376</span>        }
-<span data-nosnippet>377</span>    }
-<span data-nosnippet>378</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.abs" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#109-111">Source</a><h4 class="code-header">pub fn <a href="#method.abs" class="fn">abs</a>(self) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/num/complex.rs.html#113&#34;,&#34;line 113&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/complex.rs (<a href="../../src/competitive/num/complex.rs.html#113">line 113</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>112</span>    <span class="kw">pub fn </span>unit(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(n / <span class="number">4</span>);
+<span data-nosnippet>292</span>        advise_huge_pages(<span class="kw-2">&amp;mut </span>result);
+<span data-nosnippet>293</span>        result.resize(n / <span class="number">4</span>, Complex4::default());
+<span data-nosnippet>294</span>        <span class="kw">for </span>(i, value) <span class="kw">in </span>values.enumerate() {
+<span data-nosnippet>295</span>            <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>296</span>                result[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>] = value;
+<span data-nosnippet>297</span>            } <span class="kw">else </span>{
+<span data-nosnippet>298</span>                result[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>] = value;
+<span data-nosnippet>299</span>            }
+<span data-nosnippet>300</span>        }
+<span data-nosnippet>301</span>        result
+<span data-nosnippet>302</span>    }
+<span data-nosnippet>303</span>
+<span data-nosnippet>304</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
+<span data-nosnippet>305</span>    </span><span class="kw">pub unsafe fn </span>convolve_f64_avx2(
+<span data-nosnippet>306</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>307</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>308</span>        range: std::ops::Range&lt;usize&gt;,
+<span data-nosnippet>309</span>    ) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>310</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
+<span data-nosnippet>311</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
+<span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
+<span data-nosnippet>313</span>        fft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>314</span>        fft_soa(<span class="kw-2">&amp;mut </span>fb);
+<span data-nosnippet>315</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
+<span data-nosnippet>316</span>        drop(fb);
+<span data-nosnippet>317</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>318</span>        range
+<span data-nosnippet>319</span>            .map(|i| {
+<span data-nosnippet>320</span>                <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>321</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
+<span data-nosnippet>322</span>                } <span class="kw">else </span>{
+<span data-nosnippet>323</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
+<span data-nosnippet>324</span>                }
+<span data-nosnippet>325</span>            })
+<span data-nosnippet>326</span>            .collect()
+<span data-nosnippet>327</span>    }
+<span data-nosnippet>328</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>329</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx2(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
+<span data-nosnippet>330</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
+<span data-nosnippet>331</span>    }
+<span data-nosnippet>332</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
+<span data-nosnippet>333</span>    </span><span class="kw">pub unsafe fn </span>convolve_i64_avx512(a: Vec&lt;i64&gt;, b: Vec&lt;i64&gt;, len: usize) -&gt; Vec&lt;i64&gt; {
+<span data-nosnippet>334</span>        <span class="kw">super</span>::convolve_i64_naive(a, b, len)
+<span data-nosnippet>335</span>    }
+<span data-nosnippet>336</span>}
+<span data-nosnippet>337</span>
+<span data-nosnippet>338</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
+<span data-nosnippet>340</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
+<span data-nosnippet>341</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
+<span data-nosnippet>342</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
+<span data-nosnippet>343</span>        k /= <span class="number">2</span>;
+<span data-nosnippet>344</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
+<span data-nosnippet>345</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
+<span data-nosnippet>346</span>        }
+<span data-nosnippet>347</span>        m <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>348</span>    }
+<span data-nosnippet>349</span>    <span class="kw">if </span>m == k {
+<span data-nosnippet>350</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
+<span data-nosnippet>351</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
+<span data-nosnippet>352</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
+<span data-nosnippet>353</span>                <span class="kw">let </span>ij = i + ip[j] <span class="kw">as </span>usize;
+<span data-nosnippet>354</span>                f.swap(ji, ij);
+<span data-nosnippet>355</span>            }
+<span data-nosnippet>356</span>        }
+<span data-nosnippet>357</span>    } <span class="kw">else </span>{
+<span data-nosnippet>358</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..m {
+<span data-nosnippet>359</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
+<span data-nosnippet>360</span>                <span class="kw">let </span>ji = j + ip[i] <span class="kw">as </span>usize;
+<span data-nosnippet>361</span>                <span class="kw">let </span>ij = i + ip[<a href="../algebra/lazy_map.rs.html#266">j</a>] <span class="kw">as </span>usize;
+<span data-nosnippet>362</span>                f.swap(ji, ij);
+<span data-nosnippet>363</span>                f.swap(ji + m, ij + m);
+<span data-nosnippet>364</span>            }
+<span data-nosnippet>365</span>        }
+<span data-nosnippet>366</span>    }
+<span data-nosnippet>367</span>}
+<span data-nosnippet>368</span>
+<span data-nosnippet>369</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
+<span data-nosnippet>370</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
+<span data-nosnippet>371</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
+<span data-nosnippet>372</span>    <span class="kw">let </span>step = <span class="highlight">Complex::primitive_nth_root_of_unity</span>(sign * n <span class="kw">as </span>f64);
+<span data-nosnippet>373</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
+<span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
+<span data-nosnippet>375</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
+<span data-nosnippet>376</span>            f(k, w);
+<span data-nosnippet>377</span>            w <span class="kw-2">*</span>= step;
+<span data-nosnippet>378</span>        }
+<span data-nosnippet>379</span>    }
+<span data-nosnippet>380</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.abs" class="method"><a class="src rightside" href="../../src/competitive/num/complex.rs.html#109-111">Source</a><h4 class="code-header">pub fn <a href="#method.abs" class="fn">abs</a>(self) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/num/complex.rs.html#113&#34;,&#34;line 113&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/complex.rs (<a href="../../src/competitive/num/complex.rs.html#113">line 113</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>112</span>    <span class="kw">pub fn </span>unit(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>113</span>        <span class="self">self </span>/ <span class="self">self</span>.<span class="highlight focus">abs</span>()
 <span data-nosnippet>114</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../src/competitive/geometry/line.rs.html#109&#34;,&#34;line 109&#34;],[[5,5],&#34;../../src/competitive/geometry/line.rs.html#111&#34;,&#34;line 111&#34;],[[5,5],&#34;../../src/competitive/geometry/line.rs.html#111&#34;,&#34;line 111&#34;]]"><div class="scraped-example-title">crates/competitive/src/geometry/line.rs (<a href="../../src/competitive/geometry/line.rs.html#109">line 109</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>106</span>    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; T {
 <span data-nosnippet>107</span>        <span class="kw">let </span>r = <span class="self">self</span>.projection(p);

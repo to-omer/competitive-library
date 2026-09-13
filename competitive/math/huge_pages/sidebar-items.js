@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["advise_huge_pages"]};

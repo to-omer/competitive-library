@@ -52,151 +52,158 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">fft_soa</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>fast_<wbr>fourier_<wbr>transform::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">fast_fourier_transform</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">fft_soa</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/fast_fourier_transform.rs.html#109-181">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn fft_soa(a: &amp;mut [<a class="struct" href="struct.Complex4.html" title="struct competitive::math::fast_fourier_transform::simd::Complex4">Complex4</a>])</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../../src/competitive/math/fast_fourier_transform.rs.html#311&#34;,&#34;line 311&#34;],[[9,9],&#34;../../../../src/competitive/math/fast_fourier_transform.rs.html#312&#34;,&#34;line 312&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../../../src/competitive/math/fast_fourier_transform.rs.html#311">line 311</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>303</span>    <span class="kw">pub unsafe fn </span>convolve_f64_avx2(
-<span data-nosnippet>304</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>305</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
-<span data-nosnippet>306</span>        range: std::ops::Range&lt;usize&gt;,
-<span data-nosnippet>307</span>    ) -&gt; Vec&lt;f64&gt; {
-<span data-nosnippet>308</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
-<span data-nosnippet>309</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
-<span data-nosnippet>310</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
-<span data-nosnippet>311</span>        <span class="highlight focus">fft_soa</span>(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>312</span>        <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>fb);
-<span data-nosnippet>313</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
-<span data-nosnippet>314</span>        drop(fb);
-<span data-nosnippet>315</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
-<span data-nosnippet>316</span>        range
-<span data-nosnippet>317</span>            .map(|i| {
-<span data-nosnippet>318</span>                <span class="kw">if </span>i &lt; n {
-<span data-nosnippet>319</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
-<span data-nosnippet>320</span>                } <span class="kw">else </span>{
-<span data-nosnippet>321</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
-<span data-nosnippet>322</span>                }
-<span data-nosnippet>323</span>            })
-<span data-nosnippet>324</span>            .collect()
-<span data-nosnippet>325</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[18,18],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#197&#34;,&#34;line 197&#34;],[[19,19],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#198&#34;,&#34;line 198&#34;],[[22,22],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#201&#34;,&#34;line 201&#34;],[[25,25],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#204&#34;,&#34;line 204&#34;],[[68,68],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#247&#34;,&#34;line 247&#34;],[[69,69],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#248&#34;,&#34;line 248&#34;],[[70,70],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#249&#34;,&#34;line 249&#34;],[[71,71],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#250&#34;,&#34;line 250&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../../../src/competitive/math/mint_fft_convolve.rs.html#197">line 197</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>179</span><span class="kw">pub unsafe fn </span>convolve_u64_avx2(a: Vec&lt;u64&gt;, b: Vec&lt;u64&gt;) -&gt; Vec&lt;u64&gt; {
-<span data-nosnippet>180</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
-<span data-nosnippet>181</span>    <span class="kw">let </span>n = len.next_power_of_two() / <span class="number">2</span>;
-<span data-nosnippet>182</span>    <span class="kw">let </span>a_parts = <span class="kw">if </span>a.iter().all(|<span class="kw-2">&amp;</span>value| value &lt;= u32::MAX <span class="kw">as </span>u64) {
-<span data-nosnippet>183</span>        <span class="number">3
-<span data-nosnippet>184</span>    </span>} <span class="kw">else </span>{
-<span data-nosnippet>185</span>        <span class="number">5
-<span data-nosnippet>186</span>    </span>};
-<span data-nosnippet>187</span>    <span class="kw">let </span><span class="kw-2">mut </span>fa = split_u64_coefficients(<span class="kw-2">&amp;</span>a, n);
-<span data-nosnippet>188</span>    drop(a);
-<span data-nosnippet>189</span>    <span class="kw">let </span>b_parts = <span class="kw">if </span>b.iter().all(|<span class="kw-2">&amp;</span>value| value &lt;= u32::MAX <span class="kw">as </span>u64) {
-<span data-nosnippet>190</span>        <span class="number">3
-<span data-nosnippet>191</span>    </span>} <span class="kw">else </span>{
-<span data-nosnippet>192</span>        <span class="number">5
-<span data-nosnippet>193</span>    </span>};
-<span data-nosnippet>194</span>    <span class="kw">let </span><span class="kw-2">mut </span>fb = split_u64_coefficients(<span class="kw-2">&amp;</span>b, n);
-<span data-nosnippet>195</span>    drop(b);
-<span data-nosnippet>196</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">3 </span>{
-<span data-nosnippet>197</span>        <span class="highlight focus">fft_soa</span>(<span class="kw-2">&amp;mut </span>fa[part]);
-<span data-nosnippet>198</span>        <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>fb[part]);
-<span data-nosnippet>199</span>    }
-<span data-nosnippet>200</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>fa[<span class="number">3</span>..a_parts] {
-<span data-nosnippet>201</span>        <span class="highlight">fft_soa</span>(part);
-<span data-nosnippet>202</span>    }
-<span data-nosnippet>203</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>fb[<span class="number">3</span>..b_parts] {
-<span data-nosnippet>204</span>        <span class="highlight">fft_soa</span>(part);
-<span data-nosnippet>205</span>    }
-<span data-nosnippet>206</span>    dot_u64_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
-<span data-nosnippet>207</span>    drop(fb);
-<span data-nosnippet>208</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>fa {
-<span data-nosnippet>209</span>        ifft_soa(part);
-<span data-nosnippet>210</span>    }
-<span data-nosnippet>211</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0</span>; len];
-<span data-nosnippet>212</span>    <span class="kw">for </span>(block, <span class="kw">_</span>) <span class="kw">in </span>fa[<span class="number">0</span>].iter().enumerate() {
-<span data-nosnippet>213</span>        <span class="kw">let </span>real: [[i64; <span class="number">4</span>]; <span class="number">5</span>] = std::array::from_fn(|part| round4(<span class="kw-2">&amp;</span>fa[part][block].re));
-<span data-nosnippet>214</span>        <span class="kw">let </span>imag: [[i64; <span class="number">4</span>]; <span class="number">5</span>] = std::array::from_fn(|part| round4(<span class="kw-2">&amp;</span>fa[part][block].im));
-<span data-nosnippet>215</span>        <span class="kw">for </span>lane <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
-<span data-nosnippet>216</span>            <span class="kw">let </span>i = block * <span class="number">4 </span>+ lane;
-<span data-nosnippet>217</span>            <span class="kw">if </span>i &lt; len {
-<span data-nosnippet>218</span>                result[i] = (real[<span class="number">0</span>][lane] <span class="kw">as </span>u64)
-<span data-nosnippet>219</span>                    .wrapping_add((real[<span class="number">1</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">13</span>)
-<span data-nosnippet>220</span>                    .wrapping_add((real[<span class="number">2</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">26</span>)
-<span data-nosnippet>221</span>                    .wrapping_add((real[<span class="number">3</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">39</span>)
-<span data-nosnippet>222</span>                    .wrapping_add((real[<span class="number">4</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">52</span>);
-<span data-nosnippet>223</span>            }
-<span data-nosnippet>224</span>            <span class="kw">if </span>i + n &lt; len {
-<span data-nosnippet>225</span>                result[i + n] = (imag[<span class="number">0</span>][lane] <span class="kw">as </span>u64)
-<span data-nosnippet>226</span>                    .wrapping_add((imag[<span class="number">1</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">13</span>)
-<span data-nosnippet>227</span>                    .wrapping_add((imag[<span class="number">2</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">26</span>)
-<span data-nosnippet>228</span>                    .wrapping_add((imag[<span class="number">3</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">39</span>)
-<span data-nosnippet>229</span>                    .wrapping_add((imag[<span class="number">4</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">52</span>);
-<span data-nosnippet>230</span>            }
-<span data-nosnippet>231</span>        }
-<span data-nosnippet>232</span>    }
-<span data-nosnippet>233</span>    result
-<span data-nosnippet>234</span>}
-<span data-nosnippet>235</span>
-<span data-nosnippet>236</span><span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
-<span data-nosnippet>237</span></span><span class="kw">pub unsafe fn </span>convolve_mint_avx2&lt;M&gt;(a: Vec&lt;MInt&lt;M&gt;&gt;, b: Vec&lt;MInt&lt;M&gt;&gt;) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
-<span data-nosnippet>238</span><span class="kw">where
-<span data-nosnippet>239</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
-<span data-nosnippet>240</span>{
-<span data-nosnippet>241</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
-<span data-nosnippet>242</span>    <span class="kw">let </span>n = len.next_power_of_two() / <span class="number">2</span>;
-<span data-nosnippet>243</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>i64;
-<span data-nosnippet>244</span>    <span class="kw">let </span>split = (modulus <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>i64 + <span class="number">1</span>;
-<span data-nosnippet>245</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>a0, <span class="kw-2">mut </span>a1) = split_coefficients(a, n, modulus, split);
-<span data-nosnippet>246</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>b0, <span class="kw-2">mut </span>b1) = split_coefficients(b, n, modulus, split);
-<span data-nosnippet>247</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>a0);
-<span data-nosnippet>248</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>a1);
-<span data-nosnippet>249</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>b0);
-<span data-nosnippet>250</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>b1);
-<span data-nosnippet>251</span>    dot_soa(<span class="kw-2">&amp;mut </span>a0, <span class="kw-2">&amp;mut </span>a1, <span class="kw-2">&amp;mut </span>b0, <span class="kw-2">&amp;</span>b1);
-<span data-nosnippet>252</span>    drop(b1);
-<span data-nosnippet>253</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a0);
-<span data-nosnippet>254</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a1);
-<span data-nosnippet>255</span>    ifft_soa(<span class="kw-2">&amp;mut </span>b0);
-<span data-nosnippet>256</span>    <span class="kw">let </span>split2 = (split * split % modulus) <span class="kw">as </span>f64;
-<span data-nosnippet>257</span>    <span class="kw">let </span>split = _mm256_set1_pd(split <span class="kw">as </span>f64);
-<span data-nosnippet>258</span>    <span class="kw">let </span>split2 = _mm256_set1_pd(split2);
-<span data-nosnippet>259</span>    <span class="kw">let </span>inverse = _mm256_set1_pd(<span class="number">1.0 </span>/ modulus <span class="kw">as </span>f64);
-<span data-nosnippet>260</span>    <span class="kw">let </span>modulus = _mm256_set1_pd(modulus <span class="kw">as </span>f64);
-<span data-nosnippet>261</span>    <span class="kw">let </span>magic = _mm256_set1_pd((<span class="number">3i64 </span>&lt;&lt; <span class="number">51</span>) <span class="kw">as </span>f64);
-<span data-nosnippet>262</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::from(<span class="number">0u32</span>); len];
-<span data-nosnippet>263</span>    <span class="kw">for </span>(block, ((a0, a1), b0)) <span class="kw">in </span>a0.iter().zip(<span class="kw-2">&amp;</span>a1).zip(<span class="kw-2">&amp;</span>b0).enumerate() {
-<span data-nosnippet>264</span>        <span class="kw">for </span>(part, (a0, a1, b0)) <span class="kw">in </span>[(<span class="kw-2">&amp;</span>a0.re, <span class="kw-2">&amp;</span>a1.re, <span class="kw-2">&amp;</span>b0.re), (<span class="kw-2">&amp;</span>a0.im, <span class="kw-2">&amp;</span>a1.im, <span class="kw-2">&amp;</span>b0.im)]
-<span data-nosnippet>265</span>            .into_iter()
-<span data-nosnippet>266</span>            .enumerate()
-<span data-nosnippet>267</span>        {
-<span data-nosnippet>268</span>            <span class="kw">let </span>a0 = _mm256_round_pd::&lt;{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }&gt;(
-<span data-nosnippet>269</span>                _mm256_load_pd(a0.as_ptr()),
-<span data-nosnippet>270</span>            );
-<span data-nosnippet>271</span>            <span class="kw">let </span>a1 = _mm256_round_pd::&lt;{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }&gt;(
-<span data-nosnippet>272</span>                _mm256_load_pd(a1.as_ptr()),
-<span data-nosnippet>273</span>            );
-<span data-nosnippet>274</span>            <span class="kw">let </span>b0 = _mm256_round_pd::&lt;{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }&gt;(
-<span data-nosnippet>275</span>                _mm256_load_pd(b0.as_ptr()),
-<span data-nosnippet>276</span>            );
-<span data-nosnippet>277</span>            <span class="kw">let </span>a0 = reduce_mod4(a0, modulus, inverse);
-<span data-nosnippet>278</span>            <span class="kw">let </span>a1 = reduce_mod4(a1, modulus, inverse);
-<span data-nosnippet>279</span>            <span class="kw">let </span>b0 = reduce_mod4(b0, modulus, inverse);
-<span data-nosnippet>280</span>            <span class="kw">let </span>value = _mm256_fmadd_pd(b0, split2, _mm256_fmadd_pd(a1, split, a0));
-<span data-nosnippet>281</span>            <span class="kw">let </span>value = reduce_mod4(value, modulus, inverse);
-<span data-nosnippet>282</span>            <span class="kw">let </span>value = _mm256_add_pd(
-<span data-nosnippet>283</span>                value,
-<span data-nosnippet>284</span>                _mm256_and_pd(
-<span data-nosnippet>285</span>                    _mm256_cmp_pd::&lt;_CMP_LT_OQ&gt;(value, _mm256_setzero_pd()),
-<span data-nosnippet>286</span>                    modulus,
-<span data-nosnippet>287</span>                ),
-<span data-nosnippet>288</span>            );
-<span data-nosnippet>289</span>            <span class="kw">let </span>value = _mm256_sub_epi64(
-<span data-nosnippet>290</span>                _mm256_castpd_si256(_mm256_add_pd(value, magic)),
-<span data-nosnippet>291</span>                _mm256_castpd_si256(magic),
-<span data-nosnippet>292</span>            );
-<span data-nosnippet>293</span>            <span class="kw">let </span><span class="kw-2">mut </span>lanes = [<span class="number">0i64</span>; <span class="number">4</span>];
-<span data-nosnippet>294</span>            _mm256_storeu_si256(lanes.as_mut_ptr().cast(), value);
-<span data-nosnippet>295</span>            <span class="kw">for </span>(lane, value) <span class="kw">in </span>lanes.into_iter().enumerate() {
-<span data-nosnippet>296</span>                <span class="kw">let </span>i = block * <span class="number">4 </span>+ lane + part * n;
-<span data-nosnippet>297</span>                <span class="kw">if </span>i &lt; len {
-<span data-nosnippet>298</span>                    result[i] = MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32);
-<span data-nosnippet>299</span>                }
-<span data-nosnippet>300</span>            }
-<span data-nosnippet>301</span>        }
-<span data-nosnippet>302</span>    }
-<span data-nosnippet>303</span>    result
-<span data-nosnippet>304</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">fft_soa</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>fast_<wbr>fourier_<wbr>transform::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">fast_fourier_transform</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">fft_soa</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/fast_fourier_transform.rs.html#109-181">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn fft_soa(a: &amp;mut [<a class="struct" href="struct.Complex4.html" title="struct competitive::math::fast_fourier_transform::simd::Complex4">Complex4</a>])</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../../src/competitive/math/fast_fourier_transform.rs.html#313&#34;,&#34;line 313&#34;],[[9,9],&#34;../../../../src/competitive/math/fast_fourier_transform.rs.html#314&#34;,&#34;line 314&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../../../src/competitive/math/fast_fourier_transform.rs.html#313">line 313</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>305</span>    <span class="kw">pub unsafe fn </span>convolve_f64_avx2(
+<span data-nosnippet>306</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>307</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
+<span data-nosnippet>308</span>        range: std::ops::Range&lt;usize&gt;,
+<span data-nosnippet>309</span>    ) -&gt; Vec&lt;f64&gt; {
+<span data-nosnippet>310</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
+<span data-nosnippet>311</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
+<span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
+<span data-nosnippet>313</span>        <span class="highlight focus">fft_soa</span>(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>314</span>        <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>fb);
+<span data-nosnippet>315</span>        dot_one_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
+<span data-nosnippet>316</span>        drop(fb);
+<span data-nosnippet>317</span>        ifft_soa(<span class="kw-2">&amp;mut </span>fa);
+<span data-nosnippet>318</span>        range
+<span data-nosnippet>319</span>            .map(|i| {
+<span data-nosnippet>320</span>                <span class="kw">if </span>i &lt; n {
+<span data-nosnippet>321</span>                    fa[i &gt;&gt; <span class="number">2</span>].re[i &amp; <span class="number">3</span>]
+<span data-nosnippet>322</span>                } <span class="kw">else </span>{
+<span data-nosnippet>323</span>                    fa[(i - n) &gt;&gt; <span class="number">2</span>].im[i &amp; <span class="number">3</span>]
+<span data-nosnippet>324</span>                }
+<span data-nosnippet>325</span>            })
+<span data-nosnippet>326</span>            .collect()
+<span data-nosnippet>327</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[18,18],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#218&#34;,&#34;line 218&#34;],[[19,19],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#219&#34;,&#34;line 219&#34;],[[22,22],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#222&#34;,&#34;line 222&#34;],[[25,25],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#225&#34;,&#34;line 225&#34;],[[68,68],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#268&#34;,&#34;line 268&#34;],[[69,69],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#269&#34;,&#34;line 269&#34;],[[70,70],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#270&#34;,&#34;line 270&#34;],[[71,71],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#271&#34;,&#34;line 271&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../../../src/competitive/math/mint_fft_convolve.rs.html#218">line 218</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>200</span><span class="kw">pub unsafe fn </span>convolve_u64_avx2(a: Vec&lt;u64&gt;, b: Vec&lt;u64&gt;) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>201</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
+<span data-nosnippet>202</span>    <span class="kw">let </span>n = len.next_power_of_two() / <span class="number">2</span>;
+<span data-nosnippet>203</span>    <span class="kw">let </span>a_parts = <span class="kw">if </span>a.iter().all(|<span class="kw-2">&amp;</span>value| value &lt;= u32::MAX <span class="kw">as </span>u64) {
+<span data-nosnippet>204</span>        <span class="number">3
+<span data-nosnippet>205</span>    </span>} <span class="kw">else </span>{
+<span data-nosnippet>206</span>        <span class="number">5
+<span data-nosnippet>207</span>    </span>};
+<span data-nosnippet>208</span>    <span class="kw">let </span><span class="kw-2">mut </span>fa = split_u64_coefficients(<span class="kw-2">&amp;</span>a, n);
+<span data-nosnippet>209</span>    drop(a);
+<span data-nosnippet>210</span>    <span class="kw">let </span>b_parts = <span class="kw">if </span>b.iter().all(|<span class="kw-2">&amp;</span>value| value &lt;= u32::MAX <span class="kw">as </span>u64) {
+<span data-nosnippet>211</span>        <span class="number">3
+<span data-nosnippet>212</span>    </span>} <span class="kw">else </span>{
+<span data-nosnippet>213</span>        <span class="number">5
+<span data-nosnippet>214</span>    </span>};
+<span data-nosnippet>215</span>    <span class="kw">let </span><span class="kw-2">mut </span>fb = split_u64_coefficients(<span class="kw-2">&amp;</span>b, n);
+<span data-nosnippet>216</span>    drop(b);
+<span data-nosnippet>217</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">3 </span>{
+<span data-nosnippet>218</span>        <span class="highlight focus">fft_soa</span>(<span class="kw-2">&amp;mut </span>fa[part]);
+<span data-nosnippet>219</span>        <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>fb[part]);
+<span data-nosnippet>220</span>    }
+<span data-nosnippet>221</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>fa[<span class="number">3</span>..a_parts] {
+<span data-nosnippet>222</span>        <span class="highlight">fft_soa</span>(part);
+<span data-nosnippet>223</span>    }
+<span data-nosnippet>224</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>fb[<span class="number">3</span>..b_parts] {
+<span data-nosnippet>225</span>        <span class="highlight">fft_soa</span>(part);
+<span data-nosnippet>226</span>    }
+<span data-nosnippet>227</span>    dot_u64_soa(<span class="kw-2">&amp;mut </span>fa, <span class="kw-2">&amp;</span>fb);
+<span data-nosnippet>228</span>    drop(fb);
+<span data-nosnippet>229</span>    <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>fa {
+<span data-nosnippet>230</span>        ifft_soa(part);
+<span data-nosnippet>231</span>    }
+<span data-nosnippet>232</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0</span>; len];
+<span data-nosnippet>233</span>    <span class="kw">for </span>(block, <span class="kw">_</span>) <span class="kw">in </span>fa[<span class="number">0</span>].iter().enumerate() {
+<span data-nosnippet>234</span>        <span class="kw">let </span>real: [[i64; <span class="number">4</span>]; <span class="number">5</span>] = std::array::from_fn(|part| round4(<span class="kw-2">&amp;</span>fa[part][block].re));
+<span data-nosnippet>235</span>        <span class="kw">let </span>imag: [[i64; <span class="number">4</span>]; <span class="number">5</span>] = std::array::from_fn(|part| round4(<span class="kw-2">&amp;</span>fa[part][block].im));
+<span data-nosnippet>236</span>        <span class="kw">for </span>lane <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
+<span data-nosnippet>237</span>            <span class="kw">let </span>i = block * <span class="number">4 </span>+ lane;
+<span data-nosnippet>238</span>            <span class="kw">if </span>i &lt; len {
+<span data-nosnippet>239</span>                result[i] = (real[<span class="number">0</span>][lane] <span class="kw">as </span>u64)
+<span data-nosnippet>240</span>                    .wrapping_add((real[<span class="number">1</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">13</span>)
+<span data-nosnippet>241</span>                    .wrapping_add((real[<span class="number">2</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">26</span>)
+<span data-nosnippet>242</span>                    .wrapping_add((real[<span class="number">3</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">39</span>)
+<span data-nosnippet>243</span>                    .wrapping_add((real[<span class="number">4</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">52</span>);
+<span data-nosnippet>244</span>            }
+<span data-nosnippet>245</span>            <span class="kw">if </span>i + n &lt; len {
+<span data-nosnippet>246</span>                result[i + n] = (imag[<span class="number">0</span>][lane] <span class="kw">as </span>u64)
+<span data-nosnippet>247</span>                    .wrapping_add((imag[<span class="number">1</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">13</span>)
+<span data-nosnippet>248</span>                    .wrapping_add((imag[<span class="number">2</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">26</span>)
+<span data-nosnippet>249</span>                    .wrapping_add((imag[<span class="number">3</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">39</span>)
+<span data-nosnippet>250</span>                    .wrapping_add((imag[<span class="number">4</span>][lane] <span class="kw">as </span>u64) &lt;&lt; <span class="number">52</span>);
+<span data-nosnippet>251</span>            }
+<span data-nosnippet>252</span>        }
+<span data-nosnippet>253</span>    }
+<span data-nosnippet>254</span>    result
+<span data-nosnippet>255</span>}
+<span data-nosnippet>256</span>
+<span data-nosnippet>257</span><span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
+<span data-nosnippet>258</span></span><span class="kw">pub unsafe fn </span>convolve_mint_avx2&lt;M&gt;(a: Vec&lt;MInt&lt;M&gt;&gt;, b: Vec&lt;MInt&lt;M&gt;&gt;) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
+<span data-nosnippet>259</span><span class="kw">where
+<span data-nosnippet>260</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
+<span data-nosnippet>261</span>{
+<span data-nosnippet>262</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
+<span data-nosnippet>263</span>    <span class="kw">let </span>n = len.next_power_of_two() / <span class="number">2</span>;
+<span data-nosnippet>264</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>i64;
+<span data-nosnippet>265</span>    <span class="kw">let </span>split = (modulus <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>i64 + <span class="number">1</span>;
+<span data-nosnippet>266</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>a0, <span class="kw-2">mut </span>a1) = split_coefficients(a, n, modulus, split);
+<span data-nosnippet>267</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>b0, <span class="kw-2">mut </span>b1) = split_coefficients(b, n, modulus, split);
+<span data-nosnippet>268</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>a0);
+<span data-nosnippet>269</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>a1);
+<span data-nosnippet>270</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>b0);
+<span data-nosnippet>271</span>    <span class="highlight">fft_soa</span>(<span class="kw-2">&amp;mut </span>b1);
+<span data-nosnippet>272</span>    dot_soa(<span class="kw-2">&amp;mut </span>a0, <span class="kw-2">&amp;mut </span>a1, <span class="kw-2">&amp;mut </span>b0, <span class="kw-2">&amp;</span>b1);
+<span data-nosnippet>273</span>    drop(b1);
+<span data-nosnippet>274</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a0);
+<span data-nosnippet>275</span>    ifft_soa(<span class="kw-2">&amp;mut </span>a1);
+<span data-nosnippet>276</span>    ifft_soa(<span class="kw-2">&amp;mut </span>b0);
+<span data-nosnippet>277</span>    <span class="kw">let </span>split2 = (split * split % modulus) <span class="kw">as </span>f64;
+<span data-nosnippet>278</span>    <span class="kw">let </span>split = _mm256_set1_pd(split <span class="kw">as </span>f64);
+<span data-nosnippet>279</span>    <span class="kw">let </span>split2 = _mm256_set1_pd(split2);
+<span data-nosnippet>280</span>    <span class="kw">let </span>inverse = _mm256_set1_pd(<span class="number">1.0 </span>/ modulus <span class="kw">as </span>f64);
+<span data-nosnippet>281</span>    <span class="kw">let </span>modulus = _mm256_set1_pd(modulus <span class="kw">as </span>f64);
+<span data-nosnippet>282</span>    <span class="kw">let </span>magic = _mm256_set1_pd((<span class="number">3i64 </span>&lt;&lt; <span class="number">51</span>) <span class="kw">as </span>f64);
+<span data-nosnippet>283</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::from(<span class="number">0u32</span>); len];
+<span data-nosnippet>284</span>    <span class="kw">for </span>(block, ((a0, a1), b0)) <span class="kw">in </span>a0.iter().zip(<span class="kw-2">&amp;</span>a1).zip(<span class="kw-2">&amp;</span>b0).enumerate() {
+<span data-nosnippet>285</span>        <span class="kw">for </span>(part, (a0, a1, b0)) <span class="kw">in </span>[(<span class="kw-2">&amp;</span>a0.re, <span class="kw-2">&amp;</span>a1.re, <span class="kw-2">&amp;</span>b0.re), (<span class="kw-2">&amp;</span>a0.im, <span class="kw-2">&amp;</span>a1.im, <span class="kw-2">&amp;</span>b0.im)]
+<span data-nosnippet>286</span>            .into_iter()
+<span data-nosnippet>287</span>            .enumerate()
+<span data-nosnippet>288</span>        {
+<span data-nosnippet>289</span>            <span class="kw">let </span>a0 = _mm256_round_pd::&lt;{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }&gt;(
+<span data-nosnippet>290</span>                _mm256_load_pd(a0.as_ptr()),
+<span data-nosnippet>291</span>            );
+<span data-nosnippet>292</span>            <span class="kw">let </span>a1 = _mm256_round_pd::&lt;{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }&gt;(
+<span data-nosnippet>293</span>                _mm256_load_pd(a1.as_ptr()),
+<span data-nosnippet>294</span>            );
+<span data-nosnippet>295</span>            <span class="kw">let </span>b0 = _mm256_round_pd::&lt;{ _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC }&gt;(
+<span data-nosnippet>296</span>                _mm256_load_pd(b0.as_ptr()),
+<span data-nosnippet>297</span>            );
+<span data-nosnippet>298</span>            <span class="kw">let </span>a0 = reduce_mod4(a0, modulus, inverse);
+<span data-nosnippet>299</span>            <span class="kw">let </span>a1 = reduce_mod4(a1, modulus, inverse);
+<span data-nosnippet>300</span>            <span class="kw">let </span>b0 = reduce_mod4(b0, modulus, inverse);
+<span data-nosnippet>301</span>            <span class="kw">let </span>value = _mm256_fmadd_pd(b0, split2, _mm256_fmadd_pd(a1, split, a0));
+<span data-nosnippet>302</span>            <span class="kw">let </span>value = reduce_mod4(value, modulus, inverse);
+<span data-nosnippet>303</span>            <span class="kw">let </span>value = _mm256_add_pd(
+<span data-nosnippet>304</span>                value,
+<span data-nosnippet>305</span>                _mm256_and_pd(
+<span data-nosnippet>306</span>                    _mm256_cmp_pd::&lt;_CMP_LT_OQ&gt;(value, _mm256_setzero_pd()),
+<span data-nosnippet>307</span>                    modulus,
+<span data-nosnippet>308</span>                ),
+<span data-nosnippet>309</span>            );
+<span data-nosnippet>310</span>            <span class="kw">let </span>value = _mm256_sub_epi64(
+<span data-nosnippet>311</span>                _mm256_castpd_si256(_mm256_add_pd(value, magic)),
+<span data-nosnippet>312</span>                _mm256_castpd_si256(magic),
+<span data-nosnippet>313</span>            );
+<span data-nosnippet>314</span>            <span class="kw">let </span><span class="kw-2">mut </span>lanes = [<span class="number">0i64</span>; <span class="number">4</span>];
+<span data-nosnippet>315</span>            _mm256_storeu_si256(lanes.as_mut_ptr().cast(), value);
+<span data-nosnippet>316</span>            <span class="kw">for </span>(lane, value) <span class="kw">in </span>lanes.into_iter().enumerate() {
+<span data-nosnippet>317</span>                <span class="kw">let </span>i = block * <span class="number">4 </span>+ lane + part * n;
+<span data-nosnippet>318</span>                <span class="kw">if </span>i &lt; len {
+<span data-nosnippet>319</span>                    <span class="kw">let </span>value = value <span class="kw">as </span>u32;
+<span data-nosnippet>320</span>                    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into();
+<span data-nosnippet>321</span>                    <span class="comment">// Expose the reduced range to the conversion's remainder operation.
+<span data-nosnippet>322</span>                    </span>result[i] = MInt::&lt;M&gt;::from(<span class="kw">if </span>value &lt; modulus {
+<span data-nosnippet>323</span>                        value
+<span data-nosnippet>324</span>                    } <span class="kw">else </span>{
+<span data-nosnippet>325</span>                        value % modulus
+<span data-nosnippet>326</span>                    });
+<span data-nosnippet>327</span>                }
+<span data-nosnippet>328</span>            }
+<span data-nosnippet>329</span>        }
+<span data-nosnippet>330</span>    }
+<span data-nosnippet>331</span>    result
+<span data-nosnippet>332</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
