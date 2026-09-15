@@ -2,11 +2,10 @@ use competitive::prelude::*;
 use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
 
 #[verify::library_checker("multipoint_evaluation")]
-pub fn multipoint_evaluation(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, m, c: [MInt998244353; n], p: [MInt998244353; m]);
+pub fn multipoint_evaluation(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, m, c: [MInt998244353; n], p: [MInt998244353; m]);
     let f = Fps998244353::from_vec(c);
     let res = f.multipoint_evaluation(&p);
-    iter_print!(writer, @it res);
+    pp!(@it res);
 }

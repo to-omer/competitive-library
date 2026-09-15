@@ -9,16 +9,15 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("line_add_get_min")]
-pub fn line_add_get_min(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn line_add_get_min(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut tree = OfflineLiChaoTree::new();
-    for (a, b) in scanner.iter::<(i32, i64)>().take(n) {
+    for (a, b) in sv!([(i32, i64)]).take(n) {
         tree.add_line((a, b));
     }
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Add { a, b } => {
                 tree.add_line((a, b));
@@ -28,5 +27,5 @@ pub fn line_add_get_min(reader: impl Read, mut writer: impl Write) {
             }
         }
     }
-    iter_print!(writer, @lf @it tree.execute().into_iter().map(Option::unwrap));
+    pp!(@lf @it tree.execute().into_iter().map(Option::unwrap));
 }

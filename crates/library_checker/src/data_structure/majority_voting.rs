@@ -12,17 +12,16 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("majority_voting")]
-pub fn majority_voting(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i32; n]);
+pub fn majority_voting(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [i32; n]);
     let mut seg = SegmentTree::<FindMajorityOperation<i32>>::from_vec(
         a.iter().map(|&a| (Some(a), 1)).collect(),
     );
     let mut rf = RangeFrequency::new(a);
     let mut out = vec![];
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Update { p, x } => {
                 seg.set(p, (Some(x), 1));
@@ -40,5 +39,5 @@ pub fn majority_voting(reader: impl Read, mut writer: impl Write) {
             out[i].0 = -1;
         }
     });
-    iter_print!(writer, @lf @it out.iter().map(|&(x, _)| x));
+    pp!(@lf @it out.iter().map(|&(x, _)| x));
 }

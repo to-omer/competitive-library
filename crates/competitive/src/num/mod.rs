@@ -1,4 +1,4 @@
-use crate::tools::IterScan;
+use crate::tools::{FastOutput, FastPrint, Scan, ScanSource};
 
 #[codesnip::entry("BarrettReduction")]
 pub use self::barrett_reduction::{BarrettReduction, Barrettable};
@@ -53,7 +53,10 @@ mod double_double;
 mod dual_number;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod float;
-#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry(include("zero_one", "bounded", "scanner", "fastio"))
+)]
 mod integer;
 mod mint;
 #[cfg_attr(

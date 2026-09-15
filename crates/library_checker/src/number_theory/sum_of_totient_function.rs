@@ -8,10 +8,9 @@ use competitive::{num::One, prelude::*};
 type M = MInt998244353;
 
 #[verify::library_checker("sum_of_totient_function")]
-pub fn sum_of_totient_function(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n: u64);
+pub fn sum_of_totient_function(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n: u64);
     let mut s = 1;
     let mut pp = 0;
     let mut pc = 0;
@@ -32,5 +31,5 @@ pub fn sum_of_totient_function(reader: impl Read, mut writer: impl Write) {
             }
             M::from(s)
         });
-    writeln!(writer, "{}", qa[n]).ok();
+    pp!(qa[n]);
 }

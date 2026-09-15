@@ -9,22 +9,21 @@ competitive::define_enum_scan! {
 }
 
 #[verify::aizu_online_judge("DSL_1_B")]
-pub fn dsl_1_b(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn dsl_1_b(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut uf = PotentializedUnionFind::<AdditiveOperation<_>>::new(n);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Unite { x, y, w } => {
                 uf.unite_with(x, y, w);
             }
             Query::Diff { x, y } => {
                 if let Some(w) = uf.difference(x, y) {
-                    writeln!(writer, "{}", w).ok();
+                    pp!(w);
                 } else {
-                    writeln!(writer, "?").ok();
+                    pp!("?");
                 }
             }
         }

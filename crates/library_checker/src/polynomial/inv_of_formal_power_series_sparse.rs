@@ -2,16 +2,15 @@ use competitive::prelude::*;
 use competitive::{math::Fps998244353, num::Zero as _, num::montgomery::MInt998244353};
 
 #[verify::library_checker("inv_of_formal_power_series_sparse")]
-pub fn inv_of_formal_power_series_sparse(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, k);
+pub fn inv_of_formal_power_series_sparse(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, k);
     let mut a = vec![MInt998244353::zero(); n];
     for _ in 0..k {
-        scan!(scanner, i, a_i: MInt998244353);
+        sc!(i, a_i: MInt998244353);
         a[i] = a_i;
     }
     let f = Fps998244353::from_vec(a);
     let g = f.inv(n);
-    iter_print!(writer, @it g.data);
+    pp!(@it g.data);
 }

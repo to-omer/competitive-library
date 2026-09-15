@@ -2,11 +2,10 @@ use competitive::math::primitive_root as primitive_root_library;
 use competitive::prelude::*;
 
 #[verify::library_checker("primitive_root")]
-pub fn primitive_root(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, q, p: [u64]);
+pub fn primitive_root(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(q, p: [u64]);
     for p in p.take(q) {
-        writeln!(writer, "{}", primitive_root_library(p)).ok();
+        pp!(primitive_root_library(p));
     }
 }

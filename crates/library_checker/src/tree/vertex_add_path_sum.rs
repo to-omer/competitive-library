@@ -11,17 +11,16 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("vertex_add_path_sum")]
-pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
+pub fn vertex_add_path_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
     let hld = graph.hld(0);
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(n);
     for (v, &x) in a.iter().enumerate() {
         bit.update(hld.index(v), x);
     }
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Add { p, x } => {
                 bit.update(hld.index(p), x);
@@ -29,7 +28,7 @@ pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
             Query::Sum { u, v } => {
                 let mut sum = 0;
                 hld.path_vertices(u, v, |l, r| sum += bit.fold(l, r));
-                writeln!(writer, "{sum}").ok();
+                pp!(sum);
             }
         }
     }

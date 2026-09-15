@@ -2,10 +2,9 @@ use competitive::graph::DinicBuilder;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("GRL_7_A")]
-pub fn grl_7_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, xs, ys, es, edges: [(usize, usize)]);
+pub fn grl_7_a(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(xs, ys, es, edges: [(usize, usize)]);
     let mut builder = DinicBuilder::new(xs + ys + 2, xs + ys + es);
     let s = xs + ys;
     let t = s + 1;
@@ -20,5 +19,5 @@ pub fn grl_7_a(reader: impl Read, mut writer: impl Write) {
     }
     let graph = builder.gen_graph();
     let mut dinic = builder.build(&graph);
-    writeln!(writer, "{}", dinic.maximum_flow(s, t)).ok();
+    pp!(dinic.maximum_flow(s, t));
 }

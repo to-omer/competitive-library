@@ -5,11 +5,10 @@ use competitive::{
 };
 
 #[verify::library_checker("convolution_mod_1000000007")]
-pub fn convolution_mod_1000000007(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
+pub fn convolution_mod_1000000007(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
     type M = MInt1000000007;
-    scan!(scanner, n, m, a: [M; n], b: [M; m]);
+    sc!(n, m, a: [M; n], b: [M; m]);
     let c = MIntConvolve::<Modulo1000000007>::convolve(a, b);
-    iter_print!(writer, @it c);
+    pp!(@it c);
 }

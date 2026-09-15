@@ -1,4 +1,4 @@
-use super::{EdgeMap, Graph, IterScan, MarkedIterScan, Neighbor, VertexMap};
+use super::{EdgeMap, Graph, MarkedScan, Neighbor, Scan, ScanSource, VertexMap};
 use std::{iter::Copied, marker::PhantomData, ops::Range, slice};
 
 #[derive(Clone, Debug, Default)]
@@ -99,14 +99,14 @@ impl<T> VertexMap<T> for AdjacencyListGraph {
     }
 }
 
-pub struct AdjacencyListGraphScanner<U: IterScan<Output = usize>, T: IterScan> {
+pub struct AdjacencyListGraphScanner<U: Scan<Output = usize>, T: Scan> {
     vsize: usize,
     esize: usize,
     directed: bool,
     _marker: PhantomData<fn() -> (U, T)>,
 }
 
-impl<U: IterScan<Output = usize>, T: IterScan> AdjacencyListGraphScanner<U, T> {
+impl<U: Scan<Output = usize>, T: Scan> AdjacencyListGraphScanner<U, T> {
     pub fn new(vsize: usize, esize: usize, directed: bool) -> Self {
         Self {
             vsize,
@@ -117,9 +117,9 @@ impl<U: IterScan<Output = usize>, T: IterScan> AdjacencyListGraphScanner<U, T> {
     }
 }
 
-impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for AdjacencyListGraphScanner<U, T> {
-    type Output = (AdjacencyListGraph, Vec<<T as IterScan>::Output>);
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+impl<U: Scan<Output = usize>, T: Scan> MarkedScan for AdjacencyListGraphScanner<U, T> {
+    type Output = (AdjacencyListGraph, Vec<<T as Scan>::Output>);
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         let mut graph = AdjacencyListGraph::new(self.vsize);
         let mut rest = Vec::with_capacity(self.esize);
         for _ in 0..self.esize {

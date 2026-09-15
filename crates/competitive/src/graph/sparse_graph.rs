@@ -1,4 +1,4 @@
-use super::{DirectedGraph, EdgeMap, Graph, IterScan, MarkedIterScan, Neighbor, VertexMap};
+use super::{DirectedGraph, EdgeMap, Graph, MarkedScan, Neighbor, Scan, ScanSource, VertexMap};
 use std::{iter::Copied, marker::PhantomData, ops, slice};
 
 type Marker<T> = PhantomData<fn() -> T>;
@@ -189,8 +189,8 @@ where
 
 pub struct SparseGraphScanner<U, T, D>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     vsize: usize,
     esize: usize,
@@ -199,8 +199,8 @@ where
 
 impl<U, T, D> SparseGraphScanner<U, T, D>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     pub fn new(vsize: usize, esize: usize) -> Self {
         Self {
@@ -211,14 +211,14 @@ where
     }
 }
 
-impl<U, T, D> MarkedIterScan for SparseGraphScanner<U, T, D>
+impl<U, T, D> MarkedScan for SparseGraphScanner<U, T, D>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
     D: SparseGraphConstruction,
 {
-    type Output = (SparseGraph<D>, Vec<<T as IterScan>::Output>);
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+    type Output = (SparseGraph<D>, Vec<<T as Scan>::Output>);
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         let mut builder = SparseGraphBuilder::new_with_esize(self.vsize, self.esize);
         for _ in 0..self.esize {
             builder.add_edge(U::scan(iter)?, U::scan(iter)?, T::scan(iter)?);
@@ -233,16 +233,16 @@ pub type BidirectionalGraphScanner<U, T = ()> = SparseGraphScanner<U, T, Bidirec
 
 pub struct TreeGraphScanner<U, T = ()>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     vsize: usize,
     _marker: Marker<(U, T)>,
 }
 impl<U, T> TreeGraphScanner<U, T>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     pub fn new(vsize: usize) -> Self {
         Self {
@@ -251,13 +251,13 @@ where
         }
     }
 }
-impl<U, T> MarkedIterScan for TreeGraphScanner<U, T>
+impl<U, T> MarkedScan for TreeGraphScanner<U, T>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
-    type Output = (UndirectedSparseGraph, Vec<<T as IterScan>::Output>);
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+    type Output = (UndirectedSparseGraph, Vec<<T as Scan>::Output>);
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         UndirectedGraphScanner::<U, T>::new(self.vsize, self.vsize - 1).mscan(iter)
     }
 }

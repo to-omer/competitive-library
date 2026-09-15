@@ -1,8 +1,7 @@
 #![allow(dead_code)]
-#![allow(clippy::crate_in_macro_def)]
 
 #[codesnip::skip]
-use crate::tools::{Scanner, read_stdin_all_unchecked};
+use crate::tools::{ScanSource, Scanner, read_stdin_all_unchecked};
 
 #[cfg_attr(nightly, rust_minify::skip)]
 pub fn solve() {
@@ -21,6 +20,7 @@ use std::{
 mod main_macros {
     /// Prepare useful macros.
     /// - `prepare!();`: default (all input scanner (`sc!`, `sv!`) + buf print (`pp!`, `dg!`))
+    /// - `prepare!(fast);`: fast stdin/stdout for valid input (`sc!`, `sv!`, `pp!`, `dg!`)
     /// - `prepare!(?);`: interactive (line scanner (`scln!`) + buf print (`pp!`, `dg!`))
     #[macro_export]
     #[allow(clippy::crate_in_macro_def)]
@@ -34,6 +34,9 @@ mod main_macros {
             #[allow(unused_macros)]
             /// [`iter_print!`] for buffered stdout.
             macro_rules! pp { ($dol($dol t:tt)*) => { $dol crate::iter_print!(__out, $dol($dol t)*) } }
+            $crate::prepare!(@debug ($));
+        };
+        (@debug ($dol:tt)) => {
             #[cfg(debug_assertions)]
             #[allow(unused_macros)]
             /// [`iter_print!`] for buffered stderr. Do nothing in release mode.
@@ -83,6 +86,22 @@ mod main_macros {
                     $dol crate::scan_value!(__scanner, $dol($dol t)*)
                 }}
             }
+        };
+        (@fast ($dol:tt)) => {
+            #[allow(unused_mut, unused_variables)]
+            let mut __scanner = unsafe { FastInput::stdin() };
+            #[allow(unused_mut, unused_variables)]
+            let mut __out = FastOutput::new(std::io::stdout().lock());
+            #[allow(unused_macros)]
+            macro_rules! sc { ($dol($dol t:tt)*) => { $dol crate::scan!(__scanner, $dol($dol t)*) } }
+            #[allow(unused_macros)]
+            macro_rules! sv { ($dol($dol t:tt)*) => { $dol crate::scan_value!(__scanner, $dol($dol t)*) } }
+            #[allow(unused_macros)]
+            macro_rules! pp { ($dol($dol t:tt)*) => { $dol crate::iter_print!(fast; __out, $dol($dol t)*) } }
+            $crate::prepare!(@debug ($));
+        };
+        (fast) => {
+            $crate::prepare!(@fast ($));
         };
         () => { $crate::prepare!(@output ($)); $crate::prepare!(@normal ($)) };
         (?) => { $crate::prepare!(@output ($)); $crate::prepare!(@interactive ($)) };

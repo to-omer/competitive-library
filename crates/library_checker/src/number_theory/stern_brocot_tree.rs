@@ -15,12 +15,11 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("stern_brocot_tree")]
-pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, t);
+pub fn stern_brocot_tree(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(t);
     for _ in 0..t {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::EncodePath { a, b } => {
                 let path = SbtPath::from(URational::new(a, b));
@@ -29,18 +28,18 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
                 } else {
                     path.path.len()
                 };
-                write!(writer, "{}", len).ok();
+                pp!(len, !);
                 for (i, count) in path.into_iter().enumerate() {
                     if count == 0 {
                         continue;
                     }
                     if i % 2 == 0 {
-                        write!(writer, " R {}", count).ok();
+                        pp!(@ns " R ", count, !);
                     } else {
-                        write!(writer, " L {}", count).ok();
+                        pp!(@ns " L ", count, !);
                     }
                 }
-                writeln!(writer).ok();
+                pp!();
             }
             Query::DecodePath { path, .. } => {
                 let node: SbtNode<u32> = if path.first().is_some_and(|t| t.0 == 'L') {
@@ -51,13 +50,13 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
                     path.into_iter().map(|(_, c)| c).collect()
                 };
                 let val = node.eval();
-                writeln!(writer, "{} {}", val.num, val.den).ok();
+                pp!(val.num, val.den);
             }
             Query::Lca { a, b, c, d } => {
                 let path1 = SbtPath::from(URational::new(a, b));
                 let path2 = SbtPath::from(URational::new(c, d));
                 let val = SbtNode::lca(path1, path2).eval();
-                writeln!(writer, "{} {}", val.num, val.den).ok();
+                pp!(val.num, val.den);
             }
             Query::Ancestor { k, a, b } => {
                 let mut path = SbtPath::from(URational::new(a, b));
@@ -65,19 +64,14 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
                 if k <= depth {
                     path.up(depth - k);
                     let val = path.eval();
-                    writeln!(writer, "{} {}", val.num, val.den).ok();
+                    pp!(val.num, val.den);
                 } else {
-                    writeln!(writer, "-1").ok();
+                    pp!("-1");
                 }
             }
             Query::Range { a, b } => {
                 let node = SbtPath::from(URational::new(a, b)).to_node();
-                writeln!(
-                    writer,
-                    "{} {} {} {}",
-                    node.l.num, node.l.den, node.r.num, node.r.den
-                )
-                .ok();
+                pp!(node.l.num, node.l.den, node.r.num, node.r.den);
             }
         }
     }

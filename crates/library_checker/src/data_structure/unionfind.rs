@@ -9,19 +9,18 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("unionfind")]
-pub fn unionfind(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn unionfind(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut uf = UnionFind::new(n);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Unite { u, v } => {
                 uf.unite(u, v);
             }
             Query::Same { u, v } => {
-                writeln!(writer, "{}", uf.same(u, v) as usize).ok();
+                pp!(uf.same(u, v) as usize);
             }
         }
     }

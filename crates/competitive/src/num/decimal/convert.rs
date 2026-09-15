@@ -140,10 +140,10 @@ impl Display for Decimal {
     }
 }
 
-impl IterScan for Decimal {
+impl Scan for Decimal {
     type Output = Self;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        iter.next()?.parse().ok()
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+        iter.next_token()?.parse().ok()
     }
 }
 

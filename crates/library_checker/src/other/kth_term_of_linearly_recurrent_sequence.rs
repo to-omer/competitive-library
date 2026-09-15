@@ -5,10 +5,9 @@ use competitive::{
 };
 
 #[verify::library_checker("kth_term_of_linearly_recurrent_sequence")]
-pub fn kth_term_of_linearly_recurrent_sequence(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, d, k, a: [MInt998244353; d], c: [MInt998244353; d]);
+pub fn kth_term_of_linearly_recurrent_sequence(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(d, k, a: [MInt998244353; d], c: [MInt998244353; d]);
     let q = Fps998244353::one() - (Fps998244353::from_vec(c) << 1);
-    iter_print!(writer, q.kth_term_of_linearly_recurrence(a, k));
+    pp!(q.kth_term_of_linearly_recurrence(a, k));
 }

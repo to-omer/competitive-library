@@ -177,13 +177,12 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("dynamic_tree_subtree_add_subtree_sum")]
-pub fn dynamic_tree_subtree_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
+pub fn dynamic_tree_subtree_add_subtree_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
     let mut tree = LinkCutTree::<SubtreeSum>::from_edges(a, &edges);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Relink { u, v, w, x } => {
                 tree.cut(u, v);
@@ -191,20 +190,19 @@ pub fn dynamic_tree_subtree_add_subtree_sum(reader: impl Read, mut writer: impl 
             }
             Query::Add { v, p, x } => tree.update_subtree(v, p, &x),
             Query::Sum { v, p } => {
-                writeln!(writer, "{}", tree.fold_subtree(v, p)).ok();
+                pp!(tree.fold_subtree(v, p));
             }
         }
     }
 }
 
 #[verify::library_checker("dynamic_tree_subtree_add_subtree_sum")]
-pub fn dynamic_tree_subtree_add_subtree_sum_top_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
+pub fn dynamic_tree_subtree_add_subtree_sum_top_tree(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
     let mut tree = TopTree::<TopTreeSubtreeSum, AddAction>::from_edges(a, &edges);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Relink { u, v, w, x } => {
                 tree.cut(u, v);
@@ -212,7 +210,7 @@ pub fn dynamic_tree_subtree_add_subtree_sum_top_tree(reader: impl Read, mut writ
             }
             Query::Add { v, p, x } => tree.update_subtree(v, p, &x),
             Query::Sum { v, p } => {
-                writeln!(writer, "{}", tree.fold_subtree(v, p).0).ok();
+                pp!(tree.fold_subtree(v, p).0);
             }
         }
     }

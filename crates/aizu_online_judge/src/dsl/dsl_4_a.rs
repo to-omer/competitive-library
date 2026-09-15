@@ -1,10 +1,9 @@
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DSL_4_A")]
-pub fn dsl_4_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, xyxy: [(i64, i64, i64, i64); n]);
+pub fn dsl_4_a(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, xyxy: [(i64, i64, i64, i64); n]);
     let (mut xs, mut ys) = (Vec::with_capacity(2 * n), Vec::with_capacity(2 * n));
     xs.extend(xyxy.iter().map(|t| t.0));
     ys.extend(xyxy.iter().map(|t| t.1));
@@ -45,5 +44,5 @@ pub fn dsl_4_a(reader: impl Read, mut writer: impl Write) {
             }
         }
     }
-    writeln!(writer, "{}", ans).ok();
+    pp!(ans);
 }

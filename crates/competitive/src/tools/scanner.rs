@@ -30,107 +30,177 @@ pub fn read_stdin_line() -> String {
     std::io::stdin().read_line(&mut s).expect("io error");
     s
 }
-pub trait IterScan: Sized {
+pub trait Scan: Sized {
     type Output;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output>;
+    fn scan<S: ScanSource>(source: &mut S) -> Option<Self::Output>;
 }
-pub trait MarkedIterScan: Sized {
+pub trait MarkedScan: Sized {
     type Output;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
+    fn mscan<S: ScanSource>(self, source: &mut S) -> Option<Self::Output>;
 }
+
+pub trait ScanSource: Sized {
+    /// Reads a token under the source's input requirements.
+    /// Checked sources return `None` at EOF; unchecked sources require available input.
+    fn next_token(&mut self) -> Option<&str>;
+    /// Skips separators without consuming the next token.
+    #[inline]
+    fn skip_whitespace(&mut self) {}
+    #[inline]
+    fn read_u8(&mut self) -> Option<u8> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_u16(&mut self) -> Option<u16> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_u32(&mut self) -> Option<u32> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_u64(&mut self) -> Option<u64> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_u128(&mut self) -> Option<u128> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_usize(&mut self) -> Option<usize> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_i8(&mut self) -> Option<i8> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_i16(&mut self) -> Option<i16> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_i32(&mut self) -> Option<i32> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_i64(&mut self) -> Option<i64> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_i128(&mut self) -> Option<i128> {
+        self.next_token()?.parse().ok()
+    }
+    #[inline]
+    fn read_isize(&mut self) -> Option<isize> {
+        self.next_token()?.parse().ok()
+    }
+    /// Panics if reading fails.
+    #[inline]
+    fn scan<T: Scan>(&mut self) -> T::Output {
+        T::scan(self).expect("scan error")
+    }
+    /// Panics if reading fails.
+    #[inline]
+    fn mscan<T: MarkedScan>(&mut self, marker: T) -> T::Output {
+        marker.mscan(self).expect("scan error")
+    }
+    fn scan_vec<T: Scan>(&mut self, size: usize) -> Vec<T::Output> {
+        if size == 0 {
+            self.skip_whitespace();
+        }
+        (0..size).map(|_| self.scan::<T>()).collect()
+    }
+    #[inline]
+    fn iter<T: Scan>(&mut self) -> ScannerIter<'_, Self, T> {
+        ScannerIter {
+            inner: self,
+            _marker: PhantomData,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Scanner<'a, I: Iterator<Item = &'a str> = std::str::SplitAsciiWhitespace<'a>> {
     iter: I,
 }
 impl<'a> Scanner<'a> {
     pub fn new(s: &'a str) -> Self {
-        let iter = s.split_ascii_whitespace();
-        Self { iter }
+        Self {
+            iter: s.split_ascii_whitespace(),
+        }
     }
 }
 impl<'a, I: Iterator<Item = &'a str>> Scanner<'a, I> {
     pub fn new_from_iter(iter: I) -> Self {
         Self { iter }
     }
-    pub fn scan<T>(&mut self) -> <T as IterScan>::Output
-    where
-        T: IterScan,
-    {
-        <T as IterScan>::scan(&mut self.iter).expect("scan error")
-    }
-    pub fn mscan<T>(&mut self, marker: T) -> <T as MarkedIterScan>::Output
-    where
-        T: MarkedIterScan,
-    {
-        marker.mscan(&mut self.iter).expect("scan error")
-    }
-    pub fn scan_vec<T>(&mut self, size: usize) -> Vec<<T as IterScan>::Output>
-    where
-        T: IterScan,
-    {
-        (0..size)
-            .map(|_| <T as IterScan>::scan(&mut self.iter).expect("scan error"))
-            .collect()
-    }
-    #[inline]
-    pub fn iter<'b, T>(&'b mut self) -> ScannerIter<'a, 'b, I, T>
-    where
-        T: IterScan,
-    {
-        ScannerIter {
-            inner: self,
-            _marker: std::marker::PhantomData,
-        }
+}
+impl<'a, I: Iterator<Item = &'a str>> ScanSource for Scanner<'a, I> {
+    fn next_token(&mut self) -> Option<&str> {
+        self.iter.next()
     }
 }
 
-macro_rules! impl_iter_scan {
+macro_rules! impl_scan {
     ($($t:ty)*) => {$(
-        impl IterScan for $t {
+        impl Scan for $t {
             type Output = Self;
-            fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
-                iter.next()?.parse::<$t>().ok()
+            fn scan<I: ScanSource>(iter: &mut I) -> Option<Self> {
+                iter.next_token()?.parse::<$t>().ok()
             }
         })*
     };
 }
-impl_iter_scan!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
+impl_scan!(char f32 f64 String);
 
-macro_rules! impl_iter_scan_tuple {
+macro_rules! impl_integer_scan {
+    ($($t:ty => $read:ident),* $(,)?) => {$(
+        impl Scan for $t {
+            type Output = Self;
+            #[inline]
+            fn scan<S: ScanSource>(source: &mut S) -> Option<Self> {
+                source.$read()
+            }
+        }
+    )*};
+}
+impl_integer_scan!(
+    u8 => read_u8, u16 => read_u16, u32 => read_u32, u64 => read_u64,
+    u128 => read_u128, usize => read_usize, i8 => read_i8, i16 => read_i16,
+    i32 => read_i32, i64 => read_i64, i128 => read_i128, isize => read_isize,
+);
+
+macro_rules! impl_scan_tuple {
     (@impl $($T:ident)*) => {
-        impl<$($T: IterScan),*> IterScan for ($($T,)*) {
-            type Output = ($(<$T as IterScan>::Output,)*);
-            fn scan<'a, It: Iterator<Item = &'a str>>(_iter: &mut It) -> Option<Self::Output> {
-                Some(($(<$T as IterScan>::scan(_iter)?,)*))
+        impl<$($T: Scan),*> Scan for ($($T,)*) {
+            type Output = ($(<$T as Scan>::Output,)*);
+            fn scan<It: ScanSource>(_iter: &mut It) -> Option<Self::Output> {
+                Some(($(<$T as Scan>::scan(_iter)?,)*))
             }
         }
     };
     (@inner $($T:ident)*,) => {
-        impl_iter_scan_tuple!(@impl $($T)*);
+        impl_scan_tuple!(@impl $($T)*);
     };
     (@inner $($T:ident)*, $U:ident $($Rest:ident)*) => {
-        impl_iter_scan_tuple!(@impl $($T)*);
-        impl_iter_scan_tuple!(@inner $($T)* $U, $($Rest)*);
+        impl_scan_tuple!(@impl $($T)*);
+        impl_scan_tuple!(@inner $($T)* $U, $($Rest)*);
     };
     ($($T:ident)*) => {
-        impl_iter_scan_tuple!(@inner , $($T)*);
+        impl_scan_tuple!(@inner , $($T)*);
     };
 }
-impl_iter_scan_tuple!(A B C D E F G H I J K);
+impl_scan_tuple!(A B C D E F G H I J K);
 
-pub struct ScannerIter<'a, 'b, I: Iterator<Item = &'a str>, T> {
-    inner: &'b mut Scanner<'a, I>,
-    _marker: std::marker::PhantomData<fn() -> T>,
+pub struct ScannerIter<'a, S, T> {
+    inner: &'a mut S,
+    _marker: PhantomData<fn() -> T>,
 }
-impl<'a, I, T> Iterator for ScannerIter<'a, '_, I, T>
-where
-    I: Iterator<Item = &'a str>,
-    T: IterScan,
-{
-    type Item = <T as IterScan>::Output;
+impl<S: ScanSource, T: Scan> Iterator for ScannerIter<'_, S, T> {
+    type Item = T::Output;
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        <T as IterScan>::scan(&mut self.inner.iter)
+        T::scan(self.inner)
     }
 }
 
@@ -139,37 +209,41 @@ where
 /// - `scan_value!(scanner, ELEMENT)`
 ///
 /// ELEMENT :=
-/// - `$ty`: IterScan
-/// - `@$expr`: MarkedIterScan
-/// - `$ty = $expr`: MarkedIterScan
+/// - `$ty`: Scan
+/// - `@$expr`: MarkedScan
+/// - `$ty = $expr`: MarkedScan
 /// - `[ELEMENT; $expr]`: vector
 /// - `[ELEMENT; const $expr]`: array
 /// - `[ELEMENT]`: iterator
+/// - `[ELEMENT; iter $expr]`: iterator of the specified length
 /// - `($(ELEMENT)*,)`: tuple
 #[macro_export]
 macro_rules! scan_value {
-    (@repeat $scanner:expr, [$($t:tt)*] $($len:expr)?)                           => { ::std::iter::repeat_with(|| $crate::scan_value!(@inner $scanner, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
-    (@array $scanner:expr, [$($t:tt)*] $len:expr)                                => { $crate::array![|| $crate::scan_value!(@inner $scanner, [] $($t)*); $len] };
-    (@tuple $scanner:expr, [$([$($args:tt)*])*])                                 => { ($($($args)*,)*) };
-    (@sparen $scanner:expr, [] @$e:expr; $($t:tt)*)                              => { $crate::scan_value!(@sparen $scanner, [@$e] $($t)*) };
-    (@sparen $scanner:expr, [] ($($tt:tt)*); $($t:tt)*)                          => { $crate::scan_value!(@sparen $scanner, [($($tt)*)] $($t)*) };
-    (@sparen $scanner:expr, [] [$($tt:tt)*]; $($t:tt)*)                          => { $crate::scan_value!(@sparen $scanner, [[$($tt)*]] $($t)*) };
-    (@sparen $scanner:expr, [] $ty:ty = $e:expr; $($t:tt)*)                      => { $crate::scan_value!(@sparen $scanner, [$ty = $e] $($t)*) };
-    (@sparen $scanner:expr, [] $ty:ty; $($t:tt)*)                                => { $crate::scan_value!(@sparen $scanner, [$ty] $($t)*) };
-    (@sparen $scanner:expr, [] $($args:tt)*)                                     => { $crate::scan_value!(@repeat $scanner, [$($args)*]) };
-    (@sparen $scanner:expr, [$($args:tt)+] const $len:expr)                      => { $crate::scan_value!(@array $scanner, [$($args)+] $len) };
-    (@sparen $scanner:expr, [$($args:tt)+] $len:expr)                            => { $crate::scan_value!(@repeat $scanner, [$($args)+] $len) };
-    (@$tag:ident $scanner:expr, [[$($args:tt)*]])                                => { $($args)* };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr $(, $($t:tt)*)?)         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $(, $($t)*)?) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)        => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@sparen $scanner, [] $($tt)*)]] $($t)*) };
+    (@repeat $scanner:expr, [$($t:tt)*] $len:expr)                             => { { $crate::scan_value!(@iter $scanner, [$($t)*] $len).collect::<Vec<_>>() } };
+    (@repeat $scanner:expr, [$($t:tt)*])                                       => { { ::std::iter::repeat_with(|| $crate::scan_value!(@inner $scanner, [] $($t)*)) } };
+    (@iter $scanner:expr, [$($t:tt)*] $len:expr)                               => {{ let size = $len; if size == 0 { $scanner.skip_whitespace(); } $crate::scan_value!(@repeat $scanner, [$($t)*]).take(size) }};
+    (@array $scanner:expr, [$($t:tt)*] $len:expr)                              => { { if $len == 0 { $scanner.skip_whitespace(); } $crate::array![|| $crate::scan_value!(@inner $scanner, [] $($t)*); $len] } };
+    (@tuple $scanner:expr, [$([$($args:tt)*])*])                               => { ($($($args)*,)*) };
+    (@sparen $scanner:expr, [] @$e:expr; $($t:tt)*)                            => { $crate::scan_value!(@sparen $scanner, [@$e] $($t)*) };
+    (@sparen $scanner:expr, [] ($($tt:tt)*); $($t:tt)*)                        => { $crate::scan_value!(@sparen $scanner, [($($tt)*)] $($t)*) };
+    (@sparen $scanner:expr, [] [$($tt:tt)*]; $($t:tt)*)                        => { $crate::scan_value!(@sparen $scanner, [[$($tt)*]] $($t)*) };
+    (@sparen $scanner:expr, [] $ty:ty = $e:expr; $($t:tt)*)                    => { $crate::scan_value!(@sparen $scanner, [$ty = $e] $($t)*) };
+    (@sparen $scanner:expr, [] $ty:ty; $($t:tt)*)                              => { $crate::scan_value!(@sparen $scanner, [$ty] $($t)*) };
+    (@sparen $scanner:expr, [] $($args:tt)*)                                   => { $crate::scan_value!(@repeat $scanner, [$($args)*]) };
+    (@sparen $scanner:expr, [$($args:tt)+] const $len:expr)                    => { $crate::scan_value!(@array $scanner, [$($args)+] $len) };
+    (@sparen $scanner:expr, [$($args:tt)+] iter $len:expr)                     => { $crate::scan_value!(@iter $scanner, [$($args)+] $len) };
+    (@sparen $scanner:expr, [$($args:tt)+] $len:expr)                          => { $crate::scan_value!(@repeat $scanner, [$($args)+] $len) };
+    (@$tag:ident $scanner:expr, [[$($args:tt)*]])                              => { $($args)* };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr $(, $($t:tt)*)?)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $(, $($t)*)?) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)      => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@sparen $scanner, [] $($tt)*)]] $($t)*) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::scan_value!(@$tag $scanner, [$($args)* [{ let _tmp: $ty = $scanner.mscan($e); _tmp }]] $(, $($t)*)?) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $(, $($t)*)?) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                      => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*])                                  => { ::std::compile_error!(::std::stringify!($($args)*)) };
-    (src = $src:expr, $($t:tt)*)                                                 => { { let mut __scanner = Scanner::new($src); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
-    (iter = $iter:expr, $($t:tt)*)                                               => { { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
-    ($scanner:expr, $($t:tt)*)                                                   => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
+    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $(, $($t)*)?) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                    => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*])                                => { ::std::compile_error!(::std::stringify!($($args)*)) };
+    (src = $src:expr, $($t:tt)*)                                               => { { let mut __scanner = Scanner::new($src); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
+    (iter = $iter:expr, $($t:tt)*)                                             => { { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
+    ($scanner:expr, $($t:tt)*)                                                 => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
 }
 
 /// scan and bind values with Scanner
@@ -208,7 +282,7 @@ macro_rules! scan {
 ///
 /// # Example
 /// ```rust
-/// # use competitive::{define_enum_scan, tools::{CharsWithBase, IterScan, Scanner, Usize1}};
+/// # use competitive::{define_enum_scan, tools::{CharsWithBase, Scan, ScanSource, Scanner, Usize1}};
 /// define_enum_scan! {
 ///   enum Query: u8 {
 ///     0 => Noop,
@@ -232,14 +306,14 @@ macro_rules! define_enum_scan {
     (@field_ty @$tag:ident [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)        => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [$crate::define_enum_scan!(@field_ty @tuple [] $($tuple)*)]] $($t)*) };
     (@field_ty @$tag:ident [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)           => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [$crate::define_enum_scan!(@field_ty @sparen [] $($tt)*)]] $($t)*) };
     (@field_ty @$tag:ident [$($args:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [$ty]] $(, $($t)*)?) };
-    (@field_ty @$tag:ident [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [<$ty as IterScan>::Output]] $(, $($t)*)?) };
+    (@field_ty @$tag:ident [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [<$ty as Scan>::Output]] $(, $($t)*)?) };
     (@field_ty @$tag:ident [$($args:tt)*] , $($t:tt)*)                      => { $crate::define_enum_scan!(@field_ty @$tag [$($args)*] $($t)*) };
     (@field_ty @$tag:ident [[$($args:tt)*]])                                => { $($args)* };
     (@field_ty @$tag:ident [$($args:tt)*])                                  => { ::std::compile_error!(::std::stringify!($($args)*)) };
     (@field_ty $($t:tt)*) => { $crate::define_enum_scan!(@field_ty @inner [] $($t)*) };
 
-    (@tag_expr raw, $iter:ident) => { $iter.next()? };
-    (@tag_expr $d:ty, $iter:ident) => { <$d as IterScan>::scan($iter)? };
+    (@tag_expr raw, $iter:ident) => { ScanSource::next_token($iter)? };
+    (@tag_expr $d:ty, $iter:ident) => { <$d as Scan>::scan($iter)? };
     (@variant ([$($attr:tt)*] $vis:vis $T:ident $d:tt) [$($vars:tt)*]) => { $crate::define_enum_scan! { @def $($attr)* $vis enum $T : $d { $($vars)* } } };
     (@variant $ctx:tt [$($vars:tt)*] $p:pat => $v:ident { $($fs:tt)* } $($rest:tt)*) => { $crate::define_enum_scan! { @field   $ctx [$($vars)*] $p => $v [] $($fs)* ; $($rest)* } };
     (@variant $ctx:tt [$($vars:tt)*] $p:pat => $v:ident $($rest:tt)*)                    => { $crate::define_enum_scan! { @variant $ctx [$($vars)* $p => $v ,] $($rest)* } };
@@ -264,15 +338,15 @@ macro_rules! define_enum_scan {
         $vis enum $T {
             $( $v $( { $( $f : $crate::define_enum_scan!(@field_ty $($spec)*) ),* } )? ),*
         }
-        impl IterScan for $T {
+        impl Scan for $T {
             type Output = Self;
-            fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
+            fn scan<I: ScanSource>(iter: &mut I) -> Option<Self> {
                 let tag = $crate::define_enum_scan!(@tag_expr $d, iter);
                 match tag {
                     $(
                         $p => {
                             $($(
-                                let $f = $crate::scan_value!(iter = &mut *iter, $($spec)* );
+                                let $f = $crate::scan_value!((*iter), $($spec)* );
                             )*)?
                             Some($T::$v $( { $( $f ),* } )?)
                         }
@@ -302,35 +376,35 @@ macro_rules! define_enum_scan {
 
 #[derive(Debug, Copy, Clone)]
 pub enum Usize1 {}
-impl IterScan for Usize1 {
+impl Scan for Usize1 {
     type Output = usize;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        <usize as IterScan>::scan(iter)?.checked_sub(1)
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+        <usize as Scan>::scan(iter)?.checked_sub(1)
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub struct CharWithBase(pub char);
-impl MarkedIterScan for CharWithBase {
+impl MarkedScan for CharWithBase {
     type Output = usize;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        Some((<char as IterScan>::scan(iter)? as u8 - self.0 as u8) as usize)
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
+        Some((<char as Scan>::scan(iter)? as u8 - self.0 as u8) as usize)
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub enum Chars {}
-impl IterScan for Chars {
+impl Scan for Chars {
     type Output = Vec<char>;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        Some(iter.next()?.chars().collect())
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+        Some(iter.next_token()?.chars().collect())
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub struct CharsWithBase(pub char);
-impl MarkedIterScan for CharsWithBase {
+impl MarkedScan for CharsWithBase {
     type Output = Vec<usize>;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         Some(
-            iter.next()?
+            iter.next_token()?
                 .chars()
                 .map(|c| (c as u8 - self.0 as u8) as usize)
                 .collect(),
@@ -339,37 +413,37 @@ impl MarkedIterScan for CharsWithBase {
 }
 #[derive(Debug, Copy, Clone)]
 pub enum Byte1 {}
-impl IterScan for Byte1 {
+impl Scan for Byte1 {
     type Output = u8;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        let bytes = iter.next()?.as_bytes();
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+        let bytes = iter.next_token()?.as_bytes();
         assert_eq!(bytes.len(), 1);
         Some(bytes[0])
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub struct ByteWithBase(pub u8);
-impl MarkedIterScan for ByteWithBase {
+impl MarkedScan for ByteWithBase {
     type Output = usize;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        Some((<char as IterScan>::scan(iter)? as u8 - self.0) as usize)
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
+        Some((<char as Scan>::scan(iter)? as u8 - self.0) as usize)
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub enum Bytes {}
-impl IterScan for Bytes {
+impl Scan for Bytes {
     type Output = Vec<u8>;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        Some(iter.next()?.bytes().collect())
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+        Some(iter.next_token()?.bytes().collect())
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub struct BytesWithBase(pub u8);
-impl MarkedIterScan for BytesWithBase {
+impl MarkedScan for BytesWithBase {
     type Output = Vec<usize>;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         Some(
-            iter.next()?
+            iter.next_token()?
                 .bytes()
                 .map(|c| (c - self.0) as usize)
                 .collect(),
@@ -377,18 +451,18 @@ impl MarkedIterScan for BytesWithBase {
     }
 }
 #[derive(Debug, Copy, Clone)]
-pub struct Collect<T, B = Vec<<T as IterScan>::Output>>
+pub struct Collect<T, B = Vec<<T as Scan>::Output>>
 where
-    T: IterScan,
-    B: FromIterator<<T as IterScan>::Output>,
+    T: Scan,
+    B: FromIterator<<T as Scan>::Output>,
 {
     size: usize,
     _marker: PhantomData<fn() -> (T, B)>,
 }
 impl<T, B> Collect<T, B>
 where
-    T: IterScan,
-    B: FromIterator<<T as IterScan>::Output>,
+    T: Scan,
+    B: FromIterator<<T as Scan>::Output>,
 {
     pub fn new(size: usize) -> Self {
         Self {
@@ -397,50 +471,54 @@ where
         }
     }
 }
-impl<T, B> MarkedIterScan for Collect<T, B>
+impl<T, B> MarkedScan for Collect<T, B>
 where
-    T: IterScan,
-    B: FromIterator<<T as IterScan>::Output>,
+    T: Scan,
+    B: FromIterator<<T as Scan>::Output>,
 {
     type Output = B;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        repeat_with(|| <T as IterScan>::scan(iter))
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
+        if self.size == 0 {
+            iter.skip_whitespace();
+        }
+        repeat_with(|| <T as Scan>::scan(iter))
             .take(self.size)
             .collect()
     }
 }
 #[derive(Debug, Copy, Clone)]
-pub struct SizedCollect<T, B = Vec<<T as IterScan>::Output>>
+pub struct SizedCollect<T, B = Vec<<T as Scan>::Output>>
 where
-    T: IterScan,
-    B: FromIterator<<T as IterScan>::Output>,
+    T: Scan,
+    B: FromIterator<<T as Scan>::Output>,
 {
     _marker: PhantomData<fn() -> (T, B)>,
 }
-impl<T, B> IterScan for SizedCollect<T, B>
+impl<T, B> Scan for SizedCollect<T, B>
 where
-    T: IterScan,
-    B: FromIterator<<T as IterScan>::Output>,
+    T: Scan,
+    B: FromIterator<<T as Scan>::Output>,
 {
     type Output = B;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
         let size = usize::scan(iter)?;
-        repeat_with(|| <T as IterScan>::scan(iter))
-            .take(size)
-            .collect()
+        if size == 0 {
+            iter.skip_whitespace();
+        }
+        repeat_with(|| <T as Scan>::scan(iter)).take(size).collect()
     }
 }
 #[derive(Debug, Copy, Clone)]
 pub struct Splitted<T, P>
 where
-    T: IterScan,
+    T: Scan,
 {
     pat: P,
     _marker: PhantomData<fn() -> T>,
 }
 impl<T, P> Splitted<T, P>
 where
-    T: IterScan,
+    T: Scan,
 {
     pub fn new(pat: P) -> Self {
         Self {
@@ -449,33 +527,33 @@ where
         }
     }
 }
-impl<T> MarkedIterScan for Splitted<T, char>
+impl<T> MarkedScan for Splitted<T, char>
 where
-    T: IterScan,
+    T: Scan,
 {
-    type Output = Vec<<T as IterScan>::Output>;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        let mut iter = iter.next()?.split(self.pat);
-        Some(from_fn(|| <T as IterScan>::scan(&mut iter)).collect())
+    type Output = Vec<<T as Scan>::Output>;
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
+        let mut iter = Scanner::new_from_iter(iter.next_token()?.split(self.pat));
+        Some(from_fn(|| <T as Scan>::scan(&mut iter)).collect())
     }
 }
-impl<T> MarkedIterScan for Splitted<T, &str>
+impl<T> MarkedScan for Splitted<T, &str>
 where
-    T: IterScan,
+    T: Scan,
 {
-    type Output = Vec<<T as IterScan>::Output>;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        let mut iter = iter.next()?.split(self.pat);
-        Some(from_fn(|| <T as IterScan>::scan(&mut iter)).collect())
+    type Output = Vec<<T as Scan>::Output>;
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
+        let mut iter = Scanner::new_from_iter(iter.next_token()?.split(self.pat));
+        Some(from_fn(|| <T as Scan>::scan(&mut iter)).collect())
     }
 }
-impl<T, F> MarkedIterScan for F
+impl<T, F> MarkedScan for F
 where
     F: Fn(&str) -> Option<T>,
 {
     type Output = T;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        self(iter.next()?)
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
+        self(iter.next_token()?)
     }
 }
 

@@ -11,17 +11,16 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("range_affine_point_get")]
-pub fn range_affine_point_get(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [MInt998244353; n]);
+pub fn range_affine_point_get(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [MInt998244353; n]);
     let mut seg = LazySegmentTree::<RangeSumRangeLinear<_>>::from_keys(a.into_iter());
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Update { l, r, bc } => seg.update(l..r, bc),
             Query::Get { i } => {
-                writeln!(writer, "{}", seg.fold(i..i + 1).0).ok();
+                pp!(seg.fold(i..i + 1).0);
             }
         };
     }

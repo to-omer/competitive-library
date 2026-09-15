@@ -2,10 +2,9 @@ use competitive::combinatorial_optimization::ZeroOneKnapsackProblemBranchAndBoun
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DPL_1_I")]
-pub fn dpl_1_i(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, w: i64, vwm: [(i64, i64, i64)]);
+pub fn dpl_1_i(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, w: i64, vwm: [(i64, i64, i64)]);
     let mut item = vec![];
     for (v, w, mut m) in vwm.take(n) {
         let mut b = 1;
@@ -17,5 +16,5 @@ pub fn dpl_1_i(reader: impl Read, mut writer: impl Write) {
         }
     }
     let knapsack = ZeroOneKnapsackProblemBranchAndBound::new(item);
-    writeln!(writer, "{}", knapsack.solve(w)).ok();
+    pp!(knapsack.solve(w));
 }

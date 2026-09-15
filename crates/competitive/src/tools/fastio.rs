@@ -1,4 +1,5 @@
 use std::{
+    fmt,
     fs::File,
     io::{Read, StdoutLock, Write, stdout},
     os::fd::AsFd,
@@ -27,13 +28,17 @@ unsafe extern "C" {
 /// representation that fits the requested type, with at most that type's maximum
 /// number of digits and an optional `-` for signed types.
 ///
-/// Each read must start at a token and consumes exactly one trailing ASCII
-/// whitespace byte. `parse` additionally requires UTF-8. `bytes` returns a slice
-/// whose lifetime must not exceed that of the input allocation.
+/// Every read, including iterator reads, must start at an available token.
+/// Reads consume exactly one trailing ASCII whitespace byte. `parse` and
+/// `ScanSource` require UTF-8. Slices returned by `bytes` must not outlive the input
+/// allocation. `bytes` and `parse` may also read an empty field at a delimiter.
+///
+/// Empty collection scans skip pending whitespace when their length is specified.
 ///
 /// On x86-64, enabling `ssse3` at compile time selects SIMD for `u64` tokens.
 pub struct FastInput {
     ptr: *const u8,
+    end: *const u8,
 }
 
 impl FastInput {
@@ -42,6 +47,7 @@ impl FastInput {
     /// # Safety
     /// Call before any other stdin reads. A mapped input file must not be modified
     /// while its contents or slices returned by this reader are in use.
+    /// Subsequent `ScanSource` reads must satisfy this type's token requirements.
     pub unsafe fn stdin() -> Self {
         let mut stdin = File::from(std::io::stdin().as_fd().try_clone_to_owned().unwrap());
         #[cfg(target_os = "linux")]
@@ -59,7 +65,10 @@ impl FastInput {
                 if region as isize != -1 {
                     // MAP_FIXED replaces only the file portion of our own reservation.
                     if mmap(region, len, 1, 2 | 0x10, 0, 0) as isize != -1 {
-                        return FastInput { ptr: region.cast() };
+                        return FastInput {
+                            ptr: region.cast(),
+                            end: region.cast::<u8>().add(len),
+                        };
                     }
                     assert_eq!(munmap(region, reserved), 0);
                 }
@@ -67,9 +76,12 @@ impl FastInput {
         }
         let mut buf = Vec::new();
         stdin.read_to_end(&mut buf).unwrap();
-        buf.resize(buf.len() + 16, b' ');
+        let len = buf.len();
+        buf.resize(len + 16, b' ');
+        let ptr = Box::into_raw(buf.into_boxed_slice()).cast::<u8>();
         FastInput {
-            ptr: Box::into_raw(buf.into_boxed_slice()).cast(),
+            ptr,
+            end: unsafe { ptr.add(len) },
         }
     }
 
@@ -77,8 +89,22 @@ impl FastInput {
     /// `s` must contain at least 16 initialized padding bytes after its final
     /// token delimiter. Its allocation must remain valid and unchanged while
     /// this reader or any slices returned by it are in use.
+    /// Subsequent `ScanSource` reads must satisfy this type's token requirements.
     pub unsafe fn from_slice(s: &[u8]) -> Self {
-        FastInput { ptr: s.as_ptr() }
+        FastInput {
+            ptr: s.as_ptr(),
+            end: unsafe { s.as_ptr().add(s.len() - 16) },
+        }
+    }
+
+    /// Skips ASCII whitespace without advancing beyond the input.
+    #[inline]
+    pub fn skip_whitespace(&mut self) {
+        unsafe {
+            while self.ptr < self.end && (*self.ptr).is_ascii_whitespace() {
+                self.ptr = self.ptr.add(1);
+            }
+        }
     }
 
     #[inline]
@@ -161,6 +187,12 @@ impl FastInput {
     #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
     #[inline]
     pub unsafe fn u64(&mut self) -> u64 {
+        unsafe { self.u64_simd::<20>() }
+    }
+
+    #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
+    #[inline]
+    unsafe fn u64_simd<const MAX_DIGITS: usize>(&mut self) -> u64 {
         use std::arch::x86_64::*;
         #[inline]
         unsafe fn parse16(digits: __m128i) -> u64 {
@@ -202,13 +234,38 @@ impl FastInput {
                 return parse16(digits);
             }
             self.ptr = self.ptr.add(16);
-            let mut x = parse16(digits);
-            while *self.ptr >= b'0' {
-                x = x * 10 + (*self.ptr - b'0') as u64;
+            let mut res = parse16(digits);
+            let mut rem = ptr::read_unaligned(self.ptr.cast::<u32>()) ^ 0x30303030;
+            if (rem & 0xf0f0f0) == 0 {
+                if MAX_DIGITS == 19 {
+                    res = res.wrapping_mul(1000).wrapping_add(
+                        ((rem & 0xff) as u64)
+                            .wrapping_mul(100)
+                            .wrapping_add((((rem.wrapping_mul(2561)) & 0xff0000) >> 16) as u64),
+                    );
+                    self.ptr = self.ptr.add(4);
+                } else {
+                    let four = (rem & 0xf0f0f0f0) == 0;
+                    rem = rem.wrapping_shl((!four as u32) << 3);
+                    rem = rem.wrapping_mul(10).wrapping_add(rem >> 8) & 0x00ff00ff;
+                    rem = rem.wrapping_mul(100).wrapping_add(rem >> 16) & 0x0000ffff;
+                    res = res
+                        .wrapping_mul(1000 + 9000 * four as u64)
+                        .wrapping_add(rem as u64);
+                    self.ptr = self.ptr.add(4 + four as usize);
+                }
+            } else if (rem & 0xf0f0) == 0 {
+                res = res
+                    .wrapping_mul(100)
+                    .wrapping_add((((rem >> 8).wrapping_add(rem.wrapping_mul(10))) & 0xff) as u64);
+                self.ptr = self.ptr.add(3);
+            } else if (rem & 0xf0) == 0 {
+                res = res.wrapping_mul(10).wrapping_add((rem & 0x0000000f) as u64);
+                self.ptr = self.ptr.add(2);
+            } else {
                 self.ptr = self.ptr.add(1);
             }
-            self.ptr = self.ptr.add(1);
-            x
+            res
         }
     }
 
@@ -398,6 +455,9 @@ impl FastInput {
         unsafe {
             let b = *self.ptr == b'-';
             self.ptr = self.ptr.add(b as usize);
+            #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
+            let mut x = self.u64_simd::<19>() as i64;
+            #[cfg(not(all(target_arch = "x86_64", target_feature = "ssse3")))]
             let mut x = self.u64() as i64;
             if b {
                 x = x.wrapping_neg();
@@ -622,7 +682,7 @@ where
         }
     }
 
-    #[inline]
+    #[inline(always)]
     unsafe fn write_u64_unchecked(&mut self, x: u64) {
         unsafe {
             if x < 10000 {
@@ -678,7 +738,7 @@ where
         unsafe { self.write_u32_unchecked(x) }
     }
 
-    #[inline]
+    #[inline(always)]
     pub fn u64(&mut self, x: u64) {
         self.ensure_capacity(20);
         unsafe { self.write_u64_unchecked(x) }
@@ -723,7 +783,7 @@ where
         }
     }
 
-    #[inline]
+    #[inline(always)]
     pub fn i64(&mut self, x: i64) {
         if x < 0 {
             self.ensure_capacity(21);
@@ -736,12 +796,59 @@ where
         }
     }
 
+    #[inline(always)]
+    pub fn usize(&mut self, x: usize) {
+        if usize::BITS == 64 {
+            self.u64(x as u64);
+        } else {
+            self.u32(x as u32);
+        }
+    }
+
+    #[inline(always)]
+    pub fn isize(&mut self, x: isize) {
+        if isize::BITS == 64 {
+            self.i64(x as i64);
+        } else {
+            self.i32(x as i32);
+        }
+    }
+
+    pub fn u128(&mut self, mut x: u128) {
+        const BASE: u128 = 10_000_000_000_000_000;
+        let mut groups = [0u64; 2];
+        let mut len = 0;
+        while x > u64::MAX as u128 {
+            groups[len] = (x % BASE) as u64;
+            x /= BASE;
+            len += 1;
+        }
+        self.u64(x as u64);
+        for &x in groups[..len].iter().rev() {
+            self.ensure_capacity(16);
+            unsafe {
+                self.write_digit4_unchecked((x / 1_000_000_000_000) as usize);
+                self.write_digit4_unchecked((x / 100_000_000 % 10000) as usize);
+                self.write_digit4_unchecked((x / 10000 % 10000) as usize);
+                self.write_digit4_unchecked((x % 10000) as usize);
+            }
+        }
+    }
+
+    pub fn i128(&mut self, x: i128) {
+        if x < 0 {
+            self.byte(b'-');
+        }
+        self.u128(x.unsigned_abs());
+    }
+
     #[inline]
     pub fn byte(&mut self, b: u8) {
         self.ensure_capacity(1);
         unsafe { self.write_byte_unchecked(b) }
     }
 
+    #[inline(always)]
     pub fn bytes(&mut self, s: &[u8]) {
         if s.len() > self.buf.len() {
             self.flush_buf();
@@ -753,6 +860,13 @@ where
             }
             self.pos += s.len();
         }
+    }
+}
+
+impl<W: Write> fmt::Write for FastOutput<W> {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.bytes(s.as_bytes());
+        Ok(())
     }
 }
 

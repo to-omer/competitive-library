@@ -12,27 +12,26 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("unionfind_with_potential")]
-pub fn unionfind_with_potential(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn unionfind_with_potential(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut uf = PotentializedUnionFind::<AdditiveOperation<MInt998244353>>::new(n);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Unite { u, v, x } => {
                 if let Some(diff) = uf.difference(u, v) {
-                    writeln!(writer, "{}", (diff == x) as u8).ok();
+                    pp!((diff == x) as u8);
                 } else {
                     uf.unite_with(u, v, x);
-                    writeln!(writer, "1").ok();
+                    pp!("1");
                 }
             }
             Query::Diff { u, v } => {
                 if let Some(diff) = uf.difference(u, v) {
-                    writeln!(writer, "{}", diff).ok();
+                    pp!(diff);
                 } else {
-                    writeln!(writer, "-1").ok();
+                    pp!("-1");
                 }
             }
         }

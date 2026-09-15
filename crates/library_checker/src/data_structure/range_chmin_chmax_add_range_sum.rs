@@ -15,17 +15,16 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("range_chmin_chmax_add_range_sum")]
-pub fn range_chmin_chmax_add_range_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [Saturating<i64>; n]);
+pub fn range_chmin_chmax_add_range_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [Saturating<i64>; n]);
     let mut seg = LazySegmentTree::<RangeSumRangeChminChmaxAdd<Saturating<i64>>>::from_vec(
         a.iter()
             .map(|&a| RangeSumRangeChminChmaxAdd::single(a, Saturating(1)))
             .collect(),
     );
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Chmin { l, r, b } => {
                 seg.update(l..r, RangeChminChmaxAdd::chmin(b));
@@ -37,7 +36,7 @@ pub fn range_chmin_chmax_add_range_sum(reader: impl Read, mut writer: impl Write
                 seg.update(l..r, RangeChminChmaxAdd::add(b));
             }
             Query::Sum { l, r } => {
-                writeln!(writer, "{}", seg.fold(l..r).sum).ok();
+                pp!(seg.fold(l..r).sum);
             }
         }
     }

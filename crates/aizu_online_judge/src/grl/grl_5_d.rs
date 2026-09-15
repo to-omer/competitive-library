@@ -12,10 +12,9 @@ competitive::define_enum_scan! {
 }
 
 #[verify::aizu_online_judge("GRL_5_D")]
-pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, c: [SizedCollect<usize>]);
+pub fn grl_5_d(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, c: [SizedCollect<usize>]);
     let edges = c
         .take(n)
         .enumerate()
@@ -25,16 +24,16 @@ pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
     let et = graph.path_euler_tour_builder(0).build();
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(et.size);
 
-    scan!(scanner, q);
+    sc!(q);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Add { v, w } => {
                 et.update(v, w, -w, |k, x| bit.update(k, x));
             }
             Query::Get { u } => {
                 let ans = et.fold(u, |k| bit.accumulate(k));
-                writeln!(writer, "{}", ans).ok();
+                pp!(ans);
             }
         }
     }

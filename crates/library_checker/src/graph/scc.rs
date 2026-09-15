@@ -2,15 +2,14 @@ use competitive::graph::{DirectedSparseGraph, StronglyConnectedComponent};
 use competitive::prelude::*;
 
 #[verify::library_checker("scc")]
-pub fn scc(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es, edges: [(usize, usize); es]);
+pub fn scc(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(vs, es, edges: [(usize, usize); es]);
     let graph = DirectedSparseGraph::from_edges(vs, edges);
     let scc = StronglyConnectedComponent::new(&graph);
     let comp = scc.components();
-    writeln!(writer, "{}", comp.len()).ok();
+    pp!(comp.len());
     for vs in comp.into_iter() {
-        iter_print!(writer, vs.len(), @it vs);
+        pp!(vs.len(), @it vs);
     }
 }

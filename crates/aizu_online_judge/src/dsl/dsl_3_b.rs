@@ -1,10 +1,9 @@
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DSL_3_B")]
-pub fn dsl_3_b(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, k, a: [Usize1; n]);
+pub fn dsl_3_b(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, k, a: [Usize1; n]);
     let mut counter = vec![0; 100_001];
     let mut j = 0;
     let mut ans = usize::MAX;
@@ -21,5 +20,5 @@ pub fn dsl_3_b(reader: impl Read, mut writer: impl Write) {
         counter[a[i]] -= 1;
         cnt -= (a[i] < k && counter[a[i]] == 0) as usize;
     }
-    writeln!(writer, "{}", if ans == usize::MAX { 0 } else { ans }).ok();
+    pp!(if ans == usize::MAX { 0 } else { ans });
 }

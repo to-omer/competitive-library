@@ -12,10 +12,9 @@ competitive::define_enum_scan! {
 }
 
 #[verify::aizu_online_judge("GRL_5_E")]
-pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, c: [SizedCollect<usize>]);
+pub fn grl_5_e(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, c: [SizedCollect<usize>]);
     let edges = c
         .take(n)
         .enumerate()
@@ -25,9 +24,9 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
     let hld = graph.hld(0);
     let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0u64, 1u64); n]);
 
-    scan!(scanner, q);
+    sc!(q);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Add { v, w } => {
                 hld.path_edges(0, v, |l, r| seg.update(l..r, w));
@@ -35,7 +34,7 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
             Query::Get { u } => {
                 let mut ans = 0;
                 hld.path_edges(0, u, |l, r| ans += seg.fold(l..r).0);
-                writeln!(writer, "{}", ans).ok();
+                pp!(ans);
             }
         }
     }

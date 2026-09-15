@@ -5,10 +5,9 @@ use competitive::{
 };
 
 #[verify::library_checker("static_range_count_distinct")]
-pub fn static_range_count_distinct(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u32; n], lr: [(usize, usize); q]);
+pub fn static_range_count_distinct(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u32; n], lr: [(usize, usize); q]);
     let mut order: Vec<_> = (0..q).collect();
     order.sort_unstable_by_key(|&i| lr[i].1);
     let mut bit = BinaryIndexedTree::<AdditiveOperation<i64>>::new(n);
@@ -26,6 +25,6 @@ pub fn static_range_count_distinct(reader: impl Read, mut writer: impl Write) {
         ans[i] = bit.fold(lr[i].0, lr[i].1);
     }
     for ans in ans {
-        writeln!(writer, "{}", ans).ok();
+        pp!(ans);
     }
 }

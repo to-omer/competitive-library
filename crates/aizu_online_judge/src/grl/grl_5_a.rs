@@ -2,10 +2,9 @@ use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, graph::TreeGraphScanner};
 
 #[verify::aizu_online_judge("GRL_5_A")]
-pub fn grl_5_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, (graph, w): @TreeGraphScanner::<usize, u64>::new(n));
+pub fn grl_5_a(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, (graph, w): @TreeGraphScanner::<usize, u64>::new(n));
     let d = graph.weighted_tree_depth::<AdditiveOperation<_>, _>(0, |eid| w[eid]);
     let r = (0..n).max_by_key(|&u| d[u]).unwrap();
     let ans = graph
@@ -13,5 +12,5 @@ pub fn grl_5_a(reader: impl Read, mut writer: impl Write) {
         .into_iter()
         .max()
         .unwrap();
-    writeln!(writer, "{}", ans).ok();
+    pp!(ans);
 }

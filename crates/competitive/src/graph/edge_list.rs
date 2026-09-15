@@ -1,4 +1,4 @@
-use super::{IterScan, MarkedIterScan};
+use super::{MarkedScan, Scan, ScanSource};
 use std::{marker::PhantomData, ops::Range, slice::Iter};
 
 #[derive(Clone, Debug)]
@@ -42,13 +42,13 @@ impl std::ops::Index<usize> for EdgeListGraph {
     }
 }
 
-pub struct EdgeListGraphScanner<U: IterScan<Output = usize>, T: IterScan> {
+pub struct EdgeListGraphScanner<U: Scan<Output = usize>, T: Scan> {
     vsize: usize,
     esize: usize,
     _marker: PhantomData<fn() -> (U, T)>,
 }
 
-impl<U: IterScan<Output = usize>, T: IterScan> EdgeListGraphScanner<U, T> {
+impl<U: Scan<Output = usize>, T: Scan> EdgeListGraphScanner<U, T> {
     pub fn new(vsize: usize, esize: usize) -> Self {
         Self {
             vsize,
@@ -58,9 +58,9 @@ impl<U: IterScan<Output = usize>, T: IterScan> EdgeListGraphScanner<U, T> {
     }
 }
 
-impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for EdgeListGraphScanner<U, T> {
-    type Output = (EdgeListGraph, Vec<<T as IterScan>::Output>);
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+impl<U: Scan<Output = usize>, T: Scan> MarkedScan for EdgeListGraphScanner<U, T> {
+    type Output = (EdgeListGraph, Vec<<T as Scan>::Output>);
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         let mut edges = Vec::with_capacity(self.esize);
         let mut rest = Vec::with_capacity(self.esize);
         for _ in 0..self.esize {

@@ -2,10 +2,9 @@ use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, data_structure::QueueAggregation};
 
 #[verify::aizu_online_judge("DSL_3_A")]
-pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, s: u64, a: [u64]);
+pub fn dsl_3_a(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, s: u64, a: [u64]);
     let mut que = QueueAggregation::<AdditiveOperation<_>>::new();
     let mut ans = usize::MAX;
     for a in a.take(n) {
@@ -15,5 +14,5 @@ pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
             que.pop();
         }
     }
-    writeln!(writer, "{}", if ans == usize::MAX { 0 } else { ans }).ok();
+    pp!(if ans == usize::MAX { 0 } else { ans });
 }

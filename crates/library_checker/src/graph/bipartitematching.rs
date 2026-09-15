@@ -2,10 +2,9 @@ use competitive::graph::{BipartiteMatching, DinicBuilder};
 use competitive::prelude::*;
 
 #[verify::library_checker("bipartitematching")]
-pub fn bipartitematching_dinic(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, l, r, m, ab: [(usize, usize); m]);
+pub fn bipartitematching_dinic(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(l, r, m, ab: [(usize, usize); m]);
     let mut builder = DinicBuilder::new(l + r + 2, m + l + r);
     let s = l + r;
     let t = s + 1;
@@ -21,23 +20,22 @@ pub fn bipartitematching_dinic(reader: impl Read, mut writer: impl Write) {
     let graph = builder.gen_graph();
     let mut dinic = builder.build(&graph);
     let f = dinic.maximum_flow(s, t);
-    writeln!(writer, "{}", f).ok();
+    pp!(f);
     for (i, (a, b)) in ab.iter().enumerate() {
         if dinic.get_flow(i) > 0 {
-            writeln!(writer, "{} {}", a, b).ok();
+            pp!(a, b);
         }
     }
 }
 
 #[verify::library_checker("bipartitematching")]
-pub fn bipartitematching(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, l, r, m, ab: [(usize, usize); m]);
+pub fn bipartitematching(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(l, r, m, ab: [(usize, usize); m]);
     let mut bm = BipartiteMatching::from_edges(l, r, &ab);
     let matching = bm.maximum_matching();
-    writeln!(writer, "{}", matching.len()).ok();
+    pp!(matching.len());
     for (x, y) in matching {
-        writeln!(writer, "{} {}", x, y).ok();
+        pp!(x, y);
     }
 }

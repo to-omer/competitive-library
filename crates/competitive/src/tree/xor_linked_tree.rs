@@ -1,4 +1,4 @@
-use super::{IterScan, MarkedIterScan};
+use super::{MarkedScan, Scan, ScanSource};
 use std::{marker::PhantomData, ops::Range};
 
 type Marker<T> = PhantomData<fn() -> T>;
@@ -585,8 +585,8 @@ pub struct XorLinkedRootedTreeScanner<
     B = NoXorBottomUpOrder,
     E = NoEIndexed,
 > where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     n: usize,
     root: usize,
@@ -595,8 +595,8 @@ pub struct XorLinkedRootedTreeScanner<
 
 impl<U, T> XorLinkedRootedTreeScanner<U, T>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     pub fn new(n: usize, root: usize) -> Self {
         Self {
@@ -609,8 +609,8 @@ where
 
 impl<U, T, P, D, H, PE, EC, X, B, E> XorLinkedRootedTreeScanner<U, T, P, D, H, PE, EC, X, B, E>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     pub fn with_parent(
         self,
@@ -676,8 +676,8 @@ where
 impl<U, T, P, D, H, X, B>
     XorLinkedRootedTreeScanner<U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     pub fn with_eindexed(
         self,
@@ -692,8 +692,8 @@ where
 
 impl<U, T, P, D, H, PE, EC, X, B> XorLinkedRootedTreeScanner<U, T, P, D, H, PE, EC, X, B, EIndexed>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
 {
     pub fn with_parent_edge(
         self,
@@ -715,11 +715,11 @@ where
     }
 }
 
-impl<U, T, P, D, H, X, B> MarkedIterScan
+impl<U, T, P, D, H, X, B> MarkedScan
     for XorLinkedRootedTreeScanner<U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
     P: ParentComponent,
     D: DfsPreorderComponent,
     H: DepthComponent,
@@ -728,10 +728,10 @@ where
 {
     type Output = (
         XorLinkedRootedTree<P, D, H, NoParentEdge, NoEdgeChild, X>,
-        Vec<<T as IterScan>::Output>,
+        Vec<<T as Scan>::Output>,
     );
 
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         let mut acc = XorAccumulator::new(self.n);
         let mut weights = Vec::with_capacity(self.n.saturating_sub(1));
         for _ in 0..self.n.saturating_sub(1) {
@@ -747,11 +747,11 @@ where
     }
 }
 
-impl<U, T, P, D, H, PE, EC, X, B> MarkedIterScan
+impl<U, T, P, D, H, PE, EC, X, B> MarkedScan
     for XorLinkedRootedTreeScanner<U, T, P, D, H, PE, EC, X, B, EIndexed>
 where
-    U: IterScan<Output = usize>,
-    T: IterScan,
+    U: Scan<Output = usize>,
+    T: Scan,
     P: ParentComponent,
     D: DfsPreorderComponent,
     H: DepthComponent,
@@ -762,10 +762,10 @@ where
 {
     type Output = (
         XorLinkedRootedTree<P, D, H, PE, EC, X>,
-        Vec<<T as IterScan>::Output>,
+        Vec<<T as Scan>::Output>,
     );
 
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+    fn mscan<I: ScanSource>(self, iter: &mut I) -> Option<Self::Output> {
         let mut acc = XorEIndexedAccumulator::new(self.n);
         let mut weights = Vec::with_capacity(self.n.saturating_sub(1));
         for eid in 0..self.n.saturating_sub(1) {
@@ -1147,9 +1147,9 @@ mod tests {
     #[derive(Debug, PartialEq, Eq)]
     struct NonCloneWeight(usize);
 
-    impl IterScan for NonCloneWeight {
+    impl Scan for NonCloneWeight {
         type Output = NonCloneWeight;
-        fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<NonCloneWeight> {
+        fn scan<I: ScanSource>(iter: &mut I) -> Option<NonCloneWeight> {
             Some(NonCloneWeight(usize::scan(iter)?))
         }
     }

@@ -5,45 +5,41 @@ use competitive::{
 };
 
 #[verify::library_checker("staticrmq")]
-pub fn staticrmq_disjoint_sparse_table(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
+pub fn staticrmq_disjoint_sparse_table(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u64; n], lr: [(usize, usize)]);
     let table = DisjointSparseTable::<MinOperation<_>>::new(a);
     for (l, r) in lr.take(q) {
-        writeln!(writer, "{}", table.fold(l, r)).ok();
+        pp!(table.fold(l, r));
     }
 }
 
 #[verify::library_checker("staticrmq")]
-pub fn staticrmq_segment_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
+pub fn staticrmq_segment_tree(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u64; n], lr: [(usize, usize)]);
     let seg = SegmentTree::<MinOperation<_>>::from_vec(a);
     for (l, r) in lr.take(q) {
-        writeln!(writer, "{}", seg.fold(l..r)).ok();
+        pp!(seg.fold(l..r));
     }
 }
 
 #[verify::library_checker("staticrmq")]
-pub fn staticrmq_range_minimum_query(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
+pub fn staticrmq_range_minimum_query(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u64; n], lr: [(usize, usize)]);
     let rmq = RangeMinimumQuery::new(a);
     for (l, r) in lr.take(q) {
-        writeln!(writer, "{}", rmq.fold(l, r)).ok();
+        pp!(rmq.fold(l, r));
     }
 }
 
 #[verify::library_checker("staticrmq")]
-pub fn staticrmq_static_range_product(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
+pub fn staticrmq_static_range_product(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [u64; n], lr: [(usize, usize)]);
     let table = StaticRangeProduct::<MinOperation<_>>::new(a);
     for (l, r) in lr.take(q) {
-        writeln!(writer, "{}", table.fold(l, r)).ok();
+        pp!(table.fold(l, r));
     }
 }

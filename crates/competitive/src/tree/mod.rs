@@ -7,7 +7,7 @@ use crate::{
     },
     graph::{Graph, UndirectedSparseGraph},
     math::{ConvolveSteps, U64Convolve},
-    tools::{IterScan, MarkedIterScan, RandomSpec, Xorshift},
+    tools::{MarkedScan, RandomSpec, Scan, ScanSource, Xorshift},
 };
 
 #[codesnip::entry("centroid_decomposition")]

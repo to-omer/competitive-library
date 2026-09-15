@@ -16,15 +16,14 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
-pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [MInt998244353; n]);
+pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [MInt998244353; n]);
 
     let mut seq = ImplicitTreap::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
     seq.extend(a);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Insert { i, x } => {
                 seq.insert(i, x);
@@ -39,7 +38,7 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: im
                 seq.update(l..r, bc);
             }
             Query::Fold { l, r } => {
-                writeln!(writer, "{}", seq.fold(l..r).0).ok();
+                pp!(seq.fold(l..r).0);
             }
         }
     }
@@ -48,16 +47,15 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: im
 #[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
 pub fn dynamic_sequence_range_affine_range_sum_implicit_splay_tree(
     reader: impl Read,
-    mut writer: impl Write,
+    writer: impl Write,
 ) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [MInt998244353; n]);
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [MInt998244353; n]);
 
     let mut seq = ImplicitSplayTree::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
     seq.extend(a);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Insert { i, x } => {
                 seq.insert(i, x);
@@ -72,7 +70,7 @@ pub fn dynamic_sequence_range_affine_range_sum_implicit_splay_tree(
                 seq.update(l..r, bc);
             }
             Query::Fold { l, r } => {
-                writeln!(writer, "{}", seq.fold(l..r).0).ok();
+                pp!(seq.fold(l..r).0);
             }
         }
     }

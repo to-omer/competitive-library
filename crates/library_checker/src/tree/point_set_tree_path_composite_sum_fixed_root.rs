@@ -102,30 +102,26 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("point_set_tree_path_composite_sum_fixed_root")]
-pub fn point_set_tree_path_composite_sum_fixed_root(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(
-        scanner,
-        n,
+pub fn point_set_tree_path_composite_sum_fixed_root(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n,
         q,
         value: [MInt; n],
-        (graph, edges): @TreeGraphScanner::<usize, (MInt, MInt)>::new(n)
-    );
+        (graph, edges): @TreeGraphScanner::<usize, (MInt, MInt)>::new(n));
 
     let top_tree = graph.static_top_tree(0);
     let mut dp = top_tree.dp::<Dp>(value, edges);
 
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::SetVertex { v, x } => {
                 dp.set_vertex(v, x);
-                writeln!(writer, "{}", dp.fold_all().sum).ok();
+                pp!(dp.fold_all().sum);
             }
             Query::SetEdge { e, a, b } => {
                 dp.set_edge(e, (a, b));
-                writeln!(writer, "{}", dp.fold_all().sum).ok();
+                pp!(dp.fold_all().sum);
             }
         }
     }

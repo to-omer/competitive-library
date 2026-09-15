@@ -13,6 +13,8 @@ pub use self::comparator::Comparator;
 #[codesnip::entry("digit_sequence")]
 pub use self::digit_sequence::ToDigitSequence;
 #[codesnip::entry("fastio")]
+pub use self::fast_print::{FastIterPrint, FastPrint};
+#[codesnip::entry("fastio")]
 pub use self::fastio::{FastInput, FastOutput};
 #[codesnip::entry("IdGenerator")]
 pub use self::id_generator::IdGenerator;
@@ -53,6 +55,10 @@ mod coding;
 pub mod comparator;
 #[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
 mod digit_sequence;
+#[cfg_attr(nightly, codesnip::entry("fastio", include("_iter_print")))]
+mod fast_print;
+#[cfg_attr(nightly, codesnip::entry("fastio", include("scanner")))]
+mod fast_scanner;
 #[cfg_attr(nightly, codesnip::entry("fastio"))]
 mod fastio;
 #[cfg_attr(nightly, codesnip::entry("IdGenerator"))]
@@ -84,3 +90,9 @@ mod scanner;
 mod totalord;
 #[cfg_attr(nightly, codesnip::entry("Xorshift"))]
 mod xorshift;
+
+#[codesnip::entry("fast_main", include("main", "fastio"))]
+#[codesnip::skip]
+#[allow(dead_code)]
+#[doc(hidden)]
+enum FastMainSnippets {}

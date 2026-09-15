@@ -9,16 +9,15 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("segment_add_get_min")]
-pub fn segment_add_get_min(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn segment_add_get_min(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut tree = OfflineLiChaoTree::new();
-    for (l, r, a, b) in scanner.iter::<(i32, i32, i32, i64)>().take(n) {
+    for (l, r, a, b) in sv!([(i32, i32, i32, i64)]).take(n) {
         tree.add_segment(l..r, (a, b));
     }
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Add { l, r, a, b } => {
                 tree.add_segment(l..r, (a, b));
@@ -30,9 +29,9 @@ pub fn segment_add_get_min(reader: impl Read, mut writer: impl Write) {
     }
     for result in tree.execute() {
         if let Some(value) = result {
-            writeln!(writer, "{value}").ok();
+            pp!(value);
         } else {
-            writeln!(writer, "INFINITY").ok();
+            pp!("INFINITY");
         }
     }
 }

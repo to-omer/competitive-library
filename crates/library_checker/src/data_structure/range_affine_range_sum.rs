@@ -13,21 +13,20 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("range_affine_range_sum")]
-pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [MInt998244353]);
+pub fn range_affine_range_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [MInt998244353]);
     let mut seg = LazySegmentTree::<RangeSumRangeLinear<_>>::from_vec(
         a.take(n).map(|x| (x, MInt998244353::one())).collect::<_>(),
     );
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Update { l, r, bc } => {
                 seg.update(l..r, bc);
             }
             Query::Fold { l, r } => {
-                writeln!(writer, "{}", seg.fold(l..r).0).ok();
+                pp!(seg.fold(l..r).0);
             }
         }
     }

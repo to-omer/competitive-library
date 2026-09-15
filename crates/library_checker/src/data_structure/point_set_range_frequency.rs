@@ -9,13 +9,12 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("point_set_range_frequency")]
-pub fn point_set_range_frequency(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i32; n]);
+pub fn point_set_range_frequency(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [i32; n]);
     let mut rf = RangeFrequency::new(a);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Set { k, v } => {
                 rf.set(k, v);
@@ -26,5 +25,5 @@ pub fn point_set_range_frequency(reader: impl Read, mut writer: impl Write) {
         }
     }
     let results = rf.execute();
-    iter_print!(writer, @lf @it results);
+    pp!(@lf @it results);
 }

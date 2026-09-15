@@ -11,10 +11,9 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("vertex_add_range_contour_sum_on_tree")]
-pub fn vertex_add_range_contour_sum_on_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, mut a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
+pub fn vertex_add_range_contour_sum_on_tree(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, mut a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
     let cq = graph.contour_query_range();
     let mut raw = vec![0; cq.len()];
     for (v, &x) in a.iter().enumerate() {
@@ -22,7 +21,7 @@ pub fn vertex_add_range_contour_sum_on_tree(reader: impl Read, mut writer: impl 
     }
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&raw);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Add { p, x } => {
                 a[p] += x;
@@ -33,7 +32,7 @@ pub fn vertex_add_range_contour_sum_on_tree(reader: impl Read, mut writer: impl 
                 cq.for_each_contour_range(v, l, r, |start, end| {
                     ans += bit.fold(start, end);
                 });
-                writeln!(writer, "{ans}").ok();
+                pp!(ans);
             }
         }
     }

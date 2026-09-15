@@ -1,4 +1,4 @@
-use super::{Bounded, Decimal, IterScan, One, Zero};
+use super::{Bounded, Decimal, One, Scan, ScanSource, Zero};
 use std::{
     cmp::Ordering,
     fmt::{self, Display},
@@ -252,10 +252,10 @@ impl One for DoubleDouble {
     }
 }
 
-impl IterScan for DoubleDouble {
+impl Scan for DoubleDouble {
     type Output = Self;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        iter.next().and_then(|s| s.parse().ok())
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+        iter.next_token().and_then(|s| s.parse().ok())
     }
 }
 

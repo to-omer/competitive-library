@@ -37,27 +37,26 @@ impl Invertible for Sl2 {
 }
 
 #[verify::library_checker("unionfind_with_potential_non_commutative_group")]
-pub fn unionfind_with_potential_non_commutative_group(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn unionfind_with_potential_non_commutative_group(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut uf = PotentializedUnionFind::<Sl2>::new(n);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Unite { u, v, x } => {
                 if let Some(diff) = uf.difference(v, u) {
-                    writeln!(writer, "{}", (diff == x) as u8).ok();
+                    pp!((diff == x) as u8);
                 } else {
                     uf.unite_with(v, u, x);
-                    writeln!(writer, "1").ok();
+                    pp!("1");
                 }
             }
             Query::Diff { u, v } => {
                 if let Some(diff) = uf.difference(v, u) {
-                    iter_print!(writer, @it diff.into_iter().flatten());
+                    pp!(@it diff.into_iter().flatten());
                 } else {
-                    writeln!(writer, "-1").ok();
+                    pp!("-1");
                 }
             }
         }

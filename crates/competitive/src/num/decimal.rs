@@ -1,4 +1,4 @@
-use super::{IterScan, One, Zero};
+use super::{One, Scan, ScanSource, Zero};
 use std::{cmp::Ordering, ops::Neg};
 
 pub mod addsub;

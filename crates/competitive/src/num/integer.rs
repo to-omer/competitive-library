@@ -1,7 +1,8 @@
-use super::{Bounded, IterScan, One, Zero};
+use super::{Bounded, FastOutput, FastPrint, One, Scan, ScanSource, Zero};
 use std::{
     convert::TryFrom,
     fmt::{self, Display},
+    io::Write,
     iter::{Product, Sum},
     ops::{
         Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Div,
@@ -554,12 +555,18 @@ where
         T::fmt(&self.0, f)
     }
 }
-impl<T> IterScan for Saturating<T>
+impl<T: FastPrint> FastPrint for Saturating<T> {
+    #[inline]
+    fn fast_print<W: Write>(&self, writer: &mut FastOutput<W>) {
+        self.0.fast_print(writer);
+    }
+}
+impl<T> Scan for Saturating<T>
 where
-    T: IterScan<Output = T>,
+    T: Scan<Output = T>,
 {
     type Output = Self;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
         T::scan(iter).map(Self)
     }
 }
@@ -850,12 +857,12 @@ where
         T::fmt(&self.0, f)
     }
 }
-impl<T> IterScan for Wrapping<T>
+impl<T> Scan for Wrapping<T>
 where
-    T: IterScan<Output = T>,
+    T: Scan<Output = T>,
 {
     type Output = Self;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
         T::scan(iter).map(Self)
     }
 }
@@ -1058,7 +1065,7 @@ impl_binary_repr_for_wrapping!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isi
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::Xorshift;
+    use crate::tools::{Scanner, Xorshift};
     const Q: usize = 10_000;
 
     mod int_base {
@@ -1346,7 +1353,7 @@ mod tests {
                     assert_eq!(S::from(1 as $t).to_string(), "1");
                     assert_eq!(S::from_str("123").unwrap(), S::from(123));
                     assert_eq!(format!("{:?}", S::from(123)), "123");
-                    assert_eq!(S::scan(&mut ["123"].iter().map(|s| *s)).unwrap(), S::from(123));
+                    assert_eq!(S::scan(&mut Scanner::new("123")).unwrap(), S::from(123));
                     assert_eq!(S::from(1) + S::from(2), S::from(3));
                     assert_eq!(S::from(1) + 2, S::from(3));
                     assert_eq!(S::from(3) - S::from(1), S::from(2));
@@ -1477,7 +1484,7 @@ mod tests {
                     assert_eq!(W::from(1 as $t).to_string(), "1");
                     assert_eq!(W::from_str("123").unwrap(), W::from(123));
                     assert_eq!(format!("{:?}", W::from(123)), "123");
-                    assert_eq!(W::scan(&mut ["123"].iter().map(|s| *s)).unwrap(), W::from(123));
+                    assert_eq!(W::scan(&mut Scanner::new("123")).unwrap(), W::from(123));
                     assert_eq!(W::from(1) + W::from(2), W::from(3));
                     assert_eq!(W::from(1) + 2, W::from(3));
                     assert_eq!(W::from(3) - W::from(1), W::from(2));

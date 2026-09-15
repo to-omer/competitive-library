@@ -43,13 +43,12 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("dynamic_tree_vertex_add_path_sum")]
-pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
+pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
     let mut tree = PathLinkCutTree::<EmptyActLazy<AdditiveOperation<i64>>>::from_edges(a, &edges);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Relink { u, v, w, x } => {
                 tree.cut(u, v);
@@ -57,20 +56,19 @@ pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, mut writer: impl Writ
             }
             Query::Add { p, x } => tree.modify(p, |value| *value + x),
             Query::Sum { u, v } => {
-                writeln!(writer, "{}", tree.fold_path(u, v)).ok();
+                pp!(tree.fold_path(u, v));
             }
         }
     }
 }
 
 #[verify::library_checker("dynamic_tree_vertex_add_path_sum")]
-pub fn dynamic_tree_vertex_add_path_sum_top_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
+pub fn dynamic_tree_vertex_add_path_sum_top_tree(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
     let mut tree = TopTree::<SumTopTree>::from_edges(a, &edges);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Relink { u, v, w, x } => {
                 tree.cut(u, v);
@@ -81,7 +79,7 @@ pub fn dynamic_tree_vertex_add_path_sum_top_tree(reader: impl Read, mut writer: 
                 tree.set(p, value);
             }
             Query::Sum { u, v } => {
-                writeln!(writer, "{}", tree.fold_path(u, v).1).ok();
+                pp!(tree.fold_path(u, v).1);
             }
         }
     }

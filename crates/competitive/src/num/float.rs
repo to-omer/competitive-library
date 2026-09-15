@@ -1,4 +1,4 @@
-use super::{Bounded, IterScan, One, Zero};
+use super::{Bounded, One, Scan, ScanSource, Zero};
 use std::{
     cmp::Ordering,
     convert::TryInto,
@@ -293,10 +293,10 @@ macro_rules! impl_ord_float {
                 self.total_cmp(other)
             }
         }
-        impl IterScan for $n {
+        impl Scan for $n {
             type Output = Self;
-            fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-                <$t as IterScan>::scan(iter).map(Self)
+            fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
+                <$t as Scan>::scan(iter).map(Self)
             }
         }
         impl Float for $n {

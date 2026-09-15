@@ -14,10 +14,9 @@ competitive::define_enum_scan! {
 }
 
 #[verify::library_checker("point_add_rectangle_sum")]
-pub fn point_add_rectangle_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, xyw: [(u32, u32, u64); n], queries: [Query; q]);
+pub fn point_add_rectangle_sum(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, xyw: [(u32, u32, u64); n], queries: [Query; q]);
     let points: Vec<_> = xyw
         .iter()
         .map(|&(x, y, w)| (x, y, w as i64))
@@ -52,17 +51,16 @@ pub fn point_add_rectangle_sum(reader: impl Read, mut writer: impl Write) {
             Query::Sum { l, d, r, u } => {
                 let l = xs.partition_point(|&x| x < l);
                 let r = xs.partition_point(|&x| x < r);
-                writeln!(writer, "{}", fold.fold_range(d..u, l..r)).ok();
+                pp!(fold.fold_range(d..u, l..r));
             }
         }
     }
 }
 
 #[verify::library_checker("point_add_rectangle_sum")]
-pub fn point_add_rectangle_sum_compressed_segment_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, xyw: [(u32, u32, u64); n], queries: [Query; q]);
+pub fn point_add_rectangle_sum_compressed_segment_tree(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, xyw: [(u32, u32, u64); n], queries: [Query; q]);
     let points: Vec<_> = xyw
         .iter()
         .map(|&(x, y, _)| (x, (y,)))
@@ -87,7 +85,7 @@ pub fn point_add_rectangle_sum_compressed_segment_tree(reader: impl Read, mut wr
             }
             Query::Sum { l, d, r, u } => {
                 let ans = seg.fold(&(l..r, (d..u,)));
-                writeln!(writer, "{}", ans).ok();
+                pp!(ans);
             }
         }
     }

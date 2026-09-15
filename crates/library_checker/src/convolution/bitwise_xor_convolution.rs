@@ -6,10 +6,9 @@ use competitive::{
 };
 
 #[verify::library_checker("bitwise_xor_convolution")]
-pub fn bitwise_xor_convolution(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, a: [MInt998244353; 1 << n], b: [MInt998244353; 1 << n]);
+pub fn bitwise_xor_convolution(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, a: [MInt998244353; 1 << n], b: [MInt998244353; 1 << n]);
     let c = BitwisexorConvolve::<AddMulOperation<_>>::convolve(a, b);
-    iter_print!(writer, @it c);
+    pp!(@it c);
 }

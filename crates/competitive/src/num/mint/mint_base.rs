@@ -3,6 +3,7 @@ use super::*;
 use std::{
     fmt::{self, Debug, Display},
     hash::{Hash, Hasher},
+    io::Write,
     iter::{Product, Sum},
     marker::PhantomData,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
@@ -293,6 +294,15 @@ where
         write!(f, "{}", self.inner())
     }
 }
+impl<M> FastPrint for MInt<M>
+where
+    M: MIntBase<Inner: FastPrint>,
+{
+    #[inline]
+    fn fast_print<W: Write>(&self, writer: &mut FastOutput<W>) {
+        self.inner().fast_print(writer);
+    }
+}
 impl<M> FromStr for MInt<M>
 where
     M: MIntConvert + MIntBase<Inner: FromStr>,
@@ -303,14 +313,14 @@ where
         s.parse::<M::Inner>().map(Self::new)
     }
 }
-impl<M> IterScan for MInt<M>
+impl<M> Scan for MInt<M>
 where
-    M: MIntConvert + MIntBase<Inner: FromStr>,
+    M: MIntConvert + MIntBase<Inner: Scan<Output = M::Inner>>,
 {
     type Output = Self;
     #[inline]
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        iter.next()?.parse::<MInt<M>>().ok()
+    fn scan<S: ScanSource>(source: &mut S) -> Option<Self> {
+        M::Inner::scan(source).map(Self::new)
     }
 }
 impl<M> SerdeByteStr for MInt<M>

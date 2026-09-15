@@ -5,10 +5,10 @@ use crate::tools::avx512_enabled;
 use crate::{
     algebra::DotProduct,
     num::{BarrettReduction, One, Zero},
-    tools::{IterScan, SerdeByteStr},
+    tools::{FastOutput, FastPrint, Scan, ScanSource, SerdeByteStr},
 };
 
-#[codesnip::entry("MIntBase", include("scanner", "zero_one", "coding", "ring"))]
+#[codesnip::entry("MIntBase", include("scanner", "fastio", "zero_one", "coding", "ring"))]
 pub use mint_base::{MInt, MIntBase, MIntConvert};
 
 #[cfg_attr(nightly, codesnip::entry("MIntBase"))]

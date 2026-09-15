@@ -1,4 +1,4 @@
-use super::{Float, IterScan, One, Zero};
+use super::{Float, One, Scan, ScanSource, Zero};
 use std::{
     cmp::Ordering,
     iter::{Product, Sum},
@@ -309,12 +309,12 @@ macro_rules! impl_complex_fold {
 impl_complex_fold!(impl<T> Sum sum (Complex<T>) Zero zero Add add where Add);
 impl_complex_fold!(impl<T> Product product (Complex<T>) One one Mul mul where Add Sub Mul + Zero + Clone);
 
-impl<T: IterScan> IterScan for Complex<T> {
-    type Output = Complex<<T as IterScan>::Output>;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+impl<T: Scan> Scan for Complex<T> {
+    type Output = Complex<<T as Scan>::Output>;
+    fn scan<I: ScanSource>(iter: &mut I) -> Option<Self::Output> {
         Some(Complex::new(
-            <T as IterScan>::scan(iter)?,
-            <T as IterScan>::scan(iter)?,
+            <T as Scan>::scan(iter)?,
+            <T as Scan>::scan(iter)?,
         ))
     }
 }

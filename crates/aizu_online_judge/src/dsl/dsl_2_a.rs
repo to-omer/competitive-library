@@ -9,19 +9,18 @@ competitive::define_enum_scan! {
 }
 
 #[verify::aizu_online_judge("DSL_2_A")]
-pub fn dsl_2_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q);
+pub fn dsl_2_a(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q);
     let mut seg = SegmentTree::<MinOperation<_>>::new(n);
     for _ in 0..q {
-        scan!(scanner, query: Query);
+        sc!(query: Query);
         match query {
             Query::Update { x, y } => {
                 seg.set(x, y as i32);
             }
             Query::Fold { x, y } => {
-                writeln!(writer, "{}", seg.fold(x..=y)).ok();
+                pp!(seg.fold(x..=y));
             }
         }
     }

@@ -8,10 +8,9 @@ use competitive::{
     not(feature = "verify_doc"),
     verify::library_checker("convolution_mod_large")
 )]
-pub fn convolution_mod_large(reader: impl Read, mut writer: impl Write) {
-    let s = read_all_unchecked(reader);
-    let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, m, a: [MInt998244353; n], b: [MInt998244353; m]);
+pub fn convolution_mod_large(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, m, a: [MInt998244353; n], b: [MInt998244353; m]);
     let c = Convolve998244353::convolve(a, b);
-    iter_print!(writer, @it c);
+    pp!(@it c);
 }
