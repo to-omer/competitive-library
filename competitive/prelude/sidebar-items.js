@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":[["iter_print",1],["scan",1]],"trait":["Read","Write"]};
+window.SIDEBAR_ITEMS = {"macro":[["iter_print",1],["prepare_io",1],["scan",1]],"trait":["Read","Write"]};

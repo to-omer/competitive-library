@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["impl_fast_iter_print_tuple",1],["impl_fast_print_display",1],["impl_fast_print_integer",1]],"trait":["FastIterPrint","FastPrint"]};

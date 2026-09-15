@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["impl_fast_scan_integer",1]]};
