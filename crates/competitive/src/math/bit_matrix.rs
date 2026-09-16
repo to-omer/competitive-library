@@ -361,11 +361,9 @@ impl BitMatrix {
     #[inline(always)]
     fn mul_impl(&self, rhs: &Self) -> Self {
         let mut result = Self::zeros((self.shape.0, rhs.shape.1));
-        if self.shape.0 < 256
-            || self.shape.1 < 32
-            || self.data.iter().map(BitSet::count_ones).sum::<u64>()
-                <= self.shape.0 as u64 * self.shape.1 as u64 / 8
-        {
+        let ones = self.data.iter().map(BitSet::count_ones).sum::<u64>();
+        let size = self.shape.0 as u64 * self.shape.1 as u64;
+        if self.shape.0 < 256 || self.shape.1 < 32 || ones <= size / 8 {
             for (a, c) in self.data.iter().zip(&mut result.data) {
                 for j in a.iter_ones() {
                     xor(c.words_mut(), rhs[j].words());
@@ -373,33 +371,62 @@ impl BitMatrix {
             }
             return result;
         }
-        let mut table = vec![BitSet::new(rhs.shape.1); 8 * 256];
+        if size - ones <= size / 8 {
+            let mut sum = BitSet::new(rhs.shape.1);
+            for row in &rhs.data {
+                sum ^= row;
+            }
+            for (a, c) in self.data.iter().zip(&mut result.data) {
+                c.words_mut().copy_from_slice(sum.words());
+                for j in (!a.clone()).iter_ones() {
+                    xor(c.words_mut(), rhs[j].words());
+                }
+            }
+            return result;
+        }
+        let width = rhs.shape.1.div_ceil(64);
+        if width == 0 {
+            return result;
+        }
+
+        // Separate the table groups by a cache line to avoid mapping them to the same sets.
+        let group = 256 * width + 8;
+        let mut storage = BitSet::new(8 * group * 64);
+        let table = storage.words_mut();
         for start in (0..self.shape.1).step_by(64) {
-            for t in 0..8 {
+            for (t, table) in table.chunks_exact_mut(group).enumerate() {
                 let col = start + t * 8;
-                let table = &mut table[t * 256..(t + 1) * 256];
                 for bit in 0..self.shape.1.saturating_sub(col).min(8) {
                     let row = rhs[col + bit].words();
-                    let half = 1 << bit;
-                    for index in 0..half {
-                        let (lower, upper) = table.split_at_mut(index + half);
-                        let source = lower[index].words();
-                        for ((x, y), z) in upper[0].words_mut().iter_mut().zip(source).zip(row) {
+                    let half = (1 << bit) * width;
+                    let (lower, upper) = table.split_at_mut(half);
+                    for (source, dest) in
+                        lower.chunks_exact(width).zip(upper.chunks_exact_mut(width))
+                    {
+                        for ((x, y), z) in dest.iter_mut().zip(source).zip(row) {
                             *x = y ^ z;
                         }
                     }
                 }
             }
             for (a, c) in self.data.iter().zip(&mut result.data) {
-                let bits = a.words()[start / 64];
-                let p0 = table[(bits & 255) as usize].words();
-                let p1 = table[256 + (bits >> 8 & 255) as usize].words();
-                let p2 = table[512 + (bits >> 16 & 255) as usize].words();
-                let p3 = table[768 + (bits >> 24 & 255) as usize].words();
-                let p4 = table[1024 + (bits >> 32 & 255) as usize].words();
-                let p5 = table[1280 + (bits >> 40 & 255) as usize].words();
-                let p6 = table[1536 + (bits >> 48 & 255) as usize].words();
-                let p7 = table[1792 + (bits >> 56 & 255) as usize].words();
+                let key = a.words()[start / 64];
+                let offset = (key & 255) as usize * width;
+                let p0 = &table[offset..offset + width];
+                let offset = group + (key >> 8 & 255) as usize * width;
+                let p1 = &table[offset..offset + width];
+                let offset = 2 * group + (key >> 16 & 255) as usize * width;
+                let p2 = &table[offset..offset + width];
+                let offset = 3 * group + (key >> 24 & 255) as usize * width;
+                let p3 = &table[offset..offset + width];
+                let offset = 4 * group + (key >> 32 & 255) as usize * width;
+                let p4 = &table[offset..offset + width];
+                let offset = 5 * group + (key >> 40 & 255) as usize * width;
+                let p5 = &table[offset..offset + width];
+                let offset = 6 * group + (key >> 48 & 255) as usize * width;
+                let p6 = &table[offset..offset + width];
+                let offset = 7 * group + (key >> 56 & 255) as usize * width;
+                let p7 = &table[offset..offset + width];
                 for ((((((((x, p0), p1), p2), p3), p4), p5), p6), p7) in c
                     .words_mut()
                     .iter_mut()
@@ -650,6 +677,11 @@ mod tests {
             }
             let expected = BitMatrix::new_with((n, k), |i, j| product[i][j]);
             assert_eq!(&a * &b, expected, "case {case}, shape {:?}", (n, m, k));
+            let complement = BitMatrix::new_with((n, m), |i, j| !rows[i][j]);
+            let complement_expected = BitMatrix::new_with((n, k), |i, j| {
+                (0..m).fold(false, |v, t| v ^ (!rows[i][t] && right[t][j]))
+            });
+            assert_eq!(&complement * &b, complement_expected, "case {case}");
             assert_eq!(
                 a.transpose(),
                 BitMatrix::new_with((m, n), |i, j| rows[j][i])
@@ -726,6 +758,7 @@ mod tests {
                     // SAFETY: AVX2 support was checked above.
                     unsafe {
                         assert_eq!(a.mul_avx2(&b), expected);
+                        assert_eq!(complement.mul_avx2(&b), complement_expected);
                         let mut reduced = a.clone();
                         assert_eq!(reduced.eliminate_avx2(m, true, false), pivots);
                         assert_eq!(reduced, rref);
@@ -735,12 +768,14 @@ mod tests {
                     // SAFETY: all required AVX-512 features were checked above.
                     unsafe {
                         assert_eq!(a.mul_avx512(&b), expected);
+                        assert_eq!(complement.mul_avx512(&b), complement_expected);
                         let mut reduced = a.clone();
                         assert_eq!(reduced.eliminate_avx512(m, true, false), pivots);
                         assert_eq!(reduced, rref);
                     }
                 }
                 assert_eq!(a.mul_impl(&b), expected);
+                assert_eq!(complement.mul_impl(&b), complement_expected);
                 let mut reduced = a.clone();
                 assert_eq!(reduced.eliminate_impl(m, true, false), pivots);
                 assert_eq!(reduced, rref);
