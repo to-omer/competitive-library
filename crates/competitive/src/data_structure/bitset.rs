@@ -40,6 +40,80 @@ impl BitSet {
         self.size == 0
     }
 
+    /// Parses ASCII `0` and `1`, with the first character at bit index zero.
+    /// Returns `None` if any other character occurs.
+    pub fn from_binary(s: &str) -> Option<Self> {
+        let bytes = s.as_bytes();
+        let mut bits = Self::new(bytes.len());
+        let end = bytes.len() / 64 * 64;
+        #[cfg(target_arch = "x86_64")]
+        let parsed = if avx512_enabled() && is_x86_feature_detected!("avx512bw") {
+            // SAFETY: AVX-512BW is available; each complete chunk contains 64 bytes.
+            unsafe { simd::parse_binary_avx512(&bytes[..end], bits.words_mut()) }
+        } else if is_x86_feature_detected!("avx2") {
+            // SAFETY: AVX2 is available; each complete chunk contains 64 bytes.
+            unsafe { simd::parse_binary_avx2(&bytes[..end], bits.words_mut()) }
+        } else {
+            Self::parse_binary_scalar(&bytes[..end], bits.words_mut())
+        };
+        #[cfg(not(target_arch = "x86_64"))]
+        let parsed = Self::parse_binary_scalar(&bytes[..end], bits.words_mut());
+        if !parsed {
+            return None;
+        }
+        if end != bytes.len() {
+            let mut word = 0;
+            for (i, &b) in bytes[end..].iter().enumerate() {
+                if b != b'0' && b != b'1' {
+                    return None;
+                }
+                word |= u64::from(b & 1) << i;
+            }
+            bits.words_mut()[end / 64] = word;
+        }
+        Some(bits)
+    }
+
+    fn parse_binary_scalar(bytes: &[u8], words: &mut [u64]) -> bool {
+        for (chunk, word) in bytes.as_chunks::<64>().0.iter().zip(words) {
+            for (i, byte) in chunk.as_chunks::<8>().0.iter().enumerate() {
+                let x = u64::from_le_bytes(*byte);
+                if x & 0xfefe_fefe_fefe_fefe != 0x3030_3030_3030_3030 {
+                    return false;
+                }
+                *word |= ((x & 0x0101_0101_0101_0101).wrapping_mul(0x0102_0408_1020_4080) >> 56)
+                    << (i * 8);
+            }
+        }
+        true
+    }
+
+    /// Returns ASCII `0` and `1` in increasing bit-index order.
+    pub fn to_binary(&self) -> String {
+        const TABLE: [[u8; 8]; 256] = {
+            let mut table = [[b'0'; 8]; 256];
+            let mut i = 0;
+            while i < 256 {
+                let mut j = 0;
+                while j < 8 {
+                    table[i][j] |= ((i >> j) & 1) as u8;
+                    j += 1;
+                }
+                i += 1;
+            }
+            table
+        };
+        let mut bytes = vec![b'0'; self.size.div_ceil(8) * 8];
+        for (chunk, &word) in bytes.chunks_mut(64).zip(self.words()) {
+            for (i, byte) in chunk.as_chunks_mut::<8>().0.iter_mut().enumerate() {
+                byte.copy_from_slice(&TABLE[(word >> (i * 8) & 255) as usize]);
+            }
+        }
+        bytes.truncate(self.size);
+        // SAFETY: every output byte is ASCII `0` or `1`.
+        unsafe { String::from_utf8_unchecked(bytes) }
+    }
+
     pub fn ones(size: usize) -> Self {
         let mut self_ = Self {
             size,
@@ -213,12 +287,15 @@ impl BitSet {
         self.shift_right::<true>(rhs);
     }
 
-    fn words(&self) -> &[u64] {
+    /// Returns words in increasing bit-index order; unused high bits in the last word are zero.
+    pub fn words(&self) -> &[u64] {
         // SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
         unsafe { std::slice::from_raw_parts(self.bits.as_ptr().cast(), self.size.div_ceil(64)) }
     }
 
-    fn words_mut(&mut self) -> &mut [u64] {
+    /// Returns mutable words in increasing bit-index order.
+    /// Callers must keep unused high bits in the last word zero.
+    pub fn words_mut(&mut self) -> &mut [u64] {
         let len = self.size.div_ceil(64);
         // SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
         unsafe { std::slice::from_raw_parts_mut(self.bits.as_mut_ptr().cast(), len) }
@@ -535,6 +612,40 @@ impl Not for &BitSet {
 mod simd {
     use super::{BIT_AND, BIT_OR, BIT_XOR, Block};
     use std::arch::x86_64::*;
+
+    #[target_feature(enable = "avx2")]
+    pub unsafe fn parse_binary_avx2(bytes: &[u8], words: &mut [u64]) -> bool {
+        let one = _mm256_set1_epi8(b'1' as i8);
+        let mask = _mm256_set1_epi8(!1);
+        let zero = _mm256_set1_epi8(b'0' as i8);
+        for (chunk, word) in bytes.as_chunks::<64>().0.iter().zip(words) {
+            let a = _mm256_loadu_si256(chunk.as_ptr().cast());
+            let b = _mm256_loadu_si256(chunk.as_ptr().add(32).cast());
+            let valid_a = _mm256_cmpeq_epi8(_mm256_and_si256(a, mask), zero);
+            let valid_b = _mm256_cmpeq_epi8(_mm256_and_si256(b, mask), zero);
+            if _mm256_movemask_epi8(_mm256_and_si256(valid_a, valid_b)) != -1 {
+                return false;
+            }
+            *word = _mm256_movemask_epi8(_mm256_cmpeq_epi8(a, one)) as u32 as u64
+                | ((_mm256_movemask_epi8(_mm256_cmpeq_epi8(b, one)) as u32 as u64) << 32);
+        }
+        true
+    }
+
+    #[target_feature(enable = "avx512bw")]
+    pub unsafe fn parse_binary_avx512(bytes: &[u8], words: &mut [u64]) -> bool {
+        let one = _mm512_set1_epi8(b'1' as i8);
+        let mask = _mm512_set1_epi8(!1);
+        let zero = _mm512_set1_epi8(b'0' as i8);
+        for (chunk, word) in bytes.as_chunks::<64>().0.iter().zip(words) {
+            let x = _mm512_loadu_si512(chunk.as_ptr().cast());
+            if _mm512_cmpeq_epi8_mask(_mm512_and_si512(x, mask), zero) != u64::MAX {
+                return false;
+            }
+            *word = _mm512_cmpeq_epi8_mask(x, one);
+        }
+        true
+    }
 
     #[target_feature(enable = "avx2")]
     pub unsafe fn bitop_avx2<const OP: u8>(lhs: &mut [Block], rhs: &[Block]) {
@@ -931,6 +1042,102 @@ mod tests {
     const SIZES: [usize; 16] = [
         0, 1, 2, 63, 64, 65, 255, 256, 257, 511, 512, 513, 3584, 4096, 4097, 8193,
     ];
+
+    #[test]
+    fn test_binary_conversion() {
+        let mut rng = Xorshift::new_with_seed(41513);
+        for case in 0..512 {
+            let size = match case % 3 {
+                0 => rng.random(0..32),
+                1 => rng.random(0..512),
+                _ => rng.random(0..20000),
+            };
+            let density = rng.rand(1010);
+            let model: Vec<bool> = (0..size).map(|_| rng.rand(1009) < density).collect();
+            let s: String = model.iter().map(|&b| if b { '1' } else { '0' }).collect();
+            let expected: BitSet = model.iter().copied().collect();
+            let parsed = BitSet::from_binary(&s).unwrap();
+            assert_model(&parsed, &model);
+            assert_eq!(parsed, expected);
+            assert_eq!(expected.to_binary(), s);
+            let words: Vec<u64> = model
+                .chunks(64)
+                .map(|chunk| {
+                    chunk
+                        .iter()
+                        .enumerate()
+                        .fold(0, |w, (i, &b)| w | (u64::from(b) << i))
+                })
+                .collect();
+            assert_eq!(expected.words(), words);
+            let mut packed = BitSet::new(size);
+            packed.words_mut().copy_from_slice(&words);
+            assert_model(&packed, &model);
+
+            let mut modified = s.as_bytes().to_vec();
+            if size != 0 {
+                for _ in 0..rng.random(1..=size.min(16)) {
+                    modified[rng.random(0..size)] = rng.random(0..128);
+                }
+            }
+            let valid = modified.iter().all(|b| matches!(b, b'0' | b'1'));
+            let modified = String::from_utf8(modified).unwrap();
+            assert_eq!(BitSet::from_binary(&modified).is_some(), valid);
+            let mut unicode = s.clone();
+            unicode.insert(
+                rng.random(0..=size),
+                char::from_u32(rng.random(0xe000..0x110000)).unwrap(),
+            );
+            assert!(BitSet::from_binary(&unicode).is_none());
+
+            let end = size / 64 * 64;
+            for invalid in [false, true] {
+                let mut input = s.as_bytes()[..end].to_vec();
+                if invalid && end != 0 {
+                    for _ in 0..rng.random(1..=end.min(16)) {
+                        input[rng.random(0..end)] = rng.random(0..=255);
+                    }
+                }
+                let valid = input.iter().all(|b| matches!(b, b'0' | b'1'));
+                let mut scalar = BitSet::new(end);
+                assert_eq!(
+                    BitSet::parse_binary_scalar(&input, scalar.words_mut()),
+                    valid
+                );
+                if valid {
+                    assert_model(
+                        &scalar,
+                        &input.iter().map(|&b| b == b'1').collect::<Vec<_>>(),
+                    );
+                }
+                #[cfg(target_arch = "x86_64")]
+                {
+                    if is_x86_feature_detected!("avx2") {
+                        let mut parsed = BitSet::new(end);
+                        // SAFETY: AVX2 support was checked; input has full 64-byte chunks.
+                        assert_eq!(
+                            unsafe { simd::parse_binary_avx2(&input, parsed.words_mut()) },
+                            valid
+                        );
+                        if valid {
+                            assert_eq!(parsed, scalar);
+                        }
+                    }
+                    if is_x86_feature_detected!("avx512bw") {
+                        let mut parsed = BitSet::new(end);
+                        // SAFETY: AVX-512BW support was checked; input has full 64-byte chunks.
+                        assert_eq!(
+                            unsafe { simd::parse_binary_avx512(&input, parsed.words_mut()) },
+                            valid
+                        );
+                        if valid {
+                            assert_eq!(parsed, scalar);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fn bitset(model: &[bool]) -> BitSet {
         model.iter().copied().collect()

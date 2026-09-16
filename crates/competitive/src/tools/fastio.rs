@@ -497,6 +497,14 @@ impl FastInput {
     pub unsafe fn bytes<'a>(&mut self) -> &'a [u8] {
         unsafe {
             let start = self.ptr;
+            loop {
+                // Padding permits this load; bytes above ASCII space cannot be separators.
+                let x = self.ptr.cast::<u64>().read_unaligned();
+                if x.wrapping_sub(0x2121_2121_2121_2121) & !x & 0x8080_8080_8080_8080 != 0 {
+                    break;
+                }
+                self.ptr = self.ptr.add(8);
+            }
             while !(*self.ptr).is_ascii_whitespace() {
                 self.ptr = self.ptr.add(1);
             }
@@ -933,6 +941,48 @@ mod tests {
                 }
             }
             assert_eq!(output, expected.as_bytes(), "capacity={capacity}");
+        }
+    }
+
+    #[test]
+    fn test_input_bytes() {
+        let mut rng = Xorshift::new_with_seed(612971);
+        for _ in 0..512 {
+            let offset = rng.random(0..64);
+            let mut input: Vec<u8> = (0..offset).map(|_| rng.random(..)).collect();
+            let mut expected = Vec::new();
+            for _ in 0..rng.random(1..32) {
+                let len = if rng.rand(4) == 0 {
+                    rng.random(0..10000)
+                } else {
+                    rng.random(0..128)
+                };
+                let ascii = rng.rand(2) == 0;
+                let token: Vec<u8> = (0..len)
+                    .map(|_| {
+                        loop {
+                            let byte: u8 = if ascii {
+                                rng.random(33..127)
+                            } else {
+                                rng.random(..)
+                            };
+                            if !byte.is_ascii_whitespace() {
+                                break byte;
+                            }
+                        }
+                    })
+                    .collect();
+                input.extend_from_slice(&token);
+                input.push([b' ', b'\t', b'\n', b'\r', 12][rng.random(0usize..5)]);
+                expected.push(token);
+            }
+            input.extend([b' '; 16]);
+            // SAFETY: input remains alive and every field has a delimiter followed by padding.
+            let mut reader = unsafe { FastInput::from_slice(&input[offset..]) };
+            for token in expected {
+                // SAFETY: byte fields need not be UTF-8; each read consumes one delimited field.
+                assert_eq!(unsafe { reader.bytes() }, token);
+            }
         }
     }
 

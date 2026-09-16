@@ -1,8 +1,13 @@
 pub mod characteristic_polynomial;
 pub mod inverse_matrix;
+pub mod inverse_matrix_mod_2;
 pub mod matrix_det;
+pub mod matrix_det_mod_2;
 pub mod matrix_product;
+pub mod matrix_product_mod_2;
 pub mod matrix_rank;
+pub mod matrix_rank_mod_2;
 pub mod pow_of_matrix;
 pub mod sparse_matrix_det;
 pub mod system_of_linear_equations;
+pub mod system_of_linear_equations_mod_2;

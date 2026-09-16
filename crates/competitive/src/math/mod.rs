@@ -5,6 +5,7 @@ use crate::algebra::{
     SemiRing, Unital,
 };
 use crate::array;
+use crate::data_structure::BitSet;
 use crate::num::{
     BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One, RangeBoundsExt,
     Signed, Unsigned, Wrapping, Zero, montgomery,
@@ -19,6 +20,8 @@ pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
 pub use self::array_vec::{ArrayVec, ToArrayVec, ToArrayVecScalar};
 #[codesnip::entry("BinomialPrefixSum")]
 pub use self::binomial_prefix_sum::{BinomialPolynomialPrefixSum, BinomialPrefixSum};
+#[codesnip::entry("BitMatrix")]
+pub use self::bit_matrix::{BitMatrix, BitMatrixSolution};
 #[codesnip::entry("bitwise_transform")]
 pub use self::bitwise_transform::bitwise_transform;
 #[codesnip::entry("BitwiseandConvolve")]
@@ -114,6 +117,8 @@ mod array_vec;
     codesnip::entry("BinomialPrefixSum", include("factorial", "MIntBase", "mo_algorithm"))
 )]
 mod binomial_prefix_sum;
+#[cfg_attr(nightly, codesnip::entry("BitMatrix", include("BitSet", "avx_helper")))]
+mod bit_matrix;
 #[cfg_attr(nightly, codesnip::entry("bitwise_transform"))]
 mod bitwise_transform;
 #[cfg_attr(
