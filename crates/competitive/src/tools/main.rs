@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[codesnip::skip]
 use crate::tools::{ScanSource, Scanner, read_stdin_all_unchecked};
 
@@ -109,6 +107,7 @@ mod main_macros {
     #[macro_export]
     macro_rules! main {
         (avx2; $($t:tt)*) => {
+            #[allow(dead_code)]
             fn main() {
                 #[target_feature(enable = "avx2")]
                 unsafe fn solve_avx2() {
@@ -118,6 +117,7 @@ mod main_macros {
             }
         };
         (large_stack; $($t:tt)*) => {
+            #[allow(dead_code)]
             fn main() {
                 const STACK_SIZE: usize = 512 * 1024 * 1024;
                 ::std::thread::Builder::new()
@@ -129,6 +129,7 @@ mod main_macros {
             }
         };
         ($($t:tt)*) => {
+            #[allow(dead_code)]
             fn main() {
                 solve();
             }

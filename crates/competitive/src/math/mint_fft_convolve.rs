@@ -1,9 +1,8 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 use super::{
-    AssociatedValue, MInt, MIntConvert,
+    AssociatedValue, MInt, MIntConvert, advise_huge_pages,
     fast_fourier_transform::{RotateCache, simd::*},
-    huge_pages::advise_huge_pages,
 };
 use std::arch::x86_64::*;
 

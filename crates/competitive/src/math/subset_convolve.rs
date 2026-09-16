@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Invertible, Ring, huge_pages::advise_huge_pages};
+use super::{ConvolveSteps, Invertible, Ring, advise_huge_pages};
 use std::marker::PhantomData;
 
 pub struct SubsetConvolve<M> {

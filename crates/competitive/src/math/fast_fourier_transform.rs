@@ -1,6 +1,6 @@
 use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
 #[cfg(target_arch = "x86_64")]
-use super::{SimdBackend, huge_pages::advise_huge_pages, simd_backend};
+use super::{SimdBackend, advise_huge_pages, simd_backend};
 
 pub enum ConvolveRealFft {}
 

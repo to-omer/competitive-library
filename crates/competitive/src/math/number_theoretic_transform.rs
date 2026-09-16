@@ -1,6 +1,6 @@
 use super::{
-    ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, fast_fourier_transform::ConvolveRealFft,
-    huge_pages::advise_huge_pages, montgomery::*,
+    ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, advise_huge_pages,
+    fast_fourier_transform::ConvolveRealFft, montgomery::*,
 };
 #[cfg(target_arch = "x86_64")]
 use super::{

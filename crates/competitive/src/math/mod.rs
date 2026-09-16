@@ -63,6 +63,8 @@ pub use self::garner::Garner;
 pub use self::gcd::*;
 #[codesnip::entry("GcdConvolve")]
 pub use self::gcd_convolve::GcdConvolve;
+#[codesnip::entry("_huge_pages")]
+pub use self::huge_pages::advise_huge_pages;
 #[codesnip::entry("lagrange_interpolation")]
 pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
 #[codesnip::entry("LcmConvolve")]
