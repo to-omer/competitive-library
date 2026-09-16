@@ -83,4 +83,26 @@
 <span data-nosnippet>28</span>            writer.byte(<span class="string">b'\n'</span>);
 <span data-nosnippet>29</span>        }
 <span data-nosnippet>30</span>    }
-<span data-nosnippet>31</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
+<span data-nosnippet>31</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/library_checker/linear_algebra/matrix_rank_mod_2.rs.html#6&#34;,&#34;line 6&#34;]]"><div class="scraped-example-title">crates/library_checker/src/linear_algebra/matrix_rank_mod_2.rs (<a href="../../../src/library_checker/linear_algebra/matrix_rank_mod_2.rs.html#6">line 6</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>matrix_rank_mod_2(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>6</span>    <span class="kw">let </span><span class="kw-2">mut </span>input = <span class="highlight focus">read_all_unchecked</span>(reader);
+<span data-nosnippet>7</span>    input.push_str(<span class="string">"                "</span>);
+<span data-nosnippet>8</span>    <span class="comment">// SAFETY: input is valid ASCII, padded, and retained until all reads finish.
+<span data-nosnippet>9</span>    </span><span class="kw">let </span><span class="kw-2">mut </span>scanner = <span class="kw">unsafe </span>{ FastInput::from_slice(input.as_bytes()) };
+<span data-nosnippet>10</span>    <span class="macro">scan!</span>(scanner, n, m);
+<span data-nosnippet>11</span>    <span class="comment">// Transpose very tall matrices to avoid allocating millions of short rows.
+<span data-nosnippet>12</span>    </span><span class="kw">let </span>transpose = n / <span class="number">2 </span>&gt; m;
+<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>a = BitMatrix::zeros(<span class="kw">if </span>transpose { (m, n) } <span class="kw">else </span>{ (n, m) });
+<span data-nosnippet>14</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="kw">if </span>m == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ n } {
+<span data-nosnippet>15</span>        <span class="kw">let </span>row = scanner.next_token().unwrap();
+<span data-nosnippet>16</span>        <span class="kw">if </span>!transpose {
+<span data-nosnippet>17</span>            a.data[i] = BitSet::from_binary(row).unwrap();
+<span data-nosnippet>18</span>        } <span class="kw">else </span>{
+<span data-nosnippet>19</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span>row.bytes().enumerate() {
+<span data-nosnippet>20</span>                a[j].set(i, b == <span class="string">b'1'</span>);
+<span data-nosnippet>21</span>            }
+<span data-nosnippet>22</span>        }
+<span data-nosnippet>23</span>    }
+<span data-nosnippet>24</span>    <span class="kw">let </span><span class="kw-2">mut </span>writer = FastOutput::new(writer);
+<span data-nosnippet>25</span>    writer.usize(a.rank());
+<span data-nosnippet>26</span>    writer.byte(<span class="string">b'\n'</span>);
+<span data-nosnippet>27</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>

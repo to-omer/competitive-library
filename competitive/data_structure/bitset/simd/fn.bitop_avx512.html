@@ -52,30 +52,30 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">bitop_avx512</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>bitset::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">bitset</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">bitop_<wbr>avx512</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/bitset.rs.html#557-569">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn bitop_avx512&lt;const OP: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(lhs: &amp;mut [<a class="struct" href="../struct.Block.html" title="struct competitive::data_structure::bitset::Block">Block</a>], rhs: &amp;[<a class="struct" href="../struct.Block.html" title="struct competitive::data_structure::bitset::Block">Block</a>])</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/bitset.rs.html#249&#34;,&#34;line 249&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/bitset.rs (<a href="../../../../src/competitive/data_structure/bitset.rs.html#249">line 249</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>240</span>    <span class="kw">fn </span>bitop_assign&lt;<span class="kw">const </span>OP: u8&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
-<span data-nosnippet>241</span>        <span class="macro">assert_eq!</span>(
-<span data-nosnippet>242</span>            <span class="self">self</span>.size, rhs.size,
-<span data-nosnippet>243</span>            <span class="string">"bitwise operations require equal lengths"
-<span data-nosnippet>244</span>        </span>);
-<span data-nosnippet>245</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>246</span>        </span><span class="kw">if </span><span class="self">self</span>.bits.len() &gt;= SIMD_MIN_BLOCKS {
-<span data-nosnippet>247</span>            <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
-<span data-nosnippet>248</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
-<span data-nosnippet>249</span>                </span><span class="kw">unsafe </span>{ <span class="highlight focus">simd::bitop_avx512::&lt;OP&gt;</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
-<span data-nosnippet>250</span>                <span class="kw">return</span>;
-<span data-nosnippet>251</span>            }
-<span data-nosnippet>252</span>            <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
-<span data-nosnippet>253</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
-<span data-nosnippet>254</span>                </span><span class="kw">unsafe </span>{ simd::bitop_avx2::&lt;OP&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
-<span data-nosnippet>255</span>                <span class="kw">return</span>;
-<span data-nosnippet>256</span>            }
-<span data-nosnippet>257</span>        }
-<span data-nosnippet>258</span>        <span class="kw">for </span>(lhs, <span class="kw-2">&amp;</span>rhs) <span class="kw">in </span><span class="self">self</span>.words_mut().iter_mut().zip(rhs.words()) {
-<span data-nosnippet>259</span>            <span class="kw-2">*</span>lhs = <span class="kw">match </span>OP {
-<span data-nosnippet>260</span>                BIT_AND =&gt; <span class="kw-2">*</span>lhs &amp; rhs,
-<span data-nosnippet>261</span>                BIT_OR =&gt; <span class="kw-2">*</span>lhs | rhs,
-<span data-nosnippet>262</span>                BIT_XOR =&gt; <span class="kw-2">*</span>lhs ^ rhs,
-<span data-nosnippet>263</span>                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
-<span data-nosnippet>264</span>            };
-<span data-nosnippet>265</span>        }
-<span data-nosnippet>266</span>    }</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">bitop_avx512</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>bitset::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">bitset</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">bitop_<wbr>avx512</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/bitset.rs.html#668-680">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn bitop_avx512&lt;const OP: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(lhs: &amp;mut [<a class="struct" href="../struct.Block.html" title="struct competitive::data_structure::bitset::Block">Block</a>], rhs: &amp;[<a class="struct" href="../struct.Block.html" title="struct competitive::data_structure::bitset::Block">Block</a>])</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/bitset.rs.html#326&#34;,&#34;line 326&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/bitset.rs (<a href="../../../../src/competitive/data_structure/bitset.rs.html#326">line 326</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>317</span>    <span class="kw">fn </span>bitop_assign&lt;<span class="kw">const </span>OP: u8&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+<span data-nosnippet>318</span>        <span class="macro">assert_eq!</span>(
+<span data-nosnippet>319</span>            <span class="self">self</span>.size, rhs.size,
+<span data-nosnippet>320</span>            <span class="string">"bitwise operations require equal lengths"
+<span data-nosnippet>321</span>        </span>);
+<span data-nosnippet>322</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>323</span>        </span><span class="kw">if </span><span class="self">self</span>.bits.len() &gt;= SIMD_MIN_BLOCKS {
+<span data-nosnippet>324</span>            <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
+<span data-nosnippet>325</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
+<span data-nosnippet>326</span>                </span><span class="kw">unsafe </span>{ <span class="highlight focus">simd::bitop_avx512::&lt;OP&gt;</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
+<span data-nosnippet>327</span>                <span class="kw">return</span>;
+<span data-nosnippet>328</span>            }
+<span data-nosnippet>329</span>            <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
+<span data-nosnippet>330</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
+<span data-nosnippet>331</span>                </span><span class="kw">unsafe </span>{ simd::bitop_avx2::&lt;OP&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
+<span data-nosnippet>332</span>                <span class="kw">return</span>;
+<span data-nosnippet>333</span>            }
+<span data-nosnippet>334</span>        }
+<span data-nosnippet>335</span>        <span class="kw">for </span>(lhs, <span class="kw-2">&amp;</span>rhs) <span class="kw">in </span><span class="self">self</span>.words_mut().iter_mut().zip(rhs.words()) {
+<span data-nosnippet>336</span>            <span class="kw-2">*</span>lhs = <span class="kw">match </span>OP {
+<span data-nosnippet>337</span>                BIT_AND =&gt; <span class="kw-2">*</span>lhs &amp; rhs,
+<span data-nosnippet>338</span>                BIT_OR =&gt; <span class="kw-2">*</span>lhs | rhs,
+<span data-nosnippet>339</span>                BIT_XOR =&gt; <span class="kw-2">*</span>lhs ^ rhs,
+<span data-nosnippet>340</span>                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+<span data-nosnippet>341</span>            };
+<span data-nosnippet>342</span>        }
+<span data-nosnippet>343</span>    }</code></pre></div></div></div></section></div></main></body></html>

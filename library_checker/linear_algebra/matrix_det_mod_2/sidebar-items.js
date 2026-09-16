@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["matrix_det_mod_2","test_matrix_det_mod_2"]};

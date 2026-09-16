@@ -52,36 +52,36 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">all_avx512</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>bitset::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">bitset</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">all_<wbr>avx512</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/bitset.rs.html#684-712">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn all_avx512(bits: &amp;[<a class="struct" href="../struct.Block.html" title="struct competitive::data_structure::bitset::Block">Block</a>]) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../../src/competitive/data_structure/bitset.rs.html#115&#34;,&#34;line 115&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/bitset.rs (<a href="../../../../src/competitive/data_structure/bitset.rs.html#115">line 115</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>104</span>    <span class="kw">pub fn </span>all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-<span data-nosnippet>105</span>        <span class="kw">let </span>words = <span class="self">self</span>.words();
-<span data-nosnippet>106</span>        <span class="kw">let </span>full_words = <span class="self">self</span>.size &gt;&gt; <span class="number">6</span>;
-<span data-nosnippet>107</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>108</span>        </span><span class="kw">if </span><span class="self">self</span>.size &gt;&gt; <span class="number">9 </span>&gt;= SIMD_MIN_BLOCKS {
-<span data-nosnippet>109</span>            <span class="kw">let </span>full_blocks = <span class="self">self</span>.size &gt;&gt; <span class="number">9</span>;
-<span data-nosnippet>110</span>            <span class="kw">if </span>words[<span class="number">0</span>] != u64::MAX {
-<span data-nosnippet>111</span>                <span class="kw">return </span><span class="bool-val">false</span>;
-<span data-nosnippet>112</span>            }
-<span data-nosnippet>113</span>            <span class="kw">let </span>full_blocks_are_set = <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
-<span data-nosnippet>114</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
-<span data-nosnippet>115</span>                </span><span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ <span class="highlight focus">simd::all_avx512</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.bits[..full_blocks]) })
-<span data-nosnippet>116</span>            } <span class="kw">else if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
-<span data-nosnippet>117</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
-<span data-nosnippet>118</span>                </span><span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ simd::all_avx2(<span class="kw-2">&amp;</span><span class="self">self</span>.bits[..full_blocks]) })
-<span data-nosnippet>119</span>            } <span class="kw">else </span>{
-<span data-nosnippet>120</span>                <span class="prelude-val">None
-<span data-nosnippet>121</span>            </span>};
-<span data-nosnippet>122</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(full_blocks_are_set) = full_blocks_are_set {
-<span data-nosnippet>123</span>                <span class="kw">return </span>full_blocks_are_set
-<span data-nosnippet>124</span>                    &amp;&amp; words[full_blocks * <span class="number">8</span>..full_words]
-<span data-nosnippet>125</span>                        .iter()
-<span data-nosnippet>126</span>                        .all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
-<span data-nosnippet>127</span>                    &amp;&amp; (<span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0
-<span data-nosnippet>128</span>                        </span>|| words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>)));
-<span data-nosnippet>129</span>            }
-<span data-nosnippet>130</span>        }
-<span data-nosnippet>131</span>        <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0 </span>{
-<span data-nosnippet>132</span>            <span class="kw">return </span>words.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
-<span data-nosnippet>133</span>        }
-<span data-nosnippet>134</span>        words[..full_words].iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
-<span data-nosnippet>135</span>            &amp;&amp; words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>))
-<span data-nosnippet>136</span>    }</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">all_avx512</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>bitset::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">bitset</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">all_<wbr>avx512</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/bitset.rs.html#795-823">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn all_avx512(bits: &amp;[<a class="struct" href="../struct.Block.html" title="struct competitive::data_structure::bitset::Block">Block</a>]) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../../src/competitive/data_structure/bitset.rs.html#189&#34;,&#34;line 189&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/bitset.rs (<a href="../../../../src/competitive/data_structure/bitset.rs.html#189">line 189</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>178</span>    <span class="kw">pub fn </span>all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>179</span>        <span class="kw">let </span>words = <span class="self">self</span>.words();
+<span data-nosnippet>180</span>        <span class="kw">let </span>full_words = <span class="self">self</span>.size &gt;&gt; <span class="number">6</span>;
+<span data-nosnippet>181</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>182</span>        </span><span class="kw">if </span><span class="self">self</span>.size &gt;&gt; <span class="number">9 </span>&gt;= SIMD_MIN_BLOCKS {
+<span data-nosnippet>183</span>            <span class="kw">let </span>full_blocks = <span class="self">self</span>.size &gt;&gt; <span class="number">9</span>;
+<span data-nosnippet>184</span>            <span class="kw">if </span>words[<span class="number">0</span>] != u64::MAX {
+<span data-nosnippet>185</span>                <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>186</span>            }
+<span data-nosnippet>187</span>            <span class="kw">let </span>full_blocks_are_set = <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
+<span data-nosnippet>188</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
+<span data-nosnippet>189</span>                </span><span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ <span class="highlight focus">simd::all_avx512</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.bits[..full_blocks]) })
+<span data-nosnippet>190</span>            } <span class="kw">else if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
+<span data-nosnippet>191</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
+<span data-nosnippet>192</span>                </span><span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ simd::all_avx2(<span class="kw-2">&amp;</span><span class="self">self</span>.bits[..full_blocks]) })
+<span data-nosnippet>193</span>            } <span class="kw">else </span>{
+<span data-nosnippet>194</span>                <span class="prelude-val">None
+<span data-nosnippet>195</span>            </span>};
+<span data-nosnippet>196</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(full_blocks_are_set) = full_blocks_are_set {
+<span data-nosnippet>197</span>                <span class="kw">return </span>full_blocks_are_set
+<span data-nosnippet>198</span>                    &amp;&amp; words[full_blocks * <span class="number">8</span>..full_words]
+<span data-nosnippet>199</span>                        .iter()
+<span data-nosnippet>200</span>                        .all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
+<span data-nosnippet>201</span>                    &amp;&amp; (<span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0
+<span data-nosnippet>202</span>                        </span>|| words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>)));
+<span data-nosnippet>203</span>            }
+<span data-nosnippet>204</span>        }
+<span data-nosnippet>205</span>        <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0 </span>{
+<span data-nosnippet>206</span>            <span class="kw">return </span>words.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
+<span data-nosnippet>207</span>        }
+<span data-nosnippet>208</span>        words[..full_words].iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
+<span data-nosnippet>209</span>            &amp;&amp; words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>))
+<span data-nosnippet>210</span>    }</code></pre></div></div></div></section></div></main></body></html>

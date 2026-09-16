@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["characteristic_polynomial","inverse_matrix","matrix_det","matrix_product","matrix_rank","pow_of_matrix","sparse_matrix_det","system_of_linear_equations"]};
+window.SIDEBAR_ITEMS = {"mod":["characteristic_polynomial","inverse_matrix","inverse_matrix_mod_2","matrix_det","matrix_det_mod_2","matrix_product","matrix_product_mod_2","matrix_rank","matrix_rank_mod_2","pow_of_matrix","sparse_matrix_det","system_of_linear_equations","system_of_linear_equations_mod_2"]};

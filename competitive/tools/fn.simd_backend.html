@@ -479,7 +479,348 @@
 <span data-nosnippet>635</span>        }
 <span data-nosnippet>636</span>        <span class="macro">fft_kernel!</span>(a, cache, INVERSE);
 <span data-nosnippet>637</span>    });
-<span data-nosnippet>638</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/data_structure/wavelet_matrix.rs.html#458&#34;,&#34;line 458&#34;],[[129,129],&#34;../../src/competitive/data_structure/wavelet_matrix.rs.html#584&#34;,&#34;line 584&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/wavelet_matrix.rs (<a href="../../src/competitive/data_structure/wavelet_matrix.rs.html#458">line 458</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>455</span>    <span class="kw">pub fn </span>new(v: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>638</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../src/competitive/math/bit_matrix.rs.html#154&#34;,&#34;line 154&#34;],[[333,333],&#34;../../src/competitive/math/bit_matrix.rs.html#485&#34;,&#34;line 485&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bit_matrix.rs (<a href="../../src/competitive/math/bit_matrix.rs.html#154">line 154</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>152</span>    <span class="kw">fn </span>eliminate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, require_full_rank: bool) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>153</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>154</span>        </span><span class="kw">match </span><span class="highlight focus">simd_backend</span>() {
+<span data-nosnippet>155</span>            <span class="comment">// SAFETY: the dispatcher checks the required CPU features.
+<span data-nosnippet>156</span>            </span>SimdBackend::Avx512 =&gt; {
+<span data-nosnippet>157</span>                <span class="kw">return unsafe </span>{ <span class="self">self</span>.eliminate_avx512(cols, full, require_full_rank) };
+<span data-nosnippet>158</span>            }
+<span data-nosnippet>159</span>            <span class="comment">// SAFETY: the dispatcher checks AVX2 support.
+<span data-nosnippet>160</span>            </span>SimdBackend::Avx2 =&gt; {
+<span data-nosnippet>161</span>                <span class="kw">return unsafe </span>{ <span class="self">self</span>.eliminate_avx2(cols, full, require_full_rank) };
+<span data-nosnippet>162</span>            }
+<span data-nosnippet>163</span>            SimdBackend::Scalar =&gt; {}
+<span data-nosnippet>164</span>        }
+<span data-nosnippet>165</span>        <span class="self">self</span>.eliminate_impl(cols, full, require_full_rank)
+<span data-nosnippet>166</span>    }
+<span data-nosnippet>167</span>
+<span data-nosnippet>168</span>    <span class="comment">// Inlined into each target-feature entry point to vectorize the row operations.
+<span data-nosnippet>169</span>    </span><span class="attr">#[inline(always)]
+<span data-nosnippet>170</span>    </span><span class="kw">fn </span>eliminate_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, require_full_rank: bool) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>171</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
+<span data-nosnippet>172</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::with_capacity(n.min(cols));
+<span data-nosnippet>173</span>        <span class="kw">if </span>n &lt; <span class="number">32 </span>{
+<span data-nosnippet>174</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0</span>;
+<span data-nosnippet>175</span>            <span class="kw">while </span>c &lt; cols {
+<span data-nosnippet>176</span>                <span class="kw">let </span>r = pivots.len();
+<span data-nosnippet>177</span>                <span class="kw">if </span>r == n {
+<span data-nosnippet>178</span>                    <span class="kw">break</span>;
+<span data-nosnippet>179</span>                }
+<span data-nosnippet>180</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(p) = (r..n).find(|<span class="kw-2">&amp;</span>i| <span class="self">self</span>[i].get(c)) <span class="kw">else </span>{
+<span data-nosnippet>181</span>                    <span class="kw">if </span>require_full_rank {
+<span data-nosnippet>182</span>                        <span class="kw">return </span>pivots;
+<span data-nosnippet>183</span>                    }
+<span data-nosnippet>184</span>                    c = <span class="self">self</span>.next_column(r, c + <span class="number">1</span>, cols);
+<span data-nosnippet>185</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>186</span>                };
+<span data-nosnippet>187</span>                <span class="self">self</span>.data.swap(r, p);
+<span data-nosnippet>188</span>                <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(r);
+<span data-nosnippet>189</span>                <span class="kw">let </span>(pivot, lower) = lower.split_first_mut().unwrap();
+<span data-nosnippet>190</span>                <span class="kw">for </span>row <span class="kw">in </span>lower
+<span data-nosnippet>191</span>                    .iter_mut()
+<span data-nosnippet>192</span>                    .chain(upper.iter_mut().take(<span class="kw">if </span>full { r } <span class="kw">else </span>{ <span class="number">0 </span>}))
+<span data-nosnippet>193</span>                {
+<span data-nosnippet>194</span>                    <span class="kw">if </span>row.get(c) {
+<span data-nosnippet>195</span>                        xor(<span class="kw-2">&amp;mut </span>row.words_mut()[c / <span class="number">64</span>..], <span class="kw-2">&amp;</span>pivot.words()[c / <span class="number">64</span>..]);
+<span data-nosnippet>196</span>                    }
+<span data-nosnippet>197</span>                }
+<span data-nosnippet>198</span>                pivots.push(c);
+<span data-nosnippet>199</span>                c += <span class="number">1</span>;
+<span data-nosnippet>200</span>            }
+<span data-nosnippet>201</span>            <span class="kw">return </span>pivots;
+<span data-nosnippet>202</span>        }
+<span data-nosnippet>203</span>        <span class="comment">// Eliminating a shared leading coefficient preserves the two-coefficient bound.
+<span data-nosnippet>204</span>        </span><span class="kw">if </span><span class="self">self
+<span data-nosnippet>205</span>            </span>.data
+<span data-nosnippet>206</span>            .iter()
+<span data-nosnippet>207</span>            .all(|row| row.iter_ones().take_while(|<span class="kw-2">&amp;</span>c| c &lt; cols).take(<span class="number">3</span>).count() &lt;= <span class="number">2</span>)
+<span data-nosnippet>208</span>        {
+<span data-nosnippet>209</span>            <span class="kw">return </span><span class="self">self</span>.eliminate_sparse(cols, full, require_full_rank);
+<span data-nosnippet>210</span>        }
+<span data-nosnippet>211</span>        <span class="kw">let </span>block = <span class="kw">if </span>n &lt; <span class="number">512 </span>{ <span class="number">4 </span>} <span class="kw">else </span>{ <span class="number">8 </span>};
+<span data-nosnippet>212</span>        <span class="kw">let </span><span class="kw-2">mut </span>table = <span class="macro">vec!</span>[BitSet::new(<span class="self">self</span>.shape.<span class="number">1</span>); <span class="number">1 </span>&lt;&lt; block];
+<span data-nosnippet>213</span>        <span class="kw">let </span><span class="kw-2">mut </span>reduced = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<span data-nosnippet>214</span>        <span class="kw">let </span><span class="kw-2">mut </span>start = <span class="number">0</span>;
+<span data-nosnippet>215</span>        <span class="kw">while </span>start &lt; cols {
+<span data-nosnippet>216</span>            <span class="kw">let </span>first = pivots.len();
+<span data-nosnippet>217</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
+<span data-nosnippet>218</span>            reduced.fill(first);
+<span data-nosnippet>219</span>            <span class="kw">for </span>c <span class="kw">in </span>start..cols.min(start + block) {
+<span data-nosnippet>220</span>                <span class="kw">let </span>r = pivots.len();
+<span data-nosnippet>221</span>                <span class="kw">let </span><span class="kw-2">mut </span>pivot = <span class="prelude-val">None</span>;
+<span data-nosnippet>222</span>                <span class="kw">for </span>(i, reduced) <span class="kw">in </span>reduced.iter_mut().enumerate().skip(r) {
+<span data-nosnippet>223</span>                    <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(i);
+<span data-nosnippet>224</span>                    <span class="kw">let </span>row = <span class="kw-2">&amp;mut </span>lower[<span class="number">0</span>];
+<span data-nosnippet>225</span>                    <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">*</span>reduced..r {
+<span data-nosnippet>226</span>                        <span class="kw">if </span>row.get(pivots[p]) {
+<span data-nosnippet>227</span>                            xor(<span class="kw-2">&amp;mut </span>row.words_mut()[word..], <span class="kw-2">&amp;</span>upper[p].words()[word..]);
+<span data-nosnippet>228</span>                        }
+<span data-nosnippet>229</span>                    }
+<span data-nosnippet>230</span>                    <span class="kw-2">*</span>reduced = r;
+<span data-nosnippet>231</span>                    <span class="kw">if </span>row.get(c) {
+<span data-nosnippet>232</span>                        pivot = <span class="prelude-val">Some</span>(i);
+<span data-nosnippet>233</span>                        <span class="kw">break</span>;
+<span data-nosnippet>234</span>                    }
+<span data-nosnippet>235</span>                }
+<span data-nosnippet>236</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = pivot {
+<span data-nosnippet>237</span>                    <span class="self">self</span>.data.swap(r, p);
+<span data-nosnippet>238</span>                    reduced.swap(r, p);
+<span data-nosnippet>239</span>                    pivots.push(c);
+<span data-nosnippet>240</span>                } <span class="kw">else if </span>require_full_rank {
+<span data-nosnippet>241</span>                    <span class="kw">return </span>pivots;
+<span data-nosnippet>242</span>                }
+<span data-nosnippet>243</span>            }
+<span data-nosnippet>244</span>            <span class="kw">let </span>rank = pivots.len();
+<span data-nosnippet>245</span>            <span class="kw">if </span>first == rank {
+<span data-nosnippet>246</span>                <span class="kw">let </span>next = <span class="self">self</span>.next_column(rank, start + block, cols);
+<span data-nosnippet>247</span>                <span class="kw">if </span>next == cols {
+<span data-nosnippet>248</span>                    <span class="kw">break</span>;
+<span data-nosnippet>249</span>                }
+<span data-nosnippet>250</span>                start = next / block * block;
+<span data-nosnippet>251</span>                <span class="kw">continue</span>;
+<span data-nosnippet>252</span>            }
+<span data-nosnippet>253</span>            <span class="comment">// Make the panel's pivot columns an identity matrix before indexing its table.
+<span data-nosnippet>254</span>            </span><span class="kw">for </span>r <span class="kw">in </span>(first..rank).rev() {
+<span data-nosnippet>255</span>                <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(r);
+<span data-nosnippet>256</span>                <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>upper[first..] {
+<span data-nosnippet>257</span>                    <span class="kw">if </span>row.get(pivots[r]) {
+<span data-nosnippet>258</span>                        xor(<span class="kw-2">&amp;mut </span>row.words_mut()[word..], <span class="kw-2">&amp;</span>lower[<span class="number">0</span>].words()[word..]);
+<span data-nosnippet>259</span>                    }
+<span data-nosnippet>260</span>                }
+<span data-nosnippet>261</span>            }
+<span data-nosnippet>262</span>            <span class="kw">let </span><span class="kw-2">mut </span>masks = [<span class="number">0usize</span>; <span class="number">256</span>];
+<span data-nosnippet>263</span>            <span class="kw">for </span>(bit, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>pivots[first..].iter().enumerate() {
+<span data-nosnippet>264</span>                <span class="kw">let </span>half = <span class="number">1 </span>&lt;&lt; bit;
+<span data-nosnippet>265</span>                <span class="kw">for </span>index <span class="kw">in </span><span class="number">0</span>..half {
+<span data-nosnippet>266</span>                    masks[index + half] = masks[index] | (<span class="number">1 </span>&lt;&lt; (c - start));
+<span data-nosnippet>267</span>                    <span class="kw">let </span>(lower, upper) = table.split_at_mut(index + half);
+<span data-nosnippet>268</span>                    <span class="kw">let </span>target = <span class="kw-2">&amp;mut </span>upper[<span class="number">0</span>].words_mut()[word..];
+<span data-nosnippet>269</span>                    <span class="kw">let </span>source = <span class="kw-2">&amp;</span>lower[index].words()[word..];
+<span data-nosnippet>270</span>                    <span class="kw">let </span>pivot = <span class="kw-2">&amp;</span><span class="self">self</span>[first + bit].words()[word..];
+<span data-nosnippet>271</span>                    <span class="kw">for </span>((x, y), z) <span class="kw">in </span>target.iter_mut().zip(source).zip(pivot) {
+<span data-nosnippet>272</span>                        <span class="kw-2">*</span>x = <a href="../algebra/action.rs.html#14">y</a> ^ z;
+<span data-nosnippet>273</span>                    }
+<span data-nosnippet>274</span>                }
+<span data-nosnippet>275</span>            }
+<span data-nosnippet>276</span>            <span class="kw">let </span><span class="kw-2">mut </span>indices = [<span class="number">0usize</span>; <span class="number">256</span>];
+<span data-nosnippet>277</span>            <span class="kw">let </span>mask = masks[(<span class="number">1 </span>&lt;&lt; (rank - first)) - <span class="number">1</span>];
+<span data-nosnippet>278</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>m) <span class="kw">in </span>masks[..<span class="number">1 </span>&lt;&lt; (rank - first)].iter().enumerate() {
+<span data-nosnippet>279</span>                indices[m] = i;
+<span data-nosnippet>280</span>            }
+<span data-nosnippet>281</span>            <span class="kw">for </span>i <span class="kw">in </span>(rank..n).chain(<span class="number">0</span>..<span class="kw">if </span>full { first } <span class="kw">else </span>{ <span class="number">0 </span>}) {
+<span data-nosnippet>282</span>                <span class="kw">let </span>index = indices[(<span class="self">self</span>[i].words()[word] &gt;&gt; (start &amp; <span class="number">63</span>)) <span class="kw">as </span>usize &amp; mask];
+<span data-nosnippet>283</span>                <span class="kw">if </span>index != <span class="number">0 </span>{
+<span data-nosnippet>284</span>                    xor(
+<span data-nosnippet>285</span>                        <span class="kw-2">&amp;mut </span><span class="self">self</span>[i].words_mut()[word..],
+<span data-nosnippet>286</span>                        <span class="kw-2">&amp;</span>table[index].words()[word..],
+<span data-nosnippet>287</span>                    );
+<span data-nosnippet>288</span>                }
+<span data-nosnippet>289</span>            }
+<span data-nosnippet>290</span>            <span class="kw">if </span>rank == n {
+<span data-nosnippet>291</span>                <span class="kw">break</span>;
+<span data-nosnippet>292</span>            }
+<span data-nosnippet>293</span>            start += block;
+<span data-nosnippet>294</span>        }
+<span data-nosnippet>295</span>        pivots
+<span data-nosnippet>296</span>    }
+<span data-nosnippet>297</span>
+<span data-nosnippet>298</span>    <span class="kw">fn </span>next_column(<span class="kw-2">&amp;</span><span class="self">self</span>, row: usize, <span class="kw-2">mut </span>start: usize, cols: usize) -&gt; usize {
+<span data-nosnippet>299</span>        <span class="kw">while </span>start &lt; cols {
+<span data-nosnippet>300</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
+<span data-nosnippet>301</span>            <span class="kw">let </span>bits = <span class="self">self</span>.data[row..]
+<span data-nosnippet>302</span>                .iter()
+<span data-nosnippet>303</span>                .fold(<span class="number">0</span>, |x, row| x | row.words()[word])
+<span data-nosnippet>304</span>                &amp; (u64::MAX &lt;&lt; (start &amp; <span class="number">63</span>));
+<span data-nosnippet>305</span>            <span class="kw">if </span>bits != <span class="number">0 </span>{
+<span data-nosnippet>306</span>                <span class="kw">return </span>(word * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
+<span data-nosnippet>307</span>            }
+<span data-nosnippet>308</span>            start = (word + <span class="number">1</span>) * <span class="number">64</span>;
+<span data-nosnippet>309</span>        }
+<span data-nosnippet>310</span>        cols
+<span data-nosnippet>311</span>    }
+<span data-nosnippet>312</span>
+<span data-nosnippet>313</span>    <span class="attr">#[inline(always)]
+<span data-nosnippet>314</span>    </span><span class="kw">fn </span>eliminate_sparse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, require_full_rank: bool) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>315</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
+<span data-nosnippet>316</span>        <span class="kw">let </span><span class="kw-2">mut </span>basis = <span class="macro">vec!</span>[n; cols];
+<span data-nosnippet>317</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::new();
+<span data-nosnippet>318</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>319</span>            <span class="kw">loop </span>{
+<span data-nosnippet>320</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(c) = <span class="self">self</span>[i].iter_ones().next().filter(|<span class="kw-2">&amp;</span>c| c &lt; cols) <span class="kw">else </span>{
+<span data-nosnippet>321</span>                    <span class="kw">if </span>require_full_rank {
+<span data-nosnippet>322</span>                        <span class="kw">return </span>pivots;
+<span data-nosnippet>323</span>                    }
+<span data-nosnippet>324</span>                    <span class="kw">break</span>;
+<span data-nosnippet>325</span>                };
+<span data-nosnippet>326</span>                <span class="kw">if </span>basis[c] == n {
+<span data-nosnippet>327</span>                    basis[c] = i;
+<span data-nosnippet>328</span>                    pivots.push(c);
+<span data-nosnippet>329</span>                    <span class="kw">break</span>;
+<span data-nosnippet>330</span>                }
+<span data-nosnippet>331</span>                <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(i);
+<span data-nosnippet>332</span>                xor(
+<span data-nosnippet>333</span>                    <span class="kw-2">&amp;mut </span>lower[<span class="number">0</span>].words_mut()[c / <span class="number">64</span>..],
+<span data-nosnippet>334</span>                    <span class="kw-2">&amp;</span>upper[basis[c]].words()[c / <span class="number">64</span>..],
+<span data-nosnippet>335</span>                );
+<span data-nosnippet>336</span>            }
+<span data-nosnippet>337</span>        }
+<span data-nosnippet>338</span>        pivots.sort_unstable();
+<span data-nosnippet>339</span>        <span class="self">self</span>.data
+<span data-nosnippet>340</span>            .sort_by_cached_key(|row| row.iter_ones().next().filter(|<span class="kw-2">&amp;</span>c| c &lt; cols).unwrap_or(cols));
+<span data-nosnippet>341</span>        <span class="kw">if </span>full {
+<span data-nosnippet>342</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>pivots.iter().enumerate() {
+<span data-nosnippet>343</span>                basis[c] = i;
+<span data-nosnippet>344</span>            }
+<span data-nosnippet>345</span>            <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..pivots.len()).rev() {
+<span data-nosnippet>346</span>                <span class="kw">let </span>next = <span class="self">self</span>[i].iter_ones().take_while(|<span class="kw-2">&amp;</span>c| c &lt; cols).nth(<span class="number">1</span>);
+<span data-nosnippet>347</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(c) = next
+<span data-nosnippet>348</span>                    &amp;&amp; basis[c] != n
+<span data-nosnippet>349</span>                {
+<span data-nosnippet>350</span>                    <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(basis[c]);
+<span data-nosnippet>351</span>                    xor(
+<span data-nosnippet>352</span>                        <span class="kw-2">&amp;mut </span>upper[i].words_mut()[c / <span class="number">64</span>..],
+<span data-nosnippet>353</span>                        <span class="kw-2">&amp;</span>lower[<span class="number">0</span>].words()[c / <span class="number">64</span>..],
+<span data-nosnippet>354</span>                    );
+<span data-nosnippet>355</span>                }
+<span data-nosnippet>356</span>            }
+<span data-nosnippet>357</span>        }
+<span data-nosnippet>358</span>        pivots
+<span data-nosnippet>359</span>    }
+<span data-nosnippet>360</span>
+<span data-nosnippet>361</span>    <span class="attr">#[inline(always)]
+<span data-nosnippet>362</span>    </span><span class="kw">fn </span>mul_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>363</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::zeros((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">1</span>));
+<span data-nosnippet>364</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256
+<span data-nosnippet>365</span>            </span>|| <span class="self">self</span>.shape.<span class="number">1 </span>&lt; <span class="number">32
+<span data-nosnippet>366</span>            </span>|| <span class="self">self</span>.data.iter().map(BitSet::count_ones).sum::&lt;u64&gt;()
+<span data-nosnippet>367</span>                &lt;= <span class="self">self</span>.shape.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64 / <span class="number">8
+<span data-nosnippet>368</span>        </span>{
+<span data-nosnippet>369</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
+<span data-nosnippet>370</span>                <span class="kw">for </span>j <span class="kw">in </span>a.iter_ones() {
+<span data-nosnippet>371</span>                    xor(c.words_mut(), rhs[j].words());
+<span data-nosnippet>372</span>                }
+<span data-nosnippet>373</span>            }
+<span data-nosnippet>374</span>            <span class="kw">return </span>result;
+<span data-nosnippet>375</span>        }
+<span data-nosnippet>376</span>        <span class="kw">let </span><span class="kw-2">mut </span>table = <span class="macro">vec!</span>[BitSet::new(rhs.shape.<span class="number">1</span>); <span class="number">8 </span>* <span class="number">256</span>];
+<span data-nosnippet>377</span>        <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>).step_by(<span class="number">64</span>) {
+<span data-nosnippet>378</span>            <span class="kw">for </span>t <span class="kw">in </span><span class="number">0</span>..<span class="number">8 </span>{
+<span data-nosnippet>379</span>                <span class="kw">let </span>col = start + t * <span class="number">8</span>;
+<span data-nosnippet>380</span>                <span class="kw">let </span>table = <span class="kw-2">&amp;mut </span>table[t * <span class="number">256</span>..(t + <span class="number">1</span>) * <span class="number">256</span>];
+<span data-nosnippet>381</span>                <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>.saturating_sub(col).min(<span class="number">8</span>) {
+<span data-nosnippet>382</span>                    <span class="kw">let </span>row = rhs[col + bit].words();
+<span data-nosnippet>383</span>                    <span class="kw">let </span>half = <span class="number">1 </span>&lt;&lt; bit;
+<span data-nosnippet>384</span>                    <span class="kw">for </span>index <span class="kw">in </span><span class="number">0</span>..half {
+<span data-nosnippet>385</span>                        <span class="kw">let </span>(lower, upper) = table.split_at_mut(index + half);
+<span data-nosnippet>386</span>                        <span class="kw">let </span>source = lower[index].words();
+<span data-nosnippet>387</span>                        <span class="kw">for </span>((x, y), z) <span class="kw">in </span>upper[<span class="number">0</span>].words_mut().iter_mut().zip(source).zip(row) {
+<span data-nosnippet>388</span>                            <span class="kw-2">*</span>x = y ^ z;
+<span data-nosnippet>389</span>                        }
+<span data-nosnippet>390</span>                    }
+<span data-nosnippet>391</span>                }
+<span data-nosnippet>392</span>            }
+<span data-nosnippet>393</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
+<span data-nosnippet>394</span>                <span class="kw">let </span>bits = a.words()[start / <span class="number">64</span>];
+<span data-nosnippet>395</span>                <span class="kw">let </span>p0 = table[(bits &amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>396</span>                <span class="kw">let </span>p1 = table[<span class="number">256 </span>+ (bits &gt;&gt; <span class="number">8 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>397</span>                <span class="kw">let </span>p2 = table[<span class="number">512 </span>+ (bits &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>398</span>                <span class="kw">let </span>p3 = table[<span class="number">768 </span>+ (bits &gt;&gt; <span class="number">24 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>399</span>                <span class="kw">let </span>p4 = table[<span class="number">1024 </span>+ (bits &gt;&gt; <span class="number">32 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>400</span>                <span class="kw">let </span>p5 = table[<span class="number">1280 </span>+ (bits &gt;&gt; <span class="number">40 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>401</span>                <span class="kw">let </span>p6 = table[<span class="number">1536 </span>+ (bits &gt;&gt; <span class="number">48 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>402</span>                <span class="kw">let </span>p7 = table[<span class="number">1792 </span>+ (bits &gt;&gt; <span class="number">56 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize].words();
+<span data-nosnippet>403</span>                <span class="kw">for </span>((((((((x, p0), p1), p2), p3), p4), p5), p6), p7) <span class="kw">in </span>c
+<span data-nosnippet>404</span>                    .words_mut()
+<span data-nosnippet>405</span>                    .iter_mut()
+<span data-nosnippet>406</span>                    .zip(p0)
+<span data-nosnippet>407</span>                    .zip(p1)
+<span data-nosnippet>408</span>                    .zip(p2)
+<span data-nosnippet>409</span>                    .zip(p3)
+<span data-nosnippet>410</span>                    .zip(p4)
+<span data-nosnippet>411</span>                    .zip(p5)
+<span data-nosnippet>412</span>                    .zip(p6)
+<span data-nosnippet>413</span>                    .zip(p7)
+<span data-nosnippet>414</span>                {
+<span data-nosnippet>415</span>                    <span class="kw-2">*</span>x ^= p0 ^ p1 ^ p2 ^ p3 ^ p4 ^ p5 ^ p6 ^ p7;
+<span data-nosnippet>416</span>                }
+<span data-nosnippet>417</span>            }
+<span data-nosnippet>418</span>        }
+<span data-nosnippet>419</span>        result
+<span data-nosnippet>420</span>    }
+<span data-nosnippet>421</span>
+<span data-nosnippet>422</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>423</span>    #[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>424</span>    </span><span class="kw">unsafe fn </span>eliminate_avx2(
+<span data-nosnippet>425</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>426</span>        cols: usize,
+<span data-nosnippet>427</span>        full: bool,
+<span data-nosnippet>428</span>        require_full_rank: bool,
+<span data-nosnippet>429</span>    ) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>430</span>        <span class="self">self</span>.eliminate_impl(cols, full, require_full_rank)
+<span data-nosnippet>431</span>    }
+<span data-nosnippet>432</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>433</span>    #[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
+<span data-nosnippet>434</span>    </span><span class="kw">unsafe fn </span>eliminate_avx512(
+<span data-nosnippet>435</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>436</span>        cols: usize,
+<span data-nosnippet>437</span>        full: bool,
+<span data-nosnippet>438</span>        require_full_rank: bool,
+<span data-nosnippet>439</span>    ) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>440</span>        <span class="self">self</span>.eliminate_impl(cols, full, require_full_rank)
+<span data-nosnippet>441</span>    }
+<span data-nosnippet>442</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>443</span>    #[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>444</span>    </span><span class="kw">unsafe fn </span>mul_avx2(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>445</span>        <span class="self">self</span>.mul_impl(rhs)
+<span data-nosnippet>446</span>    }
+<span data-nosnippet>447</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>448</span>    #[target_feature(enable = <span class="string">"avx512f,avx512dq,avx512cd,avx512bw,avx512vl"</span>)]
+<span data-nosnippet>449</span>    </span><span class="kw">unsafe fn </span>mul_avx512(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>450</span>        <span class="self">self</span>.mul_impl(rhs)
+<span data-nosnippet>451</span>    }
+<span data-nosnippet>452</span>}
+<span data-nosnippet>453</span>
+<span data-nosnippet>454</span><span class="attr">#[inline(always)]
+<span data-nosnippet>455</span></span><span class="kw">fn </span>xor(row: <span class="kw-2">&amp;mut </span>[u64], pivot: <span class="kw-2">&amp;</span>[u64]) {
+<span data-nosnippet>456</span>    <span class="kw">for </span>(x, y) <span class="kw">in </span>row.iter_mut().zip(pivot) {
+<span data-nosnippet>457</span>        <span class="kw-2">*</span>x ^= y;
+<span data-nosnippet>458</span>    }
+<span data-nosnippet>459</span>}
+<span data-nosnippet>460</span>
+<span data-nosnippet>461</span><span class="kw">impl </span>Index&lt;usize&gt; <span class="kw">for </span>BitMatrix {
+<span data-nosnippet>462</span>    <span class="kw">type </span>Output = BitSet;
+<span data-nosnippet>463</span>    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, i: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+<span data-nosnippet>464</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.data[i]
+<span data-nosnippet>465</span>    }
+<span data-nosnippet>466</span>}
+<span data-nosnippet>467</span><span class="kw">impl </span>IndexMut&lt;usize&gt; <span class="kw">for </span>BitMatrix {
+<span data-nosnippet>468</span>    <span class="kw">fn </span>index_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Output {
+<span data-nosnippet>469</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i]
+<span data-nosnippet>470</span>    }
+<span data-nosnippet>471</span>}
+<span data-nosnippet>472</span><span class="kw">impl </span>BitXorAssign&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>&gt; <span class="kw">for </span>BitMatrix {
+<span data-nosnippet>473</span>    <span class="kw">fn </span>bitxor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+<span data-nosnippet>474</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
+<span data-nosnippet>475</span>        <span class="kw">for </span>(a, b) <span class="kw">in </span><span class="self">self</span>.data.iter_mut().zip(<span class="kw-2">&amp;</span>rhs.data) {
+<span data-nosnippet>476</span>            <span class="kw-2">*</span>a ^= b;
+<span data-nosnippet>477</span>        }
+<span data-nosnippet>478</span>    }
+<span data-nosnippet>479</span>}
+<span data-nosnippet>480</span><span class="kw">impl </span>Mul&lt;<span class="kw-2">&amp;</span>BitMatrix&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>BitMatrix {
+<span data-nosnippet>481</span>    <span class="kw">type </span>Output = BitMatrix;
+<span data-nosnippet>482</span>    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>BitMatrix) -&gt; BitMatrix {
+<span data-nosnippet>483</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, rhs.shape.<span class="number">0</span>);
+<span data-nosnippet>484</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>485</span>        </span><span class="kw">match </span><span class="highlight">simd_backend</span>() {
+<span data-nosnippet>486</span>            <span class="comment">// SAFETY: the dispatcher checks the required CPU features.
+<span data-nosnippet>487</span>            </span>SimdBackend::Avx512 =&gt; <span class="kw">return unsafe </span>{ <span class="self">self</span>.mul_avx512(rhs) },
+<span data-nosnippet>488</span>            <span class="comment">// SAFETY: the dispatcher checks AVX2 support.
+<span data-nosnippet>489</span>            </span>SimdBackend::Avx2 =&gt; <span class="kw">return unsafe </span>{ <span class="self">self</span>.mul_avx2(rhs) },
+<span data-nosnippet>490</span>            SimdBackend::Scalar =&gt; {}
+<span data-nosnippet>491</span>        }
+<span data-nosnippet>492</span>        <span class="self">self</span>.mul_impl(rhs)
+<span data-nosnippet>493</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/data_structure/wavelet_matrix.rs.html#458&#34;,&#34;line 458&#34;],[[129,129],&#34;../../src/competitive/data_structure/wavelet_matrix.rs.html#584&#34;,&#34;line 584&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/wavelet_matrix.rs (<a href="../../src/competitive/data_structure/wavelet_matrix.rs.html#458">line 458</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>455</span>    <span class="kw">pub fn </span>new(v: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>456</span>        <span class="kw">if </span>v.len() &lt;= u32::MAX <span class="kw">as </span>usize {
 <span data-nosnippet>457</span>            <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>458</span>            </span><span class="kw">let </span>backend = <span class="highlight focus"><span class="kw">super</span>::simd_backend</span>();
