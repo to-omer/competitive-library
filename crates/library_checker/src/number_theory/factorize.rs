@@ -7,10 +7,6 @@ pub fn factorize(reader: impl Read, writer: impl Write) {
     sc!(q);
     for a in sv!([u64]).take(q) {
         let x = prime_factors_flatten(a);
-        pp!(x.len(), !);
-        for x in x.into_iter() {
-            pp!(@ns " ", x, !);
-        }
-        pp!();
+        pp!(x.len(), @it x);
     }
 }

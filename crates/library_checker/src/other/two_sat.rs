@@ -14,12 +14,11 @@ pub fn two_sat(reader: impl Read, writer: impl Write) {
         two_sat.add_clause(a.unsigned_abs() - 1, a >= 0, b.unsigned_abs() - 1, b >= 0);
     }
     if let Some(v) = two_sat.two_satisfiability() {
-        pp!("s SATISFIABLE");
-        pp!("v", !);
-        for (i, v) in v.into_iter().enumerate() {
-            pp!(@ns " ", if v { i as i32 + 1 } else { -(i as i32 + 1) }, !);
-        }
-        pp!(" 0", !);
+        let ans = v
+            .into_iter()
+            .enumerate()
+            .map(|(i, v)| if v { i as i32 + 1 } else { -(i as i32 + 1) });
+        pp!("s SATISFIABLE"; "v", @it ans, 0, !);
     } else {
         pp!("s UNSATISFIABLE");
     }

@@ -15,7 +15,7 @@ pub fn static_range_sum_with_upper_bound(reader: impl Read, writer: impl Write) 
         sc!(l, r, x: u32);
         fold.query(l..r, x);
     }
-    pp!(@it2d fold.execute().into_iter().map(|(count, sum)| [count, sum]));
+    pp!(@ittup fold.execute());
 }
 
 #[verify::library_checker("static_range_sum_with_upper_bound")]

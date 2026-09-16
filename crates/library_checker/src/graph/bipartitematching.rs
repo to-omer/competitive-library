@@ -20,12 +20,11 @@ pub fn bipartitematching_dinic(reader: impl Read, writer: impl Write) {
     let graph = builder.gen_graph();
     let mut dinic = builder.build(&graph);
     let f = dinic.maximum_flow(s, t);
-    pp!(f);
-    for (i, (a, b)) in ab.iter().enumerate() {
-        if dinic.get_flow(i) > 0 {
-            pp!(a, b);
-        }
-    }
+    let ans = ab
+        .into_iter()
+        .enumerate()
+        .filter_map(|(i, edge)| (dinic.get_flow(i) > 0).then_some(edge));
+    pp!(f; @ittup ans);
 }
 
 #[verify::library_checker("bipartitematching")]
@@ -34,8 +33,5 @@ pub fn bipartitematching(reader: impl Read, writer: impl Write) {
     sc!(l, r, m, ab: [(usize, usize); m]);
     let mut bm = BipartiteMatching::from_edges(l, r, &ab);
     let matching = bm.maximum_matching();
-    pp!(matching.len());
-    for (x, y) in matching {
-        pp!(x, y);
-    }
+    pp!(matching.len(); @ittup matching);
 }

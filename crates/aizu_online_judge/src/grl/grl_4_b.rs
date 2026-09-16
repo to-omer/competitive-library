@@ -5,9 +5,7 @@ use competitive::prelude::*;
 pub fn grl_4_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, (graph, _): @DirectedGraphScanner::<usize, ()>::new(vs, es));
-    for u in graph.topological_sort().into_iter() {
-        pp!(u);
-    }
+    pp!(@lf @it graph.topological_sort());
 }
 
 pub fn judge_grl_4_b(input: impl Read, _output: impl Read, result: impl Read) -> bool {

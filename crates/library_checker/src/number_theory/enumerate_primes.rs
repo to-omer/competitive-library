@@ -7,9 +7,5 @@ pub fn enumerate_primes(reader: impl Read, writer: impl Write) {
     sc!(n: u32, a, b);
     let primes = PrimeList::new(n);
     let iter = primes.primes().skip(b).step_by(a);
-    pp!(primes.len(), primes.len().saturating_sub(b).div_ceil(a));
-    for p in iter {
-        pp!(@ns p, " ", !);
-    }
-    pp!();
+    pp!(primes.len(), primes.len().saturating_sub(b).div_ceil(a); @it iter);
 }

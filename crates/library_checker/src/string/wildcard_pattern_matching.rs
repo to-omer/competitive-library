@@ -11,8 +11,5 @@ pub fn wildcard_pattern_matching(reader: impl Read, writer: impl Write) {
         }
     }
     let ans = wildcard_pattern_matching_library(&t, &s);
-    for ok in ans {
-        pp!(ok as u8, !);
-    }
-    pp!();
+    pp!(@ns @bw (b'0' ans));
 }

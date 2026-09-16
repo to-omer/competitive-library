@@ -14,13 +14,7 @@ pub fn min_cost_b_flow(reader: impl Read, writer: impl Write) {
     }
     let sol = ns.solve_minimize();
     if let Some(sol) = sol {
-        pp!(sol.cost);
-        for potential in &sol.potentials {
-            pp!(potential);
-        }
-        for flow in &sol.flows {
-            pp!(flow);
-        }
+        pp!(@lf sol.cost, @it sol.potentials, @it sol.flows);
     } else {
         pp!("infeasible");
     }

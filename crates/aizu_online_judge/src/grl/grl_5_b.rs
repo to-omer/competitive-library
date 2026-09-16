@@ -8,5 +8,5 @@ pub fn grl_5_b(reader: impl Read, writer: impl Write) {
     let re = ReRooting::<MaxOperation<u64>, _>::new(&graph, |d, _vid, eid_opt| {
         d + eid_opt.map_or(0, |eid| w[eid])
     });
-    pp!(@sep '\n', @it re.dp);
+    pp!(@lf @it re.dp);
 }

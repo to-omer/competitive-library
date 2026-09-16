@@ -8,7 +8,5 @@ pub fn division_of_polynomials(reader: impl Read, writer: impl Write) {
     let f = Fps998244353::from_vec(f);
     let g = Fps998244353::from_vec(g);
     let (q, r) = f.div_rem(g);
-    pp!(q.length(), r.length());
-    pp!(@it q.data);
-    pp!(@it r.data);
+    pp!(q.length(), r.length(); @it q.data; @it r.data);
 }

@@ -6,6 +6,5 @@ pub fn assignment(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [[i32; n]; n]);
     let (cost, assignment) = minimum_assignment(&a);
-    pp!(cost);
-    pp!(@it assignment);
+    pp!(cost; @it assignment);
 }

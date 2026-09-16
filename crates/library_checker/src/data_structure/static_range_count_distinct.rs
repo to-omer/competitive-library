@@ -24,7 +24,5 @@ pub fn static_range_count_distinct(reader: impl Read, writer: impl Write) {
         }
         ans[i] = bit.fold(lr[i].0, lr[i].1);
     }
-    for ans in ans {
-        pp!(ans);
-    }
+    pp!(@lf @it ans);
 }
