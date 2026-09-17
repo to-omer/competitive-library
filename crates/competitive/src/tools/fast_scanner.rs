@@ -100,6 +100,54 @@ mod tests {
     }
 
     #[test]
+    fn test_borrowed_tokens() {
+        let mut rng = Xorshift::new_with_seed(197283);
+        for _ in 0..256 {
+            let offset = rng.random(0..64);
+            let mut input = "!".repeat(offset);
+            let mut tokens = Vec::new();
+            for _ in 0..rng.random(1..32) {
+                let start = input.len();
+                for _ in 0..rng.random(1..256) {
+                    let ch = loop {
+                        if let Some(ch) = char::from_u32(rng.random(0..0x110000))
+                            && !ch.is_ascii_whitespace()
+                        {
+                            break ch;
+                        }
+                    };
+                    input.push(ch);
+                }
+                tokens.push(start..input.len());
+                input.push([' ', '\t', '\n', '\r', '\x0c'][rng.random(0usize..5)]);
+            }
+            input.push_str("                ");
+            let mut scanner = Scanner::new(&input[offset..]);
+            // SAFETY: all fields are valid UTF-8 with one delimiter and 16 padding bytes.
+            let mut fast = unsafe { FastInput::from_slice(&input.as_bytes()[offset..]) };
+            for (i, range) in tokens.into_iter().enumerate() {
+                let expected = &input[range];
+                let a = if i % 2 == 0 {
+                    crate::scan!(scanner, token: &str);
+                    token
+                } else {
+                    crate::scan_value!(scanner, &str)
+                };
+                let b = if i % 2 == 0 {
+                    crate::scan!(fast, token: &str);
+                    token
+                } else {
+                    crate::scan_value!(fast, &str)
+                };
+                assert_eq!(a, expected);
+                assert_eq!(b, expected);
+                assert_eq!(a.as_ptr(), expected.as_ptr());
+                assert_eq!(b.as_ptr(), expected.as_ptr());
+            }
+        }
+    }
+
+    #[test]
     fn test_prepare_io() {
         use std::io::Write as _;
         let mut rng = Xorshift::default();
@@ -124,7 +172,8 @@ mod tests {
                 for (a, b) in sv!([(u64, i64); iter len]) {
                     pp!(@tup (a, b));
                 }
-                assert_eq!(sv!(String), "END");
+                sc!(end: &str);
+                assert_eq!(end, "END");
             }
             assert_eq!(output, expected);
         }

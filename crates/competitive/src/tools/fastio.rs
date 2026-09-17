@@ -35,7 +35,8 @@ unsafe extern "C" {
 ///
 /// Empty collection scans skip pending whitespace when their length is specified.
 ///
-/// On x86-64, enabling `ssse3` at compile time selects SIMD for `u64` tokens.
+/// On x86-64, enabling `ssse3` at compile time selects SIMD for `u64` tokens;
+/// `avx2` or `avx512bw` also accelerates byte fields.
 pub struct FastInput {
     ptr: *const u8,
     end: *const u8,
@@ -497,13 +498,54 @@ impl FastInput {
     pub unsafe fn bytes<'a>(&mut self) -> &'a [u8] {
         unsafe {
             let start = self.ptr;
-            loop {
-                // Padding permits this load; bytes above ASCII space cannot be separators.
-                let x = self.ptr.cast::<u64>().read_unaligned();
-                if x.wrapping_sub(0x2121_2121_2121_2121) & !x & 0x8080_8080_8080_8080 != 0 {
-                    break;
+            'token: {
+                #[cfg(all(target_arch = "x86_64", target_feature = "avx512bw"))]
+                {
+                    use std::arch::x86_64::*;
+                    // Short fields avoid the SIMD mask-to-pointer dependency between reads.
+                    let x = self.ptr.cast::<u64>().read_unaligned();
+                    if x.wrapping_sub(0x2121_2121_2121_2121) & !x & 0x8080_8080_8080_8080 != 0 {
+                        break 'token;
+                    }
+                    let space = _mm512_set1_epi8(32);
+                    // The 16-byte padding contract does not permit a full SIMD load at EOF.
+                    while self.end.offset_from(self.ptr) >= 64 {
+                        let bytes = _mm512_loadu_si512(self.ptr.cast());
+                        let low = _mm512_cmple_epu8_mask(bytes, space);
+                        if low != 0 {
+                            self.ptr = self.ptr.add(low.trailing_zeros() as usize);
+                            break 'token;
+                        }
+                        self.ptr = self.ptr.add(64);
+                    }
                 }
-                self.ptr = self.ptr.add(8);
+                #[cfg(all(
+                    target_arch = "x86_64",
+                    target_feature = "avx2",
+                    not(target_feature = "avx512bw")
+                ))]
+                {
+                    use std::arch::x86_64::*;
+                    let space = _mm256_set1_epi8(32);
+                    // The public contract guarantees only 16 padding bytes, so full SIMD
+                    // loads stay within the input; the scalar loop handles its final token.
+                    while self.end.offset_from(self.ptr) >= 32 {
+                        let bytes = _mm256_loadu_si256(self.ptr.cast());
+                        let low = _mm256_cmpeq_epi8(_mm256_min_epu8(bytes, space), bytes);
+                        if _mm256_movemask_epi8(low) != 0 {
+                            break;
+                        }
+                        self.ptr = self.ptr.add(32);
+                    }
+                }
+                loop {
+                    // Padding permits this load; bytes above ASCII space cannot be separators.
+                    let x = self.ptr.cast::<u64>().read_unaligned();
+                    if x.wrapping_sub(0x2121_2121_2121_2121) & !x & 0x8080_8080_8080_8080 != 0 {
+                        break 'token;
+                    }
+                    self.ptr = self.ptr.add(8);
+                }
             }
             while !(*self.ptr).is_ascii_whitespace() {
                 self.ptr = self.ptr.add(1);

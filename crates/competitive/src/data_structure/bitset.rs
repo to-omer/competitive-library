@@ -104,7 +104,27 @@ impl BitSet {
             table
         };
         let mut bytes = vec![b'0'; self.size.div_ceil(8) * 8];
-        for (chunk, &word) in bytes.chunks_mut(64).zip(self.words()) {
+        #[cfg(target_arch = "x86_64")]
+        let end = if self.size >= 64 && avx512_enabled() && is_x86_feature_detected!("avx512bw") {
+            let end = self.size / 64 * 64;
+            // SAFETY: AVX-512BW is available; each output chunk holds one 64-bit word.
+            unsafe {
+                simd::write_binary_avx512(&mut bytes[..end], self.words());
+            }
+            end
+        } else if self.size >= 64 && is_x86_feature_detected!("avx2") {
+            let end = self.size / 64 * 64;
+            // SAFETY: AVX2 is available; each output chunk holds one complete 64-bit word.
+            unsafe {
+                simd::write_binary_avx2(&mut bytes[..end], self.words());
+            }
+            end
+        } else {
+            0
+        };
+        #[cfg(not(target_arch = "x86_64"))]
+        let end = 0;
+        for (chunk, &word) in bytes[end..].chunks_mut(64).zip(&self.words()[end / 64..]) {
             for (i, byte) in chunk.as_chunks_mut::<8>().0.iter_mut().enumerate() {
                 byte.copy_from_slice(&TABLE[(word >> (i * 8) & 255) as usize]);
             }
@@ -613,6 +633,35 @@ mod simd {
     use super::{BIT_AND, BIT_OR, BIT_XOR, Block};
     use std::arch::x86_64::*;
 
+    #[target_feature(enable = "avx512bw")]
+    pub unsafe fn write_binary_avx512(bytes: &mut [u8], words: &[u64]) {
+        let one = _mm512_set1_epi8(1);
+        let zero = _mm512_set1_epi8(b'0' as i8);
+        for (chunk, &word) in bytes.as_chunks_mut::<64>().0.iter_mut().zip(words) {
+            let value = _mm512_mask_add_epi8(zero, word, zero, one);
+            _mm512_storeu_si512(chunk.as_mut_ptr().cast(), value);
+        }
+    }
+    #[target_feature(enable = "avx2")]
+    pub unsafe fn write_binary_avx2(bytes: &mut [u8], words: &[u64]) {
+        let indices = _mm256_setr_epi64x(
+            0,
+            0x0101_0101_0101_0101,
+            0x0202_0202_0202_0202,
+            0x0303_0303_0303_0303,
+        );
+        let mask = _mm256_set1_epi64x(0x8040_2010_0804_0201u64 as i64);
+        let one = _mm256_set1_epi8(b'1' as i8);
+        let zero = _mm256_setzero_si256();
+        for (chunk, &word) in bytes.as_chunks_mut::<64>().0.iter_mut().zip(words) {
+            let lo = _mm256_shuffle_epi8(_mm256_set1_epi32(word as i32), indices);
+            let hi = _mm256_shuffle_epi8(_mm256_set1_epi32((word >> 32) as i32), indices);
+            let lo = _mm256_add_epi8(one, _mm256_cmpeq_epi8(_mm256_and_si256(lo, mask), zero));
+            let hi = _mm256_add_epi8(one, _mm256_cmpeq_epi8(_mm256_and_si256(hi, mask), zero));
+            _mm256_storeu_si256(chunk.as_mut_ptr().cast(), lo);
+            _mm256_storeu_si256(chunk.as_mut_ptr().add(32).cast(), hi);
+        }
+    }
     #[target_feature(enable = "avx2")]
     pub unsafe fn parse_binary_avx2(bytes: &[u8], words: &mut [u64]) -> bool {
         let one = _mm256_set1_epi8(b'1' as i8);
@@ -1121,6 +1170,10 @@ mod tests {
                         );
                         if valid {
                             assert_eq!(parsed, scalar);
+                            let mut output = vec![0; end];
+                            // SAFETY: AVX2 support was checked; output has full 64-byte chunks.
+                            unsafe { simd::write_binary_avx2(&mut output, parsed.words()) };
+                            assert_eq!(output, input);
                         }
                     }
                     if is_x86_feature_detected!("avx512bw") {
@@ -1132,6 +1185,10 @@ mod tests {
                         );
                         if valid {
                             assert_eq!(parsed, scalar);
+                            let mut output = vec![0; end];
+                            // SAFETY: AVX-512BW support was checked; output has full chunks.
+                            unsafe { simd::write_binary_avx512(&mut output, parsed.words()) };
+                            assert_eq!(output, input);
                         }
                     }
                 }

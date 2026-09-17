@@ -210,6 +210,7 @@ impl<S: ScanSource, T: Scan> Iterator for ScannerIter<'_, S, T> {
 ///
 /// ELEMENT :=
 /// - `$ty`: Scan
+/// - `&str`: borrowed token; the source stays borrowed until its last use
 /// - `@$expr`: MarkedScan
 /// - `$ty = $expr`: MarkedScan
 /// - `[ELEMENT; $expr]`: vector
@@ -237,6 +238,7 @@ macro_rules! scan_value {
     (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr $(, $($t:tt)*)?)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $(, $($t)*)?) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)      => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@sparen $scanner, [] $($tt)*)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] &str $(, $($t:tt)*)?)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.next_token().expect("scan error")]] $(, $($t)*)?) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::scan_value!(@$tag $scanner, [$($args)* [{ let _tmp: $ty = $scanner.mscan($e); _tmp }]] $(, $($t)*)?) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $(, $($t)*)?) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                    => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
@@ -266,6 +268,7 @@ macro_rules! scan {
     (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] @$e:expr $(, $($t:tt)*)?)         => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* @$e] $(, $($t)*)?) };
     (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] ($($x:tt)*) $($t:tt)*)            => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* ($($x)*)] $($t)*) };
     (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] [$($x:tt)*] $($t:tt)*)            => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* [$($x)*]] $($t)*) };
+    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] &str $(, $($t:tt)*)?)             => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* &str] $(, $($t)*)?) };
     (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* $ty = $e] $(, $($t)*)?) };
     (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* $ty] $(, $($t)*)?) };
     (@let $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $($t:tt)*) => {
