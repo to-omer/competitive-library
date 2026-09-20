@@ -467,11 +467,7 @@ mod tests {
         let mut rng = Xorshift::new_with_seed(374938);
         macro_rules! check {
             ($mint:ty) => {{
-                let (n, m, p) = (
-                    rng.random(32..160),
-                    rng.random(32..160),
-                    rng.random(32..160),
-                );
+                let (n, m, p) = (rng.random(1..160), rng.random(1..160), rng.random(1..160));
                 let a: Vec<Vec<$mint>> = (0..n)
                     .map(|_| (0..m).map(|_| rng.random(..)).collect())
                     .collect();

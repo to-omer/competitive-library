@@ -499,14 +499,20 @@ impl FastInput {
         unsafe {
             let start = self.ptr;
             'token: {
-                #[cfg(all(target_arch = "x86_64", target_feature = "avx512bw"))]
+                #[cfg(all(
+                    target_arch = "x86_64",
+                    any(target_feature = "avx2", target_feature = "avx512bw")
+                ))]
                 {
-                    use std::arch::x86_64::*;
                     // Short fields avoid the SIMD mask-to-pointer dependency between reads.
                     let x = self.ptr.cast::<u64>().read_unaligned();
                     if x.wrapping_sub(0x2121_2121_2121_2121) & !x & 0x8080_8080_8080_8080 != 0 {
                         break 'token;
                     }
+                }
+                #[cfg(all(target_arch = "x86_64", target_feature = "avx512bw"))]
+                {
+                    use std::arch::x86_64::*;
                     let space = _mm512_set1_epi8(32);
                     // The 16-byte padding contract does not permit a full SIMD load at EOF.
                     while self.end.offset_from(self.ptr) >= 64 {

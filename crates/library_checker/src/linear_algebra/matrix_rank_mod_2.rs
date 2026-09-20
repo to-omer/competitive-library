@@ -8,13 +8,29 @@ pub fn matrix_rank_mod_2(reader: impl Read, writer: impl Write) {
     // Transpose very tall matrices to avoid allocating millions of short rows.
     let transpose = n / 2 > m;
     let mut a = BitMatrix::zeros(if transpose { (m, n) } else { (n, m) });
-    for i in 0..if m == 0 { 0 } else { n } {
-        sc!(row: &str);
-        if !transpose {
-            a.data[i] = BitSet::from_binary(row).unwrap();
-        } else {
-            for (j, b) in row.bytes().enumerate() {
-                a[j].set(i, b == b'1');
+    if transpose && m >= 64 {
+        let mut words = vec![0u64; m];
+        for first in (0..n).step_by(64) {
+            words.fill(0);
+            for i in 0..64.min(n - first) {
+                sc!(row: &str);
+                for (word, b) in words.iter_mut().zip(row.bytes()) {
+                    *word |= u64::from(b == b'1') << i;
+                }
+            }
+            for (row, &word) in a.data.iter_mut().zip(&words) {
+                row.words_mut()[first / 64] = word;
+            }
+        }
+    } else {
+        for i in 0..if m == 0 { 0 } else { n } {
+            sc!(row: &str);
+            if !transpose {
+                a.data[i] = BitSet::from_binary(row).unwrap();
+            } else {
+                for (j, b) in row.bytes().enumerate() {
+                    a[j].words_mut()[i / 64] |= u64::from(b == b'1') << (i % 64);
+                }
             }
         }
     }

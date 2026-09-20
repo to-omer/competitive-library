@@ -178,7 +178,9 @@ where
                     self.data.swap(rank, pivot);
                     negative = !negative;
                 }
-                R::mul_assign(&mut determinant, &self[rank][col]);
+                if DETERMINANT {
+                    R::mul_assign(&mut determinant, &self[rank][col]);
+                }
                 let inv = R::inv(&self[rank][col]);
                 let (upper, lower) = self.data.split_at_mut(rank + 1);
                 let pivot = &upper[rank];
@@ -200,10 +202,10 @@ where
                     break;
                 }
             }
-            for i in start..rank {
+            for i in start..if rank - start < 32 { n } else { rank } {
                 let (upper, lower) = self.data.split_at_mut(i);
                 let row = &mut lower[0];
-                for (j, &col) in pivots[..i - start].iter().enumerate() {
+                for (j, &col) in pivots[..(i - start).min(pivots.len())].iter().enumerate() {
                     if R::is_zero(&row[col]) {
                         continue;
                     }
@@ -211,7 +213,13 @@ where
                     R::add_scaled_assign(&mut row[end..], &upper[start + j][end..], &factor);
                 }
             }
-            if rank < n && end < m && rank != start {
+            if rank < n
+                && end < m
+                && rank - start >= 32
+                && self.data[rank..]
+                    .iter()
+                    .any(|row| pivots.iter().any(|&col| !R::is_zero(&row[col])))
+            {
                 let lower = Self::new_with((n - rank, rank - start), |i, j| {
                     R::neg(&self[rank + i][pivots[j]])
                 });
@@ -234,7 +242,7 @@ where
                 return (rank, R::zero());
             }
         }
-        if negative {
+        if DETERMINANT && negative {
             determinant = R::neg(&determinant);
         }
         (rank, determinant)
@@ -297,45 +305,24 @@ where
         b: &[R::T],
     ) -> Option<SystemOfLinearEquationsSolution<R>> {
         assert_eq!(self.shape.0, b.len());
-        let (n, m) = self.shape;
-        let mut a = self.clone();
-        let mut b = b.to_vec();
-        let mut pivots = Vec::with_capacity(n.min(m));
-        let mut rank = 0;
-        for c in 0..m {
-            if rank == n {
-                break;
+        let m = self.shape.1;
+        let mut a = Self::new_with((self.shape.0, m + 1), |i, j| {
+            if j == m {
+                b[i].clone()
+            } else {
+                self[i][j].clone()
             }
-            let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&a[i][c])) else {
-                continue;
-            };
-            a.data.swap(rank, pivot);
-            b.swap(rank, pivot);
-
-            let d = R::inv(&a[rank][c]);
-            a[rank][c] = R::one();
-            for x in &mut a[rank][(c + 1)..] {
-                R::mul_assign(x, &d);
-            }
-            R::mul_assign(&mut b[rank], &d);
-
-            let (upper, lower) = a.data.split_at_mut(rank + 1);
-            let pivot = &upper[rank];
-            let pivot_b = b[rank].clone();
-            for (row, value) in lower.iter_mut().zip(&mut b[(rank + 1)..]) {
-                if R::is_zero(&row[c]) {
-                    continue;
-                }
-                let factor = row[c].clone();
-                row[c] = R::zero();
-                R::add_scaled_assign(&mut row[(c + 1)..], &pivot[(c + 1)..], &R::neg(&factor));
-                R::sub_assign(value, &R::mul(&factor, &pivot_b));
+        });
+        let rank = a.eliminate::<false>().0;
+        let mut pivots = Vec::with_capacity(rank);
+        let mut b = Vec::with_capacity(rank);
+        for row in &a.data[..rank] {
+            let c = row.iter().position(|x| !R::is_zero(x)).unwrap();
+            if c == m {
+                return None;
             }
             pivots.push(c);
-            rank += 1;
-        }
-        if b[rank..].iter().any(|x| !R::is_zero(x)) {
-            return None;
+            b.push(row[m].clone());
         }
 
         let mut free = Vec::with_capacity(m - rank);
@@ -352,9 +339,14 @@ where
             .collect();
         for k in (0..rank).rev() {
             let c = pivots[k];
+            let inv = R::inv(&a[k][c]);
+            R::mul_assign(&mut b[k], &inv);
             let pivot_b = b[k].clone();
             let (upper, lower) = coefficients.split_at_mut(k);
-            let pivot_coefficients = &lower[0];
+            let pivot_coefficients = &mut lower[0];
+            for x in pivot_coefficients.iter_mut() {
+                R::mul_assign(x, &inv);
+            }
             for ((row, value), coefficients) in a.data[..k].iter_mut().zip(&mut b[..k]).zip(upper) {
                 if R::is_zero(&row[c]) {
                     continue;
@@ -1168,37 +1160,65 @@ mod tests {
 
     #[test]
     fn test_system_of_linear_equations() {
-        const Q: usize = 1000;
-        let mut rng = Xorshift::default();
+        let mut rng = Xorshift::new_with_seed(746182);
         let ps = [2, 3, 1_000_000_007];
-        for _ in 0..Q {
-            let p = ps[rng.random(..ps.len())];
-            DynMIntU32::set_mod(p);
-            let n = rng.random(1..=30);
-            let m = rng.random(1..=30);
-            let a = random_matrix(&mut rng, (n, m));
-            let b = random_matrix(&mut rng, (1, n))
-                .data
-                .into_iter()
-                .next()
-                .unwrap();
-            if let Some(sol) = a.solve_system_of_linear_equations(&b) {
-                assert_eq!(
-                    &a * Matrix::from_vec(vec![sol.particular.clone()]).transpose(),
-                    Matrix::from_vec(vec![b.clone()]).transpose()
-                );
-                let c: Vec<DynMIntU32> = rand_value!(rng, [..; sol.basis.len()]);
-                let mut x = sol.particular.clone();
-                for (c, v) in c.iter().zip(sol.basis.iter()) {
-                    for (x, v) in x.iter_mut().zip(v.iter()) {
-                        *x += *c * *v;
+        for iteration in 0..300 {
+            DynMIntU32::set_mod(ps[rng.random(..ps.len())]);
+            let (n, m): (usize, usize) = if iteration < 24 {
+                (rng.random(96..200), rng.random(96..200))
+            } else {
+                (rng.random(0..32), rng.random(0..32))
+            };
+            let r = rng.random(0..=n.min(m));
+            let mut a = &Matrix::<R>::new_with((n, r), |_, _| rng.random(..))
+                * &Matrix::new_with((r, m), |_, _| rng.random(..));
+            for j in 0..m {
+                if rng.gen_bool(0.1) {
+                    for row in &mut a.data {
+                        row[j] = DynMIntU32::zero();
                     }
                 }
+            }
+            let b: Vec<DynMIntU32> = if rng.gen_bool(0.5) {
+                let x: Vec<DynMIntU32> = rand_value!(rng, [..; m]);
+                a.data.iter().map(|row| R::dot_product(row, &x)).collect()
+            } else {
+                rand_value!(rng, [..; n])
+            };
+            let mut reduced = a.clone();
+            reduced.add_col_with(|i, _| b[i]);
+            reduced.row_reduction(true);
+            let rank = reduced
+                .data
+                .iter()
+                .filter(|row| row[..m].iter().any(|x| !x.is_zero()))
+                .count();
+            let solvable = reduced
+                .data
+                .iter()
+                .all(|row| row[m].is_zero() || row[..m].iter().any(|x| !x.is_zero()));
+            let solution = a.solve_system_of_linear_equations(&b);
+            assert_eq!(solution.is_some(), solvable);
+            if let Some(sol) = solution {
+                assert_eq!(sol.basis.len(), m - rank);
+                for (row, expected) in a.data.iter().zip(&b) {
+                    assert_eq!(R::dot_product(row, &sol.particular), *expected);
+                    for vector in &sol.basis {
+                        assert!(R::dot_product(row, vector).is_zero());
+                    }
+                }
+                let mut basis = Matrix::<R>::from_vec(sol.basis);
+                basis.row_reduction(true);
                 assert_eq!(
-                    &a * Matrix::from_vec(vec![x]).transpose(),
-                    Matrix::from_vec(vec![b]).transpose()
+                    basis
+                        .data
+                        .iter()
+                        .filter(|row| row.iter().any(|x| !x.is_zero()))
+                        .count(),
+                    m - rank
                 );
             }
         }
+        DynMIntU32::set_mod(1_000_000_007);
     }
 }

@@ -216,11 +216,12 @@ where
         self.0.iter().all(|x| x.is_zero()).then_some(Self(q))
     }
 
-    fn mul_mod(&self, rhs: &Self, p: &Self) -> Self {
+    fn square_mod(&self, p: &Self) -> Self {
         let d = p.0.len() - 1;
         let mut c = vec![MInt::zero(); 2 * d - 1];
         for (i, &x) in self.0.iter().enumerate() {
-            MInt::add_scaled_assign(&mut c[i..i + rhs.0.len()], &rhs.0, &x);
+            MInt::add_scaled_assign(&mut c[i..2 * i], &self.0[..i], &(x + x));
+            c[2 * i] += x * x;
         }
         for i in (d..c.len()).rev() {
             let x = c[i];
@@ -238,7 +239,7 @@ where
         let mut r = Self(vec![MInt::zero(); d]);
         r.0[0] = MInt::one();
         for bit in (0..usize::BITS - k.leading_zeros()).rev() {
-            r = r.mul_mod(&r, self);
+            r = r.square_mod(self);
             if k >> bit & 1 != 0 {
                 let x = r.0[d - 1];
                 for i in (1..d).rev() {
@@ -290,12 +291,25 @@ where
                 }
             }
             let shifts: Matrix<AddMulOperation<MInt<M>>> = Matrix::from_vec(shifts);
-            let previous = Matrix::from_vec(t[..s].to_vec());
-            let correction = &shifts * &previous;
-            for (i, row) in rows[s..].iter_mut().enumerate() {
-                for (x, &y) in t[s + i].iter_mut().zip(&correction[i]) {
-                    *x += y;
+            if d < 32 {
+                let (previous, current) = t.split_at_mut(s);
+                for (shift, row) in shifts.data.iter().zip(current) {
+                    for (factor, source) in shift.iter().zip(previous.iter()) {
+                        if !factor.is_zero() {
+                            MInt::add_scaled_assign(row, source, factor);
+                        }
+                    }
                 }
+            } else {
+                let previous = Matrix::from_vec(t[..s].to_vec());
+                let correction = &shifts * &previous;
+                for (row, correction) in t[s..].iter_mut().zip(&correction.data) {
+                    for (x, &y) in row.iter_mut().zip(correction) {
+                        *x += y;
+                    }
+                }
+            }
+            for row in &mut rows[s..] {
                 // Keep the reduced vector fixed: T_new += S*T_old gives C_old -= C_new*S.
                 let (previous, current) = row.row[n..].split_at_mut(s);
                 for (&x, shift) in current.iter().zip(&shifts.data) {
