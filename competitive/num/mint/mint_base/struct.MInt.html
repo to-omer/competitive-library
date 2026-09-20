@@ -2687,99 +2687,99 @@
 <span data-nosnippet>1530</span>                }
 <span data-nosnippet>1531</span>            });
 <span data-nosnippet>1532</span>            h
-<span data-nosnippet>1533</span>        }</code></pre></div></div><div class="scraped-example" data-locs="[[[80,80],&#34;../../../../src/competitive/num/mint/simd_matrix.rs.html#287&#34;,&#34;line 287&#34;],[[85,87],&#34;../../../../src/competitive/num/mint/simd_matrix.rs.html#292-294&#34;,&#34;lines 292-294&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/simd_matrix.rs (<a href="../../../../src/competitive/num/mint/simd_matrix.rs.html#287">line 287</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>207</span>    <span class="kw">pub unsafe fn </span>matrix_product_avx2(
-<span data-nosnippet>208</span>        a: <span class="kw-2">&amp;</span>[Vec&lt;<span class="self">Self</span>&gt;],
-<span data-nosnippet>209</span>        b: <span class="kw-2">&amp;</span>[Vec&lt;<span class="self">Self</span>&gt;],
-<span data-nosnippet>210</span>        scale: u32,
-<span data-nosnippet>211</span>    ) -&gt; Vec&lt;Vec&lt;<span class="self">Self</span>&gt;&gt; {
-<span data-nosnippet>212</span>        <span class="kw">let </span>(n, m, p) = (a.len(), b.len(), b.first().map_or(<span class="number">0</span>, Vec::len));
-<span data-nosnippet>213</span>        <span class="macro">assert!</span>(a.iter().all(|row| row.len() == m));
-<span data-nosnippet>214</span>        <span class="macro">assert!</span>(b.iter().all(|row| row.len() == p));
-<span data-nosnippet>215</span>        <span class="kw">let </span>modulus = M::get_mod();
-<span data-nosnippet>216</span>        <span class="kw">let </span>alignment = <span class="kw">if </span>n.min(m).min(p) &lt;= <span class="number">64 </span>{ <span class="number">8 </span>} <span class="kw">else </span>{ <span class="number">32 </span>};
-<span data-nosnippet>217</span>        <span class="kw">let </span>(nn, mm, pp) = (
-<span data-nosnippet>218</span>            n.div_ceil(alignment) * alignment,
-<span data-nosnippet>219</span>            m.div_ceil(alignment) * alignment,
-<span data-nosnippet>220</span>            p.div_ceil(alignment) * alignment,
-<span data-nosnippet>221</span>        );
-<span data-nosnippet>222</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = <span class="number">0</span>;
-<span data-nosnippet>223</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>y, <span class="kw-2">mut </span>z) = (nn, mm, pp);
-<span data-nosnippet>224</span>        <span class="kw">while </span>x.min(y).min(z) &gt; <span class="number">64 </span>&amp;&amp; x % <span class="number">16 </span>== <span class="number">0 </span>&amp;&amp; y % <span class="number">16 </span>== <span class="number">0 </span>&amp;&amp; z % <span class="number">16 </span>== <span class="number">0 </span>{
-<span data-nosnippet>225</span>            depth += <span class="number">1</span>;
-<span data-nosnippet>226</span>            x /= <span class="number">2</span>;
-<span data-nosnippet>227</span>            y /= <span class="number">2</span>;
-<span data-nosnippet>228</span>            z /= <span class="number">2</span>;
-<span data-nosnippet>229</span>        }
-<span data-nosnippet>230</span>        <span class="kw">let </span>entries = nn * mm + mm * pp + nn * pp;
-<span data-nosnippet>231</span>        <span class="comment">// A recursive level uses one quarter of its parent's storage; siblings reuse it.
-<span data-nosnippet>232</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>data = <span class="kw">if </span>entries + entries / <span class="number">3 </span>&gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
-<span data-nosnippet>233</span>            <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(entries + entries / <span class="number">3</span>);
-<span data-nosnippet>234</span>            advise_huge_pages(<span class="kw-2">&amp;mut </span>data);
-<span data-nosnippet>235</span>            data.resize(entries + entries / <span class="number">3</span>, <span class="number">0u32</span>);
-<span data-nosnippet>236</span>            data
-<span data-nosnippet>237</span>        } <span class="kw">else </span>{
-<span data-nosnippet>238</span>            <span class="macro">vec!</span>[<span class="number">0u32</span>; entries + entries / <span class="number">3</span>]
-<span data-nosnippet>239</span>        };
-<span data-nosnippet>240</span>        <span class="kw">let </span>quotient = (((scale <span class="kw">as </span>u64) &lt;&lt; <span class="number">32</span>) / modulus <span class="kw">as </span>u64) <span class="kw">as </span>u32;
-<span data-nosnippet>241</span>        <span class="kw">let </span><span class="kw-2">mut </span>inverse = <span class="number">1u32</span>;
-<span data-nosnippet>242</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">5 </span>{
-<span data-nosnippet>243</span>            inverse = inverse.wrapping_mul(<span class="number">2u32</span>.wrapping_sub(modulus.wrapping_mul(inverse)));
-<span data-nosnippet>244</span>        }
-<span data-nosnippet>245</span>        <span class="kw">let </span>inverse = inverse.wrapping_neg();
-<span data-nosnippet>246</span>        <span class="kw">for </span>(offset, row, col) <span class="kw">in </span>blocks(nn, mm, depth) {
-<span data-nosnippet>247</span>            <span class="kw">let </span>(nr, nc) = (nn &gt;&gt; depth, mm &gt;&gt; depth);
-<span data-nosnippet>248</span>            <span class="kw">for </span>i <span class="kw">in </span>row..(row + nr).min(n) {
-<span data-nosnippet>249</span>                <span class="comment">// SAFETY: MInt is transparent over u32. Reading raw words preserves Montgomery encoding.
-<span data-nosnippet>250</span>                </span><span class="kw">let </span>values: <span class="kw-2">&amp;</span>[u32] = <span class="kw">unsafe </span>{ std::slice::from_raw_parts(a[i].as_ptr().cast(), m) };
-<span data-nosnippet>251</span>                <span class="kw">for </span>j <span class="kw">in </span>col..(col + nc).min(m) {
-<span data-nosnippet>252</span>                    <span class="kw">let </span>x = values[j];
-<span data-nosnippet>253</span>                    <span class="kw">let </span>q = ((x <span class="kw">as </span>u64 * quotient <span class="kw">as </span>u64) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span>u32;
-<span data-nosnippet>254</span>                    <span class="kw">let </span>x = x.wrapping_mul(scale).wrapping_sub(q.wrapping_mul(modulus));
-<span data-nosnippet>255</span>                    data[offset + (i - row) * nc + j - col] = x.min(x.wrapping_sub(modulus));
-<span data-nosnippet>256</span>                }
-<span data-nosnippet>257</span>            }
-<span data-nosnippet>258</span>        }
-<span data-nosnippet>259</span>        <span class="kw">for </span>(offset, row, col) <span class="kw">in </span>blocks(mm, pp, depth) {
-<span data-nosnippet>260</span>            <span class="kw">let </span>(nr, nc) = (mm &gt;&gt; depth, pp &gt;&gt; depth);
-<span data-nosnippet>261</span>            <span class="kw">for </span>i <span class="kw">in </span>row..(row + nr).min(m) {
-<span data-nosnippet>262</span>                <span class="comment">// SAFETY: MInt is transparent over u32 and row lengths were checked above.
-<span data-nosnippet>263</span>                </span><span class="kw">let </span>values: <span class="kw-2">&amp;</span>[u32] = <span class="kw">unsafe </span>{ std::slice::from_raw_parts(b[i].as_ptr().cast(), p) };
-<span data-nosnippet>264</span>                <span class="kw">for </span>j <span class="kw">in </span>col..(col + nc).min(p) {
-<span data-nosnippet>265</span>                    data[nn * mm + offset + (i - row) * nc + j - col] = values[j];
-<span data-nosnippet>266</span>                }
-<span data-nosnippet>267</span>            }
-<span data-nosnippet>268</span>        }
-<span data-nosnippet>269</span>        <span class="kw">let </span>kernel = Kernel {
-<span data-nosnippet>270</span>            modulus,
-<span data-nosnippet>271</span>            inverse,
-<span data-nosnippet>272</span>            avx512: avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>),
-<span data-nosnippet>273</span>        };
-<span data-nosnippet>274</span>        <span class="comment">// SAFETY: padding keeps every leaf dimension divisible by eight. The three matrices
-<span data-nosnippet>275</span>        // and the geometric scratch space are disjoint parts of the allocated buffer.
-<span data-nosnippet>276</span>        </span><span class="kw">unsafe </span>{
-<span data-nosnippet>277</span>            <span class="kw">let </span>ptr = data.as_mut_ptr();
-<span data-nosnippet>278</span>            multiply(
-<span data-nosnippet>279</span>                ptr,
-<span data-nosnippet>280</span>                ptr.add(nn * mm),
-<span data-nosnippet>281</span>                ptr.add(nn * mm + mm * pp),
-<span data-nosnippet>282</span>                (nn, mm, pp),
-<span data-nosnippet>283</span>                ptr.add(entries),
-<span data-nosnippet>284</span>                <span class="kw-2">&amp;</span>kernel,
-<span data-nosnippet>285</span>            );
-<span data-nosnippet>286</span>        }
-<span data-nosnippet>287</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="macro">vec!</span>[<span class="highlight focus">MInt::new_unchecked</span>(M::mod_zero()); p]; n];
-<span data-nosnippet>288</span>        <span class="kw">for </span>(offset, row, col) <span class="kw">in </span>blocks(nn, pp, depth) {
-<span data-nosnippet>289</span>            <span class="kw">let </span>(nr, nc) = (nn &gt;&gt; depth, pp &gt;&gt; depth);
-<span data-nosnippet>290</span>            <span class="kw">for </span>i <span class="kw">in </span>row..(row + nr).min(n) {
-<span data-nosnippet>291</span>                <span class="kw">for </span>j <span class="kw">in </span>col..(col + nc).min(p) {
-<span data-nosnippet>292</span>                    result[i][j] = <span class="highlight">MInt::new_unchecked</span>(
-<span data-nosnippet>293</span>                        data[nn * mm + mm * pp + offset + (i - row) * nc + j - col],
-<span data-nosnippet>294</span>                    );
-<span data-nosnippet>295</span>                }
-<span data-nosnippet>296</span>            }
-<span data-nosnippet>297</span>        }
-<span data-nosnippet>298</span>        result
-<span data-nosnippet>299</span>    }</code></pre></div></div></div></details></div></details><section id="method.get_mod" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_base.rs.html#103-105">Source</a><h4 class="code-header">pub fn <a href="#method.get_mod" class="fn">get_mod</a>() -&gt; M::<a class="associatedtype" href="../../trait.MIntBase.html#associatedtype.Inner" title="type competitive::num::MIntBase::Inner">Inner</a></h4></section><details class="toggle method-toggle" open><summary><section id="method.pow" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_base.rs.html#107-109">Source</a><h4 class="code-header">pub fn <a href="#method.pow" class="fn">pow</a>(self, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../../src/competitive/math/formal_power_series/mod.rs.html#78&#34;,&#34;line 78&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/mod.rs (<a href="../../../../src/competitive/math/formal_power_series/mod.rs.html#78">line 78</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>77</span>    <span class="kw">fn </span>pow(<span class="self">self</span>, exp: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>1533</span>        }</code></pre></div></div><div class="scraped-example" data-locs="[[[80,80],&#34;../../../../src/competitive/num/mint/simd_matrix.rs.html#291&#34;,&#34;line 291&#34;],[[85,87],&#34;../../../../src/competitive/num/mint/simd_matrix.rs.html#296-298&#34;,&#34;lines 296-298&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/simd_matrix.rs (<a href="../../../../src/competitive/num/mint/simd_matrix.rs.html#291">line 291</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>211</span>    <span class="kw">pub unsafe fn </span>matrix_product_avx2(
+<span data-nosnippet>212</span>        a: <span class="kw-2">&amp;</span>[Vec&lt;<span class="self">Self</span>&gt;],
+<span data-nosnippet>213</span>        b: <span class="kw-2">&amp;</span>[Vec&lt;<span class="self">Self</span>&gt;],
+<span data-nosnippet>214</span>        scale: u32,
+<span data-nosnippet>215</span>    ) -&gt; Vec&lt;Vec&lt;<span class="self">Self</span>&gt;&gt; {
+<span data-nosnippet>216</span>        <span class="kw">let </span>(n, m, p) = (a.len(), b.len(), b.first().map_or(<span class="number">0</span>, Vec::len));
+<span data-nosnippet>217</span>        <span class="macro">assert!</span>(a.iter().all(|row| row.len() == m));
+<span data-nosnippet>218</span>        <span class="macro">assert!</span>(b.iter().all(|row| row.len() == p));
+<span data-nosnippet>219</span>        <span class="kw">let </span>modulus = M::get_mod();
+<span data-nosnippet>220</span>        <span class="kw">let </span>alignment = <span class="kw">if </span>n.min(m).min(p) &lt;= <span class="number">64 </span>{ <span class="number">8 </span>} <span class="kw">else </span>{ <span class="number">32 </span>};
+<span data-nosnippet>221</span>        <span class="kw">let </span>(nn, mm, pp) = (
+<span data-nosnippet>222</span>            n.div_ceil(alignment) * alignment,
+<span data-nosnippet>223</span>            m.div_ceil(alignment) * alignment,
+<span data-nosnippet>224</span>            p.div_ceil(alignment) * alignment,
+<span data-nosnippet>225</span>        );
+<span data-nosnippet>226</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = <span class="number">0</span>;
+<span data-nosnippet>227</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>y, <span class="kw-2">mut </span>z) = (nn, mm, pp);
+<span data-nosnippet>228</span>        <span class="kw">while </span>x.min(y).min(z) &gt; <span class="number">64 </span>&amp;&amp; x % <span class="number">16 </span>== <span class="number">0 </span>&amp;&amp; y % <span class="number">16 </span>== <span class="number">0 </span>&amp;&amp; z % <span class="number">16 </span>== <span class="number">0 </span>{
+<span data-nosnippet>229</span>            depth += <span class="number">1</span>;
+<span data-nosnippet>230</span>            x /= <span class="number">2</span>;
+<span data-nosnippet>231</span>            y /= <span class="number">2</span>;
+<span data-nosnippet>232</span>            z /= <span class="number">2</span>;
+<span data-nosnippet>233</span>        }
+<span data-nosnippet>234</span>        <span class="kw">let </span>entries = nn * mm + mm * pp + nn * pp;
+<span data-nosnippet>235</span>        <span class="comment">// A recursive level uses one quarter of its parent's storage; siblings reuse it.
+<span data-nosnippet>236</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>data = <span class="kw">if </span>entries + entries / <span class="number">3 </span>&gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
+<span data-nosnippet>237</span>            <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(entries + entries / <span class="number">3</span>);
+<span data-nosnippet>238</span>            advise_huge_pages(<span class="kw-2">&amp;mut </span>data);
+<span data-nosnippet>239</span>            data.resize(entries + entries / <span class="number">3</span>, <span class="number">0u32</span>);
+<span data-nosnippet>240</span>            data
+<span data-nosnippet>241</span>        } <span class="kw">else </span>{
+<span data-nosnippet>242</span>            <span class="macro">vec!</span>[<span class="number">0u32</span>; entries + entries / <span class="number">3</span>]
+<span data-nosnippet>243</span>        };
+<span data-nosnippet>244</span>        <span class="kw">let </span>quotient = (((scale <span class="kw">as </span>u64) &lt;&lt; <span class="number">32</span>) / modulus <span class="kw">as </span>u64) <span class="kw">as </span>u32;
+<span data-nosnippet>245</span>        <span class="kw">let </span><span class="kw-2">mut </span>inverse = <span class="number">1u32</span>;
+<span data-nosnippet>246</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">5 </span>{
+<span data-nosnippet>247</span>            inverse = inverse.wrapping_mul(<span class="number">2u32</span>.wrapping_sub(modulus.wrapping_mul(inverse)));
+<span data-nosnippet>248</span>        }
+<span data-nosnippet>249</span>        <span class="kw">let </span>inverse = inverse.wrapping_neg();
+<span data-nosnippet>250</span>        <span class="kw">for </span>(offset, row, col) <span class="kw">in </span>blocks(nn, mm, depth) {
+<span data-nosnippet>251</span>            <span class="kw">let </span>(nr, nc) = (nn &gt;&gt; depth, mm &gt;&gt; depth);
+<span data-nosnippet>252</span>            <span class="kw">for </span>i <span class="kw">in </span>row..(row + nr).min(n) {
+<span data-nosnippet>253</span>                <span class="comment">// SAFETY: MInt is transparent over u32. Reading raw words preserves Montgomery encoding.
+<span data-nosnippet>254</span>                </span><span class="kw">let </span>values: <span class="kw-2">&amp;</span>[u32] = <span class="kw">unsafe </span>{ std::slice::from_raw_parts(a[i].as_ptr().cast(), m) };
+<span data-nosnippet>255</span>                <span class="kw">for </span>j <span class="kw">in </span>col..(col + nc).min(m) {
+<span data-nosnippet>256</span>                    <span class="kw">let </span>x = values[j];
+<span data-nosnippet>257</span>                    <span class="kw">let </span>q = ((x <span class="kw">as </span>u64 * quotient <span class="kw">as </span>u64) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span>u32;
+<span data-nosnippet>258</span>                    <span class="kw">let </span>x = x.wrapping_mul(scale).wrapping_sub(q.wrapping_mul(modulus));
+<span data-nosnippet>259</span>                    data[offset + (i - row) * nc + j - col] = x.min(x.wrapping_sub(modulus));
+<span data-nosnippet>260</span>                }
+<span data-nosnippet>261</span>            }
+<span data-nosnippet>262</span>        }
+<span data-nosnippet>263</span>        <span class="kw">for </span>(offset, row, col) <span class="kw">in </span>blocks(mm, pp, depth) {
+<span data-nosnippet>264</span>            <span class="kw">let </span>(nr, nc) = (mm &gt;&gt; depth, pp &gt;&gt; depth);
+<span data-nosnippet>265</span>            <span class="kw">for </span>i <span class="kw">in </span>row..(row + nr).min(m) {
+<span data-nosnippet>266</span>                <span class="comment">// SAFETY: MInt is transparent over u32 and row lengths were checked above.
+<span data-nosnippet>267</span>                </span><span class="kw">let </span>values: <span class="kw-2">&amp;</span>[u32] = <span class="kw">unsafe </span>{ std::slice::from_raw_parts(b[i].as_ptr().cast(), p) };
+<span data-nosnippet>268</span>                <span class="kw">for </span>j <span class="kw">in </span>col..(col + nc).min(p) {
+<span data-nosnippet>269</span>                    data[nn * mm + offset + (i - row) * nc + j - col] = values[j];
+<span data-nosnippet>270</span>                }
+<span data-nosnippet>271</span>            }
+<span data-nosnippet>272</span>        }
+<span data-nosnippet>273</span>        <span class="kw">let </span>kernel = Kernel {
+<span data-nosnippet>274</span>            modulus,
+<span data-nosnippet>275</span>            inverse,
+<span data-nosnippet>276</span>            avx512: avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>),
+<span data-nosnippet>277</span>        };
+<span data-nosnippet>278</span>        <span class="comment">// SAFETY: padding keeps every leaf dimension divisible by eight. The three matrices
+<span data-nosnippet>279</span>        // and the geometric scratch space are disjoint parts of the allocated buffer.
+<span data-nosnippet>280</span>        </span><span class="kw">unsafe </span>{
+<span data-nosnippet>281</span>            <span class="kw">let </span>ptr = data.as_mut_ptr();
+<span data-nosnippet>282</span>            multiply(
+<span data-nosnippet>283</span>                ptr,
+<span data-nosnippet>284</span>                ptr.add(nn * mm),
+<span data-nosnippet>285</span>                ptr.add(nn * mm + mm * pp),
+<span data-nosnippet>286</span>                (nn, mm, pp),
+<span data-nosnippet>287</span>                ptr.add(entries),
+<span data-nosnippet>288</span>                <span class="kw-2">&amp;</span>kernel,
+<span data-nosnippet>289</span>            );
+<span data-nosnippet>290</span>        }
+<span data-nosnippet>291</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="macro">vec!</span>[<span class="highlight focus">MInt::new_unchecked</span>(M::mod_zero()); p]; n];
+<span data-nosnippet>292</span>        <span class="kw">for </span>(offset, row, col) <span class="kw">in </span>blocks(nn, pp, depth) {
+<span data-nosnippet>293</span>            <span class="kw">let </span>(nr, nc) = (nn &gt;&gt; depth, pp &gt;&gt; depth);
+<span data-nosnippet>294</span>            <span class="kw">for </span>i <span class="kw">in </span>row..(row + nr).min(n) {
+<span data-nosnippet>295</span>                <span class="kw">for </span>j <span class="kw">in </span>col..(col + nc).min(p) {
+<span data-nosnippet>296</span>                    result[i][j] = <span class="highlight">MInt::new_unchecked</span>(
+<span data-nosnippet>297</span>                        data[nn * mm + mm * pp + offset + (i - row) * nc + j - col],
+<span data-nosnippet>298</span>                    );
+<span data-nosnippet>299</span>                }
+<span data-nosnippet>300</span>            }
+<span data-nosnippet>301</span>        }
+<span data-nosnippet>302</span>        result
+<span data-nosnippet>303</span>    }</code></pre></div></div></div></details></div></details><section id="method.get_mod" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_base.rs.html#103-105">Source</a><h4 class="code-header">pub fn <a href="#method.get_mod" class="fn">get_mod</a>() -&gt; M::<a class="associatedtype" href="../../trait.MIntBase.html#associatedtype.Inner" title="type competitive::num::MIntBase::Inner">Inner</a></h4></section><details class="toggle method-toggle" open><summary><section id="method.pow" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_base.rs.html#107-109">Source</a><h4 class="code-header">pub fn <a href="#method.pow" class="fn">pow</a>(self, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../../src/competitive/math/formal_power_series/mod.rs.html#78&#34;,&#34;line 78&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/mod.rs (<a href="../../../../src/competitive/math/formal_power_series/mod.rs.html#78">line 78</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>77</span>    <span class="kw">fn </span>pow(<span class="self">self</span>, exp: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>78</span>        <span class="highlight focus"><span class="self">Self</span>::pow</span>(<span class="self">self</span>, exp)
 <span data-nosnippet>79</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../../src/competitive/math/mint_matrix.rs.html#237&#34;,&#34;line 237&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_matrix.rs (<a href="../../../../src/competitive/math/mint_matrix.rs.html#237">line 237</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>234</span>    <span class="kw">fn </span>x_pow_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>235</span>        <span class="kw">let </span>d = <span class="self">self</span>.<span class="number">0</span>.len() - <span class="number">1</span>;
@@ -4166,7 +4166,7 @@
 <span data-nosnippet>1051</span>                f[<span class="number">1</span>][i] = f[<span class="number">0</span>][i] * g[<span class="number">1</span>][i] + f[<span class="number">1</span>][i] * g[<span class="number">0</span>][i];
 <span data-nosnippet>1052</span>                f[<span class="number">0</span>][i] <span class="kw-2">*</span>= g[<span class="number">0</span>][i];
 <span data-nosnippet>1053</span>            }
-<span data-nosnippet>1054</span>        }</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU32%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#444-448">Source</a><a href="#impl-MInt%3CDynModuloU32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="../../struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;<a class="enum" href="../../mint_basic/enum.DynModuloU32.html" title="enum competitive::num::mint_basic::DynModuloU32">DynModuloU32</a>&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.set_mod" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#445-447">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../../src/library_checker/number_theory/sqrt_mod.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sqrt_mod.rs (<a href="../../../../src/library_checker/number_theory/sqrt_mod.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>sqrt_mod(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>1054</span>        }</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU32%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#437-441">Source</a><a href="#impl-MInt%3CDynModuloU32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="../../struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;<a class="enum" href="../../mint_basic/enum.DynModuloU32.html" title="enum competitive::num::mint_basic::DynModuloU32">DynModuloU32</a>&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.set_mod" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#438-440">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../../src/library_checker/number_theory/sqrt_mod.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sqrt_mod.rs (<a href="../../../../src/library_checker/number_theory/sqrt_mod.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>sqrt_mod(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(q, yp: [(u32, u32)]);
 <span data-nosnippet>8</span>    <span class="kw">for </span>(y, p) <span class="kw">in </span>yp.take(q) {
@@ -4187,8 +4187,8 @@
 <span data-nosnippet>12</span>        <span class="kw">let </span>ans: DynMIntU32 = f.combination(n, k);
 <span data-nosnippet>13</span>        <span class="macro">pp!</span>(ans);
 <span data-nosnippet>14</span>    }
-<span data-nosnippet>15</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU64%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#460-464">Source</a><a href="#impl-MInt%3CDynModuloU64%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="../../struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;<a class="enum" href="../../mint_basic/enum.DynModuloU64.html" title="enum competitive::num::mint_basic::DynModuloU64">DynModuloU64</a>&gt;</h3></section></summary><div class="impl-items"><section id="method.set_mod-1" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#461-463">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod-1" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CM%3E-3" class="impl"><a class="src rightside" href="../../../../src/competitive/num/mint/simd_matrix.rs.html#199-300">Source</a><a href="#impl-MInt%3CM%3E-3" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="../../struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;<div class="where">where
-    M: <a class="trait" href="../../trait.MIntBase.html" title="trait competitive::num::MIntBase">MIntBase</a>&lt;Inner = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.matrix_product_avx2" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/simd_matrix.rs.html#207-299">Source</a><h4 class="code-header">pub unsafe fn <a href="#method.matrix_product_avx2" class="fn">matrix_product_avx2</a>(
+<span data-nosnippet>15</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU64%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#453-457">Source</a><a href="#impl-MInt%3CDynModuloU64%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="../../struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;<a class="enum" href="../../mint_basic/enum.DynModuloU64.html" title="enum competitive::num::mint_basic::DynModuloU64">DynModuloU64</a>&gt;</h3></section></summary><div class="impl-items"><section id="method.set_mod-1" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/mint_basic.rs.html#454-456">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod-1" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CM%3E-3" class="impl"><a class="src rightside" href="../../../../src/competitive/num/mint/simd_matrix.rs.html#203-304">Source</a><a href="#impl-MInt%3CM%3E-3" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="../../struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;<div class="where">where
+    M: <a class="trait" href="../../trait.MIntBase.html" title="trait competitive::num::MIntBase">MIntBase</a>&lt;Inner = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.matrix_product_avx2" class="method"><a class="src rightside" href="../../../../src/competitive/num/mint/simd_matrix.rs.html#211-303">Source</a><h4 class="code-header">pub unsafe fn <a href="#method.matrix_product_avx2" class="fn">matrix_product_avx2</a>(
     a: &amp;[<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;Self&gt;],
     b: &amp;[<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;Self&gt;],
     scale: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,

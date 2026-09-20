@@ -59,7 +59,7 @@
     shape: (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
     modulus: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,
     inverse: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,
-)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[15,15],&#34;../../../../src/competitive/num/mint/simd_matrix.rs.html#149&#34;,&#34;line 149&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/simd_matrix.rs (<a href="../../../../src/competitive/num/mint/simd_matrix.rs.html#149">line 149</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>134</span><span class="kw">unsafe fn </span>multiply(
+)</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[19,19],&#34;../../../../src/competitive/num/mint/simd_matrix.rs.html#153&#34;,&#34;line 153&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/simd_matrix.rs (<a href="../../../../src/competitive/num/mint/simd_matrix.rs.html#153">line 153</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>134</span><span class="kw">unsafe fn </span>multiply(
 <span data-nosnippet>135</span>    a: <span class="kw-2">*const </span>u32,
 <span data-nosnippet>136</span>    b: <span class="kw-2">*const </span>u32,
 <span data-nosnippet>137</span>    c: <span class="kw-2">*mut </span>u32,
@@ -72,39 +72,43 @@
 <span data-nosnippet>144</span>        <span class="kw">let </span>(modulus, inverse) = (kernel.modulus, kernel.inverse);
 <span data-nosnippet>145</span>        <span class="kw">if </span>n.min(m).min(p) &lt;= <span class="number">64 </span>|| n % <span class="number">16 </span>!= <span class="number">0 </span>|| m % <span class="number">16 </span>!= <span class="number">0 </span>|| p % <span class="number">16 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>146</span>            <span class="kw">if </span>kernel.avx512 {
-<span data-nosnippet>147</span>                leaf_avx512(a, b, c, shape, modulus, inverse);
-<span data-nosnippet>148</span>            } <span class="kw">else </span>{
-<span data-nosnippet>149</span>                <span class="highlight focus">leaf_avx2</span>(a, b, c, shape, modulus, inverse);
-<span data-nosnippet>150</span>            }
-<span data-nosnippet>151</span>            <span class="kw">return</span>;
-<span data-nosnippet>152</span>        }
-<span data-nosnippet>153</span>        <span class="kw">let </span>(n, m, p) = (n / <span class="number">2</span>, m / <span class="number">2</span>, p / <span class="number">2</span>);
-<span data-nosnippet>154</span>        <span class="kw">let </span>(s, t, q) = (work, work.add(n * m), work.add(n * m + m * p));
-<span data-nosnippet>155</span>        <span class="kw">let </span>work = q.add(n * p);
-<span data-nosnippet>156</span>        <span class="kw">let </span>(a00, a01, a10, a11) = (a, a.add(n * m), a.add(<span class="number">2 </span>* n * m), a.add(<span class="number">3 </span>* n * m));
-<span data-nosnippet>157</span>        <span class="kw">let </span>(b00, b01, b10, b11) = (b, b.add(m * p), b.add(<span class="number">2 </span>* m * p), b.add(<span class="number">3 </span>* m * p));
-<span data-nosnippet>158</span>        <span class="kw">let </span>(c00, c01, c10, c11) = (c, c.add(n * p), c.add(<span class="number">2 </span>* n * p), c.add(<span class="number">3 </span>* n * p));
-<span data-nosnippet>159</span>        multiply(a00, b00, c11, (n, m, p), work, kernel);
-<span data-nosnippet>160</span>        multiply(a01, b10, c00, (n, m, p), work, kernel);
-<span data-nosnippet>161</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c00, c11, c00, n * p, modulus);
-<span data-nosnippet>162</span>        combine::&lt;<span class="bool-val">false</span>&gt;(a10, a11, s, n * m, modulus);
-<span data-nosnippet>163</span>        combine::&lt;<span class="bool-val">true</span>&gt;(b01, b00, t, m * p, modulus);
-<span data-nosnippet>164</span>        multiply(s, t, c01, (n, m, p), work, kernel);
-<span data-nosnippet>165</span>        combine::&lt;<span class="bool-val">true</span>&gt;(s, a00, s, n * m, modulus);
-<span data-nosnippet>166</span>        combine::&lt;<span class="bool-val">true</span>&gt;(b11, t, t, m * p, modulus);
-<span data-nosnippet>167</span>        multiply(s, t, c10, (n, m, p), work, kernel);
-<span data-nosnippet>168</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c11, c10, c10, n * p, modulus);
-<span data-nosnippet>169</span>        combine::&lt;<span class="bool-val">true</span>&gt;(a01, s, s, n * m, modulus);
-<span data-nosnippet>170</span>        multiply(s, b11, q, (n, m, p), work, kernel);
-<span data-nosnippet>171</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c10, c01, c11, n * p, modulus);
-<span data-nosnippet>172</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c11, q, c01, n * p, modulus);
-<span data-nosnippet>173</span>        combine::&lt;<span class="bool-val">true</span>&gt;(t, b10, t, m * p, modulus);
-<span data-nosnippet>174</span>        multiply(a11, t, q, (n, m, p), work, kernel);
-<span data-nosnippet>175</span>        combine::&lt;<span class="bool-val">true</span>&gt;(c10, q, c10, n * p, modulus);
-<span data-nosnippet>176</span>        combine::&lt;<span class="bool-val">true</span>&gt;(a00, a10, s, n * m, modulus);
-<span data-nosnippet>177</span>        combine::&lt;<span class="bool-val">true</span>&gt;(b11, b01, t, m * p, modulus);
-<span data-nosnippet>178</span>        multiply(s, t, q, (n, m, p), work, kernel);
-<span data-nosnippet>179</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c10, q, c10, n * p, modulus);
-<span data-nosnippet>180</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c11, q, c11, n * p, modulus);
-<span data-nosnippet>181</span>    }
-<span data-nosnippet>182</span>}</code></pre></div></div></div></section></div></main></body></html>
+<span data-nosnippet>147</span>                <span class="kw">if </span>shape == (<span class="number">64</span>, <span class="number">64</span>, <span class="number">64</span>) {
+<span data-nosnippet>148</span>                    leaf_avx512::&lt;<span class="bool-val">true</span>&gt;(a, b, c, shape, modulus, inverse);
+<span data-nosnippet>149</span>                } <span class="kw">else </span>{
+<span data-nosnippet>150</span>                    leaf_avx512::&lt;<span class="bool-val">false</span>&gt;(a, b, c, shape, modulus, inverse);
+<span data-nosnippet>151</span>                }
+<span data-nosnippet>152</span>            } <span class="kw">else </span>{
+<span data-nosnippet>153</span>                <span class="highlight focus">leaf_avx2</span>(a, b, c, shape, modulus, inverse);
+<span data-nosnippet>154</span>            }
+<span data-nosnippet>155</span>            <span class="kw">return</span>;
+<span data-nosnippet>156</span>        }
+<span data-nosnippet>157</span>        <span class="kw">let </span>(n, m, p) = (n / <span class="number">2</span>, m / <span class="number">2</span>, p / <span class="number">2</span>);
+<span data-nosnippet>158</span>        <span class="kw">let </span>(s, t, q) = (work, work.add(n * m), work.add(n * m + m * p));
+<span data-nosnippet>159</span>        <span class="kw">let </span>work = q.add(n * p);
+<span data-nosnippet>160</span>        <span class="kw">let </span>(a00, a01, a10, a11) = (a, a.add(n * m), a.add(<span class="number">2 </span>* n * m), a.add(<span class="number">3 </span>* n * m));
+<span data-nosnippet>161</span>        <span class="kw">let </span>(b00, b01, b10, b11) = (b, b.add(m * p), b.add(<span class="number">2 </span>* m * p), b.add(<span class="number">3 </span>* m * p));
+<span data-nosnippet>162</span>        <span class="kw">let </span>(c00, c01, c10, c11) = (c, c.add(n * p), c.add(<span class="number">2 </span>* n * p), c.add(<span class="number">3 </span>* n * p));
+<span data-nosnippet>163</span>        multiply(a00, b00, c11, (n, m, p), work, kernel);
+<span data-nosnippet>164</span>        multiply(a01, b10, c00, (n, m, p), work, kernel);
+<span data-nosnippet>165</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c00, c11, c00, n * p, modulus);
+<span data-nosnippet>166</span>        combine::&lt;<span class="bool-val">false</span>&gt;(a10, a11, s, n * m, modulus);
+<span data-nosnippet>167</span>        combine::&lt;<span class="bool-val">true</span>&gt;(b01, b00, t, m * p, modulus);
+<span data-nosnippet>168</span>        multiply(s, t, c01, (n, m, p), work, kernel);
+<span data-nosnippet>169</span>        combine::&lt;<span class="bool-val">true</span>&gt;(s, a00, s, n * m, modulus);
+<span data-nosnippet>170</span>        combine::&lt;<span class="bool-val">true</span>&gt;(b11, t, t, m * p, modulus);
+<span data-nosnippet>171</span>        multiply(s, t, c10, (n, m, p), work, kernel);
+<span data-nosnippet>172</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c11, c10, c10, n * p, modulus);
+<span data-nosnippet>173</span>        combine::&lt;<span class="bool-val">true</span>&gt;(a01, s, s, n * m, modulus);
+<span data-nosnippet>174</span>        multiply(s, b11, q, (n, m, p), work, kernel);
+<span data-nosnippet>175</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c10, c01, c11, n * p, modulus);
+<span data-nosnippet>176</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c11, q, c01, n * p, modulus);
+<span data-nosnippet>177</span>        combine::&lt;<span class="bool-val">true</span>&gt;(t, b10, t, m * p, modulus);
+<span data-nosnippet>178</span>        multiply(a11, t, q, (n, m, p), work, kernel);
+<span data-nosnippet>179</span>        combine::&lt;<span class="bool-val">true</span>&gt;(c10, q, c10, n * p, modulus);
+<span data-nosnippet>180</span>        combine::&lt;<span class="bool-val">true</span>&gt;(a00, a10, s, n * m, modulus);
+<span data-nosnippet>181</span>        combine::&lt;<span class="bool-val">true</span>&gt;(b11, b01, t, m * p, modulus);
+<span data-nosnippet>182</span>        multiply(s, t, q, (n, m, p), work, kernel);
+<span data-nosnippet>183</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c10, q, c10, n * p, modulus);
+<span data-nosnippet>184</span>        combine::&lt;<span class="bool-val">false</span>&gt;(c11, q, c11, n * p, modulus);
+<span data-nosnippet>185</span>    }
+<span data-nosnippet>186</span>}</code></pre></div></div></div></section></div></main></body></html>
