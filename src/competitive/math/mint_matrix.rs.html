@@ -89,7 +89,7 @@
 <a href=#35 id=35 data-nosnippet>35</a>        }
 <a href=#36 id=36 data-nosnippet>36</a>        <span class="kw">let </span><span class="kw-2">mut </span>f = other.determinant_linear_non_singular(<span class="self">self</span>)<span class="question-mark">?</span>;
 <a href=#37 id=37 data-nosnippet>37</a>        <a href="#36">f</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.slice.html#method.reverse">reverse</a>();
-<a href=#38 id=38 data-nosnippet>38</a>        <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#357-380">taylor_shift</a>::&lt;M&gt;(<a href="#36">f</a>, -<a href="#29">a</a>))
+<a href=#38 id=38 data-nosnippet>38</a>        <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#371-394">taylor_shift</a>::&lt;M&gt;(<a href="#36">f</a>, -<a href="#29">a</a>))
 <a href=#39 id=39 data-nosnippet>39</a>    }
 <a href=#40 id=40 data-nosnippet>40</a>
 <a href=#41 id=41 data-nosnippet>41</a>    <span class="kw">fn </span>pow_frobenius(<span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self
@@ -100,11 +100,11 @@
 <a href=#46 id=46 data-nosnippet>46</a>        <span class="kw">let </span>a = <a class="self" href="#41">self</a>.<a href="matrix.rs.html#107-109">transpose</a>();
 <a href=#47 id=47 data-nosnippet>47</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="../tools/xorshift.rs.html#8-10">Xorshift</a>::<a href="../tools/xorshift.rs.html#17-19">new</a>();
 <a href=#48 id=48 data-nosnippet>48</a>        <span class="kw">let </span>f = <span class="kw">loop </span>{
-<a href=#49 id=49 data-nosnippet>49</a>            <span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(f) = <a href="#254-330">frobenius_decomposition</a>(<span class="kw-2">&amp;</span><a href="#46">a</a>, <span class="kw-2">&amp;mut </span><a href="#47">rng</a>) {
+<a href=#49 id=49 data-nosnippet>49</a>            <span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(f) = <a href="#255-344">frobenius_decomposition</a>(<span class="kw-2">&amp;</span><a href="#46">a</a>, <span class="kw-2">&amp;mut </span><a href="#47">rng</a>) {
 <a href=#50 id=50 data-nosnippet>50</a>                <span class="kw">break </span><a href="#49">f</a>;
 <a href=#51 id=51 data-nosnippet>51</a>            }
 <a href=#52 id=52 data-nosnippet>52</a>        };
-<a href=#53 id=53 data-nosnippet>53</a>        <span class="kw">let </span>fk = <a href="#48">f</a>.<a href="#336-354">pow</a>(<a href="#41">k</a>);
+<a href=#53 id=53 data-nosnippet>53</a>        <span class="kw">let </span>fk = <a href="#48">f</a>.<a href="#350-368">pow</a>(<a href="#41">k</a>);
 <a href=#54 id=54 data-nosnippet>54</a>        <span class="kw">let </span>n = <a href="#48">f</a>.t.shape.<span class="number">0</span>;
 <a href=#55 id=55 data-nosnippet>55</a>        <span class="kw">if </span><a href="#48">f</a>.blocks
 <a href=#56 id=56 data-nosnippet>56</a>            .<a href="https://doc.rust-lang.org/nightly/core/primitive.slice.html#method.iter">iter</a>()
@@ -175,7 +175,7 @@
 <a href=#121 id=121 data-nosnippet>121</a>                <span class="kw-2">*</span>s = -<span class="kw-2">*</span>s;
 <a href=#122 id=122 data-nosnippet>122</a>            }
 <a href=#123 id=123 data-nosnippet>123</a>        }
-<a href=#124 id=124 data-nosnippet>124</a>        <span class="kw">let </span><span class="kw-2">mut </span>p = <a class="self" href="#84">self</a>.<a href="matrix.rs.html#482-523">characteristic_polynomial</a>();
+<a href=#124 id=124 data-nosnippet>124</a>        <span class="kw">let </span><span class="kw-2">mut </span>p = <a class="self" href="#84">self</a>.<a href="matrix.rs.html#474-515">characteristic_polynomial</a>();
 <a href=#125 id=125 data-nosnippet>125</a>        <span class="kw">for </span>p <span class="kw">in </span>p.iter_mut() {
 <a href=#126 id=126 data-nosnippet>126</a>            <span class="kw-2">*</span>p <span class="kw-2">*</span>= f;
 <a href=#127 id=127 data-nosnippet>127</a>        }
@@ -270,246 +270,260 @@
 <a href=#216 id=216 data-nosnippet>216</a>        <a class="self" href="#209">self</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/primitive.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.all">all</a>(|x| <a href="#216">x</a>.<a href="../num/zero_one.rs.html#4-9">is_zero</a>()).<a href="https://doc.rust-lang.org/nightly/core/primitive.bool.html#method.then_some">then_some</a>(<span class="self">Self</span>(<a href="#210">q</a>))
 <a href=#217 id=217 data-nosnippet>217</a>    }
 <a href=#218 id=218 data-nosnippet>218</a>
-<a href=#219 id=219 data-nosnippet>219</a>    <span class="kw">fn </span>mul_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>, p: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<a href=#219 id=219 data-nosnippet>219</a>    <span class="kw">fn </span>square_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <a href=#220 id=220 data-nosnippet>220</a>        <span class="kw">let </span>d = <a href="#219">p</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() - <span class="number">1</span>;
 <a href=#221 id=221 data-nosnippet>221</a>        <span class="kw">let </span><span class="kw-2">mut </span>c = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::zero(); <span class="number">2 </span>* d - <span class="number">1</span>];
 <a href=#222 id=222 data-nosnippet>222</a>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>x) <span class="kw">in </span><span class="self">self</span>.<span class="number">0</span>.iter().enumerate() {
-<a href=#223 id=223 data-nosnippet>223</a>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i..i + rhs.<span class="number">0</span>.len()], <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>, <span class="kw-2">&amp;</span>x);
-<a href=#224 id=224 data-nosnippet>224</a>        }
-<a href=#225 id=225 data-nosnippet>225</a>        <span class="kw">for </span>i <span class="kw">in </span>(d..c.len()).rev() {
-<a href=#226 id=226 data-nosnippet>226</a>            <span class="kw">let </span>x = c[i];
-<a href=#227 id=227 data-nosnippet>227</a>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i - d..=i], <span class="kw-2">&amp;</span>p.<span class="number">0</span>, <span class="kw-2">&amp;</span>-x);
-<a href=#228 id=228 data-nosnippet>228</a>        }
-<a href=#229 id=229 data-nosnippet>229</a>        <a href="#221">c</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.truncate">truncate</a>(<a href="#220">d</a>);
-<a href=#230 id=230 data-nosnippet>230</a>        <span class="self">Self</span>(<a href="#221">c</a>)
-<a href=#231 id=231 data-nosnippet>231</a>    }
-<a href=#232 id=232 data-nosnippet>232</a>
-<a href=#233 id=233 data-nosnippet>233</a>    <span class="kw">fn </span>x_pow_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-<a href=#234 id=234 data-nosnippet>234</a>        <span class="kw">let </span>d = <a class="self" href="#233">self</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() - <span class="number">1</span>;
-<a href=#235 id=235 data-nosnippet>235</a>        <span class="kw">if </span><a href="#234">d</a> == <span class="number">1 </span>{
-<a href=#236 id=236 data-nosnippet>236</a>            <span class="kw">return </span><span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(-<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>]).pow(k)]);
-<a href=#237 id=237 data-nosnippet>237</a>        }
-<a href=#238 id=238 data-nosnippet>238</a>        <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::zero(); d]);
-<a href=#239 id=239 data-nosnippet>239</a>        <a href="#238">r</a>.<span class="number">0</span>[<span class="number">0</span>] = <a href="../num/mint/mint_base.rs.html#14-20">MInt</a>::<a href="../num/zero_one.rs.html#16">one</a>();
-<a href=#240 id=240 data-nosnippet>240</a>        <span class="kw">for </span>bit <span class="kw">in </span>(<span class="number">0</span>..usize::BITS - k.leading_zeros()).rev() {
-<a href=#241 id=241 data-nosnippet>241</a>            r = r.mul_mod(<span class="kw-2">&amp;</span>r, <span class="self">self</span>);
-<a href=#242 id=242 data-nosnippet>242</a>            <span class="kw">if </span>k &gt;&gt; bit &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
-<a href=#243 id=243 data-nosnippet>243</a>                <span class="kw">let </span>x = r.<span class="number">0</span>[d - <span class="number">1</span>];
-<a href=#244 id=244 data-nosnippet>244</a>                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..d).rev() {
-<a href=#245 id=245 data-nosnippet>245</a>                    r.<span class="number">0</span>[i] = r.<span class="number">0</span>[i - <span class="number">1</span>] - x * <span class="self">self</span>.<span class="number">0</span>[i];
-<a href=#246 id=246 data-nosnippet>246</a>                }
-<a href=#247 id=247 data-nosnippet>247</a>                r.<span class="number">0</span>[<span class="number">0</span>] = -x * <span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>];
-<a href=#248 id=248 data-nosnippet>248</a>            }
-<a href=#249 id=249 data-nosnippet>249</a>        }
-<a href=#250 id=250 data-nosnippet>250</a>        <a href="#238">r</a>
-<a href=#251 id=251 data-nosnippet>251</a>    }
-<a href=#252 id=252 data-nosnippet>252</a>}
-<a href=#253 id=253 data-nosnippet>253</a>
-<a href=#254 id=254 data-nosnippet>254</a><span class="kw">fn </span><a href="../../../competitive/math/mint_matrix/fn.frobenius_decomposition.html">frobenius_decomposition</a>&lt;M&gt;(
-<a href=#255 id=255 data-nosnippet>255</a>    a: <span class="kw-2">&amp;</span><a href="matrix.rs.html#8-15">Matrix</a>&lt;<a href="../algebra/ring.rs.html#136-141">AddMulOperation</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;&gt;,
-<a href=#256 id=256 data-nosnippet>256</a>    rng: <span class="kw-2">&amp;mut </span><a href="../tools/xorshift.rs.html#8-10">Xorshift</a>,
-<a href=#257 id=257 data-nosnippet>257</a>) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<a href="#145-152">FrobeniusDecomposition</a>&lt;M&gt;&gt;
-<a href=#258 id=258 data-nosnippet>258</a><span class="kw">where
-<a href=#259 id=259 data-nosnippet>259</a>    </span>M: <a href="../num/mint/mint_base.rs.html#28-80">MIntBase</a> + <a href="../num/mint/mint_base.rs.html#22-26">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
-<a href=#260 id=260 data-nosnippet>260</a>{
-<a href=#261 id=261 data-nosnippet>261</a>    <span class="kw">let </span>n = <a href="#255">a</a>.shape.<span class="number">0</span>;
-<a href=#262 id=262 data-nosnippet>262</a>    <span class="kw">let </span><span class="kw-2">mut </span>rows = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#261">n</a>);
-<a href=#263 id=263 data-nosnippet>263</a>    <span class="kw">let </span><span class="kw-2">mut </span>t = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#261">n</a>);
-<a href=#264 id=264 data-nosnippet>264</a>    <span class="kw">let </span><span class="kw-2">mut </span>blocks: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#141-143">Polynomial</a>&lt;M&gt;&gt; = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">new</a>();
-<a href=#265 id=265 data-nosnippet>265</a>    <span class="kw">while </span>rows.len() &lt; n {
-<a href=#266 id=266 data-nosnippet>266</a>        <span class="kw">let </span>s = rows.len();
-<a href=#267 id=267 data-nosnippet>267</a>        <span class="kw">let </span>v = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
-<a href=#268 id=268 data-nosnippet>268</a>        <span class="kw">let </span>c = generate_frobenius_block(a, v, <span class="kw-2">&amp;mut </span>rows, <span class="kw-2">&amp;mut </span>t);
-<a href=#269 id=269 data-nosnippet>269</a>        <span class="kw">if </span>rows.len() == s {
-<a href=#270 id=270 data-nosnippet>270</a>            <span class="kw">continue</span>;
-<a href=#271 id=271 data-nosnippet>271</a>        }
-<a href=#272 id=272 data-nosnippet>272</a>        <span class="kw">let </span>p = Polynomial(c.<span class="number">0</span>[s..].to_vec());
-<a href=#273 id=273 data-nosnippet>273</a>        <span class="kw">if </span>c.<span class="number">0</span>[..s].iter().any(|x| !x.is_zero()) {
-<a href=#274 id=274 data-nosnippet>274</a>            <span class="kw">let </span>q = c.exact_div(<span class="kw-2">&amp;</span>p)<span class="question-mark">?</span>;
-<a href=#275 id=275 data-nosnippet>275</a>            <span class="kw">let </span>d = rows.len() - s;
-<a href=#276 id=276 data-nosnippet>276</a>            <span class="kw">let </span><span class="kw-2">mut </span>coefficients = q.<span class="number">0</span>[..s].to_vec();
-<a href=#277 id=277 data-nosnippet>277</a>            <span class="kw">let </span><span class="kw-2">mut </span>shifts = Vec::with_capacity(d);
-<a href=#278 id=278 data-nosnippet>278</a>            <span class="kw">for _ in </span><span class="number">0</span>..d {
-<a href=#279 id=279 data-nosnippet>279</a>                shifts.push(coefficients.clone());
-<a href=#280 id=280 data-nosnippet>280</a>                <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="number">0</span>;
-<a href=#281 id=281 data-nosnippet>281</a>                <span class="kw">for </span>block <span class="kw">in </span><span class="kw-2">&amp;</span>blocks {
-<a href=#282 id=282 data-nosnippet>282</a>                    <span class="kw">let </span>len = block.<span class="number">0</span>.len() - <span class="number">1</span>;
-<a href=#283 id=283 data-nosnippet>283</a>                    <span class="kw">let </span>c = <span class="kw-2">&amp;mut </span>coefficients[first..first + len];
-<a href=#284 id=284 data-nosnippet>284</a>                    <span class="kw">let </span>last = c[len - <span class="number">1</span>];
-<a href=#285 id=285 data-nosnippet>285</a>                    <span class="kw">for </span>j <span class="kw">in </span>(<span class="number">1</span>..len).rev() {
-<a href=#286 id=286 data-nosnippet>286</a>                        c[j] = c[j - <span class="number">1</span>] - last * block.<span class="number">0</span>[j];
-<a href=#287 id=287 data-nosnippet>287</a>                    }
-<a href=#288 id=288 data-nosnippet>288</a>                    c[<span class="number">0</span>] = -last * block.<span class="number">0</span>[<span class="number">0</span>];
-<a href=#289 id=289 data-nosnippet>289</a>                    first += len;
-<a href=#290 id=290 data-nosnippet>290</a>                }
-<a href=#291 id=291 data-nosnippet>291</a>            }
-<a href=#292 id=292 data-nosnippet>292</a>            <span class="kw">let </span>shifts: Matrix&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;&gt; = Matrix::from_vec(shifts);
-<a href=#293 id=293 data-nosnippet>293</a>            <span class="kw">let </span>previous = Matrix::from_vec(t[..s].to_vec());
-<a href=#294 id=294 data-nosnippet>294</a>            <span class="kw">let </span>correction = <span class="kw-2">&amp;</span>shifts * <span class="kw-2">&amp;</span>previous;
-<a href=#295 id=295 data-nosnippet>295</a>            <span class="kw">for </span>(i, row) <span class="kw">in </span>rows[s..].iter_mut().enumerate() {
-<a href=#296 id=296 data-nosnippet>296</a>                <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>t[s + i].iter_mut().zip(<span class="kw-2">&amp;</span>correction[i]) {
-<a href=#297 id=297 data-nosnippet>297</a>                    <span class="kw-2">*</span>x += y;
-<a href=#298 id=298 data-nosnippet>298</a>                }
-<a href=#299 id=299 data-nosnippet>299</a>                <span class="comment">// Keep the reduced vector fixed: T_new += S*T_old gives C_old -= C_new*S.
-<a href=#300 id=300 data-nosnippet>300</a>                </span><span class="kw">let </span>(previous, current) = row.row[n..].split_at_mut(s);
-<a href=#301 id=301 data-nosnippet>301</a>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>x, shift) <span class="kw">in </span>current.iter().zip(<span class="kw-2">&amp;</span>shifts.data) {
-<a href=#302 id=302 data-nosnippet>302</a>                    MInt::add_scaled_assign(previous, shift, <span class="kw-2">&amp;</span>-x);
-<a href=#303 id=303 data-nosnippet>303</a>                }
-<a href=#304 id=304 data-nosnippet>304</a>            }
-<a href=#305 id=305 data-nosnippet>305</a>        }
-<a href=#306 id=306 data-nosnippet>306</a>        blocks.push(p);
-<a href=#307 id=307 data-nosnippet>307</a>    }
-<a href=#308 id=308 data-nosnippet>308</a>
-<a href=#309 id=309 data-nosnippet>309</a>    <span class="kw">let </span><span class="kw-2">mut </span>t_inv = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[MInt::zero(); n]; n];
-<a href=#310 id=310 data-nosnippet>310</a>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
-<a href=#311 id=311 data-nosnippet>311</a>        <span class="kw">let </span>row = <span class="kw-2">&amp;</span>rows[i];
-<a href=#312 id=312 data-nosnippet>312</a>        <span class="kw">let </span><span class="kw-2">mut </span>c = row.row[n..].to_vec();
-<a href=#313 id=313 data-nosnippet>313</a>        c.resize(n, MInt::zero());
-<a href=#314 id=314 data-nosnippet>314</a>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>c {
-<a href=#315 id=315 data-nosnippet>315</a>            <span class="kw-2">*</span>x <span class="kw-2">*</span>= row.inv;
-<a href=#316 id=316 data-nosnippet>316</a>        }
-<a href=#317 id=317 data-nosnippet>317</a>        <span class="kw">for </span>next <span class="kw">in </span><span class="kw-2">&amp;</span>rows[i + <span class="number">1</span>..] {
-<a href=#318 id=318 data-nosnippet>318</a>            <span class="kw">let </span>factor = -row.row[next.pivot] * row.inv;
-<a href=#319 id=319 data-nosnippet>319</a>            <span class="kw">if </span>!factor.is_zero() {
-<a href=#320 id=320 data-nosnippet>320</a>                MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c, <span class="kw-2">&amp;</span>t_inv[next.pivot], <span class="kw-2">&amp;</span>factor);
-<a href=#321 id=321 data-nosnippet>321</a>            }
-<a href=#322 id=322 data-nosnippet>322</a>        }
-<a href=#323 id=323 data-nosnippet>323</a>        t_inv[row.pivot] = c;
-<a href=#324 id=324 data-nosnippet>324</a>    }
-<a href=#325 id=325 data-nosnippet>325</a>    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#145-152">FrobeniusDecomposition</a> {
-<a href=#326 id=326 data-nosnippet>326</a>        t: <a href="matrix.rs.html#8-15">Matrix</a>::<a href="matrix.rs.html#66-74">from_vec</a>(<a href="#263">t</a>),
-<a href=#327 id=327 data-nosnippet>327</a>        t_inv: <a href="matrix.rs.html#8-15">Matrix</a>::<a href="matrix.rs.html#66-74">from_vec</a>(<a href="#309">t_inv</a>),
-<a href=#328 id=328 data-nosnippet>328</a>        <a href="#264">blocks</a>,
-<a href=#329 id=329 data-nosnippet>329</a>    })
-<a href=#330 id=330 data-nosnippet>330</a>}
-<a href=#331 id=331 data-nosnippet>331</a>
-<a href=#332 id=332 data-nosnippet>332</a><span class="kw">impl</span>&lt;M&gt; <a href="#145-152">FrobeniusDecomposition</a>&lt;M&gt;
-<a href=#333 id=333 data-nosnippet>333</a><span class="kw">where
-<a href=#334 id=334 data-nosnippet>334</a>    </span>M: <a href="../num/mint/mint_base.rs.html#28-80">MIntBase</a>,
-<a href=#335 id=335 data-nosnippet>335</a>{
-<a href=#336 id=336 data-nosnippet>336</a>    <span class="kw">fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="matrix.rs.html#8-15">Matrix</a>&lt;<a href="../algebra/ring.rs.html#136-141">AddMulOperation</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;&gt; {
-<a href=#337 id=337 data-nosnippet>337</a>        <span class="kw">let </span>n = <a class="self" href="#336">self</a>.t.shape.<span class="number">0</span>;
-<a href=#338 id=338 data-nosnippet>338</a>        <span class="kw">let </span><span class="kw-2">mut </span>a = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[MInt::zero(); n]; n];
-<a href=#339 id=339 data-nosnippet>339</a>        <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="number">0</span>;
-<a href=#340 id=340 data-nosnippet>340</a>        <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.blocks {
-<a href=#341 id=341 data-nosnippet>341</a>            <span class="kw">let </span>d = p.<span class="number">0</span>.len() - <span class="number">1</span>;
-<a href=#342 id=342 data-nosnippet>342</a>            <span class="kw">let </span><span class="kw-2">mut </span>c = p.x_pow_mod(k).<span class="number">0</span>;
-<a href=#343 id=343 data-nosnippet>343</a>            <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>a[s..s + d] {
-<a href=#344 id=344 data-nosnippet>344</a>                row[s..s + d].copy_from_slice(<span class="kw-2">&amp;</span>c);
-<a href=#345 id=345 data-nosnippet>345</a>                <span class="kw">let </span>x = c[d - <span class="number">1</span>];
-<a href=#346 id=346 data-nosnippet>346</a>                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..d).rev() {
-<a href=#347 id=347 data-nosnippet>347</a>                    c[i] = c[i - <span class="number">1</span>] - x * p.<span class="number">0</span>[i];
-<a href=#348 id=348 data-nosnippet>348</a>                }
-<a href=#349 id=349 data-nosnippet>349</a>                c[<span class="number">0</span>] = -x * p.<span class="number">0</span>[<span class="number">0</span>];
-<a href=#350 id=350 data-nosnippet>350</a>            }
-<a href=#351 id=351 data-nosnippet>351</a>            s += d;
-<a href=#352 id=352 data-nosnippet>352</a>        }
-<a href=#353 id=353 data-nosnippet>353</a>        <a href="matrix.rs.html#8-15">Matrix</a>::<a href="matrix.rs.html#66-74">from_vec</a>(<a href="#338">a</a>)
-<a href=#354 id=354 data-nosnippet>354</a>    }
-<a href=#355 id=355 data-nosnippet>355</a>}
-<a href=#356 id=356 data-nosnippet>356</a>
-<a href=#357 id=357 data-nosnippet>357</a><span class="kw">fn </span><a href="../../../competitive/math/mint_matrix/fn.taylor_shift.html">taylor_shift</a>&lt;M&gt;(f: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;, a: <a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;
-<a href=#358 id=358 data-nosnippet>358</a><span class="kw">where
-<a href=#359 id=359 data-nosnippet>359</a>    </span>M: <a href="../num/mint/mint_base.rs.html#22-26">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#360 id=360 data-nosnippet>360</a>{
-<a href=#361 id=361 data-nosnippet>361</a>    <span class="kw">let </span>n = <a href="#357">f</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
-<a href=#362 id=362 data-nosnippet>362</a>    <span class="kw">if </span><a href="#361">n</a> == <span class="number">0 </span>{
-<a href=#363 id=363 data-nosnippet>363</a>        <span class="kw">return </span><a href="#357">f</a>;
-<a href=#364 id=364 data-nosnippet>364</a>    }
-<a href=#365 id=365 data-nosnippet>365</a>    <span class="kw">let </span>mf = <a href="factorial.rs.html#4-10">MemorizedFactorial</a>::<a href="factorial.rs.html#16-27">new</a>(<a href="#361">n</a>);
-<a href=#366 id=366 data-nosnippet>366</a>    <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::zero(); n];
-<a href=#367 id=367 data-nosnippet>367</a>    <span class="kw">let </span><span class="kw-2">mut </span>apow = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::one(); n];
-<a href=#368 id=368 data-nosnippet>368</a>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
-<a href=#369 id=369 data-nosnippet>369</a>        apow[i] = apow[i - <span class="number">1</span>] * a;
-<a href=#370 id=370 data-nosnippet>370</a>    }
-<a href=#371 id=371 data-nosnippet>371</a>    <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#372 id=372 data-nosnippet>372</a>        <span class="kw">if </span>f[j].is_zero() {
-<a href=#373 id=373 data-nosnippet>373</a>            <span class="kw">continue</span>;
-<a href=#374 id=374 data-nosnippet>374</a>        }
-<a href=#375 id=375 data-nosnippet>375</a>        <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..=j {
-<a href=#376 id=376 data-nosnippet>376</a>            res[k] += f[j] * apow[j - k] * mf.combination(j, k);
-<a href=#377 id=377 data-nosnippet>377</a>        }
+<a href=#223 id=223 data-nosnippet>223</a>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i..<span class="number">2 </span>* i], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[..i], <span class="kw-2">&amp;</span>(x + x));
+<a href=#224 id=224 data-nosnippet>224</a>            c[<span class="number">2 </span>* i] += x * x;
+<a href=#225 id=225 data-nosnippet>225</a>        }
+<a href=#226 id=226 data-nosnippet>226</a>        <span class="kw">for </span>i <span class="kw">in </span>(d..c.len()).rev() {
+<a href=#227 id=227 data-nosnippet>227</a>            <span class="kw">let </span>x = c[i];
+<a href=#228 id=228 data-nosnippet>228</a>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i - d..=i], <span class="kw-2">&amp;</span>p.<span class="number">0</span>, <span class="kw-2">&amp;</span>-x);
+<a href=#229 id=229 data-nosnippet>229</a>        }
+<a href=#230 id=230 data-nosnippet>230</a>        <a href="#221">c</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.truncate">truncate</a>(<a href="#220">d</a>);
+<a href=#231 id=231 data-nosnippet>231</a>        <span class="self">Self</span>(<a href="#221">c</a>)
+<a href=#232 id=232 data-nosnippet>232</a>    }
+<a href=#233 id=233 data-nosnippet>233</a>
+<a href=#234 id=234 data-nosnippet>234</a>    <span class="kw">fn </span>x_pow_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+<a href=#235 id=235 data-nosnippet>235</a>        <span class="kw">let </span>d = <a class="self" href="#234">self</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() - <span class="number">1</span>;
+<a href=#236 id=236 data-nosnippet>236</a>        <span class="kw">if </span><a href="#235">d</a> == <span class="number">1 </span>{
+<a href=#237 id=237 data-nosnippet>237</a>            <span class="kw">return </span><span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(-<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>]).pow(k)]);
+<a href=#238 id=238 data-nosnippet>238</a>        }
+<a href=#239 id=239 data-nosnippet>239</a>        <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::zero(); d]);
+<a href=#240 id=240 data-nosnippet>240</a>        <a href="#239">r</a>.<span class="number">0</span>[<span class="number">0</span>] = <a href="../num/mint/mint_base.rs.html#14-20">MInt</a>::<a href="../num/zero_one.rs.html#16">one</a>();
+<a href=#241 id=241 data-nosnippet>241</a>        <span class="kw">for </span>bit <span class="kw">in </span>(<span class="number">0</span>..usize::BITS - k.leading_zeros()).rev() {
+<a href=#242 id=242 data-nosnippet>242</a>            r = r.square_mod(<span class="self">self</span>);
+<a href=#243 id=243 data-nosnippet>243</a>            <span class="kw">if </span>k &gt;&gt; bit &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+<a href=#244 id=244 data-nosnippet>244</a>                <span class="kw">let </span>x = r.<span class="number">0</span>[d - <span class="number">1</span>];
+<a href=#245 id=245 data-nosnippet>245</a>                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..d).rev() {
+<a href=#246 id=246 data-nosnippet>246</a>                    r.<span class="number">0</span>[i] = r.<span class="number">0</span>[i - <span class="number">1</span>] - x * <span class="self">self</span>.<span class="number">0</span>[i];
+<a href=#247 id=247 data-nosnippet>247</a>                }
+<a href=#248 id=248 data-nosnippet>248</a>                r.<span class="number">0</span>[<span class="number">0</span>] = -x * <span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>];
+<a href=#249 id=249 data-nosnippet>249</a>            }
+<a href=#250 id=250 data-nosnippet>250</a>        }
+<a href=#251 id=251 data-nosnippet>251</a>        <a href="#239">r</a>
+<a href=#252 id=252 data-nosnippet>252</a>    }
+<a href=#253 id=253 data-nosnippet>253</a>}
+<a href=#254 id=254 data-nosnippet>254</a>
+<a href=#255 id=255 data-nosnippet>255</a><span class="kw">fn </span><a href="../../../competitive/math/mint_matrix/fn.frobenius_decomposition.html">frobenius_decomposition</a>&lt;M&gt;(
+<a href=#256 id=256 data-nosnippet>256</a>    a: <span class="kw-2">&amp;</span><a href="matrix.rs.html#8-15">Matrix</a>&lt;<a href="../algebra/ring.rs.html#136-141">AddMulOperation</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;&gt;,
+<a href=#257 id=257 data-nosnippet>257</a>    rng: <span class="kw-2">&amp;mut </span><a href="../tools/xorshift.rs.html#8-10">Xorshift</a>,
+<a href=#258 id=258 data-nosnippet>258</a>) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<a href="#145-152">FrobeniusDecomposition</a>&lt;M&gt;&gt;
+<a href=#259 id=259 data-nosnippet>259</a><span class="kw">where
+<a href=#260 id=260 data-nosnippet>260</a>    </span>M: <a href="../num/mint/mint_base.rs.html#28-80">MIntBase</a> + <a href="../num/mint/mint_base.rs.html#22-26">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+<a href=#261 id=261 data-nosnippet>261</a>{
+<a href=#262 id=262 data-nosnippet>262</a>    <span class="kw">let </span>n = <a href="#256">a</a>.shape.<span class="number">0</span>;
+<a href=#263 id=263 data-nosnippet>263</a>    <span class="kw">let </span><span class="kw-2">mut </span>rows = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#262">n</a>);
+<a href=#264 id=264 data-nosnippet>264</a>    <span class="kw">let </span><span class="kw-2">mut </span>t = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#262">n</a>);
+<a href=#265 id=265 data-nosnippet>265</a>    <span class="kw">let </span><span class="kw-2">mut </span>blocks: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#141-143">Polynomial</a>&lt;M&gt;&gt; = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">new</a>();
+<a href=#266 id=266 data-nosnippet>266</a>    <span class="kw">while </span>rows.len() &lt; n {
+<a href=#267 id=267 data-nosnippet>267</a>        <span class="kw">let </span>s = rows.len();
+<a href=#268 id=268 data-nosnippet>268</a>        <span class="kw">let </span>v = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
+<a href=#269 id=269 data-nosnippet>269</a>        <span class="kw">let </span>c = generate_frobenius_block(a, v, <span class="kw-2">&amp;mut </span>rows, <span class="kw-2">&amp;mut </span>t);
+<a href=#270 id=270 data-nosnippet>270</a>        <span class="kw">if </span>rows.len() == s {
+<a href=#271 id=271 data-nosnippet>271</a>            <span class="kw">continue</span>;
+<a href=#272 id=272 data-nosnippet>272</a>        }
+<a href=#273 id=273 data-nosnippet>273</a>        <span class="kw">let </span>p = Polynomial(c.<span class="number">0</span>[s..].to_vec());
+<a href=#274 id=274 data-nosnippet>274</a>        <span class="kw">if </span>c.<span class="number">0</span>[..s].iter().any(|x| !x.is_zero()) {
+<a href=#275 id=275 data-nosnippet>275</a>            <span class="kw">let </span>q = c.exact_div(<span class="kw-2">&amp;</span>p)<span class="question-mark">?</span>;
+<a href=#276 id=276 data-nosnippet>276</a>            <span class="kw">let </span>d = rows.len() - s;
+<a href=#277 id=277 data-nosnippet>277</a>            <span class="kw">let </span><span class="kw-2">mut </span>coefficients = q.<span class="number">0</span>[..s].to_vec();
+<a href=#278 id=278 data-nosnippet>278</a>            <span class="kw">let </span><span class="kw-2">mut </span>shifts = Vec::with_capacity(d);
+<a href=#279 id=279 data-nosnippet>279</a>            <span class="kw">for _ in </span><span class="number">0</span>..d {
+<a href=#280 id=280 data-nosnippet>280</a>                shifts.push(coefficients.clone());
+<a href=#281 id=281 data-nosnippet>281</a>                <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="number">0</span>;
+<a href=#282 id=282 data-nosnippet>282</a>                <span class="kw">for </span>block <span class="kw">in </span><span class="kw-2">&amp;</span>blocks {
+<a href=#283 id=283 data-nosnippet>283</a>                    <span class="kw">let </span>len = block.<span class="number">0</span>.len() - <span class="number">1</span>;
+<a href=#284 id=284 data-nosnippet>284</a>                    <span class="kw">let </span>c = <span class="kw-2">&amp;mut </span>coefficients[first..first + len];
+<a href=#285 id=285 data-nosnippet>285</a>                    <span class="kw">let </span>last = c[len - <span class="number">1</span>];
+<a href=#286 id=286 data-nosnippet>286</a>                    <span class="kw">for </span>j <span class="kw">in </span>(<span class="number">1</span>..len).rev() {
+<a href=#287 id=287 data-nosnippet>287</a>                        c[j] = c[j - <span class="number">1</span>] - last * block.<span class="number">0</span>[j];
+<a href=#288 id=288 data-nosnippet>288</a>                    }
+<a href=#289 id=289 data-nosnippet>289</a>                    c[<span class="number">0</span>] = -last * block.<span class="number">0</span>[<span class="number">0</span>];
+<a href=#290 id=290 data-nosnippet>290</a>                    first += len;
+<a href=#291 id=291 data-nosnippet>291</a>                }
+<a href=#292 id=292 data-nosnippet>292</a>            }
+<a href=#293 id=293 data-nosnippet>293</a>            <span class="kw">let </span>shifts: Matrix&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;&gt; = Matrix::from_vec(shifts);
+<a href=#294 id=294 data-nosnippet>294</a>            <span class="kw">if </span>d &lt; <span class="number">32 </span>{
+<a href=#295 id=295 data-nosnippet>295</a>                <span class="kw">let </span>(previous, current) = t.split_at_mut(s);
+<a href=#296 id=296 data-nosnippet>296</a>                <span class="kw">for </span>(shift, row) <span class="kw">in </span>shifts.data.iter().zip(current) {
+<a href=#297 id=297 data-nosnippet>297</a>                    <span class="kw">for </span>(factor, source) <span class="kw">in </span>shift.iter().zip(previous.iter()) {
+<a href=#298 id=298 data-nosnippet>298</a>                        <span class="kw">if </span>!factor.is_zero() {
+<a href=#299 id=299 data-nosnippet>299</a>                            MInt::add_scaled_assign(row, source, factor);
+<a href=#300 id=300 data-nosnippet>300</a>                        }
+<a href=#301 id=301 data-nosnippet>301</a>                    }
+<a href=#302 id=302 data-nosnippet>302</a>                }
+<a href=#303 id=303 data-nosnippet>303</a>            } <span class="kw">else </span>{
+<a href=#304 id=304 data-nosnippet>304</a>                <span class="kw">let </span>previous = Matrix::from_vec(t[..s].to_vec());
+<a href=#305 id=305 data-nosnippet>305</a>                <span class="kw">let </span>correction = <span class="kw-2">&amp;</span>shifts * <span class="kw-2">&amp;</span>previous;
+<a href=#306 id=306 data-nosnippet>306</a>                <span class="kw">for </span>(row, correction) <span class="kw">in </span>t[s..].iter_mut().zip(<span class="kw-2">&amp;</span>correction.data) {
+<a href=#307 id=307 data-nosnippet>307</a>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>row.iter_mut().zip(correction) {
+<a href=#308 id=308 data-nosnippet>308</a>                        <span class="kw-2">*</span>x += y;
+<a href=#309 id=309 data-nosnippet>309</a>                    }
+<a href=#310 id=310 data-nosnippet>310</a>                }
+<a href=#311 id=311 data-nosnippet>311</a>            }
+<a href=#312 id=312 data-nosnippet>312</a>            <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>rows[s..] {
+<a href=#313 id=313 data-nosnippet>313</a>                <span class="comment">// Keep the reduced vector fixed: T_new += S*T_old gives C_old -= C_new*S.
+<a href=#314 id=314 data-nosnippet>314</a>                </span><span class="kw">let </span>(previous, current) = row.row[n..].split_at_mut(s);
+<a href=#315 id=315 data-nosnippet>315</a>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>x, shift) <span class="kw">in </span>current.iter().zip(<span class="kw-2">&amp;</span>shifts.data) {
+<a href=#316 id=316 data-nosnippet>316</a>                    MInt::add_scaled_assign(previous, shift, <span class="kw-2">&amp;</span>-x);
+<a href=#317 id=317 data-nosnippet>317</a>                }
+<a href=#318 id=318 data-nosnippet>318</a>            }
+<a href=#319 id=319 data-nosnippet>319</a>        }
+<a href=#320 id=320 data-nosnippet>320</a>        blocks.push(p);
+<a href=#321 id=321 data-nosnippet>321</a>    }
+<a href=#322 id=322 data-nosnippet>322</a>
+<a href=#323 id=323 data-nosnippet>323</a>    <span class="kw">let </span><span class="kw-2">mut </span>t_inv = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[MInt::zero(); n]; n];
+<a href=#324 id=324 data-nosnippet>324</a>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
+<a href=#325 id=325 data-nosnippet>325</a>        <span class="kw">let </span>row = <span class="kw-2">&amp;</span>rows[i];
+<a href=#326 id=326 data-nosnippet>326</a>        <span class="kw">let </span><span class="kw-2">mut </span>c = row.row[n..].to_vec();
+<a href=#327 id=327 data-nosnippet>327</a>        c.resize(n, MInt::zero());
+<a href=#328 id=328 data-nosnippet>328</a>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>c {
+<a href=#329 id=329 data-nosnippet>329</a>            <span class="kw-2">*</span>x <span class="kw-2">*</span>= row.inv;
+<a href=#330 id=330 data-nosnippet>330</a>        }
+<a href=#331 id=331 data-nosnippet>331</a>        <span class="kw">for </span>next <span class="kw">in </span><span class="kw-2">&amp;</span>rows[i + <span class="number">1</span>..] {
+<a href=#332 id=332 data-nosnippet>332</a>            <span class="kw">let </span>factor = -row.row[next.pivot] * row.inv;
+<a href=#333 id=333 data-nosnippet>333</a>            <span class="kw">if </span>!factor.is_zero() {
+<a href=#334 id=334 data-nosnippet>334</a>                MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c, <span class="kw-2">&amp;</span>t_inv[next.pivot], <span class="kw-2">&amp;</span>factor);
+<a href=#335 id=335 data-nosnippet>335</a>            }
+<a href=#336 id=336 data-nosnippet>336</a>        }
+<a href=#337 id=337 data-nosnippet>337</a>        t_inv[row.pivot] = c;
+<a href=#338 id=338 data-nosnippet>338</a>    }
+<a href=#339 id=339 data-nosnippet>339</a>    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#145-152">FrobeniusDecomposition</a> {
+<a href=#340 id=340 data-nosnippet>340</a>        t: <a href="matrix.rs.html#8-15">Matrix</a>::<a href="matrix.rs.html#66-74">from_vec</a>(<a href="#264">t</a>),
+<a href=#341 id=341 data-nosnippet>341</a>        t_inv: <a href="matrix.rs.html#8-15">Matrix</a>::<a href="matrix.rs.html#66-74">from_vec</a>(<a href="#323">t_inv</a>),
+<a href=#342 id=342 data-nosnippet>342</a>        <a href="#265">blocks</a>,
+<a href=#343 id=343 data-nosnippet>343</a>    })
+<a href=#344 id=344 data-nosnippet>344</a>}
+<a href=#345 id=345 data-nosnippet>345</a>
+<a href=#346 id=346 data-nosnippet>346</a><span class="kw">impl</span>&lt;M&gt; <a href="#145-152">FrobeniusDecomposition</a>&lt;M&gt;
+<a href=#347 id=347 data-nosnippet>347</a><span class="kw">where
+<a href=#348 id=348 data-nosnippet>348</a>    </span>M: <a href="../num/mint/mint_base.rs.html#28-80">MIntBase</a>,
+<a href=#349 id=349 data-nosnippet>349</a>{
+<a href=#350 id=350 data-nosnippet>350</a>    <span class="kw">fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="matrix.rs.html#8-15">Matrix</a>&lt;<a href="../algebra/ring.rs.html#136-141">AddMulOperation</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;&gt; {
+<a href=#351 id=351 data-nosnippet>351</a>        <span class="kw">let </span>n = <a class="self" href="#350">self</a>.t.shape.<span class="number">0</span>;
+<a href=#352 id=352 data-nosnippet>352</a>        <span class="kw">let </span><span class="kw-2">mut </span>a = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[MInt::zero(); n]; n];
+<a href=#353 id=353 data-nosnippet>353</a>        <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="number">0</span>;
+<a href=#354 id=354 data-nosnippet>354</a>        <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.blocks {
+<a href=#355 id=355 data-nosnippet>355</a>            <span class="kw">let </span>d = p.<span class="number">0</span>.len() - <span class="number">1</span>;
+<a href=#356 id=356 data-nosnippet>356</a>            <span class="kw">let </span><span class="kw-2">mut </span>c = p.x_pow_mod(k).<span class="number">0</span>;
+<a href=#357 id=357 data-nosnippet>357</a>            <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>a[s..s + d] {
+<a href=#358 id=358 data-nosnippet>358</a>                row[s..s + d].copy_from_slice(<span class="kw-2">&amp;</span>c);
+<a href=#359 id=359 data-nosnippet>359</a>                <span class="kw">let </span>x = c[d - <span class="number">1</span>];
+<a href=#360 id=360 data-nosnippet>360</a>                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..d).rev() {
+<a href=#361 id=361 data-nosnippet>361</a>                    c[i] = c[i - <span class="number">1</span>] - x * p.<span class="number">0</span>[i];
+<a href=#362 id=362 data-nosnippet>362</a>                }
+<a href=#363 id=363 data-nosnippet>363</a>                c[<span class="number">0</span>] = -x * p.<span class="number">0</span>[<span class="number">0</span>];
+<a href=#364 id=364 data-nosnippet>364</a>            }
+<a href=#365 id=365 data-nosnippet>365</a>            s += d;
+<a href=#366 id=366 data-nosnippet>366</a>        }
+<a href=#367 id=367 data-nosnippet>367</a>        <a href="matrix.rs.html#8-15">Matrix</a>::<a href="matrix.rs.html#66-74">from_vec</a>(<a href="#352">a</a>)
+<a href=#368 id=368 data-nosnippet>368</a>    }
+<a href=#369 id=369 data-nosnippet>369</a>}
+<a href=#370 id=370 data-nosnippet>370</a>
+<a href=#371 id=371 data-nosnippet>371</a><span class="kw">fn </span><a href="../../../competitive/math/mint_matrix/fn.taylor_shift.html">taylor_shift</a>&lt;M&gt;(f: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;, a: <a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#14-20">MInt</a>&lt;M&gt;&gt;
+<a href=#372 id=372 data-nosnippet>372</a><span class="kw">where
+<a href=#373 id=373 data-nosnippet>373</a>    </span>M: <a href="../num/mint/mint_base.rs.html#22-26">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+<a href=#374 id=374 data-nosnippet>374</a>{
+<a href=#375 id=375 data-nosnippet>375</a>    <span class="kw">let </span>n = <a href="#371">f</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
+<a href=#376 id=376 data-nosnippet>376</a>    <span class="kw">if </span><a href="#375">n</a> == <span class="number">0 </span>{
+<a href=#377 id=377 data-nosnippet>377</a>        <span class="kw">return </span><a href="#371">f</a>;
 <a href=#378 id=378 data-nosnippet>378</a>    }
-<a href=#379 id=379 data-nosnippet>379</a>    <a href="#366">res</a>
-<a href=#380 id=380 data-nosnippet>380</a>}
-<a href=#381 id=381 data-nosnippet>381</a>
-<a href=#382 id=382 data-nosnippet>382</a><span class="attr">#[cfg(test)]
-<a href=#383 id=383 data-nosnippet>383</a></span><span class="kw">mod </span>tests {
-<a href=#384 id=384 data-nosnippet>384</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#385 id=385 data-nosnippet>385</a>    <span class="kw">use crate</span>::{math::lagrange_interpolation_polynomial, num::montgomery::MInt998244353, rand};
-<a href=#386 id=386 data-nosnippet>386</a>
-<a href=#387 id=387 data-nosnippet>387</a>    <span class="attr">#[test]
-<a href=#388 id=388 data-nosnippet>388</a>    </span><span class="kw">fn </span>test_determinant_linear() {
-<a href=#389 id=389 data-nosnippet>389</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#390 id=390 data-nosnippet>390</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#391 id=391 data-nosnippet>391</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..<span class="number">30</span>, m0: [[<span class="number">0</span>..<span class="number">998244353</span>; n]; n], m1: [[<span class="number">0</span>..<span class="number">998244353</span>; n]; n]);
-<a href=#392 id=392 data-nosnippet>392</a>            <span class="kw">let </span>m0 = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(m0)
-<a href=#393 id=393 data-nosnippet>393</a>                .map::&lt;AddMulOperation&lt;MInt998244353&gt;, <span class="kw">_</span>&gt;(|<span class="kw-2">&amp;</span>x| MInt998244353::new(x));
-<a href=#394 id=394 data-nosnippet>394</a>            <span class="kw">let </span>m1 = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(m1)
-<a href=#395 id=395 data-nosnippet>395</a>                .map::&lt;AddMulOperation&lt;MInt998244353&gt;, <span class="kw">_</span>&gt;(|<span class="kw-2">&amp;</span>x| MInt998244353::new(x));
-<a href=#396 id=396 data-nosnippet>396</a>            <span class="kw">let </span>f = m0.clone().determinant_linear(m1.clone()).unwrap();
-<a href=#397 id=397 data-nosnippet>397</a>
-<a href=#398 id=398 data-nosnippet>398</a>            <span class="kw">let </span>d: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..=n)
-<a href=#399 id=399 data-nosnippet>399</a>                .map(|k| {
-<a href=#400 id=400 data-nosnippet>400</a>                    <span class="kw">let </span><span class="kw-2">mut </span>mat = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::new_with((n, n), |i, j| {
-<a href=#401 id=401 data-nosnippet>401</a>                        m0[i][j] + m1[i][j] * MInt998244353::from(k)
-<a href=#402 id=402 data-nosnippet>402</a>                    });
-<a href=#403 id=403 data-nosnippet>403</a>                    mat.determinant()
-<a href=#404 id=404 data-nosnippet>404</a>                })
-<a href=#405 id=405 data-nosnippet>405</a>                .collect();
-<a href=#406 id=406 data-nosnippet>406</a>            <span class="kw">let </span>(x, y): (Vec&lt;<span class="kw">_</span>&gt;, Vec&lt;<span class="kw">_</span>&gt;) = (<span class="number">0</span>..=n).map(|k| (MInt998244353::from(k), d[k])).unzip();
-<a href=#407 id=407 data-nosnippet>407</a>            <span class="kw">let </span>g = lagrange_interpolation_polynomial(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>y);
-<a href=#408 id=408 data-nosnippet>408</a>            <span class="macro">assert_eq!</span>(f, g);
-<a href=#409 id=409 data-nosnippet>409</a>        }
-<a href=#410 id=410 data-nosnippet>410</a>    }
+<a href=#379 id=379 data-nosnippet>379</a>    <span class="kw">let </span>mf = <a href="factorial.rs.html#4-10">MemorizedFactorial</a>::<a href="factorial.rs.html#16-27">new</a>(<a href="#375">n</a>);
+<a href=#380 id=380 data-nosnippet>380</a>    <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::zero(); n];
+<a href=#381 id=381 data-nosnippet>381</a>    <span class="kw">let </span><span class="kw-2">mut </span>apow = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::one(); n];
+<a href=#382 id=382 data-nosnippet>382</a>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
+<a href=#383 id=383 data-nosnippet>383</a>        apow[i] = apow[i - <span class="number">1</span>] * a;
+<a href=#384 id=384 data-nosnippet>384</a>    }
+<a href=#385 id=385 data-nosnippet>385</a>    <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#386 id=386 data-nosnippet>386</a>        <span class="kw">if </span>f[j].is_zero() {
+<a href=#387 id=387 data-nosnippet>387</a>            <span class="kw">continue</span>;
+<a href=#388 id=388 data-nosnippet>388</a>        }
+<a href=#389 id=389 data-nosnippet>389</a>        <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..=j {
+<a href=#390 id=390 data-nosnippet>390</a>            res[k] += f[j] * apow[j - k] * mf.combination(j, k);
+<a href=#391 id=391 data-nosnippet>391</a>        }
+<a href=#392 id=392 data-nosnippet>392</a>    }
+<a href=#393 id=393 data-nosnippet>393</a>    <a href="#380">res</a>
+<a href=#394 id=394 data-nosnippet>394</a>}
+<a href=#395 id=395 data-nosnippet>395</a>
+<a href=#396 id=396 data-nosnippet>396</a><span class="attr">#[cfg(test)]
+<a href=#397 id=397 data-nosnippet>397</a></span><span class="kw">mod </span>tests {
+<a href=#398 id=398 data-nosnippet>398</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#399 id=399 data-nosnippet>399</a>    <span class="kw">use crate</span>::{math::lagrange_interpolation_polynomial, num::montgomery::MInt998244353, rand};
+<a href=#400 id=400 data-nosnippet>400</a>
+<a href=#401 id=401 data-nosnippet>401</a>    <span class="attr">#[test]
+<a href=#402 id=402 data-nosnippet>402</a>    </span><span class="kw">fn </span>test_determinant_linear() {
+<a href=#403 id=403 data-nosnippet>403</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#404 id=404 data-nosnippet>404</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#405 id=405 data-nosnippet>405</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..<span class="number">30</span>, m0: [[<span class="number">0</span>..<span class="number">998244353</span>; n]; n], m1: [[<span class="number">0</span>..<span class="number">998244353</span>; n]; n]);
+<a href=#406 id=406 data-nosnippet>406</a>            <span class="kw">let </span>m0 = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(m0)
+<a href=#407 id=407 data-nosnippet>407</a>                .map::&lt;AddMulOperation&lt;MInt998244353&gt;, <span class="kw">_</span>&gt;(|<span class="kw-2">&amp;</span>x| MInt998244353::new(x));
+<a href=#408 id=408 data-nosnippet>408</a>            <span class="kw">let </span>m1 = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(m1)
+<a href=#409 id=409 data-nosnippet>409</a>                .map::&lt;AddMulOperation&lt;MInt998244353&gt;, <span class="kw">_</span>&gt;(|<span class="kw-2">&amp;</span>x| MInt998244353::new(x));
+<a href=#410 id=410 data-nosnippet>410</a>            <span class="kw">let </span>f = m0.clone().determinant_linear(m1.clone()).unwrap();
 <a href=#411 id=411 data-nosnippet>411</a>
-<a href=#412 id=412 data-nosnippet>412</a>    <span class="attr">#[test]
-<a href=#413 id=413 data-nosnippet>413</a>    </span><span class="kw">fn </span>test_pow_frobenius() {
-<a href=#414 id=414 data-nosnippet>414</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#415 id=415 data-nosnippet>415</a>        <span class="kw">for </span>iteration <span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#416 id=416 data-nosnippet>416</a>            <span class="kw">let </span>n = <span class="kw">if </span>iteration &lt; <span class="number">16 </span>{
-<a href=#417 id=417 data-nosnippet>417</a>                rng.random(<span class="number">32</span>..<span class="number">100</span>)
-<a href=#418 id=418 data-nosnippet>418</a>            } <span class="kw">else </span>{
-<a href=#419 id=419 data-nosnippet>419</a>                rng.random(<span class="number">0</span>..<span class="number">30</span>)
-<a href=#420 id=420 data-nosnippet>420</a>            };
-<a href=#421 id=421 data-nosnippet>421</a>            <span class="kw">let </span>k = rng.random(<span class="number">0</span>..<span class="number">1_000_000_000</span>);
-<a href=#422 id=422 data-nosnippet>422</a>            <span class="macro">rand!</span>(rng, data: [[<span class="number">0</span>..<span class="number">998244353</span>; n]; n]);
-<a href=#423 id=423 data-nosnippet>423</a>            <span class="kw">let </span>matrix = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(data)
-<a href=#424 id=424 data-nosnippet>424</a>                .map::&lt;AddMulOperation&lt;MInt998244353&gt;, <span class="kw">_</span>&gt;(|<span class="kw-2">&amp;</span>x| MInt998244353::new(x));
-<a href=#425 id=425 data-nosnippet>425</a>            <span class="macro">assert_eq!</span>(matrix.clone().pow(k), matrix.pow_frobenius(k));
-<a href=#426 id=426 data-nosnippet>426</a>
-<a href=#427 id=427 data-nosnippet>427</a>            <span class="kw">let </span>scalar: MInt998244353 = rng.random(..);
-<a href=#428 id=428 data-nosnippet>428</a>            <span class="kw">let </span>matrix: Matrix&lt;AddMulOperation&lt;MInt998244353&gt;&gt; =
-<a href=#429 id=429 data-nosnippet>429</a>                Matrix::new_with((n, n), |i, j| <span class="kw">if </span>i == j { scalar } <span class="kw">else </span>{ MInt::zero() });
-<a href=#430 id=430 data-nosnippet>430</a>            <span class="macro">assert_eq!</span>(matrix.clone().pow(k), matrix.pow_frobenius(k));
-<a href=#431 id=431 data-nosnippet>431</a>
-<a href=#432 id=432 data-nosnippet>432</a>            <span class="kw">let </span><span class="kw-2">mut </span>matrix: Matrix&lt;AddMulOperation&lt;MInt998244353&gt;&gt; =
-<a href=#433 id=433 data-nosnippet>433</a>                Matrix::new_with((n, n), |i, j| {
-<a href=#434 id=434 data-nosnippet>434</a>                    <span class="kw">if </span>i == j {
-<a href=#435 id=435 data-nosnippet>435</a>                        scalar
-<a href=#436 id=436 data-nosnippet>436</a>                    } <span class="kw">else if </span>i + <span class="number">1 </span>== j &amp;&amp; rng.gen_bool(<span class="number">0.8</span>) {
-<a href=#437 id=437 data-nosnippet>437</a>                        MInt::one()
-<a href=#438 id=438 data-nosnippet>438</a>                    } <span class="kw">else </span>{
-<a href=#439 id=439 data-nosnippet>439</a>                        MInt::zero()
-<a href=#440 id=440 data-nosnippet>440</a>                    }
-<a href=#441 id=441 data-nosnippet>441</a>                });
-<a href=#442 id=442 data-nosnippet>442</a>            <span class="kw">if </span>n &gt;= <span class="number">2 </span>{
-<a href=#443 id=443 data-nosnippet>443</a>                <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">4 </span>* n {
-<a href=#444 id=444 data-nosnippet>444</a>                    <span class="kw">let </span>i = rng.random(..n);
-<a href=#445 id=445 data-nosnippet>445</a>                    <span class="kw">let </span>j = (i + rng.random(<span class="number">1</span>..n)) % n;
-<a href=#446 id=446 data-nosnippet>446</a>                    <span class="kw">let </span>factor: MInt998244353 = rng.random(..);
-<a href=#447 id=447 data-nosnippet>447</a>                    <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#448 id=448 data-nosnippet>448</a>                        <span class="kw">let </span>x = factor * matrix[j][k];
-<a href=#449 id=449 data-nosnippet>449</a>                        matrix[i][k] += x;
-<a href=#450 id=450 data-nosnippet>450</a>                    }
-<a href=#451 id=451 data-nosnippet>451</a>                    <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>matrix.data {
-<a href=#452 id=452 data-nosnippet>452</a>                        <span class="kw">let </span>x = factor * row[i];
-<a href=#453 id=453 data-nosnippet>453</a>                        row[j] -= x;
+<a href=#412 id=412 data-nosnippet>412</a>            <span class="kw">let </span>d: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..=n)
+<a href=#413 id=413 data-nosnippet>413</a>                .map(|k| {
+<a href=#414 id=414 data-nosnippet>414</a>                    <span class="kw">let </span><span class="kw-2">mut </span>mat = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::new_with((n, n), |i, j| {
+<a href=#415 id=415 data-nosnippet>415</a>                        m0[i][j] + m1[i][j] * MInt998244353::from(k)
+<a href=#416 id=416 data-nosnippet>416</a>                    });
+<a href=#417 id=417 data-nosnippet>417</a>                    mat.determinant()
+<a href=#418 id=418 data-nosnippet>418</a>                })
+<a href=#419 id=419 data-nosnippet>419</a>                .collect();
+<a href=#420 id=420 data-nosnippet>420</a>            <span class="kw">let </span>(x, y): (Vec&lt;<span class="kw">_</span>&gt;, Vec&lt;<span class="kw">_</span>&gt;) = (<span class="number">0</span>..=n).map(|k| (MInt998244353::from(k), d[k])).unzip();
+<a href=#421 id=421 data-nosnippet>421</a>            <span class="kw">let </span>g = lagrange_interpolation_polynomial(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>y);
+<a href=#422 id=422 data-nosnippet>422</a>            <span class="macro">assert_eq!</span>(f, g);
+<a href=#423 id=423 data-nosnippet>423</a>        }
+<a href=#424 id=424 data-nosnippet>424</a>    }
+<a href=#425 id=425 data-nosnippet>425</a>
+<a href=#426 id=426 data-nosnippet>426</a>    <span class="attr">#[test]
+<a href=#427 id=427 data-nosnippet>427</a>    </span><span class="kw">fn </span>test_pow_frobenius() {
+<a href=#428 id=428 data-nosnippet>428</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#429 id=429 data-nosnippet>429</a>        <span class="kw">for </span>iteration <span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#430 id=430 data-nosnippet>430</a>            <span class="kw">let </span>n = <span class="kw">if </span>iteration &lt; <span class="number">16 </span>{
+<a href=#431 id=431 data-nosnippet>431</a>                rng.random(<span class="number">32</span>..<span class="number">100</span>)
+<a href=#432 id=432 data-nosnippet>432</a>            } <span class="kw">else </span>{
+<a href=#433 id=433 data-nosnippet>433</a>                rng.random(<span class="number">0</span>..<span class="number">30</span>)
+<a href=#434 id=434 data-nosnippet>434</a>            };
+<a href=#435 id=435 data-nosnippet>435</a>            <span class="kw">let </span>k = rng.random(<span class="number">0</span>..<span class="number">1_000_000_000</span>);
+<a href=#436 id=436 data-nosnippet>436</a>            <span class="macro">rand!</span>(rng, data: [[<span class="number">0</span>..<span class="number">998244353</span>; n]; n]);
+<a href=#437 id=437 data-nosnippet>437</a>            <span class="kw">let </span>matrix = Matrix::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(data)
+<a href=#438 id=438 data-nosnippet>438</a>                .map::&lt;AddMulOperation&lt;MInt998244353&gt;, <span class="kw">_</span>&gt;(|<span class="kw-2">&amp;</span>x| MInt998244353::new(x));
+<a href=#439 id=439 data-nosnippet>439</a>            <span class="macro">assert_eq!</span>(matrix.clone().pow(k), matrix.pow_frobenius(k));
+<a href=#440 id=440 data-nosnippet>440</a>
+<a href=#441 id=441 data-nosnippet>441</a>            <span class="kw">let </span>scalar: MInt998244353 = rng.random(..);
+<a href=#442 id=442 data-nosnippet>442</a>            <span class="kw">let </span>matrix: Matrix&lt;AddMulOperation&lt;MInt998244353&gt;&gt; =
+<a href=#443 id=443 data-nosnippet>443</a>                Matrix::new_with((n, n), |i, j| <span class="kw">if </span>i == j { scalar } <span class="kw">else </span>{ MInt::zero() });
+<a href=#444 id=444 data-nosnippet>444</a>            <span class="macro">assert_eq!</span>(matrix.clone().pow(k), matrix.pow_frobenius(k));
+<a href=#445 id=445 data-nosnippet>445</a>
+<a href=#446 id=446 data-nosnippet>446</a>            <span class="kw">let </span><span class="kw-2">mut </span>matrix: Matrix&lt;AddMulOperation&lt;MInt998244353&gt;&gt; =
+<a href=#447 id=447 data-nosnippet>447</a>                Matrix::new_with((n, n), |i, j| {
+<a href=#448 id=448 data-nosnippet>448</a>                    <span class="kw">if </span>i == j {
+<a href=#449 id=449 data-nosnippet>449</a>                        scalar
+<a href=#450 id=450 data-nosnippet>450</a>                    } <span class="kw">else if </span>i + <span class="number">1 </span>== j &amp;&amp; rng.gen_bool(<span class="number">0.8</span>) {
+<a href=#451 id=451 data-nosnippet>451</a>                        MInt::one()
+<a href=#452 id=452 data-nosnippet>452</a>                    } <span class="kw">else </span>{
+<a href=#453 id=453 data-nosnippet>453</a>                        MInt::zero()
 <a href=#454 id=454 data-nosnippet>454</a>                    }
-<a href=#455 id=455 data-nosnippet>455</a>                }
-<a href=#456 id=456 data-nosnippet>456</a>            }
-<a href=#457 id=457 data-nosnippet>457</a>            <span class="macro">assert_eq!</span>(matrix.clone().pow(k), matrix.pow_frobenius(k));
-<a href=#458 id=458 data-nosnippet>458</a>        }
-<a href=#459 id=459 data-nosnippet>459</a>    }
-<a href=#460 id=460 data-nosnippet>460</a>}
+<a href=#455 id=455 data-nosnippet>455</a>                });
+<a href=#456 id=456 data-nosnippet>456</a>            <span class="kw">if </span>n &gt;= <span class="number">2 </span>{
+<a href=#457 id=457 data-nosnippet>457</a>                <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">4 </span>* n {
+<a href=#458 id=458 data-nosnippet>458</a>                    <span class="kw">let </span>i = rng.random(..n);
+<a href=#459 id=459 data-nosnippet>459</a>                    <span class="kw">let </span>j = (i + rng.random(<span class="number">1</span>..n)) % n;
+<a href=#460 id=460 data-nosnippet>460</a>                    <span class="kw">let </span>factor: MInt998244353 = rng.random(..);
+<a href=#461 id=461 data-nosnippet>461</a>                    <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#462 id=462 data-nosnippet>462</a>                        <span class="kw">let </span>x = factor * matrix[j][k];
+<a href=#463 id=463 data-nosnippet>463</a>                        matrix[i][k] += x;
+<a href=#464 id=464 data-nosnippet>464</a>                    }
+<a href=#465 id=465 data-nosnippet>465</a>                    <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>matrix.data {
+<a href=#466 id=466 data-nosnippet>466</a>                        <span class="kw">let </span>x = factor * row[i];
+<a href=#467 id=467 data-nosnippet>467</a>                        row[j] -= x;
+<a href=#468 id=468 data-nosnippet>468</a>                    }
+<a href=#469 id=469 data-nosnippet>469</a>                }
+<a href=#470 id=470 data-nosnippet>470</a>            }
+<a href=#471 id=471 data-nosnippet>471</a>            <span class="macro">assert_eq!</span>(matrix.clone().pow(k), matrix.pow_frobenius(k));
+<a href=#472 id=472 data-nosnippet>472</a>        }
+<a href=#473 id=473 data-nosnippet>473</a>    }
+<a href=#474 id=474 data-nosnippet>474</a>}
 </code></pre></div></section></main></body></html>

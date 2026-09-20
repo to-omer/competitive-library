@@ -868,7 +868,7 @@
 <span data-nosnippet>77</span>            s -= <span class="self">Self</span>::MOD;
 <span data-nosnippet>78</span>        }
 <span data-nosnippet>79</span>        s
-<span data-nosnippet>80</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/mint_matrix.rs.html#29&#34;,&#34;line 29&#34;],[[243,243],&#34;../../../src/competitive/math/mint_matrix.rs.html#267&#34;,&#34;line 267&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_matrix.rs (<a href="../../../src/competitive/math/mint_matrix.rs.html#29">line 29</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>24</span>    <span class="kw">fn </span>determinant_linear(<span class="kw-2">mut </span><span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;MInt&lt;M&gt;&gt;&gt;
+<span data-nosnippet>80</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/mint_matrix.rs.html#29&#34;,&#34;line 29&#34;],[[244,244],&#34;../../../src/competitive/math/mint_matrix.rs.html#268&#34;,&#34;line 268&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_matrix.rs (<a href="../../../src/competitive/math/mint_matrix.rs.html#29">line 29</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>24</span>    <span class="kw">fn </span>determinant_linear(<span class="kw-2">mut </span><span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;MInt&lt;M&gt;&gt;&gt;
 <span data-nosnippet>25</span>    <span class="kw">where
 <span data-nosnippet>26</span>        </span>M: MIntConvert&lt;usize&gt; + MIntConvert&lt;u64&gt;,
 <span data-nosnippet>27</span>    {
@@ -1063,118 +1063,132 @@
 <span data-nosnippet>216</span>        <span class="self">self</span>.<span class="number">0</span>.iter().all(|x| x.is_zero()).then_some(<span class="self">Self</span>(<a href="../algebra/action.rs.html#20">q</a>))
 <span data-nosnippet>217</span>    }
 <span data-nosnippet>218</span>
-<span data-nosnippet>219</span>    <span class="kw">fn </span>mul_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>, p: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>219</span>    <span class="kw">fn </span>square_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>220</span>        <span class="kw">let </span>d = p.<span class="number">0</span>.len() - <span class="number">1</span>;
 <span data-nosnippet>221</span>        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[MInt::zero(); <span class="number">2 </span>* d - <span class="number">1</span>];
 <span data-nosnippet>222</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>x) <span class="kw">in </span><span class="self">self</span>.<span class="number">0</span>.iter().enumerate() {
-<span data-nosnippet>223</span>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i..i + rhs.<span class="number">0</span>.len()], <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>, <span class="kw-2">&amp;</span>x);
-<span data-nosnippet>224</span>        }
-<span data-nosnippet>225</span>        <span class="kw">for </span>i <span class="kw">in </span>(d..c.len()).rev() {
-<span data-nosnippet>226</span>            <span class="kw">let </span>x = c[i];
-<span data-nosnippet>227</span>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i - d..=i], <span class="kw-2">&amp;</span>p.<span class="number">0</span>, <span class="kw-2">&amp;</span>-x);
-<span data-nosnippet>228</span>        }
-<span data-nosnippet>229</span>        c.truncate(d);
-<span data-nosnippet>230</span>        <span class="self">Self</span>(c)
-<span data-nosnippet>231</span>    }
-<span data-nosnippet>232</span>
-<span data-nosnippet>233</span>    <span class="kw">fn </span>x_pow_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>234</span>        <span class="kw">let </span>d = <span class="self">self</span>.<span class="number">0</span>.len() - <span class="number">1</span>;
-<span data-nosnippet>235</span>        <span class="kw">if </span>d == <span class="number">1 </span>{
-<span data-nosnippet>236</span>            <span class="kw">return </span><span class="self">Self</span>(<span class="macro">vec!</span>[(-<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>]).pow(k)]);
-<span data-nosnippet>237</span>        }
-<span data-nosnippet>238</span>        <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="self">Self</span>(<span class="macro">vec!</span>[MInt::zero(); d]);
-<span data-nosnippet>239</span>        r.<span class="number">0</span>[<span class="number">0</span>] = MInt::one();
-<span data-nosnippet>240</span>        <span class="kw">for </span>bit <span class="kw">in </span>(<span class="number">0</span>..usize::BITS - k.leading_zeros()).rev() {
-<span data-nosnippet>241</span>            r = r.mul_mod(<span class="kw-2">&amp;</span>r, <span class="self">self</span>);
-<span data-nosnippet>242</span>            <span class="kw">if </span>k &gt;&gt; bit &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
-<span data-nosnippet>243</span>                <span class="kw">let </span>x = r.<span class="number">0</span>[d - <span class="number">1</span>];
-<span data-nosnippet>244</span>                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..d).rev() {
-<span data-nosnippet>245</span>                    r.<span class="number">0</span>[i] = r.<span class="number">0</span>[i - <span class="number">1</span>] - x * <span class="self">self</span>.<span class="number">0</span>[i];
-<span data-nosnippet>246</span>                }
-<span data-nosnippet>247</span>                r.<span class="number">0</span>[<span class="number">0</span>] = -x * <span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>];
-<span data-nosnippet>248</span>            }
-<span data-nosnippet>249</span>        }
-<span data-nosnippet>250</span>        r
-<span data-nosnippet>251</span>    }
-<span data-nosnippet>252</span>}
-<span data-nosnippet>253</span>
-<span data-nosnippet>254</span><span class="kw">fn </span>frobenius_decomposition&lt;M&gt;(
-<span data-nosnippet>255</span>    a: <span class="kw-2">&amp;</span>Matrix&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;&gt;,
-<span data-nosnippet>256</span>    rng: <span class="kw-2">&amp;mut </span>Xorshift,
-<span data-nosnippet>257</span>) -&gt; <span class="prelude-ty">Option</span>&lt;FrobeniusDecomposition&lt;M&gt;&gt;
-<span data-nosnippet>258</span><span class="kw">where
-<span data-nosnippet>259</span>    </span>M: MIntBase + MIntConvert&lt;u64&gt;,
-<span data-nosnippet>260</span>{
-<span data-nosnippet>261</span>    <span class="kw">let </span>n = a.shape.<span class="number">0</span>;
-<span data-nosnippet>262</span>    <span class="kw">let </span><span class="kw-2">mut </span>rows = Vec::with_capacity(n);
-<span data-nosnippet>263</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = Vec::with_capacity(n);
-<span data-nosnippet>264</span>    <span class="kw">let </span><span class="kw-2">mut </span>blocks: Vec&lt;Polynomial&lt;M&gt;&gt; = Vec::new();
-<span data-nosnippet>265</span>    <span class="kw">while </span>rows.len() &lt; n {
-<span data-nosnippet>266</span>        <span class="kw">let </span>s = rows.len();
-<span data-nosnippet>267</span>        <span class="kw">let </span>v = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.<span class="highlight">rand64</span>())).collect();
-<span data-nosnippet>268</span>        <span class="kw">let </span>c = generate_frobenius_block(a, v, <span class="kw-2">&amp;mut </span>rows, <span class="kw-2">&amp;mut </span>t);
-<span data-nosnippet>269</span>        <span class="kw">if </span>rows.len() == s {
-<span data-nosnippet>270</span>            <span class="kw">continue</span>;
-<span data-nosnippet>271</span>        }
-<span data-nosnippet>272</span>        <span class="kw">let </span>p = Polynomial(c.<span class="number">0</span>[s..].to_vec());
-<span data-nosnippet>273</span>        <span class="kw">if </span>c.<span class="number">0</span>[..s].iter().any(|x| !x.is_zero()) {
-<span data-nosnippet>274</span>            <span class="kw">let </span>q = c.exact_div(<span class="kw-2">&amp;</span>p)<span class="question-mark">?</span>;
-<span data-nosnippet>275</span>            <span class="kw">let </span>d = rows.len() - s;
-<span data-nosnippet>276</span>            <span class="kw">let </span><span class="kw-2">mut </span>coefficients = q.<span class="number">0</span>[..s].to_vec();
-<span data-nosnippet>277</span>            <span class="kw">let </span><span class="kw-2">mut </span>shifts = Vec::with_capacity(d);
-<span data-nosnippet>278</span>            <span class="kw">for _ in </span><span class="number">0</span>..d {
-<span data-nosnippet>279</span>                shifts.push(coefficients.clone());
-<span data-nosnippet>280</span>                <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="number">0</span>;
-<span data-nosnippet>281</span>                <span class="kw">for </span>block <span class="kw">in </span><span class="kw-2">&amp;</span>blocks {
-<span data-nosnippet>282</span>                    <span class="kw">let </span>len = block.<span class="number">0</span>.len() - <span class="number">1</span>;
-<span data-nosnippet>283</span>                    <span class="kw">let </span>c = <span class="kw-2">&amp;mut </span>coefficients[first..first + len];
-<span data-nosnippet>284</span>                    <span class="kw">let </span>last = c[len - <span class="number">1</span>];
-<span data-nosnippet>285</span>                    <span class="kw">for </span>j <span class="kw">in </span>(<span class="number">1</span>..len).rev() {
-<span data-nosnippet>286</span>                        c[j] = c[j - <span class="number">1</span>] - last * block.<span class="number">0</span>[j];
-<span data-nosnippet>287</span>                    }
-<span data-nosnippet>288</span>                    c[<span class="number">0</span>] = -last * block.<span class="number">0</span>[<span class="number">0</span>];
-<span data-nosnippet>289</span>                    first += len;
-<span data-nosnippet>290</span>                }
-<span data-nosnippet>291</span>            }
-<span data-nosnippet>292</span>            <span class="kw">let </span>shifts: Matrix&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;&gt; = Matrix::from_vec(shifts);
-<span data-nosnippet>293</span>            <span class="kw">let </span>previous = Matrix::from_vec(t[..s].to_vec());
-<span data-nosnippet>294</span>            <span class="kw">let </span>correction = <span class="kw-2">&amp;</span>shifts * <span class="kw-2">&amp;</span>previous;
-<span data-nosnippet>295</span>            <span class="kw">for </span>(i, row) <span class="kw">in </span>rows[s..].iter_mut().enumerate() {
-<span data-nosnippet>296</span>                <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>t[s + <a href="../algebra/lazy_map.rs.html#48">i</a>].iter_mut().zip(<span class="kw-2">&amp;</span>correction[i]) {
-<span data-nosnippet>297</span>                    <span class="kw-2">*</span>x += y;
-<span data-nosnippet>298</span>                }
-<span data-nosnippet>299</span>                <span class="comment">// Keep the reduced vector fixed: T_new += S*T_old gives C_old -= C_new*S.
-<span data-nosnippet>300</span>                </span><span class="kw">let </span>(previous, current) = row.row[n..].split_at_mut(s);
-<span data-nosnippet>301</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>x, shift) <span class="kw">in </span>current.iter().zip(<span class="kw-2">&amp;</span>shifts.data) {
-<span data-nosnippet>302</span>                    MInt::add_scaled_assign(previous, shift, <span class="kw-2">&amp;</span>-x);
-<span data-nosnippet>303</span>                }
-<span data-nosnippet>304</span>            }
-<span data-nosnippet>305</span>        }
-<span data-nosnippet>306</span>        blocks.push(p);
-<span data-nosnippet>307</span>    }
-<span data-nosnippet>308</span>
-<span data-nosnippet>309</span>    <span class="kw">let </span><span class="kw-2">mut </span>t_inv = <span class="macro">vec!</span>[<span class="macro">vec!</span>[<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">MInt</a>::zero(); n]; n];
-<span data-nosnippet>310</span>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
-<span data-nosnippet>311</span>        <span class="kw">let </span>row = <span class="kw-2">&amp;</span>rows[i];
-<span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>c = row.row[n..].to_vec();
-<span data-nosnippet>313</span>        c.resize(n, MInt::zero());
-<span data-nosnippet>314</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>c {
-<span data-nosnippet>315</span>            <span class="kw-2">*</span>x <span class="kw-2">*</span>= row.inv;
-<span data-nosnippet>316</span>        }
-<span data-nosnippet>317</span>        <span class="kw">for </span>next <span class="kw">in </span><span class="kw-2">&amp;</span>rows[i + <span class="number">1</span>..] {
-<span data-nosnippet>318</span>            <span class="kw">let </span>factor = -row.row[next.pivot] * row.inv;
-<span data-nosnippet>319</span>            <span class="kw">if </span>!factor.is_zero() {
-<span data-nosnippet>320</span>                MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c, <span class="kw-2">&amp;</span>t_inv[next.pivot], <span class="kw-2">&amp;</span>factor);
-<span data-nosnippet>321</span>            }
-<span data-nosnippet>322</span>        }
-<span data-nosnippet>323</span>        t_inv[row.pivot] = c;
-<span data-nosnippet>324</span>    }
-<span data-nosnippet>325</span>    <span class="prelude-val">Some</span>(FrobeniusDecomposition {
-<span data-nosnippet>326</span>        t: Matrix::from_vec(t),
-<span data-nosnippet>327</span>        t_inv: Matrix::from_vec(t_inv),
-<span data-nosnippet>328</span>        blocks,
-<span data-nosnippet>329</span>    })
-<span data-nosnippet>330</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/math/primitive_root.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">pub fn </span>primitive_root(p: u64) -&gt; u64 {
+<span data-nosnippet>223</span>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i..<span class="number">2 </span>* i], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[..i], <span class="kw-2">&amp;</span>(x + x));
+<span data-nosnippet>224</span>            c[<span class="number">2 </span>* i] += x * x;
+<span data-nosnippet>225</span>        }
+<span data-nosnippet>226</span>        <span class="kw">for </span>i <span class="kw">in </span>(d..c.len()).rev() {
+<span data-nosnippet>227</span>            <span class="kw">let </span>x = c[i];
+<span data-nosnippet>228</span>            MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c[i - d..=i], <span class="kw-2">&amp;</span>p.<span class="number">0</span>, <span class="kw-2">&amp;</span>-x);
+<span data-nosnippet>229</span>        }
+<span data-nosnippet>230</span>        c.truncate(d);
+<span data-nosnippet>231</span>        <span class="self">Self</span>(c)
+<span data-nosnippet>232</span>    }
+<span data-nosnippet>233</span>
+<span data-nosnippet>234</span>    <span class="kw">fn </span>x_pow_mod(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>235</span>        <span class="kw">let </span>d = <span class="self">self</span>.<span class="number">0</span>.len() - <span class="number">1</span>;
+<span data-nosnippet>236</span>        <span class="kw">if </span>d == <span class="number">1 </span>{
+<span data-nosnippet>237</span>            <span class="kw">return </span><span class="self">Self</span>(<span class="macro">vec!</span>[(-<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>]).pow(k)]);
+<span data-nosnippet>238</span>        }
+<span data-nosnippet>239</span>        <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="self">Self</span>(<span class="macro">vec!</span>[MInt::zero(); d]);
+<span data-nosnippet>240</span>        r.<span class="number">0</span>[<span class="number">0</span>] = MInt::one();
+<span data-nosnippet>241</span>        <span class="kw">for </span>bit <span class="kw">in </span>(<span class="number">0</span>..usize::BITS - k.leading_zeros()).rev() {
+<span data-nosnippet>242</span>            r = r.square_mod(<span class="self">self</span>);
+<span data-nosnippet>243</span>            <span class="kw">if </span>k &gt;&gt; bit &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+<span data-nosnippet>244</span>                <span class="kw">let </span>x = r.<span class="number">0</span>[d - <span class="number">1</span>];
+<span data-nosnippet>245</span>                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..d).rev() {
+<span data-nosnippet>246</span>                    r.<span class="number">0</span>[i] = r.<span class="number">0</span>[i - <span class="number">1</span>] - x * <span class="self">self</span>.<span class="number">0</span>[i];
+<span data-nosnippet>247</span>                }
+<span data-nosnippet>248</span>                r.<span class="number">0</span>[<span class="number">0</span>] = -x * <span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>];
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>        }
+<span data-nosnippet>251</span>        r
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>}
+<span data-nosnippet>254</span>
+<span data-nosnippet>255</span><span class="kw">fn </span>frobenius_decomposition&lt;M&gt;(
+<span data-nosnippet>256</span>    a: <span class="kw-2">&amp;</span>Matrix&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;&gt;,
+<span data-nosnippet>257</span>    rng: <span class="kw-2">&amp;mut </span>Xorshift,
+<span data-nosnippet>258</span>) -&gt; <span class="prelude-ty">Option</span>&lt;FrobeniusDecomposition&lt;M&gt;&gt;
+<span data-nosnippet>259</span><span class="kw">where
+<span data-nosnippet>260</span>    </span>M: MIntBase + MIntConvert&lt;u64&gt;,
+<span data-nosnippet>261</span>{
+<span data-nosnippet>262</span>    <span class="kw">let </span>n = a.shape.<span class="number">0</span>;
+<span data-nosnippet>263</span>    <span class="kw">let </span><span class="kw-2">mut </span>rows = Vec::with_capacity(n);
+<span data-nosnippet>264</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = Vec::with_capacity(n);
+<span data-nosnippet>265</span>    <span class="kw">let </span><span class="kw-2">mut </span>blocks: Vec&lt;Polynomial&lt;M&gt;&gt; = Vec::new();
+<span data-nosnippet>266</span>    <span class="kw">while </span>rows.len() &lt; n {
+<span data-nosnippet>267</span>        <span class="kw">let </span>s = rows.len();
+<span data-nosnippet>268</span>        <span class="kw">let </span>v = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.<span class="highlight">rand64</span>())).collect();
+<span data-nosnippet>269</span>        <span class="kw">let </span>c = generate_frobenius_block(a, v, <span class="kw-2">&amp;mut </span>rows, <span class="kw-2">&amp;mut </span>t);
+<span data-nosnippet>270</span>        <span class="kw">if </span>rows.len() == s {
+<span data-nosnippet>271</span>            <span class="kw">continue</span>;
+<span data-nosnippet>272</span>        }
+<span data-nosnippet>273</span>        <span class="kw">let </span>p = Polynomial(c.<span class="number">0</span>[s..].to_vec());
+<span data-nosnippet>274</span>        <span class="kw">if </span>c.<span class="number">0</span>[..s].iter().any(|x| !x.is_zero()) {
+<span data-nosnippet>275</span>            <span class="kw">let </span>q = c.exact_div(<span class="kw-2">&amp;</span>p)<span class="question-mark">?</span>;
+<span data-nosnippet>276</span>            <span class="kw">let </span>d = rows.len() - s;
+<span data-nosnippet>277</span>            <span class="kw">let </span><span class="kw-2">mut </span>coefficients = q.<span class="number">0</span>[..s].to_vec();
+<span data-nosnippet>278</span>            <span class="kw">let </span><span class="kw-2">mut </span>shifts = Vec::with_capacity(d);
+<span data-nosnippet>279</span>            <span class="kw">for _ in </span><span class="number">0</span>..d {
+<span data-nosnippet>280</span>                shifts.push(coefficients.clone());
+<span data-nosnippet>281</span>                <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="number">0</span>;
+<span data-nosnippet>282</span>                <span class="kw">for </span>block <span class="kw">in </span><span class="kw-2">&amp;</span>blocks {
+<span data-nosnippet>283</span>                    <span class="kw">let </span>len = block.<span class="number">0</span>.len() - <span class="number">1</span>;
+<span data-nosnippet>284</span>                    <span class="kw">let </span>c = <span class="kw-2">&amp;mut </span>coefficients[first..first + len];
+<span data-nosnippet>285</span>                    <span class="kw">let </span>last = c[len - <span class="number">1</span>];
+<span data-nosnippet>286</span>                    <span class="kw">for </span>j <span class="kw">in </span>(<span class="number">1</span>..len).rev() {
+<span data-nosnippet>287</span>                        c[j] = c[j - <span class="number">1</span>] - last * block.<span class="number">0</span>[j];
+<span data-nosnippet>288</span>                    }
+<span data-nosnippet>289</span>                    c[<span class="number">0</span>] = -last * block.<span class="number">0</span>[<span class="number">0</span>];
+<span data-nosnippet>290</span>                    first += len;
+<span data-nosnippet>291</span>                }
+<span data-nosnippet>292</span>            }
+<span data-nosnippet>293</span>            <span class="kw">let </span>shifts: Matrix&lt;AddMulOperation&lt;MInt&lt;M&gt;&gt;&gt; = Matrix::from_vec(shifts);
+<span data-nosnippet>294</span>            <span class="kw">if </span>d &lt; <span class="number">32 </span>{
+<span data-nosnippet>295</span>                <span class="kw">let </span>(previous, current) = t.split_at_mut(s);
+<span data-nosnippet>296</span>                <span class="kw">for </span>(shift, row) <span class="kw">in </span>shifts.data.iter().zip(current) {
+<span data-nosnippet>297</span>                    <span class="kw">for </span>(factor, source) <span class="kw">in </span>shift.iter().zip(previous.iter()) {
+<span data-nosnippet>298</span>                        <span class="kw">if </span>!factor.is_zero() {
+<span data-nosnippet>299</span>                            MInt::add_scaled_assign(row, source, factor);
+<span data-nosnippet>300</span>                        }
+<span data-nosnippet>301</span>                    }
+<span data-nosnippet>302</span>                }
+<span data-nosnippet>303</span>            } <span class="kw">else </span>{
+<span data-nosnippet>304</span>                <span class="kw">let </span>previous = Matrix::from_vec(t[..s].to_vec());
+<span data-nosnippet>305</span>                <span class="kw">let </span>correction = <span class="kw-2">&amp;</span>shifts * <span class="kw-2">&amp;</span>previous;
+<span data-nosnippet>306</span>                <span class="kw">for </span>(row, correction) <span class="kw">in </span>t[s..].iter_mut().zip(<span class="kw-2">&amp;</span>correction.data) {
+<span data-nosnippet>307</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>row.iter_mut().zip(correction) {
+<span data-nosnippet>308</span>                        <span class="kw-2">*</span>x += y;
+<span data-nosnippet>309</span>                    }
+<span data-nosnippet>310</span>                }
+<span data-nosnippet>311</span>            }
+<span data-nosnippet>312</span>            <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>rows[s..] {
+<span data-nosnippet>313</span>                <span class="comment">// Keep the reduced vector fixed: T_new += S*T_old gives C_old -= C_new*S.
+<span data-nosnippet>314</span>                </span><span class="kw">let </span>(previous, current) = row.row[n..].split_at_mut(s);
+<span data-nosnippet>315</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>x, shift) <span class="kw">in </span>current.iter().zip(<span class="kw-2">&amp;</span>shifts.data) {
+<span data-nosnippet>316</span>                    MInt::add_scaled_assign(previous, shift, <span class="kw-2">&amp;</span>-x);
+<span data-nosnippet>317</span>                }
+<span data-nosnippet>318</span>            }
+<span data-nosnippet>319</span>        }
+<span data-nosnippet>320</span>        blocks.push(p);
+<span data-nosnippet>321</span>    }
+<span data-nosnippet>322</span>
+<span data-nosnippet>323</span>    <span class="kw">let </span><span class="kw-2">mut </span>t_inv = <span class="macro">vec!</span>[<span class="macro">vec!</span>[MInt::zero(); n]; n];
+<span data-nosnippet>324</span>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
+<span data-nosnippet>325</span>        <span class="kw">let </span>row = <span class="kw-2">&amp;</span>rows[i];
+<span data-nosnippet>326</span>        <span class="kw">let </span><span class="kw-2">mut </span>c = row.row[n..].to_vec();
+<span data-nosnippet>327</span>        c.resize(n, MInt::zero());
+<span data-nosnippet>328</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>c {
+<span data-nosnippet>329</span>            <span class="kw-2">*</span>x <span class="kw-2">*</span>= row.inv;
+<span data-nosnippet>330</span>        }
+<span data-nosnippet>331</span>        <span class="kw">for </span>next <span class="kw">in </span><span class="kw-2">&amp;</span>rows[i + <span class="number">1</span>..] {
+<span data-nosnippet>332</span>            <span class="kw">let </span>factor = -row.row[next.pivot] * row.inv;
+<span data-nosnippet>333</span>            <span class="kw">if </span>!factor.is_zero() {
+<span data-nosnippet>334</span>                MInt::add_scaled_assign(<span class="kw-2">&amp;mut </span>c, <span class="kw-2">&amp;</span>t_inv[next.pivot], <span class="kw-2">&amp;</span>factor);
+<span data-nosnippet>335</span>            }
+<span data-nosnippet>336</span>        }
+<span data-nosnippet>337</span>        t_inv[row.pivot] = c;
+<span data-nosnippet>338</span>    }
+<span data-nosnippet>339</span>    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Some</a>(FrobeniusDecomposition {
+<span data-nosnippet>340</span>        t: Matrix::from_vec(t),
+<span data-nosnippet>341</span>        t_inv: Matrix::from_vec(t_inv),
+<span data-nosnippet>342</span>        blocks,
+<span data-nosnippet>343</span>    })
+<span data-nosnippet>344</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/math/primitive_root.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">pub fn </span>primitive_root(p: u64) -&gt; u64 {
 <span data-nosnippet>4</span>    <span class="kw">if </span>p == <span class="number">2 </span>{
 <span data-nosnippet>5</span>        <span class="kw">return </span><span class="number">1</span>;
 <span data-nosnippet>6</span>    }

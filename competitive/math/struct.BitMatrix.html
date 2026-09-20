@@ -476,18 +476,34 @@
 <span data-nosnippet>8</span>    <span class="comment">// Transpose very tall matrices to avoid allocating millions of short rows.
 <span data-nosnippet>9</span>    </span><span class="kw">let </span>transpose = n / <span class="number">2 </span>&gt; m;
 <span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="highlight focus">BitMatrix::zeros</span>(<span class="kw">if </span>transpose { (m, n) } <span class="kw">else </span>{ (n, m) });
-<span data-nosnippet>11</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="kw">if </span>m == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ n } {
-<span data-nosnippet>12</span>        <span class="macro">sc!</span>(row: <span class="kw-2">&amp;</span>str);
-<span data-nosnippet>13</span>        <span class="kw">if </span>!transpose {
-<span data-nosnippet>14</span>            a.data[i] = BitSet::from_binary(row).unwrap();
-<span data-nosnippet>15</span>        } <span class="kw">else </span>{
-<span data-nosnippet>16</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span>row.bytes().enumerate() {
-<span data-nosnippet>17</span>                a[j].set(i, b == <span class="string">b'1'</span>);
-<span data-nosnippet>18</span>            }
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>    <span class="macro">pp!</span>(a.rank());
-<span data-nosnippet>22</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.from_vec" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#27-31">Source</a><h4 class="code-header">pub fn <a href="#method.from_vec" class="fn">from_vec</a>(data: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../data_structure/struct.BitSet.html" title="struct competitive::data_structure::BitSet">BitSet</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../src/library_checker/linear_algebra/matrix_det_mod_2.rs.html#8&#34;,&#34;line 8&#34;]]"><div class="scraped-example-title">crates/library_checker/src/linear_algebra/matrix_det_mod_2.rs (<a href="../../src/library_checker/linear_algebra/matrix_det_mod_2.rs.html#8">line 8</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>matrix_det_mod_2(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="kw">if </span>transpose &amp;&amp; m &gt;= <span class="number">64 </span>{
+<span data-nosnippet>12</span>        <span class="kw">let </span><span class="kw-2">mut </span>words = <span class="macro">vec!</span>[<span class="number">0u64</span>; m];
+<span data-nosnippet>13</span>        <span class="kw">for </span>first <span class="kw">in </span>(<span class="number">0</span>..n).step_by(<span class="number">64</span>) {
+<span data-nosnippet>14</span>            words.fill(<span class="number">0</span>);
+<span data-nosnippet>15</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">64</span>.min(n - first) {
+<span data-nosnippet>16</span>                <span class="macro">sc!</span>(row: <span class="kw-2">&amp;</span>str);
+<span data-nosnippet>17</span>                <span class="kw">for </span>(word, b) <span class="kw">in </span>words.iter_mut().zip(row.bytes()) {
+<span data-nosnippet>18</span>                    <span class="kw-2">*</span>word |= u64::from(b == <span class="string">b'1'</span>) &lt;&lt; i;
+<span data-nosnippet>19</span>                }
+<span data-nosnippet>20</span>            }
+<span data-nosnippet>21</span>            <span class="kw">for </span>(row, <span class="kw-2">&amp;</span>word) <span class="kw">in </span>a.data.iter_mut().zip(<span class="kw-2">&amp;</span>words) {
+<span data-nosnippet>22</span>                row.words_mut()[first / <span class="number">64</span>] = word;
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>        }
+<span data-nosnippet>25</span>    } <span class="kw">else </span>{
+<span data-nosnippet>26</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="kw">if </span>m == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ n } {
+<span data-nosnippet>27</span>            <span class="macro">sc!</span>(row: <span class="kw-2">&amp;</span>str);
+<span data-nosnippet>28</span>            <span class="kw">if </span>!transpose {
+<span data-nosnippet>29</span>                a.data[i] = BitSet::from_binary(row).unwrap();
+<span data-nosnippet>30</span>            } <span class="kw">else </span>{
+<span data-nosnippet>31</span>                <span class="kw">for </span>(j, b) <span class="kw">in </span>row.bytes().enumerate() {
+<span data-nosnippet>32</span>                    a[j].words_mut()[i / <span class="number">64</span>] |= u64::from(b == <span class="string">b'1'</span>) &lt;&lt; (i % <span class="number">64</span>);
+<span data-nosnippet>33</span>                }
+<span data-nosnippet>34</span>            }
+<span data-nosnippet>35</span>        }
+<span data-nosnippet>36</span>    }
+<span data-nosnippet>37</span>    <span class="macro">pp!</span>(a.rank());
+<span data-nosnippet>38</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.from_vec" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#27-31">Source</a><h4 class="code-header">pub fn <a href="#method.from_vec" class="fn">from_vec</a>(data: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../data_structure/struct.BitSet.html" title="struct competitive::data_structure::BitSet">BitSet</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../src/library_checker/linear_algebra/matrix_det_mod_2.rs.html#8&#34;,&#34;line 8&#34;]]"><div class="scraped-example-title">crates/library_checker/src/linear_algebra/matrix_det_mod_2.rs (<a href="../../src/library_checker/linear_algebra/matrix_det_mod_2.rs.html#8">line 8</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>matrix_det_mod_2(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(n, a: [@BitSet::from_binary; n]);
 <span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="highlight focus">BitMatrix::from_vec</span>(a);
@@ -543,24 +559,40 @@
 <span data-nosnippet>149</span>        result
 <span data-nosnippet>150</span>    }</code></pre></div></div></div></details><section id="method.transpose" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#53-61">Source</a><h4 class="code-header">pub fn <a href="#method.transpose" class="fn">transpose</a>(&amp;self) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.row_reduction" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#64-66">Source</a><h4 class="code-header">pub fn <a href="#method.row_reduction" class="fn">row_reduction</a>(&amp;mut self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock"><p>Replaces the matrix with reduced row echelon form and returns its pivot columns.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.rank" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#69-71">Source</a><h4 class="code-header">pub fn <a href="#method.rank" class="fn">rank</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock"><p>Replaces the matrix with row echelon form and returns its rank.</p>
-</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[16,16],&#34;../../src/library_checker/linear_algebra/matrix_rank_mod_2.rs.html#21&#34;,&#34;line 21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/linear_algebra/matrix_rank_mod_2.rs (<a href="../../src/library_checker/linear_algebra/matrix_rank_mod_2.rs.html#21">line 21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>matrix_rank_mod_2(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[32,32],&#34;../../src/library_checker/linear_algebra/matrix_rank_mod_2.rs.html#37&#34;,&#34;line 37&#34;]]"><div class="scraped-example-title">crates/library_checker/src/linear_algebra/matrix_rank_mod_2.rs (<a href="../../src/library_checker/linear_algebra/matrix_rank_mod_2.rs.html#37">line 37</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>matrix_rank_mod_2(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(n, m);
 <span data-nosnippet>8</span>    <span class="comment">// Transpose very tall matrices to avoid allocating millions of short rows.
 <span data-nosnippet>9</span>    </span><span class="kw">let </span>transpose = n / <span class="number">2 </span>&gt; m;
 <span data-nosnippet>10</span>    <span class="kw">let </span><span class="kw-2">mut </span>a = BitMatrix::zeros(<span class="kw">if </span>transpose { (m, n) } <span class="kw">else </span>{ (n, m) });
-<span data-nosnippet>11</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="kw">if </span>m == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ n } {
-<span data-nosnippet>12</span>        <span class="macro">sc!</span>(row: <span class="kw-2">&amp;</span>str);
-<span data-nosnippet>13</span>        <span class="kw">if </span>!transpose {
-<span data-nosnippet>14</span>            a.data[i] = BitSet::from_binary(row).unwrap();
-<span data-nosnippet>15</span>        } <span class="kw">else </span>{
-<span data-nosnippet>16</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span>row.bytes().enumerate() {
-<span data-nosnippet>17</span>                a[j].set(i, b == <span class="string">b'1'</span>);
-<span data-nosnippet>18</span>            }
-<span data-nosnippet>19</span>        }
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>    <span class="macro">pp!</span>(a.<span class="highlight focus">rank</span>());
-<span data-nosnippet>22</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.determinant" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#74-77">Source</a><h4 class="code-header">pub fn <a href="#method.determinant" class="fn">determinant</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock"><p>Computes the determinant in place. The matrix must be square.</p>
+<span data-nosnippet>11</span>    <span class="kw">if </span>transpose &amp;&amp; m &gt;= <span class="number">64 </span>{
+<span data-nosnippet>12</span>        <span class="kw">let </span><span class="kw-2">mut </span>words = <span class="macro">vec!</span>[<span class="number">0u64</span>; m];
+<span data-nosnippet>13</span>        <span class="kw">for </span>first <span class="kw">in </span>(<span class="number">0</span>..n).step_by(<span class="number">64</span>) {
+<span data-nosnippet>14</span>            words.fill(<span class="number">0</span>);
+<span data-nosnippet>15</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">64</span>.min(n - first) {
+<span data-nosnippet>16</span>                <span class="macro">sc!</span>(row: <span class="kw-2">&amp;</span>str);
+<span data-nosnippet>17</span>                <span class="kw">for </span>(word, b) <span class="kw">in </span>words.iter_mut().zip(row.bytes()) {
+<span data-nosnippet>18</span>                    <span class="kw-2">*</span>word |= u64::from(b == <span class="string">b'1'</span>) &lt;&lt; i;
+<span data-nosnippet>19</span>                }
+<span data-nosnippet>20</span>            }
+<span data-nosnippet>21</span>            <span class="kw">for </span>(row, <span class="kw-2">&amp;</span>word) <span class="kw">in </span>a.data.iter_mut().zip(<span class="kw-2">&amp;</span>words) {
+<span data-nosnippet>22</span>                row.words_mut()[first / <span class="number">64</span>] = word;
+<span data-nosnippet>23</span>            }
+<span data-nosnippet>24</span>        }
+<span data-nosnippet>25</span>    } <span class="kw">else </span>{
+<span data-nosnippet>26</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="kw">if </span>m == <span class="number">0 </span>{ <span class="number">0 </span>} <span class="kw">else </span>{ n } {
+<span data-nosnippet>27</span>            <span class="macro">sc!</span>(row: <span class="kw-2">&amp;</span>str);
+<span data-nosnippet>28</span>            <span class="kw">if </span>!transpose {
+<span data-nosnippet>29</span>                a.data[i] = BitSet::from_binary(row).unwrap();
+<span data-nosnippet>30</span>            } <span class="kw">else </span>{
+<span data-nosnippet>31</span>                <span class="kw">for </span>(j, b) <span class="kw">in </span>row.bytes().enumerate() {
+<span data-nosnippet>32</span>                    a[j].words_mut()[i / <span class="number">64</span>] |= u64::from(b == <span class="string">b'1'</span>) &lt;&lt; (i % <span class="number">64</span>);
+<span data-nosnippet>33</span>                }
+<span data-nosnippet>34</span>            }
+<span data-nosnippet>35</span>        }
+<span data-nosnippet>36</span>    }
+<span data-nosnippet>37</span>    <span class="macro">pp!</span>(a.<span class="highlight focus">rank</span>());
+<span data-nosnippet>38</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.determinant" class="method"><a class="src rightside" href="../../src/competitive/math/bit_matrix.rs.html#74-77">Source</a><h4 class="code-header">pub fn <a href="#method.determinant" class="fn">determinant</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock"><p>Computes the determinant in place. The matrix must be square.</p>
 </div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../src/library_checker/linear_algebra/matrix_det_mod_2.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/linear_algebra/matrix_det_mod_2.rs (<a href="../../src/library_checker/linear_algebra/matrix_det_mod_2.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>matrix_det_mod_2(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(n, a: [@BitSet::from_binary; n]);
