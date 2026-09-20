@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["mint_base","mint_basic","montgomery","random_spec"]};
+window.SIDEBAR_ITEMS = {"mod":["mint_base","mint_basic","montgomery","random_spec","simd_matrix"]};

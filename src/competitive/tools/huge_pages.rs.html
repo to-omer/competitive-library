@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/huge_pages.rs`."><title>huge_pages.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (feaadeeac 2026-09-19)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/tools/</div>huge_pages.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-2"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="attr">#[inline]
+<a href=#2 id=2 data-nosnippet>2</a></span><span class="kw">pub fn </span><a href="../../../competitive/tools/fn.advise_huge_pages.html">advise_huge_pages</a>&lt;T&gt;(_values: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;) {
+<a href=#3 id=3 data-nosnippet>3</a>    <span class="attr">#[cfg(all(target_os = <span class="string">"linux"</span>, target_arch = <span class="string">"x86_64"</span>))]
+<a href=#4 id=4 data-nosnippet>4</a>    </span><span class="kw">unsafe </span>{
+<a href=#5 id=5 data-nosnippet>5</a>        <span class="kw">unsafe extern </span><span class="string">"C" </span>{
+<a href=#6 id=6 data-nosnippet>6</a>            <span class="kw">fn </span>madvise(
+<a href=#7 id=7 data-nosnippet>7</a>                addr: <span class="kw-2">*mut </span>std::ffi::<a href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html">c_void</a>,
+<a href=#8 id=8 data-nosnippet>8</a>                len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+<a href=#9 id=9 data-nosnippet>9</a>                advice: std::ffi::<a href="https://doc.rust-lang.org/nightly/core/ffi/primitives/type.c_int.html">c_int</a>,
+<a href=#10 id=10 data-nosnippet>10</a>            ) -&gt; std::ffi::<a href="https://doc.rust-lang.org/nightly/core/ffi/primitives/type.c_int.html">c_int</a>;
+<a href=#11 id=11 data-nosnippet>11</a>        }
+<a href=#12 id=12 data-nosnippet>12</a>        <span class="kw">const </span>PAGE_SIZE: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = <span class="number">1 </span>&lt;&lt; <span class="number">12</span>;
+<a href=#13 id=13 data-nosnippet>13</a>        <span class="kw">const </span>MADV_HUGEPAGE: std::ffi::<a href="https://doc.rust-lang.org/nightly/core/ffi/primitives/type.c_int.html">c_int</a> = <span class="number">14</span>;
+<a href=#14 id=14 data-nosnippet>14</a>        <span class="kw">let </span>ptr = <a href="#2">_values</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.as_mut_ptr">as_mut_ptr</a>().<a href="https://doc.rust-lang.org/nightly/core/primitive.pointer.html#method.cast">cast</a>::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;();
+<a href=#15 id=15 data-nosnippet>15</a>        <span class="kw">let </span>offset = <a href="#14">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.pointer.html#method.align_offset">align_offset</a>(<a href="#12">PAGE_SIZE</a>);
+<a href=#16 id=16 data-nosnippet>16</a>        <span class="kw">let </span>len = (<a href="#2">_values</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.capacity">capacity</a>() * <a href="https://doc.rust-lang.org/nightly/core/mem/fn.size_of.html">size_of</a>::&lt;T&gt;()).<a href="https://doc.rust-lang.org/nightly/core/primitive.usize.html#method.saturating_sub">saturating_sub</a>(<a href="#15">offset</a>) &amp; !(<a href="#12">PAGE_SIZE</a> - <span class="number">1</span>);
+<a href=#17 id=17 data-nosnippet>17</a>        <span class="kw">if </span><a href="#16">len</a> &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
+<a href=#18 id=18 data-nosnippet>18</a>            <span class="comment">// The hint covers only owned pages; initialization also works without it.
+<a href=#19 id=19 data-nosnippet>19</a>            </span><span class="kw">let _ </span>= <a href="#6-10">madvise</a>(<a href="#14">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.pointer.html#method.add">add</a>(<a href="#15">offset</a>).<a href="https://doc.rust-lang.org/nightly/core/primitive.pointer.html#method.cast">cast</a>(), <a href="#16">len</a>, <a href="#13">MADV_HUGEPAGE</a>);
+<a href=#20 id=20 data-nosnippet>20</a>        }
+<a href=#21 id=21 data-nosnippet>21</a>    }
+<a href=#22 id=22 data-nosnippet>22</a>}
+</code></pre></div></section></main></body></html>
