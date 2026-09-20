@@ -119,17 +119,20 @@ impl BitMatrix {
             particular.set(c, a[i].get(m));
             free.set(c, false);
         }
-        let basis = free
-            .iter_ones()
-            .map(|c| {
+        let columns: Vec<_> = free.iter_ones().collect();
+        let mut basis: Vec<_> = columns
+            .iter()
+            .map(|&c| {
                 let mut row = BitSet::new(m);
                 row.set(c, true);
-                for (i, &p) in pivots.iter().enumerate() {
-                    row.set(p, a[i].get(c));
-                }
                 row
             })
             .collect();
+        for (i, &p) in pivots.iter().enumerate() {
+            for (row, &c) in basis.iter_mut().zip(&columns) {
+                row.words_mut()[p / 64] |= u64::from(a[i].get(c)) << (p & 63);
+            }
+        }
         Some(BitMatrixSolution { particular, basis })
     }
 
@@ -208,15 +211,23 @@ impl BitMatrix {
         {
             return self.eliminate_sparse(cols, full, require_full_rank);
         }
-        let block = if n < 512 { 4 } else { 8 };
-        let mut table = vec![BitSet::new(self.shape.1); 1 << block];
+        let block: usize = if n < 512 {
+            4
+        } else if n < 1536 {
+            8
+        } else {
+            32
+        };
+        let mut table = vec![BitSet::new(self.shape.1); (1 << block.min(8)) * block.div_ceil(8)];
         let mut reduced = vec![0; n];
         let mut start = 0;
         while start < cols {
             let first = pivots.len();
             let word = start / 64;
             reduced.fill(first);
-            for c in start..cols.min(start + block) {
+            let end = cols.min(start + block);
+            let mut c = start;
+            while c < end {
                 let r = pivots.len();
                 let mut pivot = None;
                 for (i, reduced) in reduced.iter_mut().enumerate().skip(r) {
@@ -237,8 +248,11 @@ impl BitMatrix {
                     self.data.swap(r, p);
                     reduced.swap(r, p);
                     pivots.push(c);
+                    c += 1;
                 } else if require_full_rank {
                     return pivots;
+                } else {
+                    c = self.next_column(r, c + 1, end);
                 }
             }
             let rank = pivots.len();
@@ -259,32 +273,59 @@ impl BitMatrix {
                     }
                 }
             }
-            let mut masks = [0usize; 256];
-            for (bit, &c) in pivots[first..].iter().enumerate() {
-                let half = 1 << bit;
-                for index in 0..half {
-                    masks[index + half] = masks[index] | (1 << (c - start));
-                    let (lower, upper) = table.split_at_mut(index + half);
-                    let target = &mut upper[0].words_mut()[word..];
-                    let source = &lower[index].words()[word..];
-                    let pivot = &self[first + bit].words()[word..];
-                    for ((x, y), z) in target.iter_mut().zip(source).zip(pivot) {
-                        *x = y ^ z;
+            let mut indices = [[0usize; 256]; 4];
+            let mut masks = [0usize; 4];
+            for group in 0..block.div_ceil(8) {
+                let mut keys = [0usize; 256];
+                let mut count = 0;
+                for (row, &c) in pivots[first..].iter().enumerate() {
+                    if (c - start) / 8 != group {
+                        continue;
+                    }
+                    let half = 1 << count;
+                    count += 1;
+                    for index in 0..half {
+                        keys[index + half] = keys[index] | (1 << ((c - start) % 8));
+                        let (lower, upper) = table.split_at_mut(group * 256 + index + half);
+                        let target = &mut upper[0].words_mut()[word..];
+                        let source = &lower[group * 256 + index].words()[word..];
+                        let pivot = &self[first + row].words()[word..];
+                        for ((x, y), z) in target.iter_mut().zip(source).zip(pivot) {
+                            *x = y ^ z;
+                        }
                     }
                 }
-            }
-            let mut indices = [0usize; 256];
-            let mask = masks[(1 << (rank - first)) - 1];
-            for (i, &m) in masks[..1 << (rank - first)].iter().enumerate() {
-                indices[m] = i;
+                masks[group] = keys[(1 << count) - 1];
+                for (i, &key) in keys[..1 << count].iter().enumerate() {
+                    indices[group][key] = i;
+                }
             }
             for i in (rank..n).chain(0..if full { first } else { 0 }) {
-                let index = indices[(self[i].words()[word] >> (start & 63)) as usize & mask];
-                if index != 0 {
-                    xor(
-                        &mut self[i].words_mut()[word..],
-                        &table[index].words()[word..],
-                    );
+                let key = (self[i].words()[word] >> (start & 63)) as usize;
+                let x = indices[0][key & masks[0]];
+                if block <= 8 {
+                    if x != 0 {
+                        xor(&mut self[i].words_mut()[word..], &table[x].words()[word..]);
+                    }
+                    continue;
+                }
+                let y = indices[1][(key >> 8) & masks[1]];
+                let z = indices[2][(key >> 16) & masks[2]];
+                let w = indices[3][(key >> 24) & masks[3]];
+                if x | y | z | w != 0 {
+                    let p = &table[x].words()[word..];
+                    let q = &table[256 + y].words()[word..];
+                    let r = &table[512 + z].words()[word..];
+                    let s = &table[768 + w].words()[word..];
+                    for ((((x, y), z), r), s) in self[i].words_mut()[word..]
+                        .iter_mut()
+                        .zip(p)
+                        .zip(q)
+                        .zip(r)
+                        .zip(s)
+                    {
+                        *x ^= y ^ z ^ r ^ s;
+                    }
                 }
             }
             if rank == n {

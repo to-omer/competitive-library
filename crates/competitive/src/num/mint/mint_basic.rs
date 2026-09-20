@@ -162,7 +162,7 @@ macro_rules! define_basic_mintbase {
     (@dot_product simd32, $name:ident, $x:ident, $y:ident, $basety:ty, $upperty:ty) => {{
         #[cfg(target_arch = "x86_64")]
         {
-            if $x.len() >= 64 {
+            if $x.len() >= 32 {
                 if $x.len() >= 512
                     && avx512_enabled()
                     && is_x86_feature_detected!("avx512f")
@@ -214,21 +214,27 @@ macro_rules! define_basic_mintbase {
                 let factor = _mm256_set1_epi32(a as i32);
                 // This quotient underestimates floor(a*y/m) by at most one.
                 let quotient = _mm256_set1_epi32((((a as u64) << 32) / Self::get_mod() as u64) as i32);
-                let end = x.len() / 8 * 8;
-                for i in (0..end).step_by(8) {
-                    let value = _mm256_loadu_si256(y.as_ptr().add(i).cast());
+                let update = |old, value| {
                     let lo = _mm256_srli_epi64::<32>(_mm256_mul_epu32(value, quotient));
                     let hi = _mm256_slli_epi64::<32>(_mm256_srli_epi64::<32>(_mm256_mul_epu32(_mm256_srli_epi64::<32>(value), quotient)));
                     let q = _mm256_or_si256(lo, hi);
                     let product = _mm256_sub_epi32(_mm256_mullo_epi32(value, factor), _mm256_mullo_epi32(q, modulus));
                     let product = _mm256_min_epu32(product, _mm256_sub_epi32(product, modulus));
-                    let old = _mm256_loadu_si256(x.as_ptr().add(i).cast());
                     let sum = _mm256_add_epi32(old, product);
-                    let sum = _mm256_min_epu32(sum, _mm256_sub_epi32(sum, modulus));
-                    _mm256_storeu_si256(x.as_mut_ptr().add(i).cast(), sum);
+                    _mm256_min_epu32(sum, _mm256_sub_epi32(sum, modulus))
+                };
+                let end = x.len() / 8 * 8;
+                for i in (0..end).step_by(8) {
+                    let value = _mm256_loadu_si256(y.as_ptr().add(i).cast());
+                    let old = _mm256_loadu_si256(x.as_ptr().add(i).cast());
+                    _mm256_storeu_si256(x.as_mut_ptr().add(i).cast(), update(old, value));
                 }
-                let a = MInt::new_unchecked(a);
-                for (x, y) in x[end..].iter_mut().zip(&y[end..]) { *x += a * *y; }
+                if end < x.len() {
+                    let mask = _mm256_cmpgt_epi32(_mm256_set1_epi32((x.len() - end) as i32), _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7));
+                    let value = _mm256_maskload_epi32(y.as_ptr().add(end).cast(), mask);
+                    let old = _mm256_maskload_epi32(x.as_ptr().add(end).cast(), mask);
+                    _mm256_maskstore_epi32(x.as_mut_ptr().add(end).cast(), mask, update(old, value));
+                }
             }
 
             #[allow(unsafe_op_in_unsafe_fn)]
@@ -260,57 +266,67 @@ macro_rules! define_basic_mintbase {
             #[target_feature(enable = "avx2")]
             unsafe fn dot_product_avx2(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {
                 use std::arch::x86_64::*;
-
                 assert_eq!(x.len(), y.len());
                 let modulus = Self::get_mod() as u64;
-                let max_value = modulus - 1;
-                let max_product = max_value * max_value;
-                let products_per_lane = ((u64::MAX - max_value) / max_product.max(1)) as usize;
-                let vectors = products_per_lane.min(18);
+                let (products, bound) = if modulus <= 1 << 30 {
+                    (8, 2 * modulus)
+                } else if modulus <= 1 << 31 {
+                    (2, modulus)
+                } else {
+                    (
+                        ((u64::MAX - (modulus - 1)) / ((modulus - 1) * (modulus - 1))) as usize,
+                        0,
+                    )
+                };
+                // For moduli up to 2^31, each batch adds less than bound*2^32.
+                let bound = _mm256_set1_epi64x((bound << 32) as i64);
                 let len = x.len();
                 let x = x.as_ptr().cast::<u32>();
                 let y = y.as_ptr().cast::<u32>();
-                let mut result = 0u64;
+                let mut even = _mm256_setzero_si256();
+                let mut odd = even;
                 let mut offset = 0;
-                while offset + 8 <= len {
-                    let batch = ((len - offset) / 8).min(vectors);
-                    let mut even = _mm256_setzero_si256();
-                    let mut odd = _mm256_setzero_si256();
-                    for i in 0..batch {
-                        let index = offset + i * 8;
-                        let xv = _mm256_loadu_si256(x.add(index).cast());
-                        let yv = _mm256_loadu_si256(y.add(index).cast());
-                        even = _mm256_add_epi64(even, _mm256_mul_epu32(xv, yv));
-                        odd = _mm256_add_epi64(
-                            odd,
-                            _mm256_mul_epu32(
-                                _mm256_srli_epi64::<32>(xv),
-                                _mm256_srli_epi64::<32>(yv),
-                            ),
-                        );
+                let mut result = 0u64;
+                loop {
+                    while offset + 8 <= len {
+                        let end = (offset + 8 * products).min(len / 8 * 8);
+                        while offset < end {
+                            let xv = _mm256_loadu_si256(x.add(offset).cast());
+                            let yv = _mm256_loadu_si256(y.add(offset).cast());
+                            even = _mm256_add_epi64(even, _mm256_mul_epu32(xv, yv));
+                            odd = _mm256_add_epi64(
+                                odd,
+                                _mm256_mul_epu32(_mm256_srli_epi64::<32>(xv), _mm256_srli_epi64::<32>(yv)),
+                            );
+                            offset += 8;
+                        }
+                        if modulus > 1 << 31 {
+                            break;
+                        }
+                        even = _mm256_min_epu32(even, _mm256_sub_epi32(even, bound));
+                        odd = _mm256_min_epu32(odd, _mm256_sub_epi32(odd, bound));
                     }
                     let mut lanes = [0u64; 8];
                     _mm256_storeu_si256(lanes.as_mut_ptr().cast(), even);
                     _mm256_storeu_si256(lanes.as_mut_ptr().add(4).cast(), odd);
+                    let mut low = 0u64;
+                    let mut high = 0u64;
                     for lane in lanes {
-                        result += lane % modulus;
-                        if result >= modulus {
-                            result -= modulus;
-                        }
+                        low += lane as u32 as u64;
+                        high += lane >> 32;
                     }
-                    offset += batch * 8;
+                    result = (result + low + (high % modulus) * ((1u64 << 32) % modulus)) % modulus;
+                    if offset + 8 > len {
+                        break;
+                    }
+                    even = _mm256_setzero_si256();
+                    odd = even;
                 }
-                let block = products_per_lane.min(64);
-                for i in (offset..len).step_by(block) {
-                    let end = (i + block).min(len);
-                    let mut sum = 0u64;
-                    for j in i..end {
-                        sum += *x.add(j) as u64 * *y.add(j) as u64;
+                for first in (offset..len).step_by(products) {
+                    for i in first..(first + products).min(len) {
+                        result += *x.add(i) as u64 * *y.add(i) as u64;
                     }
-                    result += sum % modulus;
-                    if result >= modulus {
-                        result -= modulus;
-                    }
+                    result %= modulus;
                 }
                 result as u32
             }
@@ -319,90 +335,67 @@ macro_rules! define_basic_mintbase {
             #[target_feature(enable = "avx512f")]
             unsafe fn dot_product_avx512(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {
                 use std::arch::x86_64::*;
-
                 assert_eq!(x.len(), y.len());
                 let modulus = Self::get_mod() as u64;
-                let max_value = modulus - 1;
-                let max_product = max_value * max_value;
-                let products_per_lane = ((u64::MAX - max_value) / max_product.max(1)) as usize;
-                let vectors = products_per_lane.min(18);
+                let (products, bound) = if modulus <= 1 << 30 {
+                    (8, 2 * modulus)
+                } else if modulus <= 1 << 31 {
+                    (2, modulus)
+                } else {
+                    (
+                        ((u64::MAX - (modulus - 1)) / ((modulus - 1) * (modulus - 1))) as usize,
+                        0,
+                    )
+                };
+                // For moduli up to 2^31, each batch adds less than bound*2^32.
+                let bound = _mm512_set1_epi64((bound << 32) as i64);
                 let len = x.len();
                 let x = x.as_ptr().cast::<u32>();
                 let y = y.as_ptr().cast::<u32>();
-                let mut result = 0u64;
+                let mut even = _mm512_setzero_si512();
+                let mut odd = even;
                 let mut offset = 0;
-                while offset + 16 <= len {
-                    let batch = ((len - offset) / 16).min(vectors);
-                    let mut even0 = _mm512_setzero_si512();
-                    let mut odd0 = _mm512_setzero_si512();
-                    let mut even1 = _mm512_setzero_si512();
-                    let mut odd1 = _mm512_setzero_si512();
-                    let mut i = 0;
-                    while i + 1 < batch {
-                        let index = offset + i * 16;
-                        let xv0 = _mm512_loadu_si512(x.add(index).cast());
-                        let yv0 = _mm512_loadu_si512(y.add(index).cast());
-                        let xv1 = _mm512_loadu_si512(x.add(index + 16).cast());
-                        let yv1 = _mm512_loadu_si512(y.add(index + 16).cast());
-                        even0 = _mm512_add_epi64(even0, _mm512_mul_epu32(xv0, yv0));
-                        odd0 = _mm512_add_epi64(
-                            odd0,
-                            _mm512_mul_epu32(
-                                _mm512_srli_epi64::<32>(xv0),
-                                _mm512_srli_epi64::<32>(yv0),
-                            ),
-                        );
-                        even1 = _mm512_add_epi64(even1, _mm512_mul_epu32(xv1, yv1));
-                        odd1 = _mm512_add_epi64(
-                            odd1,
-                            _mm512_mul_epu32(
-                                _mm512_srli_epi64::<32>(xv1),
-                                _mm512_srli_epi64::<32>(yv1),
-                            ),
-                        );
-                        i += 2;
-                    }
-                    if i < batch {
-                        let index = offset + i * 16;
-                        let xv = _mm512_loadu_si512(x.add(index).cast());
-                        let yv = _mm512_loadu_si512(y.add(index).cast());
-                        even0 = _mm512_add_epi64(even0, _mm512_mul_epu32(xv, yv));
-                        odd0 = _mm512_add_epi64(
-                            odd0,
-                            _mm512_mul_epu32(
-                                _mm512_srli_epi64::<32>(xv),
-                                _mm512_srli_epi64::<32>(yv),
-                            ),
-                        );
+                let mut result = 0u64;
+                loop {
+                    while offset + 16 <= len {
+                        let end = (offset + 16 * products).min(len / 16 * 16);
+                        while offset < end {
+                            let xv = _mm512_loadu_si512(x.add(offset).cast());
+                            let yv = _mm512_loadu_si512(y.add(offset).cast());
+                            even = _mm512_add_epi64(even, _mm512_mul_epu32(xv, yv));
+                            odd = _mm512_add_epi64(
+                                odd,
+                                _mm512_mul_epu32(_mm512_srli_epi64::<32>(xv), _mm512_srli_epi64::<32>(yv)),
+                            );
+                            offset += 16;
+                        }
+                        if modulus > 1 << 31 {
+                            break;
+                        }
+                        even = _mm512_min_epu32(even, _mm512_sub_epi32(even, bound));
+                        odd = _mm512_min_epu32(odd, _mm512_sub_epi32(odd, bound));
                     }
                     let mut lanes = [0u64; 16];
-                    _mm512_storeu_si512(
-                        lanes.as_mut_ptr().cast(),
-                        _mm512_add_epi64(even0, even1),
-                    );
-                    _mm512_storeu_si512(
-                        lanes.as_mut_ptr().add(8).cast(),
-                        _mm512_add_epi64(odd0, odd1),
-                    );
+                    _mm512_storeu_si512(lanes.as_mut_ptr().cast(), even);
+                    _mm512_storeu_si512(lanes.as_mut_ptr().add(8).cast(), odd);
+                    let mut low = 0u64;
+                    let mut high = 0u64;
                     for lane in lanes {
-                        result += lane % modulus;
-                        if result >= modulus {
-                            result -= modulus;
-                        }
+                        low += lane as u32 as u64;
+                        high += lane >> 32;
                     }
-                    offset += batch * 16;
+                    result = (result + low + (high % modulus) * ((1u64 << 32) % modulus)) % modulus;
+                    if offset + 16 > len {
+                        break;
+                    }
+                    even = _mm512_setzero_si512();
+                    odd = even;
                 }
-                let block = products_per_lane.min(64);
-                for i in (offset..len).step_by(block) {
-                    let end = (i + block).min(len);
-                    let mut sum = 0u64;
-                    for j in i..end {
-                        sum += *x.add(j) as u64 * *y.add(j) as u64;
+                for first in (offset..len).step_by(products) {
+                    for i in first..(first + products).min(len) {
+                        result += *x.add(i) as u64 * *y.add(i) as u64;
                     }
-                    result += sum % modulus;
-                    if result >= modulus {
-                        result -= modulus;
-                    }
+                    result %= modulus;
                 }
                 result as u32
             }

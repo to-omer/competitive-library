@@ -32,6 +32,13 @@ pub fn matrix_rank_mod_2(reader: impl Read, writer: impl Write) {
                     a[j].words_mut()[i / 64] |= u64::from(b == b'1') << (i % 64);
                 }
             }
+            if transpose
+                && i == 63
+                && BitMatrix::new_with((m, 64), |row, col| a[row].get(col)).rank() == m
+            {
+                pp!(m);
+                return;
+            }
         }
     }
     pp!(a.rank());

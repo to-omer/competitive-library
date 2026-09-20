@@ -30,7 +30,7 @@ unsafe fn leaf_avx2(
                 for first in (0..m).step_by(8) {
                     for k in first..first + 8 {
                         let b0 = _mm256_loadu_si256(b.add(k * p + j).cast());
-                        let b1 = _mm256_srli_epi64::<32>(b0);
+                        let b1 = _mm256_shuffle_epi32::<0xf5>(b0);
                         for t in 0..4 {
                             let factor = _mm256_set1_epi32(*a.add((i + t) * m + k) as i32);
                             lo[t] = _mm256_add_epi64(lo[t], _mm256_mul_epu32(factor, b0));
@@ -58,7 +58,7 @@ unsafe fn leaf_avx2(
 }
 
 #[target_feature(enable = "avx512f")]
-unsafe fn leaf_avx512(
+unsafe fn leaf_avx512<const FIXED: bool>(
     a: *const u32,
     b: *const u32,
     c: *mut u32,
@@ -66,7 +66,7 @@ unsafe fn leaf_avx512(
     modulus: u32,
     inverse: u32,
 ) {
-    let (n, m, p) = shape;
+    let (n, m, p) = if FIXED { (64, 64, 64) } else { shape };
     unsafe {
         let bound = _mm512_set1_epi64(((2 * modulus as u64) << 32) as i64);
         let mv = _mm512_set1_epi32(modulus as i32);
@@ -144,7 +144,11 @@ unsafe fn multiply(
         let (modulus, inverse) = (kernel.modulus, kernel.inverse);
         if n.min(m).min(p) <= 64 || n % 16 != 0 || m % 16 != 0 || p % 16 != 0 {
             if kernel.avx512 {
-                leaf_avx512(a, b, c, shape, modulus, inverse);
+                if shape == (64, 64, 64) {
+                    leaf_avx512::<true>(a, b, c, shape, modulus, inverse);
+                } else {
+                    leaf_avx512::<false>(a, b, c, shape, modulus, inverse);
+                }
             } else {
                 leaf_avx2(a, b, c, shape, modulus, inverse);
             }

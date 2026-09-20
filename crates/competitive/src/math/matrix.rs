@@ -167,11 +167,19 @@ where
             let end = (first + 64).min(m);
             let start = rank;
             let mut pivots = Vec::new();
+            let mut panel = vec![vec![R::zero(); end - first]; end - first];
             for col in first..end {
-                let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&self[i][col])) else {
-                    if DETERMINANT {
-                        break;
+                if panel[col - first][..col - first]
+                    .iter()
+                    .any(|x| !R::is_zero(x))
+                {
+                    for row in &mut self.data[rank..] {
+                        let value =
+                            R::dot_product(&row[first..col], &panel[col - first][..col - first]);
+                        R::sub_assign(&mut row[col], &value);
                     }
+                }
+                let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&self[i][col])) else {
                     continue;
                 };
                 if pivot != rank {
@@ -182,19 +190,14 @@ where
                     R::mul_assign(&mut determinant, &self[rank][col]);
                 }
                 let inv = R::inv(&self[rank][col]);
-                let (upper, lower) = self.data.split_at_mut(rank + 1);
-                let pivot = &upper[rank];
-                for row in lower {
-                    if R::is_zero(&row[col]) {
-                        continue;
-                    }
-                    let factor = R::mul(&row[col], &inv);
-                    row[col] = factor.clone();
-                    R::add_scaled_assign(
-                        &mut row[col + 1..end],
-                        &pivot[col + 1..end],
-                        &R::neg(&factor),
-                    );
+                let row = &mut self.data[rank];
+                for c in col + 1..end {
+                    let value = R::dot_product(&row[first..col], &panel[c - first][..col - first]);
+                    R::sub_assign(&mut row[c], &value);
+                    panel[c - first][col - first] = row[c].clone();
+                }
+                for row in &mut self.data[rank + 1..] {
+                    R::mul_assign(&mut row[col], &inv);
                 }
                 pivots.push(col);
                 rank += 1;
@@ -377,7 +380,7 @@ where
     pub fn inverse(&self) -> Option<Matrix<R>> {
         assert_eq!(self.shape.0, self.shape.1);
         let n = self.shape.0;
-        if n >= 128 {
+        if n >= 64 {
             let m = n / 2;
             let a = Self::new_with((m, m), |i, j| self[i][j].clone());
             if let Some(mut ai) = a.inverse() {
@@ -496,22 +499,27 @@ where
                 }
             }
         }
-        let mut dp = vec![vec![R::one()]];
+        // dp[k][j - k] stores [x^k] det(xI - A[..j, ..j]).
+        let mut dp: Vec<Vec<R::T>> = (0..=n).map(|i| Vec::with_capacity(n + 1 - i)).collect();
+        dp[0].push(R::one());
         for i in 0..n {
-            let mut next = vec![R::zero(); i + 2];
-            for (j, dp) in dp[i].iter().enumerate() {
-                R::sub_assign(&mut next[j], &R::mul(dp, &self[i][i]));
-                R::add_assign(&mut next[j + 1], dp);
-            }
+            let mut c = vec![R::zero(); i + 1];
+            c[i] = R::neg(&self[i][i]);
             let mut mul = R::one();
             for j in (0..i).rev() {
                 mul = R::mul(&mul, &self[j + 1][j]);
-                let c = R::mul(&mul, &self[j][i]);
-                R::add_scaled_assign(&mut next[..dp[j].len()], &dp[j], &R::neg(&c));
+                c[j] = R::neg(&R::mul(&mul, &self[j][i]));
             }
-            dp.push(next);
+            for k in (0..=i).rev() {
+                let mut value = R::dot_product(&dp[k], &c[k..]);
+                if k > 0 {
+                    R::add_assign(&mut value, dp[k - 1].last().unwrap());
+                }
+                dp[k].push(value);
+            }
+            dp[i + 1].push(R::one());
         }
-        dp.pop().unwrap()
+        dp.into_iter().map(|mut c| c.pop().unwrap()).collect()
     }
 }
 
