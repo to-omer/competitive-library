@@ -725,9 +725,9 @@ where
         unsafe {
             if x >= 1_0000_0000 {
                 let b = x / 10000;
-                let a = b / 10000;
-                self.write_digit4_trimmed_unchecked(a as usize);
-                self.write_digit4_unchecked((b % 10000) as usize);
+                let a = x / 100000000;
+                self.write_u8_unchecked(a as u8);
+                self.write_digit4_unchecked((b - a * 10000) as usize);
                 self.write_digit4_unchecked((x % 10000) as usize);
             } else if x >= 10000 {
                 self.write_digit4_trimmed_unchecked((x / 10000) as usize);
