@@ -1,5 +1,5 @@
 use competitive::prelude::*;
-use competitive::{algebra::AddMulOperation, math::Matrix, num::montgomery::MInt998244353};
+use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353};
 use std::iter::once;
 
 #[verify::library_checker("system_of_linear_equations")]

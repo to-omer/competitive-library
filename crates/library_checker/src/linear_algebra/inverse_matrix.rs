@@ -1,5 +1,5 @@
 use competitive::prelude::*;
-use competitive::{algebra::AddMulOperation, math::Matrix, num::montgomery::MInt998244353};
+use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353};
 
 #[verify::library_checker("inverse_matrix")]
 pub fn inverse_matrix(reader: impl Read, writer: impl Write) {

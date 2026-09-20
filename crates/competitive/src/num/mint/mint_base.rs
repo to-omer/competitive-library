@@ -33,6 +33,15 @@ pub trait MIntBase {
     fn mod_add(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_sub(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_mul(x: Self::Inner, y: Self::Inner) -> Self::Inner;
+    fn mod_matrix_product(
+        _a: &[Vec<MInt<Self>>],
+        _b: &[Vec<MInt<Self>>],
+    ) -> Option<Vec<Vec<MInt<Self>>>>
+    where
+        Self: Sized,
+    {
+        None
+    }
     fn mod_dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> Self::Inner
     where
         Self: Sized,
@@ -41,6 +50,15 @@ pub trait MIntBase {
         x.iter().zip(y).fold(Self::mod_zero(), |sum, (&x, &y)| {
             Self::mod_add(sum, Self::mod_mul(x.x, y.x))
         })
+    }
+    fn mod_add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: Self::Inner)
+    where
+        Self: Sized,
+    {
+        assert_eq!(x.len(), y.len());
+        for (x, y) in x.iter_mut().zip(y) {
+            x.x = Self::mod_add(x.x, Self::mod_mul(a, y.x));
+        }
     }
     fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_neg(x: Self::Inner) -> Self::Inner;
@@ -104,9 +122,19 @@ where
     M: MIntBase,
 {
     #[inline]
+    fn try_matrix_product(a: &[Vec<Self>], b: &[Vec<Self>]) -> Option<Vec<Vec<Self>>> {
+        M::mod_matrix_product(a, b)
+    }
+
+    #[inline]
     fn dot_product(x: &[Self], y: &[Self]) -> Self {
         assert_eq!(x.len(), y.len());
         Self::new_unchecked(M::mod_dot_product(x, y))
+    }
+
+    #[inline]
+    fn add_scaled_assign(x: &mut [Self], y: &[Self], a: &Self) {
+        M::mod_add_scaled_assign(x, y, a.x);
     }
 }
 
@@ -417,3 +445,91 @@ impl_mint_ref_op_assign!(AddAssign, add_assign, MInt<M>, Add, add);
 impl_mint_ref_op_assign!(SubAssign, sub_assign, MInt<M>, Sub, sub);
 impl_mint_ref_op_assign!(MulAssign, mul_assign, MInt<M>, Mul, mul);
 impl_mint_ref_op_assign!(DivAssign, div_assign, MInt<M>, Div, div);
+
+#[cfg(test)]
+mod tests {
+    use super::{MInt, MIntBase, MIntConvert};
+    #[cfg(target_arch = "x86_64")]
+    use crate::tools::avx512_enabled;
+    use crate::{
+        algebra::{AddMulOperation, DotProduct},
+        define_basic_mint32, define_basic_mintbase,
+        math::Matrix,
+        num::{mint_basic, montgomery},
+        tools::Xorshift,
+    };
+    use std::mem::swap;
+
+    define_basic_mint32!([Modulo17, 17, MInt17]);
+
+    #[test]
+    fn test_random_matrix_products() {
+        let mut rng = Xorshift::new_with_seed(374938);
+        macro_rules! check {
+            ($mint:ty) => {{
+                let (n, m, p) = (
+                    rng.random(32..160),
+                    rng.random(32..160),
+                    rng.random(32..160),
+                );
+                let a: Vec<Vec<$mint>> = (0..n)
+                    .map(|_| (0..m).map(|_| rng.random(..)).collect())
+                    .collect();
+                let b: Vec<Vec<$mint>> = (0..m)
+                    .map(|_| (0..p).map(|_| rng.random(..)).collect())
+                    .collect();
+                let a: Matrix<AddMulOperation<_>> = Matrix::from_vec(a);
+                let b = Matrix::from_vec(b);
+                let result = &a * &b;
+                for i in 0..n {
+                    for j in 0..p {
+                        let expected = (0..m).map(|k| a[i][k] * b[k][j]).sum();
+                        assert_eq!(result[i][j], expected);
+                    }
+                }
+            }};
+        }
+        for _ in 0..24 {
+            check!(MInt17);
+            check!(mint_basic::MInt998244353);
+            check!(mint_basic::MInt1000000007);
+            mint_basic::DynMIntU32::set_mod(rng.random(1u32..1 << 29) * 2 + 1);
+            check!(mint_basic::DynMIntU32);
+            check!(montgomery::MInt167772161);
+            check!(montgomery::MInt469762049);
+            check!(montgomery::MInt754974721);
+            check!(montgomery::MInt998244353);
+        }
+        mint_basic::DynMIntU32::set_mod(1_000_000_007);
+    }
+
+    #[test]
+    fn test_random_vector_operations() {
+        let mut rng = Xorshift::new_with_seed(629714);
+        macro_rules! check {
+            ($mint:ty) => {{
+                let n = rng.random(0..2048);
+                let mut x: Vec<$mint> = (0..n).map(|_| rng.random(..)).collect();
+                let y: Vec<$mint> = (0..n).map(|_| rng.random(..)).collect();
+                let a: $mint = rng.random(..);
+                let expected: Vec<_> = x.iter().zip(&y).map(|(&x, &y)| x + a * y).collect();
+                let dot = x.iter().zip(&y).map(|(&x, &y)| x * y).sum();
+                assert_eq!(<$mint>::dot_product(&x, &y), dot);
+                <$mint>::add_scaled_assign(&mut x, &y, &a);
+                assert_eq!(x, expected);
+            }};
+        }
+        for _ in 0..256 {
+            check!(MInt17);
+            check!(mint_basic::MInt998244353);
+            check!(mint_basic::MInt1000000007);
+            mint_basic::DynMIntU32::set_mod(rng.random(1..));
+            check!(mint_basic::DynMIntU32);
+            check!(montgomery::MInt167772161);
+            check!(montgomery::MInt469762049);
+            check!(montgomery::MInt754974721);
+            check!(montgomery::MInt998244353);
+        }
+        mint_basic::DynMIntU32::set_mod(1_000_000_007);
+    }
+}

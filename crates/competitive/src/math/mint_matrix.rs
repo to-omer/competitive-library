@@ -12,7 +12,6 @@ where
     where
         M: MIntConvert<usize> + MIntConvert<u64>;
 
-    /// Computes `self^k` using Frobenius normal form.
     fn pow_frobenius(self, k: usize) -> Self
     where
         M: MIntConvert<u64>;
@@ -52,7 +51,29 @@ where
             }
         };
         let fk = f.pow(k);
-        &(&f.t_inv * &fk) * &f.t
+        let n = f.t.shape.0;
+        if f.blocks
+            .iter()
+            .map(|p| (p.0.len() - 1).pow(2))
+            .sum::<usize>()
+            * 4
+            <= n * n
+        {
+            let mut ft = Matrix::zeros((n, n));
+            let mut first = 0;
+            for p in &f.blocks {
+                let d = p.0.len() - 1;
+                for i in first..first + d {
+                    for j in first..first + d {
+                        MInt::add_scaled_assign(&mut ft[i], &f.t[j], &fk[i][j]);
+                    }
+                }
+                first += d;
+            }
+            &f.t_inv * &ft
+        } else {
+            &(&f.t_inv * &fk) * &f.t
+        }
     }
 }
 
@@ -139,9 +160,8 @@ where
         if a.is_zero() {
             return;
         }
-        for (x, &y) in row[self.pivot..].iter_mut().zip(&self.row[self.pivot..]) {
-            *x += a * y;
-        }
+        let end = self.row.len();
+        MInt::add_scaled_assign(&mut row[self.pivot..end], &self.row[self.pivot..], &a);
     }
 }
 
@@ -156,7 +176,7 @@ where
 {
     let n = a.shape.0;
     loop {
-        let mut row = vec![MInt::zero(); 2 * n + 1];
+        let mut row = vec![MInt::zero(); n + rows.len() + 1];
         let (x, c) = row.split_at_mut(n);
         x.copy_from_slice(&v);
         c[rows.len()] = MInt::one();
@@ -191,9 +211,7 @@ where
         let inv = rhs.0.last().unwrap().inv();
         for i in (0..q.len()).rev() {
             q[i] = self.0[i + rhs.0.len() - 1] * inv;
-            for (x, &y) in self.0[i..].iter_mut().zip(&rhs.0) {
-                *x -= q[i] * y;
-            }
+            MInt::add_scaled_assign(&mut self.0[i..i + rhs.0.len()], &rhs.0, &-q[i]);
         }
         self.0.iter().all(|x| x.is_zero()).then_some(Self(q))
     }
@@ -202,37 +220,31 @@ where
         let d = p.0.len() - 1;
         let mut c = vec![MInt::zero(); 2 * d - 1];
         for (i, &x) in self.0.iter().enumerate() {
-            for (z, &y) in c[i..].iter_mut().zip(&rhs.0) {
-                *z += x * y;
-            }
+            MInt::add_scaled_assign(&mut c[i..i + rhs.0.len()], &rhs.0, &x);
         }
         for i in (d..c.len()).rev() {
             let x = c[i];
-            for (y, &m) in c[i - d..].iter_mut().zip(&p.0) {
-                *y -= x * m;
-            }
+            MInt::add_scaled_assign(&mut c[i - d..=i], &p.0, &-x);
         }
         c.truncate(d);
         Self(c)
     }
 
-    fn x_pow_mod(&self, mut k: usize) -> Self {
+    fn x_pow_mod(&self, k: usize) -> Self {
         let d = self.0.len() - 1;
+        if d == 1 {
+            return Self(vec![(-self.0[0]).pow(k)]);
+        }
         let mut r = Self(vec![MInt::zero(); d]);
         r.0[0] = MInt::one();
-        let mut x = Self(vec![MInt::zero(); d]);
-        if d == 1 {
-            x.0[0] = -self.0[0];
-        } else {
-            x.0[1] = MInt::one();
-        }
-        while k > 0 {
-            if k & 1 != 0 {
-                r = r.mul_mod(&x, self);
-            }
-            k >>= 1;
-            if k > 0 {
-                x = x.mul_mod(&x, self);
+        for bit in (0..usize::BITS - k.leading_zeros()).rev() {
+            r = r.mul_mod(&r, self);
+            if k >> bit & 1 != 0 {
+                let x = r.0[d - 1];
+                for i in (1..d).rev() {
+                    r.0[i] = r.0[i - 1] - x * self.0[i];
+                }
+                r.0[0] = -x * self.0[0];
             }
         }
         r
@@ -249,42 +261,66 @@ where
     let n = a.shape.0;
     let mut rows = Vec::with_capacity(n);
     let mut t = Vec::with_capacity(n);
-    let mut blocks = Vec::new();
+    let mut blocks: Vec<Polynomial<M>> = Vec::new();
     while rows.len() < n {
         let s = rows.len();
         let v = (0..n).map(|_| MInt::from(rng.rand64())).collect();
-        let mut c = generate_frobenius_block(a, v, &mut rows, &mut t);
+        let c = generate_frobenius_block(a, v, &mut rows, &mut t);
         if rows.len() == s {
             continue;
         }
+        let p = Polynomial(c.0[s..].to_vec());
         if c.0[..s].iter().any(|x| !x.is_zero()) {
-            let p = Polynomial(c.0[s..].to_vec());
             let q = c.exact_div(&p)?;
-            let mut v = t[s].clone();
-            for (&x, u) in q.0.iter().zip(&t[..s]) {
-                for (v, &u) in v.iter_mut().zip(u) {
-                    *v += x * u;
+            let d = rows.len() - s;
+            let mut coefficients = q.0[..s].to_vec();
+            let mut shifts = Vec::with_capacity(d);
+            for _ in 0..d {
+                shifts.push(coefficients.clone());
+                let mut first = 0;
+                for block in &blocks {
+                    let len = block.0.len() - 1;
+                    let c = &mut coefficients[first..first + len];
+                    let last = c[len - 1];
+                    for j in (1..len).rev() {
+                        c[j] = c[j - 1] - last * block.0[j];
+                    }
+                    c[0] = -last * block.0[0];
+                    first += len;
                 }
             }
-            rows.truncate(s);
-            t.truncate(s);
-            c = generate_frobenius_block(a, v, &mut rows, &mut t);
+            let shifts: Matrix<AddMulOperation<MInt<M>>> = Matrix::from_vec(shifts);
+            let previous = Matrix::from_vec(t[..s].to_vec());
+            let correction = &shifts * &previous;
+            for (i, row) in rows[s..].iter_mut().enumerate() {
+                for (x, &y) in t[s + i].iter_mut().zip(&correction[i]) {
+                    *x += y;
+                }
+                // Keep the reduced vector fixed: T_new += S*T_old gives C_old -= C_new*S.
+                let (previous, current) = row.row[n..].split_at_mut(s);
+                for (&x, shift) in current.iter().zip(&shifts.data) {
+                    MInt::add_scaled_assign(previous, shift, &-x);
+                }
+            }
         }
-        blocks.push(Polynomial(c.0[s..].to_vec()));
+        blocks.push(p);
     }
 
-    for i in 0..n {
-        let (left, right) = rows.split_at_mut(i + 1);
-        for row in right {
-            row.reduce(&mut left[i].row);
-        }
-    }
     let mut t_inv = vec![vec![MInt::zero(); n]; n];
-    for row in rows {
-        let (_, c) = row.row.split_at(n);
-        for (x, &y) in t_inv[row.pivot].iter_mut().zip(c) {
-            *x = row.inv * y;
+    for i in (0..n).rev() {
+        let row = &rows[i];
+        let mut c = row.row[n..].to_vec();
+        c.resize(n, MInt::zero());
+        for x in &mut c {
+            *x *= row.inv;
         }
+        for next in &rows[i + 1..] {
+            let factor = -row.row[next.pivot] * row.inv;
+            if !factor.is_zero() {
+                MInt::add_scaled_assign(&mut c, &t_inv[next.pivot], &factor);
+            }
+        }
+        t_inv[row.pivot] = c;
     }
     Some(FrobeniusDecomposition {
         t: Matrix::from_vec(t),
@@ -304,7 +340,6 @@ where
         for p in &self.blocks {
             let d = p.0.len() - 1;
             let mut c = p.x_pow_mod(k).0;
-            c.resize(d, MInt::zero());
             for row in &mut a[s..s + d] {
                 row[s..s + d].copy_from_slice(&c);
                 let x = c[d - 1];
@@ -377,8 +412,14 @@ mod tests {
     #[test]
     fn test_pow_frobenius() {
         let mut rng = Xorshift::default();
-        for _ in 0..100 {
-            rand!(rng, n: 1..30, k: 0..30, data: [[0..998244353; n]; n]);
+        for iteration in 0..100 {
+            let n = if iteration < 16 {
+                rng.random(32..100)
+            } else {
+                rng.random(0..30)
+            };
+            let k = rng.random(0..1_000_000_000);
+            rand!(rng, data: [[0..998244353; n]; n]);
             let matrix = Matrix::<AddMulOperation<_>>::from_vec(data)
                 .map::<AddMulOperation<MInt998244353>, _>(|&x| MInt998244353::new(x));
             assert_eq!(matrix.clone().pow(k), matrix.pow_frobenius(k));
@@ -386,6 +427,33 @@ mod tests {
             let scalar: MInt998244353 = rng.random(..);
             let matrix: Matrix<AddMulOperation<MInt998244353>> =
                 Matrix::new_with((n, n), |i, j| if i == j { scalar } else { MInt::zero() });
+            assert_eq!(matrix.clone().pow(k), matrix.pow_frobenius(k));
+
+            let mut matrix: Matrix<AddMulOperation<MInt998244353>> =
+                Matrix::new_with((n, n), |i, j| {
+                    if i == j {
+                        scalar
+                    } else if i + 1 == j && rng.gen_bool(0.8) {
+                        MInt::one()
+                    } else {
+                        MInt::zero()
+                    }
+                });
+            if n >= 2 {
+                for _ in 0..4 * n {
+                    let i = rng.random(..n);
+                    let j = (i + rng.random(1..n)) % n;
+                    let factor: MInt998244353 = rng.random(..);
+                    for k in 0..n {
+                        let x = factor * matrix[j][k];
+                        matrix[i][k] += x;
+                    }
+                    for row in &mut matrix.data {
+                        let x = factor * row[i];
+                        row[j] -= x;
+                    }
+                }
+            }
             assert_eq!(matrix.clone().pow(k), matrix.pow_frobenius(k));
         }
     }

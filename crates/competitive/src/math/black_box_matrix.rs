@@ -1,6 +1,6 @@
 use super::{
-    AddMulOperation, ConvolveSteps, FormalPowerSeries, Fps, MInt, MIntBase, MIntConvert, Matrix,
-    One, SemiRing, Xorshift, Zero,
+    AddMulOperation, ConvolveSteps, DotProduct, Field, FormalPowerSeries, Fps, Invertible, MInt,
+    MIntBase, MIntConvert, Matrix, One, SemiRing, Xorshift, Zero,
 };
 use std::{
     fmt::{self, Debug},
@@ -22,13 +22,7 @@ where
 {
     fn apply(&self, v: &[R::T]) -> Vec<R::T> {
         assert_eq!(self.shape.1, v.len());
-        let mut res = vec![R::zero(); self.shape.0];
-        for i in 0..self.shape.0 {
-            for j in 0..self.shape.1 {
-                R::add_assign(&mut res[i], &R::mul(&self[(i, j)], &v[j]));
-            }
-        }
-        res
+        self.data.iter().map(|row| R::dot_product(row, v)).collect()
     }
 
     fn shape(&self) -> (usize, usize) {
@@ -96,6 +90,112 @@ where
     }
     pub fn from_nonzero(shape: (usize, usize), nonzero: Vec<(usize, usize, R::T)>) -> Self {
         Self { shape, nonzero }
+    }
+}
+
+impl<R> SparseMatrix<R>
+where
+    R: Field<T: PartialEq, Additive: Invertible, Multiplicative: Invertible>,
+{
+    pub fn determinant(&self) -> R::T {
+        assert_eq!(self.shape.0, self.shape.1);
+        let n = self.shape.0;
+        let mut columns = vec![Vec::<(usize, R::T)>::new(); n];
+        for &(i, j, ref value) in &self.nonzero {
+            columns[j].push((i, value.clone()));
+        }
+        let mut degrees = vec![0; n];
+        for column in &mut columns {
+            column.sort_unstable_by_key(|&(i, _)| i);
+            let mut merged: Vec<(usize, R::T)> = Vec::with_capacity(column.len());
+            for (i, value) in column.drain(..) {
+                if let Some((_, x)) = merged.last_mut().filter(|(last, _)| *last == i) {
+                    R::add_assign(x, &value);
+                } else {
+                    merged.push((i, value));
+                }
+            }
+            merged.retain(|(i, value)| {
+                if R::is_zero(value) {
+                    false
+                } else {
+                    degrees[*i] += 1;
+                    true
+                }
+            });
+            *column = merged;
+        }
+        let mut order: Vec<_> = (0..n).collect();
+        order.sort_unstable_by_key(|&j| columns[j].len());
+        let mut lower: Vec<Vec<(usize, R::T)>> = Vec::with_capacity(n);
+        let mut pivots: Vec<Option<usize>> = vec![None; n];
+        let mut x = vec![R::zero(); n];
+        let mut seen = vec![0; n];
+        let mut stack = Vec::new();
+        let mut support = Vec::new();
+        let mut determinant = R::one();
+        for (k, &j) in order.iter().enumerate() {
+            support.clear();
+            for &(i, _) in &columns[j] {
+                if seen[i] == k + 1 {
+                    continue;
+                }
+                seen[i] = k + 1;
+                x[i] = R::zero();
+                stack.push((i, 0));
+                while let Some((i, next)) = stack.last_mut() {
+                    if let Some(pivot) = pivots[*i]
+                        && *next < lower[pivot].len()
+                    {
+                        let row = lower[pivot][*next].0;
+                        *next += 1;
+                        if seen[row] != k + 1 {
+                            seen[row] = k + 1;
+                            x[row] = R::zero();
+                            stack.push((row, 0));
+                        }
+                        continue;
+                    }
+                    support.push(*i);
+                    stack.pop();
+                }
+            }
+            for &(i, ref value) in &columns[j] {
+                x[i] = value.clone();
+            }
+            let mut pivot = None;
+            for &i in support.iter().rev() {
+                if let Some(p) = pivots[i] {
+                    let factor = R::neg(&x[i]);
+                    for &(row, ref value) in &lower[p] {
+                        R::add_assign(&mut x[row], &R::mul(&factor, value));
+                    }
+                } else if !R::is_zero(&x[i]) && pivot.is_none_or(|p| degrees[i] < degrees[p]) {
+                    pivot = Some(i);
+                }
+            }
+            let Some(pivot) = pivot else { return R::zero() };
+            R::mul_assign(&mut determinant, &x[pivot]);
+            let inv = R::inv(&x[pivot]);
+            pivots[pivot] = Some(k);
+            lower.push(
+                support
+                    .iter()
+                    .filter(|&&i| pivots[i].is_none() && !R::is_zero(&x[i]))
+                    .map(|&i| (i, R::mul(&x[i], &inv)))
+                    .collect(),
+            );
+        }
+        for mut permutation in [order, pivots.into_iter().map(Option::unwrap).collect()] {
+            for i in 0..n {
+                while permutation[i] != i {
+                    let j = permutation[i];
+                    permutation.swap(i, j);
+                    determinant = R::neg(&determinant);
+                }
+            }
+        }
+        determinant
     }
 }
 
@@ -223,7 +323,7 @@ where
         let u: Vec<MInt<M>> = (0..n).map(|_| MInt::from(rng.rand64())).collect();
         let a: Vec<MInt<M>> = (0..2 * n)
             .scan(b, |b, _| {
-                let a = b.iter().zip(&u).fold(MInt::zero(), |s, (x, y)| s + x * y);
+                let a = MInt::dot_product(b, &u);
                 *b = self.apply(b);
                 Some(a)
             })
@@ -382,6 +482,28 @@ mod tests {
             let expected = a.clone().pow(k).apply(&b);
             let result = a.apply_pow::<Convolve998244353>(b, k);
             assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn test_sparse_determinant() {
+        let mut rng = Xorshift::new_with_seed(94623);
+        for _ in 0..500 {
+            let n = rng.random(0..40);
+            let count = rng.random(0..n * n * 2 + 1);
+            let mut entries = Vec::new();
+            for _ in 0..count {
+                let i = rng.random(0..n);
+                let j = rng.random(0..n);
+                let value: MInt998244353 = rng.random(..);
+                entries.push((i, j, value));
+                if rng.gen_bool(0.25) {
+                    entries.push((i, j, -value));
+                }
+            }
+            let sparse = SparseMatrix::<R>::from_nonzero((n, n), entries);
+            let expected = Matrix::from(sparse.clone()).determinant();
+            assert_eq!(sparse.determinant(), expected);
         }
     }
 

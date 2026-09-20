@@ -13,7 +13,6 @@ pub trait SemiRing {
     fn zero() -> Self::T {
         <Self::Additive as Unital>::unit()
     }
-    /// checks if the element is zero
     fn is_zero(x: &Self::T) -> bool
     where
         Self::T: PartialEq,
@@ -24,7 +23,6 @@ pub trait SemiRing {
     fn one() -> Self::T {
         <Self::Multiplicative as Unital>::unit()
     }
-    /// checks if the element is one
     fn is_one(x: &Self::T) -> bool
     where
         Self::T: PartialEq,
@@ -40,12 +38,23 @@ pub trait SemiRing {
         <Self::Multiplicative as Magma>::operate(x, y)
     }
 
+    fn try_matrix_product(_a: &[Vec<Self::T>], _b: &[Vec<Self::T>]) -> Option<Vec<Vec<Self::T>>> {
+        None
+    }
+
     fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
         assert_eq!(x.len(), y.len());
         x.iter().zip(y).fold(Self::zero(), |mut sum, (x, y)| {
             Self::add_assign(&mut sum, &Self::mul(x, y));
             sum
         })
+    }
+
+    fn add_scaled_assign(x: &mut [Self::T], y: &[Self::T], a: &Self::T) {
+        assert_eq!(x.len(), y.len());
+        for (x, y) in x.iter_mut().zip(y) {
+            Self::add_assign(x, &Self::mul(a, y));
+        }
     }
 
     fn add_assign(x: &mut Self::T, y: &Self::T) {
@@ -91,8 +100,18 @@ pub trait Field: Ring<Multiplicative: Invertible> {
 
 impl<F> Field for F where F: Ring<Multiplicative: Invertible> {}
 
-/// Dot product using `+` and `*`.
 pub trait DotProduct: Sized + Clone + Zero + Add<Output = Self> + Mul<Output = Self> {
+    fn try_matrix_product(_a: &[Vec<Self>], _b: &[Vec<Self>]) -> Option<Vec<Vec<Self>>> {
+        None
+    }
+
+    fn add_scaled_assign(x: &mut [Self], y: &[Self], a: &Self) {
+        assert_eq!(x.len(), y.len());
+        for (x, y) in x.iter_mut().zip(y) {
+            *x = x.clone() + a.clone() * y.clone();
+        }
+    }
+
     fn dot_product(x: &[Self], y: &[Self]) -> Self {
         assert_eq!(x.len(), y.len());
         x.iter()
@@ -129,7 +148,17 @@ where
     type Multiplicative = MultiplicativeOperation<T>;
 
     #[inline]
+    fn try_matrix_product(a: &[Vec<T>], b: &[Vec<T>]) -> Option<Vec<Vec<T>>> {
+        T::try_matrix_product(a, b)
+    }
+
+    #[inline]
     fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
         T::dot_product(x, y)
+    }
+
+    #[inline]
+    fn add_scaled_assign(x: &mut [Self::T], y: &[Self::T], a: &Self::T) {
+        T::add_scaled_assign(x, y, a);
     }
 }

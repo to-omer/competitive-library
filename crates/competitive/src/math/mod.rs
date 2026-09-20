@@ -10,7 +10,7 @@ use crate::num::{
     BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One, RangeBoundsExt,
     Signed, Unsigned, Wrapping, Zero, montgomery,
 };
-use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
+use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift, advise_huge_pages};
 #[cfg(target_arch = "x86_64")]
 use crate::tools::{SimdBackend, simd_backend};
 
@@ -63,8 +63,6 @@ pub use self::garner::Garner;
 pub use self::gcd::*;
 #[codesnip::entry("GcdConvolve")]
 pub use self::gcd_convolve::GcdConvolve;
-#[codesnip::entry("_huge_pages")]
-pub use self::huge_pages::advise_huge_pages;
 #[codesnip::entry("lagrange_interpolation")]
 pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
 #[codesnip::entry("LcmConvolve")]
@@ -212,8 +210,6 @@ mod gcd;
     codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))
 )]
 mod gcd_convolve;
-#[cfg_attr(nightly, codesnip::entry("_huge_pages"))]
-mod huge_pages;
 #[cfg_attr(
     nightly,
     codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))

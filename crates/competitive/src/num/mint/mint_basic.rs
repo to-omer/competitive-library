@@ -62,9 +62,19 @@ macro_rules! define_basic_mintbase {
                 // (x as $upperty * y as $upperty % Self::get_mod() as $upperty) as $basety
                 $name::rem(x as $upperty * y as $upperty) as $basety
             }
+            fn mod_matrix_product(_a: &[Vec<MInt<Self>>], _b: &[Vec<MInt<Self>>]) -> Option<Vec<Vec<MInt<Self>>>> {
+                $crate::define_basic_mintbase!(@matrix_product $dot_product, _a, _b)
+            }
             #[$inline]
             fn mod_dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> Self::Inner {
                 $crate::define_basic_mintbase!(@dot_product $dot_product, $name, x, y, $basety, $upperty)
+            }
+            #[inline]
+            fn mod_add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: Self::Inner) {
+                assert_eq!(x.len(), y.len());
+                $crate::define_basic_mintbase!(@add_scaled $dot_product, $name, x, y, a);
+                let a = MInt::new_unchecked(a);
+                for (x, y) in x.iter_mut().zip(y) { *x += a * *y; }
             }
             #[inline]
             fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner {
@@ -157,21 +167,95 @@ macro_rules! define_basic_mintbase {
                     && avx512_enabled()
                     && is_x86_feature_detected!("avx512f")
                 {
-                    // SAFETY: feature detection checked AVX-512F.
                     return unsafe { $name::dot_product_avx512($x, $y) };
                 }
                 if is_x86_feature_detected!("avx2") {
-                    // SAFETY: feature detection checked AVX2.
                     return unsafe { $name::dot_product_avx2($x, $y) };
                 }
             }
         }
         $crate::define_basic_mintbase!(@dot_product scalar, $name, $x, $y, $basety, $upperty)
     }};
+    (@matrix_product scalar, $a:ident, $b:ident) => { None };
+    (@matrix_product simd32, $a:ident, $b:ident) => {{
+        #[cfg(target_arch = "x86_64")]
+        if $a.len() >= 32 && $b.len() >= 32 && $b[0].len() >= 32
+            && Self::get_mod() > 1 && Self::get_mod() < 1 << 30
+            && Self::get_mod() % 2 == 1 && is_x86_feature_detected!("avx2")
+        {
+            let scale = ((1u64 << 32) % Self::get_mod() as u64) as u32;
+            return Some(unsafe { MInt::matrix_product_avx2($a, $b, scale) });
+        }
+        None
+    }};
+    (@add_scaled scalar, $name:ident, $x:ident, $y:ident, $a:ident) => {};
+    (@add_scaled simd32, $name:ident, $x:ident, $y:ident, $a:ident) => {
+        #[cfg(target_arch = "x86_64")]
+        if $x.len() >= 16 && Self::get_mod() <= 1 << 31 {
+            if $x.len() >= 64 && avx512_enabled() && is_x86_feature_detected!("avx512f") {
+                unsafe { Self::add_scaled_avx512($x, $y, $a) };
+                return;
+            }
+            if is_x86_feature_detected!("avx2") {
+                unsafe { Self::add_scaled_avx2($x, $y, $a) };
+                return;
+            }
+        }
+    };
     (@simd_functions scalar, $name:ident) => {};
     (@simd_functions simd32, $name:ident) => {
         #[cfg(target_arch = "x86_64")]
         impl $name {
+            #[allow(unsafe_op_in_unsafe_fn)]
+            #[target_feature(enable = "avx2")]
+            unsafe fn add_scaled_avx2(x: &mut [MInt<Self>], y: &[MInt<Self>], a: u32) {
+                use std::arch::x86_64::*;
+                let modulus = _mm256_set1_epi32(Self::get_mod() as i32);
+                let factor = _mm256_set1_epi32(a as i32);
+                // This quotient underestimates floor(a*y/m) by at most one.
+                let quotient = _mm256_set1_epi32((((a as u64) << 32) / Self::get_mod() as u64) as i32);
+                let end = x.len() / 8 * 8;
+                for i in (0..end).step_by(8) {
+                    let value = _mm256_loadu_si256(y.as_ptr().add(i).cast());
+                    let lo = _mm256_srli_epi64::<32>(_mm256_mul_epu32(value, quotient));
+                    let hi = _mm256_slli_epi64::<32>(_mm256_srli_epi64::<32>(_mm256_mul_epu32(_mm256_srli_epi64::<32>(value), quotient)));
+                    let q = _mm256_or_si256(lo, hi);
+                    let product = _mm256_sub_epi32(_mm256_mullo_epi32(value, factor), _mm256_mullo_epi32(q, modulus));
+                    let product = _mm256_min_epu32(product, _mm256_sub_epi32(product, modulus));
+                    let old = _mm256_loadu_si256(x.as_ptr().add(i).cast());
+                    let sum = _mm256_add_epi32(old, product);
+                    let sum = _mm256_min_epu32(sum, _mm256_sub_epi32(sum, modulus));
+                    _mm256_storeu_si256(x.as_mut_ptr().add(i).cast(), sum);
+                }
+                let a = MInt::new_unchecked(a);
+                for (x, y) in x[end..].iter_mut().zip(&y[end..]) { *x += a * *y; }
+            }
+
+            #[allow(unsafe_op_in_unsafe_fn)]
+            #[target_feature(enable = "avx512f")]
+            unsafe fn add_scaled_avx512(x: &mut [MInt<Self>], y: &[MInt<Self>], a: u32) {
+                use std::arch::x86_64::*;
+                let modulus = _mm512_set1_epi32(Self::get_mod() as i32);
+                let factor = _mm512_set1_epi32(a as i32);
+                // This quotient underestimates floor(a*y/m) by at most one.
+                let quotient = _mm512_set1_epi32((((a as u64) << 32) / Self::get_mod() as u64) as i32);
+                let end = x.len() / 16 * 16;
+                for i in (0..end).step_by(16) {
+                    let value = _mm512_loadu_si512(y.as_ptr().add(i).cast());
+                    let lo = _mm512_srli_epi64::<32>(_mm512_mul_epu32(value, quotient));
+                    let hi = _mm512_slli_epi64::<32>(_mm512_srli_epi64::<32>(_mm512_mul_epu32(_mm512_srli_epi64::<32>(value), quotient)));
+                    let q = _mm512_or_si512(lo, hi);
+                    let product = _mm512_sub_epi32(_mm512_mullo_epi32(value, factor), _mm512_mullo_epi32(q, modulus));
+                    let product = _mm512_min_epu32(product, _mm512_sub_epi32(product, modulus));
+                    let old = _mm512_loadu_si512(x.as_ptr().add(i).cast());
+                    let sum = _mm512_add_epi32(old, product);
+                    let sum = _mm512_min_epu32(sum, _mm512_sub_epi32(sum, modulus));
+                    _mm512_storeu_si512(x.as_mut_ptr().add(i).cast(), sum);
+                }
+                let a = MInt::new_unchecked(a);
+                for (x, y) in x[end..].iter_mut().zip(&y[end..]) { *x += a * *y; }
+            }
+
             #[allow(unsafe_op_in_unsafe_fn)]
             #[target_feature(enable = "avx2")]
             unsafe fn dot_product_avx2(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {

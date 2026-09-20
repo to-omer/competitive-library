@@ -16,6 +16,8 @@ pub use self::digit_sequence::ToDigitSequence;
 pub use self::fast_print::{FastIterPrint, FastPrint};
 #[codesnip::entry("fastio")]
 pub use self::fastio::{FastInput, FastOutput};
+#[codesnip::entry("_huge_pages")]
+pub use self::huge_pages::advise_huge_pages;
 #[codesnip::entry("IdGenerator")]
 pub use self::id_generator::IdGenerator;
 #[codesnip::entry("_iter_print")]
@@ -61,6 +63,8 @@ mod fast_print;
 mod fast_scanner;
 #[cfg_attr(nightly, codesnip::entry("fastio"))]
 mod fastio;
+#[cfg_attr(nightly, codesnip::entry("_huge_pages"))]
+mod huge_pages;
 #[cfg_attr(nightly, codesnip::entry("IdGenerator"))]
 mod id_generator;
 #[cfg_attr(nightly, codesnip::entry)]

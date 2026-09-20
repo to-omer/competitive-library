@@ -1,7 +1,7 @@
 //! modint
 
 #[cfg(target_arch = "x86_64")]
-use crate::tools::avx512_enabled;
+use crate::tools::{advise_huge_pages, avx512_enabled, avx512_supported};
 use crate::{
     algebra::DotProduct,
     num::{BarrettReduction, One, Zero},
@@ -16,12 +16,25 @@ mod mint_base;
 
 #[cfg_attr(
     nightly,
-    codesnip::entry("MInt", include("MIntBase", "BarrettReduction", "avx_helper"))
+    codesnip::entry(
+        "MInt",
+        include("MIntBase", "BarrettReduction", "avx_helper", "simd_matrix")
+    )
 )]
 pub mod mint_basic;
 
-#[cfg_attr(nightly, codesnip::entry("montgomery", include("MIntBase")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("montgomery", include("MIntBase", "avx_helper", "simd_matrix"))
+)]
 pub mod montgomery;
+
+#[cfg(target_arch = "x86_64")]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("simd_matrix", include("MIntBase", "avx_helper", "_huge_pages"))
+)]
+mod simd_matrix;
 
 mod random_spec {
     use super::*;

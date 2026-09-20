@@ -155,21 +155,89 @@ impl<R> Matrix<R>
 where
     R: Field<T: PartialEq, Additive: Invertible, Multiplicative: Invertible>,
 {
-    #[inline]
-    fn eliminate_below(&mut self, row: usize, col: usize) {
-        let inv = R::inv(&self[row][col]);
-        let (upper, lower) = self.data.split_at_mut(row + 1);
-        let pivot = &upper[row];
-        for target in lower {
-            if R::is_zero(&target[col]) {
-                continue;
+    fn eliminate<const DETERMINANT: bool>(&mut self) -> (usize, R::T) {
+        let (n, m) = self.shape;
+        let mut rank = 0;
+        let mut determinant = R::one();
+        let mut negative = false;
+        for first in (0..m).step_by(64) {
+            if rank == n {
+                break;
             }
-            let factor = R::mul(&target[col], &inv);
-            target[col] = R::zero();
-            for (x, y) in target[(col + 1)..].iter_mut().zip(&pivot[(col + 1)..]) {
-                R::sub_assign(x, &R::mul(&factor, y));
+            let end = (first + 64).min(m);
+            let start = rank;
+            let mut pivots = Vec::new();
+            for col in first..end {
+                let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&self[i][col])) else {
+                    if DETERMINANT {
+                        break;
+                    }
+                    continue;
+                };
+                if pivot != rank {
+                    self.data.swap(rank, pivot);
+                    negative = !negative;
+                }
+                R::mul_assign(&mut determinant, &self[rank][col]);
+                let inv = R::inv(&self[rank][col]);
+                let (upper, lower) = self.data.split_at_mut(rank + 1);
+                let pivot = &upper[rank];
+                for row in lower {
+                    if R::is_zero(&row[col]) {
+                        continue;
+                    }
+                    let factor = R::mul(&row[col], &inv);
+                    row[col] = factor.clone();
+                    R::add_scaled_assign(
+                        &mut row[col + 1..end],
+                        &pivot[col + 1..end],
+                        &R::neg(&factor),
+                    );
+                }
+                pivots.push(col);
+                rank += 1;
+                if rank == n {
+                    break;
+                }
+            }
+            for i in start..rank {
+                let (upper, lower) = self.data.split_at_mut(i);
+                let row = &mut lower[0];
+                for (j, &col) in pivots[..i - start].iter().enumerate() {
+                    if R::is_zero(&row[col]) {
+                        continue;
+                    }
+                    let factor = R::neg(&row[col]);
+                    R::add_scaled_assign(&mut row[end..], &upper[start + j][end..], &factor);
+                }
+            }
+            if rank < n && end < m && rank != start {
+                let lower = Self::new_with((n - rank, rank - start), |i, j| {
+                    R::neg(&self[rank + i][pivots[j]])
+                });
+                let upper = Self::new_with((rank - start, m - end), |i, j| {
+                    self[start + i][end + j].clone()
+                });
+                let update = &lower * &upper;
+                for (row, update) in self.data[rank..].iter_mut().zip(update.data) {
+                    for (x, y) in row[end..].iter_mut().zip(update) {
+                        R::add_assign(x, &y);
+                    }
+                }
+            }
+            for (i, &col) in pivots.iter().enumerate() {
+                for row in &mut self.data[start + i + 1..] {
+                    row[col] = R::zero();
+                }
+            }
+            if DETERMINANT && rank < end {
+                return (rank, R::zero());
             }
         }
+        if negative {
+            determinant = R::neg(&determinant);
+        }
+        (rank, determinant)
     }
 
     /// f: (row, pivot_row, col)
@@ -216,45 +284,12 @@ where
     }
 
     pub fn rank(&mut self) -> usize {
-        let (n, m) = self.shape;
-        if n == 0 {
-            return 0;
-        }
-        let mut rank = 0;
-        for c in 0..m {
-            let Some(pivot) = (rank..n).find(|&i| !R::is_zero(&self[i][c])) else {
-                continue;
-            };
-            self.data.swap(rank, pivot);
-            self.eliminate_below(rank, c);
-            rank += 1;
-            if rank == n {
-                break;
-            }
-        }
-        rank
+        self.eliminate::<false>().0
     }
 
     pub fn determinant(&mut self) -> R::T {
         assert_eq!(self.shape.0, self.shape.1);
-        let n = self.shape.0;
-        let mut determinant = R::one();
-        let mut neg = false;
-        for c in 0..n {
-            let Some(pivot) = (c..n).find(|&i| !R::is_zero(&self[i][c])) else {
-                return R::zero();
-            };
-            if c != pivot {
-                self.data.swap(c, pivot);
-                neg = !neg;
-            }
-            R::mul_assign(&mut determinant, &self[c][c]);
-            self.eliminate_below(c, c);
-        }
-        if neg {
-            determinant = R::neg(&determinant);
-        }
-        determinant
+        self.eliminate::<true>().1
     }
 
     pub fn solve_system_of_linear_equations(
@@ -293,9 +328,7 @@ where
                 }
                 let factor = row[c].clone();
                 row[c] = R::zero();
-                for (x, y) in row[(c + 1)..].iter_mut().zip(&pivot[(c + 1)..]) {
-                    R::sub_assign(x, &R::mul(&factor, y));
-                }
+                R::add_scaled_assign(&mut row[(c + 1)..], &pivot[(c + 1)..], &R::neg(&factor));
                 R::sub_assign(value, &R::mul(&factor, &pivot_b));
             }
             pivots.push(c);
@@ -329,9 +362,7 @@ where
                 let factor = row[c].clone();
                 row[c] = R::zero();
                 R::sub_assign(value, &R::mul(&factor, &pivot_b));
-                for (x, y) in coefficients.iter_mut().zip(pivot_coefficients) {
-                    R::sub_assign(x, &R::mul(&factor, y));
-                }
+                R::add_scaled_assign(coefficients, pivot_coefficients, &R::neg(&factor));
             }
         }
 
@@ -354,6 +385,36 @@ where
     pub fn inverse(&self) -> Option<Matrix<R>> {
         assert_eq!(self.shape.0, self.shape.1);
         let n = self.shape.0;
+        if n >= 128 {
+            let m = n / 2;
+            let a = Self::new_with((m, m), |i, j| self[i][j].clone());
+            if let Some(mut ai) = a.inverse() {
+                let b = Self::new_with((m, n - m), |i, j| self[i][j + m].clone());
+                let c = Self::new_with((n - m, m), |i, j| self[i + m][j].clone());
+                let mut d = Self::new_with((n - m, n - m), |i, j| self[i + m][j + m].clone());
+                let u = &ai * &b;
+                let v = &c * &ai;
+                d -= &v * &b;
+                let di = d.inverse()?;
+                let r = &u * &di;
+                let t = &di * &v;
+                ai += &r * &v;
+                let mut inverse = Self::zeros((n, n));
+                for i in 0..m {
+                    inverse[i][..m].clone_from_slice(&ai[i]);
+                    for (x, y) in inverse[i][m..].iter_mut().zip(&r[i]) {
+                        *x = R::neg(y);
+                    }
+                }
+                for i in m..n {
+                    for (x, y) in inverse[i][..m].iter_mut().zip(&t[i - m]) {
+                        *x = R::neg(y);
+                    }
+                    inverse[i][m..].clone_from_slice(&di[i - m]);
+                }
+                return Some(inverse);
+            }
+        }
         let mut a = self.clone();
         let mut inverse = Self::eye((n, n));
         let mut ranges: Vec<_> = (0..n).map(|i| (i, i + 1)).collect();
@@ -384,15 +445,12 @@ where
                 }
                 let e = a[r].clone();
                 a[r] = R::zero();
-                for (x, y) in a[(r + 1)..].iter_mut().zip(&pivot_a[(r + 1)..]) {
-                    R::sub_assign(x, &R::mul(&e, y));
-                }
-                for (x, y) in inverse[left..right]
-                    .iter_mut()
-                    .zip(&pivot_inverse[left..right])
-                {
-                    R::sub_assign(x, &R::mul(&e, y));
-                }
+                R::add_scaled_assign(&mut a[(r + 1)..], &pivot_a[(r + 1)..], &R::neg(&e));
+                R::add_scaled_assign(
+                    &mut inverse[left..right],
+                    &pivot_inverse[left..right],
+                    &R::neg(&e),
+                );
                 range.0 = range.0.min(left);
                 range.1 = range.1.max(right);
             }
@@ -409,12 +467,11 @@ where
                 }
                 let e = a[r].clone();
                 a[r] = R::zero();
-                for (x, y) in inverse[left..right]
-                    .iter_mut()
-                    .zip(&pivot_inverse[left..right])
-                {
-                    R::sub_assign(x, &R::mul(&e, y));
-                }
+                R::add_scaled_assign(
+                    &mut inverse[left..right],
+                    &pivot_inverse[left..right],
+                    &R::neg(&e),
+                );
                 range.0 = range.0.min(left);
                 range.1 = range.1.max(right);
             }
@@ -437,17 +494,12 @@ where
                 let src = std::mem::take(&mut self[j + 1]);
                 for a in self.data[(j + 2)..].iter_mut() {
                     let mul = R::mul(&a[j], &inv);
-                    for (a, src) in a[j..].iter_mut().zip(src[j..].iter()) {
-                        R::sub_assign(a, &R::mul(&mul, src));
-                    }
+                    R::add_scaled_assign(&mut a[j..], &src[j..], &R::neg(&mul));
                     v.push(mul);
                 }
                 self[j + 1] = src;
                 for a in self.data.iter_mut() {
-                    let v = a[(j + 2)..]
-                        .iter()
-                        .zip(v.iter())
-                        .fold(R::zero(), |s, a| R::add(&s, &R::mul(a.0, a.1)));
+                    let v = R::dot_product(&a[(j + 2)..], &v);
                     R::add_assign(&mut a[j + 1], &v);
                 }
             }
@@ -463,9 +515,7 @@ where
             for j in (0..i).rev() {
                 mul = R::mul(&mul, &self[j + 1][j]);
                 let c = R::mul(&mul, &self[j][i]);
-                for (next, dp) in next.iter_mut().zip(dp[j].iter()) {
-                    R::sub_assign(next, &R::mul(&c, dp));
-                }
+                R::add_scaled_assign(&mut next[..dp[j].len()], &dp[j], &R::neg(&c));
             }
             dp.push(next);
         }
@@ -616,6 +666,9 @@ where
     type Output = Matrix<R>;
     fn mul(self, rhs: &Matrix<R>) -> Self::Output {
         assert_eq!(self.shape.1, rhs.shape.0);
+        if let Some(data) = R::try_matrix_product(&self.data, &rhs.data) {
+            return Matrix::from_vec(data);
+        }
         let rhs = rhs.transpose();
         Matrix::new_with((self.shape.0, rhs.shape.0), |i, j| {
             R::dot_product(&self[i], &rhs[j])
@@ -627,10 +680,11 @@ fn strassen_rec<R: Ring>(
     a: &[R::T],
     b: &[R::T],
     c: &mut [R::T],
-    n: usize,
+    shape: (usize, usize, usize),
     stride_a: usize,
     stride_b: usize,
 ) {
+    let (n, m, p) = shape;
     fn add_block<R: Ring>(
         a: &[R::T],
         b: &[R::T],
@@ -669,30 +723,31 @@ fn strassen_rec<R: Ring>(
         }
     }
 
-    if n <= 16 {
-        for (a, c) in a.chunks(stride_a).zip(c.chunks_exact_mut(n)) {
-            for (a, b) in a.iter().zip(b.chunks(stride_b)).take(n) {
-                for (b, c) in b.iter().zip(c.iter_mut()) {
-                    R::add_assign(c, &R::mul(a, b));
-                }
+    if n.min(m).min(p) <= 128 {
+        let transposed: Vec<_> = (0..p)
+            .flat_map(|j| (0..m).map(move |i| b[i * stride_b + j].clone()))
+            .collect();
+        for (a, c) in a.chunks(stride_a).zip(c.chunks_exact_mut(p)) {
+            for (b, c) in transposed.chunks_exact(m).zip(c) {
+                *c = R::dot_product(&a[..m], b);
             }
         }
         return;
     }
-    let h = n / 2;
+    let (h, k, w) = (n / 2, m / 2, p / 2);
     let a11 = 0;
-    let a12 = h;
+    let a12 = k;
     let a21 = h * stride_a;
-    let a22 = a21 + h;
+    let a22 = a21 + k;
     let b11 = 0;
-    let b12 = h;
-    let b21 = h * stride_b;
-    let b22 = b21 + h;
+    let b12 = w;
+    let b21 = k * stride_b;
+    let b22 = b21 + w;
 
-    let block = h * h;
-    let mut buf = vec![R::zero(); block * 9];
-    let (s_buf, m_buf) = buf.split_at_mut(block * 2);
-    let (s1, s2) = s_buf.split_at_mut(block);
+    let block = h * w;
+    let mut buf = vec![R::zero(); h * k + k * w + block * 7];
+    let (s1, rest) = buf.split_at_mut(h * k);
+    let (s2, m_buf) = rest.split_at_mut(k * w);
     let (m1, rest) = m_buf.split_at_mut(block);
     let (m2, rest) = rest.split_at_mut(block);
     let (m3, rest) = rest.split_at_mut(block);
@@ -701,46 +756,46 @@ fn strassen_rec<R: Ring>(
     let (m6, m7) = rest.split_at_mut(block);
 
     // (A11 + A22)(B11 + B22)
-    add_block::<R>(&a[a11..], &a[a22..], s1, h, stride_a, stride_a);
-    add_block::<R>(&b[b11..], &b[b22..], s2, h, stride_b, stride_b);
-    strassen_rec::<R>(s1, s2, m1, h, h, h);
+    add_block::<R>(&a[a11..], &a[a22..], s1, k, stride_a, stride_a);
+    add_block::<R>(&b[b11..], &b[b22..], s2, w, stride_b, stride_b);
+    strassen_rec::<R>(s1, s2, m1, (h, k, w), k, w);
 
     // (A21 + A22) B11
-    add_block::<R>(&a[a21..], &a[a22..], s1, h, stride_a, stride_a);
-    strassen_rec::<R>(s1, &b[b11..], m2, h, h, stride_b);
+    add_block::<R>(&a[a21..], &a[a22..], s1, k, stride_a, stride_a);
+    strassen_rec::<R>(s1, &b[b11..], m2, (h, k, w), k, stride_b);
 
     // A11 (B12 - B22)
-    sub_block::<R>(&b[b12..], &b[b22..], s1, h, stride_b, stride_b);
-    strassen_rec::<R>(&a[a11..], s1, m3, h, stride_a, h);
+    sub_block::<R>(&b[b12..], &b[b22..], s2, w, stride_b, stride_b);
+    strassen_rec::<R>(&a[a11..], s2, m3, (h, k, w), stride_a, w);
 
     // A22 (B21 - B11)
-    sub_block::<R>(&b[b21..], &b[b11..], s1, h, stride_b, stride_b);
-    strassen_rec::<R>(&a[a22..], s1, m4, h, stride_a, h);
+    sub_block::<R>(&b[b21..], &b[b11..], s2, w, stride_b, stride_b);
+    strassen_rec::<R>(&a[a22..], s2, m4, (h, k, w), stride_a, w);
 
     // (A11 + A12) B22
-    add_block::<R>(&a[a11..], &a[a12..], s1, h, stride_a, stride_a);
-    strassen_rec::<R>(s1, &b[b22..], m5, h, h, stride_b);
+    add_block::<R>(&a[a11..], &a[a12..], s1, k, stride_a, stride_a);
+    strassen_rec::<R>(s1, &b[b22..], m5, (h, k, w), k, stride_b);
 
     // (A21 - A11)(B11 + B12)
-    sub_block::<R>(&a[a21..], &a[a11..], s1, h, stride_a, stride_a);
-    add_block::<R>(&b[b11..], &b[b12..], s2, h, stride_b, stride_b);
-    strassen_rec::<R>(s1, s2, m6, h, h, h);
+    sub_block::<R>(&a[a21..], &a[a11..], s1, k, stride_a, stride_a);
+    add_block::<R>(&b[b11..], &b[b12..], s2, w, stride_b, stride_b);
+    strassen_rec::<R>(s1, s2, m6, (h, k, w), k, w);
 
     // (A12 - A22)(B21 + B22)
-    sub_block::<R>(&a[a12..], &a[a22..], s1, h, stride_a, stride_a);
-    add_block::<R>(&b[b21..], &b[b22..], s2, h, stride_b, stride_b);
-    strassen_rec::<R>(s1, s2, m7, h, h, h);
+    sub_block::<R>(&a[a12..], &a[a22..], s1, k, stride_a, stride_a);
+    add_block::<R>(&b[b21..], &b[b22..], s2, w, stride_b, stride_b);
+    strassen_rec::<R>(s1, s2, m7, (h, k, w), k, w);
 
     let c11 = 0;
-    let c12 = h;
-    let c21 = h * n;
-    let c22 = c21 + h;
+    let c12 = w;
+    let c21 = h * p;
+    let c22 = c21 + w;
     for ((((m1, m4), m5), m7), c) in m1
         .iter()
         .zip(m4.iter())
         .zip(m5.iter())
         .zip(m7.iter())
-        .zip(c[c11..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+        .zip(c[c11..].chunks_mut(p).flat_map(|c| c.iter_mut().take(w)))
     {
         *c = R::add(m1, m4);
         R::sub_assign(c, m5);
@@ -749,14 +804,14 @@ fn strassen_rec<R: Ring>(
     for ((m3, m5), c) in m3
         .iter()
         .zip(m5.iter())
-        .zip(c[c12..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+        .zip(c[c12..].chunks_mut(p).flat_map(|c| c.iter_mut().take(w)))
     {
         *c = R::add(m3, m5);
     }
     for ((m2, m4), c) in m2
         .iter()
         .zip(m4.iter())
-        .zip(c[c21..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+        .zip(c[c21..].chunks_mut(p).flat_map(|c| c.iter_mut().take(w)))
     {
         *c = R::add(m2, m4);
     }
@@ -765,7 +820,7 @@ fn strassen_rec<R: Ring>(
         .zip(m2.iter())
         .zip(m3.iter())
         .zip(m6.iter())
-        .zip(c[c22..].chunks_mut(n).flat_map(|c| c.iter_mut().take(h)))
+        .zip(c[c22..].chunks_mut(p).flat_map(|c| c.iter_mut().take(w)))
     {
         *c = R::sub(m1, m2);
         R::add_assign(c, m3);
@@ -779,31 +834,33 @@ where
 {
     pub fn mul_strassen(&self, rhs: &Matrix<R>) -> Matrix<R> {
         assert_eq!(self.shape.1, rhs.shape.0);
+        if let Some(data) = R::try_matrix_product(&self.data, &rhs.data) {
+            return Matrix::from_vec(data);
+        }
         let (n, m) = self.shape;
         let p = rhs.shape.1;
         if n == 0 || m == 0 || p == 0 {
             return Matrix::zeros((n, p));
         }
-        let max_dim = n.max(m).max(p);
-        if max_dim <= 64 {
+        let split = n.min(m).min(p).div_ceil(128).next_power_of_two();
+        if split <= 2 {
             return self * rhs;
         }
-        let size = max_dim.next_power_of_two();
-        if size * size * size > n * m * p * 2 {
-            return self * rhs;
-        }
-        let mut a = vec![R::zero(); size * size];
-        for (a, data) in a.chunks_exact_mut(size).zip(&self.data) {
+        let rows = n.div_ceil(split) * split;
+        let inner = m.div_ceil(split) * split;
+        let cols = p.div_ceil(split) * split;
+        let mut a = vec![R::zero(); rows * inner];
+        for (a, data) in a.chunks_exact_mut(inner).zip(&self.data) {
             a[..m].clone_from_slice(data);
         }
-        let mut b = vec![R::zero(); size * size];
-        for (b, data) in b.chunks_exact_mut(size).zip(&rhs.data) {
+        let mut b = vec![R::zero(); inner * cols];
+        for (b, data) in b.chunks_exact_mut(cols).zip(&rhs.data) {
             b[..p].clone_from_slice(data);
         }
-        let mut c = vec![R::zero(); size * size];
-        strassen_rec::<R>(&a, &b, &mut c, size, size, size);
+        let mut c = vec![R::zero(); rows * cols];
+        strassen_rec::<R>(&a, &b, &mut c, (rows, inner, cols), inner, cols);
         let mut res = Matrix::zeros((n, p));
-        for (data, c) in res.data.iter_mut().zip(c.chunks_exact(size)) {
+        for (data, c) in res.data.iter_mut().zip(c.chunks_exact(cols)) {
             data.clone_from_slice(&c[..p]);
         }
         res
@@ -1007,11 +1064,14 @@ mod tests {
             ac *= &c;
             assert_eq!(ac, Matrix::new_with(a.shape, |i, j| a[i][j] * c));
         }
-        for _ in 0..3 {
-            rand!(rng, n: 65..130, m: 65..130, l: 65..130);
+        for _ in 0..12 {
+            rand!(rng, n: 257..520, m: 257..520, l: 257..520);
             let a = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
             let b = Matrix::<R>::new_with((m, l), |_, _| rng.random(..));
-            assert_eq!(a.mul_strassen(&b), &a * &b);
+            let bt = b.transpose();
+            let expected = Matrix::new_with((n, l), |i, j| R::dot_product(&a[i], &bt[j]));
+            assert_eq!(&a * &b, expected);
+            assert_eq!(a.mul_strassen(&b), expected);
         }
     }
 
@@ -1020,10 +1080,14 @@ mod tests {
         const Q: usize = 1000;
         let mut rng = Xorshift::default();
         let ps = [2, 3, 1_000_000_007];
-        for _ in 0..Q {
+        for iteration in 0..Q {
             let m = ps[rng.random(..ps.len())];
             DynMIntU32::set_mod(m);
-            let n = rng.random(2..=30);
+            let n = if iteration < 12 {
+                rng.random(128..260)
+            } else {
+                rng.random(2..=30)
+            };
             let mat = Matrix::<R>::new_with((n, n), |_, _| rng.random(..));
             let rank = mat.clone().rank();
             let inv = mat.inverse();
@@ -1045,6 +1109,60 @@ mod tests {
                 .filter(|row| row.iter().any(|x| !R::is_zero(x)))
                 .count();
             assert_eq!(mat.clone().rank(), expected);
+        }
+    }
+
+    #[test]
+    fn test_determinant() {
+        let mut rng = Xorshift::new_with_seed(358224);
+        let ps = [2, 3, 1_000_000_007];
+        for iteration in 0..300 {
+            DynMIntU32::set_mod(ps[rng.random(..ps.len())]);
+            let n = if iteration < 24 {
+                rng.random(128..260)
+            } else {
+                rng.random(0..32)
+            };
+            let mut mat = Matrix::<R>::new_with((n, n), |i, j| {
+                if i <= j {
+                    rng.random(..)
+                } else {
+                    DynMIntU32::zero()
+                }
+            });
+            if n != 0 && rng.gen_bool(0.5) {
+                let col = rng.random(..n);
+                for row in &mut mat.data {
+                    row[col] = DynMIntU32::zero();
+                }
+            }
+            let mut expected: DynMIntU32 = (0..n).map(|i| mat[i][i]).product();
+            for _ in 0..3 * n {
+                let i = rng.random(..n);
+                let j = rng.random(..n);
+                if i == j {
+                    continue;
+                }
+                if rng.gen_bool(0.5) {
+                    mat.data.swap(i, j);
+                    expected = -expected;
+                } else {
+                    let factor: DynMIntU32 = rng.random(..);
+                    for k in 0..n {
+                        let x = mat[j][k] * factor;
+                        mat[i][k] += x;
+                    }
+                }
+            }
+            let mut reduced = mat.clone();
+            reduced.row_reduction(false);
+            let rank = reduced
+                .data
+                .iter()
+                .filter(|row| row.iter().any(|x| !R::is_zero(x)))
+                .count();
+            assert_eq!(mat.determinant(), expected);
+            assert_eq!(mat.rank(), rank);
         }
     }
 
