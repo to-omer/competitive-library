@@ -339,32 +339,27 @@
 <a href=#285 id=285 data-nosnippet>285</a><span class="attr">#[cfg(test)]
 <a href=#286 id=286 data-nosnippet>286</a></span><span class="kw">mod </span>tests {
 <a href=#287 id=287 data-nosnippet>287</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#288 id=288 data-nosnippet>288</a>
-<a href=#289 id=289 data-nosnippet>289</a>    <span class="attr">#[test]
-<a href=#290 id=290 data-nosnippet>290</a>    </span><span class="kw">fn </span>test_display() {
-<a href=#291 id=291 data-nosnippet>291</a>        <span class="kw">let </span>x = DoubleDouble::from(<span class="number">1.234</span>);
-<a href=#292 id=292 data-nosnippet>292</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"1.234"</span>);
-<a href=#293 id=293 data-nosnippet>293</a>        <span class="kw">let </span>x = DoubleDouble::from(<span class="number">1.234e-10</span>);
-<a href=#294 id=294 data-nosnippet>294</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"0.0000000001234"</span>);
-<a href=#295 id=295 data-nosnippet>295</a>        <span class="kw">let </span>x = DoubleDouble::from(<span class="number">1.234e10</span>);
-<a href=#296 id=296 data-nosnippet>296</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"12340000000"</span>);
-<a href=#297 id=297 data-nosnippet>297</a>        <span class="kw">let </span>x = DoubleDouble::from(<span class="number">1.234e-10</span>) + DoubleDouble::from(<span class="number">1.234e10</span>);
-<a href=#298 id=298 data-nosnippet>298</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"12340000000.0000000001234"</span>);
-<a href=#299 id=299 data-nosnippet>299</a>    }
-<a href=#300 id=300 data-nosnippet>300</a>
-<a href=#301 id=301 data-nosnippet>301</a>    <span class="attr">#[test]
-<a href=#302 id=302 data-nosnippet>302</a>    </span><span class="kw">fn </span>test_from_str() {
-<a href=#303 id=303 data-nosnippet>303</a>        <span class="kw">let </span>x = DoubleDouble::from_str(<span class="string">"1.234"</span>).unwrap();
-<a href=#304 id=304 data-nosnippet>304</a>        <span class="macro">assert_eq!</span>(x, DoubleDouble::from(<span class="number">1.234</span>));
-<a href=#305 id=305 data-nosnippet>305</a>        <span class="kw">let </span>x = DoubleDouble::from_str(<span class="string">"0.0000000001234"</span>).unwrap();
-<a href=#306 id=306 data-nosnippet>306</a>        <span class="macro">assert_eq!</span>(x, DoubleDouble::from(<span class="number">1.234e-10</span>));
-<a href=#307 id=307 data-nosnippet>307</a>        <span class="kw">let </span>x = DoubleDouble::from_str(<span class="string">"12340000000"</span>).unwrap();
-<a href=#308 id=308 data-nosnippet>308</a>        <span class="macro">assert_eq!</span>(x, DoubleDouble::from(<span class="number">1.234e10</span>));
-<a href=#309 id=309 data-nosnippet>309</a>        <span class="kw">let </span>x = DoubleDouble::from_str(<span class="string">"12340000000.0000000001234"</span>).unwrap();
-<a href=#310 id=310 data-nosnippet>310</a>        <span class="macro">assert_eq!</span>(
-<a href=#311 id=311 data-nosnippet>311</a>            x,
-<a href=#312 id=312 data-nosnippet>312</a>            DoubleDouble::from(<span class="number">1.234e10</span>) + DoubleDouble::from(<span class="number">1.234e-10</span>)
-<a href=#313 id=313 data-nosnippet>313</a>        );
-<a href=#314 id=314 data-nosnippet>314</a>    }
-<a href=#315 id=315 data-nosnippet>315</a>}
+<a href=#288 id=288 data-nosnippet>288</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#289 id=289 data-nosnippet>289</a>
+<a href=#290 id=290 data-nosnippet>290</a>    <span class="attr">#[test]
+<a href=#291 id=291 data-nosnippet>291</a>    </span><span class="kw">fn </span>test_decimal_conversion() {
+<a href=#292 id=292 data-nosnippet>292</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#293 id=293 data-nosnippet>293</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1000 </span>{
+<a href=#294 id=294 data-nosnippet>294</a>            <span class="kw">let </span>scalar =
+<a href=#295 id=295 data-nosnippet>295</a>                rng.random(-<span class="number">1_000_000</span>..=<span class="number">1_000_000</span>) <span class="kw">as </span>f64 * <span class="number">10f64</span>.powi(rng.random(-<span class="number">30</span>..=<span class="number">30</span>));
+<a href=#296 id=296 data-nosnippet>296</a>            <span class="macro">assert_eq!</span>(DoubleDouble::from(scalar).to_string(), scalar.to_string());
+<a href=#297 id=297 data-nosnippet>297</a>            <span class="macro">assert_eq!</span>(
+<a href=#298 id=298 data-nosnippet>298</a>                scalar.to_string().parse::&lt;DoubleDouble&gt;().unwrap(),
+<a href=#299 id=299 data-nosnippet>299</a>                DoubleDouble::from(scalar)
+<a href=#300 id=300 data-nosnippet>300</a>            );
+<a href=#301 id=301 data-nosnippet>301</a>            <span class="kw">let </span>integer = rng.random(-<span class="number">1_000_000</span>..=<span class="number">1_000_000</span>) <span class="kw">as </span>f64 * <span class="number">1_000_000_000.0</span>;
+<a href=#302 id=302 data-nosnippet>302</a>            <span class="kw">let </span>fractional =
+<a href=#303 id=303 data-nosnippet>303</a>                rng.random(-<span class="number">1_000_000</span>..=<span class="number">1_000_000</span>) <span class="kw">as </span>f64 / <span class="number">10f64</span>.powi(rng.random(<span class="number">18</span>..=<span class="number">24</span>));
+<a href=#304 id=304 data-nosnippet>304</a>            <span class="kw">let </span>expected = Decimal::from(integer) + Decimal::from(fractional);
+<a href=#305 id=305 data-nosnippet>305</a>            <span class="kw">let </span>value = DoubleDouble::from(integer) + DoubleDouble::from(fractional);
+<a href=#306 id=306 data-nosnippet>306</a>            <span class="macro">assert_eq!</span>(value.to_string(), expected.to_string());
+<a href=#307 id=307 data-nosnippet>307</a>            <span class="macro">assert_eq!</span>(expected.to_string().parse::&lt;DoubleDouble&gt;().unwrap(), value);
+<a href=#308 id=308 data-nosnippet>308</a>        }
+<a href=#309 id=309 data-nosnippet>309</a>    }
+<a href=#310 id=310 data-nosnippet>310</a>}
 </code></pre></div></section></main></body></html>

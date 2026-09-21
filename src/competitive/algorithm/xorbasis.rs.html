@@ -164,10 +164,15 @@
 <a href=#110 id=110 data-nosnippet>110</a>            <span class="macro">rand!</span>(rng, k: <span class="number">0usize</span>..=L + <span class="number">2</span>, b: [<span class="number">0u64</span>..<span class="number">1 </span>&lt;&lt; L; k]);
 <a href=#111 id=111 data-nosnippet>111</a>            <span class="kw">let </span>cons = consistables(<span class="kw-2">&amp;</span>b);
 <a href=#112 id=112 data-nosnippet>112</a>            <span class="kw">let </span>basis: XorBasis = b.into_iter().collect();
-<a href=#113 id=113 data-nosnippet>113</a>            <span class="kw">for </span>x <span class="kw">in </span>rng.random_iter(<span class="number">0u64</span>..<span class="number">1 </span>&lt;&lt; L).take(Q) {
+<a href=#113 id=113 data-nosnippet>113</a>            <span class="kw">for </span>x <span class="kw">in </span><span class="number">0u64</span>..<span class="number">1 </span>&lt;&lt; L {
 <a href=#114 id=114 data-nosnippet>114</a>                <span class="macro">assert_eq!</span>(cons.contains(<span class="kw-2">&amp;</span>x), basis.find(x).is_some());
-<a href=#115 id=115 data-nosnippet>115</a>            }
-<a href=#116 id=116 data-nosnippet>116</a>        }
-<a href=#117 id=117 data-nosnippet>117</a>    }
-<a href=#118 id=118 data-nosnippet>118</a>}
+<a href=#115 id=115 data-nosnippet>115</a>                <span class="kw">let </span>decomposition = basis.basis(x);
+<a href=#116 id=116 data-nosnippet>116</a>                <span class="macro">assert_eq!</span>(decomposition.is_some(), cons.contains(<span class="kw-2">&amp;</span>x));
+<a href=#117 id=117 data-nosnippet>117</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>(parts) = decomposition {
+<a href=#118 id=118 data-nosnippet>118</a>                    <span class="macro">assert_eq!</span>(parts.into_iter().fold(<span class="number">0</span>, std::ops::BitXor::bitxor), x);
+<a href=#119 id=119 data-nosnippet>119</a>                }
+<a href=#120 id=120 data-nosnippet>120</a>            }
+<a href=#121 id=121 data-nosnippet>121</a>        }
+<a href=#122 id=122 data-nosnippet>122</a>    }
+<a href=#123 id=123 data-nosnippet>123</a>}
 </code></pre></div></section></main></body></html>

@@ -1106,7 +1106,7 @@
 <span data-nosnippet>1051</span>        }
 <span data-nosnippet>1052</span>        <span class="kw">let </span>p = C::inverse_transform_ntt(p, k);
 <span data-nosnippet>1053</span>        <span class="kw">let </span>q = C::inverse_transform_ntt(q, k);
-<span data-nosnippet>1054</span>        res + p[<span class="number">0</span>].clone() / q[<span class="number">0</span>].<a href="../../algebra/mod.rs.html#40">clone</a>()
+<span data-nosnippet>1054</span>        res + p[<span class="number">0</span>].clone() / q[<span class="number">0</span>].clone()
 <span data-nosnippet>1055</span>    }
 <span data-nosnippet>1056</span>    <span class="doccomment">/// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
 <span data-nosnippet>1057</span>    </span><span class="kw">pub fn </span>bostan_mori_msb(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
@@ -2916,7 +2916,7 @@
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].<span class="highlight">length</span>();
 <span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
-<span data-nosnippet>1136</span>            <span class="kw">let </span><a href="../../num/zero_one.rs.html#2">left</a> = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
+<span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();
 <span data-nosnippet>1139</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
@@ -2926,7 +2926,7 @@
 <span data-nosnippet>1143</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum;
 <span data-nosnippet>1144</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>left);
 <span data-nosnippet>1145</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = C::inverse_transform_ntt(child, degree);
-<span data-nosnippet>1146</span>            <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">child</a>.drain(..degree / <span class="number">2</span>);
+<span data-nosnippet>1146</span>            child.drain(..degree / <span class="number">2</span>);
 <span data-nosnippet>1147</span>            uptree_t.push(<span class="self">Self</span>::from_vec(child));
 <span data-nosnippet>1148</span>        }
 <span data-nosnippet>1149</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(n);
@@ -2985,7 +2985,7 @@
 <span data-nosnippet>1202</span>        }
 <span data-nosnippet>1203</span>        (<span class="self">Self</span>::zero(), <span class="self">Self</span>::one())
 <span data-nosnippet>1204</span>    }
-<span data-nosnippet>1205</span>    <span class="kw">pub fn </span>kth_term_of_linearly_recurrence(<span class="self">self</span>, a: Vec&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; T
+<span data-nosnippet>1205</span>    <span class="kw">pub fn </span>kth_term_of_linearly_recurrence(<span class="self">self</span>, a: Vec&lt;T&gt;, k: usize) -&gt; T
 <span data-nosnippet>1206</span>    <span class="kw">where
 <span data-nosnippet>1207</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>1208</span>    {
@@ -3013,7 +3013,7 @@
 <span data-nosnippet>1230</span>    {
 <span data-nosnippet>1231</span>        <span class="kw">let </span>(p, q) = <span class="self">Self</span>::sum_all_rational(
 <span data-nosnippet>1232</span>            iter.into_iter()
-<span data-nosnippet>1233</span>                .map(|(a, b)| (<span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[a]), <span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[T::one(), -b]))),
+<span data-nosnippet>1233</span>                .map(|(a, b)| (<span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[a]), <span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[T::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">one</a>(), -b]))),
 <span data-nosnippet>1234</span>            deg,
 <span data-nosnippet>1235</span>        );
 <span data-nosnippet>1236</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (p * q.inv(deg)).prefix(deg);
@@ -3060,7 +3060,7 @@
 <span data-nosnippet>1277</span>            p_flat[n - <span class="number">1 </span>- i] = wi.clone();
 <span data-nosnippet>1278</span>        }
 <span data-nosnippet>1279</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_flat = <span class="macro">vec!</span>[T::zero(); base * <span class="number">2</span>];
-<span data-nosnippet>1280</span>        q_flat[<span class="number">0</span>] = T::one();
+<span data-nosnippet>1280</span>        q_flat[<span class="number">0</span>] = <a href="../../algebra/operations.rs.html#444">T</a>::one();
 <span data-nosnippet>1281</span>        <span class="kw">let </span>q_offset = base;
 <span data-nosnippet>1282</span>        <span class="kw">for </span>(i, fi) <span class="kw">in </span>f.iter().enumerate() {
 <span data-nosnippet>1283</span>            q_flat[q_offset + i] = -fi.clone();
@@ -3097,7 +3097,7 @@
 <span data-nosnippet>1314</span>        }
 <span data-nosnippet>1315</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_y = Vec::with_capacity(qy);
 <span data-nosnippet>1316</span>        <span class="kw">for </span>y <span class="kw">in </span><span class="number">0</span>..qy {
-<span data-nosnippet>1317</span>            <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html#tymethod.mul">q_y</a>.push(q_flat[base * y].clone());
+<span data-nosnippet>1317</span>            q_y.push(q_flat[base * y].clone());
 <span data-nosnippet>1318</span>        }
 <span data-nosnippet>1319</span>        (<span class="self">Self</span>::from_vec(p_y) * <span class="self">Self</span>::from_vec(q_y).inv(m)).prefix(m)
 <span data-nosnippet>1320</span>    }
@@ -4619,7 +4619,7 @@
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].length();
 <span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
-<span data-nosnippet>1136</span>            <span class="kw">let </span><a href="../../num/zero_one.rs.html#2">left</a> = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
+<span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();
 <span data-nosnippet>1139</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
@@ -4629,7 +4629,7 @@
 <span data-nosnippet>1143</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum;
 <span data-nosnippet>1144</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>left);
 <span data-nosnippet>1145</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = C::inverse_transform_ntt(child, degree);
-<span data-nosnippet>1146</span>            <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">child</a>.drain(..degree / <span class="number">2</span>);
+<span data-nosnippet>1146</span>            child.drain(..degree / <span class="number">2</span>);
 <span data-nosnippet>1147</span>            uptree_t.push(<span class="self">Self</span>::from_vec(child));
 <span data-nosnippet>1148</span>        }
 <span data-nosnippet>1149</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(n);
@@ -4688,7 +4688,7 @@
 <span data-nosnippet>1202</span>        }
 <span data-nosnippet>1203</span>        (<span class="self">Self</span>::zero(), <span class="self">Self</span>::one())
 <span data-nosnippet>1204</span>    }
-<span data-nosnippet>1205</span>    <span class="kw">pub fn </span>kth_term_of_linearly_recurrence(<span class="self">self</span>, a: Vec&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; T
+<span data-nosnippet>1205</span>    <span class="kw">pub fn </span>kth_term_of_linearly_recurrence(<span class="self">self</span>, a: Vec&lt;T&gt;, k: usize) -&gt; T
 <span data-nosnippet>1206</span>    <span class="kw">where
 <span data-nosnippet>1207</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>1208</span>    {
@@ -4716,7 +4716,7 @@
 <span data-nosnippet>1230</span>    {
 <span data-nosnippet>1231</span>        <span class="kw">let </span>(p, q) = <span class="self">Self</span>::sum_all_rational(
 <span data-nosnippet>1232</span>            iter.into_iter()
-<span data-nosnippet>1233</span>                .map(|(a, b)| (<span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[a]), <span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[T::one(), -b]))),
+<span data-nosnippet>1233</span>                .map(|(a, b)| (<span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[a]), <span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[T::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">one</a>(), -b]))),
 <span data-nosnippet>1234</span>            deg,
 <span data-nosnippet>1235</span>        );
 <span data-nosnippet>1236</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (p * q.inv(deg)).prefix(deg);
@@ -4763,7 +4763,7 @@
 <span data-nosnippet>1277</span>            p_flat[n - <span class="number">1 </span>- i] = wi.clone();
 <span data-nosnippet>1278</span>        }
 <span data-nosnippet>1279</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_flat = <span class="macro">vec!</span>[T::zero(); base * <span class="number">2</span>];
-<span data-nosnippet>1280</span>        q_flat[<span class="number">0</span>] = T::one();
+<span data-nosnippet>1280</span>        q_flat[<span class="number">0</span>] = <a href="../../algebra/operations.rs.html#444">T</a>::one();
 <span data-nosnippet>1281</span>        <span class="kw">let </span>q_offset = base;
 <span data-nosnippet>1282</span>        <span class="kw">for </span>(i, fi) <span class="kw">in </span>f.iter().enumerate() {
 <span data-nosnippet>1283</span>            q_flat[q_offset + i] = -fi.clone();
@@ -4800,7 +4800,7 @@
 <span data-nosnippet>1314</span>        }
 <span data-nosnippet>1315</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_y = Vec::with_capacity(qy);
 <span data-nosnippet>1316</span>        <span class="kw">for </span>y <span class="kw">in </span><span class="number">0</span>..qy {
-<span data-nosnippet>1317</span>            <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html#tymethod.mul">q_y</a>.push(q_flat[base * y].clone());
+<span data-nosnippet>1317</span>            q_y.push(q_flat[base * y].clone());
 <span data-nosnippet>1318</span>        }
 <span data-nosnippet>1319</span>        (<span class="self">Self</span>::from_vec(p_y) * <span class="self">Self</span>::from_vec(q_y).inv(m)).prefix(m)
 <span data-nosnippet>1320</span>    }
@@ -6079,7 +6079,7 @@
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].length();
 <span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
-<span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
+<span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_ref">unwrap</a>();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();
 <span data-nosnippet>1139</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
@@ -6186,8 +6186,8 @@
 <span data-nosnippet>1240</span>        f
 <span data-nosnippet>1241</span>    }
 <span data-nosnippet>1242</span>    <span class="doccomment">/// sum_i (a_i x)^j
-<span data-nosnippet>1243</span>    </span><span class="kw">pub fn </span>sum_of_powers&lt;I&gt;(iter: I, deg: usize) -&gt; <a class="self" href="../../num/zero_one.rs.html#1-14">Self</a>
-<span data-nosnippet>1244</span>    <span class="kw">where
+<span data-nosnippet>1243</span>    </span><span class="kw">pub fn </span>sum_of_powers&lt;I&gt;(iter: I, deg: usize) -&gt; <span class="self">Self
+<span data-nosnippet>1244</span>    </span><span class="kw">where
 <span data-nosnippet>1245</span>        </span>I: IntoIterator&lt;Item = T&gt;,
 <span data-nosnippet>1246</span>    {
 <span data-nosnippet>1247</span>        <span class="kw">let </span><span class="kw-2">mut </span>n = T::zero();
@@ -6255,7 +6255,7 @@
 <span data-nosnippet>1309</span>
 <span data-nosnippet>1310</span>        <span class="kw">let </span>base = <span class="number">2</span>;
 <span data-nosnippet>1311</span>        <span class="kw">let </span><span class="kw-2">mut </span>p_y = Vec::with_capacity(py);
-<span data-nosnippet>1312</span>        <span class="kw">for </span><a href="../../algebra/operations.rs.html#346">y</a> <span class="kw">in </span><span class="number">0</span>..py {
+<span data-nosnippet>1312</span>        <span class="kw">for </span>y <span class="kw">in </span><span class="number">0</span>..py {
 <span data-nosnippet>1313</span>            p_y.push(p_flat[base * y].clone());
 <span data-nosnippet>1314</span>        }
 <span data-nosnippet>1315</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_y = Vec::with_capacity(qy);
@@ -9248,7 +9248,7 @@
 <span data-nosnippet>1082</span>    <span class="kw">fn </span>middle_product(<span class="self">self</span>, other: <span class="kw-2">&amp;</span>C::F, deg: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>1083</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>1084</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
-<span data-nosnippet>1085</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">other</a>);
+<span data-nosnippet>1085</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
 <span data-nosnippet>1086</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
 <span data-nosnippet>1087</span>    }
 <span data-nosnippet>1088</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
@@ -10403,13 +10403,13 @@
 <span data-nosnippet>978</span>    {
 <span data-nosnippet>979</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>980</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::zeros(n);
-<span data-nosnippet>981</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..<a href="../../algebra/operations.rs.html#84">n</a> {
+<span data-nosnippet>981</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>982</span>            <span class="kw">if </span>!<span class="self">self</span>[i].is_zero() {
 <span data-nosnippet>983</span>                <span class="kw">for </span>(j, d) <span class="kw">in </span>(<span class="number">0</span>..n).step_by(i).enumerate().skip(<span class="number">1</span>) {
 <span data-nosnippet>984</span>                    <span class="kw">if </span>j &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
-<span data-nosnippet>985</span>                        f[d] += <span class="self">self</span>[i].clone() * <span class="kw-2">&amp;</span>inverse(j);
+<span data-nosnippet>985</span>                        <a href="../../algebra/operations.rs.html#81">f</a>[d] += <span class="self">self</span>[i].clone() * <span class="kw-2">&amp;</span>inverse(j);
 <span data-nosnippet>986</span>                    } <span class="kw">else </span>{
-<span data-nosnippet>987</span>                        f[d] -= <span class="self">self</span>[i].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>() * <span class="kw-2">&amp;</span>inverse(j);
+<span data-nosnippet>987</span>                        f[d] -= <span class="self">self</span>[i].clone() * <span class="kw-2">&amp;</span>inverse(j);
 <span data-nosnippet>988</span>                    }
 <span data-nosnippet>989</span>                }
 <span data-nosnippet>990</span>            }
@@ -13302,7 +13302,7 @@
 <span data-nosnippet>1002</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>1003</span>            <span class="kw">if </span>!<span class="self">self</span>[i].is_zero() {
 <span data-nosnippet>1004</span>                <span class="kw">for </span>(j, d) <span class="kw">in </span>(<span class="number">0</span>..n).step_by(i).enumerate().skip(<span class="number">1</span>) {
-<span data-nosnippet>1005</span>                    f[d] += <span class="self">self</span>[i].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>() * <span class="kw-2">&amp;</span>inverse(j);
+<span data-nosnippet>1005</span>                    f[d] += <span class="self">self</span>[i].clone() * <span class="kw-2">&amp;</span>inverse(j);
 <span data-nosnippet>1006</span>                }
 <span data-nosnippet>1007</span>            }
 <span data-nosnippet>1008</span>        }
@@ -13350,7 +13350,7 @@
 <span data-nosnippet>1050</span>            }
 <span data-nosnippet>1051</span>        }
 <span data-nosnippet>1052</span>        <span class="kw">let </span>p = C::inverse_transform_ntt(p, k);
-<span data-nosnippet>1053</span>        <span class="kw">let </span>q = C::inverse_transform_ntt(q, k);
+<span data-nosnippet>1053</span>        <span class="kw">let </span><a href="../../algebra/operations.rs.html#138">q</a> = C::inverse_transform_ntt(q, k);
 <span data-nosnippet>1054</span>        res + p[<span class="number">0</span>].clone() / q[<span class="number">0</span>].clone()
 <span data-nosnippet>1055</span>    }
 <span data-nosnippet>1056</span>    <span class="doccomment">/// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
@@ -15048,11 +15048,11 @@
 <span data-nosnippet>1346</span>        <span class="kw">let </span>n_t = T::from(n);
 <span data-nosnippet>1347</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = <span class="macro">vec!</span>[T::zero(); n];
 <span data-nosnippet>1348</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
-<span data-nosnippet>1349</span>            <a href="../../algebra/operations.rs.html#269">h</a>[n - i] = s[i].clone() * <span class="kw-2">&amp;</span>n_t / T::from(i);
+<span data-nosnippet>1349</span>            h[n - i] = s[i].clone() * <span class="kw-2">&amp;</span>n_t / T::from(i);
 <span data-nosnippet>1350</span>        }
 <span data-nosnippet>1351</span>
 <span data-nosnippet>1352</span>        <span class="kw">let </span>h_fps = <span class="self">Self</span>::from_vec(h);
-<span data-nosnippet>1353</span>        <span class="kw">let </span>inv_n = T::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">one</a>() / n_t;
+<span data-nosnippet>1353</span>        <span class="kw">let </span>inv_n = T::one() / n_t;
 <span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>t = h_fps.log(n);
 <span data-nosnippet>1355</span>        t <span class="kw-2">*</span>= -inv_n;
 <span data-nosnippet>1356</span>        <span class="kw">let </span>g_over_x = t.exp(n);
@@ -18518,7 +18518,7 @@
 <span data-nosnippet>1226</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
 <span data-nosnippet>1227</span>    </span><span class="kw">where
 <span data-nosnippet>1228</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
-<span data-nosnippet>1229</span>        F: FnMut(<a href="../../algebra/magma.rs.html#4-18">usize</a>) -&gt; T,
+<span data-nosnippet>1229</span>        F: FnMut(usize) -&gt; T,
 <span data-nosnippet>1230</span>    {
 <span data-nosnippet>1231</span>        <span class="kw">let </span>(p, q) = <span class="self">Self</span>::sum_all_rational(
 <span data-nosnippet>1232</span>            iter.into_iter()
@@ -18582,7 +18582,7 @@
 <span data-nosnippet>1290</span>            <span class="kw">let </span>(<span class="kw-2">mut </span>p, <span class="kw-2">mut </span>q) = C::power_projection_step(p_flat, q_flat, n, py, qy);
 <span data-nosnippet>1291</span>            <span class="kw">let </span>new_py = (py + qy - <span class="number">1</span>).min(y_limit);
 <span data-nosnippet>1292</span>            <span class="kw">let </span>new_qy = (qy + qy - <span class="number">1</span>).min(y_limit);
-<span data-nosnippet>1293</span>            <a href="../../algebra/operations.rs.html#144">p</a>.resize_with(<a href="../../algebra/operations.rs.html#144">n</a> * new_py, T::zero);
+<span data-nosnippet>1293</span>            p.resize_with(n * new_py, T::zero);
 <span data-nosnippet>1294</span>            q.resize_with(n * new_qy, T::zero);
 <span data-nosnippet>1295</span>
 <span data-nosnippet>1296</span>            <span class="kw">let </span>n2 = n / <span class="number">2</span>;
@@ -18791,7 +18791,7 @@
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].length();
 <span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
-<span data-nosnippet>1136</span>            <span class="kw">let </span>left = <a href="../../algebra/operations.rs.html#417-422">subproduct_tree</a>[i * <span class="number">2</span>].take().unwrap();
+<span data-nosnippet>1136</span>            <span class="kw">let </span>left = <a href="../../algebra/operations.rs.html#392-397">subproduct_tree</a>[i * <span class="number">2</span>].take().unwrap();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();
 <span data-nosnippet>1139</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
@@ -20426,7 +20426,7 @@
 <span data-nosnippet>1226</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
 <span data-nosnippet>1227</span>    </span><span class="kw">where
 <span data-nosnippet>1228</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
-<span data-nosnippet>1229</span>        F: FnMut(<a href="../../algebra/magma.rs.html#4-18">usize</a>) -&gt; T,
+<span data-nosnippet>1229</span>        F: FnMut(usize) -&gt; T,
 <span data-nosnippet>1230</span>    {
 <span data-nosnippet>1231</span>        <span class="kw">let </span>(p, q) = <span class="self">Self</span>::sum_all_rational(
 <span data-nosnippet>1232</span>            iter.into_iter()
@@ -20490,7 +20490,7 @@
 <span data-nosnippet>1290</span>            <span class="kw">let </span>(<span class="kw-2">mut </span>p, <span class="kw-2">mut </span>q) = C::power_projection_step(p_flat, q_flat, n, py, qy);
 <span data-nosnippet>1291</span>            <span class="kw">let </span>new_py = (py + qy - <span class="number">1</span>).min(y_limit);
 <span data-nosnippet>1292</span>            <span class="kw">let </span>new_qy = (qy + qy - <span class="number">1</span>).min(y_limit);
-<span data-nosnippet>1293</span>            <a href="../../algebra/operations.rs.html#144">p</a>.resize_with(<a href="../../algebra/operations.rs.html#144">n</a> * new_py, T::zero);
+<span data-nosnippet>1293</span>            p.resize_with(n * new_py, T::zero);
 <span data-nosnippet>1294</span>            q.resize_with(n * new_qy, T::zero);
 <span data-nosnippet>1295</span>
 <span data-nosnippet>1296</span>            <span class="kw">let </span>n2 = n / <span class="number">2</span>;
@@ -20554,7 +20554,7 @@
 <span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>t = h_fps.<span class="highlight">log</span>(n);
 <span data-nosnippet>1355</span>        t <span class="kw-2">*</span>= -inv_n;
 <span data-nosnippet>1356</span>        <span class="kw">let </span>g_over_x = t.exp(n);
-<span data-nosnippet>1357</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = (g_over_x &lt;&lt; <span class="number">1</span>).<a href="../../algebra/magma.rs.html#54-81">prefix</a>(deg);
+<span data-nosnippet>1357</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = (g_over_x &lt;&lt; <span class="number">1</span>).prefix(deg);
 <span data-nosnippet>1358</span>
 <span data-nosnippet>1359</span>        <span class="kw">let </span>inv_c = T::one() / c;
 <span data-nosnippet>1360</span>        <span class="kw">let </span><span class="kw-2">mut </span>pow = T::one();

@@ -75,21 +75,26 @@
 <a href=#21 id=21 data-nosnippet>21</a><span class="attr">#[cfg(test)]
 <a href=#22 id=22 data-nosnippet>22</a></span><span class="kw">mod </span>tests {
 <a href=#23 id=23 data-nosnippet>23</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#24 id=24 data-nosnippet>24</a>    <span class="kw">use crate</span>::{rand, tools::Xorshift};
-<a href=#25 id=25 data-nosnippet>25</a>
-<a href=#26 id=26 data-nosnippet>26</a>    <span class="attr">#[test]
-<a href=#27 id=27 data-nosnippet>27</a>    </span><span class="kw">fn </span>test_run_length_encoding() {
-<a href=#28 id=28 data-nosnippet>28</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#29 id=29 data-nosnippet>29</a>        <span class="kw">const </span>N: usize = <span class="number">100_000</span>;
-<a href=#30 id=30 data-nosnippet>30</a>        <span class="macro">rand!</span>(rng, v: [<span class="number">0u8</span>..<span class="number">8u8</span>; N]);
-<a href=#31 id=31 data-nosnippet>31</a>        <span class="kw">let </span>r = run_length_encoding(v.iter());
-<a href=#32 id=32 data-nosnippet>32</a>        <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="number">0</span>;
-<a href=#33 id=33 data-nosnippet>33</a>        <span class="kw">for </span>(a, l) <span class="kw">in </span>r {
-<a href=#34 id=34 data-nosnippet>34</a>            <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span>v[s..s + l] {
-<a href=#35 id=35 data-nosnippet>35</a>                <span class="macro">assert_eq!</span>(a, v);
-<a href=#36 id=36 data-nosnippet>36</a>            }
-<a href=#37 id=37 data-nosnippet>37</a>            s += l;
-<a href=#38 id=38 data-nosnippet>38</a>        }
-<a href=#39 id=39 data-nosnippet>39</a>    }
-<a href=#40 id=40 data-nosnippet>40</a>}
+<a href=#24 id=24 data-nosnippet>24</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#25 id=25 data-nosnippet>25</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+<a href=#26 id=26 data-nosnippet>26</a>    <span class="kw">use </span>std::iter::repeat_n;
+<a href=#27 id=27 data-nosnippet>27</a>
+<a href=#28 id=28 data-nosnippet>28</a>    <span class="attr">#[test]
+<a href=#29 id=29 data-nosnippet>29</a>    </span><span class="kw">fn </span>test_run_length_encoding() {
+<a href=#30 id=30 data-nosnippet>30</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#31 id=31 data-nosnippet>31</a>        <span class="kw">let </span>lengths = sample_usize(<span class="kw-2">&amp;mut </span>rng, <span class="number">16</span>, <span class="number">0</span>..=<span class="number">100_000</span>, <span class="number">2</span>);
+<a href=#32 id=32 data-nosnippet>32</a>        <span class="kw">for </span>values <span class="kw">in
+<a href=#33 id=33 data-nosnippet>33</a>            </span>exhaustive_sequences(<span class="number">0</span>..<span class="number">3</span>, <span class="number">0</span>..=<span class="number">8</span>).chain(structured_sequences(<span class="kw-2">&amp;mut </span>rng, <span class="number">0</span>..<span class="number">8</span>, lengths))
+<a href=#34 id=34 data-nosnippet>34</a>        {
+<a href=#35 id=35 data-nosnippet>35</a>            <span class="kw">let </span>runs = run_length_encoding(values.iter().copied());
+<a href=#36 id=36 data-nosnippet>36</a>            <span class="macro">assert!</span>(runs.iter().all(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, len)| len &gt; <span class="number">0</span>));
+<a href=#37 id=37 data-nosnippet>37</a>            <span class="macro">assert!</span>(runs.windows(<span class="number">2</span>).all(|w| w[<span class="number">0</span>].<span class="number">0 </span>!= w[<span class="number">1</span>].<span class="number">0</span>));
+<a href=#38 id=38 data-nosnippet>38</a>            <span class="kw">let </span>restored: Vec&lt;<span class="kw">_</span>&gt; = runs
+<a href=#39 id=39 data-nosnippet>39</a>                .into_iter()
+<a href=#40 id=40 data-nosnippet>40</a>                .flat_map(|(value, len)| repeat_n(value, len))
+<a href=#41 id=41 data-nosnippet>41</a>                .collect();
+<a href=#42 id=42 data-nosnippet>42</a>            <span class="macro">assert_eq!</span>(restored, values);
+<a href=#43 id=43 data-nosnippet>43</a>        }
+<a href=#44 id=44 data-nosnippet>44</a>    }
+<a href=#45 id=45 data-nosnippet>45</a>}
 </code></pre></div></section></main></body></html>

@@ -164,50 +164,53 @@
 <a href=#110 id=110 data-nosnippet>110</a></span><span class="kw">mod </span>tests {
 <a href=#111 id=111 data-nosnippet>111</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <a href=#112 id=112 data-nosnippet>112</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
-<a href=#113 id=113 data-nosnippet>113</a>
-<a href=#114 id=114 data-nosnippet>114</a>    <span class="attr">#[test]
-<a href=#115 id=115 data-nosnippet>115</a>    </span><span class="kw">fn </span>test_suffix_automaton() {
-<a href=#116 id=116 data-nosnippet>116</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#117 id=117 data-nosnippet>117</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#118 id=118 data-nosnippet>118</a>            <span class="kw">let </span>csize = rng.random(<span class="number">1usize</span>..=<span class="number">10</span>);
-<a href=#119 id=119 data-nosnippet>119</a>            <span class="kw">let </span>n = rng.random(<span class="number">1usize</span>..=<span class="number">100</span>);
-<a href=#120 id=120 data-nosnippet>120</a>            <span class="kw">let </span>s: Vec&lt;usize&gt; = rng.random_iter(<span class="number">0usize</span>..csize).take(n).collect();
-<a href=#121 id=121 data-nosnippet>121</a>            <span class="kw">let </span>sa = SuffixAutomaton::from_iter(s.iter().cloned());
-<a href=#122 id=122 data-nosnippet>122</a>            <span class="kw">let </span><span class="kw-2">mut </span>len = <span class="macro">vec!</span>[<span class="number">0</span>; sa.state_size()];
-<a href=#123 id=123 data-nosnippet>123</a>
-<a href=#124 id=124 data-nosnippet>124</a>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#125 id=125 data-nosnippet>125</a>                <span class="kw">let </span><span class="kw-2">mut </span>state = <span class="number">0</span>;
-<a href=#126 id=126 data-nosnippet>126</a>                <span class="kw">for </span>(j, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>s[i..].iter().enumerate() {
-<a href=#127 id=127 data-nosnippet>127</a>                    <span class="macro">assert!</span>(sa.transitions(state).contains_key(<span class="kw-2">&amp;</span>c));
-<a href=#128 id=128 data-nosnippet>128</a>                    state = sa.transitions(state)[<span class="kw-2">&amp;</span>c];
-<a href=#129 id=129 data-nosnippet>129</a>                    len[state] = len[state].max(j + <span class="number">1</span>);
-<a href=#130 id=130 data-nosnippet>130</a>                }
-<a href=#131 id=131 data-nosnippet>131</a>            }
-<a href=#132 id=132 data-nosnippet>132</a>            <span class="kw">for </span>(state, <span class="kw-2">&amp;</span>len) <span class="kw">in </span>len.iter().enumerate() {
-<a href=#133 id=133 data-nosnippet>133</a>                <span class="macro">assert_eq!</span>(sa.length(state), len);
-<a href=#134 id=134 data-nosnippet>134</a>            }
-<a href=#135 id=135 data-nosnippet>135</a>            <span class="kw">for </span>state <span class="kw">in </span><span class="number">1</span>..sa.state_size() {
-<a href=#136 id=136 data-nosnippet>136</a>                <span class="macro">assert_ne!</span>(sa.link(state), !<span class="number">0</span>);
-<a href=#137 id=137 data-nosnippet>137</a>            }
-<a href=#138 id=138 data-nosnippet>138</a>        }
-<a href=#139 id=139 data-nosnippet>139</a>    }
-<a href=#140 id=140 data-nosnippet>140</a>
-<a href=#141 id=141 data-nosnippet>141</a>    <span class="attr">#[test]
-<a href=#142 id=142 data-nosnippet>142</a>    </span><span class="kw">fn </span>test_number_of_substrings() {
-<a href=#143 id=143 data-nosnippet>143</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#144 id=144 data-nosnippet>144</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#145 id=145 data-nosnippet>145</a>            <span class="kw">let </span>csize = rng.random(<span class="number">1usize</span>..=<span class="number">10</span>);
-<a href=#146 id=146 data-nosnippet>146</a>            <span class="kw">let </span>n = rng.random(<span class="number">1usize</span>..=<span class="number">100</span>);
-<a href=#147 id=147 data-nosnippet>147</a>            <span class="kw">let </span>s: Vec&lt;usize&gt; = rng.random_iter(<span class="number">0usize</span>..csize).take(n).collect();
-<a href=#148 id=148 data-nosnippet>148</a>            <span class="kw">let </span>sa = SuffixAutomaton::from_iter(s.iter().cloned());
-<a href=#149 id=149 data-nosnippet>149</a>            <span class="kw">let </span><span class="kw-2">mut </span>substrings = std::collections::HashSet::new();
-<a href=#150 id=150 data-nosnippet>150</a>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#151 id=151 data-nosnippet>151</a>                <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..=n {
-<a href=#152 id=152 data-nosnippet>152</a>                    substrings.insert(<span class="kw-2">&amp;</span>s[i..j]);
-<a href=#153 id=153 data-nosnippet>153</a>                }
-<a href=#154 id=154 data-nosnippet>154</a>            }
-<a href=#155 id=155 data-nosnippet>155</a>            <span class="macro">assert_eq!</span>(sa.number_of_substrings(), substrings.len());
-<a href=#156 id=156 data-nosnippet>156</a>        }
-<a href=#157 id=157 data-nosnippet>157</a>    }
-<a href=#158 id=158 data-nosnippet>158</a>}
+<a href=#113 id=113 data-nosnippet>113</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+<a href=#114 id=114 data-nosnippet>114</a>
+<a href=#115 id=115 data-nosnippet>115</a>    <span class="attr">#[test]
+<a href=#116 id=116 data-nosnippet>116</a>    </span><span class="kw">fn </span>test_suffix_automaton() {
+<a href=#117 id=117 data-nosnippet>117</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#118 id=118 data-nosnippet>118</a>        <span class="kw">let </span>lengths = sample_usize(<span class="kw-2">&amp;mut </span>rng, <span class="number">16</span>, <span class="number">0</span>..=<span class="number">100</span>, <span class="number">100</span>);
+<a href=#119 id=119 data-nosnippet>119</a>        <span class="kw">for </span>s <span class="kw">in
+<a href=#120 id=120 data-nosnippet>120</a>            </span>exhaustive_sequences(<span class="number">0</span>..<span class="number">3</span>, <span class="number">0</span>..=<span class="number">8</span>).chain(structured_sequences(<span class="kw-2">&amp;mut </span>rng, <span class="number">0</span>..<span class="number">10</span>, lengths))
+<a href=#121 id=121 data-nosnippet>121</a>        {
+<a href=#122 id=122 data-nosnippet>122</a>            <span class="kw">let </span>n = s.len();
+<a href=#123 id=123 data-nosnippet>123</a>            <span class="kw">let </span>sa = SuffixAutomaton::from_iter(s.iter().cloned());
+<a href=#124 id=124 data-nosnippet>124</a>            <span class="kw">let </span><span class="kw-2">mut </span>len = <span class="macro">vec!</span>[<span class="number">0</span>; sa.state_size()];
+<a href=#125 id=125 data-nosnippet>125</a>
+<a href=#126 id=126 data-nosnippet>126</a>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#127 id=127 data-nosnippet>127</a>                <span class="kw">let </span><span class="kw-2">mut </span>state = <span class="number">0</span>;
+<a href=#128 id=128 data-nosnippet>128</a>                <span class="kw">for </span>(j, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>s[i..].iter().enumerate() {
+<a href=#129 id=129 data-nosnippet>129</a>                    <span class="macro">assert!</span>(sa.transitions(state).contains_key(<span class="kw-2">&amp;</span>c));
+<a href=#130 id=130 data-nosnippet>130</a>                    state = sa.transitions(state)[<span class="kw-2">&amp;</span>c];
+<a href=#131 id=131 data-nosnippet>131</a>                    len[state] = len[state].max(j + <span class="number">1</span>);
+<a href=#132 id=132 data-nosnippet>132</a>                }
+<a href=#133 id=133 data-nosnippet>133</a>            }
+<a href=#134 id=134 data-nosnippet>134</a>            <span class="kw">for </span>(state, <span class="kw-2">&amp;</span>len) <span class="kw">in </span>len.iter().enumerate() {
+<a href=#135 id=135 data-nosnippet>135</a>                <span class="macro">assert_eq!</span>(sa.length(state), len);
+<a href=#136 id=136 data-nosnippet>136</a>            }
+<a href=#137 id=137 data-nosnippet>137</a>            <span class="kw">for </span>state <span class="kw">in </span><span class="number">1</span>..sa.state_size() {
+<a href=#138 id=138 data-nosnippet>138</a>                <span class="macro">assert_ne!</span>(sa.link(state), !<span class="number">0</span>);
+<a href=#139 id=139 data-nosnippet>139</a>            }
+<a href=#140 id=140 data-nosnippet>140</a>        }
+<a href=#141 id=141 data-nosnippet>141</a>    }
+<a href=#142 id=142 data-nosnippet>142</a>
+<a href=#143 id=143 data-nosnippet>143</a>    <span class="attr">#[test]
+<a href=#144 id=144 data-nosnippet>144</a>    </span><span class="kw">fn </span>test_number_of_substrings() {
+<a href=#145 id=145 data-nosnippet>145</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#146 id=146 data-nosnippet>146</a>        <span class="kw">let </span>lengths = sample_usize(<span class="kw-2">&amp;mut </span>rng, <span class="number">16</span>, <span class="number">0</span>..=<span class="number">100</span>, <span class="number">100</span>);
+<a href=#147 id=147 data-nosnippet>147</a>        <span class="kw">for </span>s <span class="kw">in
+<a href=#148 id=148 data-nosnippet>148</a>            </span>exhaustive_sequences(<span class="number">0</span>..<span class="number">3</span>, <span class="number">0</span>..=<span class="number">8</span>).chain(structured_sequences(<span class="kw-2">&amp;mut </span>rng, <span class="number">0</span>..<span class="number">10</span>, lengths))
+<a href=#149 id=149 data-nosnippet>149</a>        {
+<a href=#150 id=150 data-nosnippet>150</a>            <span class="kw">let </span>n = s.len();
+<a href=#151 id=151 data-nosnippet>151</a>            <span class="kw">let </span>sa = SuffixAutomaton::from_iter(s.iter().cloned());
+<a href=#152 id=152 data-nosnippet>152</a>            <span class="kw">let </span><span class="kw-2">mut </span>substrings = std::collections::HashSet::new();
+<a href=#153 id=153 data-nosnippet>153</a>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#154 id=154 data-nosnippet>154</a>                <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..=n {
+<a href=#155 id=155 data-nosnippet>155</a>                    substrings.insert(<span class="kw-2">&amp;</span>s[i..j]);
+<a href=#156 id=156 data-nosnippet>156</a>                }
+<a href=#157 id=157 data-nosnippet>157</a>            }
+<a href=#158 id=158 data-nosnippet>158</a>            <span class="macro">assert_eq!</span>(sa.number_of_substrings(), substrings.len());
+<a href=#159 id=159 data-nosnippet>159</a>        }
+<a href=#160 id=160 data-nosnippet>160</a>    }
+<a href=#161 id=161 data-nosnippet>161</a>}
 </code></pre></div></section></main></body></html>

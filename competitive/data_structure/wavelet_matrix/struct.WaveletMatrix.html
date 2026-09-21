@@ -1022,7 +1022,7 @@
 <span data-nosnippet>1312</span>                        ..vector.starts[low] + vector.rank(low, range.end);
 <span data-nosnippet>1313</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>1314</span>                }
-<span data-nosnippet>1315</span>                <span class="kw">let </span>start = vector.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">ranks</a>(range.start);
+<span data-nosnippet>1315</span>                <span class="kw">let </span>start = vector.ranks(range.start);
 <span data-nosnippet>1316</span>                <span class="kw">let </span>end = vector.ranks(range.end);
 <span data-nosnippet>1317</span>                <span class="kw">let </span>count: usize = (low..high).map(|digit| end[digit] - start[digit]).sum();
 <span data-nosnippet>1318</span>                <span class="kw">return </span>count
@@ -1063,7 +1063,7 @@
 <span data-nosnippet>1353</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>1354</span>        queries: <span class="kw">impl </span>IntoIterator&lt;Item = (Range&lt;T&gt;, Range&lt;usize&gt;)&gt;,
 <span data-nosnippet>1355</span>    ) -&gt; Vec&lt;usize&gt; {
-<span data-nosnippet>1356</span>        <span class="kw">let </span>queries: Vec&lt;<span class="kw">_</span>&gt; = queries.into_iter().collect();
+<span data-nosnippet>1356</span>        <span class="kw">let </span>queries: Vec&lt;<span class="kw">_</span>&gt; = queries.into_iter().<a href="../num/bounded.rs.html#3">collect</a>();
 <span data-nosnippet>1357</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(queries.len());
 <span data-nosnippet>1358</span>        <span class="kw">for </span>queries <span class="kw">in </span>queries.chunks(<span class="number">8</span>) {
 <span data-nosnippet>1359</span>            <span class="kw">let </span><span class="kw-2">mut </span>states = [[<span class="number">0</span>; <span class="number">4</span>]; <span class="number">16</span>];
@@ -1130,7 +1130,7 @@
 <span data-nosnippet>1420</span>            <span class="kw">if </span>((idx &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
 <span data-nosnippet>1421</span>                f(d, start0..end0);
 <span data-nosnippet>1422</span>                range.start = <span class="self">self</span>.zeros[level] + start1;
-<span data-nosnippet>1423</span>                range.end = <span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">zeros</a>[level] + end1;
+<span data-nosnippet>1423</span>                range.end = <span class="self">self</span>.zeros[level] + end1;
 <span data-nosnippet>1424</span>            } <span class="kw">else </span>{
 <span data-nosnippet>1425</span>                range.start = start0;
 <span data-nosnippet>1426</span>                range.end = end0;
@@ -1195,7 +1195,7 @@
 <span data-nosnippet>1485</span>    </span>T: Ord + Clone,
 <span data-nosnippet>1486</span>    M: AbelianGroup,
 <span data-nosnippet>1487</span>{
-<span data-nosnippet>1488</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>index: <a href="../algebra/magma.rs.html#4-18">usize</a>, value: M::T) {
+<span data-nosnippet>1488</span>    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>index: usize, value: M::T) {
 <span data-nosnippet>1489</span>        <span class="macro">debug_assert!</span>(index &lt; <span class="self">self</span>.wavelet_matrix.len);
 <span data-nosnippet>1490</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.wavelet_matrix.bit_length).rev() {
 <span data-nosnippet>1491</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.<span class="highlight">level</span>(d);
@@ -1392,9 +1392,9 @@
 <span data-nosnippet>1682</span>                <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.start);
 <span data-nosnippet>1683</span>                <span class="kw">let </span>end1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].rank1(range.end);
 <span data-nosnippet>1684</span>                <span class="kw">let </span>start0 = range.start - start1;
-<span data-nosnippet>1685</span>                <span class="kw">let </span>end0 = range.end - end1;
+<span data-nosnippet>1685</span>                <span class="kw">let </span>end0 = range.<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">end</a> - end1;
 <span data-nosnippet>1686</span>                <span class="kw">if </span>((index &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
-<span data-nosnippet>1687</span>                    <span class="kw-2">*</span><a href="../algebra/mod.rs.html#40">count</a> += end0 - start0;
+<span data-nosnippet>1687</span>                    <span class="kw-2">*</span>count += end0 - start0;
 <span data-nosnippet>1688</span>                    M::operate_assign(sum, <span class="kw-2">&amp;</span><span class="self">self</span>.range_sum(level, start0..end0));
 <span data-nosnippet>1689</span>                    range.start = <span class="self">self</span>.wavelet_matrix.zeros[level] + start1;
 <span data-nosnippet>1690</span>                    range.end = <span class="self">self</span>.wavelet_matrix.zeros[level] + end1;
@@ -1506,7 +1506,7 @@
 <span data-nosnippet>781</span>                            + (state[<span class="number">2</span>] &gt;= prefix[<span class="number">2</span>]) <span class="kw">as </span>usize
 <span data-nosnippet>782</span>                            + (state[<span class="number">2</span>] &gt;= prefix[<span class="number">3</span>]) <span class="kw">as </span>usize;
 <span data-nosnippet>783</span>                        state[<span class="number">2</span>] -= prefix[digit];
-<span data-nosnippet>784</span>                        state[<span class="number">0</span>] = vector.starts[digit] + start[<a href="../algebra/magma.rs.html#1-316">digit</a>];
+<span data-nosnippet>784</span>                        state[<span class="number">0</span>] = vector.starts[digit] + start[<a href="../algebra/magma.rs.html#1-323">digit</a>];
 <span data-nosnippet>785</span>                        state[<span class="number">1</span>] = vector.starts[digit] + end[digit];
 <span data-nosnippet>786</span>                        state[<span class="number">3</span>] = state[<span class="number">3</span>] * <span class="number">4 </span>+ digit;
 <span data-nosnippet>787</span>                    }
@@ -2123,7 +2123,7 @@
 <span data-nosnippet>1398</span>                <span class="kw">let </span>start = vector.ranks(range.start);
 <span data-nosnippet>1399</span>                <span class="kw">let </span>end = vector.ranks(range.end);
 <span data-nosnippet>1400</span>                <span class="kw">if </span>digit &amp; <span class="number">2 </span>!= <span class="number">0 </span>{
-<span data-nosnippet>1401</span>                    f(d + <span class="number">1</span>, start[<span class="number">0</span>] + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">start</a>[<span class="number">1</span>]..end[<span class="number">0</span>] + end[<span class="number">1</span>]);
+<span data-nosnippet>1401</span>                    f(d + <span class="number">1</span>, start[<span class="number">0</span>] + start[<span class="number">1</span>]..end[<span class="number">0</span>] + end[<span class="number">1</span>]);
 <span data-nosnippet>1402</span>                }
 <span data-nosnippet>1403</span>                <span class="kw">if </span>digit &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>1404</span>                    <span class="kw">let </span>zero = digit &amp; <span class="number">2</span>;

@@ -193,86 +193,140 @@
 <a href=#139 id=139 data-nosnippet>139</a><span class="attr">#[cfg(test)]
 <a href=#140 id=140 data-nosnippet>140</a></span><span class="kw">mod </span>tests {
 <a href=#141 id=141 data-nosnippet>141</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#142 id=142 data-nosnippet>142</a>    <span class="kw">const </span>V: [i64; <span class="number">10</span>] = [<span class="number">0i64</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">8</span>];
-<a href=#143 id=143 data-nosnippet>143</a>
-<a href=#144 id=144 data-nosnippet>144</a>    <span class="attr">#[test]
-<a href=#145 id=145 data-nosnippet>145</a>    </span><span class="kw">fn </span>test_binary_search() {
-<a href=#146 id=146 data-nosnippet>146</a>        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &gt;= <span class="number">1</span>, V.len(), <span class="number">0</span>), <span class="number">1</span>);
-<a href=#147 id=147 data-nosnippet>147</a>        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &gt;= <span class="number">2</span>, V.len(), <span class="number">0</span>), <span class="number">4</span>);
-<a href=#148 id=148 data-nosnippet>148</a>        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &gt;= <span class="number">3</span>, V.len(), <span class="number">0</span>), <span class="number">6</span>);
-<a href=#149 id=149 data-nosnippet>149</a>        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &lt;= <span class="number">1</span>, <span class="number">0</span>, V.len()), <span class="number">3</span>);
-<a href=#150 id=150 data-nosnippet>150</a>        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &lt;= <span class="number">2</span>, <span class="number">0</span>, V.len()), <span class="number">5</span>);
-<a href=#151 id=151 data-nosnippet>151</a>        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &lt;= <span class="number">3</span>, <span class="number">0</span>, V.len()), <span class="number">6</span>);
-<a href=#152 id=152 data-nosnippet>152</a>
-<a href=#153 id=153 data-nosnippet>153</a>        <span class="macro">assert_eq!</span>(
-<a href=#154 id=154 data-nosnippet>154</a>            binary_search(<span class="kw-2">&amp;</span>|<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span>i64| V[x <span class="kw">as </span>usize] &lt;= -<span class="number">1</span>, -<span class="number">1</span>, V.len() <span class="kw">as </span>i64),
-<a href=#155 id=155 data-nosnippet>155</a>            -<span class="number">1
-<a href=#156 id=156 data-nosnippet>156</a>        </span>);
-<a href=#157 id=157 data-nosnippet>157</a>
-<a href=#158 id=158 data-nosnippet>158</a>        <span class="kw">let </span>sq2 = binary_search(|<span class="kw-2">&amp;</span>x| x * x &lt;= <span class="number">2.</span>, <span class="number">1.</span>, <span class="number">4.</span>);
-<a href=#159 id=159 data-nosnippet>159</a>        <span class="kw">let </span>expect = <span class="number">1.414_213_562_73</span>;
-<a href=#160 id=160 data-nosnippet>160</a>        <span class="macro">assert!</span>(expect - <span class="number">1e-8 </span>&lt;= sq2 &amp;&amp; sq2 &lt;= expect + <span class="number">1e-8</span>);
-<a href=#161 id=161 data-nosnippet>161</a>
-<a href=#162 id=162 data-nosnippet>162</a>        <span class="macro">assert_eq!</span>(
-<a href=#163 id=163 data-nosnippet>163</a>            binary_search(|<span class="kw-2">&amp;</span>x| x &lt; i64::MAX, i64::MIN, i64::MAX),
-<a href=#164 id=164 data-nosnippet>164</a>            i64::MAX - <span class="number">1
-<a href=#165 id=165 data-nosnippet>165</a>        </span>);
-<a href=#166 id=166 data-nosnippet>166</a>        <span class="macro">assert_eq!</span>(
-<a href=#167 id=167 data-nosnippet>167</a>            binary_search(|<span class="kw-2">&amp;</span>x| x == i64::MIN, i64::MIN, i64::MAX),
-<a href=#168 id=168 data-nosnippet>168</a>            i64::MIN
-<a href=#169 id=169 data-nosnippet>169</a>        );
-<a href=#170 id=170 data-nosnippet>170</a>        <span class="macro">assert_eq!</span>(
-<a href=#171 id=171 data-nosnippet>171</a>            binary_search(|<span class="kw-2">&amp;</span>x| x == i64::MAX, i64::MAX, i64::MIN),
-<a href=#172 id=172 data-nosnippet>172</a>            i64::MAX
-<a href=#173 id=173 data-nosnippet>173</a>        );
-<a href=#174 id=174 data-nosnippet>174</a>        <span class="macro">assert_eq!</span>(
-<a href=#175 id=175 data-nosnippet>175</a>            binary_search(|<span class="kw-2">&amp;</span>x| x &gt; i64::MIN, i64::MAX, i64::MIN),
-<a href=#176 id=176 data-nosnippet>176</a>            i64::MIN + <span class="number">1
-<a href=#177 id=177 data-nosnippet>177</a>        </span>);
-<a href=#178 id=178 data-nosnippet>178</a>    }
-<a href=#179 id=179 data-nosnippet>179</a>
-<a href=#180 id=180 data-nosnippet>180</a>    <span class="attr">#[test]
-<a href=#181 id=181 data-nosnippet>181</a>    </span><span class="kw">fn </span>test_position() {
-<a href=#182 id=182 data-nosnippet>182</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= -<span class="number">1</span>), <span class="number">0</span>);
-<a href=#183 id=183 data-nosnippet>183</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">0</span>), <span class="number">0</span>);
-<a href=#184 id=184 data-nosnippet>184</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">1</span>), <span class="number">1</span>);
-<a href=#185 id=185 data-nosnippet>185</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">2</span>), <span class="number">4</span>);
-<a href=#186 id=186 data-nosnippet>186</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">3</span>), <span class="number">6</span>);
-<a href=#187 id=187 data-nosnippet>187</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">5</span>), <span class="number">8</span>);
-<a href=#188 id=188 data-nosnippet>188</a>        <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">10</span>), <span class="number">10</span>);
-<a href=#189 id=189 data-nosnippet>189</a>    }
-<a href=#190 id=190 data-nosnippet>190</a>
-<a href=#191 id=191 data-nosnippet>191</a>    <span class="attr">#[test]
-<a href=#192 id=192 data-nosnippet>192</a>    </span><span class="kw">fn </span>test_find() {
-<a href=#193 id=193 data-nosnippet>193</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= -<span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
-<a href=#194 id=194 data-nosnippet>194</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">0</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
-<a href=#195 id=195 data-nosnippet>195</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
-<a href=#196 id=196 data-nosnippet>196</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">2</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
-<a href=#197 id=197 data-nosnippet>197</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
-<a href=#198 id=198 data-nosnippet>198</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">5</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
-<a href=#199 id=199 data-nosnippet>199</a>        <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">10</span>), <span class="prelude-val">None</span>);
-<a href=#200 id=200 data-nosnippet>200</a>    }
-<a href=#201 id=201 data-nosnippet>201</a>
-<a href=#202 id=202 data-nosnippet>202</a>    <span class="attr">#[test]
-<a href=#203 id=203 data-nosnippet>203</a>    </span><span class="kw">fn </span>test_rposition() {
-<a href=#204 id=204 data-nosnippet>204</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= -<span class="number">1</span>), <span class="number">0</span>);
-<a href=#205 id=205 data-nosnippet>205</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">0</span>), <span class="number">1</span>);
-<a href=#206 id=206 data-nosnippet>206</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">1</span>), <span class="number">4</span>);
-<a href=#207 id=207 data-nosnippet>207</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">2</span>), <span class="number">6</span>);
-<a href=#208 id=208 data-nosnippet>208</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">3</span>), <span class="number">7</span>);
-<a href=#209 id=209 data-nosnippet>209</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">5</span>), <span class="number">8</span>);
-<a href=#210 id=210 data-nosnippet>210</a>        <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">10</span>), <span class="number">10</span>);
-<a href=#211 id=211 data-nosnippet>211</a>    }
-<a href=#212 id=212 data-nosnippet>212</a>
-<a href=#213 id=213 data-nosnippet>213</a>    <span class="attr">#[test]
-<a href=#214 id=214 data-nosnippet>214</a>    </span><span class="kw">fn </span>test_rfind() {
-<a href=#215 id=215 data-nosnippet>215</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= -<span class="number">1</span>), <span class="prelude-val">None</span>);
-<a href=#216 id=216 data-nosnippet>216</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">0</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
-<a href=#217 id=217 data-nosnippet>217</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
-<a href=#218 id=218 data-nosnippet>218</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">2</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
-<a href=#219 id=219 data-nosnippet>219</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
-<a href=#220 id=220 data-nosnippet>220</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">5</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">4</span>));
-<a href=#221 id=221 data-nosnippet>221</a>        <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">10</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">8</span>));
-<a href=#222 id=222 data-nosnippet>222</a>    }
-<a href=#223 id=223 data-nosnippet>223</a>}
+<a href=#142 id=142 data-nosnippet>142</a>    <span class="kw">use </span><span class="kw">crate</span>::algorithm::SliceCombinationsExt;
+<a href=#143 id=143 data-nosnippet>143</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::{
+<a href=#144 id=144 data-nosnippet>144</a>        Xorshift,
+<a href=#145 id=145 data-nosnippet>145</a>        testutil::{integer_boundary_values, sample_usize, structured_sequences},
+<a href=#146 id=146 data-nosnippet>146</a>    };
+<a href=#147 id=147 data-nosnippet>147</a>
+<a href=#148 id=148 data-nosnippet>148</a>    <span class="attr">#[test]
+<a href=#149 id=149 data-nosnippet>149</a>    </span><span class="kw">fn </span>test_slice_bisect() {
+<a href=#150 id=150 data-nosnippet>150</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#151 id=151 data-nosnippet>151</a>        <span class="kw">let </span><span class="kw-2">mut </span>cases = Vec::new();
+<a href=#152 id=152 data-nosnippet>152</a>        <span class="comment">// Every sorted sequence over {-1, 0, 1}, without enumerating its permutations.
+<a href=#153 id=153 data-nosnippet>153</a>        </span><span class="kw">for </span>n <span class="kw">in </span><span class="number">0</span>..=<span class="number">32 </span>{
+<a href=#154 id=154 data-nosnippet>154</a>            [-<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>].for_each_combinations_with_replacement(n, |xs| cases.push(xs.to_vec()));
+<a href=#155 id=155 data-nosnippet>155</a>        }
+<a href=#156 id=156 data-nosnippet>156</a>        <span class="kw">let </span>lengths = sample_usize(<span class="kw-2">&amp;mut </span>rng, <span class="number">32</span>, <span class="number">0</span>..=<span class="number">1024</span>, <span class="number">1000</span>);
+<a href=#157 id=157 data-nosnippet>157</a>        cases.extend(
+<a href=#158 id=158 data-nosnippet>158</a>            structured_sequences(<span class="kw-2">&amp;mut </span>rng, -<span class="number">10</span>..=<span class="number">10</span>, lengths).map(|<span class="kw-2">mut </span>values| {
+<a href=#159 id=159 data-nosnippet>159</a>                values.sort_unstable();
+<a href=#160 id=160 data-nosnippet>160</a>                values
+<a href=#161 id=161 data-nosnippet>161</a>            }),
+<a href=#162 id=162 data-nosnippet>162</a>        );
+<a href=#163 id=163 data-nosnippet>163</a>        cases.sort_unstable();
+<a href=#164 id=164 data-nosnippet>164</a>        cases.dedup();
+<a href=#165 id=165 data-nosnippet>165</a>        <span class="kw">for </span>values <span class="kw">in </span>cases {
+<a href=#166 id=166 data-nosnippet>166</a>            <span class="kw">let </span>n = values.len();
+<a href=#167 id=167 data-nosnippet>167</a>            <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="number">0</span>;
+<a href=#168 id=168 data-nosnippet>168</a>            <span class="kw">let </span><span class="kw-2">mut </span>end = <span class="number">0</span>;
+<a href=#169 id=169 data-nosnippet>169</a>            <span class="kw">for </span>key <span class="kw">in </span>-<span class="number">11</span>..=<span class="number">11 </span>{
+<a href=#170 id=170 data-nosnippet>170</a>                <span class="kw">while </span>first &lt; n &amp;&amp; values[first] &lt; key {
+<a href=#171 id=171 data-nosnippet>171</a>                    first += <span class="number">1</span>;
+<a href=#172 id=172 data-nosnippet>172</a>                }
+<a href=#173 id=173 data-nosnippet>173</a>                <span class="kw">while </span>end &lt; n &amp;&amp; values[end] &lt;= key {
+<a href=#174 id=174 data-nosnippet>174</a>                    end += <span class="number">1</span>;
+<a href=#175 id=175 data-nosnippet>175</a>                }
+<a href=#176 id=176 data-nosnippet>176</a>                <span class="macro">assert_eq!</span>(
+<a href=#177 id=177 data-nosnippet>177</a>                    values.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= key),
+<a href=#178 id=178 data-nosnippet>178</a>                    first,
+<a href=#179 id=179 data-nosnippet>179</a>                    <span class="string">"values={values:?}, key={key}"
+<a href=#180 id=180 data-nosnippet>180</a>                </span>);
+<a href=#181 id=181 data-nosnippet>181</a>                <span class="macro">assert_eq!</span>(
+<a href=#182 id=182 data-nosnippet>182</a>                    values.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= key),
+<a href=#183 id=183 data-nosnippet>183</a>                    values.get(first),
+<a href=#184 id=184 data-nosnippet>184</a>                    <span class="string">"values={values:?}, key={key}"
+<a href=#185 id=185 data-nosnippet>185</a>                </span>);
+<a href=#186 id=186 data-nosnippet>186</a>                <span class="macro">assert_eq!</span>(
+<a href=#187 id=187 data-nosnippet>187</a>                    values.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= key),
+<a href=#188 id=188 data-nosnippet>188</a>                    end,
+<a href=#189 id=189 data-nosnippet>189</a>                    <span class="string">"values={values:?}, key={key}"
+<a href=#190 id=190 data-nosnippet>190</a>                </span>);
+<a href=#191 id=191 data-nosnippet>191</a>                <span class="macro">assert_eq!</span>(
+<a href=#192 id=192 data-nosnippet>192</a>                    values.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= key),
+<a href=#193 id=193 data-nosnippet>193</a>                    values[..end].last(),
+<a href=#194 id=194 data-nosnippet>194</a>                    <span class="string">"values={values:?}, key={key}"
+<a href=#195 id=195 data-nosnippet>195</a>                </span>);
+<a href=#196 id=196 data-nosnippet>196</a>                <span class="macro">assert_eq!</span>(
+<a href=#197 id=197 data-nosnippet>197</a>                    binary_search(|<span class="kw-2">&amp;</span>i: <span class="kw-2">&amp;</span>isize| values[i <span class="kw">as </span>usize] &gt;= key, n <span class="kw">as </span>isize, -<span class="number">1</span>),
+<a href=#198 id=198 data-nosnippet>198</a>                    first <span class="kw">as </span>isize,
+<a href=#199 id=199 data-nosnippet>199</a>                    <span class="string">"values={values:?}, key={key}"
+<a href=#200 id=200 data-nosnippet>200</a>                </span>);
+<a href=#201 id=201 data-nosnippet>201</a>                <span class="macro">assert_eq!</span>(
+<a href=#202 id=202 data-nosnippet>202</a>                    binary_search(|<span class="kw-2">&amp;</span>i: <span class="kw-2">&amp;</span>isize| values[i <span class="kw">as </span>usize] &lt;= key, -<span class="number">1</span>, n <span class="kw">as </span>isize),
+<a href=#203 id=203 data-nosnippet>203</a>                    end <span class="kw">as </span>isize - <span class="number">1</span>,
+<a href=#204 id=204 data-nosnippet>204</a>                    <span class="string">"values={values:?}, key={key}"
+<a href=#205 id=205 data-nosnippet>205</a>                </span>);
+<a href=#206 id=206 data-nosnippet>206</a>            }
+<a href=#207 id=207 data-nosnippet>207</a>        }
+<a href=#208 id=208 data-nosnippet>208</a>    }
+<a href=#209 id=209 data-nosnippet>209</a>
+<a href=#210 id=210 data-nosnippet>210</a>    <span class="attr">#[test]
+<a href=#211 id=211 data-nosnippet>211</a>    </span><span class="kw">fn </span>test_integer_bisect() {
+<a href=#212 id=212 data-nosnippet>212</a>        <span class="macro">macro_rules!</span> check {
+<a href=#213 id=213 data-nosnippet>213</a>            ($(<span class="macro-nonterminal">$ty</span>:ty),<span class="kw-2">*</span>) =&gt; {$(
+<a href=#214 id=214 data-nosnippet>214</a>                <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#215 id=215 data-nosnippet>215</a>                <span class="kw">for </span>boundary <span class="kw">in </span><span class="macro">integer_boundary_values!</span>(<span class="macro-nonterminal">$ty</span>).into_iter()
+<a href=#216 id=216 data-nosnippet>216</a>                    .chain((<span class="number">0</span>..=u8::MAX).map(|x| x <span class="kw">as </span><span class="macro-nonterminal">$ty</span>))
+<a href=#217 id=217 data-nosnippet>217</a>                    .chain(rng.random_iter(..).take(<span class="number">10_000</span>))
+<a href=#218 id=218 data-nosnippet>218</a>                {
+<a href=#219 id=219 data-nosnippet>219</a>                    <span class="kw">if </span>boundary &lt; &lt;<span class="macro-nonterminal">$ty</span>&gt;::MAX {
+<a href=#220 id=220 data-nosnippet>220</a>                        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x &lt;= boundary, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MIN, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MAX), boundary);
+<a href=#221 id=221 data-nosnippet>221</a>                        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x &gt; boundary, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MAX, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MIN), boundary + <span class="number">1</span>);
+<a href=#222 id=222 data-nosnippet>222</a>                    }
+<a href=#223 id=223 data-nosnippet>223</a>                    <span class="kw">if </span>boundary &gt; &lt;<span class="macro-nonterminal">$ty</span>&gt;::MIN {
+<a href=#224 id=224 data-nosnippet>224</a>                        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x &gt;= boundary, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MAX, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MIN), boundary);
+<a href=#225 id=225 data-nosnippet>225</a>                        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x &lt; boundary, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MIN, &lt;<span class="macro-nonterminal">$ty</span>&gt;::MAX), boundary - <span class="number">1</span>);
+<a href=#226 id=226 data-nosnippet>226</a>                    }
+<a href=#227 id=227 data-nosnippet>227</a>                }
+<a href=#228 id=228 data-nosnippet>228</a>            )<span class="kw-2">*</span>};
+<a href=#229 id=229 data-nosnippet>229</a>        }
+<a href=#230 id=230 data-nosnippet>230</a>        <span class="macro">check!</span>(
+<a href=#231 id=231 data-nosnippet>231</a>            u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
+<a href=#232 id=232 data-nosnippet>232</a>        );
+<a href=#233 id=233 data-nosnippet>233</a>    }
+<a href=#234 id=234 data-nosnippet>234</a>
+<a href=#235 id=235 data-nosnippet>235</a>    <span class="attr">#[test]
+<a href=#236 id=236 data-nosnippet>236</a>    </span><span class="kw">fn </span>test_float_bisect() {
+<a href=#237 id=237 data-nosnippet>237</a>        <span class="macro">macro_rules!</span> check {
+<a href=#238 id=238 data-nosnippet>238</a>            (<span class="macro-nonterminal">$ty</span>:ty, <span class="macro-nonterminal">$bits</span>:ty, <span class="macro-nonterminal">$fraction</span>:expr, <span class="macro-nonterminal">$max_exponent</span>:expr) =&gt; {
+<a href=#239 id=239 data-nosnippet>239</a>                <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#240 id=240 data-nosnippet>240</a>                <span class="comment">// Powers of two and their adjacent representations cross every
+<a href=#241 id=241 data-nosnippet>241</a>                // normal/subnormal exponent boundary, in both directions.
+<a href=#242 id=242 data-nosnippet>242</a>                </span><span class="kw">let </span><span class="kw-2">mut </span>bits: Vec&lt;<span class="macro-nonterminal">$bits</span>&gt; = (<span class="number">1</span>..=<span class="macro-nonterminal">$max_exponent</span>)
+<a href=#243 id=243 data-nosnippet>243</a>                    .flat_map(|exponent| {
+<a href=#244 id=244 data-nosnippet>244</a>                        <span class="kw">let </span>power = exponent &lt;&lt; <span class="macro-nonterminal">$fraction</span>;
+<a href=#245 id=245 data-nosnippet>245</a>                        [power - <span class="number">1</span>, power, power + <span class="number">1</span>]
+<a href=#246 id=246 data-nosnippet>246</a>                    })
+<a href=#247 id=247 data-nosnippet>247</a>                    .collect();
+<a href=#248 id=248 data-nosnippet>248</a>                bits.extend(<span class="macro">integer_boundary_values!</span>(<span class="macro-nonterminal">$bits</span>));
+<a href=#249 id=249 data-nosnippet>249</a>                bits.extend((<span class="number">0</span>..<span class="number">10_000</span>).map(|<span class="kw">_</span>| {
+<a href=#250 id=250 data-nosnippet>250</a>                    <span class="kw">let </span>bits: <span class="macro-nonterminal">$bits </span>= rng.random(..);
+<a href=#251 id=251 data-nosnippet>251</a>                    bits
+<a href=#252 id=252 data-nosnippet>252</a>                }));
+<a href=#253 id=253 data-nosnippet>253</a>                <span class="kw">for </span>bits <span class="kw">in </span>bits {
+<a href=#254 id=254 data-nosnippet>254</a>                    <span class="kw">for </span>x <span class="kw">in </span>[&lt;<span class="macro-nonterminal">$ty</span>&gt;::from_bits(bits), -&lt;<span class="macro-nonterminal">$ty</span>&gt;::from_bits(bits)] {
+<a href=#255 id=255 data-nosnippet>255</a>                        <span class="kw">if </span>x.is_finite() &amp;&amp; x != <span class="number">0.0 </span>{
+<a href=#256 id=256 data-nosnippet>256</a>                            <span class="macro">assert_eq!</span>(
+<a href=#257 id=257 data-nosnippet>257</a>                                binary_search(|<span class="kw-2">&amp;</span>y| y &lt;= x, &lt;<span class="macro-nonterminal">$ty</span>&gt;::NEG_INFINITY, &lt;<span class="macro-nonterminal">$ty</span>&gt;::INFINITY),
+<a href=#258 id=258 data-nosnippet>258</a>                                x
+<a href=#259 id=259 data-nosnippet>259</a>                            );
+<a href=#260 id=260 data-nosnippet>260</a>                            <span class="macro">assert_eq!</span>(
+<a href=#261 id=261 data-nosnippet>261</a>                                binary_search(|<span class="kw-2">&amp;</span>y| y &gt;= x, &lt;<span class="macro-nonterminal">$ty</span>&gt;::INFINITY, &lt;<span class="macro-nonterminal">$ty</span>&gt;::NEG_INFINITY),
+<a href=#262 id=262 data-nosnippet>262</a>                                x
+<a href=#263 id=263 data-nosnippet>263</a>                            );
+<a href=#264 id=264 data-nosnippet>264</a>                        }
+<a href=#265 id=265 data-nosnippet>265</a>                    }
+<a href=#266 id=266 data-nosnippet>266</a>                }
+<a href=#267 id=267 data-nosnippet>267</a>                <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..=<span class="number">10_000 </span>{
+<a href=#268 id=268 data-nosnippet>268</a>                    <span class="kw">let </span>x = x <span class="kw">as </span><span class="macro-nonterminal">$ty</span>;
+<a href=#269 id=269 data-nosnippet>269</a>                    <span class="kw">let </span>actual = binary_search(|<span class="kw-2">&amp;</span>y| y * y &lt;= x, <span class="number">0.0</span>, x + <span class="number">1.0</span>);
+<a href=#270 id=270 data-nosnippet>270</a>                    <span class="macro">assert!</span>((actual - x.sqrt()).abs() &lt;= &lt;<span class="macro-nonterminal">$ty</span>&gt;::EPSILON * x.sqrt().max(<span class="number">1.0</span>));
+<a href=#271 id=271 data-nosnippet>271</a>                }
+<a href=#272 id=272 data-nosnippet>272</a>            };
+<a href=#273 id=273 data-nosnippet>273</a>        }
+<a href=#274 id=274 data-nosnippet>274</a>        <span class="macro">check!</span>(f32, u32, <span class="number">23</span>, <span class="number">254</span>);
+<a href=#275 id=275 data-nosnippet>275</a>        <span class="macro">check!</span>(f64, u64, <span class="number">52</span>, <span class="number">2046</span>);
+<a href=#276 id=276 data-nosnippet>276</a>    }
+<a href=#277 id=277 data-nosnippet>277</a>}
 </code></pre></div></section></main></body></html>

@@ -2049,7 +2049,7 @@
 <span data-nosnippet>1134</span>
 <span data-nosnippet>1135</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
 <span data-nosnippet>1136</span>    <span class="kw">let </span>transform = |values: <span class="kw-2">&amp;</span>[u64]| {
-<span data-nosnippet>1137</span>        <span class="kw">if </span>values.iter().any(|<span class="kw-2">&amp;</span>value| value &gt; u32::MAX <span class="kw">as </span>u64) {
+<span data-nosnippet>1137</span>        <span class="kw">if </span>values.iter().any(|<span class="kw-2">&amp;</span>value| value &gt; u32::MAX <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">u64</a>) {
 <span data-nosnippet>1138</span>            <span class="kw">return </span>split(values).map(|part| ConvolveRealFft::transform(part, len));
 <span data-nosnippet>1139</span>        }
 <span data-nosnippet>1140</span>        <span class="kw">let </span>[a, b, c, <span class="kw">_</span>, <span class="kw">_</span>] = split(values);
@@ -2244,7 +2244,7 @@
 <span data-nosnippet>1329</span>
 <span data-nosnippet>1330</span>    <span class="kw">fn </span>multiply_add(sum: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1331</span>        <span class="macro">assert!</span>(sum.len() == f.len() &amp;&amp; sum.len() == g.len());
-<span data-nosnippet>1332</span>        pointwise_multiply_add(sum, <a href="../algebra/operations.rs.html#269">f</a>, g);
+<span data-nosnippet>1332</span>        pointwise_multiply_add(sum, f, g);
 <span data-nosnippet>1333</span>    }
 <span data-nosnippet>1334</span>
 <span data-nosnippet>1335</span>    <span class="kw">fn </span>power_projection_step(
@@ -2356,10 +2356,10 @@
 <span data-nosnippet>1441</span>    }
 <span data-nosnippet>1442</span>
 <span data-nosnippet>1443</span>    <span class="kw">fn </span>ntt_doubling(f: <span class="self">Self</span>::F, monic: bool) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>1444</span>        <span class="kw">if </span>monic {
+<span data-nosnippet>1444</span>        <span class="kw">if </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">monic</a> {
 <span data-nosnippet>1445</span>            <span class="kw">let </span>n = f.<span class="number">0</span>.len();
 <span data-nosnippet>1446</span>            <span class="kw">let </span><span class="kw-2">mut </span>coefficients = <span class="self">Self</span>::inverse_transform_ntt(f, n);
-<span data-nosnippet>1447</span>            coefficients[<span class="number">0</span>] -= MInt::&lt;M&gt;::one();
+<span data-nosnippet>1447</span>            coefficients[<span class="number">0</span>] -= MInt::&lt;<a href="../algebra/operations.rs.html#402">M</a>&gt;::one();
 <span data-nosnippet>1448</span>            coefficients.push(MInt::&lt;M&gt;::one());
 <span data-nosnippet>1449</span>            <span class="self">Self</span>::transform_ntt(coefficients, n * <span class="number">2</span>)
 <span data-nosnippet>1450</span>        } <span class="kw">else </span>{
@@ -2389,7 +2389,7 @@
 <span data-nosnippet>1474</span>                        * <span class="kw">if </span>i == <span class="number">0 </span>{
 <span data-nosnippet>1475</span>                            g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + u
 <span data-nosnippet>1476</span>                        } <span class="kw">else </span>{
-<span data-nosnippet>1477</span>                            g[<a href="../algebra/operations.rs.html#427">i</a> &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>]
+<span data-nosnippet>1477</span>                            g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>]
 <span data-nosnippet>1478</span>                        }
 <span data-nosnippet>1479</span>                        + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>])
 <span data-nosnippet>1480</span>                        * inv2

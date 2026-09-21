@@ -120,28 +120,35 @@
 <a href=#66 id=66 data-nosnippet>66</a>
 <a href=#67 id=67 data-nosnippet>67</a>    <span class="attr">#[test]
 <a href=#68 id=68 data-nosnippet>68</a>    </span><span class="kw">fn </span>test_factorials() {
-<a href=#69 id=69 data-nosnippet>69</a>        <span class="kw">use </span><span class="kw">crate</span>::num::mint_basic::MInt1000000007;
-<a href=#70 id=70 data-nosnippet>70</a>        <span class="kw">let </span>fact = MemorizedFactorial::new(<span class="number">100</span>);
-<a href=#71 id=71 data-nosnippet>71</a>        <span class="kw">type </span>M = MInt1000000007;
-<a href=#72 id=72 data-nosnippet>72</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">101 </span>{
-<a href=#73 id=73 data-nosnippet>73</a>            <span class="macro">assert_eq!</span>(fact.fact[i] * fact.inv_fact[i], M::new(<span class="number">1</span>));
-<a href=#74 id=74 data-nosnippet>74</a>        }
-<a href=#75 id=75 data-nosnippet>75</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..<span class="number">101 </span>{
-<a href=#76 id=76 data-nosnippet>76</a>            <span class="macro">assert_eq!</span>(fact.inv(i), M::new(i <span class="kw">as </span>u32).inv());
-<a href=#77 id=77 data-nosnippet>77</a>        }
-<a href=#78 id=78 data-nosnippet>78</a>        <span class="macro">assert_eq!</span>(fact.combination(<span class="number">10</span>, <span class="number">0</span>), M::new(<span class="number">1</span>));
-<a href=#79 id=79 data-nosnippet>79</a>        <span class="macro">assert_eq!</span>(fact.combination(<span class="number">10</span>, <span class="number">1</span>), M::new(<span class="number">10</span>));
-<a href=#80 id=80 data-nosnippet>80</a>        <span class="macro">assert_eq!</span>(fact.combination(<span class="number">10</span>, <span class="number">5</span>), M::new(<span class="number">252</span>));
-<a href=#81 id=81 data-nosnippet>81</a>        <span class="macro">assert_eq!</span>(fact.combination(<span class="number">10</span>, <span class="number">6</span>), M::new(<span class="number">210</span>));
-<a href=#82 id=82 data-nosnippet>82</a>        <span class="macro">assert_eq!</span>(fact.combination(<span class="number">10</span>, <span class="number">10</span>), M::new(<span class="number">1</span>));
-<a href=#83 id=83 data-nosnippet>83</a>        <span class="macro">assert_eq!</span>(fact.combination(<span class="number">10</span>, <span class="number">11</span>), M::new(<span class="number">0</span>));
-<a href=#84 id=84 data-nosnippet>84</a>
-<a href=#85 id=85 data-nosnippet>85</a>        <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">0</span>), M::new(<span class="number">1</span>));
-<a href=#86 id=86 data-nosnippet>86</a>        <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">1</span>), M::new(<span class="number">10</span>));
-<a href=#87 id=87 data-nosnippet>87</a>        <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">5</span>), M::new(<span class="number">30240</span>));
-<a href=#88 id=88 data-nosnippet>88</a>        <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">6</span>), M::new(<span class="number">151_200</span>));
-<a href=#89 id=89 data-nosnippet>89</a>        <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">10</span>), M::new(<span class="number">3_628_800</span>));
-<a href=#90 id=90 data-nosnippet>90</a>        <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">11</span>), M::new(<span class="number">0</span>));
-<a href=#91 id=91 data-nosnippet>91</a>    }
-<a href=#92 id=92 data-nosnippet>92</a>}
+<a href=#69 id=69 data-nosnippet>69</a>        <span class="kw">use crate</span>::{num::mint_basic::MInt1000000007 <span class="kw">as </span>M, tools::Xorshift};
+<a href=#70 id=70 data-nosnippet>70</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#71 id=71 data-nosnippet>71</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#72 id=72 data-nosnippet>72</a>            <span class="kw">let </span>limit = rng.random(<span class="number">1</span>..=<span class="number">100usize</span>);
+<a href=#73 id=73 data-nosnippet>73</a>            <span class="kw">let </span>fact = MemorizedFactorial::new(limit);
+<a href=#74 id=74 data-nosnippet>74</a>            <span class="kw">let </span><span class="kw-2">mut </span>binom = <span class="macro">vec!</span>[<span class="macro">vec!</span>[M::new(<span class="number">0</span>); limit + <span class="number">2</span>]; limit + <span class="number">1</span>];
+<a href=#75 id=75 data-nosnippet>75</a>            binom[<span class="number">0</span>][<span class="number">0</span>] = M::new(<span class="number">1</span>);
+<a href=#76 id=76 data-nosnippet>76</a>            <span class="kw">let </span><span class="kw-2">mut </span>product = M::new(<span class="number">1</span>);
+<a href=#77 id=77 data-nosnippet>77</a>            <span class="kw">for </span>n <span class="kw">in </span><span class="number">0</span>..=limit {
+<a href=#78 id=78 data-nosnippet>78</a>                <span class="kw">if </span>n &gt; <span class="number">0 </span>{
+<a href=#79 id=79 data-nosnippet>79</a>                    product <span class="kw-2">*</span>= M::from(n);
+<a href=#80 id=80 data-nosnippet>80</a>                    binom[n][<span class="number">0</span>] = M::new(<span class="number">1</span>);
+<a href=#81 id=81 data-nosnippet>81</a>                    <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..=n {
+<a href=#82 id=82 data-nosnippet>82</a>                        binom[n][k] = binom[n - <span class="number">1</span>][k - <span class="number">1</span>] + binom[n - <span class="number">1</span>][k];
+<a href=#83 id=83 data-nosnippet>83</a>                    }
+<a href=#84 id=84 data-nosnippet>84</a>                    <span class="macro">assert_eq!</span>(fact.inv(n) * M::from(n), M::new(<span class="number">1</span>));
+<a href=#85 id=85 data-nosnippet>85</a>                }
+<a href=#86 id=86 data-nosnippet>86</a>                <span class="macro">assert_eq!</span>(fact.fact[n], product);
+<a href=#87 id=87 data-nosnippet>87</a>                <span class="macro">assert_eq!</span>(fact.fact[n] * fact.inv_fact[n], M::new(<span class="number">1</span>));
+<a href=#88 id=88 data-nosnippet>88</a>                <span class="kw">let </span>k = rng.random(<span class="number">0</span>..=limit + <span class="number">1</span>);
+<a href=#89 id=89 data-nosnippet>89</a>                <span class="macro">assert_eq!</span>(fact.combination(n, k), binom[n][k]);
+<a href=#90 id=90 data-nosnippet>90</a>                <span class="kw">let </span>expected: M = <span class="kw">if </span>k &lt;= n {
+<a href=#91 id=91 data-nosnippet>91</a>                    (n - k + <span class="number">1</span>..=n).map(M::from).product()
+<a href=#92 id=92 data-nosnippet>92</a>                } <span class="kw">else </span>{
+<a href=#93 id=93 data-nosnippet>93</a>                    M::new(<span class="number">0</span>)
+<a href=#94 id=94 data-nosnippet>94</a>                };
+<a href=#95 id=95 data-nosnippet>95</a>                <span class="macro">assert_eq!</span>(fact.permutation(n, k), expected);
+<a href=#96 id=96 data-nosnippet>96</a>            }
+<a href=#97 id=97 data-nosnippet>97</a>        }
+<a href=#98 id=98 data-nosnippet>98</a>    }
+<a href=#99 id=99 data-nosnippet>99</a>}
 </code></pre></div></section></main></body></html>

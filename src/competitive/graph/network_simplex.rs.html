@@ -518,30 +518,86 @@
 <a href=#464 id=464 data-nosnippet>464</a><span class="attr">#[cfg(test)]
 <a href=#465 id=465 data-nosnippet>465</a></span><span class="kw">mod </span>tests {
 <a href=#466 id=466 data-nosnippet>466</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#467 id=467 data-nosnippet>467</a>
-<a href=#468 id=468 data-nosnippet>468</a>    <span class="attr">#[test]
-<a href=#469 id=469 data-nosnippet>469</a>    </span><span class="kw">fn </span>test_feasible_b_flow() {
-<a href=#470 id=470 data-nosnippet>470</a>        <span class="kw">let </span><span class="kw-2">mut </span>ns = NetworkSimplex::&lt;i32, i32&gt;::new(<span class="number">3</span>);
-<a href=#471 id=471 data-nosnippet>471</a>        ns.add_supply(<span class="number">0</span>, <span class="number">5</span>);
-<a href=#472 id=472 data-nosnippet>472</a>        ns.add_demand(<span class="number">1</span>, <span class="number">5</span>);
-<a href=#473 id=473 data-nosnippet>473</a>        ns.add_edge(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">10</span>, -<span class="number">1</span>);
-<a href=#474 id=474 data-nosnippet>474</a>        ns.add_edge(<span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">10</span>, -<span class="number">1</span>);
-<a href=#475 id=475 data-nosnippet>475</a>        ns.add_edge(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">10</span>, <span class="number">10</span>);
-<a href=#476 id=476 data-nosnippet>476</a>        <span class="kw">let </span>sol = ns.solve_minimize();
-<a href=#477 id=477 data-nosnippet>477</a>        <span class="macro">assert!</span>(sol.is_some(), <span class="string">"should be feasible"</span>);
-<a href=#478 id=478 data-nosnippet>478</a>        <span class="kw">let </span>sol = sol.unwrap();
-<a href=#479 id=479 data-nosnippet>479</a>        <span class="macro">assert_eq!</span>(sol.cost, -<span class="number">10</span>);
-<a href=#480 id=480 data-nosnippet>480</a>        <span class="macro">assert_eq!</span>(sol.flows, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">5</span>, <span class="number">0</span>]);
-<a href=#481 id=481 data-nosnippet>481</a>    }
-<a href=#482 id=482 data-nosnippet>482</a>
-<a href=#483 id=483 data-nosnippet>483</a>    <span class="attr">#[test]
-<a href=#484 id=484 data-nosnippet>484</a>    </span><span class="kw">fn </span>test_infeasible_b_flow() {
-<a href=#485 id=485 data-nosnippet>485</a>        <span class="kw">let </span><span class="kw-2">mut </span>ns = NetworkSimplex::&lt;i32, i32&gt;::new(<span class="number">2</span>);
-<a href=#486 id=486 data-nosnippet>486</a>        ns.add_demand(<span class="number">0</span>, <span class="number">5</span>);
-<a href=#487 id=487 data-nosnippet>487</a>        ns.add_supply(<span class="number">1</span>, <span class="number">5</span>);
-<a href=#488 id=488 data-nosnippet>488</a>        ns.add_edge(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">2</span>);
-<a href=#489 id=489 data-nosnippet>489</a>        <span class="kw">let </span>sol = ns.solve_minimize();
-<a href=#490 id=490 data-nosnippet>490</a>        <span class="macro">assert!</span>(sol.is_none(), <span class="string">"should be infeasible"</span>);
-<a href=#491 id=491 data-nosnippet>491</a>    }
-<a href=#492 id=492 data-nosnippet>492</a>}
+<a href=#467 id=467 data-nosnippet>467</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#468 id=468 data-nosnippet>468</a>
+<a href=#469 id=469 data-nosnippet>469</a>    <span class="attr">#[test]
+<a href=#470 id=470 data-nosnippet>470</a>    </span><span class="kw">fn </span>test_minimum_cost_flow() {
+<a href=#471 id=471 data-nosnippet>471</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#472 id=472 data-nosnippet>472</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1000 </span>{
+<a href=#473 id=473 data-nosnippet>473</a>            <span class="kw">let </span>n = rng.random(<span class="number">1</span>..=<span class="number">5</span>);
+<a href=#474 id=474 data-nosnippet>474</a>            <span class="kw">let </span>m = rng.random(<span class="number">0</span>..=<span class="number">7</span>);
+<a href=#475 id=475 data-nosnippet>475</a>            <span class="kw">let </span>edges: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..m)
+<a href=#476 id=476 data-nosnippet>476</a>                .map(|<span class="kw">_</span>| {
+<a href=#477 id=477 data-nosnippet>477</a>                    <span class="kw">let </span>lo = rng.random(<span class="number">0</span>..=<span class="number">2i32</span>);
+<a href=#478 id=478 data-nosnippet>478</a>                    (
+<a href=#479 id=479 data-nosnippet>479</a>                        rng.random(<span class="number">0</span>..n),
+<a href=#480 id=480 data-nosnippet>480</a>                        rng.random(<span class="number">0</span>..n),
+<a href=#481 id=481 data-nosnippet>481</a>                        lo,
+<a href=#482 id=482 data-nosnippet>482</a>                        lo + rng.random(<span class="number">0</span>..=<span class="number">2i32</span>),
+<a href=#483 id=483 data-nosnippet>483</a>                        rng.random(-<span class="number">5</span>..=<span class="number">5i32</span>),
+<a href=#484 id=484 data-nosnippet>484</a>                    )
+<a href=#485 id=485 data-nosnippet>485</a>                })
+<a href=#486 id=486 data-nosnippet>486</a>                .collect();
+<a href=#487 id=487 data-nosnippet>487</a>            <span class="kw">let </span><span class="kw-2">mut </span>balances = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<a href=#488 id=488 data-nosnippet>488</a>            <span class="kw">for </span><span class="kw-2">&amp;</span>(u, v, lo, hi, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>edges {
+<a href=#489 id=489 data-nosnippet>489</a>                <span class="kw">let </span>flow = rng.random(lo..=hi);
+<a href=#490 id=490 data-nosnippet>490</a>                balances[u] += flow;
+<a href=#491 id=491 data-nosnippet>491</a>                balances[v] -= flow;
+<a href=#492 id=492 data-nosnippet>492</a>            }
+<a href=#493 id=493 data-nosnippet>493</a>            <span class="kw">if </span>rng.random(<span class="number">0</span>..<span class="number">2</span>) == <span class="number">0 </span>{
+<a href=#494 id=494 data-nosnippet>494</a>                <span class="kw">let </span>u = rng.random(<span class="number">0</span>..n);
+<a href=#495 id=495 data-nosnippet>495</a>                <span class="kw">let </span>v = rng.random(<span class="number">0</span>..n);
+<a href=#496 id=496 data-nosnippet>496</a>                <span class="kw">let </span>amount = rng.random(-<span class="number">5</span>..=<span class="number">5</span>);
+<a href=#497 id=497 data-nosnippet>497</a>                balances[u] += amount;
+<a href=#498 id=498 data-nosnippet>498</a>                balances[v] -= amount;
+<a href=#499 id=499 data-nosnippet>499</a>            }
+<a href=#500 id=500 data-nosnippet>500</a>            <span class="kw">let </span><span class="kw-2">mut </span>solver = NetworkSimplex::new(n);
+<a href=#501 id=501 data-nosnippet>501</a>            <span class="kw">for </span>(v, <span class="kw-2">&amp;</span>balance) <span class="kw">in </span>balances.iter().enumerate() {
+<a href=#502 id=502 data-nosnippet>502</a>                solver.add_demand_supply(v, balance);
+<a href=#503 id=503 data-nosnippet>503</a>            }
+<a href=#504 id=504 data-nosnippet>504</a>            <span class="kw">for </span><span class="kw-2">&amp;</span>(u, v, lo, hi, cost) <span class="kw">in </span><span class="kw-2">&amp;</span>edges {
+<a href=#505 id=505 data-nosnippet>505</a>                solver.add_edge(u, v, lo, hi, cost);
+<a href=#506 id=506 data-nosnippet>506</a>            }
+<a href=#507 id=507 data-nosnippet>507</a>            <span class="kw">let </span>count: usize = edges
+<a href=#508 id=508 data-nosnippet>508</a>                .iter()
+<a href=#509 id=509 data-nosnippet>509</a>                .map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw">_</span>, lo, hi, <span class="kw">_</span>)| (hi - lo + <span class="number">1</span>) <span class="kw">as </span>usize)
+<a href=#510 id=510 data-nosnippet>510</a>                .product();
+<a href=#511 id=511 data-nosnippet>511</a>            <span class="kw">let </span><span class="kw-2">mut </span>expected = <span class="prelude-val">None</span>;
+<a href=#512 id=512 data-nosnippet>512</a>            <span class="kw">for </span><span class="kw-2">mut </span>code <span class="kw">in </span><span class="number">0</span>..count {
+<a href=#513 id=513 data-nosnippet>513</a>                <span class="kw">let </span><span class="kw-2">mut </span>net = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<a href=#514 id=514 data-nosnippet>514</a>                <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="number">0</span>;
+<a href=#515 id=515 data-nosnippet>515</a>                <span class="kw">for </span><span class="kw-2">&amp;</span>(u, v, lo, hi, c) <span class="kw">in </span><span class="kw-2">&amp;</span>edges {
+<a href=#516 id=516 data-nosnippet>516</a>                    <span class="kw">let </span>width = (hi - lo + <span class="number">1</span>) <span class="kw">as </span>usize;
+<a href=#517 id=517 data-nosnippet>517</a>                    <span class="kw">let </span>flow = lo + (code % width) <span class="kw">as </span>i32;
+<a href=#518 id=518 data-nosnippet>518</a>                    code /= width;
+<a href=#519 id=519 data-nosnippet>519</a>                    net[u] += flow;
+<a href=#520 id=520 data-nosnippet>520</a>                    net[v] -= flow;
+<a href=#521 id=521 data-nosnippet>521</a>                    cost += flow * c;
+<a href=#522 id=522 data-nosnippet>522</a>                }
+<a href=#523 id=523 data-nosnippet>523</a>                <span class="kw">if </span>net == balances {
+<a href=#524 id=524 data-nosnippet>524</a>                    expected = <span class="prelude-val">Some</span>(expected.map_or(cost, |best: i32| best.min(cost)));
+<a href=#525 id=525 data-nosnippet>525</a>                }
+<a href=#526 id=526 data-nosnippet>526</a>            }
+<a href=#527 id=527 data-nosnippet>527</a>            <span class="kw">let </span>solution = solver.solve_minimize();
+<a href=#528 id=528 data-nosnippet>528</a>            <span class="macro">assert_eq!</span>(
+<a href=#529 id=529 data-nosnippet>529</a>                solution.as_ref().map(|s| s.cost),
+<a href=#530 id=530 data-nosnippet>530</a>                expected,
+<a href=#531 id=531 data-nosnippet>531</a>                <span class="string">"{edges:?} {balances:?}"
+<a href=#532 id=532 data-nosnippet>532</a>            </span>);
+<a href=#533 id=533 data-nosnippet>533</a>            <span class="kw">if let </span><span class="prelude-val">Some</span>(solution) = solution {
+<a href=#534 id=534 data-nosnippet>534</a>                <span class="macro">assert_eq!</span>(solution.flows.len(), m);
+<a href=#535 id=535 data-nosnippet>535</a>                <span class="kw">let </span><span class="kw-2">mut </span>net = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<a href=#536 id=536 data-nosnippet>536</a>                <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="number">0</span>;
+<a href=#537 id=537 data-nosnippet>537</a>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>flow, <span class="kw-2">&amp;</span>(u, v, lo, hi, c)) <span class="kw">in </span>solution.flows.iter().zip(<span class="kw-2">&amp;</span>edges) {
+<a href=#538 id=538 data-nosnippet>538</a>                    <span class="macro">assert!</span>((lo..=hi).contains(<span class="kw-2">&amp;</span>flow));
+<a href=#539 id=539 data-nosnippet>539</a>                    net[u] += flow;
+<a href=#540 id=540 data-nosnippet>540</a>                    net[v] -= flow;
+<a href=#541 id=541 data-nosnippet>541</a>                    cost += flow * c;
+<a href=#542 id=542 data-nosnippet>542</a>                }
+<a href=#543 id=543 data-nosnippet>543</a>                <span class="macro">assert_eq!</span>(net, balances);
+<a href=#544 id=544 data-nosnippet>544</a>                <span class="macro">assert_eq!</span>(cost, solution.cost);
+<a href=#545 id=545 data-nosnippet>545</a>            }
+<a href=#546 id=546 data-nosnippet>546</a>        }
+<a href=#547 id=547 data-nosnippet>547</a>    }
+<a href=#548 id=548 data-nosnippet>548</a>}
 </code></pre></div></section></main></body></html>

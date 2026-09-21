@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["wildcard_pattern_matching"]};
+window.SIDEBAR_ITEMS = {"fn":["wildcard_pattern_matching","wildcard_pattern_matching_with_rng"]};

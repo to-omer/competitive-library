@@ -1171,7 +1171,7 @@
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].length();
 <span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
-<span data-nosnippet>1136</span>            <span class="kw">let </span><a href="../../num/zero_one.rs.html#2">left</a> = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
+<span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();
 <span data-nosnippet>1139</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
@@ -1181,7 +1181,7 @@
 <span data-nosnippet>1143</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum;
 <span data-nosnippet>1144</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>left);
 <span data-nosnippet>1145</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = C::inverse_transform_ntt(child, degree);
-<span data-nosnippet>1146</span>            <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">child</a>.drain(..degree / <span class="number">2</span>);
+<span data-nosnippet>1146</span>            child.drain(..degree / <span class="number">2</span>);
 <span data-nosnippet>1147</span>            uptree_t.push(<span class="self">Self</span>::from_vec(child));
 <span data-nosnippet>1148</span>        }
 <span data-nosnippet>1149</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(n);
@@ -1240,7 +1240,7 @@
 <span data-nosnippet>1202</span>        }
 <span data-nosnippet>1203</span>        (<span class="self">Self</span>::zero(), <span class="self">Self</span>::one())
 <span data-nosnippet>1204</span>    }
-<span data-nosnippet>1205</span>    <span class="kw">pub fn </span>kth_term_of_linearly_recurrence(<span class="self">self</span>, a: Vec&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; T
+<span data-nosnippet>1205</span>    <span class="kw">pub fn </span>kth_term_of_linearly_recurrence(<span class="self">self</span>, a: Vec&lt;T&gt;, k: usize) -&gt; T
 <span data-nosnippet>1206</span>    <span class="kw">where
 <span data-nosnippet>1207</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>1208</span>    {
@@ -1268,7 +1268,7 @@
 <span data-nosnippet>1230</span>    {
 <span data-nosnippet>1231</span>        <span class="kw">let </span>(p, q) = <span class="self">Self</span>::sum_all_rational(
 <span data-nosnippet>1232</span>            iter.into_iter()
-<span data-nosnippet>1233</span>                .map(|(a, b)| (<span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[a]), <span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[T::one(), -b]))),
+<span data-nosnippet>1233</span>                .map(|(a, b)| (<span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[a]), <span class="self">Self</span>::from_vec(<span class="macro">vec!</span>[T::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">one</a>(), -b]))),
 <span data-nosnippet>1234</span>            deg,
 <span data-nosnippet>1235</span>        );
 <span data-nosnippet>1236</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (p * q.inv(deg)).prefix(deg);
@@ -1315,7 +1315,7 @@
 <span data-nosnippet>1277</span>            p_flat[n - <span class="number">1 </span>- i] = wi.clone();
 <span data-nosnippet>1278</span>        }
 <span data-nosnippet>1279</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_flat = <span class="macro">vec!</span>[T::zero(); base * <span class="number">2</span>];
-<span data-nosnippet>1280</span>        q_flat[<span class="number">0</span>] = T::one();
+<span data-nosnippet>1280</span>        q_flat[<span class="number">0</span>] = <a href="../../algebra/operations.rs.html#444">T</a>::one();
 <span data-nosnippet>1281</span>        <span class="kw">let </span>q_offset = base;
 <span data-nosnippet>1282</span>        <span class="kw">for </span>(i, fi) <span class="kw">in </span>f.iter().enumerate() {
 <span data-nosnippet>1283</span>            q_flat[q_offset + i] = -fi.clone();
@@ -1352,7 +1352,7 @@
 <span data-nosnippet>1314</span>        }
 <span data-nosnippet>1315</span>        <span class="kw">let </span><span class="kw-2">mut </span>q_y = Vec::with_capacity(qy);
 <span data-nosnippet>1316</span>        <span class="kw">for </span>y <span class="kw">in </span><span class="number">0</span>..qy {
-<span data-nosnippet>1317</span>            <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html#tymethod.mul">q_y</a>.push(q_flat[base * y].clone());
+<span data-nosnippet>1317</span>            q_y.push(q_flat[base * y].clone());
 <span data-nosnippet>1318</span>        }
 <span data-nosnippet>1319</span>        (<span class="self">Self</span>::from_vec(p_y) * <span class="self">Self</span>::from_vec(q_y).inv(m)).prefix(m)
 <span data-nosnippet>1320</span>    }

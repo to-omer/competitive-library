@@ -165,42 +165,33 @@
 <a href=#111 id=111 data-nosnippet>111</a>
 <a href=#112 id=112 data-nosnippet>112</a>    <span class="attr">#[test]
 <a href=#113 id=113 data-nosnippet>113</a>    </span><span class="kw">fn </span>test_prime_table() {
-<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">const </span>N: u32 = <span class="number">100_000</span>;
-<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">let </span>primes = PrimeTable::new(N);
-<a href=#116 id=116 data-nosnippet>116</a>        <span class="macro">assert!</span>(!primes.is_prime(N));
-<a href=#117 id=117 data-nosnippet>117</a>        <span class="macro">assert!</span>(primes.is_prime(<span class="number">99991</span>));
-<a href=#118 id=118 data-nosnippet>118</a>
-<a href=#119 id=119 data-nosnippet>119</a>        <span class="kw">let </span>factors = primes.prime_factors(<span class="number">99991</span>);
-<a href=#120 id=120 data-nosnippet>120</a>        <span class="macro">assert_eq!</span>(factors, <span class="macro">vec!</span>[(<span class="number">99991</span>, <span class="number">1</span>)]);
-<a href=#121 id=121 data-nosnippet>121</a>        <span class="kw">let </span>factors = primes.prime_factors(<span class="number">2016</span>);
-<a href=#122 id=122 data-nosnippet>122</a>        <span class="macro">assert_eq!</span>(factors, <span class="macro">vec!</span>[(<span class="number">2</span>, <span class="number">5</span>), (<span class="number">3</span>, <span class="number">2</span>), (<span class="number">7</span>, <span class="number">1</span>)]);
-<a href=#123 id=123 data-nosnippet>123</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=N {
-<a href=#124 id=124 data-nosnippet>124</a>            <span class="macro">assert_eq!</span>(
-<a href=#125 id=125 data-nosnippet>125</a>                i,
-<a href=#126 id=126 data-nosnippet>126</a>                primes
-<a href=#127 id=127 data-nosnippet>127</a>                    .prime_factors(i)
-<a href=#128 id=128 data-nosnippet>128</a>                    .into_iter()
-<a href=#129 id=129 data-nosnippet>129</a>                    .map(|(p, c)| p.pow(c))
-<a href=#130 id=130 data-nosnippet>130</a>                    .product::&lt;u32&gt;()
-<a href=#131 id=131 data-nosnippet>131</a>            );
-<a href=#132 id=132 data-nosnippet>132</a>            <span class="macro">assert_eq!</span>(
-<a href=#133 id=133 data-nosnippet>133</a>                primes
-<a href=#134 id=134 data-nosnippet>134</a>                    .prime_factors(i)
-<a href=#135 id=135 data-nosnippet>135</a>                    .into_iter()
-<a href=#136 id=136 data-nosnippet>136</a>                    .map(|(<span class="kw">_</span>, c)| c + <span class="number">1</span>)
-<a href=#137 id=137 data-nosnippet>137</a>                    .product::&lt;u32&gt;(),
-<a href=#138 id=138 data-nosnippet>138</a>                primes.count_divisors(i)
-<a href=#139 id=139 data-nosnippet>139</a>            );
+<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..=<span class="number">30</span>).chain([<span class="number">1000</span>, <span class="number">10_000</span>]) {
+<a href=#115 id=115 data-nosnippet>115</a>            <span class="kw">let </span>primes = PrimeTable::new(n);
+<a href=#116 id=116 data-nosnippet>116</a>            <span class="kw">for </span>x <span class="kw">in </span><span class="number">1</span>..=n {
+<a href=#117 id=117 data-nosnippet>117</a>                <span class="kw">let </span>is_prime = x &gt;= <span class="number">2 </span>&amp;&amp; (<span class="number">2</span>..).take_while(|<span class="kw-2">&amp;</span>d| d * d &lt;= x).all(|d| x % d != <span class="number">0</span>);
+<a href=#118 id=118 data-nosnippet>118</a>                <span class="macro">assert_eq!</span>(primes.is_prime(x), is_prime);
+<a href=#119 id=119 data-nosnippet>119</a>                <span class="kw">let </span>factors = primes.prime_factors(x);
+<a href=#120 id=120 data-nosnippet>120</a>                <span class="macro">assert_eq!</span>(factors.iter().map(|<span class="kw-2">&amp;</span>(p, e)| p.pow(e)).product::&lt;u32&gt;(), x);
+<a href=#121 id=121 data-nosnippet>121</a>                <span class="macro">assert!</span>(factors.windows(<span class="number">2</span>).all(|w| w[<span class="number">0</span>].<span class="number">0 </span>&lt; w[<span class="number">1</span>].<span class="number">0</span>));
+<a href=#122 id=122 data-nosnippet>122</a>                <span class="kw">for </span><span class="kw-2">&amp;</span>(p, e) <span class="kw">in </span><span class="kw-2">&amp;</span>factors {
+<a href=#123 id=123 data-nosnippet>123</a>                    <span class="macro">assert!</span>(p &gt;= <span class="number">2 </span>&amp;&amp; e &gt; <span class="number">0</span>);
+<a href=#124 id=124 data-nosnippet>124</a>                    <span class="macro">assert!</span>((<span class="number">2</span>..).take_while(|<span class="kw-2">&amp;</span>d| d * d &lt;= p).all(|d| p % d != <span class="number">0</span>));
+<a href=#125 id=125 data-nosnippet>125</a>                }
+<a href=#126 id=126 data-nosnippet>126</a>                <span class="macro">assert_eq!</span>(
+<a href=#127 id=127 data-nosnippet>127</a>                    primes.count_divisors(x),
+<a href=#128 id=128 data-nosnippet>128</a>                    (<span class="number">1</span>..=x).filter(|d| x % d == <span class="number">0</span>).count() <span class="kw">as </span>u32
+<a href=#129 id=129 data-nosnippet>129</a>                );
+<a href=#130 id=130 data-nosnippet>130</a>            }
+<a href=#131 id=131 data-nosnippet>131</a>        }
+<a href=#132 id=132 data-nosnippet>132</a>    }
+<a href=#133 id=133 data-nosnippet>133</a>
+<a href=#134 id=134 data-nosnippet>134</a>    <span class="attr">#[test]
+<a href=#135 id=135 data-nosnippet>135</a>    </span><span class="kw">fn </span>test_divisors() {
+<a href=#136 id=136 data-nosnippet>136</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#137 id=137 data-nosnippet>137</a>        <span class="kw">let </span>pt = PrimeTable::new(<span class="number">200001</span>);
+<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">1</span>..=<span class="number">200000</span>).take(<span class="number">100</span>)) {
+<a href=#139 id=139 data-nosnippet>139</a>            <span class="macro">assert_eq!</span>(pt.divisors(n), divisors(n));
 <a href=#140 id=140 data-nosnippet>140</a>        }
 <a href=#141 id=141 data-nosnippet>141</a>    }
-<a href=#142 id=142 data-nosnippet>142</a>
-<a href=#143 id=143 data-nosnippet>143</a>    <span class="attr">#[test]
-<a href=#144 id=144 data-nosnippet>144</a>    </span><span class="kw">fn </span>test_divisors() {
-<a href=#145 id=145 data-nosnippet>145</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#146 id=146 data-nosnippet>146</a>        <span class="kw">let </span>pt = PrimeTable::new(<span class="number">200001</span>);
-<a href=#147 id=147 data-nosnippet>147</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">1</span>..=<span class="number">200000</span>).take(<span class="number">100</span>)) {
-<a href=#148 id=148 data-nosnippet>148</a>            <span class="macro">assert_eq!</span>(pt.divisors(n), divisors(n));
-<a href=#149 id=149 data-nosnippet>149</a>        }
-<a href=#150 id=150 data-nosnippet>150</a>    }
-<a href=#151 id=151 data-nosnippet>151</a>}
+<a href=#142 id=142 data-nosnippet>142</a>}
 </code></pre></div></section></main></body></html>

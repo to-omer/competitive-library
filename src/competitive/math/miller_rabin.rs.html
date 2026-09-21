@@ -172,23 +172,36 @@
 <a href=#118 id=118 data-nosnippet>118</a>}
 <a href=#119 id=119 data-nosnippet>119</a>
 <a href=#120 id=120 data-nosnippet>120</a><span class="kw">pub fn </span><a href="../../../competitive/math/fn.miller_rabin.html">miller_rabin</a>(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-<a href=#121 id=121 data-nosnippet>121</a>    <a href="#104-118">miller_rabin_with_br</a>(<a href="#120">n</a>, <span class="kw-2">&amp;</span><a href="../num/barrett_reduction.rs.html#5-8">BarrettReduction</a>::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::<a href="../num/barrett_reduction.rs.html#14-19">new</a>(<a href="#120">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>))
+<a href=#121 id=121 data-nosnippet>121</a>    <a href="#120">n</a> &gt;= <span class="number">2 </span>&amp;&amp; <a href="#104-118">miller_rabin_with_br</a>(<a href="#120">n</a>, <span class="kw-2">&amp;</span><a href="../num/barrett_reduction.rs.html#5-8">BarrettReduction</a>::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::<a href="../num/barrett_reduction.rs.html#14-19">new</a>(<a href="#120">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>))
 <a href=#122 id=122 data-nosnippet>122</a>}
 <a href=#123 id=123 data-nosnippet>123</a>
 <a href=#124 id=124 data-nosnippet>124</a><span class="attr">#[cfg(test)]
 <a href=#125 id=125 data-nosnippet>125</a></span><span class="kw">mod </span>tests {
 <a href=#126 id=126 data-nosnippet>126</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#127 id=127 data-nosnippet>127</a>    <span class="kw">use </span><span class="kw">crate</span>::math::PrimeTable;
-<a href=#128 id=128 data-nosnippet>128</a>
-<a href=#129 id=129 data-nosnippet>129</a>    <span class="attr">#[test]
-<a href=#130 id=130 data-nosnippet>130</a>    </span><span class="kw">fn </span>test_miller_rabin() {
-<a href=#131 id=131 data-nosnippet>131</a>        <span class="kw">const </span>N: u32 = <span class="number">1_000_000</span>;
-<a href=#132 id=132 data-nosnippet>132</a>        <span class="kw">let </span>primes = PrimeTable::new(N);
-<a href=#133 id=133 data-nosnippet>133</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=N {
-<a href=#134 id=134 data-nosnippet>134</a>            <span class="macro">assert_eq!</span>(primes.is_prime(i), miller_rabin(i <span class="kw">as _</span>), <span class="string">"{}"</span>, i);
-<a href=#135 id=135 data-nosnippet>135</a>        }
-<a href=#136 id=136 data-nosnippet>136</a>        <span class="macro">assert!</span>(miller_rabin(<span class="number">1_000_000_007</span>));
-<a href=#137 id=137 data-nosnippet>137</a>        <span class="macro">assert!</span>(!miller_rabin(<span class="number">1_000_000_011</span>));
-<a href=#138 id=138 data-nosnippet>138</a>    }
-<a href=#139 id=139 data-nosnippet>139</a>}
+<a href=#127 id=127 data-nosnippet>127</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#128 id=128 data-nosnippet>128</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::testutil::integer_boundary_values;
+<a href=#129 id=129 data-nosnippet>129</a>
+<a href=#130 id=130 data-nosnippet>130</a>    <span class="attr">#[test]
+<a href=#131 id=131 data-nosnippet>131</a>    </span><span class="kw">fn </span>test_miller_rabin() {
+<a href=#132 id=132 data-nosnippet>132</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#133 id=133 data-nosnippet>133</a>        <span class="kw">let </span>primes = <span class="kw">crate</span>::math::PrimeTable::new(<span class="number">1_000_000</span>);
+<a href=#134 id=134 data-nosnippet>134</a>        <span class="kw">for </span>n <span class="kw">in </span><span class="number">1</span>..=<span class="number">1_000_000 </span>{
+<a href=#135 id=135 data-nosnippet>135</a>            <span class="macro">assert_eq!</span>(miller_rabin(n <span class="kw">as </span>u64), primes.is_prime(n));
+<a href=#136 id=136 data-nosnippet>136</a>        }
+<a href=#137 id=137 data-nosnippet>137</a>        <span class="kw">let </span>boundaries = <span class="macro">integer_boundary_values!</span>(u32);
+<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">for </span>n <span class="kw">in </span>boundaries
+<a href=#139 id=139 data-nosnippet>139</a>            .into_iter()
+<a href=#140 id=140 data-nosnippet>140</a>            .flat_map(|x| x.saturating_sub(<span class="number">16</span>)..=x.saturating_add(<span class="number">16</span>))
+<a href=#141 id=141 data-nosnippet>141</a>            .chain(rng.random_iter(..).take(<span class="number">10_000</span>))
+<a href=#142 id=142 data-nosnippet>142</a>            .map(u64::from)
+<a href=#143 id=143 data-nosnippet>143</a>        {
+<a href=#144 id=144 data-nosnippet>144</a>            <span class="kw">let </span>expected = n &gt;= <span class="number">2 </span>&amp;&amp; (<span class="number">2</span>..).take_while(|<span class="kw-2">&amp;</span>d| d * d &lt;= n).all(|d| n % d != <span class="number">0</span>);
+<a href=#145 id=145 data-nosnippet>145</a>            <span class="macro">assert_eq!</span>(miller_rabin(n), expected, <span class="string">"{n}"</span>);
+<a href=#146 id=146 data-nosnippet>146</a>        }
+<a href=#147 id=147 data-nosnippet>147</a>        <span class="kw">for </span>(a, b) <span class="kw">in </span>rng.random_iter((<span class="number">2</span>..=u32::MAX, <span class="number">2</span>..=u32::MAX)).take(<span class="number">10_000</span>) {
+<a href=#148 id=148 data-nosnippet>148</a>            <span class="kw">let </span>n = u64::from(a) * u64::from(b);
+<a href=#149 id=149 data-nosnippet>149</a>            <span class="macro">assert!</span>(!miller_rabin(n), <span class="string">"{a} * {b}"</span>);
+<a href=#150 id=150 data-nosnippet>150</a>        }
+<a href=#151 id=151 data-nosnippet>151</a>    }
+<a href=#152 id=152 data-nosnippet>152</a>}
 </code></pre></div></section></main></body></html>

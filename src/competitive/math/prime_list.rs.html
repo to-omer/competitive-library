@@ -671,140 +671,184 @@
 <a href=#617 id=617 data-nosnippet>617</a></span><span class="kw">mod </span>tests {
 <a href=#618 id=618 data-nosnippet>618</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <a href=#619 id=619 data-nosnippet>619</a>    <span class="kw">use </span><span class="kw">crate</span>::math::prime_factors;
-<a href=#620 id=620 data-nosnippet>620</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
-<a href=#621 id=621 data-nosnippet>621</a>
-<a href=#622 id=622 data-nosnippet>622</a>    <span class="kw">fn </span>primes(n: usize) -&gt; Vec&lt;usize&gt; {
-<a href=#623 id=623 data-nosnippet>623</a>        <span class="kw">if </span>n &lt; <span class="number">2 </span>{
-<a href=#624 id=624 data-nosnippet>624</a>            <span class="kw">return </span><span class="macro">vec!</span>[];
-<a href=#625 id=625 data-nosnippet>625</a>        }
-<a href=#626 id=626 data-nosnippet>626</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[<span class="number">2</span>];
-<a href=#627 id=627 data-nosnippet>627</a>        <span class="kw">let </span>sqrt_n = (n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize | <span class="number">1</span>;
-<a href=#628 id=628 data-nosnippet>628</a>        <span class="kw">let </span><span class="kw-2">mut </span>seive = <span class="macro">vec!</span>[<span class="bool-val">true</span>; n / <span class="number">2</span>];
-<a href=#629 id=629 data-nosnippet>629</a>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">3</span>..=sqrt_n).step_by(<span class="number">2</span>) {
-<a href=#630 id=630 data-nosnippet>630</a>            <span class="kw">if </span>seive[i / <span class="number">2 </span>- <span class="number">1</span>] {
-<a href=#631 id=631 data-nosnippet>631</a>                res.push(i);
-<a href=#632 id=632 data-nosnippet>632</a>                <span class="kw">for </span>j <span class="kw">in </span>(i * i..=n).step_by(i * <span class="number">2</span>) {
-<a href=#633 id=633 data-nosnippet>633</a>                    seive[j / <span class="number">2 </span>- <span class="number">1</span>] = <span class="bool-val">false</span>;
-<a href=#634 id=634 data-nosnippet>634</a>                }
-<a href=#635 id=635 data-nosnippet>635</a>            }
-<a href=#636 id=636 data-nosnippet>636</a>        }
-<a href=#637 id=637 data-nosnippet>637</a>        <span class="kw">for </span>i <span class="kw">in </span>(std::cmp::max(<span class="number">3</span>, sqrt_n + <span class="number">2</span>)..=n).step_by(<span class="number">2</span>) {
-<a href=#638 id=638 data-nosnippet>638</a>            <span class="kw">if </span>seive[i / <span class="number">2 </span>- <span class="number">1</span>] {
-<a href=#639 id=639 data-nosnippet>639</a>                res.push(i);
-<a href=#640 id=640 data-nosnippet>640</a>            }
-<a href=#641 id=641 data-nosnippet>641</a>        }
-<a href=#642 id=642 data-nosnippet>642</a>        res
-<a href=#643 id=643 data-nosnippet>643</a>    }
-<a href=#644 id=644 data-nosnippet>644</a>
-<a href=#645 id=645 data-nosnippet>645</a>    <span class="kw">pub fn </span>divisors(n: u64) -&gt; Vec&lt;u64&gt; {
-<a href=#646 id=646 data-nosnippet>646</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
-<a href=#647 id=647 data-nosnippet>647</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>u64 + <span class="number">1 </span>{
-<a href=#648 id=648 data-nosnippet>648</a>            <span class="kw">if </span>n.is_multiple_of(i) {
-<a href=#649 id=649 data-nosnippet>649</a>                res.push(i);
-<a href=#650 id=650 data-nosnippet>650</a>                <span class="kw">if </span>i * i != n {
-<a href=#651 id=651 data-nosnippet>651</a>                    res.push(n / i);
-<a href=#652 id=652 data-nosnippet>652</a>                }
-<a href=#653 id=653 data-nosnippet>653</a>            }
-<a href=#654 id=654 data-nosnippet>654</a>        }
-<a href=#655 id=655 data-nosnippet>655</a>        res.sort_unstable();
-<a href=#656 id=656 data-nosnippet>656</a>        res
-<a href=#657 id=657 data-nosnippet>657</a>    }
-<a href=#658 id=658 data-nosnippet>658</a>
-<a href=#659 id=659 data-nosnippet>659</a>    <span class="attr">#[test]
-<a href=#660 id=660 data-nosnippet>660</a>    </span><span class="kw">fn </span>test_prime_list() {
-<a href=#661 id=661 data-nosnippet>661</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#620 id=620 data-nosnippet>620</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::{
+<a href=#621 id=621 data-nosnippet>621</a>        Xorshift,
+<a href=#622 id=622 data-nosnippet>622</a>        testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+<a href=#623 id=623 data-nosnippet>623</a>    };
+<a href=#624 id=624 data-nosnippet>624</a>    <span class="kw">use </span>std::collections::VecDeque;
+<a href=#625 id=625 data-nosnippet>625</a>
+<a href=#626 id=626 data-nosnippet>626</a>    <span class="kw">fn </span>primes(n: usize) -&gt; Vec&lt;usize&gt; {
+<a href=#627 id=627 data-nosnippet>627</a>        <span class="kw">if </span>n &lt; <span class="number">2 </span>{
+<a href=#628 id=628 data-nosnippet>628</a>            <span class="kw">return </span><span class="macro">vec!</span>[];
+<a href=#629 id=629 data-nosnippet>629</a>        }
+<a href=#630 id=630 data-nosnippet>630</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[<span class="number">2</span>];
+<a href=#631 id=631 data-nosnippet>631</a>        <span class="kw">let </span>sqrt_n = (n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize | <span class="number">1</span>;
+<a href=#632 id=632 data-nosnippet>632</a>        <span class="kw">let </span><span class="kw-2">mut </span>seive = <span class="macro">vec!</span>[<span class="bool-val">true</span>; n / <span class="number">2</span>];
+<a href=#633 id=633 data-nosnippet>633</a>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">3</span>..=sqrt_n).step_by(<span class="number">2</span>) {
+<a href=#634 id=634 data-nosnippet>634</a>            <span class="kw">if </span>seive[i / <span class="number">2 </span>- <span class="number">1</span>] {
+<a href=#635 id=635 data-nosnippet>635</a>                res.push(i);
+<a href=#636 id=636 data-nosnippet>636</a>                <span class="kw">for </span>j <span class="kw">in </span>(i * i..=n).step_by(i * <span class="number">2</span>) {
+<a href=#637 id=637 data-nosnippet>637</a>                    seive[j / <span class="number">2 </span>- <span class="number">1</span>] = <span class="bool-val">false</span>;
+<a href=#638 id=638 data-nosnippet>638</a>                }
+<a href=#639 id=639 data-nosnippet>639</a>            }
+<a href=#640 id=640 data-nosnippet>640</a>        }
+<a href=#641 id=641 data-nosnippet>641</a>        <span class="kw">for </span>i <span class="kw">in </span>(std::cmp::max(<span class="number">3</span>, sqrt_n + <span class="number">2</span>)..=n).step_by(<span class="number">2</span>) {
+<a href=#642 id=642 data-nosnippet>642</a>            <span class="kw">if </span>seive[i / <span class="number">2 </span>- <span class="number">1</span>] {
+<a href=#643 id=643 data-nosnippet>643</a>                res.push(i);
+<a href=#644 id=644 data-nosnippet>644</a>            }
+<a href=#645 id=645 data-nosnippet>645</a>        }
+<a href=#646 id=646 data-nosnippet>646</a>        res
+<a href=#647 id=647 data-nosnippet>647</a>    }
+<a href=#648 id=648 data-nosnippet>648</a>
+<a href=#649 id=649 data-nosnippet>649</a>    <span class="kw">pub fn </span>divisors(n: u64) -&gt; Vec&lt;u64&gt; {
+<a href=#650 id=650 data-nosnippet>650</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
+<a href=#651 id=651 data-nosnippet>651</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>u64 + <span class="number">1 </span>{
+<a href=#652 id=652 data-nosnippet>652</a>            <span class="kw">if </span>n.is_multiple_of(i) {
+<a href=#653 id=653 data-nosnippet>653</a>                res.push(i);
+<a href=#654 id=654 data-nosnippet>654</a>                <span class="kw">if </span>i * i != n {
+<a href=#655 id=655 data-nosnippet>655</a>                    res.push(n / i);
+<a href=#656 id=656 data-nosnippet>656</a>                }
+<a href=#657 id=657 data-nosnippet>657</a>            }
+<a href=#658 id=658 data-nosnippet>658</a>        }
+<a href=#659 id=659 data-nosnippet>659</a>        res.sort_unstable();
+<a href=#660 id=660 data-nosnippet>660</a>        res
+<a href=#661 id=661 data-nosnippet>661</a>    }
 <a href=#662 id=662 data-nosnippet>662</a>
-<a href=#663 id=663 data-nosnippet>663</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">0</span>..=<span class="number">20000</span>).take(<span class="number">100</span>)) {
-<a href=#664 id=664 data-nosnippet>664</a>            <span class="kw">let </span>pl = PrimeList::new(n);
-<a href=#665 id=665 data-nosnippet>665</a>            <span class="kw">let </span>ps: Vec&lt;<span class="kw">_</span>&gt; = primes(n <span class="kw">as _</span>).into_iter().map(|p| p <span class="kw">as </span>u32).collect();
-<a href=#666 id=666 data-nosnippet>666</a>            <span class="macro">assert_eq!</span>(pl.len(), ps.len());
-<a href=#667 id=667 data-nosnippet>667</a>            <span class="macro">assert_eq!</span>(pl.primes().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), ps);
-<a href=#668 id=668 data-nosnippet>668</a>        }
-<a href=#669 id=669 data-nosnippet>669</a>
-<a href=#670 id=670 data-nosnippet>670</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#671 id=671 data-nosnippet>671</a>            <span class="kw">let </span>b = rng.randf() * <span class="number">0.0001</span>;
-<a href=#672 id=672 data-nosnippet>672</a>            <span class="kw">let </span><span class="kw-2">mut </span>pl = PrimeList::new(<span class="number">0</span>);
-<a href=#673 id=673 data-nosnippet>673</a>            <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">20_000</span>).filter(|<span class="kw">_</span>| rng.gen_bool(b)) {
-<a href=#674 id=674 data-nosnippet>674</a>                pl.reserve(n);
-<a href=#675 id=675 data-nosnippet>675</a>                <span class="kw">let </span>ps: Vec&lt;<span class="kw">_</span>&gt; = primes(n <span class="kw">as _</span>).into_iter().map(|p| p <span class="kw">as </span>u32).collect();
-<a href=#676 id=676 data-nosnippet>676</a>                <span class="macro">assert_eq!</span>(pl.len(), ps.len());
-<a href=#677 id=677 data-nosnippet>677</a>                <span class="macro">assert_eq!</span>(pl.primes().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), ps);
-<a href=#678 id=678 data-nosnippet>678</a>            }
-<a href=#679 id=679 data-nosnippet>679</a>        }
-<a href=#680 id=680 data-nosnippet>680</a>
-<a href=#681 id=681 data-nosnippet>681</a>        <span class="kw">let </span>pl = PrimeList::new(<span class="number">100_000</span>);
-<a href=#682 id=682 data-nosnippet>682</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">0</span>..=<span class="number">1_000_000_000</span>).take(<span class="number">100</span>)) {
-<a href=#683 id=683 data-nosnippet>683</a>            <span class="macro">assert_eq!</span>(prime_factors(n), pl.prime_factors(n));
-<a href=#684 id=684 data-nosnippet>684</a>        }
-<a href=#685 id=685 data-nosnippet>685</a>    }
-<a href=#686 id=686 data-nosnippet>686</a>
-<a href=#687 id=687 data-nosnippet>687</a>    <span class="attr">#[test]
-<a href=#688 id=688 data-nosnippet>688</a>    </span><span class="kw">fn </span>test_primes() {
-<a href=#689 id=689 data-nosnippet>689</a>        <span class="kw">let </span>pl = PrimeList::new(<span class="number">2000</span>);
-<a href=#690 id=690 data-nosnippet>690</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=<span class="number">2000 </span>{
-<a href=#691 id=691 data-nosnippet>691</a>            <span class="macro">assert_eq!</span>(
-<a href=#692 id=692 data-nosnippet>692</a>                primes(i),
-<a href=#693 id=693 data-nosnippet>693</a>                (<span class="number">2</span>..=i).filter(|<span class="kw-2">&amp;</span>i| pl.is_prime(i <span class="kw">as _</span>)).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-<a href=#694 id=694 data-nosnippet>694</a>            );
-<a href=#695 id=695 data-nosnippet>695</a>            <span class="macro">assert_eq!</span>(
-<a href=#696 id=696 data-nosnippet>696</a>                primes(i).iter().map(|<span class="kw-2">&amp;</span>p| p <span class="kw">as </span>u32).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-<a href=#697 id=697 data-nosnippet>697</a>                pl.primes_lte(i <span class="kw">as _</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-<a href=#698 id=698 data-nosnippet>698</a>            );
-<a href=#699 id=699 data-nosnippet>699</a>            <span class="macro">assert_eq!</span>(
-<a href=#700 id=700 data-nosnippet>700</a>                primes(i)
+<a href=#663 id=663 data-nosnippet>663</a>    <span class="attr">#[test]
+<a href=#664 id=664 data-nosnippet>664</a>    </span><span class="kw">fn </span>test_prime_list() {
+<a href=#665 id=665 data-nosnippet>665</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#666 id=666 data-nosnippet>666</a>
+<a href=#667 id=667 data-nosnippet>667</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">0</span>..=<span class="number">20000</span>).take(<span class="number">100</span>)) {
+<a href=#668 id=668 data-nosnippet>668</a>            <span class="kw">let </span>pl = PrimeList::new(n);
+<a href=#669 id=669 data-nosnippet>669</a>            <span class="kw">let </span>ps: Vec&lt;<span class="kw">_</span>&gt; = primes(n <span class="kw">as _</span>).into_iter().map(|p| p <span class="kw">as </span>u32).collect();
+<a href=#670 id=670 data-nosnippet>670</a>            <span class="macro">assert_eq!</span>(pl.len(), ps.len());
+<a href=#671 id=671 data-nosnippet>671</a>            <span class="macro">assert_eq!</span>(pl.primes().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), ps);
+<a href=#672 id=672 data-nosnippet>672</a>        }
+<a href=#673 id=673 data-nosnippet>673</a>
+<a href=#674 id=674 data-nosnippet>674</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#675 id=675 data-nosnippet>675</a>            <span class="kw">let </span>b = rng.randf() * <span class="number">0.0001</span>;
+<a href=#676 id=676 data-nosnippet>676</a>            <span class="kw">let </span><span class="kw-2">mut </span>pl = PrimeList::new(<span class="number">0</span>);
+<a href=#677 id=677 data-nosnippet>677</a>            <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">20_000</span>).filter(|<span class="kw">_</span>| rng.gen_bool(b)) {
+<a href=#678 id=678 data-nosnippet>678</a>                pl.reserve(n);
+<a href=#679 id=679 data-nosnippet>679</a>                <span class="kw">let </span>ps: Vec&lt;<span class="kw">_</span>&gt; = primes(n <span class="kw">as _</span>).into_iter().map(|p| p <span class="kw">as </span>u32).collect();
+<a href=#680 id=680 data-nosnippet>680</a>                <span class="macro">assert_eq!</span>(pl.len(), ps.len());
+<a href=#681 id=681 data-nosnippet>681</a>                <span class="macro">assert_eq!</span>(pl.primes().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), ps);
+<a href=#682 id=682 data-nosnippet>682</a>            }
+<a href=#683 id=683 data-nosnippet>683</a>        }
+<a href=#684 id=684 data-nosnippet>684</a>
+<a href=#685 id=685 data-nosnippet>685</a>        <span class="kw">let </span>pl = PrimeList::new(<span class="number">100_000</span>);
+<a href=#686 id=686 data-nosnippet>686</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">0</span>..=<span class="number">1_000_000_000</span>).take(<span class="number">100</span>)) {
+<a href=#687 id=687 data-nosnippet>687</a>            <span class="macro">assert_eq!</span>(prime_factors(n), pl.prime_factors(n));
+<a href=#688 id=688 data-nosnippet>688</a>        }
+<a href=#689 id=689 data-nosnippet>689</a>    }
+<a href=#690 id=690 data-nosnippet>690</a>
+<a href=#691 id=691 data-nosnippet>691</a>    <span class="attr">#[test]
+<a href=#692 id=692 data-nosnippet>692</a>    </span><span class="kw">fn </span>test_primes() {
+<a href=#693 id=693 data-nosnippet>693</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#694 id=694 data-nosnippet>694</a>        <span class="kw">let </span>bounds = sample_usize(<span class="kw-2">&amp;mut </span>rng, <span class="number">128</span>, <span class="number">0</span>..=<span class="number">100_000</span>, <span class="number">300</span>);
+<a href=#695 id=695 data-nosnippet>695</a>        <span class="kw">for </span>n <span class="kw">in </span>bounds {
+<a href=#696 id=696 data-nosnippet>696</a>            <span class="kw">let </span>pl = PrimeList::new(n <span class="kw">as </span>u32);
+<a href=#697 id=697 data-nosnippet>697</a>            <span class="kw">let </span>expected: Vec&lt;<span class="kw">_</span>&gt; = primes(n).into_iter().map(|p| p <span class="kw">as </span>u32).collect();
+<a href=#698 id=698 data-nosnippet>698</a>            <span class="macro">assert_eq!</span>(pl.primes().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), expected);
+<a href=#699 id=699 data-nosnippet>699</a>            <span class="kw">for </span>limit <span class="kw">in </span>(<span class="number">0</span>..=n.min(<span class="number">128</span>)).chain([n / <span class="number">2</span>, n.saturating_sub(<span class="number">1</span>), n]) {
+<a href=#700 id=700 data-nosnippet>700</a>                <span class="kw">let </span>bounded: Vec&lt;<span class="kw">_</span>&gt; = expected
 <a href=#701 id=701 data-nosnippet>701</a>                    .iter()
-<a href=#702 id=702 data-nosnippet>702</a>                    .rev()
-<a href=#703 id=703 data-nosnippet>703</a>                    .map(|<span class="kw-2">&amp;</span>p| p <span class="kw">as </span>u32)
-<a href=#704 id=704 data-nosnippet>704</a>                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-<a href=#705 id=705 data-nosnippet>705</a>                pl.primes_lte(i <span class="kw">as _</span>).rev().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-<a href=#706 id=706 data-nosnippet>706</a>            );
-<a href=#707 id=707 data-nosnippet>707</a>        }
-<a href=#708 id=708 data-nosnippet>708</a>        <span class="kw">let </span>ps = primes(<span class="number">2000</span>)
-<a href=#709 id=709 data-nosnippet>709</a>            .into_iter()
-<a href=#710 id=710 data-nosnippet>710</a>            .map(|p| p <span class="kw">as </span>u32)
-<a href=#711 id=711 data-nosnippet>711</a>            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-<a href=#712 id=712 data-nosnippet>712</a>        <span class="kw">for </span>skip <span class="kw">in </span>(<span class="number">0</span>..<span class="number">10</span>).chain([ps.len(), ps.len() + <span class="number">1</span>]) {
-<a href=#713 id=713 data-nosnippet>713</a>            <span class="kw">for </span>step <span class="kw">in </span><span class="number">1</span>..<span class="number">10 </span>{
-<a href=#714 id=714 data-nosnippet>714</a>                <span class="macro">assert_eq!</span>(
-<a href=#715 id=715 data-nosnippet>715</a>                    ps.iter()
-<a href=#716 id=716 data-nosnippet>716</a>                        .copied()
-<a href=#717 id=717 data-nosnippet>717</a>                        .skip(skip)
-<a href=#718 id=718 data-nosnippet>718</a>                        .step_by(step)
-<a href=#719 id=719 data-nosnippet>719</a>                        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-<a href=#720 id=720 data-nosnippet>720</a>                    pl.primes().skip(skip).step_by(step).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-<a href=#721 id=721 data-nosnippet>721</a>                );
-<a href=#722 id=722 data-nosnippet>722</a>                <span class="macro">assert_eq!</span>(
-<a href=#723 id=723 data-nosnippet>723</a>                    ps.iter()
-<a href=#724 id=724 data-nosnippet>724</a>                        .rev()
-<a href=#725 id=725 data-nosnippet>725</a>                        .copied()
-<a href=#726 id=726 data-nosnippet>726</a>                        .skip(skip)
-<a href=#727 id=727 data-nosnippet>727</a>                        .step_by(step)
-<a href=#728 id=728 data-nosnippet>728</a>                        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-<a href=#729 id=729 data-nosnippet>729</a>                    pl.primes()
-<a href=#730 id=730 data-nosnippet>730</a>                        .rev()
-<a href=#731 id=731 data-nosnippet>731</a>                        .skip(skip)
-<a href=#732 id=732 data-nosnippet>732</a>                        .step_by(step)
-<a href=#733 id=733 data-nosnippet>733</a>                        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-<a href=#734 id=734 data-nosnippet>734</a>                );
-<a href=#735 id=735 data-nosnippet>735</a>            }
-<a href=#736 id=736 data-nosnippet>736</a>        }
-<a href=#737 id=737 data-nosnippet>737</a>        <span class="kw">let </span><span class="kw-2">mut </span>ps = std::collections::VecDeque::from(ps);
-<a href=#738 id=738 data-nosnippet>738</a>        <span class="kw">let </span><span class="kw-2">mut </span>iter = pl.primes();
-<a href=#739 id=739 data-nosnippet>739</a>        <span class="kw">while </span>!ps.is_empty() {
-<a href=#740 id=740 data-nosnippet>740</a>            <span class="macro">assert_eq!</span>(iter.next(), ps.pop_front());
-<a href=#741 id=741 data-nosnippet>741</a>            <span class="macro">assert_eq!</span>(iter.next_back(), ps.pop_back());
-<a href=#742 id=742 data-nosnippet>742</a>        }
-<a href=#743 id=743 data-nosnippet>743</a>        <span class="macro">assert_eq!</span>(iter.next(), <span class="prelude-val">None</span>);
-<a href=#744 id=744 data-nosnippet>744</a>        <span class="macro">assert_eq!</span>(iter.next_back(), <span class="prelude-val">None</span>);
-<a href=#745 id=745 data-nosnippet>745</a>    }
-<a href=#746 id=746 data-nosnippet>746</a>
-<a href=#747 id=747 data-nosnippet>747</a>    <span class="attr">#[test]
-<a href=#748 id=748 data-nosnippet>748</a>    </span><span class="kw">fn </span>test_divisors() {
-<a href=#749 id=749 data-nosnippet>749</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#750 id=750 data-nosnippet>750</a>        <span class="kw">let </span>pl = PrimeList::new(<span class="number">20000</span>);
-<a href=#751 id=751 data-nosnippet>751</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">1</span>..=<span class="number">20000000</span>).take(<span class="number">100</span>)) {
-<a href=#752 id=752 data-nosnippet>752</a>            <span class="macro">assert_eq!</span>(pl.divisors(n), divisors(n));
-<a href=#753 id=753 data-nosnippet>753</a>        }
-<a href=#754 id=754 data-nosnippet>754</a>    }
-<a href=#755 id=755 data-nosnippet>755</a>}
+<a href=#702 id=702 data-nosnippet>702</a>                    .copied()
+<a href=#703 id=703 data-nosnippet>703</a>                    .take_while(|<span class="kw-2">&amp;</span>p| p &lt;= limit <span class="kw">as </span>u32)
+<a href=#704 id=704 data-nosnippet>704</a>                    .collect();
+<a href=#705 id=705 data-nosnippet>705</a>                <span class="macro">assert_eq!</span>(pl.primes_lte(limit <span class="kw">as </span>u32).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), bounded);
+<a href=#706 id=706 data-nosnippet>706</a>                <span class="macro">assert_eq!</span>(
+<a href=#707 id=707 data-nosnippet>707</a>                    pl.primes_lte(limit <span class="kw">as </span>u32).rev().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+<a href=#708 id=708 data-nosnippet>708</a>                    bounded.into_iter().rev().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+<a href=#709 id=709 data-nosnippet>709</a>                );
+<a href=#710 id=710 data-nosnippet>710</a>            }
+<a href=#711 id=711 data-nosnippet>711</a>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=n.min(<span class="number">2000</span>) {
+<a href=#712 id=712 data-nosnippet>712</a>                <span class="macro">assert_eq!</span>(
+<a href=#713 id=713 data-nosnippet>713</a>                    pl.is_prime(i <span class="kw">as </span>u32),
+<a href=#714 id=714 data-nosnippet>714</a>                    expected.binary_search(<span class="kw-2">&amp;</span>(i <span class="kw">as </span>u32)).is_ok()
+<a href=#715 id=715 data-nosnippet>715</a>                );
+<a href=#716 id=716 data-nosnippet>716</a>            }
+<a href=#717 id=717 data-nosnippet>717</a>        }
+<a href=#718 id=718 data-nosnippet>718</a>        <span class="comment">// Exhaust all query limits on a larger, fixed sieve as well.
+<a href=#719 id=719 data-nosnippet>719</a>        </span><span class="kw">let </span>pl = PrimeList::new(<span class="number">10_000</span>);
+<a href=#720 id=720 data-nosnippet>720</a>        <span class="kw">let </span>expected = primes(<span class="number">10_000</span>);
+<a href=#721 id=721 data-nosnippet>721</a>        <span class="kw">for </span>limit <span class="kw">in </span><span class="number">0</span>..=<span class="number">10_000 </span>{
+<a href=#722 id=722 data-nosnippet>722</a>            <span class="kw">let </span>bounded: Vec&lt;<span class="kw">_</span>&gt; = expected
+<a href=#723 id=723 data-nosnippet>723</a>                .iter()
+<a href=#724 id=724 data-nosnippet>724</a>                .copied()
+<a href=#725 id=725 data-nosnippet>725</a>                .take_while(|<span class="kw-2">&amp;</span>p| p &lt;= limit)
+<a href=#726 id=726 data-nosnippet>726</a>                .map(|p| p <span class="kw">as </span>u32)
+<a href=#727 id=727 data-nosnippet>727</a>                .collect();
+<a href=#728 id=728 data-nosnippet>728</a>            <span class="macro">assert_eq!</span>(pl.primes_lte(limit <span class="kw">as </span>u32).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(), bounded);
+<a href=#729 id=729 data-nosnippet>729</a>            <span class="macro">assert_eq!</span>(
+<a href=#730 id=730 data-nosnippet>730</a>                pl.primes_lte(limit <span class="kw">as </span>u32).rev().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+<a href=#731 id=731 data-nosnippet>731</a>                bounded.into_iter().rev().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+<a href=#732 id=732 data-nosnippet>732</a>            );
+<a href=#733 id=733 data-nosnippet>733</a>        }
+<a href=#734 id=734 data-nosnippet>734</a>    }
+<a href=#735 id=735 data-nosnippet>735</a>
+<a href=#736 id=736 data-nosnippet>736</a>    <span class="attr">#[test]
+<a href=#737 id=737 data-nosnippet>737</a>    </span><span class="kw">fn </span>test_prime_iterator() {
+<a href=#738 id=738 data-nosnippet>738</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#739 id=739 data-nosnippet>739</a>        <span class="kw">for </span>n <span class="kw">in </span>sample_usize(<span class="kw-2">&amp;mut </span>rng, <span class="number">128</span>, <span class="number">0</span>..=<span class="number">10_000</span>, <span class="number">300</span>) {
+<a href=#740 id=740 data-nosnippet>740</a>            <span class="kw">let </span>pl = PrimeList::new(n <span class="kw">as </span>u32);
+<a href=#741 id=741 data-nosnippet>741</a>            <span class="kw">let </span>expected: Vec&lt;<span class="kw">_</span>&gt; = primes(n).into_iter().map(|p| p <span class="kw">as </span>u32).collect();
+<a href=#742 id=742 data-nosnippet>742</a>            <span class="kw">for </span>skip <span class="kw">in </span>(<span class="number">0</span>..=expected.len().min(<span class="number">16</span>)).chain([expected.len(), expected.len() + <span class="number">1</span>]) {
+<a href=#743 id=743 data-nosnippet>743</a>                <span class="kw">for </span>step <span class="kw">in </span>(<span class="number">1</span>..=<span class="number">16</span>).chain([expected.len() + <span class="number">1</span>]) {
+<a href=#744 id=744 data-nosnippet>744</a>                    <span class="macro">assert_eq!</span>(
+<a href=#745 id=745 data-nosnippet>745</a>                        pl.primes().skip(skip).step_by(step).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+<a href=#746 id=746 data-nosnippet>746</a>                        expected
+<a href=#747 id=747 data-nosnippet>747</a>                            .iter()
+<a href=#748 id=748 data-nosnippet>748</a>                            .copied()
+<a href=#749 id=749 data-nosnippet>749</a>                            .skip(skip)
+<a href=#750 id=750 data-nosnippet>750</a>                            .step_by(step)
+<a href=#751 id=751 data-nosnippet>751</a>                            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+<a href=#752 id=752 data-nosnippet>752</a>                    );
+<a href=#753 id=753 data-nosnippet>753</a>                    <span class="macro">assert_eq!</span>(
+<a href=#754 id=754 data-nosnippet>754</a>                        pl.primes()
+<a href=#755 id=755 data-nosnippet>755</a>                            .rev()
+<a href=#756 id=756 data-nosnippet>756</a>                            .skip(skip)
+<a href=#757 id=757 data-nosnippet>757</a>                            .step_by(step)
+<a href=#758 id=758 data-nosnippet>758</a>                            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+<a href=#759 id=759 data-nosnippet>759</a>                        expected
+<a href=#760 id=760 data-nosnippet>760</a>                            .iter()
+<a href=#761 id=761 data-nosnippet>761</a>                            .rev()
+<a href=#762 id=762 data-nosnippet>762</a>                            .copied()
+<a href=#763 id=763 data-nosnippet>763</a>                            .skip(skip)
+<a href=#764 id=764 data-nosnippet>764</a>                            .step_by(step)
+<a href=#765 id=765 data-nosnippet>765</a>                            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+<a href=#766 id=766 data-nosnippet>766</a>                    );
+<a href=#767 id=767 data-nosnippet>767</a>                }
+<a href=#768 id=768 data-nosnippet>768</a>            }
+<a href=#769 id=769 data-nosnippet>769</a>            <span class="kw">let </span>directions: Vec&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = <span class="kw">if </span>n &lt;= <span class="number">20 </span>{
+<a href=#770 id=770 data-nosnippet>770</a>                exhaustive_sequences(<span class="number">0</span>..<span class="number">2</span>, expected.len()..=expected.len()).collect()
+<a href=#771 id=771 data-nosnippet>771</a>            } <span class="kw">else </span>{
+<a href=#772 id=772 data-nosnippet>772</a>                structured_sequences(<span class="kw-2">&amp;mut </span>rng, <span class="number">0</span>..<span class="number">2</span>, [expected.len()]).collect()
+<a href=#773 id=773 data-nosnippet>773</a>            };
+<a href=#774 id=774 data-nosnippet>774</a>            <span class="kw">for </span>directions <span class="kw">in </span>directions {
+<a href=#775 id=775 data-nosnippet>775</a>                <span class="kw">let </span><span class="kw-2">mut </span>queue = VecDeque::from(expected.clone());
+<a href=#776 id=776 data-nosnippet>776</a>                <span class="kw">let </span><span class="kw-2">mut </span>iter = pl.primes();
+<a href=#777 id=777 data-nosnippet>777</a>                <span class="kw">for </span>back <span class="kw">in </span>directions.into_iter().map(|i| i != <span class="number">0</span>) {
+<a href=#778 id=778 data-nosnippet>778</a>                    <span class="kw">if </span>back {
+<a href=#779 id=779 data-nosnippet>779</a>                        <span class="macro">assert_eq!</span>(iter.next_back(), queue.pop_back());
+<a href=#780 id=780 data-nosnippet>780</a>                    } <span class="kw">else </span>{
+<a href=#781 id=781 data-nosnippet>781</a>                        <span class="macro">assert_eq!</span>(iter.next(), queue.pop_front());
+<a href=#782 id=782 data-nosnippet>782</a>                    }
+<a href=#783 id=783 data-nosnippet>783</a>                }
+<a href=#784 id=784 data-nosnippet>784</a>                <span class="macro">assert!</span>(queue.is_empty());
+<a href=#785 id=785 data-nosnippet>785</a>                <span class="macro">assert_eq!</span>(iter.next(), <span class="prelude-val">None</span>);
+<a href=#786 id=786 data-nosnippet>786</a>                <span class="macro">assert_eq!</span>(iter.next_back(), <span class="prelude-val">None</span>);
+<a href=#787 id=787 data-nosnippet>787</a>            }
+<a href=#788 id=788 data-nosnippet>788</a>        }
+<a href=#789 id=789 data-nosnippet>789</a>    }
+<a href=#790 id=790 data-nosnippet>790</a>
+<a href=#791 id=791 data-nosnippet>791</a>    <span class="attr">#[test]
+<a href=#792 id=792 data-nosnippet>792</a>    </span><span class="kw">fn </span>test_divisors() {
+<a href=#793 id=793 data-nosnippet>793</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#794 id=794 data-nosnippet>794</a>        <span class="kw">let </span>pl = PrimeList::new(<span class="number">20000</span>);
+<a href=#795 id=795 data-nosnippet>795</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">1</span>..=<span class="number">20000000</span>).take(<span class="number">100</span>)) {
+<a href=#796 id=796 data-nosnippet>796</a>            <span class="macro">assert_eq!</span>(pl.divisors(n), divisors(n));
+<a href=#797 id=797 data-nosnippet>797</a>        }
+<a href=#798 id=798 data-nosnippet>798</a>    }
+<a href=#799 id=799 data-nosnippet>799</a>}
 </code></pre></div></section></main></body></html>

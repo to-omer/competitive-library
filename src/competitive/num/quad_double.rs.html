@@ -470,29 +470,27 @@
 <a href=#416 id=416 data-nosnippet>416</a><span class="attr">#[cfg(test)]
 <a href=#417 id=417 data-nosnippet>417</a></span><span class="kw">mod </span>tests {
 <a href=#418 id=418 data-nosnippet>418</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#419 id=419 data-nosnippet>419</a>
-<a href=#420 id=420 data-nosnippet>420</a>    <span class="attr">#[test]
-<a href=#421 id=421 data-nosnippet>421</a>    </span><span class="kw">fn </span>test_display() {
-<a href=#422 id=422 data-nosnippet>422</a>        <span class="kw">let </span>x = QuadDouble::from(<span class="number">1.234</span>);
-<a href=#423 id=423 data-nosnippet>423</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"1.234"</span>);
-<a href=#424 id=424 data-nosnippet>424</a>        <span class="kw">let </span>x = QuadDouble::from(<span class="number">1.234e-10</span>);
-<a href=#425 id=425 data-nosnippet>425</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"0.0000000001234"</span>);
-<a href=#426 id=426 data-nosnippet>426</a>        <span class="kw">let </span>x = QuadDouble::from(<span class="number">1.234e10</span>);
-<a href=#427 id=427 data-nosnippet>427</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"12340000000"</span>);
-<a href=#428 id=428 data-nosnippet>428</a>        <span class="kw">let </span>x = QuadDouble::from(<span class="number">1.234e-10</span>) + QuadDouble::from(<span class="number">1.234e10</span>);
-<a href=#429 id=429 data-nosnippet>429</a>        <span class="macro">assert_eq!</span>(x.to_string(), <span class="string">"12340000000.0000000001234"</span>);
-<a href=#430 id=430 data-nosnippet>430</a>    }
-<a href=#431 id=431 data-nosnippet>431</a>
-<a href=#432 id=432 data-nosnippet>432</a>    <span class="attr">#[test]
-<a href=#433 id=433 data-nosnippet>433</a>    </span><span class="kw">fn </span>test_from_str() {
-<a href=#434 id=434 data-nosnippet>434</a>        <span class="kw">let </span>x = QuadDouble::from_str(<span class="string">"1.234"</span>).unwrap();
-<a href=#435 id=435 data-nosnippet>435</a>        <span class="macro">assert_eq!</span>(x, QuadDouble::from(<span class="number">1.234</span>));
-<a href=#436 id=436 data-nosnippet>436</a>        <span class="kw">let </span>x = QuadDouble::from_str(<span class="string">"0.0000000001234"</span>).unwrap();
-<a href=#437 id=437 data-nosnippet>437</a>        <span class="macro">assert_eq!</span>(x, QuadDouble::from(<span class="number">1.234e-10</span>));
-<a href=#438 id=438 data-nosnippet>438</a>        <span class="kw">let </span>x = QuadDouble::from_str(<span class="string">"12340000000"</span>).unwrap();
-<a href=#439 id=439 data-nosnippet>439</a>        <span class="macro">assert_eq!</span>(x, QuadDouble::from(<span class="number">1.234e10</span>));
-<a href=#440 id=440 data-nosnippet>440</a>        <span class="kw">let </span>x = QuadDouble::from_str(<span class="string">"12340000000.0000000001234"</span>).unwrap();
-<a href=#441 id=441 data-nosnippet>441</a>        <span class="macro">assert_eq!</span>(x, QuadDouble::from(<span class="number">1.234e10</span>) + QuadDouble::from(<span class="number">1.234e-10</span>));
-<a href=#442 id=442 data-nosnippet>442</a>    }
-<a href=#443 id=443 data-nosnippet>443</a>}
+<a href=#419 id=419 data-nosnippet>419</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#420 id=420 data-nosnippet>420</a>
+<a href=#421 id=421 data-nosnippet>421</a>    <span class="attr">#[test]
+<a href=#422 id=422 data-nosnippet>422</a>    </span><span class="kw">fn </span>test_decimal_conversion() {
+<a href=#423 id=423 data-nosnippet>423</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#424 id=424 data-nosnippet>424</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1000 </span>{
+<a href=#425 id=425 data-nosnippet>425</a>            <span class="kw">let </span>scalar =
+<a href=#426 id=426 data-nosnippet>426</a>                rng.random(-<span class="number">1_000_000</span>..=<span class="number">1_000_000</span>) <span class="kw">as </span>f64 * <span class="number">10f64</span>.powi(rng.random(-<span class="number">30</span>..=<span class="number">30</span>));
+<a href=#427 id=427 data-nosnippet>427</a>            <span class="macro">assert_eq!</span>(QuadDouble::from(scalar).to_string(), scalar.to_string());
+<a href=#428 id=428 data-nosnippet>428</a>            <span class="macro">assert_eq!</span>(
+<a href=#429 id=429 data-nosnippet>429</a>                scalar.to_string().parse::&lt;QuadDouble&gt;().unwrap(),
+<a href=#430 id=430 data-nosnippet>430</a>                QuadDouble::from(scalar)
+<a href=#431 id=431 data-nosnippet>431</a>            );
+<a href=#432 id=432 data-nosnippet>432</a>            <span class="kw">let </span>integer = rng.random(-<span class="number">1_000_000</span>..=<span class="number">1_000_000</span>) <span class="kw">as </span>f64 * <span class="number">1_000_000_000.0</span>;
+<a href=#433 id=433 data-nosnippet>433</a>            <span class="kw">let </span>fractional =
+<a href=#434 id=434 data-nosnippet>434</a>                rng.random(-<span class="number">1_000_000</span>..=<span class="number">1_000_000</span>) <span class="kw">as </span>f64 / <span class="number">10f64</span>.powi(rng.random(<span class="number">18</span>..=<span class="number">24</span>));
+<a href=#435 id=435 data-nosnippet>435</a>            <span class="kw">let </span>expected = Decimal::from(integer) + Decimal::from(fractional);
+<a href=#436 id=436 data-nosnippet>436</a>            <span class="kw">let </span>value = QuadDouble::from(integer) + QuadDouble::from(fractional);
+<a href=#437 id=437 data-nosnippet>437</a>            <span class="macro">assert_eq!</span>(value.to_string(), expected.to_string());
+<a href=#438 id=438 data-nosnippet>438</a>            <span class="macro">assert_eq!</span>(expected.to_string().parse::&lt;QuadDouble&gt;().unwrap(), value);
+<a href=#439 id=439 data-nosnippet>439</a>        }
+<a href=#440 id=440 data-nosnippet>440</a>    }
+<a href=#441 id=441 data-nosnippet>441</a>}
 </code></pre></div></section></main></body></html>
