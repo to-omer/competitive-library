@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_scaled_avx2","add_scaled_avx512"]};

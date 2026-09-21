@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BlackBoxMatrixImpl","SparseMatrix"],"trait":["BlackBoxMIntMatrix","BlackBoxMatrix"]};
+window.SIDEBAR_ITEMS = {"struct":["BlackBoxMatrixImpl","SparseMatrix"],"trait":["BlackBoxMatrix"]};

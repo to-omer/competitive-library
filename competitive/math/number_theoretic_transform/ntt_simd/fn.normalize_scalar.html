@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `normalize_scalar` fn in crate `competitive`."><title>normalize_scalar in competitive::math::number_theoretic_transform::ntt_simd - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (feaadeeac 2026-09-19)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../../static.files/main-1814ead3.js"></script><script defer src="../../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `normalize_scalar` fn in crate `competitive`."><title>normalize_scalar in competitive::math::number_theoretic_transform::ntt_simd - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (bba531001 2026-09-20)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../../static.files/main-1814ead3.js"></script><script defer src="../../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -92,9 +92,9 @@
 <span data-nosnippet>24</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>25</span>{
 <span data-nosnippet>26</span>    <span class="kw">if </span>M::MOD &lt; LAZY_THRESHOLD {
-<span data-nosnippet>27</span>        simd32::montgomery_add_512(a, b, mod2_vec)
+<span data-nosnippet>27</span>        montgomery_simd::montgomery_add_512(a, b, mod2_vec)
 <span data-nosnippet>28</span>    } <span class="kw">else </span>{
-<span data-nosnippet>29</span>        simd32::add_mod_512(a, b, mod_vec)
+<span data-nosnippet>29</span>        montgomery_simd::add_mod_512(a, b, mod_vec)
 <span data-nosnippet>30</span>    }
 <span data-nosnippet>31</span>}
 <span data-nosnippet>32</span>
@@ -103,9 +103,9 @@
 <span data-nosnippet>35</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>36</span>{
 <span data-nosnippet>37</span>    <span class="kw">if </span>M::MOD &lt; LAZY_THRESHOLD {
-<span data-nosnippet>38</span>        simd32::montgomery_sub_512(a, b, mod2_vec)
+<span data-nosnippet>38</span>        montgomery_simd::montgomery_sub_512(a, b, mod2_vec)
 <span data-nosnippet>39</span>    } <span class="kw">else </span>{
-<span data-nosnippet>40</span>        simd32::sub_mod_512(a, b, mod_vec)
+<span data-nosnippet>40</span>        montgomery_simd::sub_mod_512(a, b, mod_vec)
 <span data-nosnippet>41</span>    }
 <span data-nosnippet>42</span>}
 <span data-nosnippet>43</span>
@@ -114,9 +114,9 @@
 <span data-nosnippet>46</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>47</span>{
 <span data-nosnippet>48</span>    <span class="kw">if </span>M::MOD &lt; LAZY_THRESHOLD {
-<span data-nosnippet>49</span>        simd32::montgomery_mul_512(a, b, r_vec, mod_vec)
+<span data-nosnippet>49</span>        montgomery_simd::montgomery_mul_512(a, b, r_vec, mod_vec)
 <span data-nosnippet>50</span>    } <span class="kw">else </span>{
-<span data-nosnippet>51</span>        simd32::montgomery_mul_512_canon(a, b, r_vec, mod_vec)
+<span data-nosnippet>51</span>        montgomery_simd::montgomery_mul_512_canon(a, b, r_vec, mod_vec)
 <span data-nosnippet>52</span>    }
 <span data-nosnippet>53</span>}
 <span data-nosnippet>54</span>
@@ -131,7 +131,7 @@
 <span data-nosnippet>63</span>    <span class="kw">while </span>i + <span class="number">16 </span>&lt;= f.len() {
 <span data-nosnippet>64</span>        <span class="kw">let </span>a = _mm512_loadu_si512(f.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>65</span>        <span class="kw">let </span>b = _mm512_loadu_si512(g.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>66</span>        <span class="kw">let </span>x = simd32::montgomery_mul_512_canon(a, b, r_vec, mod_vec);
+<span data-nosnippet>66</span>        <span class="kw">let </span>x = montgomery_simd::montgomery_mul_512_canon(a, b, r_vec, mod_vec);
 <span data-nosnippet>67</span>        _mm512_storeu_si512(f.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, x);
 <span data-nosnippet>68</span>        i += <span class="number">16</span>;
 <span data-nosnippet>69</span>    }
@@ -153,10 +153,10 @@
 <span data-nosnippet>85</span>        <span class="kw">let </span>s = _mm512_loadu_si512(sum.as_ptr().add(i).cast());
 <span data-nosnippet>86</span>        <span class="kw">let </span>f = _mm512_loadu_si512(f.as_ptr().add(i).cast());
 <span data-nosnippet>87</span>        <span class="kw">let </span>g = _mm512_loadu_si512(g.as_ptr().add(i).cast());
-<span data-nosnippet>88</span>        <span class="kw">let </span>product = simd32::montgomery_mul_512_canon(f, g, r_vec, mod_vec);
+<span data-nosnippet>88</span>        <span class="kw">let </span>product = montgomery_simd::montgomery_mul_512_canon(f, g, r_vec, mod_vec);
 <span data-nosnippet>89</span>        _mm512_storeu_si512(
 <span data-nosnippet>90</span>            sum.as_mut_ptr().add(i).cast(),
-<span data-nosnippet>91</span>            simd32::add_mod_512(s, product, mod_vec),
+<span data-nosnippet>91</span>            montgomery_simd::add_mod_512(s, product, mod_vec),
 <span data-nosnippet>92</span>        );
 <span data-nosnippet>93</span>        i += <span class="number">16</span>;
 <span data-nosnippet>94</span>    }
@@ -228,7 +228,7 @@
 <span data-nosnippet>160</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>161</span>            <span class="kw">while </span>i + <span class="number">16 </span>&lt;= half {
 <span data-nosnippet>162</span>                <span class="kw">let </span>x0 = _mm512_loadu_si512(ll.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>163</span>                <span class="kw">let </span>x1 = _mm512_loadu_si512(lr.add(<a href="../../../algebra/action.rs.html#23">i</a>) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>163</span>                <span class="kw">let </span>x1 = _mm512_loadu_si512(lr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>164</span>                <span class="kw">let </span>x2 = _mm512_loadu_si512(rl.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>165</span>                <span class="kw">let </span>x3 = _mm512_loadu_si512(rr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>166</span>
@@ -275,7 +275,7 @@
 <span data-nosnippet>207</span>                <span class="kw-2">*</span>rr.add(i) = M::mod_sub(a0na2, a1na3imag);
 <span data-nosnippet>208</span>                i += <span class="number">1</span>;
 <span data-nosnippet>209</span>            }
-<span data-nosnippet>210</span>            w1 = M::mod_mul(w1, <a href="../../../algebra/lazy_map.rs.html#40">M</a>::INFO.rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>210</span>            w1 = M::mod_mul(w1, M::INFO.rate3[s.trailing_ones() <span class="kw">as </span>usize]);
 <span data-nosnippet>211</span>        }
 <span data-nosnippet>212</span>        v &gt;&gt;= <span class="number">2</span>;
 <span data-nosnippet>213</span>    }
