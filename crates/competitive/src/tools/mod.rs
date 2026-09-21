@@ -57,11 +57,11 @@ mod coding;
 pub mod comparator;
 #[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
 mod digit_sequence;
-#[cfg_attr(nightly, codesnip::entry("fastio", include("_iter_print")))]
-mod fast_print;
-#[cfg_attr(nightly, codesnip::entry("fastio", include("scanner")))]
-mod fast_scanner;
 #[cfg_attr(nightly, codesnip::entry("fastio"))]
+mod fast_print;
+#[cfg_attr(nightly, codesnip::entry("fastio"))]
+mod fast_scanner;
+#[cfg_attr(nightly, codesnip::entry("fastio", include("_iter_print", "scanner")))]
 mod fastio;
 #[cfg_attr(nightly, codesnip::entry("_huge_pages"))]
 mod huge_pages;

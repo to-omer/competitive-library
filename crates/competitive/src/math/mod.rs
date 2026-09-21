@@ -6,9 +6,11 @@ use crate::algebra::{
 };
 use crate::array;
 use crate::data_structure::BitSet;
+#[cfg(target_arch = "x86_64")]
+use crate::num::montgomery_simd;
 use crate::num::{
-    BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One, RangeBoundsExt,
-    Signed, Unsigned, Wrapping, Zero, montgomery,
+    BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, MIntDotProduct, One,
+    RangeBoundsExt, Signed, Unsigned, Wrapping, Zero, montgomery,
 };
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift, advise_huge_pages};
 #[cfg(target_arch = "x86_64")]
@@ -35,9 +37,9 @@ pub use self::bitwiseor_convolve::{
 #[codesnip::entry("BitwisexorConvolve")]
 pub use self::bitwisexor_convolve::BitwisexorConvolve;
 #[codesnip::entry("BlackBoxMatrix")]
-pub use self::black_box_matrix::{
-    BlackBoxMIntMatrix, BlackBoxMatrix, BlackBoxMatrixImpl, SparseMatrix,
-};
+pub use self::black_box_matrix::{BlackBoxMatrix, BlackBoxMatrixImpl, SparseMatrix};
+#[codesnip::entry("BlackBoxMIntMatrix")]
+pub use self::black_box_mint_matrix::BlackBoxMIntMatrix;
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("discrete_logarithm")]
@@ -136,11 +138,16 @@ mod bitwiseor_convolve;
     codesnip::entry("BitwisexorConvolve", include("_zeta_transform", "bitwise_transform"))
 )]
 mod bitwisexor_convolve;
+#[cfg_attr(nightly, codesnip::entry("BlackBoxMatrix", include("Matrix")))]
+mod black_box_matrix;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BlackBoxMatrix", include("FormalPowerSeries", "Matrix", "Xorshift"))
+    codesnip::entry(
+        "BlackBoxMIntMatrix",
+        include("BlackBoxMatrix", "FormalPowerSeries", "MIntDotProduct", "Xorshift")
+    )
 )]
-mod black_box_matrix;
+mod black_box_mint_matrix;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
 mod convolve_steps;
 #[cfg_attr(
@@ -234,14 +241,14 @@ mod miller_rabin;
 )]
 mod min_plus_convolution;
 #[cfg(target_arch = "x86_64")]
-#[cfg_attr(
-    nightly,
-    codesnip::entry("NumberTheoreticTransform", include("fast_fourier_transform", "MInt"))
-)]
+#[cfg_attr(nightly, codesnip::entry("NumberTheoreticTransform"))]
 mod mint_fft_convolve;
 #[cfg_attr(
     nightly,
-    codesnip::entry("MIntMatrix", include("Matrix", "factorial", "Xorshift"))
+    codesnip::entry(
+        "MIntMatrix",
+        include("Matrix", "MIntDotProduct", "factorial", "Xorshift")
+    )
 )]
 mod mint_matrix;
 #[cfg_attr(nightly, codesnip::entry("mod_sqrt", include("MIntBase")))]
@@ -251,7 +258,9 @@ mod mod_sqrt;
     codesnip::entry(
         "NumberTheoreticTransform",
         include(
+            "MInt",
             "montgomery",
+            "montgomery_simd",
             "ConvolveSteps",
             "avx_helper",
             "fast_fourier_transform",

@@ -6,7 +6,7 @@ use super::{
 use super::{
     SimdBackend,
     mint_fft_convolve::{convolve_mint_avx2, convolve_u64_avx2},
-    simd_backend,
+    montgomery_simd, simd_backend,
 };
 use std::{
     cell::UnsafeCell,

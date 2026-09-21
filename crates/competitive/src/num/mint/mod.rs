@@ -8,7 +8,7 @@ use crate::{
     tools::{FastOutput, FastPrint, RandomSpec, Scan, ScanSource, SerdeByteStr, Xorshift},
 };
 
-#[codesnip::entry("MIntBase", include("scanner", "zero_one", "ring"))]
+#[codesnip::entry("MIntBase", include("scanner", "zero_one"))]
 pub use mint_base::{MInt, MIntBase, MIntConvert};
 
 #[cfg_attr(nightly, codesnip::entry("MIntBase"))]
@@ -16,18 +16,36 @@ mod mint_base;
 
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "MInt",
-        include("MIntBase", "BarrettReduction", "avx_helper", "simd_matrix")
-    )
+    codesnip::entry("MInt", include("MIntBase", "BarrettReduction"))
 )]
 pub mod mint_basic;
 
+#[cfg_attr(nightly, codesnip::entry("montgomery", include("MIntBase")))]
+pub mod montgomery;
+
+#[codesnip::entry("MIntDotProduct")]
+pub use mint_dot_product::MIntDotProduct;
 #[cfg_attr(
     nightly,
-    codesnip::entry("montgomery", include("MIntBase", "avx_helper", "simd_matrix"))
+    codesnip::entry(when("MInt", "MIntDotProduct"), include("simd_matrix", "avx_helper"))
 )]
-pub mod montgomery;
+mod mint_basic_dot_product;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("MIntDotProduct", include("MIntBase", "ring"))
+)]
+mod mint_dot_product;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        when("montgomery", "MIntDotProduct"),
+        include("simd_matrix", "montgomery_simd", "avx_helper")
+    )
+)]
+mod montgomery_dot_product;
+#[cfg(target_arch = "x86_64")]
+#[cfg_attr(nightly, codesnip::entry("montgomery_simd"))]
+pub mod montgomery_simd;
 
 #[cfg(target_arch = "x86_64")]
 #[cfg_attr(

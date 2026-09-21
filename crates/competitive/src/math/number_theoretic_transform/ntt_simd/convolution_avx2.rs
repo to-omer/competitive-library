@@ -136,7 +136,7 @@ where
             let x1 = load_block_avx2(a, size + i);
             let x2 = load_block_avx2(a, size * 2 + i);
             let x3 = load_block_avx2(a, size * 3 + i);
-            let g3 = simd32::montgomery_mul_256_fixed(
+            let g3 = montgomery_simd::montgomery_mul_256_fixed(
                 lazy_sub_avx2(x1, x3, modulus2),
                 imag,
                 imag_r,
@@ -194,11 +194,11 @@ where
                     let x1 = _mm256_loadu_si256(base.add(p0 + (quarter << 3)).cast());
                     let x2 = _mm256_loadu_si256(base.add(p0 + (quarter << 4)).cast());
                     let x3 = _mm256_loadu_si256(base.add(p0 + quarter * 24).cast());
-                    let g1 = simd32::montgomery_mul_256_fixed(x1, r1, r1_r, modulus);
-                    let ng3 = simd32::montgomery_mul_256_fixed(x3, nr3, nr3_r, modulus);
-                    let g2 = simd32::montgomery_mul_256_fixed(x2, r2, r2_r, modulus);
+                    let g1 = montgomery_simd::montgomery_mul_256_fixed(x1, r1, r1_r, modulus);
+                    let ng3 = montgomery_simd::montgomery_mul_256_fixed(x3, nr3, nr3_r, modulus);
+                    let g2 = montgomery_simd::montgomery_mul_256_fixed(x2, r2, r2_r, modulus);
                     let g0 = shrink_avx2(x0, modulus2);
-                    let h3 = simd32::montgomery_mul_256_fixed(
+                    let h3 = montgomery_simd::montgomery_mul_256_fixed(
                         _mm256_add_epi32(g1, ng3),
                         imag,
                         imag_r,
@@ -251,8 +251,12 @@ where
             let ng3 = montgomery_mul_even_avx2(x3, nr3, r, modulus);
             let g2 = montgomery_mul_even_avx2(x2, r2, r, modulus);
             let g0 = shrink_avx2(x0, modulus2);
-            let h3 =
-                simd32::montgomery_mul_256_fixed(_mm256_add_epi32(g1, ng3), imag, imag_r, modulus);
+            let h3 = montgomery_simd::montgomery_mul_256_fixed(
+                _mm256_add_epi32(g1, ng3),
+                imag,
+                imag_r,
+                modulus,
+            );
             let h1 = sub_mod_avx2(g1, ng3, modulus2);
             let h0 = add_mod_avx2(g0, g2, modulus2);
             let h2 = sub_mod_avx2(g0, g2, modulus2);
@@ -341,7 +345,7 @@ where
             let x1 = load_block_avx2(a, i + 1);
             let x2 = load_block_avx2(a, i + 2);
             let x3 = load_block_avx2(a, i + 3);
-            let g3 = simd32::montgomery_mul_256_fixed(
+            let g3 = montgomery_simd::montgomery_mul_256_fixed(
                 lazy_sub_avx2(x3, x2, modulus2),
                 imag,
                 imag_r,
@@ -360,7 +364,7 @@ where
                 store_block_avx2(
                     a,
                     i,
-                    simd32::montgomery_mul_256_fixed(h0, inv_vec, inv_r, modulus),
+                    montgomery_simd::montgomery_mul_256_fixed(h0, inv_vec, inv_r, modulus),
                 );
             }
             store_block_avx2(a, i + 1, montgomery_mul_even_avx2(h1, r1, r, modulus));
@@ -384,7 +388,7 @@ where
                     let x1 = load_block_avx2(a, quarter + i);
                     let x2 = load_block_avx2(a, quarter * 2 + i);
                     let x3 = load_block_avx2(a, quarter * 3 + i);
-                    let g3 = simd32::montgomery_mul_256_fixed(
+                    let g3 = montgomery_simd::montgomery_mul_256_fixed(
                         lazy_sub_avx2(x3, x2, modulus2),
                         imag,
                         imag_r,
@@ -435,7 +439,7 @@ where
                     let x1 = _mm256_loadu_si256(base.add(p0 + (quarter << 3)).cast());
                     let x2 = _mm256_loadu_si256(base.add(p0 + (quarter << 4)).cast());
                     let x3 = _mm256_loadu_si256(base.add(p0 + quarter * 24).cast());
-                    let g3 = simd32::montgomery_mul_256_fixed(
+                    let g3 = montgomery_simd::montgomery_mul_256_fixed(
                         lazy_sub_avx2(x3, x2, modulus2),
                         imag,
                         imag_r,
@@ -451,15 +455,15 @@ where
                     _mm256_storeu_si256(base.add(p0).cast(), shrink_avx2(h0, modulus2));
                     _mm256_storeu_si256(
                         base.add(p0 + (quarter << 3)).cast(),
-                        simd32::montgomery_mul_256_fixed(h1, r1, r1_r, modulus),
+                        montgomery_simd::montgomery_mul_256_fixed(h1, r1, r1_r, modulus),
                     );
                     _mm256_storeu_si256(
                         base.add(p0 + (quarter << 4)).cast(),
-                        simd32::montgomery_mul_256_fixed(h2, r2, r2_r, modulus),
+                        montgomery_simd::montgomery_mul_256_fixed(h2, r2, r2_r, modulus),
                     );
                     _mm256_storeu_si256(
                         base.add(p0 + quarter * 24).cast(),
-                        simd32::montgomery_mul_256_fixed(h3, r3, r3_r, modulus),
+                        montgomery_simd::montgomery_mul_256_fixed(h3, r3, r3_r, modulus),
                     );
                     j += 1;
                 }
@@ -556,7 +560,7 @@ where
             let ff = load_block_avx2(f, k);
             // fw < 5 * MOD / 4, so the eight-product sum still reduces below 7 * MOD / 2.
             let fw = shrink_avx2(
-                simd32::montgomery_mul_256_fixed(
+                montgomery_simd::montgomery_mul_256_fixed(
                     ff,
                     _mm256_set1_epi32(ww as i32),
                     _mm256_set1_epi32(ww.wrapping_mul(M::R) as i32),

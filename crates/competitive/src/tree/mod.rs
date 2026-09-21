@@ -37,13 +37,18 @@ pub use self::xor_linked_tree::*;
 
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "centroid_decomposition",
-        include("SparseGraph", "NumberTheoreticTransform")
-    )
+    codesnip::entry("centroid_decomposition", include("SparseGraph"))
 )]
 mod centroid_decomposition;
 mod depth;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "distance_frequencies",
+        include("centroid_decomposition", "NumberTheoreticTransform")
+    )
+)]
+mod distance_frequencies;
 #[cfg_attr(
     nightly,
     codesnip::entry("EulerTour", include("RangeMinimumQuery", "SparseGraph", "tree_order"))

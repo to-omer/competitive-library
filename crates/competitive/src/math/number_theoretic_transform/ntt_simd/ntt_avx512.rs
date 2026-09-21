@@ -24,9 +24,9 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        simd32::montgomery_add_512(a, b, mod2_vec)
+        montgomery_simd::montgomery_add_512(a, b, mod2_vec)
     } else {
-        simd32::add_mod_512(a, b, mod_vec)
+        montgomery_simd::add_mod_512(a, b, mod_vec)
     }
 }
 
@@ -35,9 +35,9 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        simd32::montgomery_sub_512(a, b, mod2_vec)
+        montgomery_simd::montgomery_sub_512(a, b, mod2_vec)
     } else {
-        simd32::sub_mod_512(a, b, mod_vec)
+        montgomery_simd::sub_mod_512(a, b, mod_vec)
     }
 }
 
@@ -46,9 +46,9 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        simd32::montgomery_mul_512(a, b, r_vec, mod_vec)
+        montgomery_simd::montgomery_mul_512(a, b, r_vec, mod_vec)
     } else {
-        simd32::montgomery_mul_512_canon(a, b, r_vec, mod_vec)
+        montgomery_simd::montgomery_mul_512_canon(a, b, r_vec, mod_vec)
     }
 }
 
@@ -63,7 +63,7 @@ where
     while i + 16 <= f.len() {
         let a = _mm512_loadu_si512(f.as_ptr().add(i) as *const __m512i);
         let b = _mm512_loadu_si512(g.as_ptr().add(i) as *const __m512i);
-        let x = simd32::montgomery_mul_512_canon(a, b, r_vec, mod_vec);
+        let x = montgomery_simd::montgomery_mul_512_canon(a, b, r_vec, mod_vec);
         _mm512_storeu_si512(f.as_mut_ptr().add(i) as *mut __m512i, x);
         i += 16;
     }
@@ -85,10 +85,10 @@ where
         let s = _mm512_loadu_si512(sum.as_ptr().add(i).cast());
         let f = _mm512_loadu_si512(f.as_ptr().add(i).cast());
         let g = _mm512_loadu_si512(g.as_ptr().add(i).cast());
-        let product = simd32::montgomery_mul_512_canon(f, g, r_vec, mod_vec);
+        let product = montgomery_simd::montgomery_mul_512_canon(f, g, r_vec, mod_vec);
         _mm512_storeu_si512(
             sum.as_mut_ptr().add(i).cast(),
-            simd32::add_mod_512(s, product, mod_vec),
+            montgomery_simd::add_mod_512(s, product, mod_vec),
         );
         i += 16;
     }
@@ -339,7 +339,7 @@ where
     let mut i = 0;
     while i + 16 <= a.len() {
         let x = _mm512_loadu_si512(a.as_ptr().add(i) as *const __m512i);
-        let y = simd32::montgomery_mul_512_canon(x, inv_vec, r_vec, mod_vec);
+        let y = montgomery_simd::montgomery_mul_512_canon(x, inv_vec, r_vec, mod_vec);
         _mm512_storeu_si512(a.as_mut_ptr().add(i) as *mut __m512i, y);
         i += 16;
     }

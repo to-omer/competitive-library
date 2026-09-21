@@ -32,33 +32,6 @@ pub trait MIntBase {
     fn mod_add(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_sub(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_mul(x: Self::Inner, y: Self::Inner) -> Self::Inner;
-    fn mod_matrix_product(
-        _a: &[Vec<MInt<Self>>],
-        _b: &[Vec<MInt<Self>>],
-    ) -> Option<Vec<Vec<MInt<Self>>>>
-    where
-        Self: Sized,
-    {
-        None
-    }
-    fn mod_dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> Self::Inner
-    where
-        Self: Sized,
-    {
-        assert_eq!(x.len(), y.len());
-        x.iter().zip(y).fold(Self::mod_zero(), |sum, (&x, &y)| {
-            Self::mod_add(sum, Self::mod_mul(x.x, y.x))
-        })
-    }
-    fn mod_add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: Self::Inner)
-    where
-        Self: Sized,
-    {
-        assert_eq!(x.len(), y.len());
-        for (x, y) in x.iter_mut().zip(y) {
-            x.x = Self::mod_add(x.x, Self::mod_mul(a, y.x));
-        }
-    }
     fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner;
     fn mod_neg(x: Self::Inner) -> Self::Inner;
     fn mod_inv(x: Self::Inner) -> Self::Inner;
@@ -113,27 +86,6 @@ where
     #[inline]
     pub fn inner(self) -> M::Inner {
         M::mod_inner(self.x)
-    }
-}
-
-impl<M> DotProduct for MInt<M>
-where
-    M: MIntBase,
-{
-    #[inline]
-    fn try_matrix_product(a: &[Vec<Self>], b: &[Vec<Self>]) -> Option<Vec<Vec<Self>>> {
-        M::mod_matrix_product(a, b)
-    }
-
-    #[inline]
-    fn dot_product(x: &[Self], y: &[Self]) -> Self {
-        assert_eq!(x.len(), y.len());
-        Self::new_unchecked(M::mod_dot_product(x, y))
-    }
-
-    #[inline]
-    fn add_scaled_assign(x: &mut [Self], y: &[Self], a: &Self) {
-        M::mod_add_scaled_assign(x, y, a.x);
     }
 }
 
@@ -428,14 +380,15 @@ mod tests {
     use crate::tools::avx512_enabled;
     use crate::{
         algebra::{AddMulOperation, DotProduct},
-        define_basic_mint32, define_basic_mintbase,
+        define_basic_mint32, define_basic_mintbase, impl_basic_mint_dot_product,
         math::Matrix,
-        num::{mint_basic, montgomery},
+        num::{MIntDotProduct, mint_basic, montgomery},
         tools::Xorshift,
     };
     use std::mem::swap;
 
     define_basic_mint32!([Modulo17, 17, MInt17]);
+    impl_basic_mint_dot_product!(u32, u64; Modulo17);
 
     #[test]
     fn test_random_matrix_products() {
@@ -492,15 +445,19 @@ mod tests {
         }
         for _ in 0..256 {
             check!(MInt17);
+            check!(mint_basic::MInt2);
             check!(mint_basic::MInt998244353);
             check!(mint_basic::MInt1000000007);
             mint_basic::DynMIntU32::set_mod(rng.random(1..));
             check!(mint_basic::DynMIntU32);
+            mint_basic::DynMIntU64::set_mod(rng.random(1..));
+            check!(mint_basic::DynMIntU64);
             check!(montgomery::MInt167772161);
             check!(montgomery::MInt469762049);
             check!(montgomery::MInt754974721);
             check!(montgomery::MInt998244353);
         }
         mint_basic::DynMIntU32::set_mod(1_000_000_007);
+        mint_basic::DynMIntU64::set_mod(1_000_000_007);
     }
 }

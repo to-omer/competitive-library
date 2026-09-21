@@ -88,39 +88,39 @@ where
     for (s, a) in a.as_chunks_mut::<8>().0.iter_mut().enumerate() {
         let mut x = _mm256_loadu_si256(a.as_ptr().cast());
         if !INVERSE {
-            x = simd32::montgomery_mul_256(x, twiddle, r, modulus);
+            x = montgomery_simd::montgomery_mul_256(x, twiddle, r, modulus);
         }
         let pair = if INVERSE {
             let y = _mm256_shuffle_epi32::<0xb1>(x);
-            let sum = simd32::montgomery_add_256(x, y, modulus2);
-            let diff = simd32::montgomery_sub_256(x, y, modulus2);
+            let sum = montgomery_simd::montgomery_add_256(x, y, modulus2);
+            let diff = montgomery_simd::montgomery_sub_256(x, y, modulus2);
             let sum = _mm256_shuffle_epi32::<0x88>(sum);
             let diff = _mm256_shuffle_epi32::<0x88>(diff);
-            let diff = simd32::montgomery_mul_256(diff, imag, r, modulus);
+            let diff = montgomery_simd::montgomery_mul_256(diff, imag, r, modulus);
             _mm256_unpacklo_epi64(sum, diff)
         } else {
             let y = _mm256_shuffle_epi32::<0x4e>(x);
-            let sum = simd32::montgomery_add_256(x, y, modulus2);
-            let diff = simd32::montgomery_sub_256(x, y, modulus2);
+            let sum = montgomery_simd::montgomery_add_256(x, y, modulus2);
+            let diff = montgomery_simd::montgomery_sub_256(x, y, modulus2);
             _mm256_unpacklo_epi64(sum, diff)
         };
         let left = _mm256_shuffle_epi32::<0xa0>(pair);
         let mut right = _mm256_shuffle_epi32::<0xf5>(pair);
         if !INVERSE {
-            right = simd32::montgomery_mul_256(right, imag, r, modulus);
+            right = montgomery_simd::montgomery_mul_256(right, imag, r, modulus);
         }
-        let sum = simd32::montgomery_add_256(left, right, modulus2);
-        let diff = simd32::montgomery_sub_256(left, right, modulus2);
+        let sum = montgomery_simd::montgomery_add_256(left, right, modulus2);
+        let diff = montgomery_simd::montgomery_sub_256(left, right, modulus2);
         let mut value = _mm256_blend_epi32::<0xaa>(sum, diff);
         if INVERSE {
             value = _mm256_shuffle_epi32::<0xd8>(value);
-            value = simd32::montgomery_mul_256(value, twiddle, r, modulus);
+            value = montgomery_simd::montgomery_mul_256(value, twiddle, r, modulus);
         }
         _mm256_storeu_si256(a.as_mut_ptr().cast(), value);
         let rate = _mm256_broadcastsi128_si256(_mm_loadu_si128(
             rates[s.trailing_ones() as usize + 1].as_ptr().cast(),
         ));
-        twiddle = simd32::montgomery_mul_256(twiddle, rate, r, modulus);
+        twiddle = montgomery_simd::montgomery_mul_256(twiddle, rate, r, modulus);
     }
 }
 
@@ -153,9 +153,9 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        simd32::montgomery_add_256(a, b, mod2_vec)
+        montgomery_simd::montgomery_add_256(a, b, mod2_vec)
     } else {
-        simd32::add_mod_256(a, b, mod_vec)
+        montgomery_simd::add_mod_256(a, b, mod_vec)
     }
 }
 
@@ -169,9 +169,9 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        simd32::montgomery_sub_256(a, b, mod2_vec)
+        montgomery_simd::montgomery_sub_256(a, b, mod2_vec)
     } else {
-        simd32::sub_mod_256(a, b, mod_vec)
+        montgomery_simd::sub_mod_256(a, b, mod_vec)
     }
 }
 
@@ -180,9 +180,9 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        simd32::montgomery_mul_256(a, b, r_vec, mod_vec)
+        montgomery_simd::montgomery_mul_256(a, b, r_vec, mod_vec)
     } else {
-        simd32::montgomery_mul_256_canon(a, b, r_vec, mod_vec)
+        montgomery_simd::montgomery_mul_256_canon(a, b, r_vec, mod_vec)
     }
 }
 
@@ -197,7 +197,7 @@ where
     while i + 8 <= f.len() {
         let a = _mm256_loadu_si256(f.as_ptr().add(i) as *const __m256i);
         let b = _mm256_loadu_si256(g.as_ptr().add(i) as *const __m256i);
-        let x = simd32::montgomery_mul_256_canon(a, b, r_vec, mod_vec);
+        let x = montgomery_simd::montgomery_mul_256_canon(a, b, r_vec, mod_vec);
         _mm256_storeu_si256(f.as_mut_ptr().add(i) as *mut __m256i, x);
         i += 8;
     }
@@ -219,10 +219,10 @@ where
         let s = _mm256_loadu_si256(sum.as_ptr().add(i).cast());
         let f = _mm256_loadu_si256(f.as_ptr().add(i).cast());
         let g = _mm256_loadu_si256(g.as_ptr().add(i).cast());
-        let product = simd32::montgomery_mul_256_canon(f, g, r_vec, mod_vec);
+        let product = montgomery_simd::montgomery_mul_256_canon(f, g, r_vec, mod_vec);
         _mm256_storeu_si256(
             sum.as_mut_ptr().add(i).cast(),
-            simd32::add_mod_256(s, product, mod_vec),
+            montgomery_simd::add_mod_256(s, product, mod_vec),
         );
         i += 8;
     }
@@ -481,7 +481,7 @@ where
     let mut i = 0;
     while i + 8 <= a.len() {
         let x = _mm256_loadu_si256(a.as_ptr().add(i) as *const __m256i);
-        let y = simd32::montgomery_mul_256_canon(x, inv_vec, r_vec, mod_vec);
+        let y = montgomery_simd::montgomery_mul_256_canon(x, inv_vec, r_vec, mod_vec);
         _mm256_storeu_si256(a.as_mut_ptr().add(i) as *mut __m256i, y);
         i += 8;
     }

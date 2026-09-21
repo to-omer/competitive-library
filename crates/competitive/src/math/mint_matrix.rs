@@ -1,11 +1,11 @@
 use super::{
-    AddMulOperation, DotProduct, MInt, MIntBase, MIntConvert, Matrix, MemorizedFactorial, One,
-    Xorshift, Zero,
+    AddMulOperation, DotProduct, MInt, MIntConvert, MIntDotProduct, Matrix, MemorizedFactorial,
+    One, Xorshift, Zero,
 };
 
 pub trait MIntMatrix<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     /// det(self + other * x)
     fn determinant_linear(self, other: Self) -> Option<Vec<MInt<M>>>
@@ -19,7 +19,7 @@ where
 
 impl<M> MIntMatrix<M> for Matrix<AddMulOperation<MInt<M>>>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     fn determinant_linear(mut self, other: Self) -> Option<Vec<MInt<M>>>
     where
@@ -79,11 +79,11 @@ where
 
 impl<M> Matrix<AddMulOperation<MInt<M>>>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     fn determinant_linear_non_singular(mut self, mut other: Self) -> Option<Vec<MInt<M>>>
     where
-        M: MIntBase,
+        M: MIntDotProduct,
     {
         let n = self.data.len();
         let mut f = MInt::one();
@@ -131,7 +131,7 @@ where
 
 struct EchelonRow<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     pivot: usize,
     inv: MInt<M>,
@@ -140,11 +140,11 @@ where
 
 struct Polynomial<M>(Vec<MInt<M>>)
 where
-    M: MIntBase;
+    M: MIntDotProduct;
 
 struct FrobeniusDecomposition<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     t: Matrix<AddMulOperation<MInt<M>>>,
     t_inv: Matrix<AddMulOperation<MInt<M>>>,
@@ -153,7 +153,7 @@ where
 
 impl<M> EchelonRow<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     fn reduce(&self, row: &mut [MInt<M>]) {
         let a = -row[self.pivot] * self.inv;
@@ -172,7 +172,7 @@ fn generate_frobenius_block<M>(
     t: &mut Vec<Vec<MInt<M>>>,
 ) -> Polynomial<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     let n = a.shape.0;
     loop {
@@ -204,7 +204,7 @@ where
 
 impl<M> Polynomial<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     fn exact_div(mut self, rhs: &Self) -> Option<Self> {
         let mut q = vec![MInt::zero(); self.0.len() - rhs.0.len() + 1];
@@ -257,7 +257,7 @@ fn frobenius_decomposition<M>(
     rng: &mut Xorshift,
 ) -> Option<FrobeniusDecomposition<M>>
 where
-    M: MIntBase + MIntConvert<u64>,
+    M: MIntDotProduct + MIntConvert<u64>,
 {
     let n = a.shape.0;
     let mut rows = Vec::with_capacity(n);
@@ -345,7 +345,7 @@ where
 
 impl<M> FrobeniusDecomposition<M>
 where
-    M: MIntBase,
+    M: MIntDotProduct,
 {
     fn pow(&self, k: usize) -> Matrix<AddMulOperation<MInt<M>>> {
         let n = self.t.shape.0;
