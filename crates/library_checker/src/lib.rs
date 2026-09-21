@@ -35,9 +35,13 @@ mod tests {
                 "--ignored",
             ])
             .output()
-            .expect("Failed to list verified problems")
-            .stdout;
-        let output = String::from_utf8_lossy(&output);
+            .expect("Failed to list verified problems");
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let output = String::from_utf8_lossy(&output.stdout);
         output
             .lines()
             .filter_map(|line| {
@@ -56,6 +60,8 @@ mod tests {
     fn checklist() {
         let problems = verify::library_checker::get_problem_list().unwrap();
         let verified_problems = list_verified_problems();
+        assert!(!verified_problems.is_empty());
+        assert!(!problems.is_empty());
         let mut total_count = 0;
         let mut verified_count = 0;
         for (category, problems) in problems {
@@ -82,6 +88,8 @@ mod tests {
     fn check_correct_category() {
         let problems = verify::library_checker::get_problem_list().unwrap();
         let verified_problems = list_verified_problems();
+        assert!(!verified_problems.is_empty());
+        assert!(!problems.is_empty());
         let mut failed = vec![];
         for (category, problem) in verified_problems {
             if let Some((correct_category, _)) = problems

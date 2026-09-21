@@ -100,3 +100,6 @@ mod xorshift;
 #[allow(dead_code)]
 #[doc(hidden)]
 enum FastMainSnippets {}
+
+#[cfg(test)]
+pub(crate) mod testutil;

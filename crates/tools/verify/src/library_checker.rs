@@ -415,8 +415,13 @@ mod tests {
 
     #[test]
     fn test_aplusb() -> BoxResult<()> {
-        let res = get_testcases_and_checker("aplusb", false)?;
-        eprintln!("res = {:?}", res);
+        let (cases, checker) = get_testcases_and_checker("aplusb", false)?;
+        assert!(!cases.is_empty());
+        for case in cases {
+            assert!(case.input.is_file());
+            assert!(case.output.is_file());
+        }
+        assert!(checker.checker.is_file());
         Ok(())
     }
 
@@ -430,16 +435,33 @@ mod tests {
 
     #[test]
     fn test_sample_testcase() {
-        for name in [
-            "example.in",
-            "small.cpp",
-            "small_random.cpp",
-            "very_small.cpp",
-        ] {
-            assert!(is_sample_testcase(name), "{name}");
-        }
-        for name in ["random.cpp", "small_and_large.cpp", "large_small.cpp"] {
-            assert!(!is_sample_testcase(name), "{name}");
+        let tokens = ["example", "sample", "small", "large", "other"];
+        for len in 0..=4 {
+            for mut code in 0..tokens.len().pow(len) {
+                let mut words = Vec::new();
+                for _ in 0..len {
+                    words.push(code % tokens.len());
+                    code /= tokens.len();
+                }
+                let expected =
+                    words.iter().any(|&i| i < 2) || words.contains(&2) && !words.contains(&3);
+                for uppercase in [false, true] {
+                    let mut name = words
+                        .iter()
+                        .map(|&i| tokens[i])
+                        .collect::<Vec<_>>()
+                        .join("_");
+                    if uppercase {
+                        name.make_ascii_uppercase();
+                    }
+                    for extension in ["in", "cpp", "txt"] {
+                        assert_eq!(
+                            is_sample_testcase(&format!("prefix_{name}_suffix.{extension}")),
+                            expected
+                        );
+                    }
+                }
+            }
         }
     }
 }

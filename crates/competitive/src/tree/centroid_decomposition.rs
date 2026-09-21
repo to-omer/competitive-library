@@ -366,56 +366,32 @@ mod tests {
     use crate::{tools::Xorshift, tree::MixedTree};
 
     #[test]
-    fn test_contour_query_range_counts() {
+    fn test_contour_query_range() {
         let mut rng = Xorshift::default();
-        for _ in 0..100 {
-            let g = rng.random(MixedTree(1usize..80));
-            let n = g.vertices_size();
-            let cq = g.contour_query_range();
-            let mut data = vec![0; cq.len()];
-            for v in 0..n {
-                cq.for_each_index(v, |i| data[i] += 1);
-            }
+        for _ in 0..200 {
+            let graph = rng.random(MixedTree(1usize..80));
+            let n = graph.vertices_size();
+            let query = graph.contour_query_range();
+            let mut values = vec![0i64; n];
+            let mut data = vec![0i64; query.len()];
             for _ in 0..200 {
-                let v = rng.random(0..n);
-                let l = rng.random(0..=n);
-                let r = rng.random(l..=n + 1);
-                let dist = g.tree_depth(v);
-                let expected = dist
-                    .iter()
-                    .enumerate()
-                    .filter(|&(u, &d)| u != v && l <= d as usize && (d as usize) < r)
-                    .count();
-                let mut actual = 0usize;
-                cq.for_each_contour_range(v, l, r, |start, end| {
-                    actual += data[start..end].iter().sum::<usize>();
-                });
-                assert_eq!(actual, expected);
-            }
-        }
-    }
-
-    #[test]
-    fn test_contour_query_range_single_vertex() {
-        let mut rng = Xorshift::default();
-        for _ in 0..80 {
-            let g = rng.random(MixedTree(1usize..60));
-            let n = g.vertices_size();
-            let cq = g.contour_query_range();
-            for _ in 0..120 {
                 let u = rng.random(0..n);
+                let delta = rng.random(-100..=100i64);
+                values[u] += delta;
+                query.for_each_index(u, |i| data[i] += delta);
                 let v = rng.random(0..n);
                 let l = rng.random(0..=n);
                 let r = rng.random(l..=n + 1);
-                let mut data = vec![0; cq.len()];
-                cq.for_each_index(u, |i| data[i] += 1);
-                let expected = usize::from({
-                    let d = g.tree_depth(v)[u] as usize;
-                    u != v && l <= d && d < r
-                });
-                let mut actual = 0usize;
-                cq.for_each_contour_range(v, l, r, |start, end| {
-                    actual += data[start..end].iter().sum::<usize>();
+                let distances = graph.tree_depth(v);
+                let expected: i64 = (0..n)
+                    .filter(|&u| {
+                        u != v && l <= distances[u] as usize && (distances[u] as usize) < r
+                    })
+                    .map(|u| values[u])
+                    .sum();
+                let mut actual = 0;
+                query.for_each_contour_range(v, l, r, |start, end| {
+                    actual += data[start..end].iter().sum::<i64>()
                 });
                 assert_eq!(actual, expected);
             }

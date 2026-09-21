@@ -617,7 +617,11 @@ where
 mod tests {
     use super::*;
     use crate::math::prime_factors;
-    use crate::tools::Xorshift;
+    use crate::tools::{
+        Xorshift,
+        testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+    };
+    use std::collections::VecDeque;
 
     fn primes(n: usize) -> Vec<usize> {
         if n < 2 {
@@ -686,62 +690,102 @@ mod tests {
 
     #[test]
     fn test_primes() {
-        let pl = PrimeList::new(2000);
-        for i in 0..=2000 {
-            assert_eq!(
-                primes(i),
-                (2..=i).filter(|&i| pl.is_prime(i as _)).collect::<Vec<_>>(),
-            );
-            assert_eq!(
-                primes(i).iter().map(|&p| p as u32).collect::<Vec<_>>(),
-                pl.primes_lte(i as _).collect::<Vec<_>>()
-            );
-            assert_eq!(
-                primes(i)
+        let mut rng = Xorshift::default();
+        let bounds = sample_usize(&mut rng, 128, 0..=100_000, 300);
+        for n in bounds {
+            let pl = PrimeList::new(n as u32);
+            let expected: Vec<_> = primes(n).into_iter().map(|p| p as u32).collect();
+            assert_eq!(pl.primes().collect::<Vec<_>>(), expected);
+            for limit in (0..=n.min(128)).chain([n / 2, n.saturating_sub(1), n]) {
+                let bounded: Vec<_> = expected
                     .iter()
-                    .rev()
-                    .map(|&p| p as u32)
-                    .collect::<Vec<_>>(),
-                pl.primes_lte(i as _).rev().collect::<Vec<_>>()
-            );
-        }
-        let ps = primes(2000)
-            .into_iter()
-            .map(|p| p as u32)
-            .collect::<Vec<_>>();
-        for skip in (0..10).chain([ps.len(), ps.len() + 1]) {
-            for step in 1..10 {
+                    .copied()
+                    .take_while(|&p| p <= limit as u32)
+                    .collect();
+                assert_eq!(pl.primes_lte(limit as u32).collect::<Vec<_>>(), bounded);
                 assert_eq!(
-                    ps.iter()
-                        .copied()
-                        .skip(skip)
-                        .step_by(step)
-                        .collect::<Vec<_>>(),
-                    pl.primes().skip(skip).step_by(step).collect::<Vec<_>>()
+                    pl.primes_lte(limit as u32).rev().collect::<Vec<_>>(),
+                    bounded.into_iter().rev().collect::<Vec<_>>()
                 );
+            }
+            for i in 0..=n.min(2000) {
                 assert_eq!(
-                    ps.iter()
-                        .rev()
-                        .copied()
-                        .skip(skip)
-                        .step_by(step)
-                        .collect::<Vec<_>>(),
-                    pl.primes()
-                        .rev()
-                        .skip(skip)
-                        .step_by(step)
-                        .collect::<Vec<_>>()
+                    pl.is_prime(i as u32),
+                    expected.binary_search(&(i as u32)).is_ok()
                 );
             }
         }
-        let mut ps = std::collections::VecDeque::from(ps);
-        let mut iter = pl.primes();
-        while !ps.is_empty() {
-            assert_eq!(iter.next(), ps.pop_front());
-            assert_eq!(iter.next_back(), ps.pop_back());
+        // Exhaust all query limits on a larger, fixed sieve as well.
+        let pl = PrimeList::new(10_000);
+        let expected = primes(10_000);
+        for limit in 0..=10_000 {
+            let bounded: Vec<_> = expected
+                .iter()
+                .copied()
+                .take_while(|&p| p <= limit)
+                .map(|p| p as u32)
+                .collect();
+            assert_eq!(pl.primes_lte(limit as u32).collect::<Vec<_>>(), bounded);
+            assert_eq!(
+                pl.primes_lte(limit as u32).rev().collect::<Vec<_>>(),
+                bounded.into_iter().rev().collect::<Vec<_>>()
+            );
         }
-        assert_eq!(iter.next(), None);
-        assert_eq!(iter.next_back(), None);
+    }
+
+    #[test]
+    fn test_prime_iterator() {
+        let mut rng = Xorshift::default();
+        for n in sample_usize(&mut rng, 128, 0..=10_000, 300) {
+            let pl = PrimeList::new(n as u32);
+            let expected: Vec<_> = primes(n).into_iter().map(|p| p as u32).collect();
+            for skip in (0..=expected.len().min(16)).chain([expected.len(), expected.len() + 1]) {
+                for step in (1..=16).chain([expected.len() + 1]) {
+                    assert_eq!(
+                        pl.primes().skip(skip).step_by(step).collect::<Vec<_>>(),
+                        expected
+                            .iter()
+                            .copied()
+                            .skip(skip)
+                            .step_by(step)
+                            .collect::<Vec<_>>()
+                    );
+                    assert_eq!(
+                        pl.primes()
+                            .rev()
+                            .skip(skip)
+                            .step_by(step)
+                            .collect::<Vec<_>>(),
+                        expected
+                            .iter()
+                            .rev()
+                            .copied()
+                            .skip(skip)
+                            .step_by(step)
+                            .collect::<Vec<_>>()
+                    );
+                }
+            }
+            let directions: Vec<Vec<_>> = if n <= 20 {
+                exhaustive_sequences(0..2, expected.len()..=expected.len()).collect()
+            } else {
+                structured_sequences(&mut rng, 0..2, [expected.len()]).collect()
+            };
+            for directions in directions {
+                let mut queue = VecDeque::from(expected.clone());
+                let mut iter = pl.primes();
+                for back in directions.into_iter().map(|i| i != 0) {
+                    if back {
+                        assert_eq!(iter.next_back(), queue.pop_back());
+                    } else {
+                        assert_eq!(iter.next(), queue.pop_front());
+                    }
+                }
+                assert!(queue.is_empty());
+                assert_eq!(iter.next(), None);
+                assert_eq!(iter.next_back(), None);
+            }
+        }
     }
 
     #[test]

@@ -286,45 +286,50 @@ impl<'a, K, V> ContainerEntry<'a> for Entry<'a, K, V> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
+    use std::collections::BTreeMap;
 
     #[test]
-    fn test_vec_map_get() {
-        let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
-        map.insert(0, 0);
-        assert_eq!(map.get(&0), Some(&0));
-        assert_eq!(map.get(&1), None);
-    }
-
-    #[test]
-    fn test_vec_map_get_mut() {
-        let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
-        map.insert(0, 0);
-        *map.get_mut(&0).unwrap() += 1;
-        assert_eq!(map.get(&0), Some(&1));
-    }
-
-    #[test]
-    fn test_vec_map_insert() {
-        let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
-        assert_eq!(map.insert(0, 0), None);
-        assert_eq!(map.insert(0, 1), Some(0));
-        assert_eq!(map.get(&0), Some(&1));
-    }
-
-    #[test]
-    fn test_vec_map_remove() {
-        let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
-        map.insert(0, 0);
-        assert_eq!(map.remove(&0), Some(0));
-        assert_eq!(map.remove(&0), None);
-    }
-
-    #[test]
-    fn test_vec_map_entry() {
-        let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
-        map.entry(0).or_insert(0);
-        assert_eq!(*map.entry(0).or_insert(1), 0);
-        assert_eq!(*map.entry(1).and_modify(|e| *e += 1).or_default(), 0);
-        assert_eq!(*map.entry(1).and_modify(|e| *e += 1).or_default(), 1);
+    fn test_vec_map() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
+            let mut expected = BTreeMap::new();
+            for _ in 0..1000 {
+                let key = rng.random(0..=100);
+                let value = rng.random(-100..=100);
+                match rng.random(0..5) {
+                    0 => {
+                        assert_eq!(map.insert(key, value), expected.insert(key, value));
+                    }
+                    1 => {
+                        assert_eq!(map.remove(&key), expected.remove(&key));
+                    }
+                    2 => {
+                        if let Some(x) = map.get_mut(&key) {
+                            *x += value;
+                        }
+                        if let Some(x) = expected.get_mut(&key) {
+                            *x += value;
+                        }
+                    }
+                    3 => {
+                        assert_eq!(
+                            map.entry(key).or_insert(value),
+                            expected.entry(key).or_insert(value)
+                        );
+                    }
+                    _ => {
+                        assert_eq!(
+                            map.entry(key).and_modify(|x| *x += value).or_default(),
+                            expected.entry(key).and_modify(|x| *x += value).or_default()
+                        );
+                    }
+                }
+                for key in 0..=100 {
+                    assert_eq!(map.get(&key), expected.get(&key));
+                }
+            }
+        }
     }
 }

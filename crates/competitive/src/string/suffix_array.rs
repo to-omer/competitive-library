@@ -223,14 +223,16 @@ fn sa_is(s: &[usize], upper: usize) -> Vec<usize> {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
 
     #[test]
     fn test_suffix_array() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=100);
-            let m = rng.random(1..=100);
-            let s: Vec<_> = rng.random_iter(1..=m).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..20, lengths))
+        {
+            let n = s.len();
             let sa = SuffixArray::new(&s);
             let mut suffixes: Vec<_> = (0..=n).collect();
             suffixes.sort_unstable_by_key(|&i| &s[i..]);
@@ -241,10 +243,11 @@ mod tests {
     #[test]
     fn test_lcp_array() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=80);
-            let m = rng.random(1..=20);
-            let s: Vec<_> = rng.random_iter(0..m).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..20, lengths))
+        {
+            let n = s.len();
             let suffix_array = SuffixArray::new(&s);
             let (lcp_array, rank) = suffix_array.lcp_array_with_rank(&s);
             assert_eq!(rank.len(), s.len() + 1);

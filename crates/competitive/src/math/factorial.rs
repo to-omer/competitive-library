@@ -66,27 +66,34 @@ mod tests {
 
     #[test]
     fn test_factorials() {
-        use crate::num::mint_basic::MInt1000000007;
-        let fact = MemorizedFactorial::new(100);
-        type M = MInt1000000007;
-        for i in 0..101 {
-            assert_eq!(fact.fact[i] * fact.inv_fact[i], M::new(1));
+        use crate::{num::mint_basic::MInt1000000007 as M, tools::Xorshift};
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let limit = rng.random(1..=100usize);
+            let fact = MemorizedFactorial::new(limit);
+            let mut binom = vec![vec![M::new(0); limit + 2]; limit + 1];
+            binom[0][0] = M::new(1);
+            let mut product = M::new(1);
+            for n in 0..=limit {
+                if n > 0 {
+                    product *= M::from(n);
+                    binom[n][0] = M::new(1);
+                    for k in 1..=n {
+                        binom[n][k] = binom[n - 1][k - 1] + binom[n - 1][k];
+                    }
+                    assert_eq!(fact.inv(n) * M::from(n), M::new(1));
+                }
+                assert_eq!(fact.fact[n], product);
+                assert_eq!(fact.fact[n] * fact.inv_fact[n], M::new(1));
+                let k = rng.random(0..=limit + 1);
+                assert_eq!(fact.combination(n, k), binom[n][k]);
+                let expected: M = if k <= n {
+                    (n - k + 1..=n).map(M::from).product()
+                } else {
+                    M::new(0)
+                };
+                assert_eq!(fact.permutation(n, k), expected);
+            }
         }
-        for i in 1..101 {
-            assert_eq!(fact.inv(i), M::new(i as u32).inv());
-        }
-        assert_eq!(fact.combination(10, 0), M::new(1));
-        assert_eq!(fact.combination(10, 1), M::new(10));
-        assert_eq!(fact.combination(10, 5), M::new(252));
-        assert_eq!(fact.combination(10, 6), M::new(210));
-        assert_eq!(fact.combination(10, 10), M::new(1));
-        assert_eq!(fact.combination(10, 11), M::new(0));
-
-        assert_eq!(fact.permutation(10, 0), M::new(1));
-        assert_eq!(fact.permutation(10, 1), M::new(10));
-        assert_eq!(fact.permutation(10, 5), M::new(30240));
-        assert_eq!(fact.permutation(10, 6), M::new(151_200));
-        assert_eq!(fact.permutation(10, 10), M::new(3_628_800));
-        assert_eq!(fact.permutation(10, 11), M::new(0));
     }
 }

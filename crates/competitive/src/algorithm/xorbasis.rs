@@ -110,8 +110,13 @@ mod tests {
             rand!(rng, k: 0usize..=L + 2, b: [0u64..1 << L; k]);
             let cons = consistables(&b);
             let basis: XorBasis = b.into_iter().collect();
-            for x in rng.random_iter(0u64..1 << L).take(Q) {
+            for x in 0u64..1 << L {
                 assert_eq!(cons.contains(&x), basis.find(x).is_some());
+                let decomposition = basis.basis(x);
+                assert_eq!(decomposition.is_some(), cons.contains(&x));
+                if let Some(parts) = decomposition {
+                    assert_eq!(parts.into_iter().fold(0, std::ops::BitXor::bitxor), x);
+                }
             }
         }
     }

@@ -117,13 +117,22 @@ mod tests {
 
     #[test]
     fn test_alloc() {
-        let mut pool = MemoryPool::<usize>::with_capacity(2);
-        let mut a = vec![];
-        for i in 0..100 {
-            let p = pool.allocate(i);
-            a.push(p);
-            for (i, &p) in a.iter().enumerate() {
-                assert_eq!(unsafe { *p.as_ref() }, i);
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let mut pool = MemoryPool::with_capacity(rng.random(0..=32));
+            let mut live: Vec<(NonNull<u64>, u64)> = Vec::new();
+            for _ in 0..1000 {
+                if !live.is_empty() && rng.random(0..3) == 0 {
+                    let i = rng.random(0..live.len());
+                    let (ptr, value) = live.swap_remove(i);
+                    assert_eq!(pool.deallocate(ptr), value);
+                } else {
+                    let value = rng.rand64();
+                    live.push((pool.allocate(value), value));
+                }
+                for &(ptr, value) in &live {
+                    assert_eq!(unsafe { *ptr.as_ref() }, value);
+                }
             }
         }
     }

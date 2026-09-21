@@ -1,9 +1,12 @@
 use super::{ConvolveRealFft, Xorshift};
 
 pub fn wildcard_pattern_matching(p: &[u8], s: &[u8]) -> Vec<bool> {
+    wildcard_pattern_matching_with_rng(p, s, &mut Xorshift::new())
+}
+
+fn wildcard_pattern_matching_with_rng(p: &[u8], s: &[u8], rng: &mut Xorshift) -> Vec<bool> {
     assert!(!p.is_empty());
     assert!(p.len() <= s.len());
-    let mut rng = Xorshift::new();
     let mut direct = [0.0; 256];
     let mut inverse = [0.0; 256];
     for i in 0..256 {
@@ -24,15 +27,28 @@ pub fn wildcard_pattern_matching(p: &[u8], s: &[u8]) -> Vec<bool> {
 
 #[cfg(test)]
 mod tests {
-    use super::wildcard_pattern_matching;
+    use super::{wildcard_pattern_matching, wildcard_pattern_matching_with_rng};
     use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, sample_usize};
 
     #[test]
     fn test_wildcard_pattern_matching() {
         let mut rng = Xorshift::default();
-        for _ in 0..100 {
-            let n = rng.rand(20) as usize + 1;
-            let m = n + rng.rand(30) as usize;
+        let inputs: Vec<_> = exhaustive_sequences([0, b'?', u8::MAX], 0..=5)
+            .filter(|s| !s.is_empty())
+            .collect();
+        let mut cases: Vec<_> = inputs
+            .iter()
+            .flat_map(|p| {
+                inputs
+                    .iter()
+                    .filter(|s| s.len() >= p.len())
+                    .map(move |s| (p.clone(), s.clone()))
+            })
+            .collect();
+        for _ in 0..1000 {
+            let n = rng.rand(128) as usize + 1;
+            let m = n + rng.rand(256) as usize;
             let mut p: Vec<_> = (0..n).map(|_| b"abc?"[rng.rand(4) as usize]).collect();
             let mut s: Vec<_> = (0..m).map(|_| b"abc?"[rng.rand(4) as usize]).collect();
             match rng.rand(4) {
@@ -41,6 +57,19 @@ mod tests {
                 2 => s.fill(b'?'),
                 _ => {}
             }
+            cases.push((p, s));
+        }
+        for n in sample_usize(&mut rng, 16, 0..=1024, 0)
+            .into_iter()
+            .filter(|&n| n != 0)
+        {
+            for c in 0..=u8::MAX {
+                let p = vec![c; n];
+                assert_eq!(wildcard_pattern_matching(&p, &p), [true]);
+                assert_eq!(wildcard_pattern_matching(&vec![b'?'; n], &p), [true]);
+            }
+        }
+        for (p, s) in cases {
             let expected: Vec<_> = (0..=s.len() - p.len())
                 .map(|i| {
                     p.iter()
@@ -48,7 +77,11 @@ mod tests {
                         .all(|(&a, &b)| a == b || a == b'?' || b == b'?')
                 })
                 .collect();
-            assert_eq!(expected, wildcard_pattern_matching(&p, &s));
+            assert_eq!(
+                expected,
+                wildcard_pattern_matching_with_rng(&p, &s, &mut Xorshift::default()),
+                "pattern={p:?}, text={s:?}"
+            );
         }
     }
 }

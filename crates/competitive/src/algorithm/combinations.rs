@@ -365,180 +365,82 @@ mod tests {
     use crate::tools::Xorshift;
 
     #[test]
-    fn test_for_each_product() {
-        for n in 1..=6 {
-            let values: Vec<i32> = (0..n).collect();
-            for r in 0..=6 {
-                let mut result = vec![];
-                values
-                    .as_slice()
-                    .for_each_product(r, |cur| result.push(cur.to_vec()));
-                let mut expected = vec![];
-                let mut current = vec![0; r];
-                'outer: loop {
-                    expected.push(current.clone());
-                    for i in (0..r).rev() {
-                        if current[i] + 1 < n {
-                            current[i] += 1;
-                            for c in &mut current[i + 1..] {
-                                *c = 0;
-                            }
-                            continue 'outer;
-                        }
-                    }
-                    break;
+    fn test_enumeration() {
+        let mut rng = Xorshift::default();
+        for (n, r) in (1usize..=6).flat_map(|n| (0..=6).map(move |r| (n, r))) {
+            let values: Vec<_> = rng.random_iter(-10..=10).take(n).collect();
+            let mut product = Vec::new();
+            let mut permutations = Vec::new();
+            let mut combinations = Vec::new();
+            let mut replacement = Vec::new();
+            for mut code in 0..n.pow(r as u32) {
+                let mut indices = vec![0; r];
+                for i in indices.iter_mut().rev() {
+                    *i = code % n;
+                    code /= n;
                 }
-                assert_eq!(result, expected);
+                let row: Vec<_> = indices.iter().map(|&i| values[i]).collect();
+                product.push(row.clone());
+                if (0..r).all(|i| !indices[..i].contains(&indices[i])) {
+                    permutations.push(row.clone());
+                }
+                if indices.windows(2).all(|w| w[0] < w[1]) {
+                    combinations.push(row.clone());
+                }
+                if indices.is_sorted() {
+                    replacement.push(row);
+                }
             }
+            let mut actual = Vec::new();
+            values.for_each_product(r, |row| actual.push(row.to_vec()));
+            assert_eq!(actual, product);
+            actual.clear();
+            values.for_each_permutations(r, |row| actual.push(row.to_vec()));
+            assert_eq!(actual, permutations);
+            actual.clear();
+            values.for_each_combinations(r, |row| actual.push(row.to_vec()));
+            assert_eq!(actual, combinations);
+            actual.clear();
+            values.for_each_combinations_with_replacement(r, |row| actual.push(row.to_vec()));
+            assert_eq!(actual, replacement);
         }
     }
 
     #[test]
-    fn test_for_each_permutations_small_cases() {
-        for n in 1..=6 {
-            let values: Vec<i32> = (0..n).collect();
-            for r in 0..=6 {
-                let mut result = vec![];
-                values
-                    .as_slice()
-                    .for_each_permutations(r, |cur| result.push(cur.to_vec()));
-                let mut expected = vec![];
-                let mut current = vec![0; r];
-                'outer: loop {
-                    let ok = {
-                        let mut current = current.clone();
-                        current.sort_unstable();
-                        current.dedup();
-                        current.len() == r
-                    };
-                    if ok {
-                        expected.push(current.clone());
-                    }
-                    for i in (0..r).rev() {
-                        if current[i] + 1 < n {
-                            current[i] += 1;
-                            for c in &mut current[i + 1..] {
-                                *c = 0;
-                            }
-                            continue 'outer;
-                        }
-                    }
-                    break;
+    fn test_next_prev() {
+        let mut rng = Xorshift::default();
+        for n in 1..=7usize {
+            let mut values: Vec<_> = (0..n)
+                .map(|i| i as i32 * 100 + rng.random(0..100))
+                .collect();
+            values.sort();
+            values.dedup();
+            let n = values.len();
+            let mut permutations = Vec::new();
+            values.for_each_permutations(n, |row| permutations.push(row.to_vec()));
+            let mut p = values.clone();
+            for (i, expected) in permutations.iter().enumerate() {
+                assert_eq!(&p, expected);
+                if i + 1 < permutations.len() {
+                    assert!(p.next_permutation());
+                    assert!(p.prev_permutation());
+                    assert_eq!(&p, expected);
                 }
-                assert_eq!(result, expected);
+                assert_eq!(p.next_permutation(), i + 1 < permutations.len());
             }
-        }
-    }
-
-    #[test]
-    fn test_for_each_combinations_small_cases() {
-        for n in 1..=6 {
-            let values: Vec<i32> = (0..n).collect();
-            for r in 0..=6 {
-                let mut result = vec![];
-                values
-                    .as_slice()
-                    .for_each_combinations(r, |cur| result.push(cur.to_vec()));
-                let mut expected = vec![];
-                let mut current = vec![0; r];
-                'outer: loop {
-                    let ok = {
-                        let mut current = current.clone();
-                        current.dedup();
-                        current.len() == r && current.is_sorted()
-                    };
-                    if ok {
-                        expected.push(current.clone());
-                    }
-                    for i in (0..r).rev() {
-                        if current[i] + 1 < n {
-                            current[i] += 1;
-                            for c in &mut current[i + 1..] {
-                                *c = 0;
-                            }
-                            continue 'outer;
-                        }
-                    }
-                    break;
-                }
-                assert_eq!(result, expected);
-            }
-        }
-    }
-
-    #[test]
-    fn test_for_each_combinations_with_replacement_small_cases() {
-        for n in 1..=6 {
-            let values: Vec<i32> = (0..n).collect();
-            for r in 0..=6 {
-                let mut result = vec![];
-                values
-                    .as_slice()
-                    .for_each_combinations_with_replacement(r, |cur| result.push(cur.to_vec()));
-                let mut expected = vec![];
-                let mut current = vec![0; r];
-                'outer: loop {
-                    let ok = {
-                        let current = current.clone();
-                        current.is_sorted()
-                    };
-                    if ok {
-                        expected.push(current.clone());
-                    }
-                    for i in (0..r).rev() {
-                        if current[i] + 1 < n {
-                            current[i] += 1;
-                            for c in &mut current[i + 1..] {
-                                *c = 0;
-                            }
-                            continue 'outer;
-                        }
-                    }
-                    break;
-                }
-                assert_eq!(result, expected);
-            }
-        }
-    }
-
-    #[test]
-    fn test_next_prev_permutation() {
-        for n in 1..=7 {
-            let mut p: Vec<_> = (0..n).collect();
-            let mut a = vec![];
-            p.for_each_permutations(n, |p| a.push(p.to_vec()));
-            let mut b = vec![];
-            loop {
-                b.push(p.to_vec());
-                if !p.next_permutation() {
-                    break;
-                }
-                assert!(p.prev_permutation());
-                assert_eq!(b.last().as_ref().unwrap().as_slice(), &p);
-                assert!(p.next_permutation());
-            }
-            assert_eq!(a, b);
-        }
-    }
-
-    #[test]
-    fn test_next_prev_combination() {
-        for n in 1..=7 {
             for r in 0..=n {
-                let mut p: Vec<_> = (0..n).collect();
-                let mut a = vec![];
-                p.for_each_combinations(r, |p| a.push(p.to_vec()));
-                let mut b = vec![];
-                loop {
-                    b.push(p[..r].to_vec());
-                    if !p.next_combination(r) {
-                        break;
+                let mut combinations = Vec::new();
+                values.for_each_combinations(r, |row| combinations.push(row.to_vec()));
+                p = values.clone();
+                for (i, expected) in combinations.iter().enumerate() {
+                    assert_eq!(&p[..r], expected);
+                    if i + 1 < combinations.len() {
+                        assert!(p.next_combination(r));
+                        assert!(p.prev_combination(r));
+                        assert_eq!(&p[..r], expected);
                     }
-                    assert!(p.prev_combination(r));
-                    assert_eq!(b.last().as_ref().unwrap().as_slice(), &p[..r]);
-                    assert!(p.next_combination(r));
+                    assert_eq!(p.next_combination(r), i + 1 < combinations.len());
                 }
-                assert_eq!(a, b);
             }
         }
     }

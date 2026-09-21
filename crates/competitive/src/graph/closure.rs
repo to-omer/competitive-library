@@ -163,53 +163,55 @@ mod tests {
     fn closure_graph_sssp() {
         let mut rng = Xorshift::default();
         const A: u64 = 1_000_000_000;
-        let h = rng.rand(15) as usize + 1;
-        let w = rng.rand(15) as usize + 1;
+        for _ in 0..30 {
+            let h = rng.rand(8) as usize + 1;
+            let w = rng.rand(8) as usize + 1;
 
-        let weight: Vec<_> = repeat_with(|| Saturating(rng.rand(A - 1) + 1))
-            .take(8)
-            .collect();
-        let visitable: Vec<Vec<bool>> =
-            repeat_with(|| repeat_with(|| rng.gen_bool(0.8)).take(w).collect())
-                .take(h)
+            let weight: Vec<_> = repeat_with(|| Saturating(rng.rand(A - 1) + 1))
+                .take(8)
                 .collect();
+            let visitable: Vec<Vec<bool>> =
+                repeat_with(|| repeat_with(|| rng.gen_bool(0.8)).take(w).collect())
+                    .take(h)
+                    .collect();
 
-        let g = GridGraph::new_adj8(h, w);
-        let g1 = UsizeGraph::new(h * w, |u| {
-            g.adj8(g.unflat(u)).filter_map(|a| {
-                if visitable[a.0.0][a.0.1] {
-                    Some((g.flat(a.0), a.1))
-                } else {
-                    None
-                }
-            })
-        });
-        let g2 = ClosureGraph::new(
-            || {
-                (0..h)
-                    .flat_map(|i| (0..w).map(move |j| (i, j)))
-                    .filter(|&(i, j)| visitable[i][j])
-            },
-            |u| g.adj8(u).filter(|&((i, j), _)| visitable[i][j]),
-        );
-        for (i, visitable) in visitable.iter().enumerate() {
-            for (j, visitable) in visitable.iter().enumerate() {
-                assert_eq!((i, j), g.unflat(g.flat((i, j))));
-                if !visitable {
-                    continue;
-                }
-                let cost1 = g1
-                    .standard_sp_additive()
-                    .dijkstra([g.flat((i, j))], |dir| weight[dir as usize]);
-                let cost2 = g2
-                    .standard_sp_additive()
-                    .dijkstra([(i, j)], |dir| weight[dir as usize]);
-                for ni in 0..h {
-                    for nj in 0..w {
-                        assert_eq!(
-                            g1.vmap_get(&cost1, g.flat((ni, nj))),
-                            g2.vmap_get(&cost2, (ni, nj))
-                        );
+            let g = GridGraph::new_adj8(h, w);
+            let g1 = UsizeGraph::new(h * w, |u| {
+                g.adj8(g.unflat(u)).filter_map(|a| {
+                    if visitable[a.0.0][a.0.1] {
+                        Some((g.flat(a.0), a.1))
+                    } else {
+                        None
+                    }
+                })
+            });
+            let g2 = ClosureGraph::new(
+                || {
+                    (0..h)
+                        .flat_map(|i| (0..w).map(move |j| (i, j)))
+                        .filter(|&(i, j)| visitable[i][j])
+                },
+                |u| g.adj8(u).filter(|&((i, j), _)| visitable[i][j]),
+            );
+            for (i, visitable) in visitable.iter().enumerate() {
+                for (j, visitable) in visitable.iter().enumerate() {
+                    assert_eq!((i, j), g.unflat(g.flat((i, j))));
+                    if !visitable {
+                        continue;
+                    }
+                    let cost1 = g1
+                        .standard_sp_additive()
+                        .dijkstra([g.flat((i, j))], |dir| weight[dir as usize]);
+                    let cost2 = g2
+                        .standard_sp_additive()
+                        .dijkstra([(i, j)], |dir| weight[dir as usize]);
+                    for ni in 0..h {
+                        for nj in 0..w {
+                            assert_eq!(
+                                g1.vmap_get(&cost1, g.flat((ni, nj))),
+                                g2.vmap_get(&cost2, (ni, nj))
+                            );
+                        }
                     }
                 }
             }
@@ -220,39 +222,41 @@ mod tests {
     fn closure_graph_apsp() {
         let mut rng = Xorshift::default();
         const A: u64 = 1_000_000_000;
-        let h = rng.rand(15) as usize + 1;
-        let w = rng.rand(15) as usize + 1;
+        for _ in 0..30 {
+            let h = rng.rand(8) as usize + 1;
+            let w = rng.rand(8) as usize + 1;
 
-        let weight: Vec<_> = repeat_with(|| Saturating(rng.rand(A - 1) + 1))
-            .take(8)
-            .collect();
+            let weight: Vec<_> = repeat_with(|| Saturating(rng.rand(A - 1) + 1))
+                .take(8)
+                .collect();
 
-        let g = GridGraph::new_adj4(h, w);
-        let cost: Vec<Vec<Vec<_>>> = (0..h)
-            .map(|i| {
-                (0..w)
-                    .map(|j| {
-                        g.standard_sp_additive()
-                            .dijkstra([(i, j)], |dir| weight[dir as usize])
-                    })
-                    .collect()
-            })
-            .collect();
-        let g2 = ClosureGraph::new(
-            || (0..h).flat_map(|i| (0..w).map(move |j| (i, j))),
-            |u| g.adj4(u),
-        );
-        let cost2 = g2
-            .standard_sp_additive()
-            .warshall_floyd_ap(|dir| weight[dir as usize]);
-        for (i, row) in cost.iter().enumerate() {
-            for (j, source_cost) in row.iter().enumerate() {
-                for ni in 0..h {
-                    for nj in 0..w {
-                        assert_eq!(
-                            g.vmap_get(source_cost, (ni, nj)),
-                            g2.vmap_get(g2.vmap_get(&cost2, (i, j)), (ni, nj))
-                        );
+            let g = GridGraph::new_adj4(h, w);
+            let cost: Vec<Vec<Vec<_>>> = (0..h)
+                .map(|i| {
+                    (0..w)
+                        .map(|j| {
+                            g.standard_sp_additive()
+                                .dijkstra([(i, j)], |dir| weight[dir as usize])
+                        })
+                        .collect()
+                })
+                .collect();
+            let g2 = ClosureGraph::new(
+                || (0..h).flat_map(|i| (0..w).map(move |j| (i, j))),
+                |u| g.adj4(u),
+            );
+            let cost2 = g2
+                .standard_sp_additive()
+                .warshall_floyd_ap(|dir| weight[dir as usize]);
+            for (i, row) in cost.iter().enumerate() {
+                for (j, source_cost) in row.iter().enumerate() {
+                    for ni in 0..h {
+                        for nj in 0..w {
+                            assert_eq!(
+                                g.vmap_get(source_cost, (ni, nj)),
+                                g2.vmap_get(g2.vmap_get(&cost2, (i, j)), (ni, nj))
+                            );
+                        }
                     }
                 }
             }

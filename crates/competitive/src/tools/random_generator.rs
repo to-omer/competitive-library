@@ -398,69 +398,90 @@ macro_rules! rand {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::testutil::integer_boundary_values;
 
     #[test]
     fn test_random_range() {
         let mut rng = Xorshift::default();
-        assert_eq!(rng.random(1i32..2), 1);
-        assert_eq!(rng.random(1u32..2), 1);
-        assert_eq!(rng.random(1i32..=1), 1);
-        assert_eq!(rng.random(1u32..=1), 1);
-        assert_eq!(rng.random(i32::MAX..), i32::MAX);
-        assert_eq!(rng.random(u32::MAX..), u32::MAX);
-        assert_eq!(rng.random(..=i32::MIN), i32::MIN);
-        assert_eq!(rng.random(..=u32::MIN), u32::MIN);
+        macro_rules! check {
+            ($($ty:ty),*) => {$(
+                let values = integer_boundary_values!($ty);
+                let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(10_000)).collect();
+                for (a, b) in pairs {
+                    let (lo, hi) = (a.min(b), a.max(b));
+                    assert!((lo..=hi).contains(&rng.random(lo..=hi)));
+                    if lo < hi {
+                        assert!((lo..hi).contains(&rng.random(lo..hi)));
+                        assert!(rng.random(..hi) < hi);
+                    }
+                    assert!(rng.random(lo..) >= lo);
+                    assert!(rng.random(..=hi) <= hi);
+                    assert_eq!(rng.random(a..=a), a);
+                }
+            )*};
+        }
+        check!(
+            i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize
+        );
     }
 
     #[test]
     fn test_random_segment() {
         let mut rng = Xorshift::default();
-        for _ in 0..100_000 {
-            let n = (1..=1_000_000).rand(&mut rng);
-            let (l, r) = NotEmptySegment(n).rand(&mut rng);
-            assert!(l < r);
-            assert!(r <= n);
+        for n in 1..=16usize {
+            let mut counts = vec![vec![0; n + 1]; n];
+            for _ in 0..10_000 {
+                let (l, r) = NotEmptySegment(n).rand(&mut rng);
+                assert!(l < r && r <= n);
+                counts[l][r] += 1;
+            }
+            for (l, row) in counts.iter().enumerate() {
+                assert!(row[l + 1..].iter().all(|&count| count > 0));
+            }
         }
-
-        const N_SMALL: usize = 100;
-        let mut set = std::collections::HashSet::new();
-        for _ in 0..100_000 {
-            let (l, r) = NotEmptySegment(N_SMALL).rand(&mut rng);
-            assert!(l < r);
-            assert!(r <= N_SMALL);
-            set.insert((l, r));
-        }
-        assert!(set.len() == N_SMALL * (N_SMALL + 1) / 2);
     }
 
     #[test]
     fn test_rand_macro() {
         let mut rng = Xorshift::default();
-        rand!(
-            rng,
-            _x: ..10,
-            _lr: NotEmptySegment(10),
-            _a: [..10; 10],
-            _t: (..10,),
-            _r: (&(..10),&mut (..10)),
-            _p: [(1..=10,2..=10); 2]
-        );
+        for _ in 0..1000 {
+            let n = rng.random(1..=100);
+            let lo = rng.random(-100..=100);
+            let hi = lo + rng.random(1..=100);
+            rand!(rng, x: lo..hi, lr: NotEmptySegment(n), a: [lo..hi; n], t: (lo..hi,), r: (&(lo..hi), &mut (lo..hi)), p: [(lo..hi, lo..hi); 2]);
+            assert!(lr.0 < lr.1 && lr.1 <= n);
+            assert_eq!(a.len(), n);
+            assert!(
+                [x, t, r.0, r.1]
+                    .into_iter()
+                    .chain(a)
+                    .chain(p.into_iter().flat_map(|(a, b)| [a, b]))
+                    .all(|x| (lo..hi).contains(&x))
+            );
+        }
     }
 
     #[test]
     fn test_weighted_sampler() {
         let mut rng = Xorshift::default();
-        let weights = vec![1.0, 2.0, 3.0, 4.0];
-        let sampler = WeightedSampler::new(weights.clone());
-        let mut counts = vec![0; weights.len()];
-        for _ in 0..1_000_000 {
-            let idx = sampler.rand(&mut rng);
-            counts[idx] += 1;
-        }
-        for i in 0..weights.len() {
-            let expected = weights[i] / weights.iter().sum::<f64>();
-            let actual = counts[i] as f64 / 1_000_000.0;
-            assert!((expected - actual).abs() < 0.01);
+        for _ in 0..100 {
+            let n = rng.random(1..=16);
+            let mut weights: Vec<_> = rng.random_iter(0..=100).take(n).map(f64::from).collect();
+            weights[rng.random(0..n)] += 1.0;
+            let sampler = WeightedSampler::new(weights.clone());
+            let mut counts = vec![0; n];
+            for _ in 0..100_000 {
+                counts[sampler.rand(&mut rng)] += 1;
+            }
+            let sum: f64 = weights.iter().sum();
+            for (&weight, &count) in weights.iter().zip(&counts) {
+                let expected = weight / sum;
+                let actual = count as f64 / 100_000.0;
+                assert!((expected - actual).abs() < 0.01, "{weights:?}: {counts:?}");
+                if weight == 0.0 {
+                    assert_eq!(count, 0);
+                }
+            }
         }
     }
 }

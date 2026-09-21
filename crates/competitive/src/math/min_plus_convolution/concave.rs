@@ -249,36 +249,6 @@ mod tests {
     use crate::{math::min_plus_convolution::min_plus_convolution_naive, tools::Xorshift};
 
     #[test]
-    fn test_concave_envelope_exhaustively() {
-        let values = [-2_i64, 0, 3, i64::MAX];
-        let mut inputs = vec![Vec::new()];
-        for _ in 0..3 {
-            let prefixes = inputs.clone();
-            for prefix in prefixes {
-                for &value in &values {
-                    let mut input = prefix.clone();
-                    input.push(value);
-                    inputs.push(input);
-                }
-            }
-        }
-        inputs.sort();
-        inputs.dedup();
-        let concave: Vec<_> = inputs
-            .iter()
-            .filter(|input| !input.contains(&i64::MAX) && is_concave(input))
-            .collect();
-        for arbitrary in &inputs {
-            for &structured in &concave {
-                assert_eq!(
-                    min_plus_convolution_concave_envelope(arbitrary, structured),
-                    min_plus_convolution_naive(arbitrary, structured)
-                );
-            }
-        }
-    }
-
-    #[test]
     fn test_concave_algorithms_randomly() {
         let mut rng = Xorshift::default();
         for _ in 0..1_000 {
@@ -326,6 +296,36 @@ mod tests {
                 min_plus_convolution_concave_both(&concave, &other),
                 min_plus_convolution_naive(&concave, &other)
             );
+        }
+    }
+
+    #[test]
+    fn test_concave_envelope_exhaustively() {
+        let values = [-2_i64, 0, 3, i64::MAX];
+        let mut inputs = vec![Vec::new()];
+        for _ in 0..3 {
+            let prefixes = inputs.clone();
+            for prefix in prefixes {
+                for &value in &values {
+                    let mut input = prefix.clone();
+                    input.push(value);
+                    inputs.push(input);
+                }
+            }
+        }
+        inputs.sort();
+        inputs.dedup();
+        let concave: Vec<_> = inputs
+            .iter()
+            .filter(|input| !input.contains(&i64::MAX) && is_concave(input))
+            .collect();
+        for arbitrary in &inputs {
+            for &structured in &concave {
+                assert_eq!(
+                    min_plus_convolution_concave_envelope(arbitrary, structured),
+                    min_plus_convolution_naive(arbitrary, structured)
+                );
+            }
         }
     }
 }

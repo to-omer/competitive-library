@@ -49,61 +49,44 @@ mod tests {
 
     #[test]
     fn test_primitive_root() {
-        assert_eq!(3, primitive_root(998244353));
-        let pl = PrimeList::new(1000);
-        for p in pl.primes().map(u64::from) {
+        let primes: Vec<_> = PrimeList::new(1000).primes().map(u64::from).collect();
+        for p in primes {
             let g = primitive_root(p);
-            let mut x = g;
-            for _ in 1..p - 1 {
-                assert_ne!(x, 1);
+            let mut powers = vec![false; p as usize];
+            let mut x = 1;
+            for _ in 0..p - 1 {
+                assert!(!powers[x as usize]);
+                powers[x as usize] = true;
                 x = x * g % p;
             }
             assert_eq!(x, 1);
+            assert!(powers[1..].iter().all(|&seen| seen));
         }
     }
 
     #[test]
-    fn test_primitive_root_prime_power() {
-        let pl = PrimeList::new(100);
-        for p in pl.primes().skip(1).map(u64::from) {
-            for e in 1.. {
-                let n = p.pow(e);
-                let phi = n - n / p;
-                let g = {
-                    let pf = prime_factors(phi);
-                    let br = BarrettReduction::<u128>::new(n as _);
-                    (2..)
-                        .find(|&g| check_primitive_root(g, phi, &br, &pf))
-                        .unwrap()
-                };
-                let mut x = g;
-                for _ in 1..phi {
-                    assert_ne!(x, 1);
+    fn test_check_primitive_root() {
+        let mut rng = Xorshift::default();
+        let primes: Vec<_> = PrimeList::new(30).primes().skip(1).map(u64::from).collect();
+        for _ in 0..1000 {
+            let p = primes[rng.random(0..primes.len())];
+            let exponent = rng.random(1..=3);
+            let n = p.pow(exponent);
+            let phi = n - n / p;
+            let factors = prime_factors(phi);
+            let br = BarrettReduction::<u128>::new(n as _);
+            let g = rng.random(1..n);
+            if g % p == 0 {
+                continue;
+            }
+            let mut x = 1;
+            let order = (1..=phi)
+                .find(|_| {
                     x = x * g % n;
-                }
-                assert_eq!(x, 1);
-                if n >= 10_000 {
-                    break;
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn test_primitive_root_power_of_two() {
-        for e in 3.. {
-            let n = 2u64.pow(e);
-            let phi = n / 4;
-            let g = 5;
-            let mut x = g;
-            for _ in 1..phi {
-                assert_ne!(x, 1);
-                x = x * g % n;
-            }
-            assert_eq!(x, 1);
-            if n >= 10_000 {
-                break;
-            }
+                    x == 1
+                })
+                .unwrap();
+            assert_eq!(check_primitive_root(g, phi, &br, &factors), order == phi);
         }
     }
 }

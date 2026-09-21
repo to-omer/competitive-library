@@ -57,7 +57,14 @@ impl UndirectedSparseGraph {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{graph::UndirectedSparseGraph, tools::Xorshift, tree::MixedTree};
+    use crate::{
+        graph::UndirectedSparseGraph,
+        tools::{
+            Xorshift,
+            testutil::{exhaustive_sequences, sample_usize},
+        },
+        tree::{MixedTree, PathTree, PruferSequence, StarTree},
+    };
 
     impl UndirectedSparseGraph {
         fn naive_tree_center(&self) -> TreeCenter {
@@ -81,47 +88,46 @@ mod tests {
     }
 
     #[test]
-    fn test_center_handmaid() {
-        assert_eq!(
-            UndirectedSparseGraph::from_edges(1, vec![]).tree_center(),
-            TreeCenter::One(0)
-        );
-        assert_eq!(
-            UndirectedSparseGraph::from_edges(2, vec![(0, 1)]).tree_center(),
-            TreeCenter::Two(0, 1)
-        );
-        assert_eq!(
-            UndirectedSparseGraph::from_edges(3, vec![(0, 1), (0, 2)]).tree_center(),
-            TreeCenter::One(0)
-        );
-        assert_eq!(
-            UndirectedSparseGraph::from_edges(4, vec![(0, 1), (1, 2), (1, 3)]).tree_center(),
-            TreeCenter::One(1)
-        );
-        assert_eq!(
-            UndirectedSparseGraph::from_edges(5, vec![(0, 1), (1, 2), (1, 3), (3, 4)])
-                .tree_center(),
-            TreeCenter::Two(1, 3)
-        );
-        assert_eq!(
-            UndirectedSparseGraph::from_edges(
-                7,
-                vec![(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
-            )
-            .tree_center(),
-            TreeCenter::One(3)
-        );
-    }
-
-    #[test]
-    fn test_center_random() {
+    fn test_center() {
+        // Prüfer sequences enumerate every labelled tree through six vertices.
+        let exhaustive = (1usize..=6).flat_map(|n| {
+            let len = n.saturating_sub(2);
+            exhaustive_sequences(0..n, len..=len).map(move |sequence| {
+                let mut degrees = vec![1; n];
+                for &v in &sequence {
+                    degrees[v] += 1;
+                }
+                let mut edges = Vec::new();
+                for v in sequence {
+                    let leaf = degrees.iter().position(|&d| d == 1).unwrap();
+                    edges.push((leaf, v));
+                    degrees[leaf] -= 1;
+                    degrees[v] -= 1;
+                }
+                let leaves: Vec<_> = (0..n).filter(|&v| degrees[v] == 1).collect();
+                if let &[a, b] = leaves.as_slice() {
+                    edges.push((a, b));
+                }
+                UndirectedSparseGraph::from_edges(n, edges)
+            })
+        });
         let mut rng = Xorshift::default();
-        const N: usize = 200;
-        const Q: usize = 200;
-        for _ in 0..Q {
-            let n = rng.random(1..=N);
-            let g = rng.random(MixedTree(n));
-            assert_eq!(g.tree_center(), g.naive_tree_center());
+        let random = sample_usize(&mut rng, 16, 1..=200, 200)
+            .into_iter()
+            .flat_map(|n| {
+                [
+                    rng.random(PathTree(n)),
+                    rng.random(StarTree(n)),
+                    rng.random(PruferSequence(n)),
+                    rng.random(MixedTree(n)),
+                ]
+            });
+        for graph in exhaustive.chain(random) {
+            assert_eq!(
+                graph.tree_center(),
+                graph.naive_tree_center(),
+                "graph={graph:?}"
+            );
         }
     }
 }

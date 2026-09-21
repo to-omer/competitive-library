@@ -362,7 +362,8 @@ mod tests {
             rand!(rng, n: 1..30);
             let a = random_matrix(&mut rng, (n, n));
             let p = a.minimal_polynomial();
-            assert!(p.len() <= n + 1);
+            assert!(!p.is_empty() && p.len() <= n + 1);
+            assert!(p.iter().any(|x| !x.is_zero()));
             let mut res = Matrix::<R>::zeros((n, n));
             let mut pow = Matrix::<R>::eye((n, n));
             for p in p {

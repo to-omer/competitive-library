@@ -348,8 +348,7 @@ mod tests {
     use super::*;
     use crate::{chmax, chmin, data_structure::UnionFind, rand, tools::Xorshift};
 
-    fn gen_graph(n: usize, m: usize) -> Vec<(usize, usize)> {
-        let mut rng = Xorshift::default();
+    fn gen_graph(n: usize, m: usize, rng: &mut Xorshift) -> Vec<(usize, usize)> {
         let mut uf = UnionFind::new(n + m);
         let mut lr = vec![];
         while uf.size(0) < n + m {
@@ -435,7 +434,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..Q {
             rand!(rng, n: 4..=N, m: 4..=M);
-            let lr = gen_graph(n, m);
+            let lr = gen_graph(n, m, &mut rng);
             let mut dp = vec![vec![!0usize; 1 << m]; 1 << n];
             dp[0][0] = 0;
             for bitl in 0usize..1 << n {
@@ -482,7 +481,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..Q {
             rand!(rng, n: 4..=N, m: 4..=M);
-            let lr = gen_graph(n, m);
+            let lr = gen_graph(n, m, &mut rng);
             let mut ans = !0usize;
             for bitl in 0usize..1 << n {
                 for bitr in 0usize..1 << m {
@@ -518,7 +517,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..Q {
             rand!(rng, n: 4..=N, m: 4..=M);
-            let lr = gen_graph(n, m);
+            let lr = gen_graph(n, m, &mut rng);
             let mut ans = 0usize;
             for bitl in 0usize..1 << n {
                 for bitr in 0usize..1 << m {

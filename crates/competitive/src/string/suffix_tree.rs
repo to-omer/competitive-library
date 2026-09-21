@@ -603,15 +603,17 @@ where
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
     use std::collections::{BTreeMap, BTreeSet};
 
     #[test]
     fn test_suffix_tree_substrings() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(1usize..=100);
-            let csize = rng.random(1usize..=10);
-            let s: Vec<_> = rng.random_iter(0usize..csize).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
+            let n = s.len();
             let st = SuffixTree::new(s.clone());
             let mut substrings = vec![];
             assert_eq!(st.node(0).parent, !0);
@@ -638,8 +640,7 @@ mod tests {
                     expected.push(i..j);
                 }
             }
-            expected.sort_by_key(|r| (&s[r.clone()], r.start, r.end));
-            substrings.sort_by_key(|r| (&s[r.clone()], r.start, r.end));
+            substrings.sort_unstable_by_key(|r| (r.start, r.end));
             assert_eq!(substrings, expected);
         }
     }
@@ -647,10 +648,11 @@ mod tests {
     #[test]
     fn test_suffix_tree_distinct_substrings() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(1usize..=100);
-            let csize = rng.random(1usize..=10);
-            let s: Vec<_> = rng.random_iter(0usize..csize).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
+            let n = s.len();
             let st = SuffixTree::new(s.clone());
             let mut substrings = vec![];
             assert_eq!(st.node(0).parent, !0);
@@ -686,10 +688,11 @@ mod tests {
     #[test]
     fn test_suffix_tree_kth_distinct_substring() {
         let mut rng = Xorshift::default();
-        for _ in 0..200 {
-            let n = rng.random(0usize..=60);
-            let csize = rng.random(1usize..=10);
-            let s: Vec<_> = rng.random_iter(0usize..csize).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=60, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
+            let n = s.len();
             let st = SuffixTree::new(s.clone());
             let kth = st.kth_substrings();
 
@@ -722,10 +725,10 @@ mod tests {
     #[test]
     fn test_suffix_tree_kth_substring() {
         let mut rng = Xorshift::default();
-        for _ in 0..200 {
-            let n = rng.random(0usize..=60);
-            let csize = rng.random(1usize..=10);
-            let s: Vec<_> = rng.random_iter(0usize..csize).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=60, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
             let st = SuffixTree::new(s.clone());
             let kth = st.kth_substrings();
 

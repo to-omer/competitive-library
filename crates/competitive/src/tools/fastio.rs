@@ -930,65 +930,51 @@ impl<W: Write> fmt::Write for FastOutput<W> {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use crate::tools::testutil::integer_boundary_values;
 
     #[test]
-    fn test_fast_input_decimal_boundaries() {
+    fn test_integer_io() {
+        let mut rng = Xorshift::default();
         macro_rules! check {
-            ($ty:ty, $method:ident, $max:expr) => {{
-                let mut values: Vec<$ty> = vec![0, 1, $max];
-                let mut power: $ty = 1;
-                while let Some(next) = power.checked_mul(10).filter(|&x| x <= $max) {
-                    values.extend([next - 1, next]);
-                    if next < $max {
-                        values.push(next + 1);
+            ($($ty:ident),*) => {$(
+                for offset in 0..64 {
+                    let mut values = integer_boundary_values!($ty);
+                    if $ty::BITS <= 16 && offset == 0 {
+                        values.extend($ty::MIN..=$ty::MAX);
                     }
-                    power = next;
-                }
-                for offset in 0..32 {
+                    let n = rng.random(0..=1000);
+                    values.extend((0..n).map(|_| {
+                        let x: $ty = rng.random(..);
+                        x >> rng.random(0..$ty::BITS)
+                    }));
                     let mut input = vec![b' '; offset];
-                    for (i, x) in values.iter().enumerate() {
-                        write!(input, "{}{}", x, if i % 2 == 0 { ' ' } else { '\n' }).unwrap();
+                    for x in &values {
+                        write!(input, "{}{}", x, char::from([b' ', b'\n', b'\t'][rng.random(0usize..3)])).unwrap();
                     }
                     input.extend_from_slice(&[b' '; 32]);
-                    let mut fi = unsafe { FastInput::from_slice(&input[offset..]) };
-                    for &x in &values {
-                        assert_eq!(unsafe { fi.$method() }, x, "offset={offset}");
+                    let mut reader = unsafe { FastInput::from_slice(&input[offset..]) };
+                    for &x in &values { assert_eq!(unsafe { reader.$ty() }, x); }
+                    let mut output = Vec::new();
+                    {
+                        let mut writer = FastOutput::with_capacity(offset, &mut output);
+                        for &x in &values { writer.$ty(x); writer.byte(b'\n'); }
                     }
+                    let expected: String = values.iter().map(|x| format!("{x}\n")).collect();
+                    assert_eq!(output, expected.as_bytes());
                 }
-            }};
+            )*};
         }
-        check!(u8, u8, u8::MAX);
-        check!(u16, u16, u16::MAX);
-        check!(u32, u32_small, 99_999_999);
-        check!(u32, u32, u32::MAX);
-        check!(u64, u64, u64::MAX);
-        check!(u128, u128, u128::MAX);
-    }
-
-    #[test]
-    fn test_fast_output_buffer_boundaries() {
-        let mut rng = Xorshift::default();
-        for capacity in 0..=80 {
-            let mut output = Vec::new();
-            let mut expected = String::new();
-            {
-                let mut fo = FastOutput::with_capacity(capacity, &mut output);
-                for i in 0..1000 {
-                    let x = match i % 5 {
-                        0 => 0,
-                        1 => u64::MAX,
-                        2 => i64::MIN as u64,
-                        3 => 10u64.pow(rng.random(0..=19)) - 1,
-                        _ => rng.rand64(),
-                    };
-                    fo.u64(x);
-                    fo.byte(b' ');
-                    fo.i64(x as i64);
-                    fo.byte(b'\n');
-                    expected.push_str(&format!("{} {}\n", x, x as i64));
-                }
-            }
-            assert_eq!(output, expected.as_bytes(), "capacity={capacity}");
+        check!(
+            u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
+        );
+        for value in integer_boundary_values!(u32)
+            .into_iter()
+            .filter(|&v| v < 100_000_000)
+            .chain(rng.random_iter(0..100_000_000u32).take(1000))
+        {
+            let input = format!("{value}                 ");
+            let mut reader = unsafe { FastInput::from_slice(input.as_bytes()) };
+            assert_eq!(unsafe { reader.u32_small() }, value);
         }
     }
 
@@ -1031,342 +1017,6 @@ mod tests {
                 // SAFETY: byte fields need not be UTF-8; each read consumes one delimited field.
                 assert_eq!(unsafe { reader.bytes() }, token);
             }
-        }
-    }
-
-    #[test]
-    fn test_past_input_u8() {
-        let mut a = vec![];
-        let mut s = String::new();
-        for i in 0..=u8::MAX {
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.u8() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_u16() {
-        let mut a = vec![];
-        let mut s = String::new();
-        for i in 0..=u16::MAX {
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.u16() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_u32() {
-        let mut rng = Xorshift::default();
-        let mut a = vec![];
-        let mut s = String::new();
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u32::BITS);
-            let i = rng.random(0..=u32::MAX.wrapping_shr(u32::BITS - k));
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.u32() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_u64() {
-        let mut rng = Xorshift::default();
-        let mut a = vec![];
-        let mut s = String::new();
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u64::BITS);
-            let i = rng.random(0..=u64::MAX.wrapping_shr(u64::BITS - k));
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.u64() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_u128() {
-        let mut rng = Xorshift::default();
-        let mut a = vec![];
-        let mut s = String::new();
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u128::BITS);
-            let i = rng.random(0..=u128::MAX.wrapping_shr(u128::BITS - k));
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.u128() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_i8() {
-        let mut a = vec![];
-        let mut s = String::new();
-        for i in i8::MIN..=i8::MAX {
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.i8() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_i16() {
-        let mut a = vec![];
-        let mut s = String::new();
-        for i in i16::MIN..=i16::MAX {
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.i16() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_i32() {
-        let mut rng = Xorshift::default();
-        let mut a = vec![];
-        let mut s = String::new();
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u32::BITS);
-            let i = rng
-                .random(0..=u32::MAX.wrapping_shr(u32::BITS - k))
-                .cast_signed();
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.i32() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_i64() {
-        let mut rng = Xorshift::default();
-        let mut a = vec![];
-        let mut s = String::new();
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u64::BITS);
-            let i = rng
-                .random(0..=u64::MAX.wrapping_shr(u64::BITS - k))
-                .cast_signed();
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.i64() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_past_input_i128() {
-        let mut rng = Xorshift::default();
-        let mut a = vec![];
-        let mut s = String::new();
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u128::BITS);
-            let i = rng
-                .random(0..=u128::MAX.wrapping_shr(u128::BITS - k))
-                .cast_signed();
-            a.push(i);
-            s.push_str(&format!("{}\n", i));
-        }
-        s.push_str("                                ");
-        let mut fi = unsafe { FastInput::from_slice(s.as_bytes()) };
-        for a in a {
-            let x = unsafe { fi.i128() };
-            assert_eq!(x, a);
-        }
-    }
-
-    #[test]
-    fn test_fast_output_u8() {
-        let mut fo = FastOutput::new(Vec::new());
-        for i in 0..=u8::MAX {
-            fo.u8(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for i in 0..=u8::MAX {
-            let line = lines.next().unwrap();
-            assert_eq!(line, i.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_u16() {
-        let mut fo = FastOutput::new(Vec::new());
-        for i in 0..=u16::MAX {
-            fo.u16(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for i in 0..=u16::MAX {
-            let line = lines.next().unwrap();
-            assert_eq!(line, i.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_u32() {
-        let mut rng = Xorshift::default();
-        let mut fo = FastOutput::new(Vec::new());
-        let mut a = vec![];
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u32::BITS);
-            let i = rng.random(0..=u32::MAX.wrapping_shr(u32::BITS - k));
-            a.push(i);
-            fo.u32(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for &a in &a {
-            let line = lines.next().unwrap();
-            assert_eq!(line, a.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_u64() {
-        let mut rng = Xorshift::default();
-        let mut fo = FastOutput::new(Vec::new());
-        let mut a = vec![];
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u64::BITS);
-            let i = rng.random(0..=u64::MAX.wrapping_shr(u64::BITS - k));
-            a.push(i);
-            fo.u64(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for &a in &a {
-            let line = lines.next().unwrap();
-            assert_eq!(line, a.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_i8() {
-        let mut fo = FastOutput::new(Vec::new());
-        for i in i8::MIN..=i8::MAX {
-            fo.i8(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for i in i8::MIN..=i8::MAX {
-            let line = lines.next().unwrap();
-            assert_eq!(line, i.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_i16() {
-        let mut fo = FastOutput::new(Vec::new());
-        for i in i16::MIN..=i16::MAX {
-            fo.i16(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for i in i16::MIN..=i16::MAX {
-            let line = lines.next().unwrap();
-            assert_eq!(line, i.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_i32() {
-        let mut rng = Xorshift::default();
-        let mut fo = FastOutput::new(Vec::new());
-        let mut a = vec![];
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u32::BITS);
-            let i = rng
-                .random(0..=u32::MAX.wrapping_shr(u32::BITS - k))
-                .cast_signed();
-            a.push(i);
-            fo.i32(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for &a in &a {
-            let line = lines.next().unwrap();
-            assert_eq!(line, a.to_string());
-        }
-    }
-
-    #[test]
-    fn test_fast_output_i64() {
-        let mut rng = Xorshift::default();
-        let mut fo = FastOutput::new(Vec::new());
-        let mut a = vec![];
-        for _ in 0..100_000 {
-            let k = rng.random(0..=u64::BITS);
-            let i = rng
-                .random(0..=u64::MAX.wrapping_shr(u64::BITS - k))
-                .cast_signed();
-            a.push(i);
-            fo.i64(i);
-            fo.byte(b'\n');
-        }
-        fo.flush();
-        let s = std::str::from_utf8(&fo.inner).unwrap();
-        let mut lines = s.lines();
-        for &a in &a {
-            let line = lines.next().unwrap();
-            assert_eq!(line, a.to_string());
         }
     }
 }

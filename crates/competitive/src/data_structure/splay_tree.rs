@@ -474,6 +474,7 @@ where
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use std::collections::BTreeSet;
     use std::{
         cell::RefCell,
         collections::{BTreeMap, VecDeque},
@@ -603,16 +604,31 @@ mod tests {
                 COUNT.with(|count| *count.borrow_mut() += 1);
             }
         }
-        {
-            let mut tree = SplayTree::new();
-            for key in 0..100 {
-                tree.insert(key, CheckDrop);
+
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            COUNT.with(|count| *count.borrow_mut() = 0);
+            let mut inserted = 0;
+            let mut expected = BTreeSet::new();
+            {
+                let mut tree = SplayTree::new();
+                for _ in 0..1000 {
+                    let key = rng.random(0..=100);
+                    if rng.random(0..2) == 0 {
+                        tree.insert(key, CheckDrop);
+                        expected.insert(key);
+                        inserted += 1;
+                    } else {
+                        tree.remove(&key);
+                        expected.remove(&key);
+                    }
+                    assert_eq!(
+                        COUNT.with(|count| *count.borrow()),
+                        inserted - expected.len()
+                    );
+                }
             }
-            for key in 0..50 {
-                tree.remove(&key);
-            }
-            assert_eq!(COUNT.with(|count| *count.borrow()), 50);
+            assert_eq!(COUNT.with(|count| *count.borrow()), inserted);
         }
-        assert_eq!(COUNT.with(|count| *count.borrow()), 100);
     }
 }

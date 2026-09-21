@@ -522,6 +522,22 @@ mod tests {
                 }
             }
         }
+
+        let mut rng = Xorshift::default();
+        let primes: Vec<_> = PrimeList::new(1000).primes().map(u64::from).collect();
+        for _ in 0..1000 {
+            let p = primes[rng.random(0..primes.len())];
+            let a = rng.random(1..p);
+            let b = rng.random(1..p);
+            let l = discrete_logarithm_prime_mod(a, b, p);
+            let mut value = 1;
+            let expected = (0..p).find(|_| {
+                let found = value == b;
+                value = value * a % p;
+                found
+            });
+            assert_eq!(l, expected, "{a} {b} {p}");
+        }
     }
 
     #[test]
@@ -542,21 +558,29 @@ mod tests {
         let mut rng = Xorshift::default();
         let p = 1_000_000_000_000 - 11;
         for _ in 0..20 {
-            let (a, b) = rng.random((1..p, 1..p));
+            let a = rng.random(1..p);
+            let exponent = rng.random(0..p);
+            let b = pow(a, exponent, &BarrettReduction::<u128>::new(p as _));
             let l = discrete_logarithm_prime_mod(a, b, p);
+            assert!(l.is_some(), "constructed reachable target");
             check(a, b, p, l, false);
         }
     }
 
     #[test]
     fn test_pohlig_hellman_prime_power_order() {
-        let p = 2u64;
-        for e in 3..40 {
-            let a = 5;
-            for b in (1..100.min(p.pow(e))).step_by(4) {
-                let l = pohlig_hellman_prime_power_order(a, b, p.pow(e), p, e - 2);
-                check(a, b, p.pow(e), l, false);
-            }
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let e = rng.random(3..40);
+            let n = 2u64.pow(e);
+            let br = BarrettReduction::<u128>::new(n as _);
+            let a = pow(5, rng.random(0..n / 8) * 2 + 1, &br);
+            let exponent = rng.random(0..n / 4);
+            let b = pow(a, exponent, &br);
+            assert_eq!(
+                pohlig_hellman_prime_power_order(a, b, n, 2, e - 2),
+                Some(exponent)
+            );
         }
     }
 
@@ -576,6 +600,27 @@ mod tests {
                 }
             }
         }
+
+        let mut rng = Xorshift::default();
+        let primes: Vec<_> = PrimeList::new(30).primes().map(u64::from).collect();
+        for _ in 0..1000 {
+            let p = primes[rng.random(0..primes.len())];
+            let e = rng.random(1..=3);
+            let n = p.pow(e);
+            let a = rng.random(1..n);
+            let b = rng.random(1..n);
+            if a % p == 0 || b % p == 0 {
+                continue;
+            }
+            let l = discrete_logarithm_prime_power(a, b, p, e).map(|t| t.0);
+            let mut value = 1;
+            let expected = (0..n).find(|_| {
+                let found = value == b;
+                value = value * a % n;
+                found
+            });
+            assert_eq!(l, expected, "{a} {b} {p}^{e}");
+        }
     }
 
     #[test]
@@ -587,6 +632,20 @@ mod tests {
                     check(a, b, n, l, true);
                 }
             }
+        }
+
+        let mut rng = Xorshift::default();
+        for _ in 0..10_000 {
+            let n = rng.random(1..=100u64);
+            let a = rng.random(0..n);
+            let b = rng.random(0..n);
+            let mut value = 1 % n;
+            let expected = (0..=n).find(|_| {
+                let found = value == b;
+                value = value * a % n;
+                found
+            });
+            assert_eq!(discrete_logarithm(a, b, n), expected, "{a} {b} {n}");
         }
     }
 
@@ -630,8 +689,10 @@ mod tests {
         for _ in 0..20 {
             let n = rng.random(1..1_000_000_000_000_000_000);
             let a = rng.random(0..n);
-            let b = rng.random(0..n);
+            let exponent = rng.random(0..n);
+            let b = pow(a, exponent, &BarrettReduction::<u128>::new(n as _));
             let l = discrete_logarithm(a, b, n);
+            assert!(l.is_some(), "constructed reachable target");
             check(a, b, n, l, false);
         }
     }

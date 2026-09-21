@@ -563,31 +563,55 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
+    use std::array;
 
     #[test]
     fn test_scan() {
-        let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1 2 3");
-        scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'), e: [usize; const 2]);
-        assert_eq!(x, 1);
-        assert_eq!(y, '2');
-        assert_eq!(z, 2);
-        assert_eq!(a, 0);
-        assert_eq!(b, vec![1, 2]);
-        assert_eq!(c, (1, 1));
-        assert_eq!(d, vec![1, 1]);
-        assert_eq!(e, [2, 3]);
-
-        scan!(src = "12 34", c: Vec<usize> = CharsWithBase('0'), d: [Vec<usize> = CharsWithBase('0'); 1]);
-        assert_eq!(c, vec![1, 2]);
-        assert_eq!(d, vec![vec![3, 4]]);
-
-        scan!(src = "1", x);
-        assert_eq!(x, 1);
-        assert_eq!(scan_value!(src = "1", usize), 1);
-
-        scan!(iter = "1".split_ascii_whitespace(), x);
-        assert_eq!(x, 1);
-        assert_eq!(scan_value!(iter = "1".split_ascii_whitespace(), usize), 1);
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let values: [usize; 10] = array::from_fn(|_| rng.random(1..=9));
+            let text = format!(
+                "{} {} {} {} {} {} {} {} {}.{} {} {}",
+                values[0],
+                values[1],
+                values[2],
+                char::from(b'a' + values[3] as u8),
+                values[4],
+                values[5],
+                values[6],
+                values[7],
+                values[8],
+                values[9],
+                values[0],
+                values[1]
+            );
+            let mut s = Scanner::new(&text);
+            scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'), e: [usize; const 2]);
+            assert_eq!(x, values[0]);
+            assert_eq!(y, char::from(b'0' + values[1] as u8));
+            assert_eq!(z, values[2] - 1);
+            assert_eq!(a, values[3]);
+            assert_eq!(b, values[4..6]);
+            assert_eq!(c, (values[6], values[7]));
+            assert_eq!(d, values[8..10]);
+            assert_eq!(e, [values[0], values[1]]);
+            let text = format!("{}{} {}{}", values[0], values[1], values[2], values[3]);
+            scan!(src = &text, c: Vec<usize> = CharsWithBase('0'), d: [Vec<usize> = CharsWithBase('0'); 1]);
+            assert_eq!(c, values[..2]);
+            assert_eq!(d, vec![values[2..4].to_vec()]);
+            let text = rng.random(0..=usize::MAX).to_string();
+            let expected: usize = text.parse().unwrap();
+            scan!(src = &text, x);
+            assert_eq!(x, expected);
+            assert_eq!(scan_value!(src = &text, usize), expected);
+            scan!(iter = text.split_ascii_whitespace(), x);
+            assert_eq!(x, expected);
+            assert_eq!(
+                scan_value!(iter = text.split_ascii_whitespace(), usize),
+                expected
+            );
+        }
     }
 
     #[test]
@@ -599,26 +623,51 @@ mod tests {
                 9 => Complex { n: usize, c: [(usize, Vec<usize> = CharsWithBase('a')); n] },
             }
         }
-
-        let mut s = Scanner::new("0   1 2 a  9 2 3 ab 2 ab");
-        scan!(s, q1: Query, q2: Query, q3: Query);
-        match q1 {
-            Query::Noop => {}
-            _ => panic!("unexpected"),
-        }
-        match q2 {
-            Query::Args { i, s } => {
-                assert_eq!(i, 1);
-                assert_eq!(s, 'a');
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let tag = rng.random(0..3);
+            let n = rng.random(0..=16);
+            let i = rng.random(1..=1000usize);
+            let ch = char::from(rng.random(b'a'..=b'z'));
+            let rows: Vec<_> = (0..n)
+                .map(|_| {
+                    let len = rng.random(1..=10);
+                    (
+                        rng.random(0..=100usize),
+                        rng.random_iter(0..26usize).take(len).collect::<Vec<_>>(),
+                    )
+                })
+                .collect();
+            let text = match tag {
+                0 => "0".to_owned(),
+                1 => format!("1 {i} {ch}"),
+                _ => format!(
+                    "9 {n} {}",
+                    rows.iter()
+                        .map(|(a, b)| format!(
+                            "{} {}",
+                            a,
+                            b.iter()
+                                .map(|&c| char::from(b'a' + c as u8))
+                                .collect::<String>()
+                        ))
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                ),
+            };
+            let mut s = Scanner::new(&text);
+            match (tag, s.scan::<Query>()) {
+                (0, Query::Noop) => {}
+                (1, Query::Args { i: actual, s }) => {
+                    assert_eq!(actual, i - 1);
+                    assert_eq!(s, ch);
+                }
+                (2, Query::Complex { n: actual, c }) => {
+                    assert_eq!(actual, n);
+                    assert_eq!(c, rows);
+                }
+                _ => panic!("unexpected query: {text}"),
             }
-            _ => panic!("unexpected"),
-        }
-        match q3 {
-            Query::Complex { n, c } => {
-                assert_eq!(n, 2);
-                assert_eq!(c, vec![(3, vec![0, 1]), (2, vec![0, 1])]);
-            }
-            _ => panic!("unexpected"),
         }
     }
 }

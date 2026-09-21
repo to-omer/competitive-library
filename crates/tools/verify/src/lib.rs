@@ -532,91 +532,83 @@ pub fn init_logger(target: String) -> Result<(), log::SetLoggerError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::read_to_string;
+    use rand::{Rng, SeedableRng};
 
-    fn test_with_result(
-        problem: &'static str,
-        fn_name: &'static str,
-        get_result: impl FnOnce(Vec<TestCase>) -> BoxResult<VerifyResults>,
-    ) -> (BoxResult<()>, String) {
-        std::fs::create_dir_all(
-            get_workspace_root()
-                .unwrap()
-                .join("target/tmp/verify/test_with_result"),
-        )
-        .unwrap();
+    #[test]
+    fn test_verification_reports() {
+        let directory = get_workspace_root()
+            .unwrap()
+            .join("target/tmp/verify/test_reports");
+        std::fs::create_dir_all(&directory).unwrap();
         let config = VerifyConfig::new(
             Service::AizuOnlineJudge,
-            problem,
-            "target/tmp/verify/test_with_result/sample.rs",
-            fn_name,
+            "sample",
+            "target/tmp/verify/test_reports/sample.rs",
+            "results",
             "test-service::sample",
         );
-        let res = match config.get_testcases_and_checker() {
-            Ok((cases, _)) => get_result(cases),
-            Err(err) => Err(err),
-        };
-        let res = config.finalize(res);
-        let path = Path::new(config.cur_file)
-            .with_file_name(config.fn_name)
-            .with_extension("md");
-        let path = get_workspace_root().unwrap().join(path);
-        (res, read_to_string(path).unwrap())
-    }
-
-    #[test]
-    fn test_accepted() {
-        let (res, content) = test_with_result("sample", "sample_1", |cases| {
-            let mut res = VerifyResults::new();
-            for case in cases {
-                let name = case.name.to_string();
-                let mut elapseds = vec![];
-                loop {
-                    let start = Instant::now();
-                    elapseds.push(start.elapsed());
-                    if elapseds.len() >= 10 {
-                        let status = VerifyStatus::Accepted;
-                        res.push(name, status, elapseds);
-                        break;
-                    }
+        let mut rng = rand::rngs::StdRng::seed_from_u64(612971);
+        let statuses = [
+            VerifyStatus::Accepted,
+            VerifyStatus::WrongAnswer,
+            VerifyStatus::RuntimeError,
+            VerifyStatus::InternalError,
+        ];
+        for len in 0..=4 {
+            for mut code in 0..statuses.len().pow(len) {
+                let mut results = VerifyResults::new();
+                let mut expected_status = VerifyStatus::Accepted;
+                let mut expected_elapsed = 0;
+                let mut expected_rows = Vec::new();
+                for i in 0..len {
+                    let status = statuses[code % statuses.len()];
+                    code /= statuses.len();
+                    expected_status = expected_status.max(status);
+                    let count = rng.random_range(0..=10);
+                    let millis: Vec<u64> = (0..count).map(|_| rng.random_range(0..=1000)).collect();
+                    let mean = if millis.is_empty() {
+                        0.0
+                    } else {
+                        millis.iter().sum::<u64>() as f64 / millis.len() as f64
+                    };
+                    let deviation = if millis.is_empty() {
+                        0.0
+                    } else {
+                        (millis
+                            .iter()
+                            .map(|&x| (x as f64 - mean).powi(2))
+                            .sum::<f64>()
+                            / millis.len() as f64)
+                            .sqrt()
+                    };
+                    let name = format!("case_{i}_{}", rng.random::<u32>());
+                    expected_rows.push(format!(
+                        "| {name} | {status} | {} ± {} ms |",
+                        mean.round() as u128,
+                        deviation.round() as u128
+                    ));
+                    expected_elapsed = expected_elapsed.max(mean.round() as u128);
+                    results.push(
+                        name,
+                        status,
+                        millis.into_iter().map(Duration::from_millis).collect(),
+                    );
+                }
+                assert_eq!(results.status(), expected_status);
+                assert_eq!(results.is_ac(), expected_status == VerifyStatus::Accepted);
+                assert_eq!(results.elapsed(), expected_elapsed);
+                let actual = config.finalize(Ok(results));
+                assert_eq!(actual.is_ok(), expected_status == VerifyStatus::Accepted);
+                let content = std::fs::read_to_string(directory.join("results.md")).unwrap();
+                assert!(content.contains("VERIFY_TARGET: sample"));
+                assert!(content.contains(&format!("{expected_status}  {expected_elapsed}ms")));
+                for row in expected_rows {
+                    assert!(content.contains(&row), "{row}\n{content}");
                 }
             }
-            Ok(res)
-        });
-        assert!(res.is_ok(), "{}", res.unwrap_err());
-        assert!(content.contains("AC"));
-        assert!(content.contains("VERIFY_TARGET: sample"));
-    }
-
-    #[test]
-    fn test_wrong_answer() {
-        let (res, content) = test_with_result("sample", "sample_2", |cases| {
-            let mut res = VerifyResults::new();
-            for case in cases {
-                let name = case.name.to_string();
-                let mut elapseds = vec![];
-                loop {
-                    let start = Instant::now();
-                    elapseds.push(start.elapsed());
-                    if elapseds.len() >= 10 {
-                        let status = VerifyStatus::WrongAnswer;
-                        res.push(name, status, elapseds);
-                        break;
-                    }
-                }
-            }
-            Ok(res)
-        });
-        assert!(res.is_err(), "{}", res.unwrap_err());
-        assert!(content.contains("WA"));
-        assert!(content.contains("VERIFY_TARGET: sample"));
-    }
-
-    #[test]
-    fn test_internal_error() {
-        let (res, content) =
-            test_with_result("sample", "sample_3", |_| Err(Box::new(VerifyFailed)));
-        assert!(res.is_err(), "{}", res.unwrap_err());
+        }
+        assert!(config.finalize(Err(Box::new(VerifyFailed))).is_err());
+        let content = std::fs::read_to_string(directory.join("results.md")).unwrap();
         assert!(content.contains("❌"));
         assert!(content.contains("VERIFY_TARGET: sample"));
     }

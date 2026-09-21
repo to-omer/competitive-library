@@ -186,35 +186,29 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::testutil::integer_boundary_values;
     use crate::{num::DoubleDouble, tools::Xorshift};
+    use std::array;
 
     #[test]
-    fn test_trisect_unsigned() {
-        for p in 0u8..=u8::MAX {
-            assert_eq!(p, u8::trisect_unkey(p.trisect_key()));
-            for q in 0u8..=u8::MAX {
-                assert_eq!(p.cmp(&q), p.trisect_key().cmp(&q.trisect_key()));
-            }
-        }
-    }
-
-    #[test]
-    fn test_trisect_signed() {
-        for p in i8::MIN..=i8::MAX {
-            assert_eq!(p, i8::trisect_unkey(p.trisect_key()));
-            for q in i8::MIN..=i8::MAX {
-                assert_eq!(p.cmp(&q), p.trisect_key().cmp(&q.trisect_key()));
-            }
-        }
-    }
-
-    #[test]
-    fn test_trisect_float() {
+    fn test_trisect() {
         let mut rng = Xorshift::default();
+        macro_rules! check {
+            ($($ty:ty),*) => {$(
+                let mut values = integer_boundary_values!($ty);
+                if <$ty>::BITS == 8 { values = (<$ty>::MIN..=<$ty>::MAX).collect(); }
+                let pairs: Vec<_> = values.iter().flat_map(|&p| values.iter().map(move |&q| (p, q))).chain(rng.random_iter((.., ..)).take(1000)).collect();
+                for (p, q) in pairs {
+                    assert_eq!(p, <$ty>::trisect_unkey(p.trisect_key()));
+                    assert_eq!(p.cmp(&q), p.trisect_key().cmp(&q.trisect_key()));
+                }
+            )*};
+        }
+        check!(u8, i8, u16, i16, u32, i32, u64, i64, usize, isize);
         for _ in 0..1000 {
-            let p = (rng.randf() - 0.5) * 200.;
+            let p = (rng.randf() - 0.5) * 2e100;
+            let q = (rng.randf() - 0.5) * 2e100;
             assert_eq!(p, f64::trisect_unkey(p.trisect_key()));
-            let q = (rng.randf() - 0.5) * 200.;
             assert_eq!(
                 p.partial_cmp(&q),
                 p.trisect_key().partial_cmp(&q.trisect_key())
@@ -223,56 +217,41 @@ mod tests {
     }
 
     #[test]
-    fn test_ternary_search_unsigned() {
-        for p in 0u8..=u8::MAX {
-            for l in 0u8..=u8::MAX {
+    fn test_ternary_search() {
+        for p in 0..=u8::MAX {
+            for l in 0..=u8::MAX {
                 for r in l..=u8::MAX {
-                    let f = |x| p.abs_diff(x);
-                    assert_eq!(
-                        f(l).min(f(r)).min(f(p.clamp(l, r))),
-                        ternary_search(l..=r, f).1,
-                    );
+                    assert_eq!(ternary_search(l..=r, |x| p.abs_diff(x)).0, p.clamp(l, r));
                 }
             }
         }
-    }
-
-    #[test]
-    fn test_ternary_search_signed() {
-        for p in -20..=20 {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let l = rng.random(-100i64..=100);
+            let r = rng.random(l..=100);
+            let p = rng.random(-100i64..=100);
+            let a = rng.random(1..=100i64);
+            let b = rng.random(-100i64..=100);
+            let f = |x: i64| a * (x - p).pow(2) + b;
+            let actual = ternary_search(l..=r, f);
+            assert_eq!(actual.0, p.clamp(l, r));
+            assert_eq!(actual.1, (l..=r).map(f).min().unwrap());
+            let l = rng.random(0..=u8::MAX);
+            let r = rng.random(l..=u8::MAX);
+            let p: u8 = rng.random(..);
             assert_eq!(
-                p.clamp(-10, 10),
-                ternary_search(-10i64..=10, |x| 10 * (x - p).pow(2) + 5).0,
+                ternary_search(l..=r, |x| p.abs_diff(x)).1,
+                (l..=r).map(|x| p.abs_diff(x)).min().unwrap()
             );
+            let p = (rng.randf() - 0.5) * 2e5;
+            let f = |x| (DoubleDouble::from(x) - DoubleDouble::from(p)).abs();
+            assert_eq!(ternary_search(f64::MIN..=f64::MAX, f).0, p);
+            let actual = golden_ternary_search(-1e100..=1e100, 1000, f).0;
+            assert!((actual - p).abs() <= 2.0 * f64::EPSILON * p.abs().max(1.0));
+            let mut bounds: [f64; 8] = array::from_fn(|_| (rng.randf() - 0.5) * 2e5);
+            bounds.sort_by(f64::total_cmp);
+            let expected = p.clamp(bounds[0], *bounds.last().unwrap());
+            assert_eq!(piecewise_ternary_search(bounds, f).0, expected);
         }
-    }
-
-    #[test]
-    fn test_ternary_search_float() {
-        assert_eq!(
-            std::f64::consts::PI,
-            ternary_search(f64::MIN..=f64::MAX, |x| (DoubleDouble::from(x)
-                - DoubleDouble::from(std::f64::consts::PI))
-            .abs())
-            .0,
-        );
-
-        for a in 0..1000 {
-            assert_eq!(
-                0.0f64,
-                piecewise_ternary_search([0.0, 1e-9, 1.0], |x| (x - (a as f64) / 1000.0).powi(2)).1,
-            )
-        }
-    }
-
-    #[test]
-    fn test_golden_ternary_search_float() {
-        assert_eq!(
-            std::f64::consts::PI,
-            golden_ternary_search(-1e100..=1e100, 1000, |x| (DoubleDouble::from(x)
-                - DoubleDouble::from(std::f64::consts::PI))
-            .abs())
-            .0,
-        );
     }
 }

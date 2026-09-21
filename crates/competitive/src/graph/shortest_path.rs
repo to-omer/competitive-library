@@ -696,5 +696,46 @@ mod tests {
                 }
             }
         }
+
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(1..=12);
+            let mut edges = Vec::new();
+            for u in 0..n {
+                for v in u + 1..n {
+                    if rng.random(0..2) == 0 {
+                        edges.push((u, v));
+                    }
+                }
+            }
+            let weights: Vec<usize> = rng.random_iter(1..=10).take(edges.len()).collect();
+            let graph = DirectedSparseGraph::from_edges(n, edges.clone());
+            let src = rng.random(0..n);
+            let mut paths = vec![(src, 0)];
+            let mut expected = vec![(usize::MAX, 0u64); n];
+            while let Some((u, distance)) = paths.pop() {
+                if distance < expected[u].0 {
+                    expected[u] = (distance, 1);
+                } else if distance == expected[u].0 {
+                    expected[u].1 += 1;
+                }
+                for (eid, &(_, v)) in edges
+                    .iter()
+                    .enumerate()
+                    .filter(|&(_, &(from, _))| from == u)
+                {
+                    paths.push((v, distance + weights[eid]));
+                }
+            }
+            let actual = graph
+                .path_folding_sp_additive_addmul()
+                .dijkstra([src], |eid| {
+                    PartialIgnoredOrd(Saturating(weights[eid]), 1u64)
+                });
+            for (actual, expected) in actual.iter().zip(expected) {
+                assert_eq!(actual.0, Saturating(expected.0));
+                assert_eq!(actual.1, expected.1);
+            }
+        }
     }
 }

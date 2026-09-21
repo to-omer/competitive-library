@@ -988,18 +988,10 @@ mod tests {
 
     #[test]
     fn test_eye() {
-        for n in 0..10 {
-            for m in 0..10 {
-                let result = Matrix::<R>::eye((n, m));
-                let expected = Matrix::<R>::new_with((n, m), |i, j| {
-                    if i == j {
-                        DynMIntU32::one()
-                    } else {
-                        DynMIntU32::zero()
-                    }
-                });
-                assert_eq!(result, expected);
-            }
+        for (n, m) in (0..=32).flat_map(|n| (0..=32).map(move |m| (n, m))) {
+            let result = Matrix::<R>::eye((n, m));
+            let expected = Matrix::<R>::new_with((n, m), |i, j| DynMIntU32::from((i == j) as u32));
+            assert_eq!(result, expected);
         }
     }
 

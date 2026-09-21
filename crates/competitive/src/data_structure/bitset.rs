@@ -1086,11 +1086,11 @@ mod simd {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    use std::panic::{AssertUnwindSafe, catch_unwind};
-
-    const SIZES: [usize; 16] = [
-        0, 1, 2, 63, 64, 65, 255, 256, 257, 511, 512, 513, 3584, 4096, 4097, 8193,
-    ];
+    use crate::tools::testutil::sample_usize;
+    use std::{
+        mem::size_of,
+        panic::{AssertUnwindSafe, catch_unwind},
+    };
 
     #[test]
     fn test_binary_conversion() {
@@ -1243,15 +1243,30 @@ mod tests {
             .collect()
     }
 
+    fn bitset_sizes(rng: &mut Xorshift) -> Vec<usize> {
+        let block_bits = size_of::<Block>() * u8::BITS as usize;
+        let max_size = 16 * block_bits + 1;
+        let mut sizes = sample_usize(rng, u64::BITS as usize, 0..=max_size, 30);
+        // Cover every block boundary, including both sides of SIMD dispatch.
+        sizes.extend(
+            (0..max_size)
+                .step_by(block_bits)
+                .flat_map(|boundary| boundary.saturating_sub(1)..=boundary + 1),
+        );
+        sizes.sort_unstable();
+        sizes.dedup();
+        sizes
+    }
+
     #[test]
     fn access_fill_reset_push_extend_resize() {
-        assert_eq!(std::mem::size_of::<Block>(), 64);
+        assert_eq!(size_of::<Block>(), 64);
         assert_eq!(std::mem::align_of::<Block>(), 64);
         let aligned = BitSet::new(1);
         assert_eq!(aligned.bits.as_ptr() as usize & 63, 0);
 
         let mut rng = Xorshift::default();
-        for size in SIZES {
+        for size in bitset_sizes(&mut rng) {
             let model = random_model(&mut rng, size);
             let mut actual = bitset(&model);
             assert_model(&actual, &model);
@@ -1269,7 +1284,8 @@ mod tests {
             }
             assert_model(&actual, &model);
 
-            let extra = random_model(&mut rng, 67);
+            let extra_len = rng.random(64..=128);
+            let extra = random_model(&mut rng, extra_len);
             actual.extend(extra.iter().copied());
             let mut extended = model.clone();
             extended.extend(extra);
@@ -1277,9 +1293,9 @@ mod tests {
 
             actual.resize(size / 2);
             assert_model(&actual, &model[..size / 2]);
-            actual.resize(size + 70);
+            actual.resize(size + extra_len);
             let mut resized = model[..size / 2].to_vec();
-            resized.resize(size + 70, false);
+            resized.resize(size + extra_len, false);
             assert_model(&actual, &resized);
 
             let value = rng.random::<u64, _>(..) & 1 != 0;
@@ -1292,7 +1308,7 @@ mod tests {
     #[test]
     fn bitwise_operations_match_boolean_model() {
         let mut rng = Xorshift::default();
-        for size in SIZES {
+        for size in bitset_sizes(&mut rng) {
             let lhs = random_model(&mut rng, size);
             let rhs = random_model(&mut rng, size);
             let lhs_set = bitset(&lhs);
@@ -1324,11 +1340,14 @@ mod tests {
     }
 
     #[test]
-    fn shifts_match_boolean_model_at_word_and_vector_boundaries() {
+    fn shifts_match_boolean_model() {
         let mut rng = Xorshift::default();
-        for size in SIZES {
+        for size in bitset_sizes(&mut rng) {
             let model = random_model(&mut rng, size);
-            for shift in [0, 1, 63, 64, 65, 255, 256, 257, size, size + 1] {
+            for shift in sample_usize(&mut rng, 16, 0..=size + 512, 10)
+                .into_iter()
+                .chain([size, size + 1])
+            {
                 let mut expected_left = vec![false; size];
                 let mut expected_right = vec![false; size];
                 for (i, &value) in model.iter().enumerate() {
@@ -1370,15 +1389,18 @@ mod tests {
 
     #[test]
     fn bitwise_operations_reject_different_lengths_without_mutation() {
-        let rhs = BitSet::ones(65);
-        for op in [BIT_AND, BIT_OR, BIT_XOR] {
-            let mut lhs = BitSet::ones(64);
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let size = rng.random(0..=1024);
+            let other_size = size + rng.random(1..=1024usize);
+            let mut lhs = bitset(&random_model(&mut rng, size));
+            let rhs = bitset(&random_model(&mut rng, other_size));
             let before = lhs.clone();
+            let op = rng.random(0..3);
             let result = catch_unwind(AssertUnwindSafe(|| match op {
-                BIT_AND => lhs &= &rhs,
-                BIT_OR => lhs |= &rhs,
-                BIT_XOR => lhs ^= &rhs,
-                _ => unreachable!(),
+                0 => lhs &= &rhs,
+                1 => lhs |= &rhs,
+                _ => lhs ^= &rhs,
             }));
             assert!(result.is_err());
             assert_eq!(lhs, before);

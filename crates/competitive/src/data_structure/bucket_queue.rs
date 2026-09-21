@@ -418,6 +418,7 @@ define_bucket_queue!(
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, integer_boundary_values};
     use std::collections::BinaryHeap;
 
     #[test]
@@ -451,13 +452,31 @@ mod tests {
                     assert_eq!(actual.pop(), Some(value));
                 }
                 assert_eq!(actual.pop(), None);
-                actual.extend([<$value>::MIN, 0, <$value>::MAX, <$value>::MAX]);
-                assert_eq!(actual.pop(), Some(<$value>::MAX));
-                assert_eq!(actual.pop(), Some(<$value>::MAX));
-                actual.clear();
-                assert!(actual.is_empty());
-                actual.push(<$value>::MIN);
-                assert_eq!(actual.pop(), Some(<$value>::MIN));
+                let values = integer_boundary_values!($value);
+                actual.extend(values.iter().copied());
+                expected.extend(values);
+                while let Some(value) = expected.pop() {
+                    assert_eq!(actual.pop(), Some(value));
+                }
+                for values in exhaustive_sequences([<$value>::MIN, 0, <$value>::MAX], 0..=6)
+                    .chain([integer_boundary_values!($value)])
+                {
+                    let mut actual: $queue = values.clone().into();
+                    let mut cleared = actual.clone();
+                    cleared.clear();
+                    assert_eq!(cleared.len(), 0);
+                    assert!(cleared.is_empty());
+                    assert_eq!(cleared.peek(), None);
+                    assert_eq!(cleared.pop(), None);
+                    cleared.extend(values.iter().copied());
+                    let mut expected = BinaryHeap::from(values);
+                    while let Some(value) = expected.pop() {
+                        assert_eq!(actual.pop(), Some(value));
+                        assert_eq!(cleared.pop(), Some(value));
+                    }
+                    assert_eq!(actual.pop(), None);
+                    assert_eq!(cleared.pop(), None);
+                }
             }};
         }
 
@@ -465,13 +484,6 @@ mod tests {
         test_queue!(BucketQueueI8, i8);
         test_queue!(BucketQueueU16, u16);
         test_queue!(BucketQueueI16, i16);
-
-        let values = [0_u16, 63, 64, 4095, 4096, u16::MAX, u16::MAX];
-        let mut actual = BucketQueueU16::from(values.to_vec());
-        let mut expected = BinaryHeap::from(values);
-        while !expected.is_empty() {
-            assert_eq!(actual.pop(), expected.pop());
-        }
 
         let values: Vec<_> = (0..1 << 16).map(|value| value as u16).collect();
         let mut actual = BucketQueueU16::from(values.clone());

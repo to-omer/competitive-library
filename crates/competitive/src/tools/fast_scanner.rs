@@ -41,6 +41,7 @@ impl ScanSource for FastInput {
 mod tests {
     use super::*;
     use crate::tools::{Bytes, Chars, Scan, Scanner, SizedCollect, Usize1, Xorshift};
+    use std::array;
 
     #[test]
     fn test_integer_tokens() {
@@ -80,23 +81,51 @@ mod tests {
                 "END" => End,
             }
         }
-        fn check(scanner: &mut impl ScanSource) {
-            crate::scan!(scanner, q: Query, bytes: Bytes, chars: Chars, pair: [i32; const 2], values: SizedCollect<u64>);
-            match q {
-                Query::Add { v, n, xs } => {
-                    assert_eq!((v, n, xs), (1, 2, vec![(-3, 4), (5, 6)]));
-                }
-                Query::End => panic!("unexpected query"),
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let v = rng.random(1..=100usize);
+            let n = rng.random(0..=16);
+            let xs: Vec<(i64, u32)> = rng.random_iter((.., ..)).take(n).collect();
+            let pair: [i32; 2] = array::from_fn(|_| rng.random(..));
+            let len = rng.random(0..=16);
+            let values: Vec<u64> = rng.random_iter(..).take(len).collect();
+            let token: String = (0..rng.random(1..=16))
+                .map(|_| char::from_u32(rng.random(0x3041..=0x3096)).unwrap())
+                .collect();
+            let input = format!(
+                "ADD {v} {n} {} {token} {token} {} {} {len} {} END                 ",
+                xs.iter()
+                    .map(|(a, b)| format!("{a} {b}"))
+                    .collect::<Vec<_>>()
+                    .join(" "),
+                pair[0],
+                pair[1],
+                values
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            );
+            macro_rules! check {
+                ($scanner:expr) => {{
+                    let mut scanner = $scanner;
+                    crate::scan!(scanner, q: Query, bytes: Bytes, chars: Chars, actual_pair: [i32; const 2], actual_values: SizedCollect<u64>);
+                    match q {
+                        Query::Add { v: actual_v, n: actual_n, xs: actual_xs } => {
+                            assert_eq!((actual_v, actual_n, actual_xs), (v - 1, n, xs.clone()));
+                        }
+                        Query::End => panic!("unexpected query"),
+                    }
+                    assert_eq!(bytes, token.as_bytes());
+                    assert_eq!(chars, token.chars().collect::<Vec<_>>());
+                    assert_eq!(actual_pair, pair);
+                    assert_eq!(actual_values, values);
+                    assert!(matches!(scanner.scan::<Query>(), Query::End));
+                }};
             }
-            assert_eq!(bytes, "é".as_bytes());
-            assert_eq!(chars, vec!['あ', 'a']);
-            assert_eq!(pair, [7, -8]);
-            assert_eq!(values, [9, 10]);
-            assert!(matches!(scanner.scan::<Query>(), Query::End));
+            check!(unsafe { FastInput::from_slice(input.as_bytes()) });
+            check!(Scanner::new(&input));
         }
-        let input = "ADD 2 2 -3 4 5 6 é あa 7 -8 2 9 10 END                 ";
-        check(&mut unsafe { FastInput::from_slice(input.as_bytes()) });
-        check(&mut Scanner::new(input));
     }
 
     #[test]

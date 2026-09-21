@@ -416,28 +416,26 @@ impl QuadDouble {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
-    fn test_display() {
-        let x = QuadDouble::from(1.234);
-        assert_eq!(x.to_string(), "1.234");
-        let x = QuadDouble::from(1.234e-10);
-        assert_eq!(x.to_string(), "0.0000000001234");
-        let x = QuadDouble::from(1.234e10);
-        assert_eq!(x.to_string(), "12340000000");
-        let x = QuadDouble::from(1.234e-10) + QuadDouble::from(1.234e10);
-        assert_eq!(x.to_string(), "12340000000.0000000001234");
-    }
-
-    #[test]
-    fn test_from_str() {
-        let x = QuadDouble::from_str("1.234").unwrap();
-        assert_eq!(x, QuadDouble::from(1.234));
-        let x = QuadDouble::from_str("0.0000000001234").unwrap();
-        assert_eq!(x, QuadDouble::from(1.234e-10));
-        let x = QuadDouble::from_str("12340000000").unwrap();
-        assert_eq!(x, QuadDouble::from(1.234e10));
-        let x = QuadDouble::from_str("12340000000.0000000001234").unwrap();
-        assert_eq!(x, QuadDouble::from(1.234e10) + QuadDouble::from(1.234e-10));
+    fn test_decimal_conversion() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let scalar =
+                rng.random(-1_000_000..=1_000_000) as f64 * 10f64.powi(rng.random(-30..=30));
+            assert_eq!(QuadDouble::from(scalar).to_string(), scalar.to_string());
+            assert_eq!(
+                scalar.to_string().parse::<QuadDouble>().unwrap(),
+                QuadDouble::from(scalar)
+            );
+            let integer = rng.random(-1_000_000..=1_000_000) as f64 * 1_000_000_000.0;
+            let fractional =
+                rng.random(-1_000_000..=1_000_000) as f64 / 10f64.powi(rng.random(18..=24));
+            let expected = Decimal::from(integer) + Decimal::from(fractional);
+            let value = QuadDouble::from(integer) + QuadDouble::from(fractional);
+            assert_eq!(value.to_string(), expected.to_string());
+            assert_eq!(expected.to_string().parse::<QuadDouble>().unwrap(), value);
+        }
     }
 }

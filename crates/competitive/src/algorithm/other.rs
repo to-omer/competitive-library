@@ -21,20 +21,25 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{rand, tools::Xorshift};
+    use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+    use std::iter::repeat_n;
 
     #[test]
     fn test_run_length_encoding() {
         let mut rng = Xorshift::default();
-        const N: usize = 100_000;
-        rand!(rng, v: [0u8..8u8; N]);
-        let r = run_length_encoding(v.iter());
-        let mut s = 0;
-        for (a, l) in r {
-            for v in &v[s..s + l] {
-                assert_eq!(a, v);
-            }
-            s += l;
+        let lengths = sample_usize(&mut rng, 16, 0..=100_000, 2);
+        for values in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..8, lengths))
+        {
+            let runs = run_length_encoding(values.iter().copied());
+            assert!(runs.iter().all(|&(_, len)| len > 0));
+            assert!(runs.windows(2).all(|w| w[0].0 != w[1].0));
+            let restored: Vec<_> = runs
+                .into_iter()
+                .flat_map(|(value, len)| repeat_n(value, len))
+                .collect();
+            assert_eq!(restored, values);
         }
     }
 }

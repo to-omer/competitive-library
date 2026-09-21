@@ -415,25 +415,36 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
     use crate::tools::{WithEmptySegment as Wes, Xorshift};
     use std::collections::{BTreeMap, BTreeSet};
 
     #[test]
     fn test_longest_common_prefix_and_compare() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=80);
-            let m = rng.random(1..=20);
-            let s: Vec<_> = rng.random_iter(0..m).take(n).collect();
+        let mut query_rng = Xorshift::default();
+        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
+            let n = s.len();
             let search = StringSearch::new(s.clone());
             if n == 0 {
                 assert_eq!(search.longest_common_prefix(0..0, 0..0), 0);
                 assert_eq!(search.compare(0..0, 0..0), Ordering::Equal);
                 continue;
             }
-            for _ in 0..200 {
-                let (al, ar) = rng.random(Wes(n));
-                let (bl, br) = rng.random(Wes(n));
+            let mut queries = Vec::new();
+            if n <= 6 {
+                let ranges: Vec<_> = (0..=n).flat_map(|l| (l..=n).map(move |r| (l, r))).collect();
+                queries.extend(
+                    ranges
+                        .iter()
+                        .flat_map(|&a| ranges.iter().map(move |&b| (a, b))),
+                );
+            }
+            queries.extend(query_rng.random_iter((Wes(n), Wes(n))).take(200));
+            for ((al, ar), (bl, br)) in queries {
                 let lcp = s[al..ar]
                     .iter()
                     .zip(s[bl..br].iter())
@@ -449,21 +460,35 @@ mod tests {
     #[test]
     fn test_range() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=80);
-            let csize = rng.random(1..=20);
-            let s: Vec<usize> = rng.random_iter(0..csize).take(n).collect();
+        let mut query_rng = Xorshift::default();
+        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
+            let n = s.len();
+            let csize = 10;
             let search = StringSearch::new(s.clone());
             let mut sa: Vec<_> = (0..=n).collect();
             sa.sort_unstable_by_key(|&i| &s[i..]);
+            let mut patterns = Vec::new();
+            if n <= 6 {
+                for l in 0..=n {
+                    for r in l..=n {
+                        patterns.push(s[l..r].to_vec());
+                    }
+                }
+            }
             for _ in 0..200 {
-                let pattern = if n == 0 || rng.random(0..=1) == 0 {
-                    let m = rng.random(0..=n + 2);
-                    rng.random_iter(0..csize).take(m).collect()
+                let pattern = if n == 0 || query_rng.random(0..=1) == 0 {
+                    let m = query_rng.random(0..=n + 2);
+                    query_rng.random_iter(0..csize).take(m).collect()
                 } else {
-                    let (l, r) = rng.random(Wes(n));
+                    let (l, r) = query_rng.random(Wes(n));
                     s[l..r].to_vec()
                 };
+                patterns.push(pattern);
+            }
+            for pattern in patterns {
                 let cmp = |pos| {
                     if s[pos..].starts_with(&pattern) {
                         Ordering::Equal
@@ -490,33 +515,33 @@ mod tests {
     #[test]
     fn test_kth_substring() {
         let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=80);
-            let csize = rng.random(1..=20);
-            let s: Vec<usize> = rng.random_iter(0..csize).take(n).collect();
+        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
+        for s in
+            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
+        {
+            let n = s.len();
             let search = StringSearch::new(s.clone());
             let kth = search.kth_substrings();
             let mut set = BTreeSet::new();
             for i in 0..n {
                 for j in i + 1..=n {
-                    set.insert(s[i..j].to_vec());
+                    set.insert(&s[i..j]);
                 }
             }
             let substrings: Vec<_> = set.into_iter().collect();
-            for (k, expected) in substrings.iter().enumerate() {
+            for (k, &expected) in substrings.iter().enumerate() {
                 let range = kth.kth_distinct_substring(k as u64).unwrap();
-                assert_eq!(&s[range.clone()], expected.as_slice());
+                assert_eq!(&s[range.clone()], expected);
                 assert_eq!(kth.index_of_distinct_substring(range), k as u64);
             }
             assert_eq!(kth.kth_distinct_substring(substrings.len() as u64), None);
             let mut index_map = BTreeMap::new();
-            for (idx, substring) in substrings.iter().enumerate() {
-                index_map.insert(substring.clone(), idx as _);
+            for (idx, &substring) in substrings.iter().enumerate() {
+                index_map.insert(substring, idx as _);
             }
             for i in 0..n {
                 for j in i + 1..=n {
-                    let key = s[i..j].to_vec();
-                    let expected = *index_map.get(&key).unwrap();
+                    let expected = *index_map.get(&s[i..j]).unwrap();
                     assert_eq!(kth.index_of_distinct_substring(i..j), expected);
                 }
             }

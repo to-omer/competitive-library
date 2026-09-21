@@ -351,6 +351,8 @@ impl_arrayvec_assign!(ShrAssign, shr_assign);
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
+    use std::array;
     use std::ops::Add;
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -380,60 +382,135 @@ mod tests {
     }
 
     #[test]
-    fn test_vec_vec_output_change() {
-        let left = [LeftValue(1), LeftValue(2)].to_array_vec();
-        let right = [RightValue(3), RightValue(4)].to_array_vec();
-        let sum = left + right;
-        assert_eq!(sum.0, [SumValue(4), SumValue(6)]);
-    }
-
-    #[test]
-    fn test_vec_scalar_output_change() {
-        let vector = [ScalarValue(1), ScalarValue(2)].to_array_vec();
-        let output = vector + 3.to_array_vec_scalar();
-        assert_eq!(output.0, [4i64, 5i64]);
-    }
-
-    #[test]
-    fn test_binary_ops() {
-        let left = [10i32, 20i32].to_array_vec();
-        let right = [3i32, 4i32].to_array_vec();
-        assert_eq!((left + right).0, [13, 24]);
-        assert_eq!((left - right).0, [7, 16]);
-        assert_eq!((left * 2.to_array_vec_scalar()).0, [20, 40]);
-        assert_eq!((left / 2.to_array_vec_scalar()).0, [5, 10]);
-        assert_eq!((left % 7.to_array_vec_scalar()).0, [3, 6]);
-        assert_eq!((2.to_array_vec_scalar() * left).0, [20, 40]);
-    }
-
-    #[test]
-    fn test_bit_and_shift_ops() {
-        let vector = [0b1100u8, 0b1010u8].to_array_vec();
-        let other = [0b1010u8, 0b1100u8].to_array_vec();
-        assert_eq!((vector & other).0, [0b1000, 0b1000]);
-        assert_eq!((vector | 0b0001.to_array_vec_scalar()).0, [0b1101, 0b1011]);
-        assert_eq!((vector ^ other).0, [0b0110, 0b0110]);
-        let shift_amounts = [1u32, 2u32].to_array_vec();
-        assert_eq!((vector << shift_amounts).0, [0b11000, 0b101000]);
-        assert_eq!((vector >> 1u32.to_array_vec_scalar()).0, [0b0110, 0b0101]);
-    }
-
-    #[test]
-    fn test_assign_ops() {
-        let mut values = [10i32, 20i32].to_array_vec();
-        values += [1, 2].to_array_vec();
-        values -= &[2, 3].to_array_vec();
-        values *= 2.to_array_vec_scalar();
-        values /= 3.to_array_vec_scalar();
-        values %= 5.to_array_vec_scalar();
-        assert_eq!(values.0, [1, 2]);
-
-        let mut bits = [0b1100u8, 0b1010u8].to_array_vec();
-        bits &= [0b1010u8, 0b1100u8].to_array_vec();
-        bits |= &[0b0001u8, 0b0010u8].to_array_vec();
-        bits ^= 0b0011.to_array_vec_scalar();
-        bits <<= 1u32.to_array_vec_scalar();
-        bits >>= 1u32.to_array_vec_scalar();
-        assert_eq!(bits.0, [0b1010u8, 0b1001u8]);
+    fn test_array_operations() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let a: [i32; 8] = array::from_fn(|_| rng.random(-100..=100));
+            let b: [i32; 8] = array::from_fn(|_| rng.random(1..=100));
+            let x = rng.random(1..=100i32);
+            let left = a.to_array_vec();
+            let right = b.to_array_vec();
+            assert_eq!(
+                (a.map(LeftValue).to_array_vec() + b.map(RightValue).to_array_vec()).0,
+                array::from_fn(|i| SumValue(a[i] + b[i]))
+            );
+            assert_eq!(
+                (a.map(ScalarValue).to_array_vec() + x.to_array_vec_scalar()).0,
+                a.map(|a| i64::from(a) + i64::from(x))
+            );
+            assert_eq!((left + right).0, array::from_fn(|i| a[i] + b[i]));
+            assert_eq!((left + x.to_array_vec_scalar()).0, a.map(|a| a + x));
+            let mut actual = left;
+            actual += right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] + b[i]));
+            let mut actual = left;
+            actual += &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] + b[i]));
+            let mut actual = left;
+            actual += x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a + x));
+            assert_eq!((left - right).0, array::from_fn(|i| a[i] - b[i]));
+            assert_eq!((left - x.to_array_vec_scalar()).0, a.map(|a| a - x));
+            let mut actual = left;
+            actual -= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] - b[i]));
+            let mut actual = left;
+            actual -= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] - b[i]));
+            let mut actual = left;
+            actual -= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a - x));
+            assert_eq!((left * right).0, array::from_fn(|i| a[i] * b[i]));
+            assert_eq!((left * x.to_array_vec_scalar()).0, a.map(|a| a * x));
+            let mut actual = left;
+            actual *= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] * b[i]));
+            let mut actual = left;
+            actual *= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] * b[i]));
+            let mut actual = left;
+            actual *= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a * x));
+            assert_eq!((left / right).0, array::from_fn(|i| a[i] / b[i]));
+            assert_eq!((left / x.to_array_vec_scalar()).0, a.map(|a| a / x));
+            let mut actual = left;
+            actual /= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] / b[i]));
+            let mut actual = left;
+            actual /= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] / b[i]));
+            let mut actual = left;
+            actual /= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a / x));
+            assert_eq!((left % right).0, array::from_fn(|i| a[i] % b[i]));
+            assert_eq!((left % x.to_array_vec_scalar()).0, a.map(|a| a % x));
+            let mut actual = left;
+            actual %= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] % b[i]));
+            let mut actual = left;
+            actual %= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] % b[i]));
+            let mut actual = left;
+            actual %= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a % x));
+            assert_eq!((left & right).0, array::from_fn(|i| a[i] & b[i]));
+            assert_eq!((left & x.to_array_vec_scalar()).0, a.map(|a| a & x));
+            let mut actual = left;
+            actual &= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] & b[i]));
+            let mut actual = left;
+            actual &= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] & b[i]));
+            let mut actual = left;
+            actual &= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a & x));
+            assert_eq!((left | right).0, array::from_fn(|i| a[i] | b[i]));
+            assert_eq!((left | x.to_array_vec_scalar()).0, a.map(|a| a | x));
+            let mut actual = left;
+            actual |= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] | b[i]));
+            let mut actual = left;
+            actual |= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] | b[i]));
+            let mut actual = left;
+            actual |= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a | x));
+            assert_eq!((left ^ right).0, array::from_fn(|i| a[i] ^ b[i]));
+            assert_eq!((left ^ x.to_array_vec_scalar()).0, a.map(|a| a ^ x));
+            let mut actual = left;
+            actual ^= right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] ^ b[i]));
+            let mut actual = left;
+            actual ^= &right;
+            assert_eq!(actual.0, array::from_fn(|i| a[i] ^ b[i]));
+            let mut actual = left;
+            actual ^= x.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a ^ x));
+            assert_eq!((x.to_array_vec_scalar() * left).0, a.map(|a| x * a));
+            let shifts: [u32; 8] = array::from_fn(|_| rng.random(0..32));
+            let shift = rng.random(0..32u32);
+            assert_eq!(
+                (left << shifts.to_array_vec()).0,
+                array::from_fn(|i| a[i] << shifts[i])
+            );
+            assert_eq!(
+                (left << shift.to_array_vec_scalar()).0,
+                a.map(|a| a << shift)
+            );
+            let mut actual = left;
+            actual <<= shift.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a << shift));
+            assert_eq!(
+                (left >> shifts.to_array_vec()).0,
+                array::from_fn(|i| a[i] >> shifts[i])
+            );
+            assert_eq!(
+                (left >> shift.to_array_vec_scalar()).0,
+                a.map(|a| a >> shift)
+            );
+            let mut actual = left;
+            actual >>= shift.to_array_vec_scalar();
+            assert_eq!(actual.0, a.map(|a| a >> shift));
+        }
     }
 }

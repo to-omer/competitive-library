@@ -45,9 +45,6 @@ mod max_operation_impl {
         #[test]
         fn test_max_operation() {
             type M = MaxOperation<i32>;
-            assert_eq!(M::operate(&1, &2), 2);
-            assert_eq!(M::operate(&2, &1), 2);
-            assert_eq!(M::operate(&2, &2), 2);
             for a in -10..=10 {
                 assert!(M::check_unital(&a));
                 assert!(M::check_idempotent(&a));
@@ -105,9 +102,6 @@ mod min_operation_impl {
         #[test]
         fn test_min_operation() {
             type M = MinOperation<i32>;
-            assert_eq!(M::operate(&1, &2), 1);
-            assert_eq!(M::operate(&2, &1), 1);
-            assert_eq!(M::operate(&2, &2), 2);
             for a in -10..=10 {
                 assert!(M::check_unital(&a));
                 assert!(M::check_idempotent(&a));
@@ -164,16 +158,12 @@ mod first_operation_impl {
         #[test]
         fn test_first_operation() {
             type M = FirstOperation<i32>;
-            assert_eq!(M::operate(&Some(1), &Some(2)), Some(1));
-            assert_eq!(M::operate(&Some(2), &Some(1)), Some(2));
-            assert_eq!(M::operate(&Some(1), &None), Some(1));
-            assert_eq!(M::operate(&None, &Some(1)), Some(1));
-            assert_eq!(M::operate(&None, &None), None);
             let iter = [Some(1), Some(2), Some(3), None];
             for a in iter {
                 assert!(M::check_unital(&a));
                 assert!(M::check_idempotent(&a));
                 for b in iter {
+                    assert_eq!(M::operate(&a, &b), [a, b].into_iter().flatten().next());
                     for c in iter {
                         assert!(M::check_associative(&a, &b, &c));
                     }
@@ -225,16 +215,12 @@ mod last_operation_impl {
         #[test]
         fn test_last_operation() {
             type M = LastOperation<i32>;
-            assert_eq!(M::operate(&Some(1), &Some(2)), Some(2));
-            assert_eq!(M::operate(&Some(2), &Some(1)), Some(1));
-            assert_eq!(M::operate(&Some(1), &None), Some(1));
-            assert_eq!(M::operate(&None, &Some(1)), Some(1));
-            assert_eq!(M::operate(&None, &None), None);
             let iter = [Some(1), Some(2), Some(3), None];
             for a in iter {
                 assert!(M::check_unital(&a));
                 assert!(M::check_idempotent(&a));
                 for b in iter {
+                    assert_eq!(M::operate(&a, &b), [a, b].into_iter().flatten().next_back());
                     for c in iter {
                         assert!(M::check_associative(&a, &b, &c));
                     }
@@ -302,11 +288,6 @@ mod additive_operation_impl {
         #[test]
         fn test_additive_operation() {
             type M = AdditiveOperation<i32>;
-            assert_eq!(M::operate(&1, &2), 3);
-            assert_eq!(M::operate(&2, &1), 3);
-            assert_eq!(M::operate(&1, &0), 1);
-            assert_eq!(M::operate(&0, &1), 1);
-            assert_eq!(M::operate(&0, &0), 0);
             for a in -10..=10 {
                 assert!(M::check_unital(&a));
                 assert!(M::check_invertible(&a));
@@ -381,12 +362,6 @@ mod multiplicative_operation_impl {
         fn test_multiplicative_operation() {
             type MInt = MInt998244353;
             type M = MultiplicativeOperation<MInt>;
-            assert_eq!(M::operate(&MInt::new(1), &MInt::new(2)), MInt::new(2));
-            assert_eq!(M::operate(&MInt::new(2), &MInt::new(1)), MInt::new(2));
-            assert_eq!(M::operate(&MInt::new(1), &MInt::new(1)), MInt::new(1));
-            assert_eq!(M::operate(&MInt::new(1), &MInt::new(0)), MInt::new(0));
-            assert_eq!(M::operate(&MInt::new(0), &MInt::new(1)), MInt::new(0));
-            assert_eq!(M::operate(&MInt::new(0), &MInt::new(0)), MInt::new(0));
             let iter = (-10..=10).map(MInt::from);
             for a in iter.clone() {
                 assert!(M::check_unital(&a));
@@ -579,34 +554,91 @@ mod bitand_operation_impl {
 
         #[test]
         fn test_bitand_operation() {
-            macro_rules! impl_test_bitand_operation {
-                ($ty:ty, $array:expr) => {{
+            let mut rng = crate::tools::Xorshift::default();
+            macro_rules! check {
+                ($ty:ty, $value:expr, $small:expr) => {{
                     type M = BitAndOperation<$ty>;
-                    for a in $array {
+                    let alphabet: Vec<$ty> = $small;
+                    let alphabet = alphabet.as_slice();
+                    let triples: Vec<_> = alphabet
+                        .iter()
+                        .flat_map(|&a| {
+                            alphabet
+                                .iter()
+                                .flat_map(move |&b| alphabet.iter().map(move |&c| (a, b, c)))
+                        })
+                        .chain((0..1000).map(|_| ($value, $value, $value)))
+                        .collect();
+                    for (a, b, c) in triples {
+                        assert_eq!(M::operate(&a, &b), a & b);
                         assert!(M::check_unital(&a));
                         assert!(M::check_idempotent(&a));
-                        for b in $array {
-                            assert!(M::check_commutative(&a, &b));
-                            for c in $array {
-                                assert!(M::check_associative(&a, &b, &c));
-                            }
-                        }
+                        assert!(M::check_commutative(&a, &b));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }};
             }
-            impl_test_bitand_operation!(bool, [true, false]);
-            impl_test_bitand_operation!(usize, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitand_operation!(u8, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitand_operation!(u16, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitand_operation!(u32, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitand_operation!(u64, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitand_operation!(u128, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitand_operation!(isize, [0, 1, 2, 3, 4, 5, -1, -2, isize::MIN, isize::MAX]);
-            impl_test_bitand_operation!(i8, [0, 1, 2, 3, 4, 5, -1, -2, i8::MIN, i8::MAX]);
-            impl_test_bitand_operation!(i16, [0, 1, 2, 3, 4, 5, -1, -2, i16::MIN, i16::MAX]);
-            impl_test_bitand_operation!(i32, [0, 1, 2, 3, 4, 5, -1, -2, i32::MIN, i32::MAX]);
-            impl_test_bitand_operation!(i64, [0, 1, 2, 3, 4, 5, -1, -2, i64::MIN, i64::MAX]);
-            impl_test_bitand_operation!(i128, [0, 1, 2, 3, 4, 5, -1, -2, i128::MIN, i128::MAX]);
+            check!(bool, rng.random(0..2) == 0, vec![false, true]);
+            check!(
+                u8,
+                rng.random(..),
+                (0..=7).chain([u8::MIN, u8::MAX]).collect()
+            );
+            check!(
+                i8,
+                rng.random(..),
+                (0..=7).chain([i8::MIN, i8::MAX]).collect()
+            );
+            check!(
+                u16,
+                rng.random(..),
+                (0..=7).chain([u16::MIN, u16::MAX]).collect()
+            );
+            check!(
+                i16,
+                rng.random(..),
+                (0..=7).chain([i16::MIN, i16::MAX]).collect()
+            );
+            check!(
+                u32,
+                rng.random(..),
+                (0..=7).chain([u32::MIN, u32::MAX]).collect()
+            );
+            check!(
+                i32,
+                rng.random(..),
+                (0..=7).chain([i32::MIN, i32::MAX]).collect()
+            );
+            check!(
+                u64,
+                rng.random(..),
+                (0..=7).chain([u64::MIN, u64::MAX]).collect()
+            );
+            check!(
+                i64,
+                rng.random(..),
+                (0..=7).chain([i64::MIN, i64::MAX]).collect()
+            );
+            check!(
+                u128,
+                rng.random(..),
+                (0..=7).chain([u128::MIN, u128::MAX]).collect()
+            );
+            check!(
+                i128,
+                rng.random(..),
+                (0..=7).chain([i128::MIN, i128::MAX]).collect()
+            );
+            check!(
+                usize,
+                rng.random(..),
+                (0..=7).chain([usize::MIN, usize::MAX]).collect()
+            );
+            check!(
+                isize,
+                rng.random(..),
+                (0..=7).chain([isize::MIN, isize::MAX]).collect()
+            );
         }
     }
 }
@@ -688,34 +720,91 @@ mod bitor_operation_impl {
 
         #[test]
         fn test_bitor_operation() {
-            macro_rules! impl_test_bitor_operation {
-                ($ty:ty, $array:expr) => {{
+            let mut rng = crate::tools::Xorshift::default();
+            macro_rules! check {
+                ($ty:ty, $value:expr, $small:expr) => {{
                     type M = BitOrOperation<$ty>;
-                    for a in $array {
+                    let alphabet: Vec<$ty> = $small;
+                    let alphabet = alphabet.as_slice();
+                    let triples: Vec<_> = alphabet
+                        .iter()
+                        .flat_map(|&a| {
+                            alphabet
+                                .iter()
+                                .flat_map(move |&b| alphabet.iter().map(move |&c| (a, b, c)))
+                        })
+                        .chain((0..1000).map(|_| ($value, $value, $value)))
+                        .collect();
+                    for (a, b, c) in triples {
+                        assert_eq!(M::operate(&a, &b), a | b);
                         assert!(M::check_unital(&a));
                         assert!(M::check_idempotent(&a));
-                        for b in $array {
-                            assert!(M::check_commutative(&a, &b));
-                            for c in $array {
-                                assert!(M::check_associative(&a, &b, &c));
-                            }
-                        }
+                        assert!(M::check_commutative(&a, &b));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }};
             }
-            impl_test_bitor_operation!(bool, [true, false]);
-            impl_test_bitor_operation!(usize, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitor_operation!(u8, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitor_operation!(u16, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitor_operation!(u32, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitor_operation!(u64, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitor_operation!(u128, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitor_operation!(isize, [0, 1, 2, 3, 4, 5, -1, -2, isize::MIN, isize::MAX]);
-            impl_test_bitor_operation!(i8, [0, 1, 2, 3, 4, 5, -1, -2, i8::MIN, i8::MAX]);
-            impl_test_bitor_operation!(i16, [0, 1, 2, 3, 4, 5, -1, -2, i16::MIN, i16::MAX]);
-            impl_test_bitor_operation!(i32, [0, 1, 2, 3, 4, 5, -1, -2, i32::MIN, i32::MAX]);
-            impl_test_bitor_operation!(i64, [0, 1, 2, 3, 4, 5, -1, -2, i64::MIN, i64::MAX]);
-            impl_test_bitor_operation!(i128, [0, 1, 2, 3, 4, 5, -1, -2, i128::MIN, i128::MAX]);
+            check!(bool, rng.random(0..2) == 0, vec![false, true]);
+            check!(
+                u8,
+                rng.random(..),
+                (0..=7).chain([u8::MIN, u8::MAX]).collect()
+            );
+            check!(
+                i8,
+                rng.random(..),
+                (0..=7).chain([i8::MIN, i8::MAX]).collect()
+            );
+            check!(
+                u16,
+                rng.random(..),
+                (0..=7).chain([u16::MIN, u16::MAX]).collect()
+            );
+            check!(
+                i16,
+                rng.random(..),
+                (0..=7).chain([i16::MIN, i16::MAX]).collect()
+            );
+            check!(
+                u32,
+                rng.random(..),
+                (0..=7).chain([u32::MIN, u32::MAX]).collect()
+            );
+            check!(
+                i32,
+                rng.random(..),
+                (0..=7).chain([i32::MIN, i32::MAX]).collect()
+            );
+            check!(
+                u64,
+                rng.random(..),
+                (0..=7).chain([u64::MIN, u64::MAX]).collect()
+            );
+            check!(
+                i64,
+                rng.random(..),
+                (0..=7).chain([i64::MIN, i64::MAX]).collect()
+            );
+            check!(
+                u128,
+                rng.random(..),
+                (0..=7).chain([u128::MIN, u128::MAX]).collect()
+            );
+            check!(
+                i128,
+                rng.random(..),
+                (0..=7).chain([i128::MIN, i128::MAX]).collect()
+            );
+            check!(
+                usize,
+                rng.random(..),
+                (0..=7).chain([usize::MIN, usize::MAX]).collect()
+            );
+            check!(
+                isize,
+                rng.random(..),
+                (0..=7).chain([isize::MIN, isize::MAX]).collect()
+            );
         }
     }
 }
@@ -800,34 +889,91 @@ mod bitxor_operation_impl {
 
         #[test]
         fn test_bitxor_operation() {
-            macro_rules! impl_test_bitxor_operation {
-                ($ty:ty, $array:expr) => {{
+            let mut rng = crate::tools::Xorshift::default();
+            macro_rules! check {
+                ($ty:ty, $value:expr, $small:expr) => {{
                     type M = BitXorOperation<$ty>;
-                    for a in $array {
+                    let alphabet: Vec<$ty> = $small;
+                    let alphabet = alphabet.as_slice();
+                    let triples: Vec<_> = alphabet
+                        .iter()
+                        .flat_map(|&a| {
+                            alphabet
+                                .iter()
+                                .flat_map(move |&b| alphabet.iter().map(move |&c| (a, b, c)))
+                        })
+                        .chain((0..1000).map(|_| ($value, $value, $value)))
+                        .collect();
+                    for (a, b, c) in triples {
+                        assert_eq!(M::operate(&a, &b), a ^ b);
                         assert!(M::check_unital(&a));
                         assert!(M::check_invertible(&a));
-                        for b in $array {
-                            assert!(M::check_commutative(&a, &b));
-                            for c in $array {
-                                assert!(M::check_associative(&a, &b, &c));
-                            }
-                        }
+                        assert!(M::check_commutative(&a, &b));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }};
             }
-            impl_test_bitxor_operation!(bool, [true, false]);
-            impl_test_bitxor_operation!(usize, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitxor_operation!(u8, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitxor_operation!(u16, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitxor_operation!(u32, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitxor_operation!(u64, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitxor_operation!(u128, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
-            impl_test_bitxor_operation!(isize, [0, 1, 2, 3, 4, 5, -1, -2, isize::MIN, isize::MAX]);
-            impl_test_bitxor_operation!(i8, [0, 1, 2, 3, 4, 5, -1, -2, i8::MIN, i8::MAX]);
-            impl_test_bitxor_operation!(i16, [0, 1, 2, 3, 4, 5, -1, -2, i16::MIN, i16::MAX]);
-            impl_test_bitxor_operation!(i32, [0, 1, 2, 3, 4, 5, -1, -2, i32::MIN, i32::MAX]);
-            impl_test_bitxor_operation!(i64, [0, 1, 2, 3, 4, 5, -1, -2, i64::MIN, i64::MAX]);
-            impl_test_bitxor_operation!(i128, [0, 1, 2, 3, 4, 5, -1, -2, i128::MIN, i128::MAX]);
+            check!(bool, rng.random(0..2) == 0, vec![false, true]);
+            check!(
+                u8,
+                rng.random(..),
+                (0..=7).chain([u8::MIN, u8::MAX]).collect()
+            );
+            check!(
+                i8,
+                rng.random(..),
+                (0..=7).chain([i8::MIN, i8::MAX]).collect()
+            );
+            check!(
+                u16,
+                rng.random(..),
+                (0..=7).chain([u16::MIN, u16::MAX]).collect()
+            );
+            check!(
+                i16,
+                rng.random(..),
+                (0..=7).chain([i16::MIN, i16::MAX]).collect()
+            );
+            check!(
+                u32,
+                rng.random(..),
+                (0..=7).chain([u32::MIN, u32::MAX]).collect()
+            );
+            check!(
+                i32,
+                rng.random(..),
+                (0..=7).chain([i32::MIN, i32::MAX]).collect()
+            );
+            check!(
+                u64,
+                rng.random(..),
+                (0..=7).chain([u64::MIN, u64::MAX]).collect()
+            );
+            check!(
+                i64,
+                rng.random(..),
+                (0..=7).chain([i64::MIN, i64::MAX]).collect()
+            );
+            check!(
+                u128,
+                rng.random(..),
+                (0..=7).chain([u128::MIN, u128::MAX]).collect()
+            );
+            check!(
+                i128,
+                rng.random(..),
+                (0..=7).chain([i128::MIN, i128::MAX]).collect()
+            );
+            check!(
+                usize,
+                rng.random(..),
+                (0..=7).chain([usize::MIN, usize::MAX]).collect()
+            );
+            check!(
+                isize,
+                rng.random(..),
+                (0..=7).chain([isize::MIN, isize::MAX]).collect()
+            );
         }
     }
 }
@@ -1931,36 +2077,31 @@ mod find_majority_operation_impl {
     #[cfg(test)]
     mod tests {
         use super::*;
-        use std::{collections::HashMap, iter::once};
+        use crate::tools::testutil::{exhaustive_sequences, sample_usize};
+        use std::collections::HashMap;
 
         #[test]
         fn test_find_majority_operation() {
             type M = FindMajorityOperation<i32>;
-            let iter = (-5..=5)
-                .flat_map(|x| (1..=5).map(move |y| (Some(x), y)))
-                .chain(once((None, 0)));
-            for a in iter.clone() {
-                assert!(M::check_unital(&a));
-                for b in iter.clone() {
-                    for c in iter.clone() {
-                        // no associativity
-                        // assert!(M::check_associative(&a, &b, &c));
-                        let mut count = HashMap::<_, usize>::new();
-                        for (key, cnt) in [a, b, c] {
-                            if let Some(key) = key {
-                                *count.entry(key).or_default() += cnt;
-                            }
-                        }
-                        let max = count.values().max().cloned().unwrap_or_default();
-                        let sum: usize = count.values().sum();
-                        if max * 2 > sum {
-                            assert_eq!(
-                                M::operate(&M::operate(&a, &b), &c).0,
-                                count.into_iter().find(|&(_, v)| v == max).map(|(k, _)| k)
-                            );
-                        }
-                    }
+            let mut rng = crate::tools::Xorshift::default();
+            let mut cases: Vec<_> = exhaustive_sequences(-1..=1, 0..=8).collect();
+            for n in sample_usize(&mut rng, 16, 0..=100, 1000) {
+                cases.push(rng.random_iter(-5..=5).take(n).collect());
+            }
+            for values in cases {
+                let n = values.len();
+                let mut count = HashMap::<_, usize>::new();
+                let mut actual = M::unit();
+                for &value in &values {
+                    *count.entry(value).or_default() += 1;
+                    let element = (Some(value), 1);
+                    assert!(M::check_unital(&element));
+                    actual = M::operate(&actual, &element);
                 }
+                if let Some((&key, _)) = count.iter().find(|&(_, &count)| count * 2 > n) {
+                    assert_eq!(actual.0, Some(key));
+                }
+                assert!(actual.0.is_none_or(|key| values.contains(&key)));
             }
         }
     }

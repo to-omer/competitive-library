@@ -164,11 +164,12 @@ mod tests {
     #[test]
     fn test_gcd() {
         let mut rng = Xorshift::default();
-        for (a, b) in rng.random_iter((0.., 0..)).take(Q) {
+        for (a, b) in (0..=30)
+            .flat_map(|a| (0..=30).map(move |b| (a, b)))
+            .chain(rng.random_iter((0.., 0..)).take(Q))
+        {
             assert_eq!(gcd_loop(a, b), gcd(a, b));
         }
-        assert_eq!(gcd_loop(0, 0), gcd(0, 0));
-        assert_eq!(gcd_loop(0, 100), gcd(0, 100));
     }
 
     #[test]

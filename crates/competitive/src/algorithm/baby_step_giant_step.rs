@@ -47,16 +47,25 @@ mod tests {
 
     #[test]
     fn test_bsgs_small() {
-        for n in 2..30 {
+        for n in 2..=32 {
             DynMIntU32::set_mod(n);
             for a in 0..n {
                 for x in 0..n {
+                    let (a, x) = (DynMIntU32::new(a), DynMIntU32::new(x));
+                    let powers: Vec<_> = (0..n)
+                        .scan(a, |value, _| {
+                            let current = *value;
+                            *value *= x;
+                            Some(current)
+                        })
+                        .collect();
                     for b in 0..n {
-                        let (a, x, b) =
-                            (DynMIntU32::new(a), DynMIntU32::new(x), DynMIntU32::new(b));
-                        let exp = (0..n).position(|i| a * x.pow(i as _) == b);
-                        let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(a, x, b, n as _);
-                        assert_eq!(exp, ans);
+                        let b = DynMIntU32::new(b);
+                        let expected = powers.iter().position(|&value| value == b);
+                        assert_eq!(
+                            baby_step_giant_step::<MulOp<DynMIntU32>>(a, x, b, n as _),
+                            expected
+                        );
                     }
                 }
             }
@@ -64,15 +73,20 @@ mod tests {
     }
 
     #[test]
-    fn test_bsgs_midium() {
+    fn test_bsgs_medium() {
         let mut rng = Xorshift::default();
-        for _ in 0..10 {
+        for _ in 0..100 {
             let n = rng.random(2..100_000u32);
             DynMIntU32::set_mod(n);
             let a = DynMIntU32::new(rng.random(..n));
             let x = DynMIntU32::new(rng.random(..n));
             let b = DynMIntU32::new(rng.random(..n));
-            let exp = (0..n).position(|i| a * x.pow(i as _) == b);
+            let mut value = a;
+            let exp = (0..n).position(|_| {
+                let found = value == b;
+                value *= x;
+                found
+            });
             let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(a, x, b, n as _);
             assert_eq!(exp, ans);
         }
@@ -81,17 +95,17 @@ mod tests {
     #[test]
     fn test_bsgs_large() {
         let mut rng = Xorshift::default();
-        for _ in 0..20 {
+        for _ in 0..100 {
             let n = rng.random(2..1_000_000_000u32);
             DynMIntU32::set_mod(n);
             let a = DynMIntU32::new(rng.random(..n));
             let x = DynMIntU32::new(rng.random(..n));
-            let b = DynMIntU32::new(rng.random(..n));
+            let exponent = rng.random(0..n);
+            let b = a * x.pow(exponent as _);
             let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(a, x, b, n as _);
-            if let Some(i) = ans {
-                assert_eq!(a * x.pow(i), b);
-                assert!(i < n as usize);
-            }
+            let i = ans.unwrap();
+            assert_eq!(a * x.pow(i), b);
+            assert!(i < n as usize);
         }
     }
 }

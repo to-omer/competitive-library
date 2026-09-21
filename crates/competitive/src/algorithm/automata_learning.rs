@@ -722,229 +722,332 @@ mod tests {
     use super::*;
     use crate::{
         algebra::AddMulOperation,
-        num::{One as _, Zero as _, mint_basic::MInt998244353},
+        num::mint_basic::MInt998244353 as M,
+        tools::{
+            Xorshift,
+            testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+        },
     };
-    use std::collections::{HashSet, VecDeque};
+    use std::{collections::VecDeque, iter::repeat_n};
 
     #[test]
     fn test_dense_sampling() {
-        for base in 1usize..=10 {
-            let mut expected = vec![];
-            for len in 0..=3 {
-                for n in 0..base.pow(len) {
-                    let mut n = n;
-                    let mut current = vec![];
-                    for _ in 0..len {
-                        current.push(n % base);
-                        n /= base;
+        for (base, max_len) in (1usize..=10).flat_map(|base| (0..=5).map(move |len| (base, len))) {
+            let mut expected = Vec::new();
+            for len in 0..=max_len {
+                for mut code in 0..base.pow(len as u32) {
+                    let mut word = vec![0; len];
+                    for x in word.iter_mut().rev() {
+                        *x = code % base;
+                        code /= base;
                     }
-                    current.reverse();
-                    expected.push(current);
+                    expected.push(word);
                 }
             }
+            assert_eq!(dense_sampling(base, max_len).collect::<Vec<_>>(), expected);
+        }
+    }
 
-            for (expected, result) in expected.into_iter().zip(dense_sampling(base, 3)) {
-                assert_eq!(expected, result);
+    #[test]
+    fn test_random_sampling() {
+        for sigma in 1..=10 {
+            for min_len in 0..=16 {
+                for max_len in min_len..=16 {
+                    let samples: Vec<_> = random_sampling(sigma, min_len..=max_len, f64::INFINITY)
+                        .take(100)
+                        .collect();
+                    assert_eq!(samples.len(), 100);
+                    assert!(
+                        samples
+                            .iter()
+                            .all(|s| (min_len..=max_len).contains(&s.len())
+                                && s.iter().all(|&x| x < sigma))
+                    );
+                }
             }
         }
     }
 
     #[test]
-    fn test_lstar() {
-        {
-            let automaton = BlackBoxAutomatonImpl::new(2, |input| input.len() % 6 == 0);
-            let dfa = DfaLearning::new(&automaton).train(dense_sampling(2, 6));
-            for sample in dense_sampling(automaton.sigma(), 12) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = dfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
-            }
-        }
-        {
-            let automaton =
-                BlackBoxAutomatonImpl::new(3, |input| input.iter().sum::<usize>() % 4 == 0);
-            let dfa = DfaLearning::new(&automaton).train(dense_sampling(3, 4));
-            for sample in dense_sampling(automaton.sigma(), 8) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = dfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
-            }
-        }
-        for i in 0usize..16 {
-            let a = i >> 3 & 1;
-            let b = i >> 2 & 1;
-            let c = i >> 1 & 1;
-            let d = i & 1;
-            let naive = |t: &[usize]| {
-                let mut set = HashSet::new();
-                let mut deq = VecDeque::new();
-                deq.push_back(t.to_vec());
-                set.insert(t.to_vec());
-                while let Some(t) = deq.pop_front() {
-                    for i in 0..t.len().saturating_sub(1) {
-                        let x = match (t[i], t[i + 1]) {
-                            (0, 0) => a,
-                            (0, 1) => b,
-                            (1, 0) => c,
-                            (1, 1) => d,
-                            _ => unreachable!(),
-                        };
-                        let mut t = t.to_vec();
-                        t.remove(i);
-                        t[i] = x;
-                        if set.insert(t.to_vec()) {
-                            deq.push_back(t);
+    fn test_lstar_transition_tables() {
+        let mut rng = Xorshift::default();
+        let mut cases = Vec::new();
+        // All transition tables, initial states and accepting sets through two states.
+        for n in 1usize..=2 {
+            for sigma in 1..=3 {
+                for table in exhaustive_sequences(0..n, n * sigma..=n * sigma) {
+                    for accepting in exhaustive_sequences([false, true], n..=n) {
+                        for initial in 0..n {
+                            cases.push((n, sigma, table.clone(), accepting.clone(), initial));
                         }
                     }
                 }
-                set.contains(&vec![1])
-            };
-            let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
-            let dfa = DfaLearning::new(&automaton).train(dense_sampling(2, 4));
-            for sample in dense_sampling(automaton.sigma(), 8) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = dfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
+            }
+        }
+        for n in 3usize..=4 {
+            for sigma in 1..=3 {
+                for _ in 0..100 {
+                    cases.push((
+                        n,
+                        sigma,
+                        rng.random_iter(0..n).take(n * sigma).collect(),
+                        (0..n).map(|_| rng.random(0..2) == 0).collect(),
+                        rng.random(0..n),
+                    ));
+                }
+            }
+        }
+        for (n, sigma, table, accepting, initial) in cases {
+            let automaton = BlackBoxAutomatonImpl::new(sigma, |input| {
+                let state = input
+                    .iter()
+                    .fold(initial, |state, &x| table[state * sigma + x]);
+                accepting[state]
+            });
+            let dfa = DfaLearning::new(&automaton).train(dense_sampling(sigma, 2 * n));
+            // Exhaust reachable pairs of states: agreement here proves equivalence
+            // for every input word, with no bound on the word length.
+            let mut seen = HashSet::new();
+            let mut queue = VecDeque::from([(initial, dfa.initial_state)]);
+            while let Some((expected, actual)) = queue.pop_front() {
+                if !seen.insert((expected, actual)) {
+                    continue;
+                }
+                assert_eq!(
+                    accepting[expected],
+                    dfa.accept(actual),
+                    "table={table:?}, accepting={accepting:?}, initial={initial}"
+                );
+                for x in 0..sigma {
+                    queue.push_back((table[expected * sigma + x], dfa.delta(actual, x)));
+                }
             }
         }
     }
 
     #[test]
-    fn test_wfa_learning() {
-        {
-            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
-                MInt998244353::from(input.iter().sum::<usize>())
-            });
-            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
-            wl.train(dense_sampling(2, 3));
-            let wfa = wl.wfa();
-            for sample in dense_sampling(automaton.sigma(), 12) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = wfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
+    fn test_wfa_transition_matrices() {
+        let mut rng = Xorshift::default();
+        let mut cases = Vec::new();
+        for (n, sigma) in [(1, 1), (1, 2), (2, 1)] {
+            let coefficients = 2 * n + sigma * n * n;
+            for values in exhaustive_sequences(0u32..=1, coefficients..=coefficients) {
+                cases.push((n, sigma, values));
             }
         }
-        {
-            let automaton = BlackBoxAutomatonImpl::new(3, |input| {
-                let mut s = MInt998244353::zero();
-                let mut c = MInt998244353::one();
-                for &x in &input {
-                    s += MInt998244353::from(x) * c;
-                    c = -c;
+        for n in 1usize..=4 {
+            for sigma in 1..=3 {
+                let coefficients = 2 * n + sigma * n * n;
+                for nonzero in 0..=4 {
+                    for _ in 0..2 {
+                        let values = (0..coefficients)
+                            .map(|_| {
+                                if rng.random(0..4) < nonzero {
+                                    rng.random(0..M::get_mod())
+                                } else {
+                                    0
+                                }
+                            })
+                            .collect();
+                        cases.push((n, sigma, values));
+                    }
                 }
-                s
-            });
-            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
-            wl.train(dense_sampling(3, 4));
-            let wfa = wl.wfa();
-            for sample in dense_sampling(automaton.sigma(), 6).chain(random_sampling(
-                automaton.sigma(),
-                6..=12,
-                0.1,
-            )) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = wfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
             }
         }
-        {
-            // Xor Sum
-            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
-                let mut n = 1; // prevent leading zero
+        for (n, sigma, values) in cases {
+            let initial: Vec<_> = values[..n].iter().copied().map(M::from).collect();
+            let final_weights: Vec<_> = values[n..2 * n].iter().copied().map(M::from).collect();
+            let transitions: Vec<_> = values[2 * n..].iter().copied().map(M::from).collect();
+            let automaton = BlackBoxAutomatonImpl::new(sigma, |input| {
+                let mut state = initial.clone();
                 for x in input {
-                    n = n * 2 + x;
+                    state = (0..n)
+                        .map(|j| {
+                            (0..n)
+                                .map(|i| state[i] * transitions[x * n * n + i * n + j])
+                                .sum()
+                        })
+                        .collect();
                 }
-                let mut s = MInt998244353::zero();
-                for u in 0..=n {
-                    for v in 0..=n {
-                        let mut ok = false;
-                        for a in 0..=n {
-                            let b = u ^ a;
-                            ok |= a + b == v;
-                        }
-                        s += MInt998244353::new(ok as _);
+                state
+                    .iter()
+                    .zip(&final_weights)
+                    .map(|(&a, &b)| a * b)
+                    .sum::<M>()
+            });
+            let lengths = sample_usize(&mut rng, 8, 0..=64, 100);
+            check_wfa(
+                &automaton,
+                2 * n,
+                n,
+                dense_sampling(sigma, 6).chain(structured_sequences(&mut rng, 0..sigma, lengths)),
+            );
+        }
+    }
+
+    fn check_wfa(
+        automaton: &impl BlackBoxAutomaton<Output = M>,
+        training_len: usize,
+        batch_len: usize,
+        samples: impl IntoIterator<Item = Vec<usize>>,
+    ) {
+        let mut incremental = WfaLearning::<AddMulOperation<_>, _>::new(automaton);
+        // One counterexample can require several rank refinements, even when
+        // every longer word evaluates to zero (for example a nilpotent matrix).
+        incremental.train(
+            dense_sampling(automaton.sigma(), training_len)
+                .flat_map(|sample| repeat_n(sample, batch_len.max(1))),
+        );
+        let mut batch = WfaLearning::<AddMulOperation<_>, _>::new(automaton);
+        batch.batch_train(dense_sampling(automaton.sigma(), batch_len));
+        for sample in samples {
+            let expected = automaton.behavior(sample.iter().copied());
+            assert_eq!(
+                incremental.wfa().behavior(sample.iter().copied()),
+                expected,
+                "input={sample:?}"
+            );
+            assert_eq!(
+                batch.wfa().behavior(sample.iter().copied()),
+                expected,
+                "input={sample:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_lstar_modular_languages() {
+        for modulus in 1..=8 {
+            for sigma in 1..=3 {
+                for by_length in [false, true] {
+                    let automaton = BlackBoxAutomatonImpl::new(sigma, |input| {
+                        let value = if by_length {
+                            input.len()
+                        } else {
+                            input.iter().sum()
+                        };
+                        value % modulus == 0
+                    });
+                    // A unary language may expose only one counterexample per
+                    // pass. At most `modulus` state refinements are needed.
+                    let training: Vec<_> = dense_sampling(sigma, modulus).collect();
+                    let dfa = DfaLearning::new(&automaton)
+                        .train((0..modulus).flat_map(|_| training.iter().cloned()));
+                    for input in dense_sampling(sigma, if sigma == 3 { 8 } else { 12 }) {
+                        assert_eq!(
+                            dfa.behavior(input.iter().copied()),
+                            automaton.behavior(input.iter().copied()),
+                            "modulus={modulus}, sigma={sigma}, length={by_length}, input={input:?}"
+                        );
                     }
                 }
-                s
-            });
-            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
-            wl.train(dense_sampling(2, 4));
-            let wfa = wl.wfa();
-            for sample in dense_sampling(automaton.sigma(), 6).chain(random_sampling(
-                automaton.sigma(),
-                6..=12,
-                0.1,
-            )) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = wfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
             }
         }
-        for i in 0usize..16 {
-            let a = i >> 3 & 1;
-            let b = i >> 2 & 1;
-            let c = i >> 1 & 1;
-            let d = i & 1;
-            let naive = |t: &[usize]| {
-                let mut set = HashSet::new();
-                let mut deq = VecDeque::new();
-                deq.push_back(t.to_vec());
-                set.insert(t.to_vec());
-                while let Some(t) = deq.pop_front() {
-                    for i in 0..t.len().saturating_sub(1) {
-                        let x = match (t[i], t[i + 1]) {
-                            (0, 0) => a,
-                            (0, 1) => b,
-                            (1, 0) => c,
-                            (1, 1) => d,
-                            _ => unreachable!(),
-                        };
-                        let mut t = t.to_vec();
-                        t.remove(i);
-                        t[i] = x;
-                        if set.insert(t.to_vec()) {
-                            deq.push_back(t);
+    }
+
+    // Each cell contains all results of fully parenthesizing one substring.
+    // This interval DP is independent of both automaton learning algorithms.
+    fn reduction_results(input: &[usize], table: &[usize]) -> Vec<Vec<u8>> {
+        let n = input.len();
+        let mut results = vec![vec![0; n + 1]; n + 1];
+        for (i, &x) in input.iter().enumerate() {
+            results[i][i + 1] = 1 << x;
+        }
+        for len in 2..=n {
+            for l in 0..=n - len {
+                let r = l + len;
+                for m in l + 1..r {
+                    for a in 0..2 {
+                        for b in 0..2 {
+                            if results[l][m] >> a & results[m][r] >> b & 1 != 0 {
+                                results[l][r] |= 1 << table[a * 2 + b];
+                            }
                         }
                     }
                 }
-                set.contains(&vec![1])
-            };
-            let naive = |t: &[usize]| {
-                let mut s = MInt998244353::zero();
-                for l in 0..t.len() {
-                    for r in l + 1..=t.len() {
-                        if naive(&t[l..r]) {
-                            s += MInt998244353::one();
-                        }
+            }
+        }
+        results
+    }
+
+    #[test]
+    fn test_lstar_reduction_languages() {
+        for table in exhaustive_sequences(0..2, 4..=4) {
+            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+                reduction_results(&input, &table)[0][input.len()] & 2 != 0
+            });
+            let dfa = DfaLearning::new(&automaton).train(dense_sampling(2, 4));
+            for input in dense_sampling(2, 12) {
+                assert_eq!(
+                    dfa.behavior(input.iter().copied()),
+                    automaton.behavior(input.iter().copied()),
+                    "table={table:?}, input={input:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_wfa_position_weights() {
+        let mut rng = Xorshift::default();
+        for sigma in 1..=3 {
+            for ratio in -2..=2 {
+                let automaton = BlackBoxAutomatonImpl::new(sigma, |input| {
+                    let mut weight = M::from(1);
+                    let mut sum = M::from(0);
+                    for x in input {
+                        sum += M::from(x) * weight;
+                        weight *= M::from(ratio);
                     }
-                }
-                s
-            };
-            let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
-            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
-            wl.train(dense_sampling(2, 6));
-            let wfa = wl.wfa();
-            for sample in dense_sampling(automaton.sigma(), 8).chain(random_sampling(
-                automaton.sigma(),
-                9..=12,
-                0.1,
-            )) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = wfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
+                    sum
+                });
+                let lengths = sample_usize(&mut rng, 16, 0..=64, 1000);
+                check_wfa(
+                    &automaton,
+                    4,
+                    3,
+                    dense_sampling(sigma, if sigma == 3 { 8 } else { 12 })
+                        .chain(structured_sequences(&mut rng, 0..sigma, lengths)),
+                );
             }
-            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
-            wl.batch_train(dense_sampling(2, 3));
-            let wfa = wl.wfa();
-            for sample in dense_sampling(automaton.sigma(), 8).chain(random_sampling(
-                automaton.sigma(),
-                9..=12,
-                0.1,
-            )) {
-                let expected = automaton.behavior(sample.iter().cloned());
-                let result = wfa.behavior(sample.iter().cloned());
-                assert_eq!(expected, result);
+        }
+    }
+
+    #[test]
+    fn test_wfa_xor_sum() {
+        // For sum = a + b, a ^ b <= sum. Enumerate distinct XOR results at
+        // each sum, then prefix-sum their counts for every n < 2^13.
+        let mut counts = vec![0usize; 1 << 13];
+        for sum in 0..counts.len() {
+            let mut seen = vec![false; sum + 1];
+            for a in 0..=sum {
+                seen[a ^ (sum - a)] = true;
             }
+            counts[sum] = seen.into_iter().filter(|&x| x).count();
+            if sum != 0 {
+                counts[sum] += counts[sum - 1];
+            }
+        }
+        let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+            let n = input.into_iter().fold(1, |n, x| n * 2 + x);
+            M::from(counts[n])
+        });
+        check_wfa(&automaton, 4, 3, dense_sampling(2, 12));
+    }
+
+    #[test]
+    fn test_wfa_reduction_substrings() {
+        for table in exhaustive_sequences(0..2, 4..=4) {
+            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+                M::from(
+                    reduction_results(&input, &table)
+                        .iter()
+                        .flatten()
+                        .filter(|&&mask| mask & 2 != 0)
+                        .count(),
+                )
+            });
+            check_wfa(&automaton, 6, 3, dense_sampling(2, 12));
         }
     }
 }

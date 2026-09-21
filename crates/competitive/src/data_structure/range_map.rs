@@ -197,6 +197,9 @@ impl<K, V> RangeMap<K, V> {
         V: Clone,
         F: FnMut((K, K), V),
     {
+        if range.0 >= range.1 {
+            return;
+        }
         if let Some((r, v)) = self.pop_left_if(&range.0, |r, _| range.0 < r.1) {
             if range.1 < r.1 {
                 f(range.clone(), v.clone());
@@ -389,147 +392,174 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::{NotEmptySegment as Nes, Xorshift};
+    use crate::tools::{
+        WithEmptySegment, Xorshift,
+        testutil::{exhaustive_sequences, sample_usize},
+    };
 
-    #[test]
-    fn test_insert() {
-        let mut map: RangeMap<usize, usize> = Default::default();
-        map.insert((1, 3), 0);
-        assert_eq!(map.get_range_value(&0), None);
-        assert_eq!(map.get_range_value(&1), Some((&(1, 3), &0)));
-        assert_eq!(map.get_range_value(&2), Some((&(1, 3), &0)));
-        assert_eq!(map.get_range_value(&3), None);
+    fn model_ranges<T: Copy + Eq>(values: &[Option<T>]) -> Vec<((usize, usize), T)> {
+        let mut start = 0;
+        let mut ranges = Vec::new();
+        for run in values.chunk_by(|a, b| a == b) {
+            let end = start + run.len();
+            if let Some(value) = run[0] {
+                ranges.push(((start, end), value));
+            }
+            start = end;
+        }
+        ranges
+    }
 
-        map.insert_with((2, 4), 1, |r, v| assert_eq!((r, v), ((2, 3), 0)));
-        assert_eq!(map.get_range_value(&0), None);
-        assert_eq!(map.get_range_value(&1), Some((&(1, 2), &0)));
-        assert_eq!(map.get_range_value(&2), Some((&(2, 4), &1)));
-        assert_eq!(map.get_range_value(&3), Some((&(2, 4), &1)));
-        assert_eq!(map.get_range_value(&4), None);
-
-        map.insert_with((2, 3), 2, |r, v| assert_eq!((r, v), ((2, 3), 1)));
-        assert_eq!(map.get_range_value(&0), None);
-        assert_eq!(map.get_range_value(&1), Some((&(1, 2), &0)));
-        assert_eq!(map.get_range_value(&2), Some((&(2, 3), &2)));
-        assert_eq!(map.get_range_value(&3), Some((&(3, 4), &1)));
-        assert_eq!(map.get_range_value(&4), None);
-
-        map.insert((1, 8), 3);
-        map.insert((4, 6), 4);
-        assert_eq!(map.get_range_value(&6), Some((&(6, 8), &3)));
+    fn check_map_operation(
+        map: &mut RangeMap<usize, i64>,
+        model: &mut [Option<i64>],
+        range: (usize, usize),
+        value: Option<i64>,
+    ) {
+        let expected: Vec<_> = model_ranges(&model[range.0..range.1])
+            .into_iter()
+            .map(|((l, r), value)| ((l + range.0, r + range.0), value))
+            .collect();
+        let mut notified = Vec::new();
+        let mut plain = map.clone();
+        if let Some(value) = value {
+            map.insert_with(range, value, |r, v| notified.push((r, v)));
+            plain.insert(range, value);
+        } else {
+            map.drain_with(range, |r, v| notified.push((r, v)));
+            plain.remove(range);
+        }
+        notified.sort_unstable();
+        assert_eq!(
+            notified, expected,
+            "range={range:?}, value={value:?}, before={model:?}"
+        );
+        model[range.0..range.1].fill(value);
+        let expected = model_ranges(model);
+        assert_eq!(
+            map.iter().map(|(&r, &v)| (r, v)).collect::<Vec<_>>(),
+            expected
+        );
+        assert_eq!(
+            plain.iter().map(|(&r, &v)| (r, v)).collect::<Vec<_>>(),
+            expected
+        );
+        for key in 0..=model.len() {
+            let interval = expected.iter().find(|((l, r), _)| *l <= key && key < *r);
+            assert_eq!(
+                map.get_range_value(&key),
+                interval.map(|(r, v)| (r, v)),
+                "key={key}, model={model:?}"
+            );
+            assert_eq!(map.get(&key).copied(), model.get(key).copied().flatten());
+            assert_eq!(map.contains_key(&key), interval.is_some());
+        }
     }
 
     #[test]
     fn test_range_map() {
+        // Every state over {absent, 0, 1} and every interval operation through five cells.
+        for n in 0..=5 {
+            for model in exhaustive_sequences([None, Some(0), Some(1)], n..=n) {
+                let mut base = RangeMap::new();
+                for (i, value) in model.iter().enumerate() {
+                    if let Some(value) = value {
+                        base.insert((i, i + 1), *value);
+                    }
+                }
+                for l in 0..=n {
+                    for r in l..=n {
+                        for value in [None, Some(0), Some(1)] {
+                            check_map_operation(
+                                &mut base.clone(),
+                                &mut model.clone(),
+                                (l, r),
+                                value,
+                            );
+                        }
+                    }
+                }
+            }
+        }
         let mut rng = Xorshift::default();
-        const N: usize = 200;
-        const Q: usize = 5000;
-        const A: i64 = 100;
-        let mut map: RangeMap<usize, i64> = Default::default();
-        let mut arr = vec![None; N];
-        for _ in 0..Q {
-            match rng.random(0..5) {
-                0 => {
-                    let key = rng.random(..N);
-                    if let Some((r, &v)) = map.get_range_value(&key) {
-                        arr[r.0..r.1].iter_mut().for_each(|a| {
-                            assert_eq!(Some(v), *a);
-                        });
-                    };
-                }
-                1 => {
-                    let range = rng.random(Nes(N));
-                    map.drain_with(range, |r, v| {
-                        arr[r.0.max(range.0)..r.1.min(range.1)]
-                            .iter_mut()
-                            .for_each(|a| {
-                                assert_eq!(Some(v), *a);
-                                *a = None;
-                            });
-                    });
-                    arr[range.0..range.1]
-                        .iter_mut()
-                        .for_each(|a| assert_eq!(*a, None));
-                }
-                _ => {
-                    let range = rng.random(Nes(N));
-                    let value = rng.random(-A..=A);
-                    map.insert_with(range, value, |r, v| {
-                        arr[r.0.max(range.0)..r.1.min(range.1)]
-                            .iter_mut()
-                            .for_each(|a| {
-                                assert_eq!(Some(v), *a);
-                                *a = None;
-                            });
-                    });
-                    arr[range.0..range.1].iter_mut().for_each(|a| {
-                        assert_eq!(*a, None);
-                        *a = Some(value);
-                    });
-                }
+        for n in sample_usize(&mut rng, 16, 0..=200, 30) {
+            let mut map = RangeMap::new();
+            let mut model = vec![None; n];
+            for _ in 0..1000 {
+                let range = rng.random(WithEmptySegment(n));
+                let value = (rng.random(0..4) != 0).then(|| rng.random(-100..=100));
+                check_map_operation(&mut map, &mut model, range, value);
             }
-            for (key, a) in arr.iter().enumerate() {
-                assert_eq!(map.get(&key), a.as_ref());
-            }
-            for (key, (a, b)) in arr.iter().zip(arr.iter().skip(1)).enumerate() {
-                assert_eq!(
-                    map.get_range_value(&key) == map.get_range_value(&(key + 1)),
-                    a == b
-                );
-            }
+        }
+    }
+
+    fn check_set_operation(
+        set: &mut RangeSet<usize>,
+        model: &mut [Option<()>],
+        range: (usize, usize),
+        insert: bool,
+    ) {
+        let expected: Vec<_> = model_ranges(&model[range.0..range.1])
+            .into_iter()
+            .map(|((l, r), ())| (l + range.0, r + range.0))
+            .collect();
+        let mut notified = Vec::new();
+        let mut plain = set.clone();
+        if insert {
+            set.insert_with(range, |r| notified.push(r));
+            plain.insert(range);
+        } else {
+            set.drain_with(range, |r| notified.push(r));
+            plain.remove(range);
+        }
+        notified.sort_unstable();
+        assert_eq!(
+            notified, expected,
+            "range={range:?}, insert={insert}, before={model:?}"
+        );
+        model[range.0..range.1].fill(insert.then_some(()));
+        let expected: Vec<_> = model_ranges(model).into_iter().map(|(r, ())| r).collect();
+        assert_eq!(set.iter().copied().collect::<Vec<_>>(), expected);
+        assert_eq!(plain.iter().copied().collect::<Vec<_>>(), expected);
+        for key in 0..=model.len() {
+            let interval = expected.iter().find(|&&(l, r)| l <= key && key < r);
+            assert_eq!(set.get_range(&key), interval, "key={key}, model={model:?}");
+            assert_eq!(set.contains(&key), interval.is_some());
         }
     }
 
     #[test]
     fn test_range_set() {
+        for n in 0..=8 {
+            for model in exhaustive_sequences([None, Some(())], n..=n) {
+                let mut base = RangeSet::new();
+                for (i, value) in model.iter().enumerate() {
+                    if value.is_some() {
+                        base.insert((i, i + 1));
+                    }
+                }
+                for l in 0..=n {
+                    for r in l..=n {
+                        for insert in [false, true] {
+                            check_set_operation(
+                                &mut base.clone(),
+                                &mut model.clone(),
+                                (l, r),
+                                insert,
+                            );
+                        }
+                    }
+                }
+            }
+        }
         let mut rng = Xorshift::default();
-        const N: usize = 200;
-        const Q: usize = 5000;
-        let mut set: RangeSet<usize> = Default::default();
-        let mut arr = [false; N];
-        for _ in 0..Q {
-            match rng.random(0..5) {
-                0 => {
-                    let key = rng.random(..N);
-                    if let Some(r) = set.get_range(&key) {
-                        arr[r.0..r.1].iter_mut().for_each(|a| {
-                            assert!(*a);
-                        });
-                    };
-                }
-                1 => {
-                    let range = rng.random(Nes(N));
-                    set.drain_with(range, |r| {
-                        arr[r.0.max(range.0)..r.1.min(range.1)]
-                            .iter_mut()
-                            .for_each(|a| {
-                                assert!(*a);
-                                *a = false;
-                            });
-                    });
-                    arr[range.0..range.1].iter_mut().for_each(|a| assert!(!*a));
-                }
-                _ => {
-                    let range = rng.random(Nes(N));
-                    set.insert_with(range, |r| {
-                        arr[r.0.max(range.0)..r.1.min(range.1)]
-                            .iter_mut()
-                            .for_each(|a| {
-                                assert!(*a);
-                                *a = false;
-                            });
-                    });
-                    arr[range.0..range.1].iter_mut().for_each(|a| {
-                        assert!(!*a);
-                        *a = true;
-                    });
-                }
-            }
-            for (key, a) in arr.iter().enumerate() {
-                assert_eq!(set.contains(&key), *a);
-            }
-            for (key, (a, b)) in arr.iter().zip(arr.iter().skip(1)).enumerate() {
-                assert_eq!(set.get_range(&key) == set.get_range(&(key + 1)), a == b,);
+        for n in sample_usize(&mut rng, 16, 0..=200, 30) {
+            let mut set = RangeSet::new();
+            let mut model = vec![None; n];
+            for _ in 0..1000 {
+                let range = rng.random(WithEmptySegment(n));
+                let insert = rng.random(0..4) != 0;
+                check_set_operation(&mut set, &mut model, range, insert);
             }
         }
     }

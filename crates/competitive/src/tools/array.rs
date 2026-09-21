@@ -25,8 +25,33 @@ macro_rules! array {
 
 #[test]
 fn test_array() {
-    let mut x = 0;
-    assert_eq!(array![1; 3], [1; 3]);
-    assert_eq!(array![|| { x += 1; x }; 3], [1, 2, 3]);
-    assert_eq!(array![|i| i + 1; 3], [1, 2, 3]);
+    use crate::tools::Xorshift;
+    use std::array;
+    fn check<const N: usize>(start: i32, step: i32) {
+        let mut x = start;
+        assert_eq!(array![start; N], [start; N]);
+        assert_eq!(
+            array![|| { x += step; x }; N],
+            array::from_fn(|i| start + (i as i32 + 1) * step)
+        );
+        assert_eq!(x, start + N as i32 * step);
+        assert_eq!(
+            array![|i| start + i as i32 * step; N],
+            array::from_fn(|i| start + i as i32 * step)
+        );
+    }
+    let mut rng = Xorshift::default();
+    for (start, step) in (-5..=5)
+        .flat_map(|start| (-5..=5).map(move |step| (start, step)))
+        .chain(rng.random_iter((-1000..=1000, -1000..=1000)).take(1000))
+    {
+        check::<0>(start, step);
+        check::<1>(start, step);
+        check::<2>(start, step);
+        check::<3>(start, step);
+        check::<4>(start, step);
+        check::<8>(start, step);
+        check::<16>(start, step);
+        check::<32>(start, step);
+    }
 }

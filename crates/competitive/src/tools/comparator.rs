@@ -50,36 +50,23 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
-    fn test_fn_comparator() {
-        let mut cmp = |a: &i32, b: &i32| b.cmp(a);
-        assert_eq!(cmp.compare(&1, &2), Ordering::Greater);
-        assert_eq!(cmp.compare(&2, &1), Ordering::Less);
-        assert_eq!(cmp.compare(&1, &1), Ordering::Equal);
-    }
-
-    #[test]
-    fn test_less_comparator() {
-        let mut cmp = Less;
-        assert_eq!(cmp.compare(&1, &2), Ordering::Less);
-        assert_eq!(cmp.compare(&2, &1), Ordering::Greater);
-        assert_eq!(cmp.compare(&1, &1), Ordering::Equal);
-    }
-
-    #[test]
-    fn test_greater_comparator() {
-        let mut cmp = Greater;
-        assert_eq!(cmp.compare(&1, &2), Ordering::Greater);
-        assert_eq!(cmp.compare(&2, &1), Ordering::Less);
-        assert_eq!(cmp.compare(&1, &1), Ordering::Equal);
-    }
-
-    #[test]
-    fn test_by_key_comparator() {
-        let mut cmp = ByKey(|x: &i32| -x);
-        assert_eq!(cmp.compare(&1, &2), Ordering::Greater);
-        assert_eq!(cmp.compare(&2, &1), Ordering::Less);
-        assert_eq!(cmp.compare(&1, &1), Ordering::Equal);
+    fn test_comparators() {
+        let mut rng = Xorshift::default();
+        for _ in 0..10_000 {
+            let a = rng.random(-100i32..=100);
+            let b = rng.random(-100i32..=100);
+            let mut cmp = |a: &i32, b: &i32| b.cmp(a);
+            assert_eq!(cmp.compare(&a, &b), b.cmp(&a));
+            assert_eq!(Less.compare(&a, &b), a.cmp(&b));
+            assert_eq!(Greater.compare(&a, &b), b.cmp(&a));
+            let divisor = rng.random(1..=100);
+            assert_eq!(
+                ByKey(|x: &i32| x.rem_euclid(divisor)).compare(&a, &b),
+                a.rem_euclid(divisor).cmp(&b.rem_euclid(divisor))
+            );
+        }
     }
 }

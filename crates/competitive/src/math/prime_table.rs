@@ -111,32 +111,23 @@ mod tests {
 
     #[test]
     fn test_prime_table() {
-        const N: u32 = 100_000;
-        let primes = PrimeTable::new(N);
-        assert!(!primes.is_prime(N));
-        assert!(primes.is_prime(99991));
-
-        let factors = primes.prime_factors(99991);
-        assert_eq!(factors, vec![(99991, 1)]);
-        let factors = primes.prime_factors(2016);
-        assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
-        for i in 1..=N {
-            assert_eq!(
-                i,
-                primes
-                    .prime_factors(i)
-                    .into_iter()
-                    .map(|(p, c)| p.pow(c))
-                    .product::<u32>()
-            );
-            assert_eq!(
-                primes
-                    .prime_factors(i)
-                    .into_iter()
-                    .map(|(_, c)| c + 1)
-                    .product::<u32>(),
-                primes.count_divisors(i)
-            );
+        for n in (1..=30).chain([1000, 10_000]) {
+            let primes = PrimeTable::new(n);
+            for x in 1..=n {
+                let is_prime = x >= 2 && (2..).take_while(|&d| d * d <= x).all(|d| x % d != 0);
+                assert_eq!(primes.is_prime(x), is_prime);
+                let factors = primes.prime_factors(x);
+                assert_eq!(factors.iter().map(|&(p, e)| p.pow(e)).product::<u32>(), x);
+                assert!(factors.windows(2).all(|w| w[0].0 < w[1].0));
+                for &(p, e) in &factors {
+                    assert!(p >= 2 && e > 0);
+                    assert!((2..).take_while(|&d| d * d <= p).all(|d| p % d != 0));
+                }
+                assert_eq!(
+                    primes.count_divisors(x),
+                    (1..=x).filter(|d| x % d == 0).count() as u32
+                );
+            }
         }
     }
 

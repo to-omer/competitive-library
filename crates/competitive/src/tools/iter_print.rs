@@ -298,48 +298,85 @@ macro_rules! iter_print {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
     use crate::tools::{FastIterPrint, FastOutput, FastPrint};
+    use std::array;
+    use std::iter;
 
     #[test]
     fn test_iter_print() {
-        let mut buf = Vec::new();
-        let mut fast_buf = Vec::new();
-        macro_rules! check {
-            ($writer:ident $(, $mode:ident)?) => {
-        iter_print!(
-            $($mode;)? $writer, 1, 2, @sep '.', 3, 4; 5, 6, @sp @it 7..=10;
-            @tup (1, 2, 3); @flush 4, @fmt ("{}?{}", 5, 6.7);
-            { @ns @it 8..=10; @lf @it 11..=13 },
-            @it2d (0..3).map(|i| (14..=15).map(move |j| i * 2 + j));
-            @ns @ittup (0..2).map(|i| (i * 2 + 20, i * 2 + 21));
-            @flush,
-            @bw (b'a' [0, 1, 2].iter().cloned());
-            @sp @it1 (0..2)
-        );
-            };
+        use std::fmt::Write as _;
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let a: [i32; 23] = array::from_fn(|_| rng.random(-1000..=1000));
+            let decimal = rng.random(-1000..=1000) as f64 / 10.0;
+            let n = rng.random(0..=20);
+            let letters: Vec<u8> = rng.random_iter(0..26).take(n).collect();
+            let indices: Vec<usize> = rng.random_iter(0..100).take(n).collect();
+            let mut buf = Vec::new();
+            let mut fast_buf = Vec::new();
+            macro_rules! check {
+                ($writer:ident $(, $mode:ident)?) => {
+                    iter_print!(
+                        $($mode;)? $writer, a[0], a[1], @sep '.', a[2], a[3];
+                        a[4], a[5], @sp @it &a[6..10];
+                        @tup (a[0], a[1], a[2]); @flush a[3], @fmt ("{}?{}", a[4], decimal);
+                        { @ns @it &a[7..10]; @lf @it &a[10..13] },
+                        @it2d a[13..19].chunks(2);
+                        @ns @ittup a[19..23].chunks(2).map(|row| (row[0], row[1]));
+                        @flush,
+                        @bw (b'a' letters.iter().copied());
+                        @sp @it1 indices.iter().copied()
+                    );
+                };
+            }
+            check!(buf);
+            {
+                let mut out = FastOutput::new(&mut fast_buf);
+                check!(out, fast);
+            }
+            let text: Vec<_> = a.iter().map(ToString::to_string).collect();
+            let mut expected = String::new();
+            writeln!(expected, "{} {}.{}.{}", a[0], a[1], a[2], a[3]).unwrap();
+            writeln!(expected, "{}.{} {}", a[4], a[5], text[6..10].join(" ")).unwrap();
+            writeln!(expected, "{}", text[..3].join(" ")).unwrap();
+            writeln!(expected, "{} {}?{}", a[3], a[4], decimal).unwrap();
+            writeln!(expected, "{}", text[7..10].concat()).unwrap();
+            writeln!(
+                expected,
+                "{} {}",
+                text[10..13].join("\n"),
+                text[13..15].join(" ")
+            )
+            .unwrap();
+            for row in text[15..19].chunks(2) {
+                writeln!(expected, "{}", row.join(" ")).unwrap();
+            }
+            for row in text[19..23].chunks(2) {
+                writeln!(expected, "{}", row.concat()).unwrap();
+            }
+            writeln!(
+                expected,
+                "{}",
+                letters
+                    .iter()
+                    .map(|&x| char::from(b'a' + x))
+                    .collect::<String>()
+            )
+            .unwrap();
+            writeln!(
+                expected,
+                "{}",
+                indices
+                    .iter()
+                    .map(|x| (x + 1).to_string())
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            )
+            .unwrap();
+            assert_eq!(buf, expected.as_bytes());
+            assert_eq!(fast_buf, expected.as_bytes());
         }
-        check!(buf);
-        {
-            let mut out = FastOutput::new(&mut fast_buf);
-            check!(out, fast);
-        }
-        let expected = r#"1 2.3.4
-5.6 7 8 9 10
-1 2 3
-4 5?6.7
-8910
-11
-12
-13 14 15
-16 17
-18 19
-2021
-2223
-abc
-1 2
-"#;
-        assert_eq!(expected, String::from_utf8_lossy(&buf));
-        assert_eq!(buf, fast_buf);
     }
 
     #[test]
@@ -403,7 +440,7 @@ abc
         for n in 0..=32 {
             let dropped = Cell::new(0);
             let mut next = 0;
-            let iter = std::iter::from_fn(|| {
+            let iter = iter::from_fn(|| {
                 let value = next;
                 assert_eq!(dropped.get(), value);
                 next += 1;

@@ -333,6 +333,8 @@ impl FromIterator<bool> for BitVector {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, integer_boundary_values};
+    use std::iter;
 
     const Q: usize = 5_000;
 
@@ -340,7 +342,10 @@ mod tests {
     fn test_rank_select_word() {
         const WORD_SIZE: usize = u64::BITS as usize;
         let mut rng = Xorshift::default();
-        for x in rng.random_iter(0u64..).take(Q) {
+        for x in (0..=u16::MAX as u64)
+            .chain(integer_boundary_values!(u64))
+            .chain(rng.random_iter(0u64..).take(Q))
+        {
             for k in 0..=WORD_SIZE {
                 assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());
                 assert_eq!(x.rank0(k), (0..k).filter(|&i| !x.access(i)).count());
@@ -365,10 +370,24 @@ mod tests {
 
     #[test]
     fn test_rank_select_bit_vector() {
-        let mut events = [Some(true), None, Some(false)].into_iter();
-        let collected: BitVector = std::iter::from_fn(|| events.next().flatten()).collect();
-        assert_eq!(collected.bit_length(), 1);
-        assert_eq!(collected.rank1(1), 1);
+        for events in exhaustive_sequences([None, Some(false), Some(true)], 0..=6) {
+            let expected: Vec<_> = events
+                .iter()
+                .copied()
+                .take_while(Option::is_some)
+                .flatten()
+                .collect();
+            let mut events = events.into_iter();
+            let actual: BitVector = iter::from_fn(|| events.next().flatten()).collect();
+            assert_eq!(actual.bit_length(), expected.len());
+            for (i, &bit) in expected.iter().enumerate() {
+                assert_eq!(actual.access(i), bit);
+            }
+            assert_eq!(
+                actual.rank1(expected.len()),
+                expected.iter().filter(|&&x| x).count()
+            );
+        }
         let mut rng = Xorshift::default();
         for len in [
             0,

@@ -1122,25 +1122,36 @@ mod tests {
 
     #[test]
     fn xor_linked_tree_visitor() {
-        let graph = UndirectedSparseGraph::from_edges(5, vec![(0, 1), (1, 2), (1, 3), (3, 4)]);
-        let mut seen = vec![];
-        XorLinkedRootedTree::builder(graph.vertices_size()).run(
-            0,
-            graph.edges.iter().copied(),
-            |u, p| {
-                seen.push((u, p));
-            },
-        );
-        assert_eq!(seen.len(), graph.edges_size());
-        let mut seen_e = vec![];
-        XorLinkedRootedTree::builder(graph.vertices_size())
-            .with_eindexed()
-            .run(0, graph.edges.iter().copied(), |u, p, e| {
-                seen_e.push((u, p, e));
-            });
-        assert_eq!(seen_e.len(), graph.edges_size());
-        for (u, p, e) in seen_e {
-            assert!(graph.edges[e] == (u, p) || graph.edges[e] == (p, u));
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(1..=100);
+            let graph = rng.random(MixedTree(n));
+            let root = rng.random(0..n);
+            let (parent, _) = expected_parent_depth(&graph, root);
+            let mut seen = Vec::new();
+            XorLinkedRootedTree::builder(n)
+                .run(root, graph.edges.iter().copied(), |u, p| seen.push((u, p)));
+            seen.sort();
+            assert_eq!(
+                seen,
+                (0..n)
+                    .filter(|&u| u != root)
+                    .map(|u| (u, parent[u]))
+                    .collect::<Vec<_>>()
+            );
+            let mut seen_e = Vec::new();
+            XorLinkedRootedTree::builder(n).with_eindexed().run(
+                root,
+                graph.edges.iter().copied(),
+                |u, p, e| seen_e.push((u, p, e)),
+            );
+            seen_e.sort_by_key(|&(_, _, e)| e);
+            assert_eq!(seen_e.len(), graph.edges_size());
+            for (eid, &(u, p, e)) in seen_e.iter().enumerate() {
+                assert_eq!(e, eid);
+                assert_eq!(parent[u], p);
+                assert!(graph.edges[e] == (u, p) || graph.edges[e] == (p, u));
+            }
         }
     }
 
@@ -1156,24 +1167,33 @@ mod tests {
 
     #[test]
     fn xor_linked_tree_scanner() {
-        let mut scanner = Scanner::new("0 1 10 1 2 20 1 3 30");
-        scan!(
-            scanner,
-            (tree, weights): @XorLinkedRootedTreeScanner::<usize, NonCloneWeight>::new(4, 0)
-                .with_parent()
-                .with_eindexed()
-                .with_parent_edge()
-        );
-        assert_eq!(tree.parent(0), usize::MAX);
-        assert_eq!(tree.parent(1), 0);
-        assert_eq!(tree.parent(2), 1);
-        assert_eq!(tree.parent(3), 1);
-        assert_eq!(
-            weights,
-            vec![NonCloneWeight(10), NonCloneWeight(20), NonCloneWeight(30)]
-        );
-        assert_eq!(tree.parent_edge(1), 0);
-        assert_eq!(tree.parent_edge(2), 1);
-        assert_eq!(tree.parent_edge(3), 2);
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(1..=100);
+            let graph = rng.random(MixedTree(n));
+            let root = rng.random(0..n);
+            let (parent, _) = expected_parent_depth(&graph, root);
+            let expected: Vec<usize> = rng.random_iter(..).take(graph.edges_size()).collect();
+            let text: String = graph
+                .edges
+                .iter()
+                .zip(&expected)
+                .map(|(&(u, v), w)| format!("{u} {v} {w}\n"))
+                .collect();
+            let mut scanner = Scanner::new(&text);
+            scan!(scanner, (tree, weights): @XorLinkedRootedTreeScanner::<usize, NonCloneWeight>::new(n, root).with_parent().with_eindexed().with_parent_edge());
+            assert_eq!(
+                weights,
+                expected.into_iter().map(NonCloneWeight).collect::<Vec<_>>()
+            );
+            for (u, &p) in parent.iter().enumerate() {
+                assert_eq!(tree.parent(u), p);
+            }
+            assert_eq!(tree.parent_edge(root), usize::MAX);
+            for (eid, &(u, v)) in graph.edges.iter().enumerate() {
+                let child = if parent[u] == v { u } else { v };
+                assert_eq!(tree.parent_edge(child), eid);
+            }
+        }
     }
 }

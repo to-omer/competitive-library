@@ -116,80 +116,45 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
+    use std::collections::BTreeSet;
 
     #[test]
-    fn test_contains() {
-        assert!(!0b1010u8.contains(0));
-        assert!(0b1010u8.contains(1));
-        assert!(!0b1010u8.contains(2));
-        assert!(0b1010u8.contains(3));
-    }
-
-    #[test]
-    fn test_insert() {
-        assert_eq!(0b1010u8.insert(0), 0b1011);
-        assert_eq!(0b1010u8.insert(1), 0b1010);
-        assert_eq!(0b1010u8.insert(2), 0b1110);
-        assert_eq!(0b1010u8.insert(3), 0b1010);
-    }
-
-    #[test]
-    fn test_remove() {
-        assert_eq!(0b1010u8.remove(0), 0b1010);
-        assert_eq!(0b1010u8.remove(1), 0b1000);
-        assert_eq!(0b1010u8.remove(2), 0b1010);
-        assert_eq!(0b1010u8.remove(3), 0b0010);
-    }
-
-    #[test]
-    fn test_is_subset() {
-        assert!(0b1010u8.is_subset(0b1010));
-        assert!(0b1010u8.is_subset(0b0000));
-        assert!(!0b1010u8.is_subset(0b0100));
-        assert!(!0b1010u8.is_subset(0b10000));
-    }
-
-    #[test]
-    fn test_is_superset() {
-        assert!(0b1010u8.is_superset(0b1010));
-        assert!(0b1010u8.is_superset(0b1111));
-        assert!(!0b1010u8.is_superset(0b0000));
-        assert!(!0b1010u8.is_superset(0b10000));
-    }
-
-    #[test]
-    fn test_subsets() {
-        for mask in 0usize..1 << 12 {
-            let mut subsets = mask.subsets().collect::<Vec<_>>();
-            let n = subsets.len();
-            assert_eq!(n, 1 << mask.count_ones());
-            assert!(subsets.iter().all(|&s| mask.is_subset(s)));
-            subsets.sort_unstable();
-            subsets.dedup();
-            assert_eq!(n, subsets.len());
-        }
-    }
-
-    #[test]
-    fn test_combinations() {
-        let mut comb = vec![vec![0; 14]; 14];
-        comb[0][0] = 1;
-        for i in 0..=12 {
-            for j in 0..=12 {
-                comb[i + 1][j] += comb[i][j];
-                comb[i][j + 1] += comb[i][j];
+    fn test_bit_operations() {
+        let mut rng = Xorshift::default();
+        let pairs: Vec<_> = (0..256usize)
+            .flat_map(|a| (0..256).map(move |b| (a, b)))
+            .chain(
+                rng.random_iter((0..1usize << 12, 0..1usize << 12))
+                    .take(1000),
+            )
+            .collect();
+        for (a, b) in pairs {
+            let set: BTreeSet<_> = (0..12).filter(|&i| a >> i & 1 != 0).collect();
+            let other: BTreeSet<_> = (0..12).filter(|&i| b >> i & 1 != 0).collect();
+            for i in 0..12 {
+                assert_eq!(a.contains(i), set.contains(&i));
+                let mut inserted = set.clone();
+                inserted.insert(i);
+                assert_eq!(a.insert(i), inserted.iter().map(|i| 1 << i).sum());
+                let mut removed = set.clone();
+                removed.remove(&i);
+                assert_eq!(a.remove(i), removed.iter().map(|i| 1 << i).sum());
             }
+            assert_eq!(a.is_subset(b), other.is_subset(&set));
+            assert_eq!(a.is_superset(b), other.is_superset(&set));
         }
-
+        for a in 0..1usize << 12 {
+            let mut subsets: Vec<_> = a.subsets().collect();
+            subsets.sort();
+            assert_eq!(subsets, (0..=a).filter(|x| x & a == *x).collect::<Vec<_>>());
+        }
         for n in 0..=12 {
             for k in 0..=n {
-                let mut combinations = usize::combinations(n, k).collect::<Vec<_>>();
-                let len = combinations.len();
-                assert_eq!(len, comb[n - k][k]);
-                assert!(combinations.iter().all(|&s| s.count_ones() as usize == k));
-                combinations.sort_unstable();
-                combinations.dedup();
-                assert_eq!(len, combinations.len());
+                let expected: Vec<_> = (0..1usize << n)
+                    .filter(|x| x.count_ones() as usize == k)
+                    .collect();
+                assert_eq!(usize::combinations(n, k).collect::<Vec<_>>(), expected);
             }
         }
     }

@@ -73,76 +73,38 @@ macro_rules! minmax {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    macro_rules! assert_eq_f64 {
-        ($l:expr, $r:expr) => { assert_eq_f64!($l, $r,) };
-        ($l:expr, $r:expr, $($t:tt)*) => {
-            ::std::assert!(($l - $r).abs() < f64::EPSILON, $($t)*);
-        };
-    }
+    use crate::tools::Xorshift;
+    use std::array;
 
     #[test]
-    fn test_min() {
-        assert_eq!(min!(1), 1);
-        assert_eq!(min!(1, 2), 1);
-        assert_eq_f64!(min!(4.0f64, 1., 2.), 1.0f64);
-        assert_eq!(min!(4, 9, 2, 3,), 2);
-    }
-
-    #[test]
-    fn test_chmin() {
-        let mut x = 100;
-        chmin!(x, 101);
-        assert_eq!(x, 100);
-        chmin!(x, 91, 78);
-        assert_eq!(x, 78);
-        chmin!(x, 61, 42, 51);
-        assert_eq!(x, 42);
-
-        let mut v = [31, 12];
-        chmin!(v[0], v[1], 14);
-        assert_eq!(v[0], v[1]);
-    }
-
-    #[test]
-    fn test_max() {
-        assert_eq!(max!(1), 1);
-        assert_eq!(max!(1, 2), 2);
-        assert_eq_f64!(max!(4.0f64, 1., 2.), 4.0f64);
-        assert_eq!(max!(4, 9, 2, 3,), 9);
-    }
-
-    #[test]
-    fn test_chmax() {
-        let mut x = 100;
-        chmax!(x, 91);
-        assert_eq!(x, 100);
-        chmax!(x, 191, 178);
-        assert_eq!(x, 191);
-        chmax!(x, 261, 242, 251);
-        assert_eq!(x, 261);
-
-        let mut v = [31, 42];
-        chmax!(v[0], v[1], 14);
-        assert_eq!(v[0], v[1]);
-    }
-
-    #[test]
-    fn test_minmax() {
-        assert_eq!(minmax!(1), (1, 1));
-        assert_eq!(minmax!(1, 2), (1, 2));
-        assert_eq_f64!(minmax!(4.0f64, 1., 2.).0, 1.0f64);
-        assert_eq_f64!(minmax!(4.0f64, 1., 2.).1, 4.0f64);
-        assert_eq!(minmax!(4, 9, 2, 3,), (2, 9));
-    }
-
-    #[test]
-    fn test_partial_ord_ext() {
-        let mut x = 100;
-        x.chmin(91);
-        assert_eq!(x, 91);
-        x.chmax(101);
-        assert_eq!(x, 101);
-        assert_eq!(100.minmax(91), (91, 100));
+    fn test_order_operations() {
+        let mut rng = Xorshift::default();
+        for _ in 0..10_000 {
+            let values: [i32; 4] = array::from_fn(|_| rng.random(-100..=100));
+            let [a, b, c, d] = values;
+            let lo = *values.iter().min().unwrap();
+            let hi = *values.iter().max().unwrap();
+            assert_eq!(min!(a), a);
+            assert_eq!(max!(a), a);
+            assert_eq!(min!(a, b), a.min(b));
+            assert_eq!(max!(a, b), a.max(b));
+            assert_eq!(min!(a, b, c, d,), lo);
+            assert_eq!(max!(a, b, c, d,), hi);
+            assert_eq!(minmax!(a, b, c, d), (lo, hi));
+            let mut x = a;
+            chmin!(x, b, c, d);
+            assert_eq!(x, lo);
+            let mut x = a;
+            chmax!(x, b, c, d);
+            assert_eq!(x, hi);
+            let mut x = a;
+            x.chmin(b);
+            assert_eq!(x, a.min(b));
+            x.chmax(c);
+            assert_eq!(x, a.min(b).max(c));
+            assert_eq!(a.minmax(b), (a.min(b), a.max(b)));
+            assert_eq!(min!(a as f64, b as f64, c as f64, d as f64), lo as f64);
+            assert_eq!(max!(a as f64, b as f64, c as f64, d as f64), hi as f64);
+        }
     }
 }

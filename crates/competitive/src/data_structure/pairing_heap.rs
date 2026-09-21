@@ -396,32 +396,47 @@ mod tests {
     use std::{cmp::Reverse, collections::BinaryHeap};
 
     #[test]
-    fn test_min_heap() {
-        let mut heap = PairingHeap::<i32>::default();
-        assert!(heap.is_empty());
-        heap.push(3);
-        heap.push(1);
-        heap.push(4);
-        heap.push(2);
-        assert_eq!(heap.len(), 4);
-        assert_eq!(heap.peek(), Some(&1));
-        assert_eq!(heap.pop(), Some(1));
-        assert_eq!(heap.pop(), Some(2));
-        assert_eq!(heap.pop(), Some(3));
-        assert_eq!(heap.pop(), Some(4));
-        assert!(heap.is_empty());
-    }
-
-    #[test]
-    fn test_max_heap() {
-        let mut heap = PairingHeap::<i32, Greater>::with_comparator(Greater);
-        heap.extend([3, 1, 4, 2]);
-        assert_eq!(heap.peek(), Some(&4));
-        assert_eq!(heap.pop(), Some(4));
-        assert_eq!(heap.pop(), Some(3));
-        assert_eq!(heap.pop(), Some(2));
-        assert_eq!(heap.pop(), Some(1));
-        assert!(heap.is_empty());
+    fn test_heap_order() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let mut min_heap = PairingHeap::<i32>::default();
+            let mut max_heap: PairingHeap<i32, Greater> = PairingHeap::with_comparator(Greater);
+            let mut min_model = BinaryHeap::new();
+            let mut max_model = BinaryHeap::new();
+            for _ in 0..1000 {
+                if rng.random(0..3) == 0 {
+                    assert_eq!(min_heap.pop(), min_model.pop().map(|Reverse(x)| x));
+                    assert_eq!(max_heap.pop(), max_model.pop());
+                } else {
+                    let x = rng.random(-100..=100);
+                    min_heap.push(x);
+                    max_heap.push(x);
+                    min_model.push(Reverse(x));
+                    max_model.push(x);
+                }
+                assert_eq!(min_heap.len(), min_model.len());
+                assert_eq!(max_heap.len(), max_model.len());
+                assert_eq!(min_heap.peek(), min_model.peek().map(|Reverse(x)| x));
+                assert_eq!(max_heap.peek(), max_model.peek());
+            }
+            assert_eq!(
+                min_heap.into_iter().collect::<Vec<_>>(),
+                min_model
+                    .into_sorted_vec()
+                    .into_iter()
+                    .rev()
+                    .map(|Reverse(x)| x)
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(
+                max_heap.into_iter().collect::<Vec<_>>(),
+                max_model
+                    .into_sorted_vec()
+                    .into_iter()
+                    .rev()
+                    .collect::<Vec<_>>()
+            );
+        }
     }
 
     #[test]

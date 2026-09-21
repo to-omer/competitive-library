@@ -575,53 +575,80 @@ impl_serdebytestr_seq!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
+    use crate::tools::testutil::sample_usize;
 
     #[test]
     fn test_bitrw() {
-        let mut writer = BitWriter::default();
-        for i in 0..10 {
-            writer.push_bit(i % 3 == 0);
-        }
-        for i in 0..10 {
-            writer.push_u8(i);
-        }
-        for i in 1..=10 {
-            writer.push_u64(i, i as _);
-        }
-        let bytes = writer.into_inner();
-
-        let mut reader = BitReader::new(&bytes);
-        for i in 0..10 {
-            assert_eq!(i % 3 == 0, reader.read_bit());
-        }
-        for i in 0..10 {
-            assert_eq!(i, reader.read_u8());
-        }
-        for i in 1..=10 {
-            let mut x = 0u64;
-            for j in (0..i).rev() {
-                x |= (reader.read_bit() as u64) << j;
+        let mut rng = Xorshift::default();
+        for n in sample_usize(&mut rng, 16, 0..=256, 1000) {
+            let mut writer = BitWriter::default();
+            let mut bits = Vec::new();
+            for i in 0..n {
+                let len = if i < 64 {
+                    i as u32 + 1
+                } else {
+                    rng.random(1..=64)
+                };
+                for value in [0, u64::MAX >> (64 - len), rng.rand64() >> (64 - len)] {
+                    match len {
+                        1 => writer.push_bit(value != 0),
+                        8 => writer.push_u8(value as u8),
+                        _ => writer.push_u64(value, len),
+                    }
+                    bits.extend((0..len).rev().map(|i| value >> i & 1 != 0));
+                }
             }
-            assert_eq!(i, x);
+            let bytes = writer.into_inner();
+            let mut reader = BitReader::new(&bytes);
+            for &bit in &bits {
+                assert_eq!(reader.read_bit(), bit);
+            }
+            let mut reader = BitReader::new(&bytes);
+            for chunk in bits.as_chunks::<8>().0 {
+                assert_eq!(
+                    reader.read_u8(),
+                    chunk.iter().fold(0, |a, &b| (a << 1) | b as u8)
+                );
+            }
         }
     }
 
     #[test]
     fn test_serde() {
-        let a = (
-            (0..=255).collect::<Vec<u8>>(),
-            String::from_utf8((0..128).collect::<Vec<u8>>()).unwrap(),
-            (0..=255).collect::<VecDeque<u64>>(),
-            (0..=255).collect::<BTreeSet<usize>>(),
-            (-255..=255).collect::<HashSet<i128>>(),
-        );
-        let b = a.serialize_bytestr();
-        let c = SerdeByteStr::deserialize_from_bytes(&unescape(b.as_bytes()));
-        assert_eq!(a, c);
-
-        let a = (0, 0);
-        let b = a.serialize_bytestr();
-        let c = SerdeByteStr::deserialize_from_bytes(&unescape(b.as_bytes()));
-        assert_eq!(a, c);
+        let mut rng = Xorshift::default();
+        for n in sample_usize(&mut rng, 16, 0..=256, 1000) {
+            let text: String = (0..n as u32)
+                .filter_map(char::from_u32)
+                .chain((0..n).filter_map(|_| char::from_u32(rng.random(0..=0x10ffff))))
+                .collect();
+            let value = (
+                (0..n)
+                    .map(|i| i as u8)
+                    .chain(rng.random_iter(..).take(n))
+                    .collect::<Vec<u8>>(),
+                text,
+                (0..n as u64)
+                    .chain(rng.random_iter(..).take(n))
+                    .collect::<VecDeque<u64>>(),
+                rng.random_iter(0..=100)
+                    .take(n)
+                    .collect::<BTreeSet<usize>>(),
+                rng.random_iter(-100..=100)
+                    .take(n)
+                    .collect::<HashSet<i128>>(),
+            );
+            let encoded = value.serialize_bytestr();
+            let decoded = SerdeByteStr::deserialize_from_bytes(&unescape(encoded.as_bytes()));
+            assert_eq!(value, decoded);
+        }
+        for value in (-4i64..=4)
+            .flat_map(|a| (0u64..=8).map(move |b| (a, b)))
+            .chain(rng.random_iter((.., ..)).take(1000))
+        {
+            let encoded = value.serialize_bytestr();
+            let decoded = SerdeByteStr::deserialize_from_bytes(&unescape(encoded.as_bytes()));
+            assert_eq!(value, decoded);
+        }
     }
 }

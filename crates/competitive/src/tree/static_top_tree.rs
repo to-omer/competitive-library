@@ -811,8 +811,9 @@ mod tests {
         graph::UndirectedSparseGraph,
         num::{One, Zero, mint_basic::MInt998244353},
         tools::Xorshift,
-        tree::{PathTree, PruferSequence, StarTree},
+        tree::{MixedTree, PathTree, StarTree},
     };
+    use std::array;
 
     type MInt = MInt998244353;
 
@@ -972,11 +973,11 @@ mod tests {
 
     impl MatchingCluster {
         fn point() -> [Vec<i64>; 2] {
-            std::array::from_fn(|_| Vec::new())
+            array::from_fn(|_| Vec::new())
         }
 
         fn path() -> [[Vec<i64>; 2]; 2] {
-            std::array::from_fn(|_| Self::point())
+            array::from_fn(|_| Self::point())
         }
 
         fn relax(dst: &mut Vec<i64>, src: &[i64], shift: usize, add: i64) {
@@ -1123,11 +1124,6 @@ mod tests {
         dfs(graph, vertices, edges, root, usize::MAX, None)
     }
 
-    fn balanced_tree(n: usize) -> UndirectedSparseGraph {
-        let edges = (1..n).map(|v| ((v - 1) / 2, v)).collect::<Vec<_>>();
-        UndirectedSparseGraph::from_edges(n, edges)
-    }
-
     fn gen_weights(rng: &mut Xorshift, n: usize, m: usize) -> (Vec<MInt>, Vec<(MInt, MInt)>) {
         let vertices = (0..n)
             .map(|_| MInt::from(rng.random(0u32..10)))
@@ -1228,8 +1224,17 @@ mod tests {
     #[test]
     fn static_top_tree_fixed_random() {
         let mut rng = Xorshift::default();
+        for n in 1..=16 {
+            for graph in [
+                rng.random(PathTree(n)),
+                rng.random(StarTree(n)),
+                UndirectedSparseGraph::from_edges(n, (1..n).map(|v| ((v - 1) / 2, v)).collect()),
+            ] {
+                run_fixed_case(&graph, 30, &mut rng);
+            }
+        }
         for _ in 0..30 {
-            let graph = rng.random(PruferSequence(2..=14usize));
+            let graph = rng.random(MixedTree(1..=14usize));
             run_fixed_case(&graph, 40, &mut rng);
         }
     }
@@ -1237,23 +1242,18 @@ mod tests {
     #[test]
     fn static_top_tree_reroot_random() {
         let mut rng = Xorshift::default();
-        for _ in 0..20 {
-            let graph = rng.random(PruferSequence(2..=12usize));
-            run_reroot_case(&graph, 30, &mut rng);
+        for n in 1..=16 {
+            for graph in [
+                rng.random(PathTree(n)),
+                rng.random(StarTree(n)),
+                UndirectedSparseGraph::from_edges(n, (1..n).map(|v| ((v - 1) / 2, v)).collect()),
+            ] {
+                run_reroot_case(&graph, 30, &mut rng);
+            }
         }
-    }
-
-    #[test]
-    fn static_top_tree_shapes() {
-        let mut rng = Xorshift::default();
-        for graph in [
-            UndirectedSparseGraph::from_edges(1, vec![]),
-            rng.random(PathTree(2..=16usize)),
-            rng.random(StarTree(2..=16usize)),
-            balanced_tree(15),
-        ] {
-            run_fixed_case(&graph, 30, &mut rng);
-            run_reroot_case(&graph, 20, &mut rng);
+        for _ in 0..20 {
+            let graph = rng.random(MixedTree(1..=12usize));
+            run_reroot_case(&graph, 30, &mut rng);
         }
     }
 
@@ -1288,24 +1288,19 @@ mod tests {
         }
 
         let mut rng = Xorshift::default();
-        let mut graphs = vec![
-            UndirectedSparseGraph::from_edges(1, vec![]),
-            rng.random(PathTree(2..=11usize)),
-            rng.random(StarTree(2..=11usize)),
-            balanced_tree(11),
-        ];
-        for _ in 0..80 {
-            graphs.push(rng.random(PruferSequence(1..=11usize)));
+        let mut graphs = Vec::new();
+        for n in 1..=11 {
+            graphs.extend([
+                rng.random(PathTree(n)),
+                rng.random(StarTree(n)),
+                UndirectedSparseGraph::from_edges(n, (1..n).map(|v| ((v - 1) / 2, v)).collect()),
+            ]);
         }
+        graphs.extend((0..100).map(|_| rng.random(MixedTree(1..=11usize))));
         for (case, graph) in graphs.into_iter().enumerate() {
-            let weights = (0..graph.edges_size())
-                .map(|eid| {
-                    if case < 4 {
-                        eid as i64 % 7 - 3
-                    } else {
-                        rng.random(-20i64..21)
-                    }
-                })
+            let weights = rng
+                .random_iter(-20i64..=20)
+                .take(graph.edges_size())
                 .collect::<Vec<_>>();
             let tree = graph.static_top_tree(0);
             let mut got = tree

@@ -294,62 +294,64 @@ mod tests {
     fn grid_graph_apsp() {
         let mut rng = Xorshift::default();
         const A: u64 = 1_000_000_000;
-        let h = rng.rand(15) as usize + 1;
-        let w = rng.rand(15) as usize + 1;
+        for _ in 0..30 {
+            let h = rng.rand(8) as usize + 1;
+            let w = rng.rand(8) as usize + 1;
 
-        let weight: Vec<_> = std::iter::repeat_with(|| Saturating(rng.rand(A - 1) + 1))
-            .take(8)
-            .collect();
+            let weight: Vec<_> = std::iter::repeat_with(|| Saturating(rng.rand(A - 1) + 1))
+                .take(8)
+                .collect();
 
-        let g = GridGraph::new_adj4(h, w);
-        let cost: Vec<Vec<Vec<_>>> = (0..h)
-            .map(|i| {
-                (0..w)
-                    .map(|j| {
-                        g.standard_sp_additive()
-                            .dijkstra([(i, j)], |dir| weight[dir as usize])
-                    })
-                    .collect()
-            })
-            .collect();
-        let cost2: Vec<Vec<_>> = g
-            .standard_sp_additive()
-            .warshall_floyd_ap(|dir| weight[dir as usize]);
-        for (i, row) in cost.iter().enumerate() {
-            for (j, source_cost) in row.iter().enumerate() {
-                for ni in 0..h {
-                    for nj in 0..w {
-                        assert_eq!(
-                            g.vmap_get(source_cost, (ni, nj)),
-                            g.vmap_get(g.vmap_get(&cost2, (i, j)), (ni, nj))
-                        );
+            let g = GridGraph::new_adj4(h, w);
+            let cost: Vec<Vec<Vec<_>>> = (0..h)
+                .map(|i| {
+                    (0..w)
+                        .map(|j| {
+                            g.standard_sp_additive()
+                                .dijkstra([(i, j)], |dir| weight[dir as usize])
+                        })
+                        .collect()
+                })
+                .collect();
+            let cost2: Vec<Vec<_>> = g
+                .standard_sp_additive()
+                .warshall_floyd_ap(|dir| weight[dir as usize]);
+            for (i, row) in cost.iter().enumerate() {
+                for (j, source_cost) in row.iter().enumerate() {
+                    for ni in 0..h {
+                        for nj in 0..w {
+                            assert_eq!(
+                                g.vmap_get(source_cost, (ni, nj)),
+                                g.vmap_get(g.vmap_get(&cost2, (i, j)), (ni, nj))
+                            );
+                        }
                     }
                 }
             }
-        }
 
-        let g = GridGraph::new_adj8(h, w);
-        let cost: Vec<Vec<Vec<_>>> = (0..h)
-            .map(|i| {
-                (0..w)
-                    .map(|j| {
-                        g.standard_sp_additive()
-                            .dijkstra([(i, j)], |dir| weight[dir as usize])
-                    })
-                    .collect()
-            })
-            .collect();
-        let cost2: Vec<Vec<_>> = g
-            .standard_sp_additive()
-            .warshall_floyd_ap(|dir| weight[dir as usize]);
-        for (i, row) in cost.iter().enumerate() {
-            for (j, source_cost) in row.iter().enumerate() {
-                for ni in 0..h {
-                    for nj in 0..w {
-                        assert_eq!(
-                            g.vmap_get(source_cost, (ni, nj)),
-                            g.vmap_get(g.vmap_get(&cost2, (i, j)), (ni, nj))
-                        );
+            let g = GridGraph::new_adj8(h, w);
+            let cost: Vec<Vec<Vec<_>>> = (0..h)
+                .map(|i| {
+                    (0..w)
+                        .map(|j| {
+                            g.standard_sp_additive()
+                                .dijkstra([(i, j)], |dir| weight[dir as usize])
+                        })
+                        .collect()
+                })
+                .collect();
+            let cost2: Vec<Vec<_>> = g
+                .standard_sp_additive()
+                .warshall_floyd_ap(|dir| weight[dir as usize]);
+            for (i, row) in cost.iter().enumerate() {
+                for (j, source_cost) in row.iter().enumerate() {
+                    for ni in 0..h {
+                        for nj in 0..w {
+                            assert_eq!(
+                                g.vmap_get(source_cost, (ni, nj)),
+                                g.vmap_get(g.vmap_get(&cost2, (i, j)), (ni, nj))
+                            );
+                        }
                     }
                 }
             }

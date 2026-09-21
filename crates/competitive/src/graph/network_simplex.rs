@@ -464,29 +464,85 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
-    fn test_feasible_b_flow() {
-        let mut ns = NetworkSimplex::<i32, i32>::new(3);
-        ns.add_supply(0, 5);
-        ns.add_demand(1, 5);
-        ns.add_edge(0, 2, 0, 10, -1);
-        ns.add_edge(2, 1, 0, 10, -1);
-        ns.add_edge(0, 1, 0, 10, 10);
-        let sol = ns.solve_minimize();
-        assert!(sol.is_some(), "should be feasible");
-        let sol = sol.unwrap();
-        assert_eq!(sol.cost, -10);
-        assert_eq!(sol.flows, vec![5, 5, 0]);
-    }
-
-    #[test]
-    fn test_infeasible_b_flow() {
-        let mut ns = NetworkSimplex::<i32, i32>::new(2);
-        ns.add_demand(0, 5);
-        ns.add_supply(1, 5);
-        ns.add_edge(0, 1, 0, 3, 2);
-        let sol = ns.solve_minimize();
-        assert!(sol.is_none(), "should be infeasible");
+    fn test_minimum_cost_flow() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(1..=5);
+            let m = rng.random(0..=7);
+            let edges: Vec<_> = (0..m)
+                .map(|_| {
+                    let lo = rng.random(0..=2i32);
+                    (
+                        rng.random(0..n),
+                        rng.random(0..n),
+                        lo,
+                        lo + rng.random(0..=2i32),
+                        rng.random(-5..=5i32),
+                    )
+                })
+                .collect();
+            let mut balances = vec![0; n];
+            for &(u, v, lo, hi, _) in &edges {
+                let flow = rng.random(lo..=hi);
+                balances[u] += flow;
+                balances[v] -= flow;
+            }
+            if rng.random(0..2) == 0 {
+                let u = rng.random(0..n);
+                let v = rng.random(0..n);
+                let amount = rng.random(-5..=5);
+                balances[u] += amount;
+                balances[v] -= amount;
+            }
+            let mut solver = NetworkSimplex::new(n);
+            for (v, &balance) in balances.iter().enumerate() {
+                solver.add_demand_supply(v, balance);
+            }
+            for &(u, v, lo, hi, cost) in &edges {
+                solver.add_edge(u, v, lo, hi, cost);
+            }
+            let count: usize = edges
+                .iter()
+                .map(|&(_, _, lo, hi, _)| (hi - lo + 1) as usize)
+                .product();
+            let mut expected = None;
+            for mut code in 0..count {
+                let mut net = vec![0; n];
+                let mut cost = 0;
+                for &(u, v, lo, hi, c) in &edges {
+                    let width = (hi - lo + 1) as usize;
+                    let flow = lo + (code % width) as i32;
+                    code /= width;
+                    net[u] += flow;
+                    net[v] -= flow;
+                    cost += flow * c;
+                }
+                if net == balances {
+                    expected = Some(expected.map_or(cost, |best: i32| best.min(cost)));
+                }
+            }
+            let solution = solver.solve_minimize();
+            assert_eq!(
+                solution.as_ref().map(|s| s.cost),
+                expected,
+                "{edges:?} {balances:?}"
+            );
+            if let Some(solution) = solution {
+                assert_eq!(solution.flows.len(), m);
+                let mut net = vec![0; n];
+                let mut cost = 0;
+                for (&flow, &(u, v, lo, hi, c)) in solution.flows.iter().zip(&edges) {
+                    assert!((lo..=hi).contains(&flow));
+                    net[u] += flow;
+                    net[v] -= flow;
+                    cost += flow * c;
+                }
+                assert_eq!(net, balances);
+                assert_eq!(cost, solution.cost);
+            }
+        }
     }
 }

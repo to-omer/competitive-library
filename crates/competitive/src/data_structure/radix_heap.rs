@@ -92,25 +92,53 @@ define_radix_heap!(RadixHeapU64, u64, 65);
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
+    use crate::tools::testutil::{exhaustive_sequences, integer_boundary_values};
     use std::{cmp::Reverse, collections::BinaryHeap};
 
     #[test]
     fn test_radix_heap() {
-        let mut edges = RadixHeapU64::new();
-        for (value, key) in [0, 0, 1, 63, 64, u32::MAX as u64, u64::MAX]
-            .into_iter()
-            .enumerate()
-        {
-            edges.push(key, value);
-        }
-        let mut keys = Vec::new();
-        while let Some((key, _)) = edges.pop() {
-            keys.push(key);
-        }
-        assert_eq!(keys, [0, 0, 1, 63, 64, u32::MAX as u64, u64::MAX]);
-
         macro_rules! check {
             ($heap:ident, $key:ty) => {{
+                let mut rng = Xorshift::default();
+                let mut cases: Vec<_> = exhaustive_sequences(0..3, 0..=6).collect();
+                let boundaries = integer_boundary_values!($key);
+                cases.push(boundaries.iter().chain(&boundaries).copied().collect());
+                for values in cases {
+                    let mut actual = $heap::new();
+                    let mut expected: Vec<_> = values
+                        .iter()
+                        .copied()
+                        .enumerate()
+                        .map(|(i, key)| (key, i))
+                        .collect();
+                    rng.shuffle(&mut expected);
+                    for &(key, value) in &expected {
+                        actual.push(key, value);
+                    }
+                    let mut cleared = actual.clone();
+                    cleared.pop();
+                    cleared.clear();
+                    assert_eq!(cleared.len(), 0);
+                    assert!(cleared.is_empty());
+                    assert_eq!(cleared.pop(), None);
+                    let pair = (<$key>::MIN, values.len());
+                    cleared.push(pair.0, pair.1);
+                    assert_eq!(cleared.pop(), Some(pair));
+                    assert_eq!(cleared.pop(), None);
+                    for &(key, value) in &expected {
+                        cleared.push(key, value);
+                    }
+                    expected.sort();
+                    for mut heap in [actual, cleared] {
+                        let mut result = Vec::new();
+                        while let Some(pair) = heap.pop() {
+                            result.push(pair);
+                        }
+                        assert!(result.windows(2).all(|w| w[0].0 <= w[1].0));
+                        result.sort();
+                        assert_eq!(result, expected);
+                    }
+                }
                 let mut actual = $heap::new();
                 let mut expected = BinaryHeap::new();
                 let mut rng = Xorshift::default();
@@ -133,9 +161,6 @@ mod tests {
                 }
                 assert!(expected.is_empty());
                 assert!(actual.is_empty());
-                actual.clear();
-                actual.push(0, 0);
-                assert_eq!(actual.pop(), Some((0, 0)));
             }};
         }
 

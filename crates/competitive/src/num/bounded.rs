@@ -84,40 +84,47 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
     use std::cmp::Reverse;
 
-    fn assert_bounded<T: Bounded, I: Iterator<Item = T>>(iter: I) {
-        assert!(T::minimum() <= T::maximum());
-        for item in iter {
-            assert!(T::minimum() <= item);
-            assert!(item <= T::maximum());
+    fn assert_bounded<T: Bounded>(item: T) {
+        assert!(T::minimum() <= item);
+        assert!(item <= T::maximum());
+    }
+
+    #[test]
+    fn test_bounded() {
+        let mut rng = Xorshift::default();
+        let mut cases = Vec::new();
+        for a in [0u32, 1, u32::MAX] {
+            for b in [i64::MIN, -1, 0, 1, i64::MAX] {
+                for c in [0usize, 1, usize::MAX] {
+                    for d in [false, true] {
+                        cases.push((a, b, c, d));
+                    }
+                }
+            }
         }
-    }
-
-    #[test]
-    fn test_num_bounded() {
-        assert_bounded([0u32, 1, 2, !0].iter().cloned());
-        assert_bounded([0u64, 1, 2, !0].iter().cloned());
-        assert_bounded([0usize, 1, 2, !0].iter().cloned());
-        assert_bounded([0i32, 1, 2, !0].iter().cloned());
-        assert_bounded([0i64, 1, 2, !0].iter().cloned());
-        assert_bounded([0isize, 1, 2, !0].iter().cloned());
-        assert_bounded([false, true].iter().cloned());
-    }
-
-    #[test]
-    fn test_tuple_bounded() {
-        assert_bounded([(1, 0, 3)].iter().cloned());
-        assert_bounded([((), (1,), (2, 3))].iter().cloned());
-    }
-
-    #[test]
-    fn test_option_bounded() {
-        assert_bounded([None, Some((false, 3))].iter().cloned());
-    }
-
-    #[test]
-    fn test_reverse_bounded() {
-        assert_bounded([Reverse(0), Reverse(1), Reverse(!0)].iter().cloned());
+        cases.extend((0..10_000).map(|_| {
+            (
+                rng.random(..),
+                rng.random(..),
+                rng.random(..),
+                rng.random(0..2) == 0,
+            )
+        }));
+        for (a, b, c, d) in cases {
+            assert_bounded(a);
+            assert_bounded(b);
+            assert_bounded(c);
+            assert_bounded(a as i32);
+            assert_bounded(b as u64);
+            assert_bounded(c as isize);
+            assert_bounded(d);
+            assert_bounded((a, b, c));
+            assert_bounded(((), (a,), (b, c)));
+            assert_bounded(if d { Some((d, b)) } else { None });
+            assert_bounded(Reverse(b));
+        }
     }
 }

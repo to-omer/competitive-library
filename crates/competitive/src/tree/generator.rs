@@ -96,6 +96,7 @@ fn from_prufer_sequence(n: usize, prufer: &[usize]) -> Vec<(usize, usize)> {
 mod tests {
     use super::*;
     use crate::graph::Graph;
+    use crate::tools::testutil::sample_usize;
 
     fn is_connected(g: &UndirectedSparseGraph) -> bool {
         let n = g.vertices_size();
@@ -125,88 +126,24 @@ mod tests {
     }
 
     #[test]
-    fn prufer_sequence_small() {
-        const Q: usize = 10_000;
-        const N: usize = 20;
+    fn test_tree_generators() {
         let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            let g = rng.random(PruferSequence(1..=N));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn prufer_sequence_big() {
-        const Q: usize = 20;
-        const N: usize = 10_000;
-        let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            let g = rng.random(PruferSequence(N - Q..=N));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn path_small() {
-        const N: usize = 20;
-        let mut rng = Xorshift::default();
-        for n in 0..=N {
-            let g = rng.random(PathTree(n));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn path_big() {
-        const Q: usize = 20;
-        const N: usize = 10_000;
-        let mut rng = Xorshift::default();
-        for n in N - Q..=N {
-            let g = rng.random(PathTree(n));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn star_small() {
-        const N: usize = 20;
-        let mut rng = Xorshift::default();
-        for n in 0..=N {
-            let g = rng.random(StarTree(n));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn star_big() {
-        const Q: usize = 20;
-        const N: usize = 10_000;
-        let mut rng = Xorshift::default();
-        for n in N - Q..=N {
-            let g = rng.random(StarTree(n));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn mixed_small() {
-        const Q: usize = 10_000;
-        const N: usize = 20;
-        let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            let g = rng.random(MixedTree(1..=N));
-            assert!(is_tree(&g));
-        }
-    }
-
-    #[test]
-    fn mixed_big() {
-        const Q: usize = 20;
-        const N: usize = 10_000;
-        let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            let g = rng.random(MixedTree(N - Q..=N));
-            assert!(is_tree(&g));
+        for n in (0..=20).chain(sample_usize(&mut rng, 16, 0..=10_000, 100)) {
+            for graph in [
+                rng.random(PruferSequence(n)),
+                rng.random(MixedTree(n)),
+                rng.random(PathTree(n)),
+                rng.random(StarTree(n)),
+            ] {
+                assert_eq!(graph.vertices_size(), n);
+                assert!(is_tree(&graph));
+            }
+            let path = rng.random(PathTree(n));
+            assert!(path.vertices().all(|v| path.neighbors(v).len() <= 2));
+            let star = rng.random(StarTree(n));
+            if n > 0 {
+                assert_eq!(star.neighbors(0).len(), n - 1);
+            }
         }
     }
 }

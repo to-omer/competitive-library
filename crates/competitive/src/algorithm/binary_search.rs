@@ -139,85 +139,139 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    const V: [i64; 10] = [0i64, 1, 1, 1, 2, 2, 3, 4, 7, 8];
+    use crate::algorithm::SliceCombinationsExt;
+    use crate::tools::{
+        Xorshift,
+        testutil::{integer_boundary_values, sample_usize, structured_sequences},
+    };
 
     #[test]
-    fn test_binary_search() {
-        assert_eq!(binary_search(|&x| V[x] >= 1, V.len(), 0), 1);
-        assert_eq!(binary_search(|&x| V[x] >= 2, V.len(), 0), 4);
-        assert_eq!(binary_search(|&x| V[x] >= 3, V.len(), 0), 6);
-        assert_eq!(binary_search(|&x| V[x] <= 1, 0, V.len()), 3);
-        assert_eq!(binary_search(|&x| V[x] <= 2, 0, V.len()), 5);
-        assert_eq!(binary_search(|&x| V[x] <= 3, 0, V.len()), 6);
+    fn test_slice_bisect() {
+        let mut rng = Xorshift::default();
+        let mut cases = Vec::new();
+        // Every sorted sequence over {-1, 0, 1}, without enumerating its permutations.
+        for n in 0..=32 {
+            [-1, 0, 1].for_each_combinations_with_replacement(n, |xs| cases.push(xs.to_vec()));
+        }
+        let lengths = sample_usize(&mut rng, 32, 0..=1024, 1000);
+        cases.extend(
+            structured_sequences(&mut rng, -10..=10, lengths).map(|mut values| {
+                values.sort_unstable();
+                values
+            }),
+        );
+        cases.sort_unstable();
+        cases.dedup();
+        for values in cases {
+            let n = values.len();
+            let mut first = 0;
+            let mut end = 0;
+            for key in -11..=11 {
+                while first < n && values[first] < key {
+                    first += 1;
+                }
+                while end < n && values[end] <= key {
+                    end += 1;
+                }
+                assert_eq!(
+                    values.position_bisect(|&x| x >= key),
+                    first,
+                    "values={values:?}, key={key}"
+                );
+                assert_eq!(
+                    values.find_bisect(|&x| x >= key),
+                    values.get(first),
+                    "values={values:?}, key={key}"
+                );
+                assert_eq!(
+                    values.rposition_bisect(|&x| x <= key),
+                    end,
+                    "values={values:?}, key={key}"
+                );
+                assert_eq!(
+                    values.rfind_bisect(|&x| x <= key),
+                    values[..end].last(),
+                    "values={values:?}, key={key}"
+                );
+                assert_eq!(
+                    binary_search(|&i: &isize| values[i as usize] >= key, n as isize, -1),
+                    first as isize,
+                    "values={values:?}, key={key}"
+                );
+                assert_eq!(
+                    binary_search(|&i: &isize| values[i as usize] <= key, -1, n as isize),
+                    end as isize - 1,
+                    "values={values:?}, key={key}"
+                );
+            }
+        }
+    }
 
-        assert_eq!(
-            binary_search(&|&x: &i64| V[x as usize] <= -1, -1, V.len() as i64),
-            -1
-        );
-
-        let sq2 = binary_search(|&x| x * x <= 2., 1., 4.);
-        let expect = 1.414_213_562_73;
-        assert!(expect - 1e-8 <= sq2 && sq2 <= expect + 1e-8);
-
-        assert_eq!(
-            binary_search(|&x| x < i64::MAX, i64::MIN, i64::MAX),
-            i64::MAX - 1
-        );
-        assert_eq!(
-            binary_search(|&x| x == i64::MIN, i64::MIN, i64::MAX),
-            i64::MIN
-        );
-        assert_eq!(
-            binary_search(|&x| x == i64::MAX, i64::MAX, i64::MIN),
-            i64::MAX
-        );
-        assert_eq!(
-            binary_search(|&x| x > i64::MIN, i64::MAX, i64::MIN),
-            i64::MIN + 1
+    #[test]
+    fn test_integer_bisect() {
+        macro_rules! check {
+            ($($ty:ty),*) => {$(
+                let mut rng = Xorshift::default();
+                for boundary in integer_boundary_values!($ty).into_iter()
+                    .chain((0..=u8::MAX).map(|x| x as $ty))
+                    .chain(rng.random_iter(..).take(10_000))
+                {
+                    if boundary < <$ty>::MAX {
+                        assert_eq!(binary_search(|&x| x <= boundary, <$ty>::MIN, <$ty>::MAX), boundary);
+                        assert_eq!(binary_search(|&x| x > boundary, <$ty>::MAX, <$ty>::MIN), boundary + 1);
+                    }
+                    if boundary > <$ty>::MIN {
+                        assert_eq!(binary_search(|&x| x >= boundary, <$ty>::MAX, <$ty>::MIN), boundary);
+                        assert_eq!(binary_search(|&x| x < boundary, <$ty>::MIN, <$ty>::MAX), boundary - 1);
+                    }
+                }
+            )*};
+        }
+        check!(
+            u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
         );
     }
 
     #[test]
-    fn test_position() {
-        assert_eq!(V.position_bisect(|&x| x >= -1), 0);
-        assert_eq!(V.position_bisect(|&x| x >= 0), 0);
-        assert_eq!(V.position_bisect(|&x| x >= 1), 1);
-        assert_eq!(V.position_bisect(|&x| x >= 2), 4);
-        assert_eq!(V.position_bisect(|&x| x >= 3), 6);
-        assert_eq!(V.position_bisect(|&x| x >= 5), 8);
-        assert_eq!(V.position_bisect(|&x| x >= 10), 10);
-    }
-
-    #[test]
-    fn test_find() {
-        assert_eq!(V.find_bisect(|&x| x >= -1), Some(&0));
-        assert_eq!(V.find_bisect(|&x| x >= 0), Some(&0));
-        assert_eq!(V.find_bisect(|&x| x >= 1), Some(&1));
-        assert_eq!(V.find_bisect(|&x| x >= 2), Some(&2));
-        assert_eq!(V.find_bisect(|&x| x >= 3), Some(&3));
-        assert_eq!(V.find_bisect(|&x| x >= 5), Some(&7));
-        assert_eq!(V.find_bisect(|&x| x >= 10), None);
-    }
-
-    #[test]
-    fn test_rposition() {
-        assert_eq!(V.rposition_bisect(|&x| x <= -1), 0);
-        assert_eq!(V.rposition_bisect(|&x| x <= 0), 1);
-        assert_eq!(V.rposition_bisect(|&x| x <= 1), 4);
-        assert_eq!(V.rposition_bisect(|&x| x <= 2), 6);
-        assert_eq!(V.rposition_bisect(|&x| x <= 3), 7);
-        assert_eq!(V.rposition_bisect(|&x| x <= 5), 8);
-        assert_eq!(V.rposition_bisect(|&x| x <= 10), 10);
-    }
-
-    #[test]
-    fn test_rfind() {
-        assert_eq!(V.rfind_bisect(|&x| x <= -1), None);
-        assert_eq!(V.rfind_bisect(|&x| x <= 0), Some(&0));
-        assert_eq!(V.rfind_bisect(|&x| x <= 1), Some(&1));
-        assert_eq!(V.rfind_bisect(|&x| x <= 2), Some(&2));
-        assert_eq!(V.rfind_bisect(|&x| x <= 3), Some(&3));
-        assert_eq!(V.rfind_bisect(|&x| x <= 5), Some(&4));
-        assert_eq!(V.rfind_bisect(|&x| x <= 10), Some(&8));
+    fn test_float_bisect() {
+        macro_rules! check {
+            ($ty:ty, $bits:ty, $fraction:expr, $max_exponent:expr) => {
+                let mut rng = Xorshift::default();
+                // Powers of two and their adjacent representations cross every
+                // normal/subnormal exponent boundary, in both directions.
+                let mut bits: Vec<$bits> = (1..=$max_exponent)
+                    .flat_map(|exponent| {
+                        let power = exponent << $fraction;
+                        [power - 1, power, power + 1]
+                    })
+                    .collect();
+                bits.extend(integer_boundary_values!($bits));
+                bits.extend((0..10_000).map(|_| {
+                    let bits: $bits = rng.random(..);
+                    bits
+                }));
+                for bits in bits {
+                    for x in [<$ty>::from_bits(bits), -<$ty>::from_bits(bits)] {
+                        if x.is_finite() && x != 0.0 {
+                            assert_eq!(
+                                binary_search(|&y| y <= x, <$ty>::NEG_INFINITY, <$ty>::INFINITY),
+                                x
+                            );
+                            assert_eq!(
+                                binary_search(|&y| y >= x, <$ty>::INFINITY, <$ty>::NEG_INFINITY),
+                                x
+                            );
+                        }
+                    }
+                }
+                for x in 0..=10_000 {
+                    let x = x as $ty;
+                    let actual = binary_search(|&y| y * y <= x, 0.0, x + 1.0);
+                    assert!((actual - x.sqrt()).abs() <= <$ty>::EPSILON * x.sqrt().max(1.0));
+                }
+            };
+        }
+        check!(f32, u32, 23, 254);
+        check!(f64, u64, 52, 2046);
     }
 }

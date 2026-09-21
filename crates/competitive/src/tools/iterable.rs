@@ -34,62 +34,71 @@ macro_rules! comprehension {
 
 #[cfg(test)]
 mod tests {
+    use crate::tools::Xorshift;
     #[test]
     fn test_comprehension() {
         use std::collections::{HashMap, HashSet};
-        const N: usize = 100;
-        assert_eq!(
-            comprehension!(0..N; @HashSet<_>),
-            (0..N).collect::<HashSet<_>>()
-        );
-        assert_eq!(comprehension!(0..N), (0..N).collect::<Vec<_>>());
-        assert_eq!(
-            comprehension!(0..N; @HashMap<_,_>; i => (i, i + i)),
-            (0..N).map(|i| (i, i + i)).collect::<HashMap<_, _>>()
-        );
-        assert_eq!(
-            comprehension!(0..N; i => i + i),
-            (0..N).map(|i| i + i).collect::<Vec<_>>()
-        );
-        assert_eq!(
-            comprehension!(0..N; &i, i % 2 == 0),
-            (0..N).filter(|&i| i % 2 == 0).collect::<Vec<_>>()
-        );
-        assert_eq!(
-            comprehension!(0..N; i => i + i, i % 2 == 0),
-            (0..N)
-                .filter_map(|i| if i % 2 == 0 { Some(i + i) } else { None })
-                .collect::<Vec<_>>()
-        );
-        assert_eq!(
-            comprehension!(0..N; i => i + i, i % 2 == 0, i % 3 == 0),
-            (0..N)
-                .filter_map(|i| if i % 2 == 0 && i % 3 == 0 {
-                    Some(i + i)
-                } else {
-                    None
-                })
-                .collect::<Vec<_>>()
-        );
-        assert_eq!(
-            comprehension!(0..N; i => i + i, i % 2 == 0, i % 3 == 0, i % 4 == 0),
-            (0..N)
-                .filter_map(|i| if i % 2 == 0 && i % 3 == 0 && i % 4 == 0 {
-                    Some(i + i)
-                } else {
-                    None
-                })
-                .collect::<Vec<_>>()
-        );
-        assert_eq!(
-            comprehension!(0..N; @HashMap<_,_>; i => (i / 24, i), i % 2 == 0, i % 3 == 0, i % 4 == 0),
-            (0..N)
-                .filter_map(|i| if i % 2 == 0 && i % 3 == 0 && i % 4 == 0 {
-                    Some((i / 24, i))
-                } else {
-                    None
-                })
-                .collect::<HashMap<_, _>>()
-        );
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(0..=100);
+            let values: Vec<_> = rng.random_iter(-100i32..=100).take(n).collect();
+            assert_eq!(
+                comprehension!(values.iter().copied(); @HashSet<_>),
+                (values.iter().copied()).collect::<HashSet<_>>()
+            );
+            assert_eq!(comprehension!(values.iter().copied()), values.clone());
+            assert_eq!(
+                comprehension!(values.iter().copied(); @HashMap<_,_>; i => (i, i + i)),
+                (values.iter().copied())
+                    .map(|i| (i, i + i))
+                    .collect::<HashMap<_, _>>()
+            );
+            assert_eq!(
+                comprehension!(values.iter().copied(); i => i + i),
+                (values.iter().copied()).map(|i| i + i).collect::<Vec<_>>()
+            );
+            assert_eq!(
+                comprehension!(values.iter().copied(); &i, i % 2 == 0),
+                (values.iter().copied())
+                    .filter(|&i| i % 2 == 0)
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(
+                comprehension!(values.iter().copied(); i => i + i, i % 2 == 0),
+                (values.iter().copied())
+                    .filter_map(|i| if i % 2 == 0 { Some(i + i) } else { None })
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(
+                comprehension!(values.iter().copied(); i => i + i, i % 2 == 0, i % 3 == 0),
+                (values.iter().copied())
+                    .filter_map(|i| if i % 2 == 0 && i % 3 == 0 {
+                        Some(i + i)
+                    } else {
+                        None
+                    })
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(
+                comprehension!(values.iter().copied(); i => i + i, i % 2 == 0, i % 3 == 0, i % 4 == 0),
+                (values.iter().copied())
+                    .filter_map(|i| if i % 2 == 0 && i % 3 == 0 && i % 4 == 0 {
+                        Some(i + i)
+                    } else {
+                        None
+                    })
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(
+                comprehension!(values.iter().copied(); @HashMap<_,_>; i => (i / 24, i), i % 2 == 0, i % 3 == 0, i % 4 == 0),
+                (values.iter().copied())
+                    .filter_map(|i| if i % 2 == 0 && i % 3 == 0 && i % 4 == 0 {
+                        Some((i / 24, i))
+                    } else {
+                        None
+                    })
+                    .collect::<HashMap<_, _>>()
+            );
+        }
     }
 }

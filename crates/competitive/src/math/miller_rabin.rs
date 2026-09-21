@@ -118,22 +118,35 @@ pub fn miller_rabin_with_br(n: u64, br: &BarrettReduction<u128>) -> bool {
 }
 
 pub fn miller_rabin(n: u64) -> bool {
-    miller_rabin_with_br(n, &BarrettReduction::<u128>::new(n as u128))
+    n >= 2 && miller_rabin_with_br(n, &BarrettReduction::<u128>::new(n as u128))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::PrimeTable;
+    use crate::tools::Xorshift;
+    use crate::tools::testutil::integer_boundary_values;
 
     #[test]
     fn test_miller_rabin() {
-        const N: u32 = 1_000_000;
-        let primes = PrimeTable::new(N);
-        for i in 1..=N {
-            assert_eq!(primes.is_prime(i), miller_rabin(i as _), "{}", i);
+        let mut rng = Xorshift::default();
+        let primes = crate::math::PrimeTable::new(1_000_000);
+        for n in 1..=1_000_000 {
+            assert_eq!(miller_rabin(n as u64), primes.is_prime(n));
         }
-        assert!(miller_rabin(1_000_000_007));
-        assert!(!miller_rabin(1_000_000_011));
+        let boundaries = integer_boundary_values!(u32);
+        for n in boundaries
+            .into_iter()
+            .flat_map(|x| x.saturating_sub(16)..=x.saturating_add(16))
+            .chain(rng.random_iter(..).take(10_000))
+            .map(u64::from)
+        {
+            let expected = n >= 2 && (2..).take_while(|&d| d * d <= n).all(|d| n % d != 0);
+            assert_eq!(miller_rabin(n), expected, "{n}");
+        }
+        for (a, b) in rng.random_iter((2..=u32::MAX, 2..=u32::MAX)).take(10_000) {
+            let n = u64::from(a) * u64::from(b);
+            assert!(!miller_rabin(n), "{a} * {b}");
+        }
     }
 }

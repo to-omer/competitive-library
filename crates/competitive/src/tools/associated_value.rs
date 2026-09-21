@@ -74,15 +74,32 @@ macro_rules! impl_assoc_value {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
     fn test_associated_value() {
         enum X {}
         impl_assoc_value!(X, usize);
-        X::set(10);
-        assert_eq!(X::get(), 10);
-        assert_eq!(X::with(|x| x + 1), 11);
-        X::modify(|x| *x += 1);
-        assert_eq!(X::get(), 11);
+        let mut rng = Xorshift::default();
+        let mut expected = 0usize;
+        for _ in 0..1000 {
+            let value = rng.random(..);
+            match rng.random(0..3) {
+                0 => {
+                    X::set(value);
+                    expected = value;
+                }
+                1 => {
+                    assert_eq!(X::replace(value), expected);
+                    expected = value;
+                }
+                _ => {
+                    X::modify(|x| *x ^= value);
+                    expected ^= value;
+                }
+            }
+            assert_eq!(X::get(), expected);
+            assert_eq!(X::with(|x| x.count_ones()), expected.count_ones());
+        }
     }
 }

@@ -30,14 +30,31 @@ impl IdGenerator {
 #[cfg(test)]
 mod tests {
     use super::IdGenerator;
+    use crate::tools::Xorshift;
 
     #[test]
     fn test_id_generator() {
-        let mut g = IdGenerator::new();
-        assert_eq!(g.create(), 0);
-        assert_eq!(g.create(), 1);
-        assert_eq!(g.create_n(3), 2..5);
-        assert_eq!(g.create_vec(4), vec![5, 6, 7, 8]);
-        assert_eq!(g.create(), 9);
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let mut g = IdGenerator::new();
+            let mut next = 0;
+            for _ in 0..100 {
+                let n = rng.random(0..=32);
+                match rng.random(0..3) {
+                    0 => {
+                        assert_eq!(g.create(), next);
+                        next += 1;
+                    }
+                    1 => {
+                        assert_eq!(g.create_n(n), next..next + n);
+                        next += n;
+                    }
+                    _ => {
+                        assert_eq!(g.create_vec(n), (next..next + n).collect::<Vec<_>>());
+                        next += n;
+                    }
+                }
+            }
+        }
     }
 }

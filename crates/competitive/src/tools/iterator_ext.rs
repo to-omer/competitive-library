@@ -54,15 +54,36 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
     fn test_merge_by() {
-        let a = vec![1, 4, 5];
-        let b = vec![2, 3, 6];
-        let merged: Vec<_> = a
-            .into_iter()
-            .merge_by(b.into_iter(), |x, y| x < y)
-            .collect();
-        assert_eq!(merged, vec![1, 2, 3, 4, 5, 6]);
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(0..=100);
+            let m = rng.random(0..=100);
+            let mut a: Vec<_> = rng.random_iter(-20..=20).take(n).collect();
+            let mut b: Vec<_> = rng.random_iter(-20..=20).take(m).collect();
+            let mut expected: Vec<_> = a.iter().chain(&b).copied().collect();
+            a.sort();
+            b.sort();
+            expected.sort();
+            assert_eq!(
+                a.iter()
+                    .merge_by(b.iter(), |x, y| x < y)
+                    .copied()
+                    .collect::<Vec<_>>(),
+                expected
+            );
+            expected.reverse();
+            assert_eq!(
+                a.iter()
+                    .rev()
+                    .merge_by(b.iter().rev(), |x, y| x > y)
+                    .copied()
+                    .collect::<Vec<_>>(),
+                expected
+            );
+        }
     }
 }

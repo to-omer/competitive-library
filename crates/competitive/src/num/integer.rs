@@ -1059,7 +1059,8 @@ impl_binary_repr_for_wrapping!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isi
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::{Scanner, Xorshift};
+    use crate::tools::{Scanner, Xorshift, testutil::integer_boundary_values};
+    use std::array;
     const Q: usize = 10_000;
 
     mod int_base {
@@ -1071,15 +1072,40 @@ mod tests {
 
                         #[test]
                         fn test_intbase() {
-                            assert_eq!(<$t as IntBase>::div_euclid(10, 3), 3);
-                            assert_eq!(<$t as IntBase>::rem_euclid(10, 3), 1);
-                            assert_eq!(<$t as IntBase>::pow(10, 2), 100);
-                            assert_eq!(<$t as IntBase>::from_str_radix("1a", 16).unwrap(), 26 as $t);
-                            assert_eq!(<$t as IntBase>::ilog(100 as $t, 10 as $t), 2);
-                            assert_eq!(<$t as IntBase>::ilog2(16 as $t), 4);
-                            assert_eq!(<$t as IntBase>::ilog10(100 as $t), 2);
-                            assert_eq!(<$t as IntBase>::isqrt(16 as $t), 4 as $t);
-                            assert_eq!(<$t as IntBase>::midpoint(10 as $t, 20 as $t), 15 as $t);
+                            let mut rng = Xorshift::default();
+                            let mut values = integer_boundary_values!($t);
+                            values.extend((0..=u8::MAX).map(|a| a as $t));
+                            values.sort_unstable();
+                            values.dedup();
+                            let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b)))
+                                .chain(rng.random_iter((.., ..)).take(Q)).collect();
+                            for (a, b) in pairs {
+                                if let Some(expected) = a.checked_div_euclid(b) {
+                                    assert_eq!(<$t as IntBase>::div_euclid(a, b), expected);
+                                    assert_eq!(<$t as IntBase>::rem_euclid(a, b), a.rem_euclid(b));
+                                }
+                                if a > 0 && b > 1 {
+                                    assert_eq!(<$t as IntBase>::ilog(a, b), a.ilog(b));
+                                }
+                                assert_eq!(<$t as IntBase>::midpoint(a, b), a.midpoint(b));
+                            }
+                            for a in values.into_iter().chain(rng.random_iter(..).take(Q)) {
+                                for n in (0..=8).chain([$t::BITS - 1, $t::BITS, $t::BITS + 1]) {
+                                    if let Some(expected) = a.checked_pow(n) {
+                                        assert_eq!(<$t as IntBase>::pow(a, n), expected);
+                                    }
+                                }
+                                assert_eq!(<$t as IntBase>::from_str_radix(&a.to_string(), 10).unwrap(), a);
+                                if a >= <$t>::zero() {
+                                    assert_eq!(<$t as IntBase>::from_str_radix(&format!("{a:x}"), 16).unwrap(), a);
+                                    assert_eq!(<$t as IntBase>::from_str_radix(&format!("{a:b}"), 2).unwrap(), a);
+                                    assert_eq!(<$t as IntBase>::isqrt(a), a.isqrt());
+                                }
+                                if a > 0 {
+                                    assert_eq!(<$t as IntBase>::ilog2(a), a.ilog2());
+                                    assert_eq!(<$t as IntBase>::ilog10(a), a.ilog10());
+                                }
+                            }
                         }
                     }
                 )*
@@ -1107,11 +1133,10 @@ mod tests {
                         #[test]
                         fn test_gcd() {
                             let mut rng = Xorshift::default();
-                                for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
+                                for (a, b) in (0..=15).flat_map(|a| (0..=15).map(move |b| (a, b))).chain(rng.random_iter((0..=A, 0..=A)).take(Q)) {
                                 assert_eq!(a.gcd(b), gcd(a, b));
                             }
-                            assert_eq!($t::zero().gcd(0), 0);
-                            assert_eq!($t::zero().gcd(100), 100);
+
                         }
                         #[test]
                         fn test_mod_inv() {
@@ -1145,19 +1170,30 @@ mod tests {
                         }
                         #[test]
                         fn test_unsigned() {
-                            assert_eq!(<$t as Unsigned>::signed(0), 0);
-                            assert_eq!(<$t as Unsigned>::abs_diff(10, 20), 10);
-                            assert_eq!(<$t as Unsigned>::div_ceil(10, 3), 4);
-                            assert_eq!(<$t as Unsigned>::is_power_of_two(16), true);
-                            assert_eq!(<$t as Unsigned>::is_power_of_two(10), false);
-                            assert_eq!(<$t as Unsigned>::next_power_of_two(10), 16);
-                            assert_eq!(<$t as Unsigned>::is_multiple_of(20, 5), true);
-                            assert_eq!(<$t as Unsigned>::is_multiple_of(20, 6), false);
-                            assert_eq!(<$t as Unsigned>::next_multiple_of(20, 6), 24);
-                            assert_eq!(<$t as Unsigned>::gcd(100, 80), 20);
-                            assert_eq!(<$t as Unsigned>::lcm(12, 15), 60);
-                            assert_eq!(<$t as Unsigned>::lcm(0, 1), 0);
-                            assert_eq!(<$t as Unsigned>::lcm(0, 0), 0);
+                            let mut rng = Xorshift::default();
+                            let mut values = integer_boundary_values!($t);
+                            if $t::BITS == 8 { values = ($t::MIN..=$t::MAX).collect(); }
+                            let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(Q)).collect();
+                            for (a, b) in pairs {
+                                assert_eq!(<$t as Unsigned>::abs_diff(a, b), a.abs_diff(b));
+                                assert_eq!(<$t as Unsigned>::is_power_of_two(a), a.is_power_of_two());
+                                assert_eq!(<$t as Unsigned>::is_multiple_of(a, b), a.is_multiple_of(b));
+                                assert_eq!(<$t as Unsigned>::gcd(a, b), gcd(a, b));
+                                if b != 0 {
+                                    assert_eq!(<$t as Unsigned>::div_ceil(a, b), a.div_ceil(b));
+                                }
+                                if let Some(expected) = a.checked_next_power_of_two() {
+                                    assert_eq!(<$t as Unsigned>::next_power_of_two(a), expected);
+                                }
+                                if let Some(expected) = a.checked_next_multiple_of(b) {
+                                    assert_eq!(<$t as Unsigned>::next_multiple_of(a, b), expected);
+                                }
+                                let a: $t = rng.random(0..=15);
+                                let b: $t = rng.random(0..=15);
+                                let expected = (1..=a * b).find(|x| x % a == 0 && x % b == 0).unwrap_or(0);
+                                assert_eq!(<$t as Unsigned>::lcm(a, b), expected);
+                                assert_eq!(<$t as Unsigned>::signed(a) as $t, a);
+                            }
                         }
                     }
                 )*
@@ -1239,9 +1275,11 @@ mod tests {
                     }
                 }
             }
-            let u = [0, 0, 0, 1 << 63];
-            let v = (1 << 127) + 1;
-            assert_eq!(rem_u256_by_u128(u, v), naive_rem(u, v));
+            for _ in 0..1000 {
+                let u = array::from_fn(|_| rng.random(..));
+                let v = rng.random(1..);
+                assert_eq!(rem_u256_by_u128(u, v), naive_rem(u, v));
+            }
         }
     }
 
@@ -1263,16 +1301,21 @@ mod tests {
                         }
                         #[test]
                         fn test_signed() {
-                            assert_eq!(<$t as Signed>::unsigned(0), 0);
-                            assert_eq!(<$t as Signed>::abs(-10), 10);
-                            assert_eq!(<$t as Signed>::abs_diff(10, -20), 30);
-                            assert!(!<$t as Signed>::is_negative(10));
-                            assert!(<$t as Signed>::is_negative(-10));
-                            assert!(<$t as Signed>::is_positive(10));
-                            assert!(!<$t as Signed>::is_positive(-10));
-                            assert_eq!(<$t as Signed>::signum(10), 1);
-                            assert_eq!(<$t as Signed>::signum(-10), -1);
-                            assert_eq!(<$t as Signed>::signum(0), 0);
+                            let mut rng = Xorshift::default();
+                            let mut values = integer_boundary_values!($t);
+                            if $t::BITS == 8 { values = ($t::MIN..=$t::MAX).collect(); }
+                            let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(Q)).collect();
+                            for (a, b) in pairs {
+                                if let Some(expected) = a.checked_abs() {
+                                    assert_eq!(<$t as Signed>::abs(a), expected);
+                                }
+                                assert_eq!(<$t as Signed>::abs_diff(a, b), a.abs_diff(b));
+                                assert_eq!(<$t as Signed>::is_negative(a), a < 0);
+                                assert_eq!(<$t as Signed>::is_positive(a), a > 0);
+                                assert_eq!(<$t as Signed>::signum(a), a.signum());
+                                let a = rng.random(0..=$t::MAX);
+                                assert_eq!(<$t as Signed>::unsigned(a) as $t, a);
+                            }
                         }
                     }
                 )*
@@ -1288,16 +1331,20 @@ mod tests {
                     use super::super::*;
                     #[test]
                     fn test_binary_repr() {
-                        assert_eq!(<$t as BinaryRepr>::count_ones(0b1010), 2);
-                        assert_eq!(<$t as BinaryRepr>::count_zeros(0b1010), <$t>::BITS - 2);
-                        assert_eq!(<$t as BinaryRepr>::leading_ones(!0b0010), <$t>::BITS - 2);
-                        assert_eq!(<$t as BinaryRepr>::leading_zeros(0b0010), <$t>::BITS - 2);
-                        assert_eq!(<$t as BinaryRepr>::reverse_bits(0b101), 0b101 << (<$t>::BITS - 3));
-                        assert_eq!(<$t as BinaryRepr>::rotate_left(0b0001_0010, 2), 0b0100_1000);
-                        assert_eq!(<$t as BinaryRepr>::rotate_right(0b0001_0010, <$t>::BITS - 2), 0b0100_1000);
-                        assert_eq!(<$t as BinaryRepr>::swap_bytes(0b0001_0010), 0b0001_0010 << (<$t>::BITS - 8));
-                        assert_eq!(<$t as BinaryRepr>::trailing_ones(!0b0100), 2);
-                        assert_eq!(<$t as BinaryRepr>::trailing_zeros(0b0100), 2);
+                        let mut rng = Xorshift::default();
+                        for a in integer_boundary_values!($t).into_iter().chain(rng.random_iter(..).take(Q)).collect::<Vec<_>>() {
+                            let n = rng.random(0..=2 * $t::BITS);
+                            assert_eq!(<$t as BinaryRepr>::count_ones(a), a.count_ones());
+                            assert_eq!(<$t as BinaryRepr>::count_zeros(a), a.count_zeros());
+                            assert_eq!(<$t as BinaryRepr>::leading_ones(a), a.leading_ones());
+                            assert_eq!(<$t as BinaryRepr>::leading_zeros(a), a.leading_zeros());
+                            assert_eq!(<$t as BinaryRepr>::reverse_bits(a), a.reverse_bits());
+                            assert_eq!(<$t as BinaryRepr>::swap_bytes(a), a.swap_bytes());
+                            assert_eq!(<$t as BinaryRepr>::trailing_ones(a), a.trailing_ones());
+                            assert_eq!(<$t as BinaryRepr>::trailing_zeros(a), a.trailing_zeros());
+                            assert_eq!(<$t as BinaryRepr>::rotate_left(a, n), a.rotate_left(n));
+                            assert_eq!(<$t as BinaryRepr>::rotate_right(a, n), a.rotate_right(n));
+                        }
                     }
                 }
             )*
@@ -1338,100 +1385,124 @@ mod tests {
 
                 #[test]
                 fn test_saturating() {
-                    assert_eq!((1 as $t).to_saturating(), S::from(1));
-                    assert_eq!($t::from_saturating((1 as $t).to_saturating()), 1 as $t);
-                    assert_eq!(S::maximum(), S::from($t::MAX));
-                    assert_eq!(S::minimum(), S::from($t::MIN));
-                    assert_eq!(S::zero(), S::from(0));
-                    assert_eq!(S::one(), S::from(1));
-                    assert_eq!(S::from(1 as $t).to_string(), "1");
-                    assert_eq!(S::from_str("123").unwrap(), S::from(123));
-                    assert_eq!(format!("{:?}", S::from(123)), "123");
-                    assert_eq!(S::scan(&mut Scanner::new("123")).unwrap(), S::from(123));
-                    assert_eq!(S::from(1) + S::from(2), S::from(3));
-                    assert_eq!(S::from(1) + 2, S::from(3));
-                    assert_eq!(S::from(3) - S::from(1), S::from(2));
-                    assert_eq!(S::from(3) - 1, S::from(2));
-                    assert_eq!(S::from(2) * S::from(3), S::from(6));
-                    assert_eq!(S::from(2) * 3, S::from(6));
-                    assert_eq!(S::from(6) / S::from(3), S::from(2));
-                    assert_eq!(S::from(6) / 3, S::from(2));
-                    assert_eq!(S::from(7) % S::from(4), S::from(3));
-                    assert_eq!(S::from(7) % 4, S::from(3));
-                    assert_eq!(S::from(1) & S::from(3), S::from(1));
-                    assert_eq!(S::from(1) & 3, S::from(1));
-                    assert_eq!(S::from(1) | S::from(2), S::from(3));
-                    assert_eq!(S::from(1) | 2, S::from(3));
-                    assert_eq!(S::from(3) ^ S::from(1), S::from(2));
-                    assert_eq!(S::from(3) ^ 1, S::from(2));
-                    assert_eq!(S::from(1) << 2, S::from(4));
-                    assert_eq!(S::from(4) >> 2, S::from(1));
-                    assert_eq!(assign!(+=, S::from(1), S::from(2)), S::from(3));
-                    assert_eq!(assign!(+=, S::from(1), 2), S::from(3));
-                    assert_eq!(assign!(-=, S::from(3), S::from(1)), S::from(2));
-                    assert_eq!(assign!(-=, S::from(3), 1), S::from(2));
-                    assert_eq!(assign!(*=, S::from(2), S::from(3)), S::from(6));
-                    assert_eq!(assign!(*=, S::from(2), 3), S::from(6));
-                    assert_eq!(assign!(/=, S::from(6), S::from(3)), S::from(2));
-                    assert_eq!(assign!(/=, S::from(6), 3), S::from(2));
-                    assert_eq!(assign!(%=, S::from(7), S::from(4)), S::from(3));
-                    assert_eq!(assign!(%=, S::from(7), 4), S::from(3));
-                    assert_eq!(assign!(&=, S::from(1), S::from(3)), S::from(1));
-                    assert_eq!(assign!(&=, S::from(1), 3), S::from(1));
-                    assert_eq!(assign!(|=, S::from(1), S::from(2)), S::from(3));
-                    assert_eq!(assign!(|=, S::from(1), 2), S::from(3));
-                    assert_eq!(assign!(^=, S::from(3), S::from(1)), S::from(2));
-                    assert_eq!(assign!(^=, S::from(3), 1), S::from(2));
-                    assert_eq!(assign!(<<=, S::from(1), 2), S::from(4));
-                    assert_eq!(assign!(>>=, S::from(4), 2), S::from(1));
-                    assert_eq!(!S::from(1), S::from(!(1 as $t)));
-                    assert_eq!([S::from(1), S::from(2)].into_iter().sum::<S>(), S::from(3));
-                    assert_eq!([S::from(2), S::from(3)].into_iter().product::<S>(), S::from(6));
-                    assert_eq!(S::from(10).div_euclid(S::from(3)), S::from(3));
-                    assert_eq!(S::from(10).rem_euclid(S::from(3)), S::from(1));
-                    assert_eq!(S::from(10).pow(2), S::from(100));
-                    assert_eq!(S::from_str_radix("1a", 16).unwrap(), S::from(26));
-                    assert_eq!(S::from(100).ilog(S::from(10)), 2);
-                    assert_eq!(S::from(16).ilog2(), 4);
-                    assert_eq!(S::from(100).ilog10(), 2);
-                    assert_eq!(S::from(0b1010).count_ones(), 2);
-                    assert_eq!(S::from(0b1010).count_zeros(), <$t>::BITS - 2);
-                    assert_eq!(S::from(!0b0010).leading_ones(), <$t>::BITS - 2);
-                    assert_eq!(S::from(0b0010).leading_zeros(), <$t>::BITS - 2);
-                    assert_eq!(S::from(0b101).reverse_bits(), S::from(0b101 << (<$t>::BITS - 3)));
-                    assert_eq!(S::from(0b0001_0010).rotate_left(2), S::from(0b0100_1000));
-                    assert_eq!(S::from(0b0001_0010).rotate_right(<$t>::BITS - 2), S::from(0b0100_1000));
-                    assert_eq!(S::from(0b0001_0010).swap_bytes(), S::from(0b0001_0010 << (<$t>::BITS - 8)));
-                    assert_eq!(S::from(!0b0100).trailing_ones(), 2);
-                    assert_eq!(S::from(0b0100).trailing_zeros(), 2);
+                    let mut rng = Xorshift::default();
+                    let mut values = integer_boundary_values!($t);
+                    if $t::BITS == 8 { values = ($t::MIN..=$t::MAX).collect(); }
+                    let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(Q)).collect();
+                    for (a, b) in pairs {
+                        let n = rng.random(0..=2 * $t::BITS);
+                        assert_eq!(a.to_saturating(), S::from(a));
+                        assert_eq!($t::from_saturating(a.to_saturating()), a);
+                        assert_eq!(S::maximum(), S::from($t::MAX));
+                        assert_eq!(S::minimum(), S::from($t::MIN));
+                        assert_eq!(S::zero(), S::from(0));
+                        assert_eq!(S::one(), S::from(1));
+                        assert_eq!(S::from(a).to_string(), a.to_string());
+                        assert_eq!(S::from_str(&a.to_string()).unwrap(), S::from(a));
+                        assert_eq!(format!("{:?}", S::from(a)), format!("{a:?}"));
+                        assert_eq!(S::scan(&mut Scanner::new(&a.to_string())).unwrap(), S::from(a));
+                        assert_eq!(S::from(a) + S::from(b), S::from(a.saturating_add(b)));
+                        assert_eq!(assign!(+=, S::from(a), S::from(b)), S::from(a.saturating_add(b)));
+                        assert_eq!(S::from(a) + b, S::from(a.saturating_add(b)));
+                        assert_eq!(assign!(+=, S::from(a), b), S::from(a.saturating_add(b)));
+                        assert_eq!(S::from(a) - S::from(b), S::from(a.saturating_sub(b)));
+                        assert_eq!(assign!(-=, S::from(a), S::from(b)), S::from(a.saturating_sub(b)));
+                        assert_eq!(S::from(a) - b, S::from(a.saturating_sub(b)));
+                        assert_eq!(assign!(-=, S::from(a), b), S::from(a.saturating_sub(b)));
+                        assert_eq!(S::from(a) * S::from(b), S::from(a.saturating_mul(b)));
+                        assert_eq!(assign!(*=, S::from(a), S::from(b)), S::from(a.saturating_mul(b)));
+                        assert_eq!(S::from(a) * b, S::from(a.saturating_mul(b)));
+                        assert_eq!(assign!(*=, S::from(a), b), S::from(a.saturating_mul(b)));
+                        assert_eq!(S::from(a) & S::from(b), S::from(a & b));
+                        assert_eq!(assign!(&=, S::from(a), S::from(b)), S::from(a & b));
+                        assert_eq!(S::from(a) & b, S::from(a & b));
+                        assert_eq!(assign!(&=, S::from(a), b), S::from(a & b));
+                        assert_eq!(S::from(a) | S::from(b), S::from(a | b));
+                        assert_eq!(assign!(|=, S::from(a), S::from(b)), S::from(a | b));
+                        assert_eq!(S::from(a) | b, S::from(a | b));
+                        assert_eq!(assign!(|=, S::from(a), b), S::from(a | b));
+                        assert_eq!(S::from(a) ^ S::from(b), S::from(a ^ b));
+                        assert_eq!(assign!(^=, S::from(a), S::from(b)), S::from(a ^ b));
+                        assert_eq!(S::from(a) ^ b, S::from(a ^ b));
+                        assert_eq!(assign!(^=, S::from(a), b), S::from(a ^ b));
+                        if a.checked_div(b).is_some() {
+                            assert_eq!(S::from(a) / S::from(b), S::from(a / b));
+                            assert_eq!(assign!(/=, S::from(a), S::from(b)), S::from(a / b));
+                            assert_eq!(S::from(a) / b, S::from(a / b));
+                            assert_eq!(assign!(/=, S::from(a), b), S::from(a / b));
+                            assert_eq!(S::from(a) % S::from(b), S::from(a % b));
+                            assert_eq!(assign!(%=, S::from(a), S::from(b)), S::from(a % b));
+                            assert_eq!(S::from(a) % b, S::from(a % b));
+                            assert_eq!(assign!(%=, S::from(a), b), S::from(a % b));
+                            assert_eq!(S::from(a).div_euclid(S::from(b)), S::from(a.div_euclid(b)));
+                            assert_eq!(S::from(a).rem_euclid(S::from(b)), S::from(a.rem_euclid(b)));
+                        }
+                        assert_eq!(S::from(a) << n, S::from(a.checked_shl(n).unwrap_or(0)));
+                        assert_eq!(assign!(<<=, S::from(a), n), S::from(a.checked_shl(n).unwrap_or(0)));
+                        assert_eq!(S::from(a) >> n, S::from(a.checked_shr(n).unwrap_or(0)));
+                        assert_eq!(assign!(>>=, S::from(a), n), S::from(a.checked_shr(n).unwrap_or(0)));
+                        assert_eq!(!S::from(a), S::from(!a));
+                        let sum: S = [S::from(a), S::from(b)].into_iter().sum();
+                        let product: S = [S::from(a), S::from(b)].into_iter().product();
+                        assert_eq!(sum, S::from(a.saturating_add(b)));
+                        assert_eq!(product, S::from(a.saturating_mul(b)));
+                        assert_eq!(S::from(a).pow(n), S::from(a.saturating_pow(n)));
+                        assert_eq!(S::from_str_radix(&a.to_string(), 10).unwrap(), S::from(a));
+                        assert_eq!(S::from(a).count_ones(), a.count_ones());
+                        assert_eq!(S::from(a).count_zeros(), a.count_zeros());
+                        assert_eq!(S::from(a).leading_ones(), a.leading_ones());
+                        assert_eq!(S::from(a).leading_zeros(), a.leading_zeros());
+                        assert_eq!(S::from(a).trailing_ones(), a.trailing_ones());
+                        assert_eq!(S::from(a).trailing_zeros(), a.trailing_zeros());
+                        assert_eq!(S::from(a).reverse_bits(), S::from(a.reverse_bits()));
+                        assert_eq!(S::from(a).swap_bytes(), S::from(a.swap_bytes()));
+                        assert_eq!(S::from(a).rotate_left(n), S::from(a.rotate_left(n)));
+                        assert_eq!(S::from(a).rotate_right(n), S::from(a.rotate_right(n)));
+                        let a = rng.random(1..=$t::MAX);
+                        let b = rng.random(2..=$t::MAX);
+                        assert_eq!(S::from(a).ilog(S::from(b)), a.ilog(b));
+                        assert_eq!(S::from(a).ilog2(), a.ilog2());
+                        assert_eq!(S::from(a).ilog10(), a.ilog10());
+                    }
                 }
             };
             (@unsigned $t:ident) => {
                 #[test]
                 fn test_saturating_unsigned() {
-                    assert_eq!(S::from(0).signed(), Saturating::from(0));
-                    assert_eq!(S::from(10).abs_diff(S::from(20)), S::from(10));
-                    assert_eq!(S::from(10).next_power_of_two(), S::from(16));
-                    assert_eq!(S::from(100).gcd(S::from(80)), S::from(20));
-                    assert_eq!(S::from(100).mod_add(S::from(80), S::from(150)), S::from(30));
-                    assert_eq!(S::from(100).mod_sub(S::from(80), S::from(150)), S::from(20));
-                    assert_eq!(S::from(100).mod_mul(S::from(80), S::from(150)), S::from(50));
+                    let mut rng = Xorshift::default();
+                    for _ in 0..Q {
+                        let a: $t = rng.random(0..=$t::MAX / 2);
+                        let b: $t = rng.random(0..=$t::MAX / 2);
+                        let m: $t = rng.random(1..=$t::MAX);
+                        assert_eq!(S::from(a).signed().0 as $t, a);
+                        assert_eq!(S::from(a).abs_diff(S::from(b)), S::from(a.abs_diff(b)));
+                        assert_eq!(S::from(a).next_power_of_two(), S::from(a.next_power_of_two()));
+                        assert_eq!(S::from(a).gcd(S::from(b)), S::from(a.gcd(b)));
+                        let a = a % m;
+                        let b = b % m;
+                        assert_eq!(S::from(a).mod_add(S::from(b), S::from(m)), S::from(a.mod_add(b, m)));
+                        assert_eq!(S::from(a).mod_sub(S::from(b), S::from(m)), S::from(a.mod_sub(b, m)));
+                        assert_eq!(S::from(a).mod_mul(S::from(b), S::from(m)), S::from(a.mod_mul(b, m)));
+                    }
                 }
             };
             (@signed $t:ident) => {
                 #[test]
                 fn test_saturating_signed() {
-                    assert_eq!(S::from(0).unsigned(), Saturating::from(0));
-                    assert_eq!(S::from(-10).abs(), S::from(10));
-                    assert_eq!(S::from(10).abs_diff(S::from(-20)), Saturating::from(30));
-                    assert!(!S::from(10).is_negative());
-                    assert!(S::from(-10).is_negative());
-                    assert!(S::from(10).is_positive());
-                    assert!(!S::from(-10).is_positive());
-                    assert_eq!(S::from(10).signum(), S::from(1));
-                    assert_eq!(S::from(-10).signum(), S::from(-1));
-                    assert_eq!(S::from(0).signum(), S::from(0));
-                    assert_eq!(-S::from(1), S::from(-1));
+                    let mut rng = Xorshift::default();
+                    let mut values = integer_boundary_values!($t);
+                    if $t::BITS == 8 { values = ($t::MIN..=$t::MAX).collect(); }
+                    let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(Q)).collect();
+                    for (a, b) in pairs {
+                        assert_eq!(S::from(a).abs(), S::from(a.saturating_abs()));
+                        assert_eq!(S::from(a).abs_diff(S::from(b)).0, a.abs_diff(b));
+                        assert_eq!(S::from(a).is_negative(), a < 0);
+                        assert_eq!(S::from(a).is_positive(), a > 0);
+                        assert_eq!(S::from(a).signum(), S::from(a.signum()));
+                        assert_eq!(-S::from(a), S::from(a.saturating_neg()));
+                        let a = rng.random(0..=$t::MAX);
+                        assert_eq!(S::from(a).unsigned().0 as $t, a);
+                    }
                 }
             };
         }
@@ -1469,100 +1540,124 @@ mod tests {
 
                 #[test]
                 fn test_wrapping() {
-                    assert_eq!((1 as $t).to_wrapping(), W::from(1));
-                    assert_eq!($t::from_wrapping((1 as $t).to_wrapping()), 1 as $t);
-                    assert_eq!(W::maximum(), W::from($t::MAX));
-                    assert_eq!(W::minimum(), W::from($t::MIN));
-                    assert_eq!(W::zero(), W::from(0));
-                    assert_eq!(W::one(), W::from(1));
-                    assert_eq!(W::from(1 as $t).to_string(), "1");
-                    assert_eq!(W::from_str("123").unwrap(), W::from(123));
-                    assert_eq!(format!("{:?}", W::from(123)), "123");
-                    assert_eq!(W::scan(&mut Scanner::new("123")).unwrap(), W::from(123));
-                    assert_eq!(W::from(1) + W::from(2), W::from(3));
-                    assert_eq!(W::from(1) + 2, W::from(3));
-                    assert_eq!(W::from(3) - W::from(1), W::from(2));
-                    assert_eq!(W::from(3) - 1, W::from(2));
-                    assert_eq!(W::from(2) * W::from(3), W::from(6));
-                    assert_eq!(W::from(2) * 3, W::from(6));
-                    assert_eq!(W::from(6) / W::from(3), W::from(2));
-                    assert_eq!(W::from(6) / 3, W::from(2));
-                    assert_eq!(W::from(7) % W::from(4), W::from(3));
-                    assert_eq!(W::from(7) % 4, W::from(3));
-                    assert_eq!(W::from(1) & W::from(3), W::from(1));
-                    assert_eq!(W::from(1) & 3, W::from(1));
-                    assert_eq!(W::from(1) | W::from(2), W::from(3));
-                    assert_eq!(W::from(1) | 2, W::from(3));
-                    assert_eq!(W::from(3) ^ W::from(1), W::from(2));
-                    assert_eq!(W::from(3) ^ 1, W::from(2));
-                    assert_eq!(W::from(1) << 2, W::from(4));
-                    assert_eq!(W::from(4) >> 2, W::from(1));
-                    assert_eq!(assign!(+=, W::from(1), W::from(2)), W::from(3));
-                    assert_eq!(assign!(+=, W::from(1), 2), W::from(3));
-                    assert_eq!(assign!(-=, W::from(3), W::from(1)), W::from(2));
-                    assert_eq!(assign!(-=, W::from(3), 1), W::from(2));
-                    assert_eq!(assign!(*=, W::from(2), W::from(3)), W::from(6));
-                    assert_eq!(assign!(*=, W::from(2), 3), W::from(6));
-                    assert_eq!(assign!(/=, W::from(6), W::from(3)), W::from(2));
-                    assert_eq!(assign!(/=, W::from(6), 3), W::from(2));
-                    assert_eq!(assign!(%=, W::from(7), W::from(4)), W::from(3));
-                    assert_eq!(assign!(%=, W::from(7), 4), W::from(3));
-                    assert_eq!(assign!(&=, W::from(1), W::from(3)), W::from(1));
-                    assert_eq!(assign!(&=, W::from(1), 3), W::from(1));
-                    assert_eq!(assign!(|=, W::from(1), W::from(2)), W::from(3));
-                    assert_eq!(assign!(|=, W::from(1), 2), W::from(3));
-                    assert_eq!(assign!(^=, W::from(3), W::from(1)), W::from(2));
-                    assert_eq!(assign!(^=, W::from(3), 1), W::from(2));
-                    assert_eq!(assign!(<<=, W::from(1), 2), W::from(4));
-                    assert_eq!(assign!(>>=, W::from(4), 2), W::from(1));
-                    assert_eq!(!W::from(1), W::from(!(1 as $t)));
-                    assert_eq!([W::from(1), W::from(2)].into_iter().sum::<W>(), W::from(3));
-                    assert_eq!([W::from(2), W::from(3)].into_iter().product::<W>(), W::from(6));
-                    assert_eq!(W::from(10).div_euclid(W::from(3)), W::from(3));
-                    assert_eq!(W::from(10).rem_euclid(W::from(3)), W::from(1));
-                    assert_eq!(W::from(10).pow(2), W::from(100));
-                    assert_eq!(W::from_str_radix("1a", 16).unwrap(), W::from(26));
-                    assert_eq!(W::from(100).ilog(W::from(10)), 2);
-                    assert_eq!(W::from(16).ilog2(), 4);
-                    assert_eq!(W::from(100).ilog10(), 2);
-                    assert_eq!(W::from(0b1010).count_ones(), 2);
-                    assert_eq!(W::from(0b1010).count_zeros(), <$t>::BITS - 2);
-                    assert_eq!(W::from(!0b0010).leading_ones(), <$t>::BITS - 2);
-                    assert_eq!(W::from(0b0010).leading_zeros(), <$t>::BITS - 2);
-                    assert_eq!(W::from(0b101).reverse_bits(), W::from(0b101 << (<$t>::BITS - 3)));
-                    assert_eq!(W::from(0b0001_0010).rotate_left(2), W::from(0b0100_1000));
-                    assert_eq!(W::from(0b0001_0010).rotate_right(<$t>::BITS - 2), W::from(0b0100_1000));
-                    assert_eq!(W::from(0b0001_0010).swap_bytes(), W::from(0b0001_0010 << (<$t>::BITS - 8)));
-                    assert_eq!(W::from(!0b0100).trailing_ones(), 2);
-                    assert_eq!(W::from(0b0100).trailing_zeros(), 2);
+                    let mut rng = Xorshift::default();
+                    let mut values = integer_boundary_values!($t);
+                    if $t::BITS == 8 { values = ($t::MIN..=$t::MAX).collect(); }
+                    let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(Q)).collect();
+                    for (a, b) in pairs {
+                        let n = rng.random(0..=2 * $t::BITS);
+                        assert_eq!(a.to_wrapping(), W::from(a));
+                        assert_eq!($t::from_wrapping(a.to_wrapping()), a);
+                        assert_eq!(W::maximum(), W::from($t::MAX));
+                        assert_eq!(W::minimum(), W::from($t::MIN));
+                        assert_eq!(W::zero(), W::from(0));
+                        assert_eq!(W::one(), W::from(1));
+                        assert_eq!(W::from(a).to_string(), a.to_string());
+                        assert_eq!(W::from_str(&a.to_string()).unwrap(), W::from(a));
+                        assert_eq!(format!("{:?}", W::from(a)), format!("{a:?}"));
+                        assert_eq!(W::scan(&mut Scanner::new(&a.to_string())).unwrap(), W::from(a));
+                        assert_eq!(W::from(a) + W::from(b), W::from(a.wrapping_add(b)));
+                        assert_eq!(assign!(+=, W::from(a), W::from(b)), W::from(a.wrapping_add(b)));
+                        assert_eq!(W::from(a) + b, W::from(a.wrapping_add(b)));
+                        assert_eq!(assign!(+=, W::from(a), b), W::from(a.wrapping_add(b)));
+                        assert_eq!(W::from(a) - W::from(b), W::from(a.wrapping_sub(b)));
+                        assert_eq!(assign!(-=, W::from(a), W::from(b)), W::from(a.wrapping_sub(b)));
+                        assert_eq!(W::from(a) - b, W::from(a.wrapping_sub(b)));
+                        assert_eq!(assign!(-=, W::from(a), b), W::from(a.wrapping_sub(b)));
+                        assert_eq!(W::from(a) * W::from(b), W::from(a.wrapping_mul(b)));
+                        assert_eq!(assign!(*=, W::from(a), W::from(b)), W::from(a.wrapping_mul(b)));
+                        assert_eq!(W::from(a) * b, W::from(a.wrapping_mul(b)));
+                        assert_eq!(assign!(*=, W::from(a), b), W::from(a.wrapping_mul(b)));
+                        assert_eq!(W::from(a) & W::from(b), W::from(a & b));
+                        assert_eq!(assign!(&=, W::from(a), W::from(b)), W::from(a & b));
+                        assert_eq!(W::from(a) & b, W::from(a & b));
+                        assert_eq!(assign!(&=, W::from(a), b), W::from(a & b));
+                        assert_eq!(W::from(a) | W::from(b), W::from(a | b));
+                        assert_eq!(assign!(|=, W::from(a), W::from(b)), W::from(a | b));
+                        assert_eq!(W::from(a) | b, W::from(a | b));
+                        assert_eq!(assign!(|=, W::from(a), b), W::from(a | b));
+                        assert_eq!(W::from(a) ^ W::from(b), W::from(a ^ b));
+                        assert_eq!(assign!(^=, W::from(a), W::from(b)), W::from(a ^ b));
+                        assert_eq!(W::from(a) ^ b, W::from(a ^ b));
+                        assert_eq!(assign!(^=, W::from(a), b), W::from(a ^ b));
+                        if b != 0 {
+                            assert_eq!(W::from(a) / W::from(b), W::from(a.wrapping_div(b)));
+                            assert_eq!(assign!(/=, W::from(a), W::from(b)), W::from(a.wrapping_div(b)));
+                            assert_eq!(W::from(a) / b, W::from(a.wrapping_div(b)));
+                            assert_eq!(assign!(/=, W::from(a), b), W::from(a.wrapping_div(b)));
+                            assert_eq!(W::from(a) % W::from(b), W::from(a.wrapping_rem(b)));
+                            assert_eq!(assign!(%=, W::from(a), W::from(b)), W::from(a.wrapping_rem(b)));
+                            assert_eq!(W::from(a) % b, W::from(a.wrapping_rem(b)));
+                            assert_eq!(assign!(%=, W::from(a), b), W::from(a.wrapping_rem(b)));
+                            assert_eq!(W::from(a).div_euclid(W::from(b)), W::from(a.wrapping_div_euclid(b)));
+                            assert_eq!(W::from(a).rem_euclid(W::from(b)), W::from(a.wrapping_rem_euclid(b)));
+                        }
+                        assert_eq!(W::from(a) << n, W::from(a.wrapping_shl(n)));
+                        assert_eq!(assign!(<<=, W::from(a), n), W::from(a.wrapping_shl(n)));
+                        assert_eq!(W::from(a) >> n, W::from(a.wrapping_shr(n)));
+                        assert_eq!(assign!(>>=, W::from(a), n), W::from(a.wrapping_shr(n)));
+                        assert_eq!(!W::from(a), W::from(!a));
+                        let sum: W = [W::from(a), W::from(b)].into_iter().sum();
+                        let product: W = [W::from(a), W::from(b)].into_iter().product();
+                        assert_eq!(sum, W::from(a.wrapping_add(b)));
+                        assert_eq!(product, W::from(a.wrapping_mul(b)));
+                        assert_eq!(W::from(a).pow(n), W::from(a.wrapping_pow(n)));
+                        assert_eq!(W::from_str_radix(&a.to_string(), 10).unwrap(), W::from(a));
+                        assert_eq!(W::from(a).count_ones(), a.count_ones());
+                        assert_eq!(W::from(a).count_zeros(), a.count_zeros());
+                        assert_eq!(W::from(a).leading_ones(), a.leading_ones());
+                        assert_eq!(W::from(a).leading_zeros(), a.leading_zeros());
+                        assert_eq!(W::from(a).trailing_ones(), a.trailing_ones());
+                        assert_eq!(W::from(a).trailing_zeros(), a.trailing_zeros());
+                        assert_eq!(W::from(a).reverse_bits(), W::from(a.reverse_bits()));
+                        assert_eq!(W::from(a).swap_bytes(), W::from(a.swap_bytes()));
+                        assert_eq!(W::from(a).rotate_left(n), W::from(a.rotate_left(n)));
+                        assert_eq!(W::from(a).rotate_right(n), W::from(a.rotate_right(n)));
+                        let a = rng.random(1..=$t::MAX);
+                        let b = rng.random(2..=$t::MAX);
+                        assert_eq!(W::from(a).ilog(W::from(b)), a.ilog(b));
+                        assert_eq!(W::from(a).ilog2(), a.ilog2());
+                        assert_eq!(W::from(a).ilog10(), a.ilog10());
+                    }
                 }
             };
             (@unsigned $t:ident) => {
                 #[test]
                 fn test_wrapping_unsigned() {
-                    assert_eq!(W::from(0).signed(), Wrapping::from(0));
-                    assert_eq!(W::from(10).abs_diff(W::from(20)), W::from(10));
-                    assert_eq!(W::from(10).next_power_of_two(), W::from(16));
-                    assert_eq!(W::from(100).gcd(W::from(80)), W::from(20));
-                    assert_eq!(W::from(100).mod_add(W::from(80), W::from(150)), W::from(30));
-                    assert_eq!(W::from(100).mod_sub(W::from(80), W::from(150)), W::from(20));
-                    assert_eq!(W::from(100).mod_mul(W::from(80), W::from(150)), W::from(50));
+                    let mut rng = Xorshift::default();
+                    for _ in 0..Q {
+                        let a: $t = rng.random(0..=$t::MAX / 2);
+                        let b: $t = rng.random(0..=$t::MAX / 2);
+                        let m: $t = rng.random(1..=$t::MAX);
+                        assert_eq!(W::from(a).signed().0 as $t, a);
+                        assert_eq!(W::from(a).abs_diff(W::from(b)), W::from(a.abs_diff(b)));
+                        assert_eq!(W::from(a).next_power_of_two(), W::from(a.next_power_of_two()));
+                        assert_eq!(W::from(a).gcd(W::from(b)), W::from(a.gcd(b)));
+                        let a = a % m;
+                        let b = b % m;
+                        assert_eq!(W::from(a).mod_add(W::from(b), W::from(m)), W::from(a.mod_add(b, m)));
+                        assert_eq!(W::from(a).mod_sub(W::from(b), W::from(m)), W::from(a.mod_sub(b, m)));
+                        assert_eq!(W::from(a).mod_mul(W::from(b), W::from(m)), W::from(a.mod_mul(b, m)));
+                    }
                 }
             };
             (@signed $t:ident) => {
                 #[test]
                 fn test_wrapping_signed() {
-                    assert_eq!(W::from(0).unsigned(), Wrapping::from(0));
-                    assert_eq!(W::from(-10).abs(), W::from(10));
-                    assert_eq!(W::from(10).abs_diff(W::from(-20)), Wrapping::from(30));
-                    assert!(!W::from(10).is_negative());
-                    assert!(W::from(-10).is_negative());
-                    assert!(W::from(10).is_positive());
-                    assert!(!W::from(-10).is_positive());
-                    assert_eq!(W::from(10).signum(), W::from(1));
-                    assert_eq!(W::from(-10).signum(), W::from(-1));
-                    assert_eq!(W::from(0).signum(), W::from(0));
-                    assert_eq!(-W::from(1), W::from(-1));
+                    let mut rng = Xorshift::default();
+                    let mut values = integer_boundary_values!($t);
+                    if $t::BITS == 8 { values = ($t::MIN..=$t::MAX).collect(); }
+                    let pairs: Vec<_> = values.iter().flat_map(|&a| values.iter().map(move |&b| (a, b))).chain(rng.random_iter((.., ..)).take(Q)).collect();
+                    for (a, b) in pairs {
+                        assert_eq!(W::from(a).abs(), W::from(a.wrapping_abs()));
+                        assert_eq!(W::from(a).abs_diff(W::from(b)).0, a.abs_diff(b));
+                        assert_eq!(W::from(a).is_negative(), a < 0);
+                        assert_eq!(W::from(a).is_positive(), a > 0);
+                        assert_eq!(W::from(a).signum(), W::from(a.signum()));
+                        assert_eq!(-W::from(a), W::from(a.wrapping_neg()));
+                        let a = rng.random(0..=$t::MAX);
+                        assert_eq!(W::from(a).unsigned().0 as $t, a);
+                    }
                 }
             };
         }

@@ -292,64 +292,52 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{algorithm::SliceCombinationsExt, tools::Xorshift};
+    use crate::tools::{
+        Xorshift,
+        testutil::{exhaustive_sequences, sample_usize},
+    };
 
-    macro_rules! test_sort {
-        (@small $sort_method:ident) => {
-            for n in 0..=8 {
-                let a: Vec<_> = (0..n).collect();
-                a.for_each_permutations(n, |a| {
-                    let mut x = a.to_vec();
-                    let mut y = a.to_vec();
-                    x.sort();
-                    y.$sort_method();
-                    assert_eq!(x, y);
-                });
-            }
-        };
-        (@large $sort_method:ident, $n_ub:expr) => {{
-            let mut rng = Xorshift::default();
-            for _ in 0..10 {
-                let n = rng.random(..$n_ub);
-                let ub = 1 << rng.random(0..20);
-                let a: Vec<_> = rng.random_iter(0..ub).take(n).collect();
-                let mut x = a.to_vec();
-                let mut y = a.to_vec();
-                x.sort();
-                y.$sort_method();
-                assert_eq!(x, y);
-            }
-        }};
+    #[test]
+    fn test_comparison_sorts() {
+        let mut rng = Xorshift::default();
+        let mut cases: Vec<_> = exhaustive_sequences(-1..=1, 0..=8).collect();
+        for n in sample_usize(&mut rng, 16, 0..=3000, 100) {
+            let bound = rng.random(0..=1000i32);
+            let values: Vec<_> = rng.random_iter(-bound..=bound).take(n).collect();
+            cases.push(vec![0; n]);
+            cases.push((0..n as i32).collect());
+            cases.push((0..n as i32).rev().collect());
+            cases.push(values);
+        }
+        for values in cases {
+            let mut expected = values.clone();
+            expected.sort();
+            let mut actual = values.clone();
+            actual.bubble_sort();
+            assert_eq!(actual, expected);
+            let mut actual = values.clone();
+            actual.merge_sort();
+            assert_eq!(actual, expected);
+            let mut actual = values;
+            actual.insertion_sort();
+            assert_eq!(actual, expected);
+        }
     }
 
     #[test]
-    fn test_bubble_sort_small() {
-        test_sort!(@small bubble_sort);
-    }
-
-    #[test]
-    fn test_bubble_sort_large() {
-        test_sort!(@large bubble_sort, 3000);
-    }
-
-    #[test]
-    fn test_merge_sort_small() {
-        test_sort!(@small merge_sort);
-    }
-
-    #[test]
-    fn test_merge_sort_large() {
-        test_sort!(@large merge_sort, 100_000);
-    }
-
-    #[test]
-    fn test_insertion_sort_small() {
-        test_sort!(@small insertion_sort);
-    }
-
-    #[test]
-    fn test_insertion_sort_large() {
-        test_sort!(@large insertion_sort, 100_000);
+    fn test_large_comparison_sorts() {
+        let mut rng = Xorshift::default();
+        for n in sample_usize(&mut rng, 16, 0..=100_000, 10) {
+            let values: Vec<i32> = rng.random_iter(..).take(n).collect();
+            let mut expected = values.clone();
+            expected.sort();
+            let mut actual = values.clone();
+            actual.merge_sort();
+            assert_eq!(actual, expected);
+            let mut actual = values;
+            actual.insertion_sort();
+            assert_eq!(actual, expected);
+        }
     }
 
     #[test]

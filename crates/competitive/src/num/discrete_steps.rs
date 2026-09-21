@@ -309,64 +309,80 @@ impl_range_bounds_ext!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
-    fn test_start_bound_included() {
-        assert_eq!((2..5).start_bound_included(), 2);
-        assert_eq!((..5usize).start_bound_included(), 0);
-    }
-
-    #[test]
-    fn test_start_bound_excluded() {
-        assert_eq!((2..5).start_bound_excluded(), 1);
-        assert_eq!((..5usize).start_bound_excluded_checked(), None);
-    }
-
-    #[test]
-    fn test_end_bound_included() {
-        assert_eq!((2..5).end_bound_included(), 4);
-        assert_eq!((2usize..).end_bound_included(), !0usize);
-    }
-
-    #[test]
-    fn test_end_bound_excluded() {
-        assert_eq!((2..5).end_bound_excluded(), 5);
-        assert_eq!((2usize..).end_bound_excluded_checked(), None);
-    }
-
-    #[test]
-    fn test_to_range() {
-        assert_eq!((2..5).to_range(), 2..5);
-        assert_eq!((2..=5).to_range(), 2..6);
-        assert_eq!((..5usize).to_range(), 0..5);
-    }
-
-    #[test]
-    fn test_to_range_bounded() {
-        assert_eq!((3..6).to_range_bounded(2, 7), Some(3..6));
-        assert_eq!((2..7).to_range_bounded(2, 7), Some(2..7));
-        assert_eq!((2..8).to_range_bounded(2, 7), None);
-        assert_eq!((1..7).to_range_bounded(2, 7), None);
-        assert_eq!((..).to_range_bounded(2, 7), Some(2..7));
-        assert_eq!((2..=6).to_range_bounded(2, 7), Some(2..7));
-        assert_eq!((2..=7).to_range_bounded(2, 7), None);
-    }
-
-    #[test]
-    fn test_to_range_inclusive() {
-        assert_eq!((2..5).to_range_inclusive(), 2..=4);
-        assert_eq!((2..=5).to_range_inclusive(), 2..=5);
-        assert_eq!((..5usize).to_range_inclusive(), 0..=4);
-    }
-
-    #[test]
-    fn test_to_range_inclusive_bounded() {
-        assert_eq!((3..6).to_range_inclusive_bounded(2, 6), Some(3..=5));
-        assert_eq!((2..7).to_range_inclusive_bounded(2, 6), Some(2..=6));
-        assert_eq!((2..8).to_range_inclusive_bounded(2, 6), None);
-        assert_eq!((1..7).to_range_inclusive_bounded(2, 6), None);
-        assert_eq!((..).to_range_inclusive_bounded(2, 6), Some(2..=6));
-        assert_eq!((2..=6).to_range_inclusive_bounded(2, 6), Some(2..=6));
-        assert_eq!((2..=7).to_range_inclusive_bounded(2, 6), None);
+    fn test_range_bounds() {
+        let mut rng = Xorshift::default();
+        let bounds: Vec<_> = std::iter::once(Bound::Unbounded)
+            .chain((0..=u8::MAX).flat_map(|x| [Bound::Included(x), Bound::Excluded(x)]))
+            .collect();
+        for (lower, upper) in bounds
+            .iter()
+            .flat_map(|&lower| bounds.iter().map(move |&upper| (lower, upper)))
+        {
+            let range = (lower, upper);
+            let start = (0..=u8::MAX).find(|x| match lower {
+                Bound::Included(a) => *x >= a,
+                Bound::Excluded(a) => *x > a,
+                Bound::Unbounded => true,
+            });
+            let end = (0..=u8::MAX).rev().find(|x| match upper {
+                Bound::Included(b) => *x <= b,
+                Bound::Excluded(b) => *x < b,
+                Bound::Unbounded => true,
+            });
+            let before = match lower {
+                Bound::Excluded(a) => Some(a),
+                _ => start.and_then(|x| x.checked_sub(1)),
+            };
+            let after = match upper {
+                Bound::Excluded(b) => Some(b),
+                _ => end.and_then(|x| x.checked_add(1)),
+            };
+            assert_eq!(range.start_bound_included_checked(), start);
+            assert_eq!(range.start_bound_excluded_checked(), before);
+            assert_eq!(range.end_bound_included_checked(), end);
+            assert_eq!(range.end_bound_excluded_checked(), after);
+            assert_eq!(
+                range.to_range_checked(),
+                start.zip(after).map(|(a, b)| a..b)
+            );
+            assert_eq!(
+                range.to_range_inclusive_checked(),
+                start.zip(end).map(|(a, b)| a..=b)
+            );
+            if let Some(expected) = range.to_range_checked() {
+                assert_eq!(range.to_range(), expected);
+            }
+            if let Some(expected) = range.to_range_inclusive_checked() {
+                assert_eq!(range.to_range_inclusive(), expected);
+            }
+            let lb: u8 = rng.random(..);
+            let ub: u8 = rng.random(..);
+            let start = if lower == Bound::Unbounded {
+                Some(lb)
+            } else {
+                start.filter(|&x| x >= lb)
+            };
+            let end = if upper == Bound::Unbounded {
+                Some(ub)
+            } else {
+                end.filter(|&x| x <= ub)
+            };
+            let after = if upper == Bound::Unbounded {
+                Some(ub)
+            } else {
+                after.filter(|&x| x <= ub)
+            };
+            assert_eq!(
+                range.to_range_bounded(lb, ub),
+                start.zip(after).map(|(a, b)| a..b)
+            );
+            assert_eq!(
+                range.to_range_inclusive_bounded(lb, ub),
+                start.zip(end).map(|(a, b)| a..=b)
+            );
+        }
     }
 }

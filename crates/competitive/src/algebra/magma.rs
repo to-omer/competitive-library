@@ -296,21 +296,28 @@ macro_rules! define_monoid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::algebra::operations::{AdditiveOperation, MaxOperation};
+    use crate::{
+        algebra::operations::{AdditiveOperation, MaxOperation},
+        tools::Xorshift,
+    };
+    use std::array;
 
     #[test]
-    fn test_monoid_pow() {
-        assert_eq!(AdditiveOperation::pow(2, 0u32), 0);
-        assert_eq!(AdditiveOperation::pow(2, 1u32), 2);
-        assert_eq!(AdditiveOperation::pow(2, 3u32), 6);
-        assert_eq!(AdditiveOperation::pow(2, 4usize), 8);
-    }
-
-    #[test]
-    fn test_monoid_fold() {
-        assert_eq!(monoid_fold!(MaxOperation<u32>,), 0);
-        assert_eq!(monoid_fold!(MaxOperation<u32>, 1), 1);
-        assert_eq!(monoid_fold!(MaxOperation<u32>, 1, 2), 2);
-        assert_eq!(monoid_fold!(MaxOperation<u32>, 0, 1, 5, 2), 5);
+    fn test_monoid_operations() {
+        let mut rng = Xorshift::default();
+        for _ in 0..10_000 {
+            let x = rng.random(-1000i64..=1000);
+            let n = rng.random(0..=1000u32);
+            assert_eq!(AdditiveOperation::pow(x, n), x * i64::from(n));
+            assert_eq!(AdditiveOperation::pow(x, n as usize), x * i64::from(n));
+            let [a, b, c, d]: [u32; 4] = array::from_fn(|_| rng.random(..));
+            assert_eq!(monoid_fold!(MaxOperation<u32>,), 0);
+            assert_eq!(monoid_fold!(MaxOperation<u32>, a), a);
+            assert_eq!(monoid_fold!(MaxOperation<u32>, a, b), a.max(b));
+            assert_eq!(
+                monoid_fold!(MaxOperation<u32>, a, b, c, d),
+                *[a, b, c, d].iter().max().unwrap()
+            );
+        }
     }
 }

@@ -298,43 +298,76 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::min_plus_convolution::min_plus_convolution_naive;
+    use crate::{
+        math::min_plus_convolution::min_plus_convolution_naive,
+        tools::{
+            Xorshift,
+            testutil::{exhaustive_sequences, sample_usize},
+        },
+    };
 
     #[test]
-    fn test_convex_algorithms_exhaustively() {
-        let values = [-2_i64, 0, 3];
-        let mut inputs = vec![Vec::new()];
-        for _ in 0..4 {
-            let prefixes = inputs.clone();
-            for prefix in prefixes {
-                for &value in &values {
-                    let mut input = prefix.clone();
-                    input.push(value);
-                    inputs.push(input);
-                }
-            }
-        }
-        inputs.sort();
-        inputs.dedup();
+    fn test_convex_algorithms() {
+        let mut rng = Xorshift::default();
+        let inputs: Vec<_> = exhaustive_sequences([-2i64, 0, 3], 0..=6).collect();
         let convex: Vec<_> = inputs.iter().filter(|input| is_convex(input)).collect();
-        for arbitrary in &inputs {
-            for &structured in &convex {
-                let expected = min_plus_convolution_naive(arbitrary, structured);
-                assert_eq!(
-                    min_plus_convolution_convex_divide_and_conquer(arbitrary, structured),
-                    expected
-                );
-                assert_eq!(
-                    min_plus_convolution_convex_smawk(arbitrary, structured),
-                    expected
-                );
-            }
+        let exhaustive = inputs
+            .iter()
+            .flat_map(|a| convex.iter().map(move |&b| (a.clone(), b.clone())));
+        let mut random = Vec::new();
+        // Check every pair of small lengths, then cross allocation boundaries.
+        let mut lengths: Vec<_> = (0..=32)
+            .flat_map(|n| (0..=32).map(move |m| (n, m)))
+            .collect();
+        for n in sample_usize(&mut rng, 32, 0..=512, 1000) {
+            lengths.push((n, rng.random(0usize..=512)));
         }
-        for &a in &convex {
-            for &b in &convex {
+        for (n, m) in lengths {
+            let arbitrary: Vec<_> = rng.random_iter(-1000..=1000).take(n).collect();
+            let mut slopes: Vec<_> = rng
+                .random_iter(-100i64..=100)
+                .take(m.saturating_sub(1))
+                .collect();
+            slopes.sort_unstable();
+            let mut structured = Vec::new();
+            if m != 0 {
+                structured.push(rng.random(-1000..=1000));
+            }
+            for slope in slopes {
+                structured.push(structured.last().unwrap() + slope);
+            }
+            random.push((arbitrary, structured.clone()));
+            let mut other: Vec<_> = rng
+                .random_iter(-100i64..=100)
+                .take(n.saturating_sub(1))
+                .collect();
+            other.sort_unstable();
+            let mut convex = Vec::new();
+            if n != 0 {
+                convex.push(rng.random(-1000..=1000));
+            }
+            for slope in other {
+                convex.push(convex.last().unwrap() + slope);
+            }
+            random.push((convex, structured));
+        }
+        for (a, b) in exhaustive.chain(random) {
+            let expected = min_plus_convolution_naive(&a, &b);
+            assert_eq!(
+                min_plus_convolution_convex_divide_and_conquer(&a, &b),
+                expected,
+                "a={a:?}, b={b:?}"
+            );
+            assert_eq!(
+                min_plus_convolution_convex_smawk(&a, &b),
+                expected,
+                "a={a:?}, b={b:?}"
+            );
+            if is_convex(&a) {
                 assert_eq!(
-                    min_plus_convolution_convex_merge(a, b),
-                    min_plus_convolution_naive(a, b)
+                    min_plus_convolution_convex_merge(&a, &b),
+                    expected,
+                    "a={a:?}, b={b:?}"
                 );
             }
         }

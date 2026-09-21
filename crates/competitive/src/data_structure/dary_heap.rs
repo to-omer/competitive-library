@@ -547,6 +547,7 @@ mod tests {
     use crate::tools::Xorshift;
     #[cfg(target_arch = "x86_64")]
     use crate::tools::avx512_supported;
+    use crate::tools::testutil::exhaustive_sequences;
     use std::collections::BinaryHeap;
 
     #[cfg(target_arch = "x86_64")]
@@ -663,10 +664,28 @@ mod tests {
             );
         }
 
-        let mut actual = DaryHeapU32::from(vec![1, 2, 3]);
-        actual.clear();
-        assert!(actual.is_empty());
-        assert_eq!(actual.replace(4), None);
-        assert_eq!(actual.peek(), Some(4));
+        for values in exhaustive_sequences([0u32, 1, u32::MAX], 0..=6) {
+            for backend in backends() {
+                let mut actual = DaryHeapU32::build(values.clone(), backend);
+                let mut cleared = actual.clone();
+                cleared.clear();
+                assert_eq!(cleared.len(), 0);
+                assert!(cleared.is_empty());
+                assert_eq!(cleared.peek(), None);
+                assert_eq!(cleared.pop(), None);
+                cleared.extend(values.iter().copied());
+                let mut expected = BinaryHeap::from(values.clone());
+                while let Some(value) = expected.pop() {
+                    assert_eq!(actual.pop(), Some(value));
+                    assert_eq!(cleared.pop(), Some(value));
+                }
+                assert_eq!(actual.pop(), None);
+                assert_eq!(cleared.pop(), None);
+                assert!(actual.is_empty());
+                let value: u32 = rng.random(..);
+                assert_eq!(actual.replace(value), None);
+                assert_eq!(actual.peek(), Some(value));
+            }
+        }
     }
 }

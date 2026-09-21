@@ -99,7 +99,11 @@ pub fn get_testcases(
 
 #[test]
 fn test_itp1_1_a() -> Result<(), Box<dyn 'static + std::error::Error>> {
-    let res = get_testcases("ITP1_1_A")?;
-    eprintln!("res = {:?}", res);
+    let cases = get_testcases("ITP1_1_A")?;
+    assert!(!cases.is_empty());
+    for case in cases {
+        assert!(case.input.is_file());
+        assert!(case.output.is_file());
+    }
     Ok(())
 }

@@ -155,35 +155,103 @@ impl Decimal {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test_case::test_case;
+    use crate::tools::Xorshift;
+    use crate::tools::testutil::integer_boundary_values;
 
-    #[test_case("0", "0", Ordering::Equal; "zero")]
-    #[test_case("0", "1", Ordering::Less; "zero vs plus")]
-    #[test_case("0", "-1", Ordering::Greater; "zero vs minus")]
-    #[test_case("1", "0", Ordering::Greater; "plus vs zero")]
-    #[test_case("1", "1", Ordering::Equal; "plus vs plus")]
-    #[test_case("1", "-1", Ordering::Greater; "plus vs minus")]
-    #[test_case("-1", "0", Ordering::Less; "minus vs zero")]
-    #[test_case("-1", "1", Ordering::Less; "minus vs plus")]
-    #[test_case("-1", "-1", Ordering::Equal; "minus vs minus")]
-    #[test_case("1000000000000000000", "1", Ordering::Greater; "long integer")]
-    #[test_case("-1000000000000000000", "-1", Ordering::Less; "negative long integer")]
-    #[test_case("0.1", "0.01", Ordering::Greater; "decimal")]
-    #[test_case("0.1", "0.1", Ordering::Equal; "decimal equal")]
-    #[test_case("0.1", "0.2", Ordering::Less; "decimal less")]
-    #[test_case("0.1", "0.0000000000000000001", Ordering::Greater; "long decimal")]
-    fn test_cmp(a: &str, b: &str, expected: Ordering) {
-        let a = a.parse::<Decimal>().unwrap();
-        let b = b.parse::<Decimal>().unwrap();
-        assert_eq!(a.cmp(&b), expected);
+    #[test]
+    fn test_decimal_arithmetic() {
+        let mut rng = Xorshift::default();
+        let mut cases: Vec<_> = (-10..=10)
+            .flat_map(|a| (-10..=10).flat_map(move |b| (-4..=4).map(move |scale| (a, b, scale))))
+            .collect();
+        for _ in 0..10_000 {
+            let digits = rng.random(0..=35u32);
+            let bound = 10i128.pow(digits);
+            let a = rng.random(-bound..=bound);
+            let b = match rng.random(0..4) {
+                0 => a,
+                1 => -a,
+                _ => rng.random(-bound..=bound),
+            };
+            let scale = rng.random(-80..=80i32);
+            cases.push((a, b, scale));
+        }
+        for (a, b, scale) in cases {
+            let format = |x: i128| {
+                if x == 0 {
+                    return "0".to_owned();
+                }
+                let mut s = x.abs().to_string();
+                if scale > 0 {
+                    let places = scale as usize;
+                    if s.len() <= places {
+                        s = "0".repeat(places + 1 - s.len()) + &s;
+                    }
+                    s.insert(s.len() - places, '.');
+                    s = s.trim_end_matches('0').trim_end_matches('.').to_owned();
+                } else {
+                    s.push_str(&"0".repeat((-scale) as usize));
+                }
+                if x < 0 {
+                    s.insert(0, '-');
+                }
+                s
+            };
+            let x: Decimal = format(a).parse().unwrap();
+            let y: Decimal = format(b).parse().unwrap();
+            assert_eq!(x.to_string(), format(a));
+            assert_eq!(x.cmp(&y), a.cmp(&b));
+            assert_eq!(x.partial_cmp(&y), Some(a.cmp(&b)));
+            assert_eq!((-x.clone()).to_string(), format(-a));
+            assert_eq!((x.clone() + y.clone()).to_string(), format(a + b));
+            assert_eq!((&x + &y).to_string(), format(a + b));
+            assert_eq!((x.clone() - y.clone()).to_string(), format(a - b));
+            assert_eq!((&x - &y).to_string(), format(a - b));
+            let mut z = x.clone();
+            z += &y;
+            assert_eq!(z.to_string(), format(a + b));
+            z -= &y;
+            assert_eq!(z, x);
+            assert_eq!(x.is_zero(), a == 0);
+        }
     }
 
-    #[test_case("0", "0"; "zero")]
-    #[test_case("1", "-1"; "plus")]
-    #[test_case("-1", "1"; "minus")]
-    fn test_neg(a: &str, expected: &str) {
-        let a = a.parse::<Decimal>().unwrap();
-        let expected = expected.parse::<Decimal>().unwrap();
-        assert_eq!(-a, expected);
+    #[test]
+    fn test_decimal_conversion() {
+        let mut rng = Xorshift::default();
+        macro_rules! check_integer {
+            ($($t:ty),*) => {$(
+                for x in integer_boundary_values!($t).into_iter().chain(rng.random_iter(..).take(1000)) {
+                    let decimal = Decimal::from(x);
+                    assert_eq!(decimal.to_string(), x.to_string());
+                    assert_eq!(x.to_string().parse::<Decimal>().unwrap(), decimal);
+                }
+            )*};
+        }
+        check_integer!(
+            u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
+        );
+        for _ in 0..1000 {
+            let x = rng.random(-1_000_000..=1_000_000) as f64 / 10f64.powi(rng.random(0..=12));
+            assert_eq!(Decimal::from(x).to_string(), x.to_string());
+            let x = x as f32;
+            assert_eq!(Decimal::from(x).to_string(), x.to_string());
+            let n = rng.random(0..=100);
+            let digits: String = rng
+                .random_iter(b'0'..=b'9')
+                .take(n)
+                .map(char::from)
+                .collect();
+            let sign = if rng.random(0..2) == 0 { "+" } else { "-" };
+            let s = format!("{}00{}.{}00", sign, digits, digits);
+            let decimal: Decimal = s.parse().unwrap();
+            assert_eq!(decimal.to_string().parse::<Decimal>().unwrap(), decimal);
+            let mut invalid = s;
+            invalid.insert(
+                rng.random(0..=invalid.len()),
+                char::from(rng.random(b'a'..=b'z')),
+            );
+            assert!(invalid.parse::<Decimal>().is_err(), "{invalid}");
+        }
     }
 }
