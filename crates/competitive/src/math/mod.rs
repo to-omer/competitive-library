@@ -224,10 +224,7 @@ mod lcm_convolve;
 mod linear_congruence;
 #[cfg_attr(nightly, codesnip::entry(include("integer", "discrete_steps")))]
 mod linear_diophantine;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Matrix", include("zero_one", "ring", "coding"))
-)]
+#[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one", "ring")))]
 mod matrix;
 #[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
 mod miller_rabin;
@@ -302,3 +299,20 @@ mod subset_convolve;
 #[allow(dead_code)]
 #[doc(hidden)]
 enum ZetaTransformSnippets {}
+
+#[codesnip::entry(when("Matrix", "coding"))]
+impl<R> SerdeByteStr for Matrix<R>
+where
+    R: SemiRing<T: SerdeByteStr>,
+{
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.data.serialize(buf);
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        Self::from_vec(Vec::deserialize(iter))
+    }
+}

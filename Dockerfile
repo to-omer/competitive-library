@@ -13,7 +13,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     python3 python3-pip make g++ git curl ca-certificates \
     && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
-    && cargo binstall --no-confirm cargo-make codesnip \
+    && cargo binstall --no-confirm cargo-make codesnip@0.6.0 \
     && rustup component add rustfmt clippy \
     && rm -rf /var/lib/apt/lists/*
 

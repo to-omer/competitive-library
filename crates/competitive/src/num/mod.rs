@@ -53,10 +53,7 @@ mod double_double;
 mod dual_number;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod float;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(include("zero_one", "bounded", "scanner", "fastio"))
-)]
+#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod integer;
 mod mint;
 #[cfg_attr(
@@ -70,3 +67,11 @@ mod rational;
 mod urational;
 #[cfg_attr(nightly, codesnip::entry)]
 mod zero_one;
+
+#[codesnip::entry(when("integer", "fastio"))]
+impl<T: FastPrint> FastPrint for Saturating<T> {
+    #[inline]
+    fn fast_print<W: std::io::Write>(&self, writer: &mut FastOutput<W>) {
+        self.0.fast_print(writer);
+    }
+}

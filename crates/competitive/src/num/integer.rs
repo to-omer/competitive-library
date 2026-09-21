@@ -1,8 +1,7 @@
-use super::{Bounded, FastOutput, FastPrint, One, Scan, ScanSource, Zero};
+use super::{Bounded, One, Scan, ScanSource, Zero};
 use std::{
     convert::TryFrom,
     fmt::{self, Display},
-    io::Write,
     iter::{Product, Sum},
     ops::{
         Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Div,
@@ -555,12 +554,7 @@ where
         T::fmt(&self.0, f)
     }
 }
-impl<T: FastPrint> FastPrint for Saturating<T> {
-    #[inline]
-    fn fast_print<W: Write>(&self, writer: &mut FastOutput<W>) {
-        self.0.fast_print(writer);
-    }
-}
+
 impl<T> Scan for Saturating<T>
 where
     T: Scan<Output = T>,

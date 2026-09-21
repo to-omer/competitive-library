@@ -5,10 +5,10 @@ use crate::tools::{advise_huge_pages, avx512_enabled, avx512_supported};
 use crate::{
     algebra::DotProduct,
     num::{BarrettReduction, One, Zero},
-    tools::{FastOutput, FastPrint, Scan, ScanSource, SerdeByteStr},
+    tools::{FastOutput, FastPrint, RandomSpec, Scan, ScanSource, SerdeByteStr, Xorshift},
 };
 
-#[codesnip::entry("MIntBase", include("scanner", "fastio", "zero_one", "coding", "ring"))]
+#[codesnip::entry("MIntBase", include("scanner", "zero_one", "ring"))]
 pub use mint_base::{MInt, MIntBase, MIntConvert};
 
 #[cfg_attr(nightly, codesnip::entry("MIntBase"))]
@@ -36,9 +36,37 @@ pub mod montgomery;
 )]
 mod simd_matrix;
 
+#[codesnip::entry(when("MIntBase", "fastio"))]
+impl<M> FastPrint for MInt<M>
+where
+    M: MIntBase<Inner: FastPrint>,
+{
+    #[inline]
+    fn fast_print<W: std::io::Write>(&self, writer: &mut FastOutput<W>) {
+        self.inner().fast_print(writer);
+    }
+}
+
+#[codesnip::entry(when("MIntBase", "coding"))]
+impl<M> SerdeByteStr for MInt<M>
+where
+    M: MIntBase<Inner: SerdeByteStr>,
+{
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.inner().serialize(buf)
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        Self::new_unchecked(M::Inner::deserialize(iter))
+    }
+}
+
+#[cfg_attr(nightly, codesnip::entry(when("MIntBase", "random_generator")))]
 mod random_spec {
     use super::*;
-    use crate::tools::{RandomSpec, Xorshift};
     use std::ops::{RangeFull, RangeTo};
 
     impl<M> RandomSpec<MInt<M>> for RangeFull

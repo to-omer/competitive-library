@@ -1,4 +1,4 @@
-use super::{Field, Invertible, Ring, SemiRing, SerdeByteStr};
+use super::{Field, Invertible, Ring, SemiRing};
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
@@ -937,22 +937,6 @@ where
             n >>= 1;
         }
         res
-    }
-}
-
-impl<R> SerdeByteStr for Matrix<R>
-where
-    R: SemiRing<T: SerdeByteStr>,
-{
-    fn serialize(&self, buf: &mut Vec<u8>) {
-        self.data.serialize(buf);
-    }
-
-    fn deserialize<I>(iter: &mut I) -> Self
-    where
-        I: Iterator<Item = u8>,
-    {
-        Self::from_vec(Vec::deserialize(iter))
     }
 }
 

@@ -3,7 +3,6 @@ use super::*;
 use std::{
     fmt::{self, Debug, Display},
     hash::{Hash, Hasher},
-    io::Write,
     iter::{Product, Sum},
     marker::PhantomData,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
@@ -322,15 +321,6 @@ where
         write!(f, "{}", self.inner())
     }
 }
-impl<M> FastPrint for MInt<M>
-where
-    M: MIntBase<Inner: FastPrint>,
-{
-    #[inline]
-    fn fast_print<W: Write>(&self, writer: &mut FastOutput<W>) {
-        self.inner().fast_print(writer);
-    }
-}
 impl<M> FromStr for MInt<M>
 where
     M: MIntConvert + MIntBase<Inner: FromStr>,
@@ -349,21 +339,6 @@ where
     #[inline]
     fn scan<S: ScanSource>(source: &mut S) -> Option<Self> {
         M::Inner::scan(source).map(Self::new)
-    }
-}
-impl<M> SerdeByteStr for MInt<M>
-where
-    M: MIntBase<Inner: SerdeByteStr>,
-{
-    fn serialize(&self, buf: &mut Vec<u8>) {
-        self.inner().serialize(buf)
-    }
-
-    fn deserialize<I>(iter: &mut I) -> Self
-    where
-        I: Iterator<Item = u8>,
-    {
-        Self::new_unchecked(M::Inner::deserialize(iter))
     }
 }
 macro_rules! impl_mint_ref_binop {
