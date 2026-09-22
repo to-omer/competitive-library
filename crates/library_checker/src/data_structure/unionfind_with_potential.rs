@@ -1,12 +1,12 @@
 use competitive::prelude::*;
 use competitive::{
     algebra::AdditiveOperation, data_structure::PotentializedUnionFind,
-    num::montgomery::MInt998244353,
+    num::montgomery::MInt998244353 as M,
 };
 
 competitive::define_enum_scan! {
     enum Query: u8 {
-        0 => Unite { u: usize, v: usize, x: MInt998244353 }
+        0 => Unite { u: usize, v: usize, x: M }
         1 => Diff { u: usize, v: usize }
     }
 }
@@ -15,7 +15,7 @@ competitive::define_enum_scan! {
 pub fn unionfind_with_potential(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);
-    let mut uf = PotentializedUnionFind::<AdditiveOperation<MInt998244353>>::new(n);
+    let mut uf = PotentializedUnionFind::<AdditiveOperation<M>>::new(n);
     for _ in 0..q {
         sc!(query: Query);
         match query {

@@ -22,7 +22,7 @@ pub fn grl_5_e(reader: impl Read, writer: impl Write) {
         .collect();
     let graph = UndirectedSparseGraph::from_edges(n, edges);
     let hld = graph.hld(0);
-    let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0u64, 1u64); n]);
+    let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_keys(std::iter::repeat_n(0u64, n));
 
     sc!(q);
     for _ in 0..q {

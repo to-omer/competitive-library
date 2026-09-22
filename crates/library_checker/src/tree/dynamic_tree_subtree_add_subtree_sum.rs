@@ -6,7 +6,6 @@ use competitive::{
         TopTreeAction, TopTreeSpec,
     },
 };
-use std::mem::replace;
 
 struct SubtreeSum;
 
@@ -57,7 +56,7 @@ impl LinkCutTreeSpec for SubtreeSum {
     }
 
     fn top_down(data: &mut Self::Data, children: [Option<&mut Self::Data>; 2]) {
-        let action = replace(&mut data.lazy, 0);
+        let action = std::mem::replace(&mut data.lazy, 0);
         for child in children.into_iter().flatten() {
             Self::apply(child, action);
         }
@@ -95,7 +94,7 @@ impl LinkCutTreeSpec for SubtreeSum {
     }
 
     fn transfer_path_parent(old_root: &mut Self::Data, new_root: &mut Self::Data) {
-        new_root.path_parent_lazy = replace(&mut old_root.path_parent_lazy, 0);
+        new_root.path_parent_lazy = std::mem::replace(&mut old_root.path_parent_lazy, 0);
     }
 }
 

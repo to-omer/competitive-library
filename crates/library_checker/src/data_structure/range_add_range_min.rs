@@ -11,8 +11,8 @@ competitive::define_enum_scan! {
 #[verify::library_checker("range_add_range_min")]
 pub fn range_add_range_min(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [i64; n]);
-    let mut seg = LazySegmentTree::<RangeMinRangeAdd<i64>>::from_vec(a);
+    sc!(n, q, a: [i64; iter n]);
+    let mut seg = LazySegmentTree::<RangeMinRangeAdd<i64>>::from_keys(a);
     for _ in 0..q {
         sc!(query: Query);
         match query {

@@ -1,15 +1,15 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::LinearOperation, data_structure::DequeAggregation, num::mint_basic::MInt998244353,
+    algebra::LinearOperation, data_structure::DequeAggregation, num::mint_basic::MInt998244353 as M,
 };
 
 competitive::define_enum_scan! {
     enum Query: usize {
-        0 => PushFront { ab: (MInt998244353, MInt998244353) }
-        1 => PushBack { ab: (MInt998244353, MInt998244353) }
+        0 => PushFront { ab: (M, M) }
+        1 => PushBack { ab: (M, M) }
         2 => PopFront
         3 => PopBack
-        4 => Apply { x: MInt998244353 }
+        4 => Apply { x: M }
     }
 }
 

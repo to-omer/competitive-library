@@ -3,19 +3,19 @@ use competitive::{
     algebra::{Associative, Invertible, Magma, Unital},
     data_structure::PotentializedUnionFind,
     define_monoid,
-    num::{One, Zero, montgomery::MInt998244353},
+    num::{One, Zero, montgomery::MInt998244353 as M},
 };
 
 competitive::define_enum_scan! {
     enum Query: u8 {
-        0 => Unite { u: usize, v: usize, x: [[MInt998244353; const 2]; const 2] }
+        0 => Unite { u: usize, v: usize, x: [[M; const 2]; const 2] }
         1 => Diff { u: usize, v: usize }
     }
 }
 
 define_monoid!(
     Sl2,
-    [[MInt998244353; 2]; 2],
+    [[M; 2]; 2],
     |a, b| {
         let [[a00, a01], [a10, a11]] = a;
         let [[b00, b01], [b10, b11]] = b;
@@ -24,10 +24,7 @@ define_monoid!(
             [a10 * b00 + a11 * b10, a10 * b01 + a11 * b11],
         ]
     },
-    [
-        [MInt998244353::one(), MInt998244353::zero()],
-        [MInt998244353::zero(), MInt998244353::one()]
-    ]
+    [[M::one(), M::zero()], [M::zero(), M::one()]]
 );
 
 impl Invertible for Sl2 {

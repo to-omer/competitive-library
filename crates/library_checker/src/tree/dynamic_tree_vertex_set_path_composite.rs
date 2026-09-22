@@ -1,12 +1,11 @@
 use competitive::prelude::*;
 use competitive::{
     algebra::{Associative, EmptyAct, LazyMapMonoid, LinearOperation, Magma, Unital},
-    num::mint_basic::MInt998244353,
+    num::mint_basic::MInt998244353 as M,
     tree::{PathLinkCutTree, TopTree, TopTreeSpec},
 };
 
-type MInt = MInt998244353;
-type Affine = (MInt, MInt);
+type Affine = (M, M);
 
 struct BidirectionalAffine;
 
@@ -83,7 +82,7 @@ competitive::define_enum_scan! {
     enum Query: usize {
         0 => Relink { u: usize, v: usize, w: usize, x: usize }
         1 => Set { p: usize, cd: Affine }
-        2 => Apply { u: usize, v: usize, x: MInt }
+        2 => Apply { u: usize, v: usize, x: M }
     }
 }
 

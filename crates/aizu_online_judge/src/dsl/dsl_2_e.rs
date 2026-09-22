@@ -12,7 +12,7 @@ competitive::define_enum_scan! {
 pub fn dsl_2_e(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);
-    let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0, 1); n]);
+    let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_keys(std::iter::repeat_n(0, n));
     for _ in 0..q {
         sc!(query: Query);
         match query {

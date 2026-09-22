@@ -3,22 +3,22 @@ use competitive::{
     algebra::{LinearOperation, ReverseOperation},
     data_structure::SegmentTree,
     graph::TreeGraphScanner,
-    num::mint_basic::MInt998244353,
+    num::mint_basic::MInt998244353 as M,
 };
 
 competitive::define_enum_scan! {
     enum Query: usize {
-        0 => Set { p: usize, cd: (MInt998244353, MInt998244353) }
-        1 => Apply { u: usize, v: usize, x: MInt998244353 }
+        0 => Set { p: usize, cd: (M, M) }
+        1 => Apply { u: usize, v: usize, x: M }
     }
 }
 
 #[verify::library_checker("vertex_set_path_composite")]
 pub fn vertex_set_path_composite(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, ab: [(MInt998244353, MInt998244353); n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
+    sc!(n, q, ab: [(M, M); n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
     let hld = graph.hld(0);
-    let mut nab = vec![(MInt998244353::default(), MInt998244353::default()); n];
+    let mut nab = vec![(M::default(), M::default()); n];
     for i in 0..n {
         nab[hld.index(i)] = ab[i];
     }

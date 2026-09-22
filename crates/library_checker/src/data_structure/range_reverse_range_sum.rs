@@ -14,7 +14,7 @@ competitive::define_enum_scan! {
 #[verify::library_checker("range_reverse_range_sum")]
 pub fn range_reverse_range_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [i64; n]);
+    sc!(n, q, a: [i64; iter n]);
     let mut seq = ImplicitTreap::<RangeSumRangeAdd<i64>>::with_capacity(n);
     seq.extend(a);
     for _ in 0..q {
@@ -34,7 +34,7 @@ pub fn range_reverse_range_sum(reader: impl Read, writer: impl Write) {
 #[verify::library_checker("range_reverse_range_sum")]
 pub fn range_reverse_range_sum_implicit_splay_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [i64; n]);
+    sc!(n, q, a: [i64; iter n]);
     let mut seq = ImplicitSplayTree::<RangeSumRangeAdd<i64>>::with_capacity(n);
     seq.extend(a);
     for _ in 0..q {

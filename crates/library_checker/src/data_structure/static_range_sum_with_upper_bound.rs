@@ -7,10 +7,10 @@ use competitive::{
 #[verify::library_checker("static_range_sum_with_upper_bound")]
 pub fn static_range_sum_with_upper_bound(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [u32; n]);
+    sc!(n, q, a: [u32; iter n]);
     type M = (AdditiveOperation<i64>, AdditiveOperation<i64>);
     let mut fold: RangeFoldWithUpperBound<_, M> =
-        RangeFoldWithUpperBound::new(a.into_iter().map(|a| (a, (1, i64::from(a)))));
+        RangeFoldWithUpperBound::new(a.map(|a| (a, (1, i64::from(a)))));
     for _ in 0..q {
         sc!(l, r, x: u32);
         fold.query(l..r, x);

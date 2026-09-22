@@ -2,15 +2,15 @@ use competitive::prelude::*;
 use competitive::{
     algebra::RangeSumRangeLinear,
     data_structure::{ImplicitSplayTree, ImplicitTreap},
-    num::mint_basic::MInt998244353,
+    num::mint_basic::MInt998244353 as M,
 };
 
 competitive::define_enum_scan! {
     enum Query: usize {
-        0 => Insert { i: usize, x: MInt998244353 }
+        0 => Insert { i: usize, x: M }
         1 => Remove { i: usize }
         2 => Reverse { l: usize, r: usize }
-        3 => Update { l: usize, r: usize, bc: (MInt998244353, MInt998244353) }
+        3 => Update { l: usize, r: usize, bc: (M, M) }
         4 => Fold { l: usize, r: usize }
     }
 }
@@ -18,9 +18,9 @@ competitive::define_enum_scan! {
 #[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
 pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [MInt998244353; n]);
+    sc!(n, q, a: [M; iter n]);
 
-    let mut seq = ImplicitTreap::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
+    let mut seq = ImplicitTreap::<RangeSumRangeLinear<M>>::with_capacity(n + q);
     seq.extend(a);
     for _ in 0..q {
         sc!(query: Query);
@@ -50,9 +50,9 @@ pub fn dynamic_sequence_range_affine_range_sum_implicit_splay_tree(
     writer: impl Write,
 ) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [MInt998244353; n]);
+    sc!(n, q, a: [M; iter n]);
 
-    let mut seq = ImplicitSplayTree::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
+    let mut seq = ImplicitSplayTree::<RangeSumRangeLinear<M>>::with_capacity(n + q);
     seq.extend(a);
     for _ in 0..q {
         sc!(query: Query);

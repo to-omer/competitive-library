@@ -2,24 +2,22 @@ use competitive::prelude::*;
 use competitive::{
     algebra::{Associative, Magma, Unital},
     graph::TreeGraphScanner,
-    num::{One, Zero, mint_basic::MInt998244353},
+    num::{One, Zero, mint_basic::MInt998244353 as M},
     tree::MonoidCluster,
 };
 
-type MInt = MInt998244353;
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Point {
-    sum: MInt,
-    cnt: MInt,
+    sum: M,
+    cnt: M,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Path {
-    a: MInt,
-    b: MInt,
-    sum: MInt,
-    cnt: MInt,
+    a: M,
+    b: M,
+    sum: M,
+    cnt: M,
 }
 
 struct PointMonoid;
@@ -35,8 +33,8 @@ impl Magma for PointMonoid {
 impl Unital for PointMonoid {
     fn unit() -> Self::T {
         Point {
-            sum: MInt::zero(),
-            cnt: MInt::zero(),
+            sum: M::zero(),
+            cnt: M::zero(),
         }
     }
 }
@@ -57,10 +55,10 @@ impl Magma for PathMonoid {
 impl Unital for PathMonoid {
     fn unit() -> Self::T {
         Path {
-            a: MInt::one(),
-            b: MInt::zero(),
-            sum: MInt::zero(),
-            cnt: MInt::zero(),
+            a: M::one(),
+            b: M::zero(),
+            sum: M::zero(),
+            cnt: M::zero(),
         }
     }
 }
@@ -95,15 +93,15 @@ impl Associative for PathPairMonoid {}
 struct Dp;
 
 impl MonoidCluster for Dp {
-    type Vertex = MInt;
-    type Edge = (MInt, MInt);
+    type Vertex = M;
+    type Edge = (M, M);
     type PointMonoid = PointMonoid;
     type PathMonoid = PathPairMonoid;
 
-    fn add_vertex(point: &Point, vertex: &MInt, parent_edge: Option<&(MInt, MInt)>) -> PathPair {
-        let cnt = point.cnt + MInt::one();
+    fn add_vertex(point: &Point, vertex: &M, parent_edge: Option<&(M, M)>) -> PathPair {
+        let cnt = point.cnt + M::one();
         let subtotal = point.sum + *vertex;
-        let (a, b) = parent_edge.copied().unwrap_or((MInt::one(), MInt::zero()));
+        let (a, b) = parent_edge.copied().unwrap_or((M::one(), M::zero()));
         PathPair {
             forward: Path {
                 a,
@@ -130,8 +128,8 @@ impl MonoidCluster for Dp {
 
 competitive::define_enum_scan! {
     enum Query: usize {
-        0 => SetVertex { v: usize, x: MInt, r: usize }
-        1 => SetEdge { e: usize, a: MInt, b: MInt, r: usize }
+        0 => SetVertex { v: usize, x: M, r: usize }
+        1 => SetEdge { e: usize, a: M, b: M, r: usize }
     }
 }
 
@@ -140,8 +138,8 @@ pub fn point_set_tree_path_composite_sum(reader: impl Read, writer: impl Write) 
     prepare_io!(reader, writer);
     sc!(n,
         q,
-        value: [MInt; n],
-        (graph, edges): @TreeGraphScanner::<usize, (MInt, MInt)>::new(n));
+        value: [M; n],
+        (graph, edges): @TreeGraphScanner::<usize, (M, M)>::new(n));
 
     let top_tree = graph.static_top_tree(0);
     let mut dp = top_tree.dp::<Dp>(value, edges);

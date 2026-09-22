@@ -1,11 +1,12 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::RangeSumRangeLinear, data_structure::LazySegmentTree, num::mint_basic::MInt998244353,
+    algebra::RangeSumRangeLinear, data_structure::LazySegmentTree,
+    num::mint_basic::MInt998244353 as M,
 };
 
 competitive::define_enum_scan! {
     enum Query: usize {
-        0 => Update { l: usize, r: usize, bc: (MInt998244353, MInt998244353) }
+        0 => Update { l: usize, r: usize, bc: (M, M) }
         1 => Get { i: usize }
     }
 }
@@ -13,8 +14,8 @@ competitive::define_enum_scan! {
 #[verify::library_checker("range_affine_point_get")]
 pub fn range_affine_point_get(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [MInt998244353; n]);
-    let mut seg = LazySegmentTree::<RangeSumRangeLinear<_>>::from_keys(a.into_iter());
+    sc!(n, q, a: [M; iter n]);
+    let mut seg = LazySegmentTree::<RangeSumRangeLinear<_>>::from_keys(a);
     for _ in 0..q {
         sc!(query: Query);
         match query {

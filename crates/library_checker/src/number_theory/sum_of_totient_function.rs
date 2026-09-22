@@ -1,11 +1,9 @@
 use competitive::{
     algebra::{AddMulOperation, AdditiveOperation, ArrayOperation},
     math::QuotientArray,
-    num::mint_basic::MInt998244353,
+    num::mint_basic::MInt998244353 as M,
 };
 use competitive::{num::One, prelude::*};
-
-type M = MInt998244353;
 
 #[verify::library_checker("sum_of_totient_function")]
 pub fn sum_of_totient_function(reader: impl Read, writer: impl Write) {
