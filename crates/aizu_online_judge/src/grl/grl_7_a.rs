@@ -4,7 +4,7 @@ use competitive::prelude::*;
 #[verify::aizu_online_judge("GRL_7_A")]
 pub fn grl_7_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(xs, ys, es, edges: [(usize, usize)]);
+    sc!(xs, ys, es, edges: [(usize, usize); iter es]);
     let mut builder = DinicBuilder::new(xs + ys + 2, xs + ys + es);
     let s = xs + ys;
     let t = s + 1;
@@ -14,7 +14,7 @@ pub fn grl_7_a(reader: impl Read, writer: impl Write) {
     for y in 0..ys {
         builder.add_edge(y + xs, t, 1);
     }
-    for (x, y) in edges.take(es) {
+    for (x, y) in edges {
         builder.add_edge(x, y + xs, 1);
     }
     let graph = builder.gen_graph();

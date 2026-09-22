@@ -3,9 +3,9 @@ use competitive::prelude::*;
 #[verify::aizu_online_judge("DSL_5_A")]
 pub fn dsl_5_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, t, lr: [(usize, usize)]);
+    sc!(n, t, lr: [(usize, usize); iter n]);
     let mut acc = vec![0; t + 1];
-    for (l, r) in lr.take(n) {
+    for (l, r) in lr {
         acc[l] += 1;
         acc[r] -= 1;
     }

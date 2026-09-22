@@ -5,7 +5,7 @@ use competitive::prelude::*;
 pub fn factorize(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(q);
-    for a in sv!([u64]).take(q) {
+    for a in sv!([u64; iter q]) {
         let x = prime_factors_flatten(a);
         pp!(x.len(), @it x);
     }

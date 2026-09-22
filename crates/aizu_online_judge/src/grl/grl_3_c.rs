@@ -7,7 +7,7 @@ pub fn grl_3_c(reader: impl Read, writer: impl Write) {
     sc!(vs, es, (graph, _): @DirectedGraphScanner::<usize, ()>::new(vs, es));
     let scc = StronglyConnectedComponent::new(&graph);
     sc!(q);
-    for (u, v) in sv!([(usize, usize)]).take(q) {
+    for (u, v) in sv!([(usize, usize); iter q]) {
         pp!((scc[u] == scc[v]) as u32);
     }
 }

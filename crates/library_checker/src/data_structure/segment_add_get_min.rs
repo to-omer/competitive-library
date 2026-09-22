@@ -13,7 +13,7 @@ pub fn segment_add_get_min(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);
     let mut tree = OfflineLiChaoTree::new();
-    for (l, r, a, b) in sv!([(i32, i32, i32, i64)]).take(n) {
+    for (l, r, a, b) in sv!([(i32, i32, i32, i64); iter n]) {
         tree.add_segment(l..r, (a, b));
     }
     for _ in 0..q {

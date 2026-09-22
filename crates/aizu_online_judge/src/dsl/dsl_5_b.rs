@@ -3,9 +3,9 @@ use competitive::prelude::*;
 #[verify::aizu_online_judge("DSL_5_B")]
 pub fn dsl_5_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, xyxy: [(usize, usize, usize, usize)]);
+    sc!(n, xyxy: [(usize, usize, usize, usize); iter n]);
     let mut acc = vec![vec![0; 1001]; 1001];
-    for (x1, y1, x2, y2) in xyxy.take(n) {
+    for (x1, y1, x2, y2) in xyxy {
         acc[x1][y1] += 1;
         acc[x2][y1] -= 1;
         acc[x1][y2] -= 1;

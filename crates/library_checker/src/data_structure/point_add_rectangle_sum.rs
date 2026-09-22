@@ -16,15 +16,13 @@ competitive::define_enum_scan! {
 #[verify::library_checker("point_add_rectangle_sum")]
 pub fn point_add_rectangle_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, xyw: [(u32, u32, u64); n], queries: [Query; q]);
-    let points: Vec<_> = xyw
-        .iter()
-        .map(|&(x, y, w)| (x, y, w as i64))
-        .chain(queries.iter().filter_map(|&query| match query {
-            Query::Add { x, y, .. } => Some((x, y, 0)),
-            Query::Sum { .. } => None,
-        }))
-        .collect();
+    sc!(n, q, xyw: [(u32, u32, u64); iter n]);
+    let mut points: Vec<_> = xyw.map(|(x, y, w)| (x, y, w as i64)).collect();
+    sc!(queries: [Query; q]);
+    points.extend(queries.iter().filter_map(|&query| match query {
+        Query::Add { x, y, .. } => Some((x, y, 0)),
+        Query::Sum { .. } => None,
+    }));
     let mut order: Vec<_> = (0..points.len()).collect();
     order.radix_sort_by_key(|&i| points[i].0);
     let mut positions = vec![0; points.len()];

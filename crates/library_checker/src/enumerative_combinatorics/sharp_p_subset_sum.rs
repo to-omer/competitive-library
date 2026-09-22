@@ -7,7 +7,7 @@ use competitive::{
 #[verify::library_checker("sharp_p_subset_sum")]
 pub fn sharp_p_subset_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, t, s: [usize; n]);
+    sc!(n, t, s: [usize; iter n]);
     let f = MemorizedFactorial::new(t);
     let mut c = vec![M::zero(); t + 1];
     for s in s {

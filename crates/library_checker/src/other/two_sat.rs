@@ -8,9 +8,9 @@ pub fn two_sat(reader: impl Read, writer: impl Write) {
         _cnf: String,
         n,
         m,
-        ab: [(isize, isize, isize)]);
+        ab: [(isize, isize, isize); iter m]);
     let mut two_sat = TwoSatisfiability::new(n);
-    for (a, b, _) in ab.take(m) {
+    for (a, b, _) in ab {
         two_sat.add_clause(a.unsigned_abs() - 1, a >= 0, b.unsigned_abs() - 1, b >= 0);
     }
     if let Some(v) = two_sat.two_satisfiability() {

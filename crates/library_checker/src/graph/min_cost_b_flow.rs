@@ -4,11 +4,12 @@ use competitive::prelude::*;
 #[verify::library_checker("min_cost_b_flow")]
 pub fn min_cost_b_flow(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, m, b: [i64; n], edges: [(usize, usize, i64, i64, i128); m]);
+    sc!(n, m, b: [i64; iter n]);
     let mut ns = NetworkSimplex::<i64, i128>::new(n);
-    for (i, b) in b.into_iter().enumerate() {
+    for (i, b) in b.enumerate() {
         ns.add_demand_supply(i, b);
     }
+    sc!(edges: [(usize, usize, i64, i64, i128); iter m]);
     for (s, t, l, u, c) in edges {
         ns.add_edge(s, t, l, u, c);
     }

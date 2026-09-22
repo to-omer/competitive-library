@@ -5,7 +5,7 @@ use competitive::tools::{FastInput, FastOutput};
 pub fn many_aplusb(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(t);
-    for (a, b) in sv!([(usize, usize)]).take(t) {
+    for (a, b) in sv!([(usize, usize); iter t]) {
         pp!(a + b);
     }
 }

@@ -4,10 +4,10 @@ use competitive::{algebra::MinOperation, data_structure::QueueAggregation};
 #[verify::aizu_online_judge("DSL_3_D")]
 pub fn dsl_3_d(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, l, a: [u64]);
+    sc!(n, l, a: [u64; iter n]);
     let mut que = QueueAggregation::<MinOperation<_>>::new();
     let mut ans = Vec::with_capacity(n - l + 1);
-    for a in a.take(n) {
+    for a in a {
         que.push(a);
         if que.len() == l {
             ans.push(que.fold_all());

@@ -3,8 +3,8 @@ use competitive::prelude::*;
 #[verify::aizu_online_judge("DSL_3_C")]
 pub fn dsl_3_c(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [u64; n], x: [u64]);
-    for x in x.take(q) {
+    sc!(n, q, a: [u64; n], x: [u64; iter q]);
+    for x in x {
         let mut ans = 0;
         let mut sum = 0;
         let mut l = 0;

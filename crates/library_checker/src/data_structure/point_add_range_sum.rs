@@ -14,9 +14,9 @@ competitive::define_enum_scan! {
 #[verify::library_checker("point_add_range_sum")]
 pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, a: [i64]);
+    sc!(n, q, a: [i64; iter n]);
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(n);
-    for (i, a) in a.take(n).enumerate() {
+    for (i, a) in a.enumerate() {
         bit.update(i, a);
     }
     for _ in 0..q {

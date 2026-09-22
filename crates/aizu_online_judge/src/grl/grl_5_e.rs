@@ -14,9 +14,8 @@ competitive::define_enum_scan! {
 #[verify::aizu_online_judge("GRL_5_E")]
 pub fn grl_5_e(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, c: [SizedCollect<usize>]);
+    sc!(n, c: [SizedCollect<usize>; iter n]);
     let edges = c
-        .take(n)
         .enumerate()
         .flat_map(|(u, it)| it.into_iter().map(move |v| (u, v)))
         .collect();

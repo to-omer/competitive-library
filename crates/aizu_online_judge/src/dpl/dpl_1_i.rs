@@ -4,9 +4,9 @@ use competitive::prelude::*;
 #[verify::aizu_online_judge("DPL_1_I")]
 pub fn dpl_1_i(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, w: i64, vwm: [(i64, i64, i64)]);
+    sc!(n, w: i64, vwm: [(i64, i64, i64); iter n]);
     let mut item = vec![];
-    for (v, w, mut m) in vwm.take(n) {
+    for (v, w, mut m) in vwm {
         let mut b = 1;
         while m > 0 {
             let k = b.min(m);

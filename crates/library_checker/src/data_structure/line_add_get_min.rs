@@ -13,7 +13,7 @@ pub fn line_add_get_min(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);
     let mut tree = OfflineLiChaoTree::new();
-    for (a, b) in sv!([(i32, i64)]).take(n) {
+    for (a, b) in sv!([(i32, i64); iter n]) {
         tree.add_line((a, b));
     }
     for _ in 0..q {

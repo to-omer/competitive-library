@@ -38,11 +38,11 @@ pub fn jump_on_tree_level_ancestor(reader: impl Read, writer: impl Write) {
 #[verify::library_checker("jump_on_tree")]
 pub fn jump_on_tree_level_ancestor_batch(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, q, (g, _): @TreeGraphScanner::<usize>::new(n), queries: [(usize, usize, usize)]);
+    sc!(n, q, (g, _): @TreeGraphScanner::<usize>::new(n), queries: [(usize, usize, usize); iter q]);
     let lca = g.lca(0);
     let results = g.level_ancestor_batch(
         0,
-        queries.take(q).map(|(s, t, i)| {
+        queries.map(|(s, t, i)| {
             let l = lca.lca(s, t);
             let dl = lca.depth(l);
             let ds = lca.depth(s) - dl;
