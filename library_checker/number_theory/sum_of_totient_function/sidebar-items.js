@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["sum_of_totient_function","test_sum_of_totient_function"],"type":["M"]};
+window.SIDEBAR_ITEMS = {"fn":["sum_of_totient_function","test_sum_of_totient_function"]};
