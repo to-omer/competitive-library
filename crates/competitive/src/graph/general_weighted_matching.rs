@@ -167,6 +167,7 @@ impl BlossomMatching {
         }
     }
 
+    #[inline]
     fn slack(&self, k: usize) -> i64 {
         let i = self.endpoint[2 * k];
         let j = self.endpoint[2 * k + 1];
@@ -561,7 +562,7 @@ impl BlossomMatching {
                         }
                         let mut kslack = 0i64;
                         if !self.allowedge[k] {
-                            kslack = self.slack(k);
+                            kslack = self.dualvar[v] + self.dualvar[w] - 2 * self.weight[k];
                             if kslack <= 0 {
                                 self.allowedge[k] = true;
                             }

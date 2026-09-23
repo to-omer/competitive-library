@@ -45,7 +45,10 @@ pub use self::shortest_path::{ShortestPathExt, ShortestPathSemiRing};
 #[codesnip::entry("SparseGraph")]
 pub use self::sparse_graph::*;
 #[codesnip::entry("steiner_tree")]
-pub use self::steiner_tree::{SteinerTreeExt, SteinerTreeOutput};
+pub use self::steiner_tree::{
+    SteinerTreeBuilder, SteinerTreeExt, SteinerTreeOutput, SteinerTreeParent,
+    SteinerTreeParentPolicy,
+};
 #[codesnip::entry("StronglyConnectedComponent")]
 pub use self::strongly_connected_component::StronglyConnectedComponent;
 #[codesnip::entry("topological_sort")]
@@ -124,7 +127,7 @@ pub mod shortest_path;
 mod sparse_graph;
 #[cfg_attr(
     nightly,
-    codesnip::entry("steiner_tree", include("shortest_path", "BitDp"))
+    codesnip::entry("steiner_tree", include("shortest_path", "BitDp", "UnionFind"))
 )]
 mod steiner_tree;
 #[cfg_attr(

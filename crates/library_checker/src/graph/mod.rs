@@ -1,10 +1,15 @@
 pub mod assignment;
 pub mod bipartitematching;
 pub mod chromatic_number;
+pub mod counting_eulerian_circuits;
+pub mod counting_spanning_tree_directed;
+pub mod counting_spanning_tree_undirected;
 pub mod directedmst;
 pub mod general_matching;
 pub mod general_weighted_matching;
 pub mod min_cost_b_flow;
 pub mod minimum_spanning_tree;
+pub mod minimum_steiner_tree;
 pub mod scc;
 pub mod shortest_path;
+pub mod two_edge_connected_components;

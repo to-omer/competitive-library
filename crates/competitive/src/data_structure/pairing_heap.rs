@@ -181,22 +181,25 @@ where
     }
 
     fn merge_pairs(&mut self, mut head: Option<Box<Node<T, A>>>) -> Option<Box<Node<T, A>>> {
-        let mut pairs: Vec<Box<Node<T, A>>> = Vec::new();
+        let mut pairs = None;
         while let Some(mut first) = head {
             first.propagate();
             let next = first.next_sibling.take();
-            if let Some(mut second) = next {
+            let mut pair = if let Some(mut second) = next {
                 second.propagate();
                 head = second.next_sibling.take();
-                pairs.push(self.merge_option(Some(first), Some(second)).unwrap());
+                self.merge_option(Some(first), Some(second)).unwrap()
             } else {
-                pairs.push(first);
-                break;
-            }
+                head = None;
+                first
+            };
+            pair.next_sibling = pairs;
+            pairs = Some(pair);
         }
 
         let mut result = None;
-        while let Some(node) = pairs.pop() {
+        while let Some(mut node) = pairs {
+            pairs = node.next_sibling.take();
             result = self.merge_option(Some(node), result);
         }
         result
