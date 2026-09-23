@@ -1,8 +1,5 @@
+use competitive::graph::{SteinerTreeExt, UndirectedGraphScanner};
 use competitive::prelude::*;
-use competitive::{
-    algebra::AdditiveOperation,
-    graph::{SteinerTreeExt, UndirectedGraphScanner, shortest_path::StandardSp},
-};
 
 #[verify::library_checker("minimum_steiner_tree")]
 pub fn minimum_steiner_tree(reader: impl Read, writer: impl Write) {
@@ -10,7 +7,8 @@ pub fn minimum_steiner_tree(reader: impl Read, writer: impl Write) {
     sc!(n, m, (graph, weights): @UndirectedGraphScanner::<usize, u64>::new(n, m));
     sc!(k, terminals: [usize; k]);
     let tree = graph
-        .steiner_tree::<StandardSp<AdditiveOperation<_>>>()
+        .steiner_tree()
+        .with_standard_sp_additive()
         .with_parent()
         .solve(terminals[1..].iter().copied(), |eid| weights[eid]);
     let edges = tree.edges_from_source(terminals[0]).unwrap();

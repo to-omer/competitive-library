@@ -1,8 +1,11 @@
 use super::{
-    BitDpExt, Graph, PartialIgnoredOrd, ShortestPathSemiRing, UnionFind, VertexMap,
-    shortest_path::{NoParent, RecordParent},
+    AdditiveOperation, BitDpExt, Bounded, Graph, Monoid, PartialIgnoredOrd, ShortestPathSemiRing,
+    UnionFind, VertexMap, Zero,
+    shortest_path::{NoParent, OptionSp, RecordParent, StandardSp},
 };
-use std::{cmp::Reverse, collections::BinaryHeap, iter::repeat_with, marker::PhantomData};
+use std::{
+    cmp::Reverse, collections::BinaryHeap, iter::repeat_with, marker::PhantomData, ops::Add,
+};
 
 pub enum SteinerTreeParent<V, L> {
     None,
@@ -62,10 +65,9 @@ where
 }
 
 pub trait SteinerTreeExt: Graph {
-    fn steiner_tree<S>(&self) -> SteinerTreeBuilder<'_, Self, S>
+    fn steiner_tree(&self) -> SteinerTreeBuilder<'_, Self>
     where
         Self: Sized,
-        S: ShortestPathSemiRing,
     {
         SteinerTreeBuilder {
             graph: self,
@@ -75,20 +77,66 @@ pub trait SteinerTreeExt: Graph {
 }
 impl<G> SteinerTreeExt for G where G: Graph + ?Sized {}
 
-pub struct SteinerTreeBuilder<'g, G, S, P = NoParent>
+pub struct SteinerTreeBuilder<'g, G, S = (), P = NoParent>
 where
     G: Graph,
-    S: ShortestPathSemiRing,
     P: SteinerTreeParentPolicy<G>,
 {
     graph: &'g G,
     _marker: PhantomData<fn() -> (S, P)>,
 }
 
+impl<'g, G, S, P> SteinerTreeBuilder<'g, G, S, P>
+where
+    G: Graph,
+    P: SteinerTreeParentPolicy<G>,
+{
+    pub fn with_sp<T>(self) -> SteinerTreeBuilder<'g, G, T, P>
+    where
+        T: ShortestPathSemiRing,
+    {
+        SteinerTreeBuilder {
+            graph: self.graph,
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn with_standard_sp<M>(self) -> SteinerTreeBuilder<'g, G, StandardSp<M>, P>
+    where
+        M: Monoid<T: Bounded + Ord>,
+    {
+        self.with_sp()
+    }
+
+    pub fn with_standard_sp_additive<T>(
+        self,
+    ) -> SteinerTreeBuilder<'g, G, StandardSp<AdditiveOperation<T>>, P>
+    where
+        T: Clone + Zero + Add<Output = T> + Bounded + Ord,
+    {
+        self.with_sp()
+    }
+
+    pub fn with_option_sp<M>(self) -> SteinerTreeBuilder<'g, G, OptionSp<M>, P>
+    where
+        M: Monoid<T: Ord>,
+    {
+        self.with_sp()
+    }
+
+    pub fn with_option_sp_additive<T>(
+        self,
+    ) -> SteinerTreeBuilder<'g, G, OptionSp<AdditiveOperation<T>>, P>
+    where
+        T: Clone + Zero + Add<Output = T> + Ord,
+    {
+        self.with_sp()
+    }
+}
+
 impl<'g, G, S> SteinerTreeBuilder<'g, G, S>
 where
     G: Graph,
-    S: ShortestPathSemiRing,
 {
     pub fn with_parent(self) -> SteinerTreeBuilder<'g, G, S, RecordParent>
     where
@@ -239,14 +287,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        algebra::AdditiveOperation,
-        graph::{
-            UndirectedSparseGraph,
-            shortest_path::{OptionSp, StandardSp},
-        },
-        tools::Xorshift,
-    };
+    use crate::{algebra::AdditiveOperation, graph::UndirectedSparseGraph, tools::Xorshift};
 
     #[test]
     fn test_steiner_tree() {
@@ -256,15 +297,18 @@ mod tests {
                 edges.iter().map(|&(u, v, _)| (u, v)).collect(),
             );
             let plain = graph
-                .steiner_tree::<StandardSp<AdditiveOperation<u64>>>()
+                .steiner_tree()
+                .with_standard_sp::<AdditiveOperation<_>>()
                 .solve(terminals.iter().copied(), |eid| edges[eid].2);
             let recorded = graph
-                .steiner_tree::<StandardSp<AdditiveOperation<u64>>>()
+                .steiner_tree()
+                .with_standard_sp_additive()
                 .with_parent()
                 .solve(terminals.iter().copied(), |eid| edges[eid].2);
             let optional = graph
-                .steiner_tree::<OptionSp<AdditiveOperation<u64>>>()
+                .steiner_tree()
                 .with_parent()
+                .with_option_sp::<AdditiveOperation<_>>()
                 .solve(terminals.iter().copied(), |eid| Some(edges[eid].2));
             for source in 0..n {
                 let mut expected = None;
