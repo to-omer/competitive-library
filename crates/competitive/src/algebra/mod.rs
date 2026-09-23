@@ -30,6 +30,7 @@ mod action;
             "AdditiveOperation",
             "MaxOperation",
             "MinOperation",
+            "CountingOperation",
             "bounded"
         )
     )

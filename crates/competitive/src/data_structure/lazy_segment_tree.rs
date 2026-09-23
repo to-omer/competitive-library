@@ -237,8 +237,8 @@ where
     pub fn get(&mut self, k: usize) -> M::Agg {
         self.fold(k..k + 1)
     }
-    pub fn fold_all(&mut self) -> M::Agg {
-        self.fold(0..self.len)
+    pub fn fold_all(&self) -> M::Agg {
+        self.seg[1].clone()
     }
     pub fn partition_point_acc<P>(&mut self, left: usize, mut pred: P) -> usize
     where

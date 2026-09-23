@@ -272,6 +272,31 @@ where
     }
 }
 
+pub struct RangeMinCountRangeAdd<T> {
+    _marker: PhantomData<fn() -> T>,
+}
+impl<T> LazyMapMonoid for RangeMinCountRangeAdd<T>
+where
+    T: Clone + Ord + Bounded + Zero + Add<Output = T>,
+{
+    type Key = T;
+    type Agg = (T, usize);
+    type Act = T;
+    type AggMonoid = CountingOperation<MinOperation<T>>;
+    type ActMonoid = AdditiveOperation<T>;
+    type KeyAct = FlattenAct<Self::ActMonoid>;
+    fn single_agg(key: &Self::Key) -> Self::Agg {
+        (key.clone(), 1)
+    }
+    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+        Some(if x.1 == 0 {
+            x.clone()
+        } else {
+            (x.0.clone() + a.clone(), x.1)
+        })
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RangeChminChmaxAdd<T> {
     lb: T,

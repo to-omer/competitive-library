@@ -40,7 +40,10 @@ impl ScanSource for FastInput {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::{Bytes, Chars, Scan, Scanner, SizedCollect, Usize1, Xorshift};
+    use crate::tools::testutil::{integer_boundary_values, sample_usize};
+    use crate::tools::{
+        BufferedInput, Bytes, Chars, Scan, Scanner, SizedCollect, Usize1, Xorshift,
+    };
     use std::array;
 
     #[test]
@@ -48,7 +51,7 @@ mod tests {
         let mut rng = Xorshift::default();
         macro_rules! check {
             ($($ty:ty),* $(,)?) => {$(
-                let mut values = vec![0, <$ty>::MIN, <$ty>::MAX];
+                let mut values = integer_boundary_values!($ty);
                 values.extend((0..=255).map(|x| x as $ty));
                 values.extend((0..512).map(|_| ((rng.rand64() as u128) << 64 | rng.rand64() as u128) as $ty));
                 let width = <$ty>::MAX.to_string().len();
@@ -61,6 +64,11 @@ mod tests {
                 for sep in [" ", "\n", "\t", "\x0c"] {
                     let input = format!("{}                 ", tokens.join(sep));
                     let mut scanner = unsafe { FastInput::from_slice(input.as_bytes()) };
+                    for &value in &values {
+                        assert_eq!(<$ty as Scan>::scan(&mut scanner), Some(value));
+                        assert_eq!(<$ty as Scan>::scan(&mut scanner), Some(value));
+                    }
+                    let mut scanner = unsafe { BufferedInput::new(input.as_bytes()) };
                     for &value in &values {
                         assert_eq!(<$ty as Scan>::scan(&mut scanner), Some(value));
                         assert_eq!(<$ty as Scan>::scan(&mut scanner), Some(value));
@@ -125,6 +133,7 @@ mod tests {
             }
             check!(unsafe { FastInput::from_slice(input.as_bytes()) });
             check!(Scanner::new(&input));
+            check!(unsafe { BufferedInput::new(input.as_bytes()) });
         }
     }
 
@@ -174,6 +183,100 @@ mod tests {
                 assert_eq!(b.as_ptr(), expected.as_ptr());
             }
         }
+
+        struct ChunkedRead<'a> {
+            input: &'a [u8],
+            width: usize,
+            until_error: Option<usize>,
+            interrupted: bool,
+        }
+        impl std::io::Read for ChunkedRead<'_> {
+            fn read(&mut self, output: &mut [u8]) -> std::io::Result<usize> {
+                self.interrupted = !self.interrupted;
+                if self.interrupted {
+                    return Err(std::io::ErrorKind::Interrupted.into());
+                }
+                if self.until_error == Some(0) {
+                    self.until_error = None;
+                    return Err(std::io::ErrorKind::Other.into());
+                }
+                let n = output
+                    .len()
+                    .min(self.width)
+                    .min(self.until_error.unwrap_or(usize::MAX));
+                let n = self.input.read(&mut output[..n])?;
+                if let Some(until_error) = &mut self.until_error {
+                    *until_error -= n;
+                }
+                Ok(n)
+            }
+        }
+        let lengths = sample_usize(&mut rng, 8, 0..=1 << 17, 32)
+            .into_iter()
+            .chain((1 << 16) - 64..=(1 << 16) + 64)
+            .chain([1 << 19, (1 << 19) + 1]);
+        for len in lengths {
+            let mut token = String::new();
+            while token.len() < len {
+                let ch = ['a', 'é', 'あ', '😀'][rng.random(0usize..4)];
+                token.push(if token.len() + ch.len_utf8() <= len {
+                    ch
+                } else {
+                    'a'
+                });
+            }
+            for whitespace in [false, true] {
+                let mut input = if whitespace {
+                    " ".repeat(len)
+                } else {
+                    token.clone()
+                };
+                if !whitespace && len != 0 {
+                    for _ in 0..rng.random(0..=32) {
+                        input.push([' ', '\n', '\t', '\r', '\x0c'][rng.random(0usize..5)]);
+                        let value: u128 = rng.random(..);
+                        input.push_str(&value.to_string());
+                    }
+                }
+                for width in sample_usize(&mut rng, 8, 1..=1 << 16, 16) {
+                    let until_error = if width == 1 << 16 && len >= 1 << 16 && !whitespace {
+                        Some(if len >= 1 << 19 { 1 << 19 } else { 1 << 16 })
+                    } else if rng.rand(4) == 0 {
+                        Some(rng.random(0..=input.len()))
+                    } else {
+                        None
+                    };
+                    let mut scanner = unsafe {
+                        BufferedInput::new(ChunkedRead {
+                            input: input.as_bytes(),
+                            width,
+                            until_error,
+                            interrupted: false,
+                        })
+                    };
+                    let mut failed = false;
+                    for expected in input.split_ascii_whitespace().map(Some).chain([None, None]) {
+                        let actual = loop {
+                            let result =
+                                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                    scanner.skip_whitespace();
+                                    scanner.next_token().map(str::to_owned)
+                                }));
+                            match result {
+                                Ok(token) => break token,
+                                Err(_) => {
+                                    assert!(until_error.is_some() && !failed);
+                                    failed = true;
+                                }
+                            }
+                        };
+                        assert_eq!(actual.as_deref(), expected);
+                    }
+                    assert_eq!(failed, until_error.is_some());
+                    assert_eq!(scanner.read_u32(), None);
+                }
+            }
+        }
     }
 
     #[test]
@@ -194,17 +297,23 @@ mod tests {
                 writeln!(expected, "{a} {b}").unwrap();
             }
             input.push_str("\nEND");
-            let mut output = Vec::new();
-            {
-                crate::prepare_io!(input.as_bytes(), &mut output);
-                sc!(len: usize);
-                for (a, b) in sv!([(u64, i64); iter len]) {
-                    pp!(@tup (a, b));
-                }
-                sc!(end: &str);
-                assert_eq!(end, "END");
+            macro_rules! check {
+                ($($mode:ident;)?) => {{
+                    let mut output = Vec::new();
+                    {
+                        crate::prepare_io!($($mode;)? input.as_bytes(), &mut output);
+                        sc!(len: usize);
+                        for (a, b) in sv!([(u64, i64); iter len]) {
+                            pp!(@tup (a, b));
+                        }
+                        sc!(end: &str);
+                        assert_eq!(end, "END");
+                    }
+                    assert_eq!(output, expected);
+                }};
             }
-            assert_eq!(output, expected);
+            check!();
+            check!(buffered;);
         }
     }
 

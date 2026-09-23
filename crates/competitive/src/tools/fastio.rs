@@ -1,3 +1,4 @@
+use super::ScanSource;
 use std::{
     fmt,
     fs::File,
@@ -32,11 +33,6 @@ unsafe extern "C" {
 /// Reads consume exactly one trailing ASCII whitespace byte. `parse` and
 /// `ScanSource` require UTF-8. Slices returned by `bytes` must not outlive the input
 /// allocation. `bytes` and `parse` may also read an empty field at a delimiter.
-///
-/// Empty collection scans skip pending whitespace when their length is specified.
-///
-/// On x86-64, enabling `ssse3` at compile time selects SIMD for `u64` tokens;
-/// `avx2` or `avx512bw` also accelerates byte fields.
 pub struct FastInput {
     ptr: *const u8,
     end: *const u8,
@@ -192,35 +188,40 @@ impl FastInput {
     }
 
     #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
+    const SHUFFLE: [[u8; 16]; 16] = const {
+        let mut table = [[128; 16]; 16];
+        let mut n = 1;
+        while n < 16 {
+            let mut i = 16 - n;
+            while i < 16 {
+                table[n][i] = (i + n - 16) as u8;
+                i += 1;
+            }
+            n += 1;
+        }
+        table
+    };
+
+    #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
+    #[inline]
+    unsafe fn parse_ud16(digits: std::arch::x86_64::__m128i) -> u64 {
+        use std::arch::x86_64::*;
+        unsafe {
+            let pairs = _mm_maddubs_epi16(digits, _mm_set1_epi16(0x010a));
+            let quads = _mm_madd_epi16(pairs, _mm_set1_epi32(0x00010064));
+            let octets = _mm_add_epi64(
+                _mm_mul_epu32(quads, _mm_set1_epi64x(10000)),
+                _mm_srli_epi64::<32>(quads),
+            );
+            (_mm_cvtsi128_si64(octets) as u64) * 100000000
+                + (_mm_cvtsi128_si64(_mm_srli_si128::<8>(octets)) as u64)
+        }
+    }
+
+    #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
     #[inline]
     unsafe fn u64_simd<const MAX_DIGITS: usize>(&mut self) -> u64 {
         use std::arch::x86_64::*;
-        #[inline]
-        unsafe fn parse16(digits: __m128i) -> u64 {
-            unsafe {
-                let pairs = _mm_maddubs_epi16(digits, _mm_set1_epi16(0x010a));
-                let quads = _mm_madd_epi16(pairs, _mm_set1_epi32(0x00010064));
-                let octets = _mm_add_epi64(
-                    _mm_mul_epu32(quads, _mm_set1_epi64x(10000)),
-                    _mm_srli_epi64::<32>(quads),
-                );
-                (_mm_cvtsi128_si64(octets) as u64) * 100000000
-                    + (_mm_cvtsi128_si64(_mm_srli_si128::<8>(octets)) as u64)
-            }
-        }
-        const SHUFFLE: [[u8; 16]; 16] = const {
-            let mut table = [[128; 16]; 16];
-            let mut n = 1;
-            while n < 16 {
-                let mut i = 16 - n;
-                while i < 16 {
-                    table[n][i] = (i + n - 16) as u8;
-                    i += 1;
-                }
-                n += 1;
-            }
-            table
-        };
         unsafe {
             let mut digits =
                 _mm_sub_epi8(_mm_loadu_si128(self.ptr.cast()), _mm_set1_epi8(b'0' as i8));
@@ -229,13 +230,13 @@ impl FastInput {
                 let len = mask.trailing_zeros();
                 digits = _mm_shuffle_epi8(
                     digits,
-                    _mm_loadu_si128(SHUFFLE[len as usize].as_ptr().cast()),
+                    _mm_loadu_si128(Self::SHUFFLE[len as usize].as_ptr().cast()),
                 );
                 self.ptr = self.ptr.add(len as usize + 1);
-                return parse16(digits);
+                return Self::parse_ud16(digits);
             }
             self.ptr = self.ptr.add(16);
-            let mut res = parse16(digits);
+            let mut res = Self::parse_ud16(digits);
             let mut rem = ptr::read_unaligned(self.ptr.cast::<u32>()) ^ 0x30303030;
             if (rem & 0xf0f0f0) == 0 {
                 if MAX_DIGITS == 19 {
@@ -351,6 +352,59 @@ impl FastInput {
         }
     }
 
+    #[cfg(all(target_arch = "x86_64", target_feature = "ssse3"))]
+    #[inline]
+    pub unsafe fn u128(&mut self) -> u128 {
+        use std::arch::x86_64::*;
+        const POW10: [u64; 16] = const {
+            let mut powers = [1; 16];
+            let mut i = 1;
+            while i < 16 {
+                powers[i] = powers[i - 1] * 10;
+                i += 1;
+            }
+            powers
+        };
+        unsafe {
+            let first = _mm_sub_epi8(_mm_loadu_si128(self.ptr.cast()), _mm_set1_epi8(b'0' as i8));
+            let mask = _mm_movemask_epi8(first) as u32;
+            if mask != 0 {
+                let len = mask.trailing_zeros() as usize;
+                self.ptr = self.ptr.add(len + 1);
+                return Self::parse_ud16(_mm_shuffle_epi8(
+                    first,
+                    _mm_loadu_si128(Self::SHUFFLE[len].as_ptr().cast()),
+                )) as u128;
+            }
+            let second = _mm_sub_epi8(
+                _mm_loadu_si128(self.ptr.add(16).cast()),
+                _mm_set1_epi8(b'0' as i8),
+            );
+            let mask = _mm_movemask_epi8(second) as u32;
+            if mask != 0 {
+                let len = mask.trailing_zeros() as usize;
+                self.ptr = self.ptr.add(17 + len);
+                return Self::parse_ud16(first) as u128 * POW10[len] as u128
+                    + Self::parse_ud16(_mm_shuffle_epi8(
+                        second,
+                        _mm_loadu_si128(Self::SHUFFLE[len].as_ptr().cast()),
+                    )) as u128;
+            }
+            let mut tail = ptr::read_unaligned(self.ptr.add(32).cast::<u64>()) ^ 0x3030303030303030;
+            let len = (tail & 0xf0f0f0f0f0f0f0f0).trailing_zeros() as usize / 8;
+            tail = if len == 0 { 0 } else { tail << ((8 - len) * 8) };
+            tail = tail.wrapping_mul(10).wrapping_add(tail >> 8) & 0x00ff00ff00ff00ff;
+            tail = tail.wrapping_mul(100).wrapping_add(tail >> 16) & 0x0000ffff0000ffff;
+            tail = tail.wrapping_mul(10000).wrapping_add(tail >> 32) & 0xffffffff;
+            self.ptr = self.ptr.add(33 + len);
+            (Self::parse_ud16(first) as u128 * 10_000_000_000_000_000
+                + Self::parse_ud16(second) as u128)
+                * POW10[len] as u128
+                + tail as u128
+        }
+    }
+
+    #[cfg(not(all(target_arch = "x86_64", target_feature = "ssse3")))]
     #[inline]
     pub unsafe fn u128(&mut self) -> u128 {
         unsafe {
@@ -572,6 +626,146 @@ impl FastInput {
             s.parse().ok().unwrap()
         }
     }
+}
+
+/// Buffered token reader with the same token requirements as [`FastInput`].
+/// Tokens may span reads and borrowed tokens remain valid until the next scan.
+pub struct BufferedInput<R> {
+    reader: R,
+    buffer: Vec<u8>,
+    input: FastInput,
+    filled: usize,
+    eof: bool,
+}
+
+impl<R: Read> BufferedInput<R> {
+    /// # Safety
+    /// Every scan must satisfy [`FastInput`]'s token requirements, including UTF-8.
+    pub unsafe fn new(reader: R) -> Self {
+        let buffer = vec![b' '; (1 << 16) + 16];
+        let input = FastInput {
+            ptr: buffer.as_ptr(),
+            end: buffer.as_ptr(),
+        };
+        Self {
+            reader,
+            buffer,
+            input,
+            filled: 0,
+            eof: false,
+        }
+    }
+
+    #[cold]
+    fn refill(&mut self) -> bool {
+        if self.eof {
+            return false;
+        }
+        let position = unsafe { self.input.ptr.offset_from(self.buffer.as_ptr()) as usize };
+        self.buffer.copy_within(position..self.filled, 0);
+        self.filled -= position;
+        self.input = FastInput {
+            ptr: self.buffer.as_ptr(),
+            end: self.buffer.as_ptr(),
+        };
+        loop {
+            if self.filled == self.buffer.len() - 16 {
+                self.buffer.resize(2 * self.filled + 16, b' ');
+                self.input = FastInput {
+                    ptr: self.buffer.as_ptr(),
+                    end: self.buffer.as_ptr(),
+                };
+            }
+            let end = self.buffer.len() - 16;
+            let start = self.filled;
+            match self.reader.read(&mut self.buffer[self.filled..end]) {
+                Ok(0) => {
+                    self.eof = true;
+                    if self.filled != 0 {
+                        self.buffer[self.filled] = b' ';
+                        self.filled += 1;
+                    }
+                }
+                Ok(n) => self.filled += n,
+                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
+                Err(e) => panic!("io error: {e}"),
+            }
+            let (prefix, chunks) = self.buffer[start..self.filled].as_rchunks();
+            let end = prefix.len()
+                + 8 * chunks
+                    .iter()
+                    .rposition(|&chunk| {
+                        let x = u64::from_le_bytes(chunk);
+                        x.wrapping_sub(0x2121_2121_2121_2121) & !x & 0x8080_8080_8080_8080 != 0
+                    })
+                    .map_or(0, |i| i + 1);
+            if let Some(end) = self.buffer[start..start + end]
+                .iter()
+                .rposition(u8::is_ascii_whitespace)
+            {
+                self.buffer[self.filled..self.filled + 16].fill(b' ');
+                self.input = FastInput {
+                    ptr: self.buffer.as_ptr(),
+                    end: unsafe { self.buffer.as_ptr().add(start + end + 1) },
+                };
+                return true;
+            }
+            if self.eof {
+                self.input = FastInput {
+                    ptr: self.buffer.as_ptr(),
+                    end: self.buffer.as_ptr(),
+                };
+                return false;
+            }
+        }
+    }
+}
+
+macro_rules! impl_buffered_scan_integer {
+    ($($ty:ty, $read:ident, $method:ident);* $(;)?) => {$(
+        #[inline]
+        fn $read(&mut self) -> Option<$ty> {
+            if self.input.ptr >= self.input.end && !self.refill() {
+                return None;
+            }
+            Some(unsafe { self.input.$method() })
+        }
+    )*};
+}
+
+impl<R: Read> ScanSource for BufferedInput<R> {
+    #[inline]
+    fn skip_whitespace(&mut self) {
+        loop {
+            self.input.skip_whitespace();
+            if self.input.ptr < self.input.end || !self.refill() {
+                break;
+            }
+        }
+    }
+
+    #[inline]
+    fn next_token(&mut self) -> Option<&str> {
+        if self.input.ptr >= self.input.end && !self.refill() {
+            return None;
+        }
+        Some(unsafe { std::str::from_utf8_unchecked(self.input.bytes()) })
+    }
+
+    impl_buffered_scan_integer!(
+        u8, read_u8, u8;
+        u16, read_u16, u16;
+        u32, read_u32, u32;
+        u64, read_u64, u64;
+        u128, read_u128, u128;
+        usize, read_usize, usize;
+        i8, read_i8, i8;
+        i16, read_i16, i16;
+        i32, read_i32, i32;
+        i64, read_i64, i64;
+        i128, read_i128, i128;
+        isize, read_isize, isize;
+    );
 }
 
 static DIGIT4: [[u8; 4]; 10000] = const {
@@ -871,7 +1065,7 @@ where
     }
 
     pub fn u128(&mut self, mut x: u128) {
-        const BASE: u128 = 10_000_000_000_000_000;
+        const BASE: u128 = 10_000_000_000_000_000_000;
         let mut groups = [0u64; 2];
         let mut len = 0;
         while x > u64::MAX as u128 {
@@ -881,9 +1075,17 @@ where
         }
         self.u64(x as u64);
         for &x in groups[..len].iter().rev() {
-            self.ensure_capacity(16);
+            self.ensure_capacity(19);
             unsafe {
-                self.write_digit4_unchecked((x / 1_000_000_000_000) as usize);
+                ptr::copy_nonoverlapping(
+                    DIGIT4[(x / 10_000_000_000_000_000) as usize]
+                        .as_ptr()
+                        .add(1),
+                    self.buf.as_mut_ptr().add(self.pos),
+                    3,
+                );
+                self.pos += 3;
+                self.write_digit4_unchecked((x / 1_000_000_000_000 % 10000) as usize);
                 self.write_digit4_unchecked((x / 100_000_000 % 10000) as usize);
                 self.write_digit4_unchecked((x / 10000 % 10000) as usize);
                 self.write_digit4_unchecked((x % 10000) as usize);
@@ -951,7 +1153,8 @@ mod tests {
                     for x in &values {
                         write!(input, "{}{}", x, char::from([b' ', b'\n', b'\t'][rng.random(0usize..3)])).unwrap();
                     }
-                    input.extend_from_slice(&[b' '; 32]);
+                    input.extend_from_slice(&[b' '; 16]);
+                    let input = input.into_boxed_slice();
                     let mut reader = unsafe { FastInput::from_slice(&input[offset..]) };
                     for &x in &values { assert_eq!(unsafe { reader.$ty() }, x); }
                     let mut output = Vec::new();

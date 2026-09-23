@@ -15,7 +15,7 @@ pub use self::digit_sequence::ToDigitSequence;
 #[codesnip::entry("fastio")]
 pub use self::fast_print::{FastIterPrint, FastPrint};
 #[codesnip::entry("fastio")]
-pub use self::fastio::{FastInput, FastOutput};
+pub use self::fastio::{BufferedInput, FastInput, FastOutput};
 #[codesnip::entry("_huge_pages")]
 pub use self::huge_pages::advise_huge_pages;
 #[codesnip::entry("IdGenerator")]
