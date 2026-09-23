@@ -87,21 +87,29 @@
 <span data-nosnippet>30</span>        <span class="kw">let </span>(count, sum) = fold.fold_lessthan_with_count(x + <span class="number">1</span>, l..r);
 <span data-nosnippet>31</span>        <span class="macro">pp!</span>(count, sum);
 <span data-nosnippet>32</span>    }
-<span data-nosnippet>33</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/library_checker/data_structure/rectangle_sum.rs.html#13&#34;,&#34;line 13&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/rectangle_sum.rs (<a href="../../../src/library_checker/data_structure/rectangle_sum.rs.html#13">line 13</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>7</span><span class="kw">pub fn </span>rectangle_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>8</span>    <span class="macro">prepare_io!</span>(reader, writer);
-<span data-nosnippet>9</span>    <span class="macro">sc!</span>(n, q, <span class="kw-2">mut </span>xyw: [(u32, u32, i64); n]);
-<span data-nosnippet>10</span>    xyw.radix_sort_by_key(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>, <span class="kw">_</span>)| x);
-<span data-nosnippet>11</span>    <span class="kw">let </span>ys = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, y, <span class="kw">_</span>)| y).collect();
-<span data-nosnippet>12</span>    <span class="kw">let </span>weights: Vec&lt;<span class="kw">_</span>&gt; = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw">_</span>, w)| w).collect();
-<span data-nosnippet>13</span>    <span class="kw">let </span>wm = <span class="highlight focus">WaveletMatrix::new</span>(ys);
-<span data-nosnippet>14</span>    <span class="kw">let </span>fold = wm.build_fold::&lt;AdditiveOperation&lt;i64&gt;&gt;(<span class="kw-2">&amp;</span>weights);
-<span data-nosnippet>15</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>16</span>        <span class="macro">sc!</span>(l: u32, d: u32, r: u32, u: u32);
-<span data-nosnippet>17</span>        <span class="kw">let </span>l = xyw.partition_point(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>, <span class="kw">_</span>)| x &lt; l);
-<span data-nosnippet>18</span>        <span class="kw">let </span>r = xyw.partition_point(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>, <span class="kw">_</span>)| x &lt; r);
-<span data-nosnippet>19</span>        <span class="macro">pp!</span>(fold.fold_range(d..u, l..r));
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[22,22],&#34;../../../src/library_checker/data_structure/point_add_rectangle_sum.rs.html#39&#34;,&#34;line 39&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_rectangle_sum.rs (<a href="../../../src/library_checker/data_structure/point_add_rectangle_sum.rs.html#39">line 39</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>17</span><span class="kw">pub fn </span>point_add_rectangle_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>33</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/library_checker/data_structure/rectangle_sum.rs.html#20&#34;,&#34;line 20&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/rectangle_sum.rs (<a href="../../../src/library_checker/data_structure/rectangle_sum.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>rectangle_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>10</span>    <span class="macro">prepare_io!</span>(buffered; reader, writer);
+<span data-nosnippet>11</span>    <span class="macro">sc!</span>(n, q, <span class="kw-2">mut </span>xyw: [(u32, u32, i64); n], queries: [(u32, u32, u32, u32); q]);
+<span data-nosnippet>12</span>    xyw.radix_sort_by_key(|<span class="kw-2">&amp;</span>(x, ..)| x);
+<span data-nosnippet>13</span>    <span class="kw">let </span>xs: Vec&lt;<span class="kw">_</span>&gt; = xyw.iter().map(|<span class="kw-2">&amp;</span>(x, ..)| x).collect();
+<span data-nosnippet>14</span>    <span class="kw">let </span>search = StaticSearch::from_sorted(<span class="kw-2">&amp;</span>xs);
+<span data-nosnippet>15</span>    <span class="kw">let </span>endpoints: Vec&lt;<span class="kw">_</span>&gt; = queries.iter().flat_map(|<span class="kw-2">&amp;</span>(l, <span class="kw">_</span>, r, <span class="kw">_</span>)| [l, r]).collect();
+<span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>positions = <span class="macro">vec!</span>[<span class="number">0</span>; endpoints.len()];
+<span data-nosnippet>17</span>    search.lower_bound_batch(<span class="kw-2">&amp;</span>endpoints, <span class="kw-2">&amp;mut </span>positions);
+<span data-nosnippet>18</span>    <span class="kw">let </span>ys = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, y, <span class="kw">_</span>)| y).collect();
+<span data-nosnippet>19</span>    <span class="kw">let </span>weights: Vec&lt;<span class="kw">_</span>&gt; = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw">_</span>, w)| w).collect();
+<span data-nosnippet>20</span>    <span class="kw">let </span>wm = <span class="highlight focus">WaveletMatrix::new</span>(ys);
+<span data-nosnippet>21</span>    <span class="kw">let </span>fold = wm.build_fold::&lt;AdditiveOperation&lt;i64&gt;&gt;(<span class="kw-2">&amp;</span>weights);
+<span data-nosnippet>22</span>    <span class="kw">let </span>result = fold.fold_lessthan_batch(
+<span data-nosnippet>23</span>        queries
+<span data-nosnippet>24</span>            .into_iter()
+<span data-nosnippet>25</span>            .zip(positions.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>)
+<span data-nosnippet>26</span>            .flat_map(|((<span class="kw">_</span>, d, <span class="kw">_</span>, u), <span class="kw-2">&amp;</span>[l, r])| [(d, l..r), (u, l..r)]),
+<span data-nosnippet>27</span>    );
+<span data-nosnippet>28</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>[lower, upper] <span class="kw">in </span>result.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0 </span>{
+<span data-nosnippet>29</span>        <span class="macro">pp!</span>(upper - lower);
+<span data-nosnippet>30</span>    }
+<span data-nosnippet>31</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[22,22],&#34;../../../src/library_checker/data_structure/point_add_rectangle_sum.rs.html#39&#34;,&#34;line 39&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/point_add_rectangle_sum.rs (<a href="../../../src/library_checker/data_structure/point_add_rectangle_sum.rs.html#39">line 39</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>17</span><span class="kw">pub fn </span>point_add_rectangle_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>18</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>19</span>    <span class="macro">sc!</span>(n, q, xyw: [(u32, u32, u64); iter n]);
 <span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>points: Vec&lt;<span class="kw">_</span>&gt; = xyw.map(|(x, y, w)| (x, y, w <span class="kw">as </span>i64)).collect();
@@ -3498,21 +3506,29 @@ in nondecreasing order and every rank must be less than the range length.</p>
 <span data-nosnippet>30</span>        <span class="kw">let </span>(count, sum) = fold.fold_lessthan_with_count(x + <span class="number">1</span>, l..r);
 <span data-nosnippet>31</span>        <span class="macro">pp!</span>(count, sum);
 <span data-nosnippet>32</span>    }
-<span data-nosnippet>33</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[7,7],&#34;../../../src/library_checker/data_structure/rectangle_sum.rs.html#14&#34;,&#34;line 14&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/rectangle_sum.rs (<a href="../../../src/library_checker/data_structure/rectangle_sum.rs.html#14">line 14</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>7</span><span class="kw">pub fn </span>rectangle_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>8</span>    <span class="macro">prepare_io!</span>(reader, writer);
-<span data-nosnippet>9</span>    <span class="macro">sc!</span>(n, q, <span class="kw-2">mut </span>xyw: [(u32, u32, i64); n]);
-<span data-nosnippet>10</span>    xyw.radix_sort_by_key(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>, <span class="kw">_</span>)| x);
-<span data-nosnippet>11</span>    <span class="kw">let </span>ys = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, y, <span class="kw">_</span>)| y).collect();
-<span data-nosnippet>12</span>    <span class="kw">let </span>weights: Vec&lt;<span class="kw">_</span>&gt; = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw">_</span>, w)| w).collect();
-<span data-nosnippet>13</span>    <span class="kw">let </span>wm = WaveletMatrix::new(ys);
-<span data-nosnippet>14</span>    <span class="kw">let </span>fold = wm.<span class="highlight focus">build_fold</span>::&lt;AdditiveOperation&lt;i64&gt;&gt;(<span class="kw-2">&amp;</span>weights);
-<span data-nosnippet>15</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>16</span>        <span class="macro">sc!</span>(l: u32, d: u32, r: u32, u: u32);
-<span data-nosnippet>17</span>        <span class="kw">let </span>l = xyw.partition_point(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>, <span class="kw">_</span>)| x &lt; l);
-<span data-nosnippet>18</span>        <span class="kw">let </span>r = xyw.partition_point(|<span class="kw-2">&amp;</span>(x, <span class="kw">_</span>, <span class="kw">_</span>)| x &lt; r);
-<span data-nosnippet>19</span>        <span class="macro">pp!</span>(fold.fold_range(d..u, l..r));
-<span data-nosnippet>20</span>    }
-<span data-nosnippet>21</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.build_point_add" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#1456-1471">Source</a><h4 class="code-header">pub fn <a href="#method.build_point_add" class="fn">build_point_add</a>&lt;M&gt;(
+<span data-nosnippet>33</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/library_checker/data_structure/rectangle_sum.rs.html#21&#34;,&#34;line 21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/rectangle_sum.rs (<a href="../../../src/library_checker/data_structure/rectangle_sum.rs.html#21">line 21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>rectangle_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>10</span>    <span class="macro">prepare_io!</span>(buffered; reader, writer);
+<span data-nosnippet>11</span>    <span class="macro">sc!</span>(n, q, <span class="kw-2">mut </span>xyw: [(u32, u32, i64); n], queries: [(u32, u32, u32, u32); q]);
+<span data-nosnippet>12</span>    xyw.radix_sort_by_key(|<span class="kw-2">&amp;</span>(x, ..)| x);
+<span data-nosnippet>13</span>    <span class="kw">let </span>xs: Vec&lt;<span class="kw">_</span>&gt; = xyw.iter().map(|<span class="kw-2">&amp;</span>(x, ..)| x).collect();
+<span data-nosnippet>14</span>    <span class="kw">let </span>search = StaticSearch::from_sorted(<span class="kw-2">&amp;</span>xs);
+<span data-nosnippet>15</span>    <span class="kw">let </span>endpoints: Vec&lt;<span class="kw">_</span>&gt; = queries.iter().flat_map(|<span class="kw-2">&amp;</span>(l, <span class="kw">_</span>, r, <span class="kw">_</span>)| [l, r]).collect();
+<span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>positions = <span class="macro">vec!</span>[<span class="number">0</span>; endpoints.len()];
+<span data-nosnippet>17</span>    search.lower_bound_batch(<span class="kw-2">&amp;</span>endpoints, <span class="kw-2">&amp;mut </span>positions);
+<span data-nosnippet>18</span>    <span class="kw">let </span>ys = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, y, <span class="kw">_</span>)| y).collect();
+<span data-nosnippet>19</span>    <span class="kw">let </span>weights: Vec&lt;<span class="kw">_</span>&gt; = xyw.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw">_</span>, w)| w).collect();
+<span data-nosnippet>20</span>    <span class="kw">let </span>wm = WaveletMatrix::new(ys);
+<span data-nosnippet>21</span>    <span class="kw">let </span>fold = wm.<span class="highlight focus">build_fold</span>::&lt;AdditiveOperation&lt;i64&gt;&gt;(<span class="kw-2">&amp;</span>weights);
+<span data-nosnippet>22</span>    <span class="kw">let </span>result = fold.fold_lessthan_batch(
+<span data-nosnippet>23</span>        queries
+<span data-nosnippet>24</span>            .into_iter()
+<span data-nosnippet>25</span>            .zip(positions.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>)
+<span data-nosnippet>26</span>            .flat_map(|((<span class="kw">_</span>, d, <span class="kw">_</span>, u), <span class="kw-2">&amp;</span>[l, r])| [(d, l..r), (u, l..r)]),
+<span data-nosnippet>27</span>    );
+<span data-nosnippet>28</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>[lower, upper] <span class="kw">in </span>result.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0 </span>{
+<span data-nosnippet>29</span>        <span class="macro">pp!</span>(upper - lower);
+<span data-nosnippet>30</span>    }
+<span data-nosnippet>31</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.build_point_add" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#1456-1471">Source</a><h4 class="code-header">pub fn <a href="#method.build_point_add" class="fn">build_point_add</a>&lt;M&gt;(
     &amp;self,
     weights: &amp;[M::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>],
 ) -&gt; <a class="struct" href="../struct.WaveletMatrixPointAdd.html" title="struct competitive::data_structure::WaveletMatrixPointAdd">WaveletMatrixPointAdd</a>&lt;'_, T, M&gt;<div class="where">where

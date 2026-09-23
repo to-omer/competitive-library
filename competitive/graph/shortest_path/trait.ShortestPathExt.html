@@ -104,12 +104,12 @@
 <span data-nosnippet>19</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/library_checker/graph/shortest_path.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/shortest_path.rs (<a href="../../../src/library_checker/graph/shortest_path.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>shortest_path(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(n, m, s, t, (g, c): @DirectedGraphScanner::&lt;usize, u64&gt;::new(n, m));
-<span data-nosnippet>8</span>    <span class="kw">let </span>sp = g
-<span data-nosnippet>9</span>        .<span class="highlight focus">standard_sp_additive</span>()
-<span data-nosnippet>10</span>        .with_parent()
-<span data-nosnippet>11</span>        .dijkstra([s], |eid| c[eid]);
-<span data-nosnippet>12</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = sp.path_to(<span class="kw-2">&amp;</span>g, t) {
-<span data-nosnippet>13</span>        <span class="macro">pp!</span>(sp.dist[t], path.len() - <span class="number">1</span>; @it2d path.windows(<span class="number">2</span>));
+<span data-nosnippet>8</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>((distance, path)) =
+<span data-nosnippet>9</span>        g.<span class="highlight focus">standard_sp_additive</span>()
+<span data-nosnippet>10</span>            .with_parent()
+<span data-nosnippet>11</span>            .dijkstra_path(s, t, |eid| c[eid])
+<span data-nosnippet>12</span>    {
+<span data-nosnippet>13</span>        <span class="macro">pp!</span>(distance, path.len() - <span class="number">1</span>; @it2d path.windows(<span class="number">2</span>));
 <span data-nosnippet>14</span>    } <span class="kw">else </span>{
 <span data-nosnippet>15</span>        <span class="macro">pp!</span>(-<span class="number">1</span>);
 <span data-nosnippet>16</span>    }
