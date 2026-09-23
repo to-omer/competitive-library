@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="binary gcd"><title>gcd in competitive::math::gcd - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (1303417c4 2026-09-21)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="binary gcd"><title>gcd in competitive::math::gcd - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0-nightly (6bb1652a0 2026-09-22)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -220,14 +220,14 @@
 <span data-nosnippet>182</span>}
 <span data-nosnippet>183</span>
 <span data-nosnippet>184</span><span class="kw">fn </span>index_calculus_for_primitive_root(
-<span data-nosnippet>185</span>    <a href="../algebra/action.rs.html#14">p</a>: u64,
+<span data-nosnippet>185</span>    p: u64,
 <span data-nosnippet>186</span>    ord: u64,
 <span data-nosnippet>187</span>    br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;],
 <span data-nosnippet>188</span>    prec: <span class="kw-2">&amp;</span>QdrtPowPrec,
 <span data-nosnippet>189</span>) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>190</span>    <span class="kw">let </span>br_ord = BarrettReduction::&lt;u128&gt;::new(ord <span class="kw">as </span>u128);
 <span data-nosnippet>191</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br_ord.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>192</span>    <span class="kw">let </span>sub = |x: u64, y: u64| <span class="kw">if </span>x &lt; y { x + ord - <a href="../algebra/action.rs.html#23">y</a> } <span class="kw">else </span>{ x - y };
+<span data-nosnippet>192</span>    <span class="kw">let </span>sub = |x: u64, y: u64| <span class="kw">if </span>x &lt; y { x + ord - y } <span class="kw">else </span>{ x - y };
 <span data-nosnippet>193</span>
 <span data-nosnippet>194</span>    <span class="kw">let </span>pc = br_primes.len();
 <span data-nosnippet>195</span>    <span class="kw">let </span><span class="kw-2">mut </span>mat: Vec&lt;Vec&lt;u64&gt;&gt; = <span class="macro">vec!</span>[];
@@ -387,7 +387,7 @@
 <span data-nosnippet>349</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
 <span data-nosnippet>350</span>    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as </span>u128);
 <span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
+<span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">f64</a>).sqrt().ceil() <span class="kw">as </span>u64;
 <span data-nosnippet>353</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;u64, u64&gt;::new();
 <span data-nosnippet>354</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
@@ -442,7 +442,7 @@
 <span data-nosnippet>404</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>405</span>            }
 <span data-nosnippet>406</span>            <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ a } <span class="kw">else </span>{ n - a };
-<span data-nosnippet>407</span>            <span class="kw">let </span>bb = <span class="kw">if </span><a href="../algebra/lazy_map.rs.html#199">b</a> % <span class="number">4 </span>== <span class="number">1 </span>{ b } <span class="kw">else </span>{ n - b };
+<span data-nosnippet>407</span>            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ b } <span class="kw">else </span>{ n - b };
 <span data-nosnippet>408</span>            <span class="kw">let </span>g = <span class="number">5</span>;
 <span data-nosnippet>409</span>            <span class="kw">let </span>ord = n / <span class="number">4</span>;
 <span data-nosnippet>410</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(g, aa, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
@@ -492,7 +492,7 @@
 <span data-nosnippet>454</span>
 <span data-nosnippet>455</span><span class="doccomment">/// a^x ≡ b (mod n)
 <span data-nosnippet>456</span></span><span class="kw">pub fn </span>discrete_logarithm(a: u64, b: u64, n: u64) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>457</span>    <span class="kw">let </span>a = a % <a href="../algebra/lazy_map.rs.html#266">n</a>;
+<span data-nosnippet>457</span>    <span class="kw">let </span>a = a % n;
 <span data-nosnippet>458</span>    <span class="kw">let </span>b = b % n;
 <span data-nosnippet>459</span>    <span class="kw">let </span>d = <span class="number">2</span>.max(<span class="number">64 </span>- n.leading_zeros() <span class="kw">as </span>u64);
 <span data-nosnippet>460</span>    <span class="kw">let </span><span class="kw-2">mut </span>pw = <span class="number">1 </span>% n;

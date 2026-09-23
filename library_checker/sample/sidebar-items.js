@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["aplusb","many_aplusb"]};
+window.SIDEBAR_ITEMS = {"mod":["aplusb","many_aplusb","many_aplusb_128bit"]};
