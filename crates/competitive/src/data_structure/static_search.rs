@@ -54,7 +54,7 @@ macro_rules! impl_signed_simd_key {
 
                 #[inline(always)]
                 fn encode(self) -> u128 {
-                    ((self as $unsigned) ^ (1 as $unsigned << (<$signed>::BITS - 1))) as u128
+                    ((self as $unsigned) ^ ((1 as $unsigned) << (<$signed>::BITS - 1))) as u128
                 }
             }
         )*
