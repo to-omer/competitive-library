@@ -90,6 +90,7 @@ where
             for x in back_stack.drain(..).map(|t| t.1).rev() {
                 self.push_front(x);
             }
+            self.back_stack = back_stack;
         }
         self.front_stack.pop().map(|t| t.1)
     }

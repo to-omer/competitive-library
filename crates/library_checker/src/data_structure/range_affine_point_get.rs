@@ -1,7 +1,6 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::RangeSumRangeLinear, data_structure::LazySegmentTree,
-    num::mint_basic::MInt998244353 as M,
+    algebra::LinearAct, data_structure::DualSegmentTree, num::mint_basic::MInt998244353 as M,
 };
 
 competitive::define_enum_scan! {
@@ -15,13 +14,13 @@ competitive::define_enum_scan! {
 pub fn range_affine_point_get(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [M; iter n]);
-    let mut seg = LazySegmentTree::<RangeSumRangeLinear<_>>::from_keys(a);
+    let mut seg = DualSegmentTree::<LinearAct<_>>::from_keys(a);
     for _ in 0..q {
         sc!(query: Query);
         match query {
             Query::Update { l, r, bc } => seg.update(l..r, bc),
             Query::Get { i } => {
-                pp!(seg.fold(i..i + 1).0);
+                pp!(seg.get(i));
             }
         };
     }

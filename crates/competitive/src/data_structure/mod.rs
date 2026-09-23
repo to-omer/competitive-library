@@ -60,6 +60,8 @@ pub use self::dary_segment_tree::{
 pub use self::disjoint_sparse_table::DisjointSparseTable;
 #[codesnip::entry("DoublyLinkedList")]
 pub use self::doubly_linked_list::DoublyLinkedList;
+#[codesnip::entry("DualSegmentTree")]
+pub use self::dual_segment_tree::DualSegmentTree;
 #[codesnip::entry("FibonacciHash")]
 pub use self::fibonacci_hash::{
     FibHashMap, FibHashSet, FibonacciHasher, FibonacciHasheru32, FibonacciHasheru64,
@@ -182,6 +184,11 @@ mod dary_segment_tree;
 mod disjoint_sparse_table;
 #[cfg_attr(nightly, codesnip::entry("DoublyLinkedList"))]
 mod doubly_linked_list;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("DualSegmentTree", include("MonoidAct", "discrete_steps"))
+)]
+mod dual_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("FibonacciHash"))]
 mod fibonacci_hash;
 #[cfg_attr(

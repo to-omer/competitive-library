@@ -309,7 +309,12 @@ where
         ShortestPathWithParent { dist, parent }
     }
 
-    fn dijkstra_core<M, I>(&self, sources: I, weight: &M) -> ShortestPathWithParent<G, S, P>
+    fn dijkstra_core<M, I>(
+        &self,
+        sources: I,
+        weight: &M,
+        mut stop: impl FnMut(G::Vertex) -> bool,
+    ) -> ShortestPathWithParent<G, S, P>
     where
         G: VertexMap<S::T>,
         M: Fn(G::Label) -> S::T + ?Sized,
@@ -327,6 +332,9 @@ where
             let current = graph.vmap_get(&dist, u);
             if current != &d {
                 continue;
+            }
+            if stop(u) {
+                break;
             }
             let d = current.clone();
             for neighbor in graph.neighbors(u) {
@@ -424,7 +432,7 @@ where
         M: Fn(G::Label) -> S::T,
         I: IntoIterator<Item = G::Vertex>,
     {
-        self.dijkstra_core(sources, &weight).dist
+        self.dijkstra_core(sources, &weight, |_| false).dist
     }
 
     pub fn bellman_ford<M, I>(
@@ -498,7 +506,7 @@ where
         M: Fn(G::Label) -> S::T,
         I: IntoIterator<Item = G::Vertex>,
     {
-        self.dijkstra_core(sources, &weight)
+        self.dijkstra_core(sources, &weight, |_| false)
     }
 
     pub fn bellman_ford<M, I>(
@@ -513,6 +521,28 @@ where
         I: IntoIterator<Item = G::Vertex>,
     {
         self.bellman_ford_core(sources, &weight, check)
+    }
+}
+
+impl<'a, G, M> ShortestPathBuilder<'a, G, StandardSp<M>, RecordParent>
+where
+    G: Graph + VertexMap<Option<<G as Graph>::Vertex>>,
+    M: Monoid<T: Bounded + Ord>,
+{
+    pub fn dijkstra_path<W>(
+        &self,
+        source: G::Vertex,
+        target: G::Vertex,
+        weight: W,
+    ) -> Option<(M::T, Vec<G::Vertex>)>
+    where
+        G: VertexMap<M::T>,
+        W: Fn(G::Label) -> M::T,
+    {
+        let result = self.dijkstra_core([source], &weight, |u| u == target);
+        let path = result.path_to(self.graph, target)?;
+        let distance: &M::T = self.graph.vmap_get(&result.dist, target);
+        Some((distance.clone(), path))
     }
 }
 
@@ -612,6 +642,19 @@ mod tests {
                 assert_eq!(dijkstra.dist, dist);
                 assert_eq!(bellman_ford.dist, dist);
                 for (target, &dist) in dist.iter().enumerate() {
+                    let point =
+                        g.standard_sp_additive()
+                            .with_parent()
+                            .dijkstra_path(src, target, |eid| w[eid] as u64);
+                    assert_eq!(point.as_ref().map(|(distance, _)| *distance as i64), dist);
+                    if let Some((distance, path)) = point {
+                        assert_eq!(path.first(), Some(&src));
+                        assert_eq!(path.last(), Some(&target));
+                        assert_eq!(
+                            distance,
+                            path.windows(2).map(|w| cost[&(w[0], w[1])] as u64).sum()
+                        );
+                    }
                     match dist {
                         None => {
                             assert!(bfs.path_to(&g, target).is_none());
