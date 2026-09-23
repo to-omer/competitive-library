@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SteinerTreeOutput"],"trait":["SteinerTreeExt"]};
+window.SIDEBAR_ITEMS = {"enum":["SteinerTreeParent"],"struct":["SteinerTreeBuilder","SteinerTreeOutput"],"trait":["SteinerTreeExt","SteinerTreeParentPolicy"]};

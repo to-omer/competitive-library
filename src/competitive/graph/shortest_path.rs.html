@@ -578,25 +578,25 @@
 <a href=#524 id=524 data-nosnippet>524</a>    }
 <a href=#525 id=525 data-nosnippet>525</a>}
 <a href=#526 id=526 data-nosnippet>526</a>
-<a href=#527 id=527 data-nosnippet>527</a><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, G, M&gt; <a href="#263-271">ShortestPathBuilder</a>&lt;<span class="lifetime">'a</span>, G, <a href="#17">StandardSp</a>&lt;M&gt;, <a href="#141">RecordParent</a>&gt;
+<a href=#527 id=527 data-nosnippet>527</a><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, G, M, P&gt; <a href="#263-271">ShortestPathBuilder</a>&lt;<span class="lifetime">'a</span>, G, <a href="#17">StandardSp</a>&lt;M&gt;, P&gt;
 <a href=#528 id=528 data-nosnippet>528</a><span class="kw">where
-<a href=#529 id=529 data-nosnippet>529</a>    </span>G: <a href="graph_base.rs.html#23-36">Graph</a> + <a href="graph_base.rs.html#41-55">VertexMap</a>&lt;<a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;&lt;G <span class="kw">as </span>Graph&gt;::<a href="graph_base.rs.html#24">Vertex</a>&gt;&gt;,
+<a href=#529 id=529 data-nosnippet>529</a>    </span>G: <a href="graph_base.rs.html#23-36">Graph</a>,
 <a href=#530 id=530 data-nosnippet>530</a>    M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
-<a href=#531 id=531 data-nosnippet>531</a>{
-<a href=#532 id=532 data-nosnippet>532</a>    <span class="kw">pub fn </span>dijkstra_path&lt;W&gt;(
-<a href=#533 id=533 data-nosnippet>533</a>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<a href=#534 id=534 data-nosnippet>534</a>        source: G::Vertex,
-<a href=#535 id=535 data-nosnippet>535</a>        target: G::Vertex,
-<a href=#536 id=536 data-nosnippet>536</a>        weight: W,
-<a href=#537 id=537 data-nosnippet>537</a>    ) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;(M::T, <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;G::Vertex&gt;)&gt;
-<a href=#538 id=538 data-nosnippet>538</a>    <span class="kw">where
-<a href=#539 id=539 data-nosnippet>539</a>        </span>G: <a href="graph_base.rs.html#41-55">VertexMap</a>&lt;M::T&gt;,
-<a href=#540 id=540 data-nosnippet>540</a>        W: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(G::Label) -&gt; M::T,
-<a href=#541 id=541 data-nosnippet>541</a>    {
-<a href=#542 id=542 data-nosnippet>542</a>        <span class="kw">let </span>result = <a class="self" href="#533">self</a>.<a href="#312-351">dijkstra_core</a>([<a href="#534">source</a>], <span class="kw-2">&amp;</span><a href="#536">weight</a>, |u| <a href="#542">u</a> == <a href="#535">target</a>);
-<a href=#543 id=543 data-nosnippet>543</a>        <span class="kw">let </span>path = result.path_to(<span class="self">self</span>.graph, target)<span class="question-mark">?</span>;
-<a href=#544 id=544 data-nosnippet>544</a>        <span class="kw">let </span>distance: <span class="kw-2">&amp;</span>M::T = <a class="self" href="#533">self</a>.graph.<a href="graph_base.rs.html#48">vmap_get</a>(<span class="kw-2">&amp;</span><a href="#542">result</a>.dist, <a href="#535">target</a>);
-<a href=#545 id=545 data-nosnippet>545</a>        <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<a href="#544">distance</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(), <a href="#543">path</a>))
+<a href=#531 id=531 data-nosnippet>531</a>    P: <a href="#122-129">ParentPolicy</a>&lt;G&gt;,
+<a href=#532 id=532 data-nosnippet>532</a>{
+<a href=#533 id=533 data-nosnippet>533</a>    <span class="doccomment">/// Distances other than the target may remain tentative.
+<a href=#534 id=534 data-nosnippet>534</a>    </span><span class="kw">pub fn </span>dijkstra_to&lt;W, I&gt;(
+<a href=#535 id=535 data-nosnippet>535</a>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<a href=#536 id=536 data-nosnippet>536</a>        sources: I,
+<a href=#537 id=537 data-nosnippet>537</a>        target: G::Vertex,
+<a href=#538 id=538 data-nosnippet>538</a>        weight: W,
+<a href=#539 id=539 data-nosnippet>539</a>    ) -&gt; <a href="#155-163">ShortestPathWithParent</a>&lt;G, <a href="#17">StandardSp</a>&lt;M&gt;, P&gt;
+<a href=#540 id=540 data-nosnippet>540</a>    <span class="kw">where
+<a href=#541 id=541 data-nosnippet>541</a>        </span>G: <a href="graph_base.rs.html#41-55">VertexMap</a>&lt;M::T&gt;,
+<a href=#542 id=542 data-nosnippet>542</a>        W: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(G::Label) -&gt; M::T,
+<a href=#543 id=543 data-nosnippet>543</a>        I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = G::Vertex&gt;,
+<a href=#544 id=544 data-nosnippet>544</a>    {
+<a href=#545 id=545 data-nosnippet>545</a>        <a class="self" href="#535">self</a>.<a href="#312-351">dijkstra_core</a>(<a href="#536">sources</a>, <span class="kw-2">&amp;</span><a href="#538">weight</a>, |u| <a href="#545">u</a> == <a href="#537">target</a>)
 <a href=#546 id=546 data-nosnippet>546</a>    }
 <a href=#547 id=547 data-nosnippet>547</a>}
 <a href=#548 id=548 data-nosnippet>548</a>
@@ -647,193 +647,209 @@
 <a href=#593 id=593 data-nosnippet>593</a>            <span class="macro">assert_eq!</span>(dijkstra, closure_dijkstra);
 <a href=#594 id=594 data-nosnippet>594</a>            <span class="macro">assert_eq!</span>(dijkstra, bellman_ford);
 <a href=#595 id=595 data-nosnippet>595</a>            <span class="macro">assert_eq!</span>(dijkstra, warshall_floyd);
-<a href=#596 id=596 data-nosnippet>596</a>        }
-<a href=#597 id=597 data-nosnippet>597</a>    }
-<a href=#598 id=598 data-nosnippet>598</a>
-<a href=#599 id=599 data-nosnippet>599</a>    <span class="attr">#[test]
-<a href=#600 id=600 data-nosnippet>600</a>    </span><span class="kw">fn </span>test_spfa() {
-<a href=#601 id=601 data-nosnippet>601</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#602 id=602 data-nosnippet>602</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#603 id=603 data-nosnippet>603</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..<span class="number">100</span>, m: <span class="number">1</span>..<span class="number">200</span>, edges: [(<span class="number">0</span>..n, <span class="number">0</span>..n); m], ub: <span class="number">0</span>..=<span class="number">1i64</span>, w: [<span class="number">0</span>..=ub * <span class="number">100_000i64</span>; m]);
-<a href=#604 id=604 data-nosnippet>604</a>            <span class="kw">let </span>g = DirectedSparseGraph::from_edges(n, edges);
-<a href=#605 id=605 data-nosnippet>605</a>            <span class="kw">let </span>bfs: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
-<a href=#606 id=606 data-nosnippet>606</a>                .map(|src| {
-<a href=#607 id=607 data-nosnippet>607</a>                    g.option_sp_additive()
-<a href=#608 id=608 data-nosnippet>608</a>                        .bfs_distance([src], |eid| <span class="prelude-val">Some</span>(w[eid]))
-<a href=#609 id=609 data-nosnippet>609</a>                })
-<a href=#610 id=610 data-nosnippet>610</a>                .collect();
-<a href=#611 id=611 data-nosnippet>611</a>            <span class="kw">let </span>warshall_floyd = g.option_sp_additive().warshall_floyd_ap(|eid| <span class="prelude-val">Some</span>(w[eid]));
-<a href=#612 id=612 data-nosnippet>612</a>            <span class="macro">assert_eq!</span>(bfs, warshall_floyd);
-<a href=#613 id=613 data-nosnippet>613</a>        }
-<a href=#614 id=614 data-nosnippet>614</a>    }
-<a href=#615 id=615 data-nosnippet>615</a>
-<a href=#616 id=616 data-nosnippet>616</a>    <span class="attr">#[test]
-<a href=#617 id=617 data-nosnippet>617</a>    </span><span class="kw">fn </span>test_shortest_path_with_parent() {
-<a href=#618 id=618 data-nosnippet>618</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#619 id=619 data-nosnippet>619</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#620 id=620 data-nosnippet>620</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..<span class="number">100</span>, m: <span class="number">1</span>..<span class="number">200</span>, edges: [(<span class="number">0</span>..n, <span class="number">0</span>..n); m], ub: <span class="number">0</span>..=<span class="number">1i64</span>, w: [<span class="number">0</span>..=ub * <span class="number">100_000i64</span>; m]);
-<a href=#621 id=621 data-nosnippet>621</a>            <span class="kw">let </span><span class="kw-2">mut </span>cost: HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = HashMap::new();
-<a href=#622 id=622 data-nosnippet>622</a>            <span class="kw">for </span>(<span class="kw-2">&amp;</span>(u, v), <span class="kw-2">&amp;</span>w) <span class="kw">in </span>edges.iter().zip(w.iter()) {
-<a href=#623 id=623 data-nosnippet>623</a>                cost.entry((u, v)).or_insert(w).chmin(w);
-<a href=#624 id=624 data-nosnippet>624</a>            }
-<a href=#625 id=625 data-nosnippet>625</a>            <span class="kw">let </span>g = DirectedSparseGraph::from_edges(n, edges);
-<a href=#626 id=626 data-nosnippet>626</a>            <span class="kw">for </span>src <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#627 id=627 data-nosnippet>627</a>                <span class="kw">let </span>bfs = g
-<a href=#628 id=628 data-nosnippet>628</a>                    .option_sp_additive()
-<a href=#629 id=629 data-nosnippet>629</a>                    .with_parent()
-<a href=#630 id=630 data-nosnippet>630</a>                    .bfs_distance([src], |eid| <span class="prelude-val">Some</span>(w[eid]));
-<a href=#631 id=631 data-nosnippet>631</a>                <span class="kw">let </span>dijkstra = g
-<a href=#632 id=632 data-nosnippet>632</a>                    .option_sp_additive()
-<a href=#633 id=633 data-nosnippet>633</a>                    .with_parent()
-<a href=#634 id=634 data-nosnippet>634</a>                    .dijkstra([src], |eid| <span class="prelude-val">Some</span>(w[eid]));
-<a href=#635 id=635 data-nosnippet>635</a>                <span class="kw">let </span>bellman_ford = g
-<a href=#636 id=636 data-nosnippet>636</a>                    .option_sp_additive()
-<a href=#637 id=637 data-nosnippet>637</a>                    .with_parent()
-<a href=#638 id=638 data-nosnippet>638</a>                    .bellman_ford([src], |eid| <span class="prelude-val">Some</span>(w[eid]), <span class="bool-val">false</span>)
-<a href=#639 id=639 data-nosnippet>639</a>                    .unwrap();
-<a href=#640 id=640 data-nosnippet>640</a>                <span class="kw">let </span>dist = g.option_sp_additive().dijkstra([src], |eid| <span class="prelude-val">Some</span>(w[eid]));
-<a href=#641 id=641 data-nosnippet>641</a>                <span class="macro">assert_eq!</span>(bfs.dist, dist);
-<a href=#642 id=642 data-nosnippet>642</a>                <span class="macro">assert_eq!</span>(dijkstra.dist, dist);
-<a href=#643 id=643 data-nosnippet>643</a>                <span class="macro">assert_eq!</span>(bellman_ford.dist, dist);
-<a href=#644 id=644 data-nosnippet>644</a>                <span class="kw">for </span>(target, <span class="kw-2">&amp;</span>dist) <span class="kw">in </span>dist.iter().enumerate() {
-<a href=#645 id=645 data-nosnippet>645</a>                    <span class="kw">let </span>point =
-<a href=#646 id=646 data-nosnippet>646</a>                        g.standard_sp_additive()
-<a href=#647 id=647 data-nosnippet>647</a>                            .with_parent()
-<a href=#648 id=648 data-nosnippet>648</a>                            .dijkstra_path(src, target, |eid| w[eid] <span class="kw">as </span>u64);
-<a href=#649 id=649 data-nosnippet>649</a>                    <span class="macro">assert_eq!</span>(point.as_ref().map(|(distance, <span class="kw">_</span>)| <span class="kw-2">*</span>distance <span class="kw">as </span>i64), dist);
-<a href=#650 id=650 data-nosnippet>650</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>((distance, path)) = point {
-<a href=#651 id=651 data-nosnippet>651</a>                        <span class="macro">assert_eq!</span>(path.first(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>src));
-<a href=#652 id=652 data-nosnippet>652</a>                        <span class="macro">assert_eq!</span>(path.last(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>target));
-<a href=#653 id=653 data-nosnippet>653</a>                        <span class="macro">assert_eq!</span>(
-<a href=#654 id=654 data-nosnippet>654</a>                            distance,
-<a href=#655 id=655 data-nosnippet>655</a>                            path.windows(<span class="number">2</span>).map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])] <span class="kw">as </span>u64).sum()
-<a href=#656 id=656 data-nosnippet>656</a>                        );
-<a href=#657 id=657 data-nosnippet>657</a>                    }
-<a href=#658 id=658 data-nosnippet>658</a>                    <span class="kw">match </span>dist {
-<a href=#659 id=659 data-nosnippet>659</a>                        <span class="prelude-val">None </span>=&gt; {
-<a href=#660 id=660 data-nosnippet>660</a>                            <span class="macro">assert!</span>(bfs.path_to(<span class="kw-2">&amp;</span>g, target).is_none());
-<a href=#661 id=661 data-nosnippet>661</a>                            <span class="macro">assert!</span>(dijkstra.path_to(<span class="kw-2">&amp;</span>g, target).is_none());
-<a href=#662 id=662 data-nosnippet>662</a>                            <span class="macro">assert!</span>(bellman_ford.path_to(<span class="kw-2">&amp;</span>g, target).is_none());
-<a href=#663 id=663 data-nosnippet>663</a>                        }
-<a href=#664 id=664 data-nosnippet>664</a>                        <span class="prelude-val">Some</span>(dist) =&gt; {
-<a href=#665 id=665 data-nosnippet>665</a>                            <span class="kw">let </span>path_bfs = bfs.path_to(<span class="kw-2">&amp;</span>g, target).unwrap();
-<a href=#666 id=666 data-nosnippet>666</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bfs.first().unwrap(), src);
-<a href=#667 id=667 data-nosnippet>667</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bfs.last().unwrap(), target);
-<a href=#668 id=668 data-nosnippet>668</a>                            <span class="macro">assert_eq!</span>(
-<a href=#669 id=669 data-nosnippet>669</a>                                path_bfs
-<a href=#670 id=670 data-nosnippet>670</a>                                    .windows(<span class="number">2</span>)
-<a href=#671 id=671 data-nosnippet>671</a>                                    .map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])])
-<a href=#672 id=672 data-nosnippet>672</a>                                    .sum::&lt;i64&gt;(),
-<a href=#673 id=673 data-nosnippet>673</a>                                dist
-<a href=#674 id=674 data-nosnippet>674</a>                            );
-<a href=#675 id=675 data-nosnippet>675</a>                            <span class="kw">let </span>path_dijkstra = dijkstra.path_to(<span class="kw-2">&amp;</span>g, target).unwrap();
-<a href=#676 id=676 data-nosnippet>676</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_dijkstra.first().unwrap(), src);
-<a href=#677 id=677 data-nosnippet>677</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_dijkstra.last().unwrap(), target);
-<a href=#678 id=678 data-nosnippet>678</a>                            <span class="macro">assert_eq!</span>(
-<a href=#679 id=679 data-nosnippet>679</a>                                path_dijkstra
-<a href=#680 id=680 data-nosnippet>680</a>                                    .windows(<span class="number">2</span>)
-<a href=#681 id=681 data-nosnippet>681</a>                                    .map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])])
-<a href=#682 id=682 data-nosnippet>682</a>                                    .sum::&lt;i64&gt;(),
-<a href=#683 id=683 data-nosnippet>683</a>                                dist
-<a href=#684 id=684 data-nosnippet>684</a>                            );
-<a href=#685 id=685 data-nosnippet>685</a>                            <span class="kw">let </span>path_bellman_ford = bellman_ford.path_to(<span class="kw-2">&amp;</span>g, target).unwrap();
-<a href=#686 id=686 data-nosnippet>686</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bellman_ford.first().unwrap(), src);
-<a href=#687 id=687 data-nosnippet>687</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bellman_ford.last().unwrap(), target);
-<a href=#688 id=688 data-nosnippet>688</a>                            <span class="macro">assert_eq!</span>(
-<a href=#689 id=689 data-nosnippet>689</a>                                path_bellman_ford
-<a href=#690 id=690 data-nosnippet>690</a>                                    .windows(<span class="number">2</span>)
-<a href=#691 id=691 data-nosnippet>691</a>                                    .map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])])
-<a href=#692 id=692 data-nosnippet>692</a>                                    .sum::&lt;i64&gt;(),
-<a href=#693 id=693 data-nosnippet>693</a>                                dist
-<a href=#694 id=694 data-nosnippet>694</a>                            );
-<a href=#695 id=695 data-nosnippet>695</a>                        }
-<a href=#696 id=696 data-nosnippet>696</a>                    }
-<a href=#697 id=697 data-nosnippet>697</a>                }
-<a href=#698 id=698 data-nosnippet>698</a>            }
-<a href=#699 id=699 data-nosnippet>699</a>        }
-<a href=#700 id=700 data-nosnippet>700</a>    }
-<a href=#701 id=701 data-nosnippet>701</a>
-<a href=#702 id=702 data-nosnippet>702</a>    <span class="attr">#[test]
-<a href=#703 id=703 data-nosnippet>703</a>    </span><span class="kw">fn </span>test_path_folding() {
-<a href=#704 id=704 data-nosnippet>704</a>        <span class="kw">const </span>N: usize = <span class="number">5</span>;
-<a href=#705 id=705 data-nosnippet>705</a>        <span class="kw">for </span>n <span class="kw">in </span><span class="number">1</span>..=N {
-<a href=#706 id=706 data-nosnippet>706</a>            <span class="kw">let </span>all_edges: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
-<a href=#707 id=707 data-nosnippet>707</a>                .flat_map(|u| (u + <span class="number">1</span>..n).map(<span class="kw">move </span>|v| (u, v)))
-<a href=#708 id=708 data-nosnippet>708</a>                .collect();
-<a href=#709 id=709 data-nosnippet>709</a>            <span class="kw">for </span>bits <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; all_edges.len() {
-<a href=#710 id=710 data-nosnippet>710</a>                <span class="kw">let </span>edges: Vec&lt;<span class="kw">_</span>&gt; = all_edges
-<a href=#711 id=711 data-nosnippet>711</a>                    .iter()
-<a href=#712 id=712 data-nosnippet>712</a>                    .enumerate()
-<a href=#713 id=713 data-nosnippet>713</a>                    .filter_map(|(eid, <span class="kw-2">&amp;</span>edge)| ((bits &gt;&gt; eid) &amp; <span class="number">1 </span>== <span class="number">1</span>).then_some(edge))
-<a href=#714 id=714 data-nosnippet>714</a>                    .collect();
-<a href=#715 id=715 data-nosnippet>715</a>                <span class="kw">let </span>graph = DirectedSparseGraph::from_edges(n, edges.clone());
-<a href=#716 id=716 data-nosnippet>716</a>                <span class="kw">for </span>src <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#717 id=717 data-nosnippet>717</a>                    <span class="kw">let </span><span class="kw-2">mut </span>expected = <span class="macro">vec!</span>[(usize::MAX, <span class="number">0u64</span>); n];
-<a href=#718 id=718 data-nosnippet>718</a>                    expected[src] = (<span class="number">0</span>, <span class="number">1</span>);
-<a href=#719 id=719 data-nosnippet>719</a>                    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#720 id=720 data-nosnippet>720</a>                        <span class="kw">if </span>expected[u].<span class="number">0 </span>== usize::MAX {
-<a href=#721 id=721 data-nosnippet>721</a>                            <span class="kw">continue</span>;
-<a href=#722 id=722 data-nosnippet>722</a>                        }
-<a href=#723 id=723 data-nosnippet>723</a>                        <span class="kw">for </span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, v) <span class="kw">in </span>edges.iter().filter(|&amp;&amp;(from, <span class="kw">_</span>)| from == u) {
-<a href=#724 id=724 data-nosnippet>724</a>                            <span class="kw">let </span>nd = expected[u].<span class="number">0 </span>+ <span class="number">1</span>;
-<a href=#725 id=725 data-nosnippet>725</a>                            <span class="kw">if </span>nd &lt; expected[v].<span class="number">0 </span>{
-<a href=#726 id=726 data-nosnippet>726</a>                                expected[v] = (nd, expected[u].<span class="number">1</span>);
-<a href=#727 id=727 data-nosnippet>727</a>                            } <span class="kw">else if </span>nd == expected[v].<span class="number">0 </span>{
-<a href=#728 id=728 data-nosnippet>728</a>                                expected[v].<span class="number">1 </span>+= expected[u].<span class="number">1</span>;
-<a href=#729 id=729 data-nosnippet>729</a>                            }
-<a href=#730 id=730 data-nosnippet>730</a>                        }
-<a href=#731 id=731 data-nosnippet>731</a>                    }
-<a href=#732 id=732 data-nosnippet>732</a>                    <span class="kw">let </span>actual = graph
-<a href=#733 id=733 data-nosnippet>733</a>                        .path_folding_sp_additive_addmul()
-<a href=#734 id=734 data-nosnippet>734</a>                        .dijkstra([src], |<span class="kw">_</span>| PartialIgnoredOrd(Saturating(<span class="number">1usize</span>), <span class="number">1u64</span>));
-<a href=#735 id=735 data-nosnippet>735</a>                    <span class="kw">for </span>(actual, expected) <span class="kw">in </span>actual.iter().zip(expected) {
-<a href=#736 id=736 data-nosnippet>736</a>                        <span class="macro">assert_eq!</span>(actual.<span class="number">0</span>, Saturating(expected.<span class="number">0</span>));
-<a href=#737 id=737 data-nosnippet>737</a>                        <span class="macro">assert_eq!</span>(actual.<span class="number">1</span>, expected.<span class="number">1</span>);
-<a href=#738 id=738 data-nosnippet>738</a>                    }
-<a href=#739 id=739 data-nosnippet>739</a>                }
-<a href=#740 id=740 data-nosnippet>740</a>            }
-<a href=#741 id=741 data-nosnippet>741</a>        }
-<a href=#742 id=742 data-nosnippet>742</a>
-<a href=#743 id=743 data-nosnippet>743</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#744 id=744 data-nosnippet>744</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1000 </span>{
-<a href=#745 id=745 data-nosnippet>745</a>            <span class="kw">let </span>n = rng.random(<span class="number">1</span>..=<span class="number">12</span>);
-<a href=#746 id=746 data-nosnippet>746</a>            <span class="kw">let </span><span class="kw-2">mut </span>edges = Vec::new();
-<a href=#747 id=747 data-nosnippet>747</a>            <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
-<a href=#748 id=748 data-nosnippet>748</a>                <span class="kw">for </span>v <span class="kw">in </span>u + <span class="number">1</span>..n {
-<a href=#749 id=749 data-nosnippet>749</a>                    <span class="kw">if </span>rng.random(<span class="number">0</span>..<span class="number">2</span>) == <span class="number">0 </span>{
-<a href=#750 id=750 data-nosnippet>750</a>                        edges.push((u, v));
-<a href=#751 id=751 data-nosnippet>751</a>                    }
-<a href=#752 id=752 data-nosnippet>752</a>                }
-<a href=#753 id=753 data-nosnippet>753</a>            }
-<a href=#754 id=754 data-nosnippet>754</a>            <span class="kw">let </span>weights: Vec&lt;usize&gt; = rng.random_iter(<span class="number">1</span>..=<span class="number">10</span>).take(edges.len()).collect();
-<a href=#755 id=755 data-nosnippet>755</a>            <span class="kw">let </span>graph = DirectedSparseGraph::from_edges(n, edges.clone());
-<a href=#756 id=756 data-nosnippet>756</a>            <span class="kw">let </span>src = rng.random(<span class="number">0</span>..n);
-<a href=#757 id=757 data-nosnippet>757</a>            <span class="kw">let </span><span class="kw-2">mut </span>paths = <span class="macro">vec!</span>[(src, <span class="number">0</span>)];
-<a href=#758 id=758 data-nosnippet>758</a>            <span class="kw">let </span><span class="kw-2">mut </span>expected = <span class="macro">vec!</span>[(usize::MAX, <span class="number">0u64</span>); n];
-<a href=#759 id=759 data-nosnippet>759</a>            <span class="kw">while let </span><span class="prelude-val">Some</span>((u, distance)) = paths.pop() {
-<a href=#760 id=760 data-nosnippet>760</a>                <span class="kw">if </span>distance &lt; expected[u].<span class="number">0 </span>{
-<a href=#761 id=761 data-nosnippet>761</a>                    expected[u] = (distance, <span class="number">1</span>);
-<a href=#762 id=762 data-nosnippet>762</a>                } <span class="kw">else if </span>distance == expected[u].<span class="number">0 </span>{
-<a href=#763 id=763 data-nosnippet>763</a>                    expected[u].<span class="number">1 </span>+= <span class="number">1</span>;
-<a href=#764 id=764 data-nosnippet>764</a>                }
-<a href=#765 id=765 data-nosnippet>765</a>                <span class="kw">for </span>(eid, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, v)) <span class="kw">in </span>edges
-<a href=#766 id=766 data-nosnippet>766</a>                    .iter()
-<a href=#767 id=767 data-nosnippet>767</a>                    .enumerate()
-<a href=#768 id=768 data-nosnippet>768</a>                    .filter(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw-2">&amp;</span>(from, <span class="kw">_</span>))| from == u)
-<a href=#769 id=769 data-nosnippet>769</a>                {
-<a href=#770 id=770 data-nosnippet>770</a>                    paths.push((v, distance + weights[eid]));
-<a href=#771 id=771 data-nosnippet>771</a>                }
-<a href=#772 id=772 data-nosnippet>772</a>            }
-<a href=#773 id=773 data-nosnippet>773</a>            <span class="kw">let </span>actual = graph
-<a href=#774 id=774 data-nosnippet>774</a>                .path_folding_sp_additive_addmul()
-<a href=#775 id=775 data-nosnippet>775</a>                .dijkstra([src], |eid| {
-<a href=#776 id=776 data-nosnippet>776</a>                    PartialIgnoredOrd(Saturating(weights[eid]), <span class="number">1u64</span>)
-<a href=#777 id=777 data-nosnippet>777</a>                });
-<a href=#778 id=778 data-nosnippet>778</a>            <span class="kw">for </span>(actual, expected) <span class="kw">in </span>actual.iter().zip(expected) {
-<a href=#779 id=779 data-nosnippet>779</a>                <span class="macro">assert_eq!</span>(actual.<span class="number">0</span>, Saturating(expected.<span class="number">0</span>));
-<a href=#780 id=780 data-nosnippet>780</a>                <span class="macro">assert_eq!</span>(actual.<span class="number">1</span>, expected.<span class="number">1</span>);
-<a href=#781 id=781 data-nosnippet>781</a>            }
-<a href=#782 id=782 data-nosnippet>782</a>        }
-<a href=#783 id=783 data-nosnippet>783</a>    }
-<a href=#784 id=784 data-nosnippet>784</a>}
+<a href=#596 id=596 data-nosnippet>596</a>            <span class="kw">for </span>(target, (<span class="kw-2">&amp;</span>first, <span class="kw-2">&amp;</span>last)) <span class="kw">in </span>dijkstra[<span class="number">0</span>].iter().zip(<span class="kw-2">&amp;</span>dijkstra[n - <span class="number">1</span>]).enumerate() {
+<a href=#597 id=597 data-nosnippet>597</a>                <span class="kw">let </span>point = g
+<a href=#598 id=598 data-nosnippet>598</a>                    .standard_sp_additive()
+<a href=#599 id=599 data-nosnippet>599</a>                    .dijkstra_to([<span class="number">0</span>, n - <span class="number">1</span>], target, |eid| w[eid] <span class="kw">as </span>u64);
+<a href=#600 id=600 data-nosnippet>600</a>                <span class="kw">let </span>expected = [first, last]
+<a href=#601 id=601 data-nosnippet>601</a>                    .into_iter()
+<a href=#602 id=602 data-nosnippet>602</a>                    .flatten()
+<a href=#603 id=603 data-nosnippet>603</a>                    .min()
+<a href=#604 id=604 data-nosnippet>604</a>                    .map_or(u64::MAX, |distance| distance <span class="kw">as </span>u64);
+<a href=#605 id=605 data-nosnippet>605</a>                <span class="macro">assert_eq!</span>(point.dist[target], expected);
+<a href=#606 id=606 data-nosnippet>606</a>            }
+<a href=#607 id=607 data-nosnippet>607</a>        }
+<a href=#608 id=608 data-nosnippet>608</a>    }
+<a href=#609 id=609 data-nosnippet>609</a>
+<a href=#610 id=610 data-nosnippet>610</a>    <span class="attr">#[test]
+<a href=#611 id=611 data-nosnippet>611</a>    </span><span class="kw">fn </span>test_spfa() {
+<a href=#612 id=612 data-nosnippet>612</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#613 id=613 data-nosnippet>613</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#614 id=614 data-nosnippet>614</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..<span class="number">100</span>, m: <span class="number">1</span>..<span class="number">200</span>, edges: [(<span class="number">0</span>..n, <span class="number">0</span>..n); m], ub: <span class="number">0</span>..=<span class="number">1i64</span>, w: [<span class="number">0</span>..=ub * <span class="number">100_000i64</span>; m]);
+<a href=#615 id=615 data-nosnippet>615</a>            <span class="kw">let </span>g = DirectedSparseGraph::from_edges(n, edges);
+<a href=#616 id=616 data-nosnippet>616</a>            <span class="kw">let </span>bfs: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<a href=#617 id=617 data-nosnippet>617</a>                .map(|src| {
+<a href=#618 id=618 data-nosnippet>618</a>                    g.option_sp_additive()
+<a href=#619 id=619 data-nosnippet>619</a>                        .bfs_distance([src], |eid| <span class="prelude-val">Some</span>(w[eid]))
+<a href=#620 id=620 data-nosnippet>620</a>                })
+<a href=#621 id=621 data-nosnippet>621</a>                .collect();
+<a href=#622 id=622 data-nosnippet>622</a>            <span class="kw">let </span>warshall_floyd = g.option_sp_additive().warshall_floyd_ap(|eid| <span class="prelude-val">Some</span>(w[eid]));
+<a href=#623 id=623 data-nosnippet>623</a>            <span class="macro">assert_eq!</span>(bfs, warshall_floyd);
+<a href=#624 id=624 data-nosnippet>624</a>        }
+<a href=#625 id=625 data-nosnippet>625</a>    }
+<a href=#626 id=626 data-nosnippet>626</a>
+<a href=#627 id=627 data-nosnippet>627</a>    <span class="attr">#[test]
+<a href=#628 id=628 data-nosnippet>628</a>    </span><span class="kw">fn </span>test_shortest_path_with_parent() {
+<a href=#629 id=629 data-nosnippet>629</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#630 id=630 data-nosnippet>630</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#631 id=631 data-nosnippet>631</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..<span class="number">100</span>, m: <span class="number">1</span>..<span class="number">200</span>, edges: [(<span class="number">0</span>..n, <span class="number">0</span>..n); m], ub: <span class="number">0</span>..=<span class="number">1i64</span>, w: [<span class="number">0</span>..=ub * <span class="number">100_000i64</span>; m]);
+<a href=#632 id=632 data-nosnippet>632</a>            <span class="kw">let </span><span class="kw-2">mut </span>cost: HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = HashMap::new();
+<a href=#633 id=633 data-nosnippet>633</a>            <span class="kw">for </span>(<span class="kw-2">&amp;</span>(u, v), <span class="kw-2">&amp;</span>w) <span class="kw">in </span>edges.iter().zip(w.iter()) {
+<a href=#634 id=634 data-nosnippet>634</a>                cost.entry((u, v)).or_insert(w).chmin(w);
+<a href=#635 id=635 data-nosnippet>635</a>            }
+<a href=#636 id=636 data-nosnippet>636</a>            <span class="kw">let </span>g = DirectedSparseGraph::from_edges(n, edges);
+<a href=#637 id=637 data-nosnippet>637</a>            <span class="kw">for </span>src <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#638 id=638 data-nosnippet>638</a>                <span class="kw">let </span>bfs = g
+<a href=#639 id=639 data-nosnippet>639</a>                    .option_sp_additive()
+<a href=#640 id=640 data-nosnippet>640</a>                    .with_parent()
+<a href=#641 id=641 data-nosnippet>641</a>                    .bfs_distance([src], |eid| <span class="prelude-val">Some</span>(w[eid]));
+<a href=#642 id=642 data-nosnippet>642</a>                <span class="kw">let </span>dijkstra = g
+<a href=#643 id=643 data-nosnippet>643</a>                    .option_sp_additive()
+<a href=#644 id=644 data-nosnippet>644</a>                    .with_parent()
+<a href=#645 id=645 data-nosnippet>645</a>                    .dijkstra([src], |eid| <span class="prelude-val">Some</span>(w[eid]));
+<a href=#646 id=646 data-nosnippet>646</a>                <span class="kw">let </span>bellman_ford = g
+<a href=#647 id=647 data-nosnippet>647</a>                    .option_sp_additive()
+<a href=#648 id=648 data-nosnippet>648</a>                    .with_parent()
+<a href=#649 id=649 data-nosnippet>649</a>                    .bellman_ford([src], |eid| <span class="prelude-val">Some</span>(w[eid]), <span class="bool-val">false</span>)
+<a href=#650 id=650 data-nosnippet>650</a>                    .unwrap();
+<a href=#651 id=651 data-nosnippet>651</a>                <span class="kw">let </span>dist = g.option_sp_additive().dijkstra([src], |eid| <span class="prelude-val">Some</span>(w[eid]));
+<a href=#652 id=652 data-nosnippet>652</a>                <span class="macro">assert_eq!</span>(bfs.dist, dist);
+<a href=#653 id=653 data-nosnippet>653</a>                <span class="macro">assert_eq!</span>(dijkstra.dist, dist);
+<a href=#654 id=654 data-nosnippet>654</a>                <span class="macro">assert_eq!</span>(bellman_ford.dist, dist);
+<a href=#655 id=655 data-nosnippet>655</a>                <span class="kw">for </span>(target, <span class="kw-2">&amp;</span>dist) <span class="kw">in </span>dist.iter().enumerate() {
+<a href=#656 id=656 data-nosnippet>656</a>                    <span class="kw">let </span>point =
+<a href=#657 id=657 data-nosnippet>657</a>                        g.standard_sp_additive()
+<a href=#658 id=658 data-nosnippet>658</a>                            .with_parent()
+<a href=#659 id=659 data-nosnippet>659</a>                            .dijkstra_to([src], target, |eid| w[eid] <span class="kw">as </span>u64);
+<a href=#660 id=660 data-nosnippet>660</a>                    <span class="macro">assert_eq!</span>(
+<a href=#661 id=661 data-nosnippet>661</a>                        point.dist[target],
+<a href=#662 id=662 data-nosnippet>662</a>                        dist.map_or(u64::MAX, |distance| distance <span class="kw">as </span>u64)
+<a href=#663 id=663 data-nosnippet>663</a>                    );
+<a href=#664 id=664 data-nosnippet>664</a>                    <span class="kw">let </span>path = point.path_to(<span class="kw-2">&amp;</span>g, target);
+<a href=#665 id=665 data-nosnippet>665</a>                    <span class="macro">assert_eq!</span>(path.is_some(), dist.is_some());
+<a href=#666 id=666 data-nosnippet>666</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = path {
+<a href=#667 id=667 data-nosnippet>667</a>                        <span class="macro">assert_eq!</span>(path.first(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>src));
+<a href=#668 id=668 data-nosnippet>668</a>                        <span class="macro">assert_eq!</span>(path.last(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>target));
+<a href=#669 id=669 data-nosnippet>669</a>                        <span class="macro">assert_eq!</span>(
+<a href=#670 id=670 data-nosnippet>670</a>                            point.dist[target],
+<a href=#671 id=671 data-nosnippet>671</a>                            path.windows(<span class="number">2</span>).map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])] <span class="kw">as </span>u64).sum()
+<a href=#672 id=672 data-nosnippet>672</a>                        );
+<a href=#673 id=673 data-nosnippet>673</a>                    }
+<a href=#674 id=674 data-nosnippet>674</a>                    <span class="kw">match </span>dist {
+<a href=#675 id=675 data-nosnippet>675</a>                        <span class="prelude-val">None </span>=&gt; {
+<a href=#676 id=676 data-nosnippet>676</a>                            <span class="macro">assert!</span>(bfs.path_to(<span class="kw-2">&amp;</span>g, target).is_none());
+<a href=#677 id=677 data-nosnippet>677</a>                            <span class="macro">assert!</span>(dijkstra.path_to(<span class="kw-2">&amp;</span>g, target).is_none());
+<a href=#678 id=678 data-nosnippet>678</a>                            <span class="macro">assert!</span>(bellman_ford.path_to(<span class="kw-2">&amp;</span>g, target).is_none());
+<a href=#679 id=679 data-nosnippet>679</a>                        }
+<a href=#680 id=680 data-nosnippet>680</a>                        <span class="prelude-val">Some</span>(dist) =&gt; {
+<a href=#681 id=681 data-nosnippet>681</a>                            <span class="kw">let </span>path_bfs = bfs.path_to(<span class="kw-2">&amp;</span>g, target).unwrap();
+<a href=#682 id=682 data-nosnippet>682</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bfs.first().unwrap(), src);
+<a href=#683 id=683 data-nosnippet>683</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bfs.last().unwrap(), target);
+<a href=#684 id=684 data-nosnippet>684</a>                            <span class="macro">assert_eq!</span>(
+<a href=#685 id=685 data-nosnippet>685</a>                                path_bfs
+<a href=#686 id=686 data-nosnippet>686</a>                                    .windows(<span class="number">2</span>)
+<a href=#687 id=687 data-nosnippet>687</a>                                    .map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])])
+<a href=#688 id=688 data-nosnippet>688</a>                                    .sum::&lt;i64&gt;(),
+<a href=#689 id=689 data-nosnippet>689</a>                                dist
+<a href=#690 id=690 data-nosnippet>690</a>                            );
+<a href=#691 id=691 data-nosnippet>691</a>                            <span class="kw">let </span>path_dijkstra = dijkstra.path_to(<span class="kw-2">&amp;</span>g, target).unwrap();
+<a href=#692 id=692 data-nosnippet>692</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_dijkstra.first().unwrap(), src);
+<a href=#693 id=693 data-nosnippet>693</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_dijkstra.last().unwrap(), target);
+<a href=#694 id=694 data-nosnippet>694</a>                            <span class="macro">assert_eq!</span>(
+<a href=#695 id=695 data-nosnippet>695</a>                                path_dijkstra
+<a href=#696 id=696 data-nosnippet>696</a>                                    .windows(<span class="number">2</span>)
+<a href=#697 id=697 data-nosnippet>697</a>                                    .map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])])
+<a href=#698 id=698 data-nosnippet>698</a>                                    .sum::&lt;i64&gt;(),
+<a href=#699 id=699 data-nosnippet>699</a>                                dist
+<a href=#700 id=700 data-nosnippet>700</a>                            );
+<a href=#701 id=701 data-nosnippet>701</a>                            <span class="kw">let </span>path_bellman_ford = bellman_ford.path_to(<span class="kw-2">&amp;</span>g, target).unwrap();
+<a href=#702 id=702 data-nosnippet>702</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bellman_ford.first().unwrap(), src);
+<a href=#703 id=703 data-nosnippet>703</a>                            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>path_bellman_ford.last().unwrap(), target);
+<a href=#704 id=704 data-nosnippet>704</a>                            <span class="macro">assert_eq!</span>(
+<a href=#705 id=705 data-nosnippet>705</a>                                path_bellman_ford
+<a href=#706 id=706 data-nosnippet>706</a>                                    .windows(<span class="number">2</span>)
+<a href=#707 id=707 data-nosnippet>707</a>                                    .map(|w| cost[<span class="kw-2">&amp;</span>(w[<span class="number">0</span>], w[<span class="number">1</span>])])
+<a href=#708 id=708 data-nosnippet>708</a>                                    .sum::&lt;i64&gt;(),
+<a href=#709 id=709 data-nosnippet>709</a>                                dist
+<a href=#710 id=710 data-nosnippet>710</a>                            );
+<a href=#711 id=711 data-nosnippet>711</a>                        }
+<a href=#712 id=712 data-nosnippet>712</a>                    }
+<a href=#713 id=713 data-nosnippet>713</a>                }
+<a href=#714 id=714 data-nosnippet>714</a>            }
+<a href=#715 id=715 data-nosnippet>715</a>        }
+<a href=#716 id=716 data-nosnippet>716</a>    }
+<a href=#717 id=717 data-nosnippet>717</a>
+<a href=#718 id=718 data-nosnippet>718</a>    <span class="attr">#[test]
+<a href=#719 id=719 data-nosnippet>719</a>    </span><span class="kw">fn </span>test_path_folding() {
+<a href=#720 id=720 data-nosnippet>720</a>        <span class="kw">const </span>N: usize = <span class="number">5</span>;
+<a href=#721 id=721 data-nosnippet>721</a>        <span class="kw">for </span>n <span class="kw">in </span><span class="number">1</span>..=N {
+<a href=#722 id=722 data-nosnippet>722</a>            <span class="kw">let </span>all_edges: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n)
+<a href=#723 id=723 data-nosnippet>723</a>                .flat_map(|u| (u + <span class="number">1</span>..n).map(<span class="kw">move </span>|v| (u, v)))
+<a href=#724 id=724 data-nosnippet>724</a>                .collect();
+<a href=#725 id=725 data-nosnippet>725</a>            <span class="kw">for </span>bits <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; all_edges.len() {
+<a href=#726 id=726 data-nosnippet>726</a>                <span class="kw">let </span>edges: Vec&lt;<span class="kw">_</span>&gt; = all_edges
+<a href=#727 id=727 data-nosnippet>727</a>                    .iter()
+<a href=#728 id=728 data-nosnippet>728</a>                    .enumerate()
+<a href=#729 id=729 data-nosnippet>729</a>                    .filter_map(|(eid, <span class="kw-2">&amp;</span>edge)| ((bits &gt;&gt; eid) &amp; <span class="number">1 </span>== <span class="number">1</span>).then_some(edge))
+<a href=#730 id=730 data-nosnippet>730</a>                    .collect();
+<a href=#731 id=731 data-nosnippet>731</a>                <span class="kw">let </span>graph = DirectedSparseGraph::from_edges(n, edges.clone());
+<a href=#732 id=732 data-nosnippet>732</a>                <span class="kw">for </span>src <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#733 id=733 data-nosnippet>733</a>                    <span class="kw">let </span><span class="kw-2">mut </span>expected = <span class="macro">vec!</span>[(usize::MAX, <span class="number">0u64</span>); n];
+<a href=#734 id=734 data-nosnippet>734</a>                    expected[src] = (<span class="number">0</span>, <span class="number">1</span>);
+<a href=#735 id=735 data-nosnippet>735</a>                    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#736 id=736 data-nosnippet>736</a>                        <span class="kw">if </span>expected[u].<span class="number">0 </span>== usize::MAX {
+<a href=#737 id=737 data-nosnippet>737</a>                            <span class="kw">continue</span>;
+<a href=#738 id=738 data-nosnippet>738</a>                        }
+<a href=#739 id=739 data-nosnippet>739</a>                        <span class="kw">for </span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, v) <span class="kw">in </span>edges.iter().filter(|&amp;&amp;(from, <span class="kw">_</span>)| from == u) {
+<a href=#740 id=740 data-nosnippet>740</a>                            <span class="kw">let </span>nd = expected[u].<span class="number">0 </span>+ <span class="number">1</span>;
+<a href=#741 id=741 data-nosnippet>741</a>                            <span class="kw">if </span>nd &lt; expected[v].<span class="number">0 </span>{
+<a href=#742 id=742 data-nosnippet>742</a>                                expected[v] = (nd, expected[u].<span class="number">1</span>);
+<a href=#743 id=743 data-nosnippet>743</a>                            } <span class="kw">else if </span>nd == expected[v].<span class="number">0 </span>{
+<a href=#744 id=744 data-nosnippet>744</a>                                expected[v].<span class="number">1 </span>+= expected[u].<span class="number">1</span>;
+<a href=#745 id=745 data-nosnippet>745</a>                            }
+<a href=#746 id=746 data-nosnippet>746</a>                        }
+<a href=#747 id=747 data-nosnippet>747</a>                    }
+<a href=#748 id=748 data-nosnippet>748</a>                    <span class="kw">let </span>actual = graph
+<a href=#749 id=749 data-nosnippet>749</a>                        .path_folding_sp_additive_addmul()
+<a href=#750 id=750 data-nosnippet>750</a>                        .dijkstra([src], |<span class="kw">_</span>| PartialIgnoredOrd(Saturating(<span class="number">1usize</span>), <span class="number">1u64</span>));
+<a href=#751 id=751 data-nosnippet>751</a>                    <span class="kw">for </span>(actual, expected) <span class="kw">in </span>actual.iter().zip(expected) {
+<a href=#752 id=752 data-nosnippet>752</a>                        <span class="macro">assert_eq!</span>(actual.<span class="number">0</span>, Saturating(expected.<span class="number">0</span>));
+<a href=#753 id=753 data-nosnippet>753</a>                        <span class="macro">assert_eq!</span>(actual.<span class="number">1</span>, expected.<span class="number">1</span>);
+<a href=#754 id=754 data-nosnippet>754</a>                    }
+<a href=#755 id=755 data-nosnippet>755</a>                }
+<a href=#756 id=756 data-nosnippet>756</a>            }
+<a href=#757 id=757 data-nosnippet>757</a>        }
+<a href=#758 id=758 data-nosnippet>758</a>
+<a href=#759 id=759 data-nosnippet>759</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#760 id=760 data-nosnippet>760</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1000 </span>{
+<a href=#761 id=761 data-nosnippet>761</a>            <span class="kw">let </span>n = rng.random(<span class="number">1</span>..=<span class="number">12</span>);
+<a href=#762 id=762 data-nosnippet>762</a>            <span class="kw">let </span><span class="kw-2">mut </span>edges = Vec::new();
+<a href=#763 id=763 data-nosnippet>763</a>            <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#764 id=764 data-nosnippet>764</a>                <span class="kw">for </span>v <span class="kw">in </span>u + <span class="number">1</span>..n {
+<a href=#765 id=765 data-nosnippet>765</a>                    <span class="kw">if </span>rng.random(<span class="number">0</span>..<span class="number">2</span>) == <span class="number">0 </span>{
+<a href=#766 id=766 data-nosnippet>766</a>                        edges.push((u, v));
+<a href=#767 id=767 data-nosnippet>767</a>                    }
+<a href=#768 id=768 data-nosnippet>768</a>                }
+<a href=#769 id=769 data-nosnippet>769</a>            }
+<a href=#770 id=770 data-nosnippet>770</a>            <span class="kw">let </span>weights: Vec&lt;usize&gt; = rng.random_iter(<span class="number">1</span>..=<span class="number">10</span>).take(edges.len()).collect();
+<a href=#771 id=771 data-nosnippet>771</a>            <span class="kw">let </span>graph = DirectedSparseGraph::from_edges(n, edges.clone());
+<a href=#772 id=772 data-nosnippet>772</a>            <span class="kw">let </span>src = rng.random(<span class="number">0</span>..n);
+<a href=#773 id=773 data-nosnippet>773</a>            <span class="kw">let </span><span class="kw-2">mut </span>paths = <span class="macro">vec!</span>[(src, <span class="number">0</span>)];
+<a href=#774 id=774 data-nosnippet>774</a>            <span class="kw">let </span><span class="kw-2">mut </span>expected = <span class="macro">vec!</span>[(usize::MAX, <span class="number">0u64</span>); n];
+<a href=#775 id=775 data-nosnippet>775</a>            <span class="kw">while let </span><span class="prelude-val">Some</span>((u, distance)) = paths.pop() {
+<a href=#776 id=776 data-nosnippet>776</a>                <span class="kw">if </span>distance &lt; expected[u].<span class="number">0 </span>{
+<a href=#777 id=777 data-nosnippet>777</a>                    expected[u] = (distance, <span class="number">1</span>);
+<a href=#778 id=778 data-nosnippet>778</a>                } <span class="kw">else if </span>distance == expected[u].<span class="number">0 </span>{
+<a href=#779 id=779 data-nosnippet>779</a>                    expected[u].<span class="number">1 </span>+= <span class="number">1</span>;
+<a href=#780 id=780 data-nosnippet>780</a>                }
+<a href=#781 id=781 data-nosnippet>781</a>                <span class="kw">for </span>(eid, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, v)) <span class="kw">in </span>edges
+<a href=#782 id=782 data-nosnippet>782</a>                    .iter()
+<a href=#783 id=783 data-nosnippet>783</a>                    .enumerate()
+<a href=#784 id=784 data-nosnippet>784</a>                    .filter(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="kw-2">&amp;</span>(from, <span class="kw">_</span>))| from == u)
+<a href=#785 id=785 data-nosnippet>785</a>                {
+<a href=#786 id=786 data-nosnippet>786</a>                    paths.push((v, distance + weights[eid]));
+<a href=#787 id=787 data-nosnippet>787</a>                }
+<a href=#788 id=788 data-nosnippet>788</a>            }
+<a href=#789 id=789 data-nosnippet>789</a>            <span class="kw">let </span>actual = graph
+<a href=#790 id=790 data-nosnippet>790</a>                .path_folding_sp_additive_addmul()
+<a href=#791 id=791 data-nosnippet>791</a>                .dijkstra([src], |eid| {
+<a href=#792 id=792 data-nosnippet>792</a>                    PartialIgnoredOrd(Saturating(weights[eid]), <span class="number">1u64</span>)
+<a href=#793 id=793 data-nosnippet>793</a>                });
+<a href=#794 id=794 data-nosnippet>794</a>            <span class="kw">for </span>(actual, expected) <span class="kw">in </span>actual.iter().zip(expected) {
+<a href=#795 id=795 data-nosnippet>795</a>                <span class="macro">assert_eq!</span>(actual.<span class="number">0</span>, Saturating(expected.<span class="number">0</span>));
+<a href=#796 id=796 data-nosnippet>796</a>                <span class="macro">assert_eq!</span>(actual.<span class="number">1</span>, expected.<span class="number">1</span>);
+<a href=#797 id=797 data-nosnippet>797</a>            }
+<a href=#798 id=798 data-nosnippet>798</a>        }
+<a href=#799 id=799 data-nosnippet>799</a>    }
+<a href=#800 id=800 data-nosnippet>800</a>}
 </code></pre></div></section></main></body></html>

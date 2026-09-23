@@ -133,7 +133,26 @@
 <span data-nosnippet>29</span>            }
 <span data-nosnippet>30</span>        }
 <span data-nosnippet>31</span>        res
-<span data-nosnippet>32</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/library_checker/data_structure/unionfind_with_potential.rs.html#18&#34;,&#34;line 18&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/unionfind_with_potential.rs (<a href="../../../src/library_checker/data_structure/unionfind_with_potential.rs.html#18">line 18</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>15</span><span class="kw">pub fn </span>unionfind_with_potential(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>32</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/library_checker/graph/two_edge_connected_components.rs.html#13&#34;,&#34;line 13&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/two_edge_connected_components.rs (<a href="../../../src/library_checker/graph/two_edge_connected_components.rs.html#13">line 13</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>two_edge_connected_components(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>10</span>    <span class="macro">sc!</span>(n, m, edges: [(usize, usize); m]);
+<span data-nosnippet>11</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
+<span data-nosnippet>12</span>    <span class="kw">let </span>low_link = LowLink::new(<span class="kw-2">&amp;</span>graph);
+<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = <span class="highlight focus">UnionFind::new</span>(n);
+<span data-nosnippet>14</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v) <span class="kw">in </span><span class="kw-2">&amp;</span>graph.edges {
+<span data-nosnippet>15</span>        <span class="kw">if </span>low_link.ord[u] &gt; low_link.ord[v] {
+<span data-nosnippet>16</span>            std::mem::swap(<span class="kw-2">&amp;mut </span>u, <span class="kw-2">&amp;mut </span>v);
+<span data-nosnippet>17</span>        }
+<span data-nosnippet>18</span>        <span class="kw">if </span>low_link.ord[u] &gt;= low_link.low[v] {
+<span data-nosnippet>19</span>            uf.unite(u, v);
+<span data-nosnippet>20</span>        }
+<span data-nosnippet>21</span>    }
+<span data-nosnippet>22</span>    <span class="kw">let </span>groups = uf.all_group_members();
+<span data-nosnippet>23</span>    <span class="macro">pp!</span>(groups.len());
+<span data-nosnippet>24</span>    <span class="kw">for </span>group <span class="kw">in </span>groups.into_values() {
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(group.len(), @it group);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/library_checker/data_structure/unionfind_with_potential.rs.html#18&#34;,&#34;line 18&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/unionfind_with_potential.rs (<a href="../../../src/library_checker/data_structure/unionfind_with_potential.rs.html#18">line 18</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>15</span><span class="kw">pub fn </span>unionfind_with_potential(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>16</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>17</span>    <span class="macro">sc!</span>(n, q);
 <span data-nosnippet>18</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = <span class="highlight focus">PotentializedUnionFind::&lt;AdditiveOperation&lt;M&gt;&gt;::new</span>(n);
@@ -157,31 +176,7 @@
 <span data-nosnippet>36</span>            }
 <span data-nosnippet>37</span>        }
 <span data-nosnippet>38</span>    }
-<span data-nosnippet>39</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/library_checker/data_structure/unionfind_with_potential_non_commutative_group.rs.html#40&#34;,&#34;line 40&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/unionfind_with_potential_non_commutative_group.rs (<a href="../../../src/library_checker/data_structure/unionfind_with_potential_non_commutative_group.rs.html#40">line 40</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>37</span><span class="kw">pub fn </span>unionfind_with_potential_non_commutative_group(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>38</span>    <span class="macro">prepare_io!</span>(reader, writer);
-<span data-nosnippet>39</span>    <span class="macro">sc!</span>(n, q);
-<span data-nosnippet>40</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = <span class="highlight focus">PotentializedUnionFind::&lt;Sl2&gt;::new</span>(n);
-<span data-nosnippet>41</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
-<span data-nosnippet>42</span>        <span class="macro">sc!</span>(query: Query);
-<span data-nosnippet>43</span>        <span class="kw">match </span>query {
-<span data-nosnippet>44</span>            Query::Unite { u, v, x } =&gt; {
-<span data-nosnippet>45</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(diff) = uf.difference(v, u) {
-<span data-nosnippet>46</span>                    <span class="macro">pp!</span>((diff == x) <span class="kw">as </span>u8);
-<span data-nosnippet>47</span>                } <span class="kw">else </span>{
-<span data-nosnippet>48</span>                    uf.unite_with(v, u, x);
-<span data-nosnippet>49</span>                    <span class="macro">pp!</span>(<span class="string">"1"</span>);
-<span data-nosnippet>50</span>                }
-<span data-nosnippet>51</span>            }
-<span data-nosnippet>52</span>            Query::Diff { u, v } =&gt; {
-<span data-nosnippet>53</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(diff) = uf.difference(v, u) {
-<span data-nosnippet>54</span>                    <span class="macro">pp!</span>(@it diff.into_iter().flatten());
-<span data-nosnippet>55</span>                } <span class="kw">else </span>{
-<span data-nosnippet>56</span>                    <span class="macro">pp!</span>(<span class="string">"-1"</span>);
-<span data-nosnippet>57</span>                }
-<span data-nosnippet>58</span>            }
-<span data-nosnippet>59</span>        }
-<span data-nosnippet>60</span>    }
-<span data-nosnippet>61</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#19">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li></ul></div></div></details></div></details><section id="method.push" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#317-319">Source</a><h4 class="code-header">pub fn <a href="#method.push" class="fn">push</a>(&amp;mut self)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-UnionFindBase%3CU,+F,+FnMerger%3CT,+Merge%3E,+P,+H%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#322-344">Source</a><a href="#impl-UnionFindBase%3CU,+F,+FnMerger%3CT,+Merge%3E,+P,+H%3E" class="anchor">§</a><h3 class="code-header">impl&lt;U, F, T, Merge, P, H&gt; <a class="struct" href="struct.UnionFindBase.html" title="struct competitive::data_structure::union_find::UnionFindBase">UnionFindBase</a>&lt;U, F, <a class="struct" href="struct.FnMerger.html" title="struct competitive::data_structure::union_find::FnMerger">FnMerger</a>&lt;T, Merge&gt;, P, H&gt;<div class="where">where
+<span data-nosnippet>39</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/data_structure/unionfind_with_potential_non_commutative_group.rs.html#40">crates/library_checker/src/data_structure/unionfind_with_potential_non_commutative_group.rs</a></li><li><a href="../../../src/competitive/graph/steiner_tree.rs.html#217">crates/competitive/src/graph/steiner_tree.rs</a></li><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#19">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li></ul></div></div></details></div></details><section id="method.push" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#317-319">Source</a><h4 class="code-header">pub fn <a href="#method.push" class="fn">push</a>(&amp;mut self)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-UnionFindBase%3CU,+F,+FnMerger%3CT,+Merge%3E,+P,+H%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#322-344">Source</a><a href="#impl-UnionFindBase%3CU,+F,+FnMerger%3CT,+Merge%3E,+P,+H%3E" class="anchor">§</a><h3 class="code-header">impl&lt;U, F, T, Merge, P, H&gt; <a class="struct" href="struct.UnionFindBase.html" title="struct competitive::data_structure::union_find::UnionFindBase">UnionFindBase</a>&lt;U, F, <a class="struct" href="struct.FnMerger.html" title="struct competitive::data_structure::union_find::FnMerger">FnMerger</a>&lt;T, Merge&gt;, P, H&gt;<div class="where">where
     U: <a class="trait" href="trait.UnionStrategy.html" title="trait competitive::data_structure::union_find::UnionStrategy">UnionStrategy</a>,
     F: <a class="trait" href="trait.FindStrategy.html" title="trait competitive::data_structure::union_find::FindStrategy">FindStrategy</a>,
     Merge: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a>),
@@ -801,7 +796,26 @@
 <span data-nosnippet>100</span>            }
 <span data-nosnippet>101</span>        }
 <span data-nosnippet>102</span>        <span class="prelude-val">Some</span>((acc, tree))
-<span data-nosnippet>103</span>    }</code></pre></div></div></div></details><section id="method.roots" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#389-391">Source</a><h4 class="code-header">pub fn <a href="#method.roots" class="fn">roots</a>(&amp;self) -&gt; impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator">Iterator</a>&lt;Item = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; + '_</h4></section><section id="method.all_group_members" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#393-400">Source</a><h4 class="code-header">pub fn <a href="#method.all_group_members" class="fn">all_group_members</a>(&amp;mut self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html" title="struct std::collections::hash::map::HashMap">HashMap</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.find" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#402-417">Source</a><h4 class="code-header">pub fn <a href="#method.find" class="fn">find</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#437&#34;,&#34;line 437&#34;],[[28,28],&#34;../../../src/competitive/data_structure/union_find.rs.html#464&#34;,&#34;line 464&#34;],[[29,29],&#34;../../../src/competitive/data_structure/union_find.rs.html#465&#34;,&#34;line 465&#34;],[[38,38],&#34;../../../src/competitive/data_structure/union_find.rs.html#474&#34;,&#34;line 474&#34;],[[39,39],&#34;../../../src/competitive/data_structure/union_find.rs.html#475&#34;,&#34;line 475&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#437">line 437</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>436</span>    <span class="kw">pub fn </span>unite_noninv(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize, potential: P::T) -&gt; bool {
+<span data-nosnippet>103</span>    }</code></pre></div></div></div></details><section id="method.roots" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#389-391">Source</a><h4 class="code-header">pub fn <a href="#method.roots" class="fn">roots</a>(&amp;self) -&gt; impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator">Iterator</a>&lt;Item = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; + '_</h4></section><details class="toggle method-toggle" open><summary><section id="method.all_group_members" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#393-400">Source</a><h4 class="code-header">pub fn <a href="#method.all_group_members" class="fn">all_group_members</a>(&amp;mut self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html" title="struct std::collections::hash::map::HashMap">HashMap</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/library_checker/graph/two_edge_connected_components.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/two_edge_connected_components.rs (<a href="../../../src/library_checker/graph/two_edge_connected_components.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>two_edge_connected_components(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>10</span>    <span class="macro">sc!</span>(n, m, edges: [(usize, usize); m]);
+<span data-nosnippet>11</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
+<span data-nosnippet>12</span>    <span class="kw">let </span>low_link = LowLink::new(<span class="kw-2">&amp;</span>graph);
+<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(n);
+<span data-nosnippet>14</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v) <span class="kw">in </span><span class="kw-2">&amp;</span>graph.edges {
+<span data-nosnippet>15</span>        <span class="kw">if </span>low_link.ord[u] &gt; low_link.ord[v] {
+<span data-nosnippet>16</span>            std::mem::swap(<span class="kw-2">&amp;mut </span>u, <span class="kw-2">&amp;mut </span>v);
+<span data-nosnippet>17</span>        }
+<span data-nosnippet>18</span>        <span class="kw">if </span>low_link.ord[u] &gt;= low_link.low[v] {
+<span data-nosnippet>19</span>            uf.unite(u, v);
+<span data-nosnippet>20</span>        }
+<span data-nosnippet>21</span>    }
+<span data-nosnippet>22</span>    <span class="kw">let </span>groups = uf.<span class="highlight focus">all_group_members</span>();
+<span data-nosnippet>23</span>    <span class="macro">pp!</span>(groups.len());
+<span data-nosnippet>24</span>    <span class="kw">for </span>group <span class="kw">in </span>groups.into_values() {
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(group.len(), @it group);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.find" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#402-417">Source</a><h4 class="code-header">pub fn <a href="#method.find" class="fn">find</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#437&#34;,&#34;line 437&#34;],[[28,28],&#34;../../../src/competitive/data_structure/union_find.rs.html#464&#34;,&#34;line 464&#34;],[[29,29],&#34;../../../src/competitive/data_structure/union_find.rs.html#465&#34;,&#34;line 465&#34;],[[38,38],&#34;../../../src/competitive/data_structure/union_find.rs.html#474&#34;,&#34;line 474&#34;],[[39,39],&#34;../../../src/competitive/data_structure/union_find.rs.html#475&#34;,&#34;line 475&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#437">line 437</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>436</span>    <span class="kw">pub fn </span>unite_noninv(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize, potential: P::T) -&gt; bool {
 <span data-nosnippet>437</span>        <span class="kw">let </span>(rx, potx) = <span class="self">self</span>.<span class="highlight focus">find</span>(x);
 <span data-nosnippet>438</span>        <span class="kw">let </span>ry = <span class="self">self</span>.find_root(y);
 <span data-nosnippet>439</span>        <span class="kw">if </span>rx == ry || y != ry {
@@ -865,7 +879,7 @@
 <span data-nosnippet>497</span>        <span class="self">self</span>.set_root_info(rx, U::unite(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo));
 <span data-nosnippet>498</span>        <span class="self">self</span>.cells[ry].set_child(rx, potential);
 <span data-nosnippet>499</span>        <span class="bool-val">true
-<span data-nosnippet>500</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.find_root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#419-434">Source</a><h4 class="code-header">pub fn <a href="#method.find_root" class="fn">find_root</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#354&#34;,&#34;line 354&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#376&#34;,&#34;line 376&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#376&#34;,&#34;line 376&#34;],[[27,27],&#34;../../../src/competitive/data_structure/union_find.rs.html#380&#34;,&#34;line 380&#34;],[[32,32],&#34;../../../src/competitive/data_structure/union_find.rs.html#385&#34;,&#34;line 385&#34;],[[43,43],&#34;../../../src/competitive/data_structure/union_find.rs.html#396&#34;,&#34;line 396&#34;],[[85,85],&#34;../../../src/competitive/data_structure/union_find.rs.html#438&#34;,&#34;line 438&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#354">line 354</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>353</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>500</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.find_root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#419-434">Source</a><h4 class="code-header">pub fn <a href="#method.find_root" class="fn">find_root</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-9"><a href="#scraped-examples-9">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#354&#34;,&#34;line 354&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#376&#34;,&#34;line 376&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#376&#34;,&#34;line 376&#34;],[[27,27],&#34;../../../src/competitive/data_structure/union_find.rs.html#380&#34;,&#34;line 380&#34;],[[32,32],&#34;../../../src/competitive/data_structure/union_find.rs.html#385&#34;,&#34;line 385&#34;],[[43,43],&#34;../../../src/competitive/data_structure/union_find.rs.html#396&#34;,&#34;line 396&#34;],[[85,85],&#34;../../../src/competitive/data_structure/union_find.rs.html#438&#34;,&#34;line 438&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#354">line 354</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>353</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
 <span data-nosnippet>354</span>        <span class="kw">let </span>root = <span class="self">self</span>.<span class="highlight focus">find_root</span>(x);
 <span data-nosnippet>355</span>        <span class="self">self</span>.root_info(root).unwrap() <span class="kw">as </span>usize
 <span data-nosnippet>356</span>    }
@@ -1108,7 +1122,7 @@
     F: <a class="trait" href="trait.FindStrategy.html" title="trait competitive::data_structure::union_find::FindStrategy">FindStrategy</a>,
     M: <a class="trait" href="trait.UfMergeSpec.html" title="trait competitive::data_structure::union_find::UfMergeSpec">UfMergeSpec</a>,
     P: <a class="trait" href="../../algebra/trait.Group.html" title="trait competitive::algebra::Group">Group</a>,
-    H: <a class="trait" href="trait.UndoStrategy.html" title="trait competitive::data_structure::union_find::UndoStrategy">UndoStrategy</a>&lt;<a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;M::<a class="associatedtype" href="trait.UfMergeSpec.html#associatedtype.Data" title="type competitive::data_structure::union_find::UfMergeSpec::Data">Data</a>, P&gt;&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.difference" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#463-471">Source</a><h4 class="code-header">pub fn <a href="#method.difference" class="fn">difference</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-9"><a href="#scraped-examples-9">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/aizu_online_judge/dsl/dsl_1_b.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_b.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_b.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>12</span><span class="kw">pub fn </span>dsl_1_b(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+    H: <a class="trait" href="trait.UndoStrategy.html" title="trait competitive::data_structure::union_find::UndoStrategy">UndoStrategy</a>&lt;<a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;M::<a class="associatedtype" href="trait.UfMergeSpec.html#associatedtype.Data" title="type competitive::data_structure::union_find::UfMergeSpec::Data">Data</a>, P&gt;&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.difference" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#463-471">Source</a><h4 class="code-header">pub fn <a href="#method.difference" class="fn">difference</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/aizu_online_judge/dsl/dsl_1_b.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_b.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_b.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>12</span><span class="kw">pub fn </span>dsl_1_b(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>13</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>14</span>    <span class="macro">sc!</span>(n, q);
 <span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = PotentializedUnionFind::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::new(n);
@@ -1175,7 +1189,7 @@
 <span data-nosnippet>58</span>            }
 <span data-nosnippet>59</span>        }
 <span data-nosnippet>60</span>    }
-<span data-nosnippet>61</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.unite_with" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#473-500">Source</a><h4 class="code-header">pub fn <a href="#method.unite_with" class="fn">unite_with</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, potential: P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#503&#34;,&#34;line 503&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#503">line 503</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>502</span>    <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+<span data-nosnippet>61</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.unite_with" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#473-500">Source</a><h4 class="code-header">pub fn <a href="#method.unite_with" class="fn">unite_with</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, potential: P::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-11"><a href="#scraped-examples-11">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#503&#34;,&#34;line 503&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#503">line 503</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>502</span>    <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
 <span data-nosnippet>503</span>        <span class="self">self</span>.<span class="highlight focus">unite_with</span>(x, y, P::unit())
 <span data-nosnippet>504</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/aizu_online_judge/dsl/dsl_1_b.rs.html#20&#34;,&#34;line 20&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_b.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_b.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>12</span><span class="kw">pub fn </span>dsl_1_b(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>13</span>    <span class="macro">prepare_io!</span>(reader, writer);
@@ -1244,7 +1258,7 @@
 <span data-nosnippet>58</span>            }
 <span data-nosnippet>59</span>        }
 <span data-nosnippet>60</span>    }
-<span data-nosnippet>61</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.unite" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#502-504">Source</a><h4 class="code-header">pub fn <a href="#method.unite" class="fn">unite</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-11"><a href="#scraped-examples-11">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#20&#34;,&#34;line 20&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_a.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>12</span><span class="kw">pub fn </span>dsl_1_a(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>61</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.unite" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#502-504">Source</a><h4 class="code-header">pub fn <a href="#method.unite" class="fn">unite</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-12"><a href="#scraped-examples-12">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#20&#34;,&#34;line 20&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_a.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>12</span><span class="kw">pub fn </span>dsl_1_a(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>13</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>14</span>    <span class="macro">sc!</span>(n, q);
 <span data-nosnippet>15</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(n);
@@ -1292,7 +1306,26 @@
 <span data-nosnippet>29</span>            }
 <span data-nosnippet>30</span>        }
 <span data-nosnippet>31</span>        res
-<span data-nosnippet>32</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[26,26],&#34;../../../src/competitive/algorithm/solve_01_on_tree.rs.html#68&#34;,&#34;line 68&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/solve_01_on_tree.rs (<a href="../../../src/competitive/algorithm/solve_01_on_tree.rs.html#68">line 68</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>42</span><span class="kw">pub fn </span>solve_01_on_tree(
+<span data-nosnippet>32</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/library_checker/graph/two_edge_connected_components.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/two_edge_connected_components.rs (<a href="../../../src/library_checker/graph/two_edge_connected_components.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>two_edge_connected_components(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>10</span>    <span class="macro">sc!</span>(n, m, edges: [(usize, usize); m]);
+<span data-nosnippet>11</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
+<span data-nosnippet>12</span>    <span class="kw">let </span>low_link = LowLink::new(<span class="kw-2">&amp;</span>graph);
+<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(n);
+<span data-nosnippet>14</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v) <span class="kw">in </span><span class="kw-2">&amp;</span>graph.edges {
+<span data-nosnippet>15</span>        <span class="kw">if </span>low_link.ord[u] &gt; low_link.ord[v] {
+<span data-nosnippet>16</span>            std::mem::swap(<span class="kw-2">&amp;mut </span>u, <span class="kw-2">&amp;mut </span>v);
+<span data-nosnippet>17</span>        }
+<span data-nosnippet>18</span>        <span class="kw">if </span>low_link.ord[u] &gt;= low_link.low[v] {
+<span data-nosnippet>19</span>            uf.<span class="highlight focus">unite</span>(u, v);
+<span data-nosnippet>20</span>        }
+<span data-nosnippet>21</span>    }
+<span data-nosnippet>22</span>    <span class="kw">let </span>groups = uf.all_group_members();
+<span data-nosnippet>23</span>    <span class="macro">pp!</span>(groups.len());
+<span data-nosnippet>24</span>    <span class="kw">for </span>group <span class="kw">in </span>groups.into_values() {
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(group.len(), @it group);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[26,26],&#34;../../../src/competitive/algorithm/solve_01_on_tree.rs.html#68&#34;,&#34;line 68&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/solve_01_on_tree.rs (<a href="../../../src/competitive/algorithm/solve_01_on_tree.rs.html#68">line 68</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>42</span><span class="kw">pub fn </span>solve_01_on_tree(
 <span data-nosnippet>43</span>    n: usize,
 <span data-nosnippet>44</span>    c01: <span class="kw">impl </span>Fn(usize) -&gt; (usize, usize),
 <span data-nosnippet>45</span>    root: usize,
@@ -1333,151 +1366,42 @@
 <span data-nosnippet>80</span>    }
 <span data-nosnippet>81</span>    ord.reverse();
 <span data-nosnippet>82</span>    (cost, ord)
-<span data-nosnippet>83</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[25,25],&#34;../../../src/library_checker/data_structure/persistent_unionfind.rs.html#33&#34;,&#34;line 33&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/persistent_unionfind.rs (<a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#33">line 33</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>persistent_unionfind(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(buffered; reader, writer);
-<span data-nosnippet>10</span>    <span class="macro">sc!</span>(n, q, queries: [(u8, i32, u32, u32); q]);
-<span data-nosnippet>11</span>    <span class="kw">let </span>children = DirectedSparseGraph::from_edges(
-<span data-nosnippet>12</span>        q + <span class="number">1</span>,
-<span data-nosnippet>13</span>        queries
-<span data-nosnippet>14</span>            .iter()
-<span data-nosnippet>15</span>            .enumerate()
-<span data-nosnippet>16</span>            .map(|(i, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, k, <span class="kw">_</span>, <span class="kw">_</span>))| ((k + <span class="number">1</span>) <span class="kw">as </span>usize, i + <span class="number">1</span>))
-<span data-nosnippet>17</span>            .collect(),
-<span data-nosnippet>18</span>    );
-<span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UndoableUnionFind::new(n);
-<span data-nosnippet>20</span>    <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="macro">vec!</span>[<span class="bool-val">false</span>; q];
-<span data-nosnippet>21</span>    <span class="kw">let </span><span class="kw-2">mut </span>stack: Vec&lt;<span class="kw">_</span>&gt; = children
-<span data-nosnippet>22</span>        .neighbors(<span class="number">0</span>)
-<span data-nosnippet>23</span>        .map(|edge| (edge.to <span class="kw">as </span>u32 - <span class="number">1</span>, <span class="bool-val">false</span>))
-<span data-nosnippet>24</span>        .collect();
-<span data-nosnippet>25</span>    <span class="kw">while let </span><span class="prelude-val">Some</span>((i, undo)) = stack.pop() {
-<span data-nosnippet>26</span>        <span class="kw">let </span>i = i <span class="kw">as </span>usize;
-<span data-nosnippet>27</span>        <span class="kw">if </span>undo {
-<span data-nosnippet>28</span>            uf.undo();
-<span data-nosnippet>29</span>            <span class="kw">continue</span>;
-<span data-nosnippet>30</span>        }
-<span data-nosnippet>31</span>        <span class="kw">let </span>(t, <span class="kw">_</span>, u, v) = queries[i];
-<span data-nosnippet>32</span>        <span class="kw">if </span>t == <span class="number">0 </span>{
-<span data-nosnippet>33</span>            <span class="kw">if </span>uf.<span class="highlight focus">unite</span>(u <span class="kw">as </span>usize, v <span class="kw">as </span>usize) {
-<span data-nosnippet>34</span>                stack.push((i <span class="kw">as </span>u32, <span class="bool-val">true</span>));
-<span data-nosnippet>35</span>            }
-<span data-nosnippet>36</span>            stack.extend(
-<span data-nosnippet>37</span>                children
-<span data-nosnippet>38</span>                    .neighbors(i + <span class="number">1</span>)
-<span data-nosnippet>39</span>                    .map(|edge| (edge.to <span class="kw">as </span>u32 - <span class="number">1</span>, <span class="bool-val">false</span>)),
-<span data-nosnippet>40</span>            );
-<span data-nosnippet>41</span>        } <span class="kw">else </span>{
-<span data-nosnippet>42</span>            ans[i] = uf.same(u <span class="kw">as </span>usize, v <span class="kw">as </span>usize);
-<span data-nosnippet>43</span>        }
-<span data-nosnippet>44</span>    }
-<span data-nosnippet>45</span>    <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>(t, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>)) <span class="kw">in </span>queries.iter().enumerate() {
-<span data-nosnippet>46</span>        <span class="kw">if </span>t == <span class="number">1 </span>{
-<span data-nosnippet>47</span>            <span class="macro">pp!</span>(ans[i] <span class="kw">as </span>u8);
-<span data-nosnippet>48</span>        }
-<span data-nosnippet>49</span>    }
-<span data-nosnippet>50</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[72,72],&#34;../../../src/competitive/graph/minimum_spanning_arborescence.rs.html#77&#34;,&#34;line 77&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/minimum_spanning_arborescence.rs (<a href="../../../src/competitive/graph/minimum_spanning_arborescence.rs.html#77">line 77</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>5</span>    <span class="kw">pub fn </span>minimum_spanning_arborescence&lt;G, F&gt;(
-<span data-nosnippet>6</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>7</span>        root: usize,
-<span data-nosnippet>8</span>        weight: F,
-<span data-nosnippet>9</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(G::T, Vec&lt;usize&gt;)&gt;
-<span data-nosnippet>10</span>    <span class="kw">where
-<span data-nosnippet>11</span>        </span>G: Group&lt;T: Ord&gt;,
-<span data-nosnippet>12</span>        F: Fn(usize) -&gt; G::T,
-<span data-nosnippet>13</span>    {
-<span data-nosnippet>14</span>        <span class="kw">struct </span>WeightAct&lt;G&gt;(std::marker::PhantomData&lt;<span class="kw">fn</span>() -&gt; G&gt;);
-<span data-nosnippet>15</span>        <span class="kw">impl</span>&lt;G&gt; MonoidAct <span class="kw">for </span>WeightAct&lt;G&gt;
-<span data-nosnippet>16</span>        <span class="kw">where
-<span data-nosnippet>17</span>            </span>G: Group,
-<span data-nosnippet>18</span>        {
-<span data-nosnippet>19</span>            <span class="kw">type </span>Key = (G::T, usize);
-<span data-nosnippet>20</span>            <span class="kw">type </span>Act = G::T;
-<span data-nosnippet>21</span>            <span class="kw">type </span>ActMonoid = G;
-<span data-nosnippet>22</span>
-<span data-nosnippet>23</span>            <span class="kw">fn </span>act(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-<span data-nosnippet>24</span>                (G::operate(<span class="kw-2">&amp;</span>x.<span class="number">0</span>, a), x.<span class="number">1</span>)
-<span data-nosnippet>25</span>            }
-<span data-nosnippet>26</span>
-<span data-nosnippet>27</span>            <span class="kw">fn </span>act_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Key, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) {
-<span data-nosnippet>28</span>                x.<span class="number">0 </span>= G::operate(<span class="kw-2">&amp;</span>x.<span class="number">0</span>, a);
-<span data-nosnippet>29</span>            }
-<span data-nosnippet>30</span>        }
-<span data-nosnippet>31</span>        <span class="kw">let </span><span class="kw-2">mut </span>uf = MergingUnionFind::new_with_merger(
-<span data-nosnippet>32</span>            <span class="self">self</span>.vertices_size(),
-<span data-nosnippet>33</span>            |<span class="kw">_</span>| PairingHeap::&lt;(G::T, usize), Less, WeightAct&lt;G&gt;&gt;::default(),
-<span data-nosnippet>34</span>            |x, y| x.append(y),
-<span data-nosnippet>35</span>        );
-<span data-nosnippet>36</span>        <span class="kw">let </span><span class="kw-2">mut </span>state = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed
-<span data-nosnippet>37</span>        </span>state[root] = <span class="number">2</span>;
-<span data-nosnippet>38</span>        <span class="kw">for </span>(id, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, to)) <span class="kw">in </span><span class="self">self</span>.edges().enumerate() {
-<span data-nosnippet>39</span>            uf.merge_data_mut(to).push((weight(id), id));
-<span data-nosnippet>40</span>        }
-<span data-nosnippet>41</span>        <span class="kw">let </span><span class="kw-2">mut </span>paredge = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.edges_size()];
-<span data-nosnippet>42</span>        <span class="kw">let </span><span class="kw-2">mut </span>ord = <span class="macro">vec!</span>[];
-<span data-nosnippet>43</span>        <span class="kw">let </span><span class="kw-2">mut </span>leaf = <span class="macro">vec!</span>[<span class="self">self</span>.edges_size(); <span class="self">self</span>.vertices_size()];
-<span data-nosnippet>44</span>        <span class="kw">let </span><span class="kw-2">mut </span>cycle = <span class="number">0usize</span>;
-<span data-nosnippet>45</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = G::unit();
-<span data-nosnippet>46</span>        <span class="kw">for </span><span class="kw-2">mut </span>cur <span class="kw">in </span><span class="self">self</span>.vertices() {
-<span data-nosnippet>47</span>            <span class="kw">if </span>state[cur] != <span class="number">0 </span>{
-<span data-nosnippet>48</span>                <span class="kw">continue</span>;
-<span data-nosnippet>49</span>            }
-<span data-nosnippet>50</span>            <span class="kw">let </span><span class="kw-2">mut </span>path = <span class="macro">vec!</span>[];
-<span data-nosnippet>51</span>            <span class="kw">let </span><span class="kw-2">mut </span>ch = <span class="macro">vec!</span>[];
-<span data-nosnippet>52</span>            <span class="kw">while </span>state[cur] != <span class="number">2 </span>{
-<span data-nosnippet>53</span>                path.push(cur);
-<span data-nosnippet>54</span>                state[cur] = <span class="number">1</span>;
-<span data-nosnippet>55</span>                <span class="kw">let </span>(w, eid) = {
-<span data-nosnippet>56</span>                    <span class="kw">match </span>uf.merge_data_mut(cur).pop() {
-<span data-nosnippet>57</span>                        <span class="prelude-val">Some</span>((w, eid)) =&gt; (w, eid),
-<span data-nosnippet>58</span>                        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
-<span data-nosnippet>59</span>                    }
-<span data-nosnippet>60</span>                };
-<span data-nosnippet>61</span>                uf.merge_data_mut(cur).apply_all(G::inverse(<span class="kw-2">&amp;</span>w));
-<span data-nosnippet>62</span>                acc = G::operate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span>w);
-<span data-nosnippet>63</span>                ord.push(eid);
-<span data-nosnippet>64</span>                <span class="kw">let </span>(u, v) = <span class="self">self</span>[eid];
-<span data-nosnippet>65</span>                <span class="kw">if </span>leaf[v] &gt;= <span class="self">self</span>.edges_size() {
-<span data-nosnippet>66</span>                    leaf[v] = eid;
-<span data-nosnippet>67</span>                }
-<span data-nosnippet>68</span>                <span class="kw">while </span>cycle &gt; <span class="number">0 </span>{
-<span data-nosnippet>69</span>                    paredge[ch.pop().unwrap()] = eid;
-<span data-nosnippet>70</span>                    cycle -= <span class="number">1</span>;
-<span data-nosnippet>71</span>                }
-<span data-nosnippet>72</span>                ch.push(eid);
-<span data-nosnippet>73</span>                <span class="kw">if </span>state[uf.find_root(u)] == <span class="number">1 </span>{
-<span data-nosnippet>74</span>                    <span class="kw">while let </span><span class="prelude-val">Some</span>(t) = path.pop() {
-<span data-nosnippet>75</span>                        state[t] = <span class="number">2</span>;
-<span data-nosnippet>76</span>                        cycle += <span class="number">1</span>;
-<span data-nosnippet>77</span>                        <span class="kw">if </span>!uf.<span class="highlight focus">unite</span>(u, t) {
-<span data-nosnippet>78</span>                            <span class="kw">break</span>;
-<span data-nosnippet>79</span>                        }
-<span data-nosnippet>80</span>                    }
-<span data-nosnippet>81</span>                    state[uf.find_root(u)] = <span class="number">1</span>;
-<span data-nosnippet>82</span>                }
-<span data-nosnippet>83</span>                cur = uf.find_root(u);
-<span data-nosnippet>84</span>            }
-<span data-nosnippet>85</span>            <span class="kw">for </span>u <span class="kw">in </span>path.into_iter() {
-<span data-nosnippet>86</span>                state[u] = <span class="number">2</span>;
-<span data-nosnippet>87</span>            }
-<span data-nosnippet>88</span>        }
-<span data-nosnippet>89</span>        <span class="kw">let </span><span class="kw-2">mut </span>tree = <span class="macro">vec!</span>[root; <span class="self">self</span>.vertices_size()];
-<span data-nosnippet>90</span>        <span class="kw">let </span><span class="kw-2">mut </span>used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.edges_size()];
-<span data-nosnippet>91</span>        <span class="kw">for </span>eid <span class="kw">in </span>ord.into_iter().rev() {
-<span data-nosnippet>92</span>            <span class="kw">if </span>!used[eid] {
-<span data-nosnippet>93</span>                <span class="kw">let </span>(u, v) = <span class="self">self</span>[eid];
-<span data-nosnippet>94</span>                tree[v] = u;
-<span data-nosnippet>95</span>                <span class="kw">let </span><span class="kw-2">mut </span>x = leaf[v];
-<span data-nosnippet>96</span>                <span class="kw">while </span>x != eid {
-<span data-nosnippet>97</span>                    used[x] = <span class="bool-val">true</span>;
-<span data-nosnippet>98</span>                    x = paredge[x];
-<span data-nosnippet>99</span>                }
-<span data-nosnippet>100</span>            }
-<span data-nosnippet>101</span>        }
-<span data-nosnippet>102</span>        <span class="prelude-val">Some</span>((acc, tree))
-<span data-nosnippet>103</span>    }</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#507-517">Source</a><a href="#impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="anchor">§</a><h3 class="code-header">impl&lt;U, M, P, H&gt; <a class="struct" href="struct.UnionFindBase.html" title="struct competitive::data_structure::union_find::UnionFindBase">UnionFindBase</a>&lt;U, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, M, P, H&gt;<div class="where">where
+<span data-nosnippet>83</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[23,23],&#34;../../../src/competitive/graph/steiner_tree.rs.html#228&#34;,&#34;line 228&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/steiner_tree.rs (<a href="../../../src/competitive/graph/steiner_tree.rs.html#228">line 228</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>205</span>    <span class="kw">pub fn </span>edges_from_source(<span class="kw-2">&amp;</span><span class="self">self</span>, source: G::Vertex) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;G::Label&gt;&gt; {
+<span data-nosnippet>206</span>        <span class="kw">if </span><span class="self">self</span>.dp.is_empty() {
+<span data-nosnippet>207</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="macro">vec!</span>[]);
+<span data-nosnippet>208</span>        }
+<span data-nosnippet>209</span>        <span class="kw">if </span><span class="self">self</span>.minimum_from_source(source) == S::inf() {
+<span data-nosnippet>210</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>211</span>        }
+<span data-nosnippet>212</span>        <span class="kw">let </span>graph = <span class="self">self</span>.graph;
+<span data-nosnippet>213</span>        <span class="kw">let </span><span class="kw-2">mut </span>index = graph.construct_vmap(|| <span class="number">0usize</span>);
+<span data-nosnippet>214</span>        <span class="kw">for </span>(i, u) <span class="kw">in </span>graph.vertices().enumerate() {
+<span data-nosnippet>215</span>            <span class="kw-2">*</span>graph.vmap_get_mut(<span class="kw-2">&amp;mut </span>index, u) = i;
+<span data-nosnippet>216</span>        }
+<span data-nosnippet>217</span>        <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(graph.vsize());
+<span data-nosnippet>218</span>        <span class="kw">let </span><span class="kw-2">mut </span>edges = <span class="macro">vec!</span>[];
+<span data-nosnippet>219</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(<span class="self">self</span>.dp.len() - <span class="number">1</span>, source)];
+<span data-nosnippet>220</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>((bit, u)) = stack.pop() {
+<span data-nosnippet>221</span>            <span class="kw">match </span>graph.vmap_get(<span class="kw-2">&amp;</span><span class="self">self</span>.parent[bit], u) {
+<span data-nosnippet>222</span>                SteinerTreeParent::None =&gt; {}
+<span data-nosnippet>223</span>                <span class="kw-2">&amp;</span>SteinerTreeParent::Split(sub) =&gt; {
+<span data-nosnippet>224</span>                    stack.push((sub, u));
+<span data-nosnippet>225</span>                    stack.push((bit ^ sub, u));
+<span data-nosnippet>226</span>                }
+<span data-nosnippet>227</span>                SteinerTreeParent::Edge(v, label) =&gt; {
+<span data-nosnippet>228</span>                    <span class="kw">if </span>uf.<span class="highlight focus">unite</span>(<span class="kw-2">*</span>graph.vmap_get(<span class="kw-2">&amp;</span>index, u), <span class="kw-2">*</span>graph.vmap_get(<span class="kw-2">&amp;</span>index, <span class="kw-2">*</span>v)) {
+<span data-nosnippet>229</span>                        edges.push(label.clone());
+<span data-nosnippet>230</span>                    }
+<span data-nosnippet>231</span>                    stack.push((bit, <span class="kw-2">*</span>v));
+<span data-nosnippet>232</span>                }
+<span data-nosnippet>233</span>            }
+<span data-nosnippet>234</span>        }
+<span data-nosnippet>235</span>        <span class="prelude-val">Some</span>(edges)
+<span data-nosnippet>236</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#33">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li><li><a href="../../../src/competitive/graph/minimum_spanning_arborescence.rs.html#77">crates/competitive/src/graph/minimum_spanning_arborescence.rs</a></li></ul></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#507-517">Source</a><a href="#impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="anchor">§</a><h3 class="code-header">impl&lt;U, M, P, H&gt; <a class="struct" href="struct.UnionFindBase.html" title="struct competitive::data_structure::union_find::UnionFindBase">UnionFindBase</a>&lt;U, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, M, P, H&gt;<div class="where">where
     U: <a class="trait" href="trait.UnionStrategy.html" title="trait competitive::data_structure::union_find::UnionStrategy">UnionStrategy</a>,
     M: <a class="trait" href="trait.UfMergeSpec.html" title="trait competitive::data_structure::union_find::UfMergeSpec">UfMergeSpec</a>,
     P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,
-    H: <a class="trait" href="trait.UndoStrategy.html" title="trait competitive::data_structure::union_find::UndoStrategy">UndoStrategy</a>&lt;<a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;M::<a class="associatedtype" href="trait.UfMergeSpec.html#associatedtype.Data" title="type competitive::data_structure::union_find::UfMergeSpec::Data">Data</a>, P&gt;&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.undo" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#514-516">Source</a><h4 class="code-header">pub fn <a href="#method.undo" class="fn">undo</a>(&amp;mut self)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-12"><a href="#scraped-examples-12">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[20,20],&#34;../../../src/library_checker/data_structure/persistent_unionfind.rs.html#28&#34;,&#34;line 28&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/persistent_unionfind.rs (<a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#28">line 28</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>persistent_unionfind(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+    H: <a class="trait" href="trait.UndoStrategy.html" title="trait competitive::data_structure::union_find::UndoStrategy">UndoStrategy</a>&lt;<a class="struct" href="struct.UfCell.html" title="struct competitive::data_structure::union_find::UfCell">UfCell</a>&lt;M::<a class="associatedtype" href="trait.UfMergeSpec.html#associatedtype.Data" title="type competitive::data_structure::union_find::UfMergeSpec::Data">Data</a>, P&gt;&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.undo" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#514-516">Source</a><h4 class="code-header">pub fn <a href="#method.undo" class="fn">undo</a>(&amp;mut self)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-13"><a href="#scraped-examples-13">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[20,20],&#34;../../../src/library_checker/data_structure/persistent_unionfind.rs.html#28&#34;,&#34;line 28&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/persistent_unionfind.rs (<a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#28">line 28</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>persistent_unionfind(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(buffered; reader, writer);
 <span data-nosnippet>10</span>    <span class="macro">sc!</span>(n, q, queries: [(u8, i32, u32, u32); q]);
 <span data-nosnippet>11</span>    <span class="kw">let </span>children = DirectedSparseGraph::from_edges(

@@ -128,7 +128,40 @@
 <span data-nosnippet>83</span>            |new_n| cur = (cur + fact.combination(new_n, m)) * inv2,
 <span data-nosnippet>84</span>            |i| f(i, cur),
 <span data-nosnippet>85</span>        );
-<span data-nosnippet>86</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.combination" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#29-36">Source</a><h4 class="code-header">pub fn <a href="#method.combination" class="fn">combination</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../../src/competitive/math/factorial.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/factorial.rs (<a href="../../../src/competitive/math/factorial.rs.html#52">line 52</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>47</span>    <span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
+<span data-nosnippet>86</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[25,25],&#34;../../../src/library_checker/graph/counting_eulerian_circuits.rs.html#34&#34;,&#34;line 34&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/counting_eulerian_circuits.rs (<a href="../../../src/library_checker/graph/counting_eulerian_circuits.rs.html#34">line 34</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>counting_eulerian_circuits(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>10</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>11</span>    <span class="macro">sc!</span>(n, m, edges: [(usize, usize); iter m]);
+<span data-nosnippet>12</span>    <span class="kw">let </span><span class="kw-2">mut </span>a = Matrix::&lt;AddMulOperation&lt;M&gt;&gt;::zeros((n, n));
+<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>indegree = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<span data-nosnippet>14</span>    <span class="kw">let </span><span class="kw-2">mut </span>outdegree = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<span data-nosnippet>15</span>    <span class="kw">for </span>(u, v) <span class="kw">in </span>edges {
+<span data-nosnippet>16</span>        a[u][v] -= M::from(<span class="number">1</span>);
+<span data-nosnippet>17</span>        a[v][v] += M::from(<span class="number">1</span>);
+<span data-nosnippet>18</span>        outdegree[u] += <span class="number">1</span>;
+<span data-nosnippet>19</span>        indegree[v] += <span class="number">1</span>;
+<span data-nosnippet>20</span>    }
+<span data-nosnippet>21</span>    <span class="kw">if </span>indegree != outdegree {
+<span data-nosnippet>22</span>        <span class="macro">pp!</span>(<span class="number">0</span>);
+<span data-nosnippet>23</span>        <span class="kw">return</span>;
+<span data-nosnippet>24</span>    }
+<span data-nosnippet>25</span>    <span class="kw">let </span>root = outdegree.iter().position(|<span class="kw-2">&amp;</span>d| d != <span class="number">0</span>).unwrap();
+<span data-nosnippet>26</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>27</span>        a[root][i] = M::from(<span class="number">0</span>);
+<span data-nosnippet>28</span>        a[i][root] = M::from(<span class="number">0</span>);
+<span data-nosnippet>29</span>        <span class="kw">if </span>outdegree[i] == <span class="number">0 </span>{
+<span data-nosnippet>30</span>            a[i][i] = M::one();
+<span data-nosnippet>31</span>        }
+<span data-nosnippet>32</span>    }
+<span data-nosnippet>33</span>    a[root][root] = M::one();
+<span data-nosnippet>34</span>    <span class="kw">let </span>factorial = <span class="highlight focus">MemorizedFactorial::new</span>(<span class="kw-2">*</span>outdegree.iter().max().unwrap() - <span class="number">1</span>);
+<span data-nosnippet>35</span>    <span class="kw">let </span><span class="kw-2">mut </span>ans = a.determinant();
+<span data-nosnippet>36</span>    <span class="kw">for </span>d <span class="kw">in </span>outdegree {
+<span data-nosnippet>37</span>        <span class="kw">if </span>d != <span class="number">0 </span>{
+<span data-nosnippet>38</span>            ans <span class="kw-2">*</span>= factorial.fact[d - <span class="number">1</span>];
+<span data-nosnippet>39</span>        }
+<span data-nosnippet>40</span>    }
+<span data-nosnippet>41</span>    <span class="macro">pp!</span>(ans);
+<span data-nosnippet>42</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.combination" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#29-36">Source</a><h4 class="code-header">pub fn <a href="#method.combination" class="fn">combination</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../../src/competitive/math/factorial.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/factorial.rs (<a href="../../../src/competitive/math/factorial.rs.html#52">line 52</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>47</span>    <span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
 <span data-nosnippet>48</span>        <span class="macro">debug_assert!</span>(n + r &lt; <span class="self">self</span>.fact.len() + <span class="number">1</span>);
 <span data-nosnippet>49</span>        <span class="kw">if </span>n == <span class="number">0 </span>&amp;&amp; r == <span class="number">0 </span>{
 <span data-nosnippet>50</span>            MInt::one()

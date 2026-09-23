@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["assignment","bipartitematching","chromatic_number","directedmst","general_matching","general_weighted_matching","min_cost_b_flow","minimum_spanning_tree","scc","shortest_path"]};
+window.SIDEBAR_ITEMS = {"mod":["assignment","bipartitematching","chromatic_number","counting_eulerian_circuits","counting_spanning_tree_directed","counting_spanning_tree_undirected","directedmst","general_matching","general_weighted_matching","min_cost_b_flow","minimum_spanning_tree","minimum_steiner_tree","scc","shortest_path","two_edge_connected_components"]};
