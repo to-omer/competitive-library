@@ -44,6 +44,14 @@ impl<M> DualSegmentTree<M>
 where
     M: MonoidAct<Key: Clone, Act: PartialEq>,
 {
+    pub fn new(len: usize, key: M::Key) -> Self {
+        let n = len.next_power_of_two();
+        Self {
+            n,
+            keys: vec![key; len],
+            lazy: vec![M::unit(); n],
+        }
+    }
     pub fn from_keys(keys: impl ExactSizeIterator<Item = M::Key>) -> Self {
         let keys: Vec<_> = keys.collect();
         let n = keys.len().next_power_of_two();
@@ -157,24 +165,37 @@ mod tests {
                     })
                     .collect()
             };
-            for sequence in sequences {
-                let mut values: Vec<_> = (0..n).map(M::from).collect();
-                let mut seg = DualSegmentTree::<LinearAct<_>>::from_keys(values.iter().copied());
-                for (l, r, b, c) in sequence {
-                    let (b, c) = (M::from(b), M::from(c));
-                    seg.update(l..r, (b, c));
-                    for value in &mut values[l..r] {
-                        *value = b * *value + c;
-                    }
+            for uniform in [false, true] {
+                for sequence in &sequences {
+                    let mut values: Vec<_> = if uniform {
+                        vec![M::from(n); n]
+                    } else {
+                        (0..n).map(M::from).collect()
+                    };
+                    let mut seg = if uniform {
+                        DualSegmentTree::<LinearAct<_>>::new(n, M::from(n))
+                    } else {
+                        DualSegmentTree::from_keys(values.iter().copied())
+                    };
                     for (i, &value) in values.iter().enumerate() {
                         assert_eq!(seg.get(i), value);
                     }
-                }
-                for i in 0..n {
-                    values[i] = M::from(i);
-                    seg.set(i, values[i]);
-                    for (j, &value) in values.iter().enumerate() {
-                        assert_eq!(seg.get(j), value);
+                    for &(l, r, b, c) in sequence {
+                        let (b, c) = (M::from(b), M::from(c));
+                        seg.update(l..r, (b, c));
+                        for value in &mut values[l..r] {
+                            *value = b * *value + c;
+                        }
+                        for (i, &value) in values.iter().enumerate() {
+                            assert_eq!(seg.get(i), value);
+                        }
+                    }
+                    for i in 0..n {
+                        values[i] = M::from(i);
+                        seg.set(i, values[i]);
+                        for (j, &value) in values.iter().enumerate() {
+                            assert_eq!(seg.get(j), value);
+                        }
                     }
                 }
             }

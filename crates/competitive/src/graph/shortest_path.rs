@@ -524,25 +524,25 @@ where
     }
 }
 
-impl<'a, G, M> ShortestPathBuilder<'a, G, StandardSp<M>, RecordParent>
+impl<'a, G, M, P> ShortestPathBuilder<'a, G, StandardSp<M>, P>
 where
-    G: Graph + VertexMap<Option<<G as Graph>::Vertex>>,
+    G: Graph,
     M: Monoid<T: Bounded + Ord>,
+    P: ParentPolicy<G>,
 {
-    pub fn dijkstra_path<W>(
+    /// Distances other than the target may remain tentative.
+    pub fn dijkstra_to<W, I>(
         &self,
-        source: G::Vertex,
+        sources: I,
         target: G::Vertex,
         weight: W,
-    ) -> Option<(M::T, Vec<G::Vertex>)>
+    ) -> ShortestPathWithParent<G, StandardSp<M>, P>
     where
         G: VertexMap<M::T>,
         W: Fn(G::Label) -> M::T,
+        I: IntoIterator<Item = G::Vertex>,
     {
-        let result = self.dijkstra_core([source], &weight, |u| u == target);
-        let path = result.path_to(self.graph, target)?;
-        let distance: &M::T = self.graph.vmap_get(&result.dist, target);
-        Some((distance.clone(), path))
+        self.dijkstra_core(sources, &weight, |u| u == target)
     }
 }
 
@@ -593,6 +593,17 @@ mod tests {
             assert_eq!(dijkstra, closure_dijkstra);
             assert_eq!(dijkstra, bellman_ford);
             assert_eq!(dijkstra, warshall_floyd);
+            for (target, (&first, &last)) in dijkstra[0].iter().zip(&dijkstra[n - 1]).enumerate() {
+                let point = g
+                    .standard_sp_additive()
+                    .dijkstra_to([0, n - 1], target, |eid| w[eid] as u64);
+                let expected = [first, last]
+                    .into_iter()
+                    .flatten()
+                    .min()
+                    .map_or(u64::MAX, |distance| distance as u64);
+                assert_eq!(point.dist[target], expected);
+            }
         }
     }
 
@@ -645,13 +656,18 @@ mod tests {
                     let point =
                         g.standard_sp_additive()
                             .with_parent()
-                            .dijkstra_path(src, target, |eid| w[eid] as u64);
-                    assert_eq!(point.as_ref().map(|(distance, _)| *distance as i64), dist);
-                    if let Some((distance, path)) = point {
+                            .dijkstra_to([src], target, |eid| w[eid] as u64);
+                    assert_eq!(
+                        point.dist[target],
+                        dist.map_or(u64::MAX, |distance| distance as u64)
+                    );
+                    let path = point.path_to(&g, target);
+                    assert_eq!(path.is_some(), dist.is_some());
+                    if let Some(path) = path {
                         assert_eq!(path.first(), Some(&src));
                         assert_eq!(path.last(), Some(&target));
                         assert_eq!(
-                            distance,
+                            point.dist[target],
                             path.windows(2).map(|w| cost[&(w[0], w[1])] as u64).sum()
                         );
                     }
