@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["internal_parent","rotate","splay","splay_with_local_top_down"],"type":["NodePtr"]};
+window.SIDEBAR_ITEMS = {"fn":["internal_parent","rotate","rotate_at","splay","splay_with_local_top_down"],"type":["NodePtr"]};

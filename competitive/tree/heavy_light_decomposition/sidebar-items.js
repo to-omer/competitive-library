@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["HeavyLightDecomposition"]};
+window.SIDEBAR_ITEMS = {"struct":["HeavyLightDecomposition","HeavyLightNode","HeavyLightPathFold","PathFoldNode"]};
