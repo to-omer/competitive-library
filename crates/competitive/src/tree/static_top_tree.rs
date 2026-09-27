@@ -99,6 +99,7 @@ struct InnerNode {
 
 #[derive(Clone)]
 struct InnerValue<T> {
+    parent: usize,
     left: T,
     right: T,
 }
@@ -396,6 +397,7 @@ impl StaticTopTree {
                 let left = self.init_compress(data, vertices, edges, node.left);
                 let right = self.init_compress(data, vertices, edges, node.right);
                 data.compressed[id].write(InnerValue {
+                    parent: node.parent,
                     left: left.clone(),
                     right: right.clone(),
                 });
@@ -493,6 +495,7 @@ impl StaticTopTree {
                 let left = self.init_rake(data, vertices, edges, node.left);
                 let right = self.init_rake(data, vertices, edges, node.right);
                 data.raked[id].write(InnerValue {
+                    parent: node.parent,
                     left: left.clone(),
                     right: right.clone(),
                 });
@@ -609,6 +612,7 @@ where
         &self.all_point
     }
 
+    #[inline(always)]
     pub fn fold_path(&self, mut vertex: usize) -> <C as Cluster>::Path {
         assert!(vertex < self.tree.n);
         let mut path = C::unit_path();
@@ -625,7 +629,7 @@ where
                 } else {
                     left = C::compress(&inner.left, &left);
                 }
-                compress_parent = self.tree.compressed[compress_parent / 2].parent;
+                compress_parent = inner.parent;
             }
             let right_point = C::add_edge(&right);
             point = C::rake(&point, &right_point);
@@ -649,7 +653,7 @@ where
                 } else {
                     point = C::rake(&inner.left, &point);
                 }
-                rake_parent = self.tree.raked[rake_parent / 2].parent;
+                rake_parent = inner.parent;
             }
             vertex = links.heavy_parent;
         }
@@ -689,7 +693,7 @@ where
                 inner.right = path;
             }
             path = C::compress(&inner.left, &inner.right);
-            id = self.tree.compressed[id / 2].parent;
+            id = inner.parent;
         }
         path
     }
@@ -707,7 +711,7 @@ where
                 inner.right = point;
             }
             point = C::rake(&inner.left, &inner.right);
-            id = self.tree.raked[id / 2].parent;
+            id = inner.parent;
         }
         point
     }

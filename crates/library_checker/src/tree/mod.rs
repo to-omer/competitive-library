@@ -9,6 +9,8 @@ pub mod lca;
 pub mod point_set_tree_path_composite_sum;
 pub mod point_set_tree_path_composite_sum_fixed_root;
 pub mod rooted_tree_topological_order_with_minimum_inversions;
+pub mod tree_diameter;
+pub mod tree_path_composite_sum;
 pub mod vertex_add_path_sum;
 pub mod vertex_add_range_contour_sum_on_tree;
 pub mod vertex_add_subtree_sum;

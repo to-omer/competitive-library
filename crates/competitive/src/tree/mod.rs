@@ -2,6 +2,7 @@
 
 use crate::{
     algebra::{LazyMapMonoid, Magma, Monoid, Unital},
+    algorithm::CartesianTree,
     data_structure::{
         Allocator, MemoryPool, RangeMinimumQuery, binary_search_tree, splay_operations,
     },
@@ -17,7 +18,7 @@ pub use self::euler_tour::LowestCommonAncestor;
 #[codesnip::entry("tree_generator")]
 pub use self::generator::*;
 #[codesnip::entry("HeavyLightDecomposition")]
-pub use self::heavy_light_decomposition::HeavyLightDecomposition;
+pub use self::heavy_light_decomposition::{HeavyLightDecomposition, HeavyLightPathFold};
 #[codesnip::entry("LevelAncestor")]
 pub use self::level_ancestor::LevelAncestor;
 #[codesnip::entry("LinkCutTree")]
@@ -37,7 +38,7 @@ pub use self::xor_linked_tree::*;
 
 #[cfg_attr(
     nightly,
-    codesnip::entry("centroid_decomposition", include("SparseGraph"))
+    codesnip::entry("centroid_decomposition", include("SparseGraph", "tree_order"))
 )]
 mod centroid_decomposition;
 mod depth;
@@ -61,7 +62,10 @@ mod euler_tour;
 mod generator;
 #[cfg_attr(
     nightly,
-    codesnip::entry("HeavyLightDecomposition", include("algebra", "SparseGraph"))
+    codesnip::entry(
+        "HeavyLightDecomposition",
+        include("algebra", "SparseGraph", "CartesianTree")
+    )
 )]
 mod heavy_light_decomposition;
 #[cfg_attr(

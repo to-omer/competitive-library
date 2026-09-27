@@ -14,26 +14,23 @@ impl CartesianTree {
     {
         let mut parents = vec![!0; a.len()];
         let mut children = vec![[!0; 2]; a.len()];
-        let mut stack = vec![];
+        let mut root = !0;
         for i in 0..a.len() {
-            let mut prev = !0usize;
-            while let Some(last) = stack.pop_if(|last| a[i] < a[*last]) {
-                prev = last;
+            let mut prev = !0;
+            let mut parent = i.wrapping_sub(1);
+            while parent != !0 && a[i] < a[parent] {
+                prev = parent;
+                parent = parents[parent];
+            }
+            parents[i] = parent;
+            if parent != !0 {
+                children[parent][1] = i;
+            } else {
+                root = i;
             }
             if prev != !0 {
                 parents[prev] = i;
-            }
-            if let Some(&last) = stack.last() {
-                parents[i] = last;
-            }
-            stack.push(i);
-        }
-        let mut root = !0;
-        for i in 0..a.len() {
-            if parents[i] != !0 {
-                children[parents[i]][(i > parents[i]) as usize] = i;
-            } else {
-                root = i;
+                children[i][0] = prev;
             }
         }
         Self {
@@ -60,7 +57,10 @@ impl CartesianTree {
 mod tests {
     use super::*;
     use crate::{
-        algebra::MinOperation, crecurse, data_structure::SegmentTree, rand, tools::Xorshift,
+        algebra::MinOperation,
+        crecurse,
+        data_structure::SegmentTree,
+        tools::{Xorshift, testutil::exhaustive_sequences},
     };
 
     #[test]
@@ -69,8 +69,12 @@ mod tests {
         const N: usize = 100;
         const A: i64 = 100;
         let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            rand!(rng, n: 1..=N, a: [0..A; n]);
+        let arrays = exhaustive_sequences(-1..=1, 0..=6).chain((0..Q).map(|_| {
+            let n = rng.random(1..=N);
+            rng.random_iter(0..A).take(n).collect()
+        }));
+        for a in arrays {
+            let n = a.len();
             let mut seg = SegmentTree::<MinOperation<_>>::from_vec(
                 a.iter().enumerate().map(|(i, &a)| (a, i)).collect(),
             );
@@ -102,9 +106,11 @@ mod tests {
             assert_eq!(ct.parents, parents);
             assert_eq!(ct.children, children);
             let mut ct_ranges = vec![];
-            ct.with_ranges(|v, range| {
-                ct_ranges.push((v, range));
-            });
+            if !a.is_empty() {
+                ct.with_ranges(|v, range| {
+                    ct_ranges.push((v, range));
+                });
+            }
             assert_eq!(ct_ranges, ranges);
         }
     }

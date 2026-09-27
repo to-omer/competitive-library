@@ -74,10 +74,7 @@ pub fn dynamic_tree_vertex_add_path_sum_top_tree(reader: impl Read, writer: impl
                 tree.cut(u, v);
                 tree.link(w, x);
             }
-            Query::Add { p, x } => {
-                let value = *tree.get(p) + x;
-                tree.set(p, value);
-            }
+            Query::Add { p, x } => tree.modify(p, |value| *value + x),
             Query::Sum { u, v } => {
                 pp!(tree.fold_path(u, v).1);
             }

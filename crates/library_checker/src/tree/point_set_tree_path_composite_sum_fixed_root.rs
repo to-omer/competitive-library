@@ -9,7 +9,7 @@ use competitive::{
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Point {
     sum: M,
-    cnt: M,
+    cnt: u32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -17,7 +17,7 @@ struct Path {
     a: M,
     b: M,
     sum: M,
-    cnt: M,
+    cnt: u32,
 }
 
 struct PointMonoid;
@@ -34,7 +34,7 @@ impl Unital for PointMonoid {
     fn unit() -> Self::T {
         Point {
             sum: M::zero(),
-            cnt: M::zero(),
+            cnt: 0,
         }
     }
 }
@@ -47,7 +47,7 @@ impl Magma for PathMonoid {
         Path {
             a: x.a * y.a,
             b: x.b + x.a * y.b,
-            sum: x.sum + x.a * y.sum + x.b * y.cnt,
+            sum: x.sum + x.a * y.sum + x.b * M::new_unchecked(y.cnt),
             cnt: x.cnt + y.cnt,
         }
     }
@@ -58,7 +58,7 @@ impl Unital for PathMonoid {
             a: M::one(),
             b: M::zero(),
             sum: M::zero(),
-            cnt: M::zero(),
+            cnt: 0,
         }
     }
 }
@@ -73,13 +73,13 @@ impl MonoidCluster for Dp {
     type PathMonoid = PathMonoid;
 
     fn add_vertex(point: &Point, vertex: &M, parent_edge: Option<&(M, M)>) -> Path {
-        let cnt = point.cnt + M::one();
+        let cnt = point.cnt + 1;
         let subtotal = point.sum + *vertex;
         let (a, b) = parent_edge.copied().unwrap_or((M::one(), M::zero()));
         Path {
             a,
             b,
-            sum: a * subtotal + b * cnt,
+            sum: a * subtotal + b * M::new_unchecked(cnt),
             cnt,
         }
     }

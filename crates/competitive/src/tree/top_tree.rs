@@ -34,6 +34,9 @@ where
     /// before `b`.
     type ActionMonoid: Monoid<T = Self::Action>;
 
+    /// Whether pending actions require propagation from the auxiliary root before rotations.
+    const ROOT_TO_NODE_TOP_DOWN: bool = true;
+
     fn act_info(info: &mut S::Info, action: &Self::Action);
     fn act_point(point: &mut S::Point, action: &Self::Action);
     fn act_path(path: &mut S::Path, action: &Self::Action);
@@ -49,6 +52,8 @@ where
     type Action = ();
     type ActionMonoid = ();
 
+    const ROOT_TO_NODE_TOP_DOWN: bool = false;
+
     fn act_info(_info: &mut S::Info, _action: &Self::Action) {}
     fn act_point(_point: &mut S::Point, _action: &Self::Action) {}
     fn act_path(_path: &mut S::Path, _action: &Self::Action) {}
@@ -62,12 +67,11 @@ where
 {
     info: S::Info,
     sum: S::Path,
-    reverse: bool,
     light: Option<RakePtr<S, A>>,
     belong: Option<RakePtr<S, A>>,
     heavy_action: A::Action,
     light_action: A::Action,
-    index: usize,
+    index_and_reverse: usize,
 }
 
 struct RakeData<S, A>
@@ -108,7 +112,7 @@ where
     unsafe fn toggle(mut node: TopPtr<S, A>) {
         unsafe { node.as_mut().child.swap(0, 1) };
         let data = unsafe { &mut node.as_mut().data };
-        data.reverse ^= true;
+        data.index_and_reverse ^= 1;
         S::reverse(&mut data.sum);
     }
 
@@ -152,8 +156,8 @@ where
     #[inline]
     fn top_down(mut node: BstDataMutRef<'_, Self>) {
         let pointer = node.node;
-        if node.reborrow().into_data().reverse {
-            node.data_mut().reverse = false;
+        if node.reborrow().into_data().index_and_reverse & 1 != 0 {
+            node.data_mut().index_and_reverse &= !1;
             for child in unsafe { pointer.as_ref().child }.into_iter().flatten() {
                 unsafe { Self::toggle(child) };
             }
@@ -346,12 +350,11 @@ where
         let node = self.node_allocator.allocate(BstNode::new(TopTreeData {
             info,
             sum,
-            reverse: false,
             light: None,
             belong: None,
             heavy_action: <A::ActionMonoid as Unital>::unit(),
             light_action: <A::ActionMonoid as Unital>::unit(),
-            index,
+            index_and_reverse: index << 1,
         }));
         self.nodes.push(node);
         index
@@ -373,8 +376,17 @@ where
 
     #[inline]
     unsafe fn splay_top(node: TopPtr<S, A>) {
-        let root = unsafe {
-            splay_operations::with_parent::splay::<TopBstSpec<S, A>, TopTreeData<S, A>>(node)
+        let root = if A::ROOT_TO_NODE_TOP_DOWN {
+            unsafe {
+                splay_operations::with_parent::splay::<TopBstSpec<S, A>, TopTreeData<S, A>>(node)
+            }
+        } else {
+            unsafe {
+                splay_operations::with_parent::splay_with_local_top_down::<
+                    TopBstSpec<S, A>,
+                    TopTreeData<S, A>,
+                >(node)
+            }
         };
         if root != node {
             unsafe {
@@ -408,24 +420,20 @@ where
         root: Option<RakePtr<S, A>>,
         key: S::Point,
     ) -> (RakePtr<S, A>, RakePtr<S, A>) {
-        let node = self.rake_allocator.allocate(BstNode::new(RakeData {
+        let mut node = self.rake_allocator.allocate(BstNode::new(RakeData {
             sum: key.clone(),
             key,
             action: <A::ActionMonoid as Unital>::unit(),
             buffer: <A::ActionMonoid as Unital>::unit(),
         }));
-        if let Some(root) = root {
-            let mut rightmost = unsafe { Self::rake_rightmost(root) };
+        if let Some(mut root) = root {
             unsafe {
-                Self::splay_rake(rightmost);
-                rightmost.as_mut().child[1] = Some(node);
-                (*node.as_ptr()).parent.parent = Some(rightmost);
-                Self::pull_rake(rightmost);
+                node.as_mut().child[0] = Some(root);
+                root.as_mut().parent.parent = Some(node);
+                Self::pull_rake(node);
             }
-            (rightmost, node)
-        } else {
-            (node, node)
         }
+        (node, node)
     }
 
     unsafe fn rake_remove(
@@ -499,10 +507,17 @@ where
     }
 
     pub fn set(&mut self, node: usize, info: S::Info) {
+        self.modify(node, |_| info);
+    }
+
+    pub fn modify<F>(&mut self, node: usize, f: F)
+    where
+        F: FnOnce(&S::Info) -> S::Info,
+    {
         let mut node = self.node(node);
         self.access_node(node);
         unsafe {
-            node.as_mut().data.info = info;
+            node.as_mut().data.info = f(&node.as_ref().data.info);
             Self::pull_top(node);
         }
     }
@@ -557,7 +572,7 @@ where
                 }
             }
             Self::splay_top(root);
-            root.as_ref().data.index
+            root.as_ref().data.index_and_reverse >> 1
         }
     }
 

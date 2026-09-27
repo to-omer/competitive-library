@@ -130,10 +130,7 @@ pub fn dynamic_tree_vertex_add_subtree_sum_top_tree(reader: impl Read, writer: i
                 tree.cut(u, v);
                 tree.link(w, x);
             }
-            Query::Add { p, x } => {
-                let value = *tree.get(p) + x;
-                tree.set(p, value);
-            }
+            Query::Add { p, x } => tree.modify(p, |value| *value + x),
             Query::Sum { v, p } => {
                 pp!(tree.fold_subtree(v, p).0);
             }

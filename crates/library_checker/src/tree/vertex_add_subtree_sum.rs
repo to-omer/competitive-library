@@ -1,6 +1,8 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::AdditiveOperation, data_structure::SegmentTree, graph::UndirectedSparseGraph,
+    algebra::AdditiveOperation,
+    data_structure::{DaryPrefixSumTreeU64, SegmentTree},
+    graph::UndirectedSparseGraph,
     tree::XorLinkedRootedTree,
 };
 
@@ -15,18 +17,18 @@ competitive::define_enum_scan! {
 pub fn vertex_add_subtree_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], p: [usize; iter n - 1]);
-    let edges = p.enumerate().map(|(i, p)| (i + 1, p));
     let tree = XorLinkedRootedTree::builder(n)
         .with_dfs_preorder()
-        .build(0, edges);
+        .build_from_ordered_parents(p);
     let b: Vec<_> = tree.dfs_order().iter().map(|&v| a[v]).collect();
-    let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(b);
+    let mut seg = DaryPrefixSumTreeU64::from_slice(&b);
     for _ in 0..q {
         sc!(query: Query);
         match query {
             Query::Add { u, x } => seg.update(tree.dfs_index(u), x),
             Query::Sum { u } => {
-                pp!(seg.fold(tree.subtree_range(u)));
+                let range = tree.subtree_range(u);
+                pp!(seg.fold(range.start, range.end));
             }
         }
     }

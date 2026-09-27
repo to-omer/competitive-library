@@ -341,6 +341,25 @@ where
     X: BuildXorBottomUpOrder<B>,
     B: XorBottomUpOrderBuffer,
 {
+    /// Builds a tree rooted at 0. The `n - 1` parents are in vertex order,
+    /// and the parent of vertex `v` must be less than `v`.
+    pub fn build_from_ordered_parents(
+        self,
+        parents: impl IntoIterator<Item = usize>,
+    ) -> XorLinkedRootedTree<P, D, H, NoParentEdge, NoEdgeChild, X> {
+        let mut parent = Vec::with_capacity(self.n);
+        if self.n != 0 {
+            parent.push(usize::MAX);
+        }
+        parent.extend(parents);
+        assert_eq!(parent.len(), self.n);
+        let mut order = B::new(self.n);
+        for v in (1..self.n).rev() {
+            B::push(&mut order, v);
+        }
+        finish_rooted_tree::<P, D, H, X, B>(0, parent, order)
+    }
+
     pub fn build<I>(
         self,
         root: usize,
@@ -795,6 +814,22 @@ where
 {
     let mut xor_order = B::new(n);
     let parent = acc.finish::<B, _>(root, &mut xor_order, |_, _| {});
+    finish_rooted_tree::<P, D, H, X, B>(root, parent, xor_order)
+}
+
+fn finish_rooted_tree<P, D, H, X, B>(
+    root: usize,
+    parent: Vec<usize>,
+    xor_order: B::Data,
+) -> XorLinkedRootedTree<P, D, H, NoParentEdge, NoEdgeChild, X>
+where
+    P: ParentComponent,
+    D: DfsPreorderComponent,
+    H: DepthComponent,
+    X: BuildXorBottomUpOrder<B>,
+    B: XorBottomUpOrderBuffer,
+{
+    let n = parent.len();
     let order = B::as_slice(&xor_order);
     let dfs = D::build(n, root, &parent, order);
     let depth = H::build(n, root, &parent, order);
@@ -1036,8 +1071,26 @@ mod tests {
     #[test]
     fn xor_linked_tree_rooted_properties() {
         let mut rng = Xorshift::default();
+        for n in 1..=6 {
+            for parents in crate::tools::testutil::exhaustive_sequences(0..n, n - 1..=n - 1) {
+                if parents.iter().enumerate().all(|(i, &p)| p <= i) {
+                    let edges = parents
+                        .iter()
+                        .enumerate()
+                        .map(|(i, &p)| (p, i + 1))
+                        .collect();
+                    let graph = UndirectedSparseGraph::from_edges(n, edges);
+                    let tree = XorLinkedRootedTree::builder(n)
+                        .with_parent()
+                        .with_dfs_preorder()
+                        .with_depth()
+                        .build_from_ordered_parents(parents);
+                    assert_rooted_tree(&graph, 0, &tree);
+                }
+            }
+        }
         for n in 1..=200 {
-            for _ in 0..3 {
+            for kind in 0..3 {
                 let graph = rng.random(MixedTree(n));
                 let root = rng.random(0..n);
                 let tree = XorLinkedRootedTree::builder(n)
@@ -1046,6 +1099,25 @@ mod tests {
                     .with_depth()
                     .build(root, graph.edges.iter().copied());
                 assert_rooted_tree(&graph, root, &tree);
+                let parents: Vec<_> = (1..n)
+                    .map(|v| match kind {
+                        0 => 0,
+                        1 => v - 1,
+                        _ => rng.random(0..v),
+                    })
+                    .collect();
+                let edges = parents
+                    .iter()
+                    .enumerate()
+                    .map(|(i, &p)| (p, i + 1))
+                    .collect();
+                let graph = UndirectedSparseGraph::from_edges(n, edges);
+                let tree = XorLinkedRootedTree::builder(n)
+                    .with_parent()
+                    .with_dfs_preorder()
+                    .with_depth()
+                    .build_from_ordered_parents(parents);
+                assert_rooted_tree(&graph, 0, &tree);
             }
         }
     }

@@ -189,8 +189,8 @@ impl UndirectedSparseGraph {
     }
 
     pub fn lca(&self, root: usize) -> LowestCommonAncestor {
-        let (_, parents) = self.tree_order(root);
-        LowestCommonAncestor::from_parents(&parents)
+        let (order, parents) = self.tree_order(root);
+        LowestCommonAncestor::from_dfs_preorder(&parents, &order)
     }
 }
 
@@ -299,6 +299,29 @@ impl LowestCommonAncestor {
         Self {
             node_to_index: node_to_label,
             label_to_node,
+            rmq: RangeMinimumQuery::new(index_to_parent),
+            depth,
+        }
+    }
+
+    /// `order` must be a DFS preorder containing every vertex in `parents` exactly once.
+    /// `parents` uses `!0` for the root.
+    pub fn from_dfs_preorder(parents: &[usize], order: &[usize]) -> Self {
+        let n = parents.len();
+        let mut node_to_index = vec![0u32; n];
+        for (i, &u) in order.iter().enumerate() {
+            node_to_index[u] = i as u32;
+        }
+        let mut depth = vec![0u32; n];
+        let mut index_to_parent = vec![0u32; n];
+        for (i, &u) in order.iter().enumerate().skip(1) {
+            let p = parents[u];
+            depth[u] = depth[p] + 1;
+            index_to_parent[i] = node_to_index[p];
+        }
+        Self {
+            node_to_index,
+            label_to_node: order.iter().map(|&u| u as u32).collect(),
             rmq: RangeMinimumQuery::new(index_to_parent),
             depth,
         }
@@ -486,11 +509,11 @@ mod tests {
             let n = rng.random(1..=200);
             let tree = rng.random(MixedTree(n));
             let root = rng.random(0..n);
-            let lca = tree.lca(root);
+            let (_, parents) = tree.tree_order(root);
+            let lcas = [tree.lca(root), LowestCommonAncestor::from_parents(&parents)];
             for _ in 0..200 {
                 let u = rng.random(0..n);
                 let v = rng.random(0..n);
-                let result = lca.lca(u, v);
                 let expected = crecurse!(
                     unsafe fn dfs(w: usize, p: usize) -> Result<usize, [bool; 2]> {
                         let mut found = [false; 2];
@@ -522,7 +545,9 @@ mod tests {
                     }
                 )(root, !0)
                 .unwrap();
-                assert_eq!(result, expected);
+                for lca in &lcas {
+                    assert_eq!(lca.lca(u, v), expected);
+                }
             }
         }
     }

@@ -56,8 +56,7 @@ where
     S: LinkCutTreeSpec,
 {
     inner: S::Data,
-    index: usize,
-    reverse: bool,
+    index_and_reverse: usize,
 }
 
 struct LinkCutBstSpec<S>(PhantomData<fn() -> S>);
@@ -73,7 +72,7 @@ where
     unsafe fn toggle(mut node: LinkCutPtr<S>) {
         unsafe { node.as_mut().child.swap(0, 1) };
         let data = unsafe { &mut node.as_mut().data };
-        data.reverse ^= true;
+        data.index_and_reverse ^= 1;
         S::reverse(&mut data.inner);
     }
 
@@ -99,8 +98,8 @@ where
     #[inline]
     fn top_down(mut node: BstDataMutRef<'_, Self>) {
         let pointer = node.node;
-        if node.reborrow().into_data().reverse {
-            node.data_mut().reverse = false;
+        if node.reborrow().into_data().index_and_reverse & 1 != 0 {
+            node.data_mut().index_and_reverse &= !1;
             let children = unsafe { pointer.as_ref().child };
             for child in children.into_iter().flatten() {
                 unsafe { Self::toggle(child) };
@@ -192,8 +191,7 @@ where
         let index = self.nodes.len();
         let node = self.allocator.allocate(BstNode::new(LinkCutData {
             inner: S::new(value),
-            index,
-            reverse: false,
+            index_and_reverse: index << 1,
         }));
         self.nodes.push(node);
         index
@@ -247,8 +245,10 @@ where
                 LinkCutBstSpec::<S>::with_two_inner_mut(parent, node, S::detach_virtual);
                 parent.as_mut().child[1] = Some(node);
                 node.as_mut().parent.parent = Some(parent);
-                Self::pull(parent);
-                Self::splay(node);
+                LinkCutBstSpec::<S>::top_down(BstDataMutRef::new_unchecked(node));
+                splay_operations::with_parent::rotate::<LinkCutBstSpec<S>, LinkCutData<S>>(node);
+                Self::pull(node);
+                LinkCutBstSpec::<S>::with_two_inner_mut(parent, node, S::transfer_path_parent);
             }
         }
     }
@@ -260,12 +260,7 @@ where
     }
 
     pub fn set(&mut self, node: usize, value: S::Value) {
-        let node = self.node(node);
-        Self::access_node(node);
-        unsafe {
-            *S::value_mut(&mut (*node.as_ptr()).data.inner) = value;
-            Self::pull(node);
-        }
+        self.modify(node, |_| value);
     }
 
     pub fn modify<F>(&mut self, node: usize, f: F)
@@ -332,7 +327,7 @@ where
                 }
             }
             Self::splay(root);
-            root.as_ref().data.index
+            root.as_ref().data.index_and_reverse >> 1
         }
     }
 

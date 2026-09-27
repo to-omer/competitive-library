@@ -15,15 +15,18 @@ pub fn vertex_get_range_contour_add_on_tree(reader: impl Read, writer: impl Writ
     prepare_io!(reader, writer);
     sc!(n, q, mut a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));
     let cq = graph.contour_query_range();
-    let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(cq.len() + 1);
+    let mut bits: Vec<BinaryIndexedTree<AdditiveOperation<_>>> = cq
+        .component_sizes()
+        .map(|n| BinaryIndexedTree::new(n + 1))
+        .collect();
 
     for _ in 0..q {
         sc!(query: Query);
         match query {
             Query::Add { v, l, r, x } => {
-                cq.for_each_contour_range(v, l, r, |start, end| {
-                    bit.update(start, x);
-                    bit.update(end, -x);
+                cq.for_each_contour_range(v, l, r, |c, start, end| {
+                    bits[c].update(start, x);
+                    bits[c].update(end, -x);
                 });
                 if l == 0 && 0 < r {
                     a[v] += x;
@@ -31,7 +34,7 @@ pub fn vertex_get_range_contour_add_on_tree(reader: impl Read, writer: impl Writ
             }
             Query::Get { v } => {
                 let mut ans = a[v];
-                cq.for_each_index(v, |i| ans += bit.accumulate(i));
+                cq.for_each_index(v, |c, i| ans += bits[c].accumulate(i));
                 pp!(ans);
             }
         }

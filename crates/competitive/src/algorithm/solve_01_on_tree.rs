@@ -56,19 +56,21 @@ pub fn solve_01_on_tree(
         cost += x.cnt1 * y.cnt0;
         *x += *y;
     });
-    let mut label = vec![0; n];
-    let mut heap = BinaryHeap::from_iter((0..n).filter(|&u| u != root).map(|u| (c01(u), u, 0)));
+    let mut label = vec![0u32; n];
+    let mut heap =
+        BinaryHeap::from_iter((0..n).filter(|&u| u != root).map(|u| (c01(u), u as u32, 0)));
     let mut next: Vec<_> = (0..n).collect();
     let mut ord = Vec::with_capacity(n);
     while let Some((_c, u, l)) = heap.pop() {
+        let u = u as usize;
         if label[u] != l {
             continue;
         }
         let p = uf.find_root(parent(u));
         uf.unite(u, p);
-        if !uf.same(p, root) {
+        if p != root {
             label[p] += 1;
-            heap.push((*uf.merge_data(p), p, label[p]));
+            heap.push((*uf.merge_data(p), p as u32, label[p]));
         }
         next.swap(u, p);
     }

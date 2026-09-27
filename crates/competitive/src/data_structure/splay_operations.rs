@@ -31,31 +31,37 @@ pub mod with_parent {
     }
 
     #[inline(always)]
-    unsafe fn rotate<Spec, Data>(mut node: NodePtr<Spec>)
-    where
+    unsafe fn rotate_at<Spec, Data>(
+        mut node: NodePtr<Spec>,
+        mut parent: NodePtr<Spec>,
+        direction: usize,
+    ) where
         Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
     {
-        let (mut parent, direction) = unsafe { internal_parent::<Spec, Data>(node) }
-            .expect("an auxiliary root cannot be rotated");
-        let (grandparent, parent_direction) = match unsafe { internal_parent::<Spec, Data>(parent) }
-        {
-            Ok((grandparent, direction)) => (Some(grandparent), Some(direction)),
-            Err(grandparent) => (grandparent, None),
-        };
-        let middle = unsafe { node.as_mut().child[direction ^ 1].take() };
-
+        let middle = unsafe { node.as_ref().child[direction ^ 1] };
         unsafe {
             parent.as_mut().child[direction] = middle;
             if let Some(mut middle) = middle {
                 middle.as_mut().parent.parent = Some(parent);
             }
             node.as_mut().child[direction ^ 1] = Some(parent);
-            node.as_mut().parent.parent = grandparent;
             parent.as_mut().parent.parent = Some(node);
-            if let (Some(mut grandparent), Some(parent_direction)) = (grandparent, parent_direction)
-            {
-                grandparent.as_mut().child[parent_direction] = Some(node);
+        }
+    }
+
+    #[inline(always)]
+    pub unsafe fn rotate<Spec, Data>(mut node: NodePtr<Spec>)
+    where
+        Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
+    {
+        let (parent, direction) = unsafe { internal_parent::<Spec, Data>(node) }
+            .expect("an auxiliary root cannot be rotated");
+        unsafe {
+            node.as_mut().parent.parent = parent.as_ref().parent.parent;
+            if let Ok((mut grandparent, direction)) = internal_parent::<Spec, Data>(parent) {
+                grandparent.as_mut().child[direction] = Some(node);
             }
+            rotate_at::<Spec, Data>(node, parent, direction);
             Spec::bottom_up(BstDataMutRef::new_unchecked(parent));
         }
     }
@@ -122,36 +128,54 @@ pub mod with_parent {
     /// nodes of the same tree. Propagating an ancestor after its descendant must be valid for
     /// `Spec`.
     #[inline(always)]
-    pub unsafe fn splay_with_local_top_down<Spec, Data>(node: NodePtr<Spec>) -> NodePtr<Spec>
+    pub unsafe fn splay_with_local_top_down<Spec, Data>(mut node: NodePtr<Spec>) -> NodePtr<Spec>
     where
         Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
     {
         let mut current = node;
         unsafe { Spec::top_down(BstDataMutRef::new_unchecked(node)) };
-        while let Ok((parent, node_direction)) = unsafe { internal_parent::<Spec, Data>(node) } {
+        while let Ok((parent, _)) = unsafe { internal_parent::<Spec, Data>(node) } {
             match unsafe { internal_parent::<Spec, Data>(parent) } {
-                Ok((grandparent, parent_direction)) => {
+                Ok((grandparent, _)) => {
                     current = grandparent;
                     unsafe {
                         Spec::top_down(BstDataMutRef::new_unchecked(grandparent));
                         Spec::top_down(BstDataMutRef::new_unchecked(parent));
                         Spec::top_down(BstDataMutRef::new_unchecked(node));
-                    }
-                    if node_direction == parent_direction {
-                        unsafe { rotate::<Spec, Data>(parent) };
-                    } else {
-                        unsafe { rotate::<Spec, Data>(node) };
+                        let node_direction = usize::from(parent.as_ref().child[1] == Some(node));
+                        let parent_direction =
+                            usize::from(grandparent.as_ref().child[1] == Some(parent));
+                        node.as_mut().parent.parent = grandparent.as_ref().parent.parent;
+                        if let Ok((mut ancestor, direction)) =
+                            internal_parent::<Spec, Data>(grandparent)
+                        {
+                            ancestor.as_mut().child[direction] = Some(node);
+                        }
+                        if node_direction == parent_direction {
+                            rotate_at::<Spec, Data>(parent, grandparent, parent_direction);
+                            rotate_at::<Spec, Data>(node, parent, node_direction);
+                            Spec::bottom_up(BstDataMutRef::new_unchecked(grandparent));
+                            Spec::bottom_up(BstDataMutRef::new_unchecked(parent));
+                        } else {
+                            rotate_at::<Spec, Data>(node, parent, node_direction);
+                            rotate_at::<Spec, Data>(node, grandparent, parent_direction);
+                            Spec::bottom_up(BstDataMutRef::new_unchecked(parent));
+                            Spec::bottom_up(BstDataMutRef::new_unchecked(grandparent));
+                        }
                     }
                 }
-                Err(_) => {
+                Err(ancestor) => {
                     current = parent;
                     unsafe {
                         Spec::top_down(BstDataMutRef::new_unchecked(parent));
                         Spec::top_down(BstDataMutRef::new_unchecked(node));
+                        let direction = usize::from(parent.as_ref().child[1] == Some(node));
+                        node.as_mut().parent.parent = ancestor;
+                        rotate_at::<Spec, Data>(node, parent, direction);
+                        Spec::bottom_up(BstDataMutRef::new_unchecked(parent));
                     }
                 }
             }
-            unsafe { rotate::<Spec, Data>(node) };
         }
         unsafe { Spec::bottom_up(BstDataMutRef::new_unchecked(node)) };
         current

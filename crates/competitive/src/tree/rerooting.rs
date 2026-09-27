@@ -1,19 +1,18 @@
 //! dynamic programming on all-rooted trees
 
-use crate::algebra::Monoid;
+use crate::algebra::{AbelianGroup, Monoid};
 use crate::graph::{Graph, Neighbor, UndirectedSparseGraph};
 
-#[codesnip::entry("ReRooting", include("algebra", "SparseGraph"))]
+#[codesnip::entry("ReRooting", include("algebra", "tree_order"))]
 /// dynamic programming on all-rooted trees
 ///
-/// caluculate all subtrees (hanging on the edge) in specific ordering,
-/// each subtree calculated in the order of merge and rooting
+/// Neighbors are merged in adjacency order before applying `rooting`.
 #[derive(Clone, Debug)]
 pub struct ReRooting<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> {
     graph: &'a UndirectedSparseGraph,
     /// dp\[v\]: result of v-rooted tree
     pub dp: Vec<M::T>,
-    /// ep\[e\]: result of e-subtree, if e >= n then reversed-e-subtree
+    /// ep\[e\]: result of e-subtree; e >= m denotes the reverse direction.
     pub ep: Vec<M::T>,
     /// rooting(data, vid, (Optional)eid): add root node(vid), result subtree is edge(eid)
     rooting: F,
@@ -25,6 +24,20 @@ where
     F: Fn(&M::T, usize, Option<usize>) -> M::T,
 {
     pub fn new(graph: &'a UndirectedSparseGraph, rooting: F) -> Self {
+        Self::build(graph, rooting, None::<fn(&M::T, &M::T) -> M::T>)
+    }
+
+    pub fn new_with_inverse(graph: &'a UndirectedSparseGraph, rooting: F) -> Self
+    where
+        M: AbelianGroup,
+    {
+        Self::build(graph, rooting, Some(M::rinv_operate))
+    }
+
+    fn build<I>(graph: &'a UndirectedSparseGraph, rooting: F, inverse: Option<I>) -> Self
+    where
+        I: Fn(&M::T, &M::T) -> M::T,
+    {
         let dp = vec![M::unit(); graph.vertices_size()];
         let ep = vec![M::unit(); graph.vertices_size() * 2];
         let mut self_ = Self {
@@ -33,7 +46,7 @@ where
             ep,
             rooting,
         };
-        self_.rerooting();
+        self_.rerooting(inverse);
         self_
     }
     #[inline]
@@ -56,42 +69,158 @@ where
     fn add_root(&self, x: &M::T, vid: usize) -> M::T {
         (self.rooting)(x, vid, None)
     }
-    fn dfs(&mut self, pa: Neighbor<usize, usize>, p: usize) {
-        let u = pa.to;
-        let pi = self.eidx(p, pa);
-        for a in self.graph.neighbors(u).filter(|a| a.to != p) {
-            let i = self.eidx(u, a);
-            self.dfs(a, u);
-            self.ep[pi] = self.merge(&self.ep[pi], &self.ep[i]);
+    fn rerooting<I: Fn(&M::T, &M::T) -> M::T>(&mut self, inverse: Option<I>) {
+        let (order, parents) = self.graph.tree_order(0);
+        for &u in order.iter().skip(1).rev() {
+            let mut sum = M::unit();
+            let mut parent = None;
+            for a in self.graph.neighbors(u) {
+                if a.to == parents[u] {
+                    parent = Some(a);
+                } else {
+                    sum = self.merge(&sum, &self.ep[self.eidx(u, a)]);
+                }
+            }
+            let a = parent.unwrap();
+            let i = self.reidx(u, a);
+            self.ep[i] = self.add_subroot(&sum, u, a.label);
+            if inverse.is_some() {
+                self.dp[u] = sum;
+            }
         }
-        self.ep[pi] = self.add_subroot(&self.ep[pi], u, pa.label);
-    }
-    fn efs(&mut self, u: usize, p: usize) {
-        let m = self.graph.neighbors(u).len();
-        let mut left = vec![M::unit(); m + 1];
-        let mut right = vec![M::unit(); m + 1];
-        for (k, a) in self.graph.neighbors(u).enumerate() {
-            let i = self.eidx(u, a);
-            left[k + 1] = self.merge(&left[k], &self.ep[i]);
+        if let Some(inverse) = inverse {
+            for u in order {
+                let sum = if u == 0 {
+                    self.graph.neighbors(u).fold(M::unit(), |sum, a| {
+                        self.merge(&sum, &self.ep[self.eidx(u, a)])
+                    })
+                } else {
+                    let a = self
+                        .graph
+                        .neighbors(u)
+                        .find(|a| a.to == parents[u])
+                        .unwrap();
+                    self.merge(&self.dp[u], &self.ep[self.eidx(u, a)])
+                };
+                self.dp[u] = self.add_root(&sum, u);
+                for a in self.graph.neighbors(u) {
+                    if a.to != parents[u] {
+                        let value = inverse(&sum, &self.ep[self.eidx(u, a)]);
+                        let i = self.reidx(u, a);
+                        self.ep[i] = self.add_subroot(&value, u, a.label);
+                    }
+                }
+            }
+            return;
         }
-        for (k, a) in self.graph.neighbors(u).enumerate().rev() {
-            let i = self.eidx(u, a);
-            right[k] = self.merge(&right[k + 1], &self.ep[i]);
-        }
-        self.dp[u] = self.add_root(&left[m], u);
-        for (k, a) in self.graph.neighbors(u).enumerate() {
-            if a.to != p {
-                let i = self.reidx(u, a);
-                self.ep[i] = self.merge(&left[k], &right[k + 1]);
-                self.ep[i] = self.add_subroot(&self.ep[i], u, a.label);
-                self.efs(a.to, u);
+        let mut prefix = Vec::new();
+        for u in order {
+            prefix.clear();
+            prefix.push(M::unit());
+            for a in self.graph.neighbors(u) {
+                prefix.push(self.merge(prefix.last().unwrap(), &self.ep[self.eidx(u, a)]));
+            }
+            self.dp[u] = self.add_root(prefix.last().unwrap(), u);
+            let mut suffix = M::unit();
+            for (k, a) in self.graph.neighbors(u).enumerate().rev() {
+                if a.to != parents[u] {
+                    let i = self.reidx(u, a);
+                    self.ep[i] = self.add_subroot(&self.merge(&prefix[k], &suffix), u, a.label);
+                }
+                suffix = self.merge(&self.ep[self.eidx(u, a)], &suffix);
             }
         }
     }
-    fn rerooting(&mut self) {
-        for a in self.graph.neighbors(0) {
-            self.dfs(a, 0);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::{AdditiveOperation, ConcatenateOperation},
+        tools::{Xorshift, testutil::exhaustive_sequences},
+        tree::{MixedTree, PathTree, StarTree},
+    };
+
+    #[test]
+    fn test_rerooting() {
+        let mut rng = Xorshift::default();
+        let mut graphs = Vec::new();
+        for n in 1..=5 {
+            for parents in exhaustive_sequences(0..n, n - 1..=n - 1) {
+                if parents.iter().enumerate().all(|(i, &p)| p <= i) {
+                    graphs.push(UndirectedSparseGraph::from_edges(
+                        n,
+                        parents
+                            .into_iter()
+                            .enumerate()
+                            .map(|(i, p)| (p, i + 1))
+                            .collect(),
+                    ));
+                }
+            }
         }
-        self.efs(0, usize::MAX);
+        for n in 1..=32 {
+            graphs.extend([
+                rng.random(PathTree(n)),
+                rng.random(StarTree(n)),
+                rng.random(MixedTree(n)),
+            ]);
+        }
+        for graph in graphs {
+            let n = graph.vertices_size();
+            let dp = ReRooting::<ConcatenateOperation<_>, _>::new(&graph, |xs, v, edge| {
+                let mut xs = xs.clone();
+                xs.push((v, edge));
+                xs
+            });
+            let sums = ReRooting::<AdditiveOperation<i64>, _>::new_with_inverse(
+                &graph,
+                |&sum, v, edge| sum + v as i64 + edge.map_or(0, |e| e as i64),
+            );
+            for root in 0..n {
+                for parent in std::iter::once(None).chain(graph.neighbors(root).map(Some)) {
+                    let mut expected = Vec::new();
+                    let mut stack = vec![(
+                        root,
+                        parent.map_or(n, |a| a.to),
+                        parent.map(|a| a.label),
+                        false,
+                    )];
+                    while let Some((u, p, edge, visited)) = stack.pop() {
+                        if visited {
+                            expected.push((u, edge));
+                        } else {
+                            stack.push((u, p, edge, true));
+                            stack.extend(
+                                graph
+                                    .neighbors(u)
+                                    .rev()
+                                    .filter(|a| a.to != p)
+                                    .map(|a| (a.to, u, Some(a.label), false)),
+                            );
+                        }
+                    }
+                    let actual = if let Some(parent) = parent {
+                        &dp.ep[dp.reidx(root, parent)]
+                    } else {
+                        &dp.dp[root]
+                    };
+                    assert_eq!(*actual, expected);
+                    let sum = if let Some(parent) = parent {
+                        sums.ep[sums.reidx(root, parent)]
+                    } else {
+                        sums.dp[root]
+                    };
+                    assert_eq!(
+                        sum,
+                        expected
+                            .iter()
+                            .map(|&(v, e)| v as i64 + e.map_or(0, |e| e as i64))
+                            .sum()
+                    );
+                }
+            }
+        }
     }
 }

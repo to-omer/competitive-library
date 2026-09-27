@@ -22,6 +22,9 @@ struct SubtreeSumData {
 
 impl SubtreeSum {
     fn apply(data: &mut SubtreeSumData, action: u64) {
+        if action == 0 {
+            return;
+        }
         data.value += action;
         data.virtual_sum += data.virtual_size * action;
         data.sum += data.size * action;
@@ -33,6 +36,8 @@ impl SubtreeSum {
 impl LinkCutTreeSpec for SubtreeSum {
     type Value = u64;
     type Data = SubtreeSumData;
+
+    const ROOT_TO_NODE_TOP_DOWN: bool = false;
 
     fn new(value: Self::Value) -> Self::Data {
         SubtreeSumData {
