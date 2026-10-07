@@ -83,7 +83,7 @@
 <span data-nosnippet>284</span>                store4(<span class="kw-2">&amp;mut </span>a[i], rr, ri);
 <span data-nosnippet>285</span>            }
 <span data-nosnippet>286</span>        });
-<span data-nosnippet>287</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[21,21],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#100&#34;,&#34;line 100&#34;],[[22,22],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#101&#34;,&#34;line 101&#34;],[[23,23],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#102&#34;,&#34;line 102&#34;],[[24,24],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#103&#34;,&#34;line 103&#34;],[[94,101],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#173-180&#34;,&#34;lines 173-180&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../../../src/competitive/math/mint_fft_convolve.rs.html#100">line 100</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>79</span><span class="kw">unsafe fn </span>dot_soa(a0: <span class="kw-2">&amp;mut </span>[Complex4], a1: <span class="kw-2">&amp;mut </span>[Complex4], b0: <span class="kw-2">&amp;mut </span>[Complex4], b1: <span class="kw-2">&amp;</span>[Complex4]) {
+<span data-nosnippet>287</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[21,21],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#100&#34;,&#34;line 100&#34;],[[22,22],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#101&#34;,&#34;line 101&#34;],[[23,23],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#102&#34;,&#34;line 102&#34;],[[24,24],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#103&#34;,&#34;line 103&#34;],[[95,102],&#34;../../../../src/competitive/math/mint_fft_convolve.rs.html#174-181&#34;,&#34;lines 174-181&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/mint_fft_convolve.rs (<a href="../../../../src/competitive/math/mint_fft_convolve.rs.html#100">line 100</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>79</span><span class="kw">unsafe fn </span>dot_soa(a0: <span class="kw-2">&amp;mut </span>[Complex4], a1: <span class="kw-2">&amp;mut </span>[Complex4], b0: <span class="kw-2">&amp;mut </span>[Complex4], b1: <span class="kw-2">&amp;</span>[Complex4]) {
 <span data-nosnippet>80</span>    <span class="kw">let </span>n = a0.len() * <span class="number">4</span>;
 <span data-nosnippet>81</span>    RotateCache::ensure(n / <span class="number">2</span>);
 <span data-nosnippet>82</span>    RotateCache::with(|cache| {
@@ -155,49 +155,51 @@
 <span data-nosnippet>148</span>}
 <span data-nosnippet>149</span>
 <span data-nosnippet>150</span><span class="attr">#[target_feature(enable = <span class="string">"avx2,fma"</span>)]
-<span data-nosnippet>151</span></span><span class="kw">unsafe fn </span>dot_u64_soa(a: <span class="kw-2">&amp;mut </span>[Vec&lt;Complex4&gt;; <span class="number">5</span>], b: <span class="kw-2">&amp;</span>[Vec&lt;Complex4&gt;; <span class="number">5</span>]) {
+<span data-nosnippet>151</span></span><span class="kw">unsafe fn </span>dot_u64_soa&lt;<span class="kw">const </span>PARTS: usize&gt;(a: <span class="kw-2">&amp;mut </span>[Vec&lt;Complex4&gt;; <span class="number">5</span>], b: <span class="kw-2">&amp;</span>[Vec&lt;Complex4&gt;; <span class="number">5</span>]) {
 <span data-nosnippet>152</span>    <span class="kw">let </span>n = a[<span class="number">0</span>].len() * <span class="number">4</span>;
 <span data-nosnippet>153</span>    RotateCache::ensure(n / <span class="number">2</span>);
 <span data-nosnippet>154</span>    RotateCache::with(|cache| {
 <span data-nosnippet>155</span>        <span class="kw">for </span>block <span class="kw">in </span><span class="number">0</span>..a[<span class="number">0</span>].len() {
-<span data-nosnippet>156</span>            <span class="kw">let </span><span class="kw-2">mut </span>br = [_mm256_setzero_pd(); <span class="number">5</span>];
+<span data-nosnippet>156</span>            <span class="kw">let </span><span class="kw-2">mut </span>br = [_mm256_setzero_pd(); PARTS];
 <span data-nosnippet>157</span>            <span class="kw">let </span><span class="kw-2">mut </span>bi = br;
-<span data-nosnippet>158</span>            <span class="kw">let </span><span class="kw-2">mut </span>rr = br;
-<span data-nosnippet>159</span>            <span class="kw">let </span><span class="kw-2">mut </span>ri = br;
-<span data-nosnippet>160</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+<span data-nosnippet>158</span>            <span class="kw">let </span><span class="kw-2">mut </span>rr = [_mm256_setzero_pd(); <span class="number">5</span>];
+<span data-nosnippet>159</span>            <span class="kw">let </span><span class="kw-2">mut </span>ri = rr;
+<span data-nosnippet>160</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..PARTS {
 <span data-nosnippet>161</span>                (br[part], bi[part]) = load4(<span class="kw-2">&amp;</span>b[part][block]);
 <span data-nosnippet>162</span>            }
 <span data-nosnippet>163</span>            <span class="kw">let </span>w = eval_twiddle(cache, <span class="number">1</span>, a[<span class="number">0</span>].len(), block);
 <span data-nosnippet>164</span>            <span class="kw">let </span>wr = _mm256_setr_pd(w.re, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);
 <span data-nosnippet>165</span>            <span class="kw">let </span>wi = _mm256_setr_pd(w.im, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
-<span data-nosnippet>166</span>            <span class="kw">for </span>lane <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
-<span data-nosnippet>167</span>                <span class="kw">let </span>ar: [__m256d; <span class="number">5</span>] =
+<span data-nosnippet>166</span>            <span class="kw">for </span><a href="mod.rs.html#1-327">lane</a> <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
+<span data-nosnippet>167</span>                <span class="kw">let </span>ar: [__m256d; PARTS] =
 <span data-nosnippet>168</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].re[lane]));
-<span data-nosnippet>169</span>                <span class="kw">let </span>ai: [__m256d; <span class="number">5</span>] =
+<span data-nosnippet>169</span>                <span class="kw">let </span>ai: [__m256d; PARTS] =
 <span data-nosnippet>170</span>                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[lane]));
-<span data-nosnippet>171</span>                <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+<span data-nosnippet>171</span>                <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">5</span>.min(<span class="number">2 </span>* PARTS - <span class="number">1</span>) {
 <span data-nosnippet>172</span>                    <span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..=part {
-<span data-nosnippet>173</span>                        <span class="highlight">multiply_accumulate4</span>(
-<span data-nosnippet>174</span>                            <span class="kw-2">&amp;mut </span>rr[part],
-<span data-nosnippet>175</span>                            <span class="kw-2">&amp;mut </span>ri[part],
-<span data-nosnippet>176</span>                            ar[left],
-<span data-nosnippet>177</span>                            ai[left],
-<span data-nosnippet>178</span>                            br[part - left],
-<span data-nosnippet>179</span>                            bi[part - left],
-<span data-nosnippet>180</span>                        );
-<span data-nosnippet>181</span>                    }
-<span data-nosnippet>182</span>                }
-<span data-nosnippet>183</span>                <span class="kw">if </span>lane != <span class="number">3 </span>{
-<span data-nosnippet>184</span>                    <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
-<span data-nosnippet>185</span>                        br[part] = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(br[part]);
-<span data-nosnippet>186</span>                        bi[part] = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(bi[part]);
-<span data-nosnippet>187</span>                        (br[part], bi[part]) = mul4(br[part], bi[part], wr, wi);
-<span data-nosnippet>188</span>                    }
-<span data-nosnippet>189</span>                }
-<span data-nosnippet>190</span>            }
-<span data-nosnippet>191</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
-<span data-nosnippet>192</span>                store4(<span class="kw-2">&amp;mut </span>a[part][block], rr[part], ri[part]);
-<span data-nosnippet>193</span>            }
-<span data-nosnippet>194</span>        }
-<span data-nosnippet>195</span>    });
-<span data-nosnippet>196</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
+<span data-nosnippet>173</span>                        <span class="kw">if </span>PARTS == <span class="number">5 </span>|| (left &lt; PARTS &amp;&amp; part - left &lt; PARTS) {
+<span data-nosnippet>174</span>                            <span class="highlight">multiply_accumulate4</span>(
+<span data-nosnippet>175</span>                                <span class="kw-2">&amp;mut </span>rr[part],
+<span data-nosnippet>176</span>                                <span class="kw-2">&amp;mut </span>ri[part],
+<span data-nosnippet>177</span>                                ar[left],
+<span data-nosnippet>178</span>                                ai[left],
+<span data-nosnippet>179</span>                                br[part - left],
+<span data-nosnippet>180</span>                                bi[part - left],
+<span data-nosnippet>181</span>                            );
+<span data-nosnippet>182</span>                        }
+<span data-nosnippet>183</span>                    }
+<span data-nosnippet>184</span>                }
+<span data-nosnippet>185</span>                <span class="kw">if </span>lane != <span class="number">3 </span>{
+<span data-nosnippet>186</span>                    <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..PARTS {
+<span data-nosnippet>187</span>                        br[part] = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(br[part]);
+<span data-nosnippet>188</span>                        bi[part] = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(bi[part]);
+<span data-nosnippet>189</span>                        (br[<a href="../algebra/ring.rs.html#1-164">part</a>], bi[part]) = mul4(br[part], bi[part], wr, wi);
+<span data-nosnippet>190</span>                    }
+<span data-nosnippet>191</span>                }
+<span data-nosnippet>192</span>            }
+<span data-nosnippet>193</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+<span data-nosnippet>194</span>                store4(<span class="kw-2">&amp;mut </span>a[part][block], rr[part], ri[part]);
+<span data-nosnippet>195</span>            }
+<span data-nosnippet>196</span>        }
+<span data-nosnippet>197</span>    });
+<span data-nosnippet>198</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>

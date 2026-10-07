@@ -82,154 +82,7 @@
 <span data-nosnippet>91</span>    <span class="doccomment">/// multiplicative right inversed operaion: $-$
 <span data-nosnippet>92</span>    </span><span class="kw">fn </span>div(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>93</span>        <span class="highlight">&lt;<span class="self">Self</span>::Multiplicative <span class="kw">as </span>Invertible&gt;::rinv_operate</span>(x, y)
-<span data-nosnippet>94</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/math/bitwiseand_convolve.rs.html#24&#34;,&#34;line 24&#34;],[[139,139],&#34;../../src/competitive/math/bitwiseand_convolve.rs.html#162&#34;,&#34;line 162&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bitwiseand_convolve.rs (<a href="../../src/competitive/math/bitwiseand_convolve.rs.html#24">line 24</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>23</span>    <span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
-<span data-nosnippet>24</span>        bitwise_transform(f, |x, y| <span class="kw-2">*</span>x = <span class="highlight focus">G::rinv_operate</span>(x, y));
-<span data-nosnippet>25</span>    }
-<span data-nosnippet>26</span>}
-<span data-nosnippet>27</span>
-<span data-nosnippet>28</span><span class="kw">impl</span>&lt;R&gt; ConvolveSteps <span class="kw">for </span>BitwiseandConvolve&lt;R&gt;
-<span data-nosnippet>29</span><span class="kw">where
-<span data-nosnippet>30</span>    </span>R: Ring&lt;T: PartialEq, Additive: Invertible&gt;,
-<span data-nosnippet>31</span>{
-<span data-nosnippet>32</span>    <span class="kw">type </span>T = Vec&lt;R::T&gt;;
-<span data-nosnippet>33</span>    <span class="kw">type </span>F = Vec&lt;R::T&gt;;
-<span data-nosnippet>34</span>
-<span data-nosnippet>35</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
-<span data-nosnippet>36</span>        t.len()
-<span data-nosnippet>37</span>    }
-<span data-nosnippet>38</span>
-<span data-nosnippet>39</span>    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, _len: usize) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>40</span>        BitwiseandConvolve::&lt;R::Additive&gt;::zeta_transform(<span class="kw-2">&amp;mut </span>t);
-<span data-nosnippet>41</span>        t
-<span data-nosnippet>42</span>    }
-<span data-nosnippet>43</span>
-<span data-nosnippet>44</span>    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, _len: usize) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>45</span>        BitwiseandConvolve::&lt;R::Additive&gt;::mobius_transform(<span class="kw-2">&amp;mut </span>f);
-<span data-nosnippet>46</span>        f
-<span data-nosnippet>47</span>    }
-<span data-nosnippet>48</span>
-<span data-nosnippet>49</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-<span data-nosnippet>50</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.iter_mut().zip(g) {
-<span data-nosnippet>51</span>            <span class="kw-2">*</span>f = R::mul(f, g);
-<span data-nosnippet>52</span>        }
-<span data-nosnippet>53</span>    }
-<span data-nosnippet>54</span>
-<span data-nosnippet>55</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>56</span>        <span class="macro">assert_eq!</span>(a.len(), b.len());
-<span data-nosnippet>57</span>        <span class="kw">let </span>len = a.len();
-<span data-nosnippet>58</span>        <span class="kw">let </span>same = a == b;
-<span data-nosnippet>59</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
-<span data-nosnippet>60</span>        <span class="kw">if </span>same {
-<span data-nosnippet>61</span>            <span class="kw">for </span>a <span class="kw">in </span>a.iter_mut() {
-<span data-nosnippet>62</span>                <span class="kw-2">*</span>a = R::mul(a, a);
-<span data-nosnippet>63</span>            }
-<span data-nosnippet>64</span>        } <span class="kw">else </span>{
-<span data-nosnippet>65</span>            <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
-<span data-nosnippet>66</span>            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>67</span>        }
-<span data-nosnippet>68</span>        <span class="self">Self</span>::inverse_transform(a, len)
-<span data-nosnippet>69</span>    }
-<span data-nosnippet>70</span>}
-<span data-nosnippet>71</span>
-<span data-nosnippet>72</span><span class="kw">pub struct </span>OnlineSupersetZetaTransform&lt;M&gt;
-<span data-nosnippet>73</span><span class="kw">where
-<span data-nosnippet>74</span>    </span>M: Monoid,
-<span data-nosnippet>75</span>{
-<span data-nosnippet>76</span>    data: Vec&lt;M::T&gt;,
-<span data-nosnippet>77</span>}
-<span data-nosnippet>78</span>
-<span data-nosnippet>79</span><span class="kw">impl</span>&lt;M&gt; OnlineSupersetZetaTransform&lt;M&gt;
-<span data-nosnippet>80</span><span class="kw">where
-<span data-nosnippet>81</span>    </span>M: Monoid,
-<span data-nosnippet>82</span>{
-<span data-nosnippet>83</span>    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>84</span>        <span class="self">Self </span>{
-<span data-nosnippet>85</span>            data: Vec::with_capacity(size),
-<span data-nosnippet>86</span>        }
-<span data-nosnippet>87</span>    }
-<span data-nosnippet>88</span>
-<span data-nosnippet>89</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: M::T) {
-<span data-nosnippet>90</span>        <span class="kw">let </span>i = <span class="self">self</span>.data.len();
-<span data-nosnippet>91</span>        <span class="self">self</span>.data.push(x);
-<span data-nosnippet>92</span>        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
-<span data-nosnippet>93</span>        <span class="kw">while </span>i &gt;&gt; k &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>94</span>            <span class="kw">let </span>size = <span class="number">1 </span>&lt;&lt; k;
-<span data-nosnippet>95</span>            <span class="kw">let </span>chunk = <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i - (size * <span class="number">2 </span>- <span class="number">1</span>)..];
-<span data-nosnippet>96</span>            <span class="kw">let </span>(x, y) = chunk.split_at_mut(size);
-<span data-nosnippet>97</span>            <span class="kw">for </span>(x, y) <span class="kw">in </span>x.iter_mut().zip(y.iter()) {
-<span data-nosnippet>98</span>                M::operate_assign(x, y);
-<span data-nosnippet>99</span>            }
-<span data-nosnippet>100</span>            k += <span class="number">1</span>;
-<span data-nosnippet>101</span>        }
-<span data-nosnippet>102</span>    }
-<span data-nosnippet>103</span>
-<span data-nosnippet>104</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; M::T {
-<span data-nosnippet>105</span>        <span class="kw">let </span><span class="kw-2">mut </span>cur = <span class="self">self</span>.data.len();
-<span data-nosnippet>106</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = M::unit();
-<span data-nosnippet>107</span>        <span class="kw">while </span>cur != <span class="number">0 </span>{
-<span data-nosnippet>108</span>            <span class="kw">let </span>d = cur.trailing_zeros() <span class="kw">as </span>usize;
-<span data-nosnippet>109</span>            <span class="kw">let </span>base = cur ^ (<span class="number">1 </span>&lt;&lt; d);
-<span data-nosnippet>110</span>            <span class="kw">if </span>(!base &amp; index) &gt;&gt; d == <span class="number">0 </span>{
-<span data-nosnippet>111</span>                <span class="kw">let </span>mask = (<span class="number">1 </span>&lt;&lt; d) - <span class="number">1</span>;
-<span data-nosnippet>112</span>                s = M::operate(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span><span class="self">self</span>.data[base ^ ((index ^ base) &amp; mask)]);
-<span data-nosnippet>113</span>            }
-<span data-nosnippet>114</span>            cur = base;
-<span data-nosnippet>115</span>        }
-<span data-nosnippet>116</span>        s
-<span data-nosnippet>117</span>    }
-<span data-nosnippet>118</span>}
-<span data-nosnippet>119</span>
-<span data-nosnippet>120</span><span class="kw">pub struct </span>OnlineSupersetMobiusTransform&lt;M&gt;
-<span data-nosnippet>121</span><span class="kw">where
-<span data-nosnippet>122</span>    </span>M: Group,
-<span data-nosnippet>123</span>{
-<span data-nosnippet>124</span>    data: Vec&lt;M::T&gt;,
-<span data-nosnippet>125</span>}
-<span data-nosnippet>126</span>
-<span data-nosnippet>127</span><span class="kw">impl</span>&lt;M&gt; OnlineSupersetMobiusTransform&lt;M&gt;
-<span data-nosnippet>128</span><span class="kw">where
-<span data-nosnippet>129</span>    </span>M: Group,
-<span data-nosnippet>130</span>{
-<span data-nosnippet>131</span>    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>132</span>        <span class="self">Self </span>{
-<span data-nosnippet>133</span>            data: Vec::with_capacity(size),
-<span data-nosnippet>134</span>        }
-<span data-nosnippet>135</span>    }
-<span data-nosnippet>136</span>
-<span data-nosnippet>137</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: M::T) {
-<span data-nosnippet>138</span>        <span class="kw">let </span>i = <span class="self">self</span>.data.len();
-<span data-nosnippet>139</span>        <span class="self">self</span>.data.push(x);
-<span data-nosnippet>140</span>        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
-<span data-nosnippet>141</span>        <span class="kw">while </span>i &gt;&gt; k &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>142</span>            <span class="kw">let </span>size = <span class="number">1 </span>&lt;&lt; k;
-<span data-nosnippet>143</span>            <span class="kw">let </span>chunk = <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i - (size * <span class="number">2 </span>- <span class="number">1</span>)..];
-<span data-nosnippet>144</span>            <span class="kw">let </span>(x, y) = chunk.split_at_mut(size);
-<span data-nosnippet>145</span>            <span class="kw">for </span>(x, y) <span class="kw">in </span>x.iter_mut().zip(y.iter()) {
-<span data-nosnippet>146</span>                M::rinv_operate_assign(x, y);
-<span data-nosnippet>147</span>            }
-<span data-nosnippet>148</span>            k += <span class="number">1</span>;
-<span data-nosnippet>149</span>        }
-<span data-nosnippet>150</span>    }
-<span data-nosnippet>151</span>
-<span data-nosnippet>152</span>    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; M::T {
-<span data-nosnippet>153</span>        <span class="kw">let </span><span class="kw-2">mut </span>cur = <span class="self">self</span>.data.len();
-<span data-nosnippet>154</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = M::unit();
-<span data-nosnippet>155</span>        <span class="kw">while </span>cur != <span class="number">0 </span>{
-<span data-nosnippet>156</span>            <span class="kw">let </span>d = cur.trailing_zeros() <span class="kw">as </span>usize;
-<span data-nosnippet>157</span>            <span class="kw">let </span>base = cur ^ (<span class="number">1 </span>&lt;&lt; d);
-<span data-nosnippet>158</span>            <span class="kw">if </span>(!base &amp; index) &gt;&gt; d == <span class="number">0 </span>{
-<span data-nosnippet>159</span>                <span class="kw">let </span>mask = (<span class="number">1 </span>&lt;&lt; d) - <span class="number">1</span>;
-<span data-nosnippet>160</span>                <span class="kw">let </span>j = base ^ ((index ^ base) &amp; mask);
-<span data-nosnippet>161</span>                <span class="kw">if </span>((index ^ base) &gt;&gt; d).count_ones() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>162</span>                    s = <span class="highlight">M::rinv_operate</span>(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span><span class="self">self</span>.data[j]);
-<span data-nosnippet>163</span>                } <span class="kw">else </span>{
-<span data-nosnippet>164</span>                    s = M::operate(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span><span class="self">self</span>.data[j]);
-<span data-nosnippet>165</span>                }
-<span data-nosnippet>166</span>            }
-<span data-nosnippet>167</span>            cur = base;
-<span data-nosnippet>168</span>        }
-<span data-nosnippet>169</span>        s
-<span data-nosnippet>170</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/math/bitwiseor_convolve.rs.html#24&#34;,&#34;line 24&#34;],[[123,123],&#34;../../src/competitive/math/bitwiseor_convolve.rs.html#146&#34;,&#34;line 146&#34;],[[139,139],&#34;../../src/competitive/math/bitwiseor_convolve.rs.html#162&#34;,&#34;line 162&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bitwiseor_convolve.rs (<a href="../../src/competitive/math/bitwiseor_convolve.rs.html#24">line 24</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>23</span>    <span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
+<span data-nosnippet>94</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/math/bitwiseor_convolve.rs.html#24&#34;,&#34;line 24&#34;],[[123,123],&#34;../../src/competitive/math/bitwiseor_convolve.rs.html#146&#34;,&#34;line 146&#34;],[[139,139],&#34;../../src/competitive/math/bitwiseor_convolve.rs.html#162&#34;,&#34;line 162&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bitwiseor_convolve.rs (<a href="../../src/competitive/math/bitwiseor_convolve.rs.html#24">line 24</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>23</span>    <span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
 <span data-nosnippet>24</span>        bitwise_transform(f, |y, x| <span class="kw-2">*</span>x = <span class="highlight focus">G::rinv_operate</span>(x, y));
 <span data-nosnippet>25</span>    }
 <span data-nosnippet>26</span>}
@@ -376,13 +229,7 @@
 <span data-nosnippet>167</span>            cur = base;
 <span data-nosnippet>168</span>        }
 <span data-nosnippet>169</span>        s
-<span data-nosnippet>170</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../src/competitive/math/bitwisexor_convolve.rs.html#39&#34;,&#34;line 39&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bitwisexor_convolve.rs (<a href="../../src/competitive/math/bitwisexor_convolve.rs.html#39">line 39</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>36</span>    <span class="kw">pub fn </span>hadamard_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
-<span data-nosnippet>37</span>        bitwise_transform(f, |x, y| {
-<span data-nosnippet>38</span>            <span class="kw">let </span>t = G::operate(x, y);
-<span data-nosnippet>39</span>            <span class="kw-2">*</span>y = <span class="highlight focus">G::rinv_operate</span>(x, y);
-<span data-nosnippet>40</span>            <span class="kw-2">*</span>x = t;
-<span data-nosnippet>41</span>        });
-<span data-nosnippet>42</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../src/competitive/math/gcd_convolve.rs.html#35&#34;,&#34;line 35&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/gcd_convolve.rs (<a href="../../src/competitive/math/gcd_convolve.rs.html#35">line 35</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>30</span>    <span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
+<span data-nosnippet>170</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../src/competitive/math/gcd_convolve.rs.html#35&#34;,&#34;line 35&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/gcd_convolve.rs (<a href="../../src/competitive/math/gcd_convolve.rs.html#35">line 35</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>30</span>    <span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
 <span data-nosnippet>31</span>        <span class="kw">let </span>n = f.len().saturating_sub(<span class="number">1</span>) <span class="kw">as </span>u32;
 <span data-nosnippet>32</span>        with_prime_list(n, |pl| {
 <span data-nosnippet>33</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(n) {
@@ -391,7 +238,37 @@
 <span data-nosnippet>36</span>                }
 <span data-nosnippet>37</span>            }
 <span data-nosnippet>38</span>        })
-<span data-nosnippet>39</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../src/competitive/math/lcm_convolve.rs.html#35">crates/competitive/src/math/lcm_convolve.rs</a></li><li><a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#134">crates/competitive/src/data_structure/binary_indexed_tree.rs</a></li><li><a href="../../src/competitive/math/quotient_array.rs.html#75">crates/competitive/src/math/quotient_array.rs</a></li><li><a href="../../src/competitive/data_structure/accumulate.rs.html#198-207">crates/competitive/src/data_structure/accumulate.rs</a></li><li><a href="../../src/competitive/data_structure/union_find.rs.html#483">crates/competitive/src/data_structure/union_find.rs</a></li><li><a href="../../src/competitive/data_structure/submask_range_query.rs.html#176">crates/competitive/src/data_structure/submask_range_query.rs</a></li><li><a href="../../src/competitive/data_structure/wavelet_matrix.rs.html#1545">crates/competitive/src/data_structure/wavelet_matrix.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.rinv_operate_assign" class="method"><a class="src rightside" href="../../src/competitive/algebra/magma.rs.html#185-187">Source</a><h4 class="code-header">fn <a href="#method.rinv_operate_assign" class="fn">rinv_operate_assign</a>(x: &amp;mut Self::<a class="associatedtype" href="trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>, y: &amp;Self::<a class="associatedtype" href="trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/algebra/ring.rs.html#80&#34;,&#34;line 80&#34;],[[18,18],&#34;../../src/competitive/algebra/ring.rs.html#97&#34;,&#34;line 97&#34;]]"><div class="scraped-example-title">crates/competitive/src/algebra/ring.rs (<a href="../../src/competitive/algebra/ring.rs.html#80">line 80</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>79</span>    <span class="kw">fn </span>sub_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) {
+<span data-nosnippet>39</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../src/competitive/math/lcm_convolve.rs.html#35&#34;,&#34;line 35&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/lcm_convolve.rs (<a href="../../src/competitive/math/lcm_convolve.rs.html#35">line 35</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>30</span>    <span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
+<span data-nosnippet>31</span>        <span class="kw">let </span>n = f.len().saturating_sub(<span class="number">1</span>) <span class="kw">as </span>u32;
+<span data-nosnippet>32</span>        with_prime_list(n, |pl| {
+<span data-nosnippet>33</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(n) {
+<span data-nosnippet>34</span>                <span class="kw">for </span>(i, j) <span class="kw">in </span>(<span class="number">0</span>..f.len()).step_by(p <span class="kw">as _</span>).enumerate().rev() {
+<span data-nosnippet>35</span>                    f[j] = <span class="highlight focus">G::rinv_operate</span>(<span class="kw-2">&amp;</span>f[j], <span class="kw-2">&amp;</span>f[i]);
+<span data-nosnippet>36</span>                }
+<span data-nosnippet>37</span>            }
+<span data-nosnippet>38</span>        })
+<span data-nosnippet>39</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[20,20],&#34;../../src/competitive/data_structure/binary_indexed_tree.rs.html#134&#34;,&#34;line 134&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_indexed_tree.rs (<a href="../../src/competitive/data_structure/binary_indexed_tree.rs.html#134">line 134</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>114</span>    <span class="kw">pub fn </span>fold_abelian(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>l: usize, <span class="kw-2">mut </span>r: usize) -&gt; G::T
+<span data-nosnippet>115</span>    <span class="kw">where
+<span data-nosnippet>116</span>        </span>G: AbelianGroup,
+<span data-nosnippet>117</span>    {
+<span data-nosnippet>118</span>        <span class="macro">debug_assert!</span>(l &lt;= <span class="self">self</span>.n &amp;&amp; r &lt;= <span class="self">self</span>.n);
+<span data-nosnippet>119</span>        <span class="kw">if </span>l == r {
+<span data-nosnippet>120</span>            <span class="kw">return </span>G::unit();
+<span data-nosnippet>121</span>        }
+<span data-nosnippet>122</span>        <span class="comment">// The prefix above the highest differing bit cancels in an Abelian group.
+<span data-nosnippet>123</span>        </span><span class="kw">let </span>common = l &amp; !(usize::MAX &gt;&gt; (l ^ r).leading_zeros());
+<span data-nosnippet>124</span>        <span class="kw">let </span><span class="kw-2">mut </span>left = G::unit();
+<span data-nosnippet>125</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = G::unit();
+<span data-nosnippet>126</span>        <span class="kw">while </span>l != common {
+<span data-nosnippet>127</span>            G::operate_assign(<span class="kw-2">&amp;mut </span>left, <span class="kw-2">&amp;</span><span class="self">self</span>.bit[l]);
+<span data-nosnippet>128</span>            l &amp;= l - <span class="number">1</span>;
+<span data-nosnippet>129</span>        }
+<span data-nosnippet>130</span>        <span class="kw">while </span>r != common {
+<span data-nosnippet>131</span>            G::operate_assign(<span class="kw-2">&amp;mut </span>right, <span class="kw-2">&amp;</span><span class="self">self</span>.bit[r]);
+<span data-nosnippet>132</span>            r &amp;= r - <span class="number">1</span>;
+<span data-nosnippet>133</span>        }
+<span data-nosnippet>134</span>        <span class="highlight focus">G::rinv_operate</span>(<span class="kw-2">&amp;</span>right, <span class="kw-2">&amp;</span>left)
+<span data-nosnippet>135</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../src/competitive/math/quotient_array.rs.html#75">crates/competitive/src/math/quotient_array.rs</a></li><li><a href="../../src/competitive/math/bitwiseand_convolve.rs.html#48">crates/competitive/src/math/bitwiseand_convolve.rs</a></li><li><a href="../../src/competitive/data_structure/accumulate.rs.html#198-207">crates/competitive/src/data_structure/accumulate.rs</a></li><li><a href="../../src/competitive/data_structure/union_find.rs.html#483">crates/competitive/src/data_structure/union_find.rs</a></li><li><a href="../../src/competitive/math/bitwisexor_convolve.rs.html#42">crates/competitive/src/math/bitwisexor_convolve.rs</a></li><li><a href="../../src/competitive/data_structure/submask_range_query.rs.html#176">crates/competitive/src/data_structure/submask_range_query.rs</a></li><li><a href="../../src/competitive/data_structure/wavelet_matrix.rs.html#1545">crates/competitive/src/data_structure/wavelet_matrix.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.rinv_operate_assign" class="method"><a class="src rightside" href="../../src/competitive/algebra/magma.rs.html#185-187">Source</a><h4 class="code-header">fn <a href="#method.rinv_operate_assign" class="fn">rinv_operate_assign</a>(x: &amp;mut Self::<a class="associatedtype" href="trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>, y: &amp;Self::<a class="associatedtype" href="trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/algebra/ring.rs.html#80&#34;,&#34;line 80&#34;],[[18,18],&#34;../../src/competitive/algebra/ring.rs.html#97&#34;,&#34;line 97&#34;]]"><div class="scraped-example-title">crates/competitive/src/algebra/ring.rs (<a href="../../src/competitive/algebra/ring.rs.html#80">line 80</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>79</span>    <span class="kw">fn </span>sub_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) {
 <span data-nosnippet>80</span>        <span class="highlight focus">&lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Invertible&gt;::rinv_operate_assign</span>(x, y);
 <span data-nosnippet>81</span>    }
 <span data-nosnippet>82</span>}
@@ -416,20 +293,20 @@
 <span data-nosnippet>99</span>        <span class="highlight">G::rinv_operate_assign</span>(<span class="kw-2">&amp;mut </span>res, <span class="kw-2">&amp;</span><span class="self">self</span>.accumulate0(i2, j1));
 <span data-nosnippet>100</span>        G::operate_assign(<span class="kw-2">&amp;mut </span>res, <span class="kw-2">&amp;</span><span class="self">self</span>.accumulate0(i2, j2));
 <span data-nosnippet>101</span>        res
-<span data-nosnippet>102</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../src/competitive/math/bitwiseand_convolve.rs.html#146&#34;,&#34;line 146&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bitwiseand_convolve.rs (<a href="../../src/competitive/math/bitwiseand_convolve.rs.html#146">line 146</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>137</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: M::T) {
-<span data-nosnippet>138</span>        <span class="kw">let </span>i = <span class="self">self</span>.data.len();
-<span data-nosnippet>139</span>        <span class="self">self</span>.data.push(x);
-<span data-nosnippet>140</span>        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
-<span data-nosnippet>141</span>        <span class="kw">while </span>i &gt;&gt; k &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>142</span>            <span class="kw">let </span>size = <span class="number">1 </span>&lt;&lt; k;
-<span data-nosnippet>143</span>            <span class="kw">let </span>chunk = <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i - (size * <span class="number">2 </span>- <span class="number">1</span>)..];
-<span data-nosnippet>144</span>            <span class="kw">let </span>(x, y) = chunk.split_at_mut(size);
-<span data-nosnippet>145</span>            <span class="kw">for </span>(x, y) <span class="kw">in </span>x.iter_mut().zip(y.iter()) {
-<span data-nosnippet>146</span>                <span class="highlight focus">M::rinv_operate_assign</span>(x, y);
-<span data-nosnippet>147</span>            }
-<span data-nosnippet>148</span>            k += <span class="number">1</span>;
-<span data-nosnippet>149</span>        }
-<span data-nosnippet>150</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[15,15],&#34;../../src/competitive/math/quotient_array.rs.html#76&#34;,&#34;line 76&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../src/competitive/math/quotient_array.rs.html#76">line 76</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>61</span>    <span class="kw">pub fn </span>lucy_dp&lt;G&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>mul_p: <span class="kw">impl </span>FnMut(T, u64) -&gt; T) -&gt; <span class="self">Self
+<span data-nosnippet>102</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../src/competitive/math/bitwiseand_convolve.rs.html#186&#34;,&#34;line 186&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/bitwiseand_convolve.rs (<a href="../../src/competitive/math/bitwiseand_convolve.rs.html#186">line 186</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>177</span>    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: M::T) {
+<span data-nosnippet>178</span>        <span class="kw">let </span>i = <span class="self">self</span>.data.len();
+<span data-nosnippet>179</span>        <span class="self">self</span>.data.push(x);
+<span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
+<span data-nosnippet>181</span>        <span class="kw">while </span>i &gt;&gt; k &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>182</span>            <span class="kw">let </span>size = <span class="number">1 </span>&lt;&lt; k;
+<span data-nosnippet>183</span>            <span class="kw">let </span>chunk = <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i - (size * <span class="number">2 </span>- <span class="number">1</span>)..];
+<span data-nosnippet>184</span>            <span class="kw">let </span>(x, y) = chunk.split_at_mut(size);
+<span data-nosnippet>185</span>            <span class="kw">for </span>(x, y) <span class="kw">in </span>x.iter_mut().zip(y.iter()) {
+<span data-nosnippet>186</span>                <span class="highlight focus">M::rinv_operate_assign</span>(x, y);
+<span data-nosnippet>187</span>            }
+<span data-nosnippet>188</span>            k += <span class="number">1</span>;
+<span data-nosnippet>189</span>        }
+<span data-nosnippet>190</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[15,15],&#34;../../src/competitive/math/quotient_array.rs.html#76&#34;,&#34;line 76&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../src/competitive/math/quotient_array.rs.html#76">line 76</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>61</span>    <span class="kw">pub fn </span>lucy_dp&lt;G&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>mul_p: <span class="kw">impl </span>FnMut(T, u64) -&gt; T) -&gt; <span class="self">Self
 <span data-nosnippet>62</span>    </span><span class="kw">where
 <span data-nosnippet>63</span>        </span>G: Group&lt;T = T&gt;,
 <span data-nosnippet>64</span>    {

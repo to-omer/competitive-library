@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["CentroidSplit","ContourInfo","ContourQueryRange","RootedTree"]};
+window.SIDEBAR_ITEMS = {"enum":["ContourComponent"],"struct":["CentroidSplit","ContourInfo","ContourQueryPointAdd","ContourQueryRange","RootedTree"]};

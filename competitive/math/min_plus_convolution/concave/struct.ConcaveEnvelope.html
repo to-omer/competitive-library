@@ -57,201 +57,204 @@
     concave: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>,
     leaf_count: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     query_root: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
-    node_curves: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,
+    node_curves: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     result: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;,
-}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.arbitrary" class="structfield section-header"><a href="#structfield.arbitrary" class="anchor field">§</a><code>arbitrary: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a></code></span><span id="structfield.concave" class="structfield section-header"><a href="#structfield.concave" class="anchor field">§</a><code>concave: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a></code></span><span id="structfield.leaf_count" class="structfield section-header"><a href="#structfield.leaf_count" class="anchor field">§</a><code>leaf_count: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.query_root" class="structfield section-header"><a href="#structfield.query_root" class="anchor field">§</a><code>query_root: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.node_curves" class="structfield section-header"><a href="#structfield.node_curves" class="anchor field">§</a><code>node_curves: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;</code></span><span id="structfield.result" class="structfield section-header"><a href="#structfield.result" class="anchor field">§</a><code>result: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-ConcaveEnvelope%3C'a,+T%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#25-150">Source</a><a href="#impl-ConcaveEnvelope%3C'a,+T%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, T&gt; <a class="struct" href="struct.ConcaveEnvelope.html" title="struct competitive::math::min_plus_convolution::concave::ConcaveEnvelope">ConcaveEnvelope</a>&lt;'a, T&gt;<div class="where">where
-    T: <a class="trait" href="../../../num/trait.Signed.html" title="trait competitive::num::Signed">Signed</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#29-42">Source</a><h4 class="code-header">fn <a href="#method.new" class="fn">new</a>(arbitrary: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>, concave: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[24,24],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#205&#34;,&#34;line 205&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#205">line 205</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>181</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>concave_envelope&lt;T&gt;(arbitrary: <span class="kw-2">&amp;</span>[T], concave: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>182</span><span class="kw">where
-<span data-nosnippet>183</span>    </span>T: Signed,
-<span data-nosnippet>184</span>{
-<span data-nosnippet>185</span>    <span class="kw">if </span>concave.len() == <span class="number">1 </span>{
-<span data-nosnippet>186</span>        <span class="kw">return </span>arbitrary
-<span data-nosnippet>187</span>            .iter()
-<span data-nosnippet>188</span>            .map(|<span class="kw-2">&amp;</span>value| {
-<span data-nosnippet>189</span>                <span class="kw">if </span>value.is_maximum() {
-<span data-nosnippet>190</span>                    T::maximum()
-<span data-nosnippet>191</span>                } <span class="kw">else </span>{
-<span data-nosnippet>192</span>                    value + concave[<span class="number">0</span>]
-<span data-nosnippet>193</span>                }
-<span data-nosnippet>194</span>            })
-<span data-nosnippet>195</span>            .collect();
-<span data-nosnippet>196</span>    }
-<span data-nosnippet>197</span>    <span class="kw">if </span>arbitrary.len() == <span class="number">1 </span>{
-<span data-nosnippet>198</span>        <span class="kw">return if </span>arbitrary[<span class="number">0</span>].is_maximum() {
-<span data-nosnippet>199</span>            <span class="macro">vec!</span>[T::maximum(); concave.len()]
-<span data-nosnippet>200</span>        } <span class="kw">else </span>{
-<span data-nosnippet>201</span>            concave.iter().map(|<span class="kw-2">&amp;</span>value| arbitrary[<span class="number">0</span>] + value).collect()
-<span data-nosnippet>202</span>        };
-<span data-nosnippet>203</span>    }
-<span data-nosnippet>204</span>
-<span data-nosnippet>205</span>    <span class="highlight focus">ConcaveEnvelope::new</span>(arbitrary, concave).convolve()
-<span data-nosnippet>206</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.value" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#45-47">Source</a><h4 class="code-header">fn <a href="#method.value" class="fn">value</a>(&amp;self, curve: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, output: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#55&#34;,&#34;line 55&#34;],[[29,29],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#79&#34;,&#34;line 79&#34;],[[29,29],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#79&#34;,&#34;line 79&#34;],[[39,39],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#89&#34;,&#34;line 89&#34;],[[63,63],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#113&#34;,&#34;line 113&#34;],[[63,63],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#113&#34;,&#34;line 113&#34;],[[73,73],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#123&#34;,&#34;line 123&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#55">line 55</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>50</span>    <span class="kw">fn </span>query(<span class="kw-2">&amp;mut </span><span class="self">self</span>, output: usize) {
+}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.arbitrary" class="structfield section-header"><a href="#structfield.arbitrary" class="anchor field">§</a><code>arbitrary: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a></code></span><span id="structfield.concave" class="structfield section-header"><a href="#structfield.concave" class="anchor field">§</a><code>concave: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a></code></span><span id="structfield.leaf_count" class="structfield section-header"><a href="#structfield.leaf_count" class="anchor field">§</a><code>leaf_count: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.query_root" class="structfield section-header"><a href="#structfield.query_root" class="anchor field">§</a><code>query_root: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.node_curves" class="structfield section-header"><a href="#structfield.node_curves" class="anchor field">§</a><code>node_curves: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><span id="structfield.result" class="structfield section-header"><a href="#structfield.result" class="anchor field">§</a><code>result: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-ConcaveEnvelope%3C'a,+T%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#25-153">Source</a><a href="#impl-ConcaveEnvelope%3C'a,+T%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, T&gt; <a class="struct" href="struct.ConcaveEnvelope.html" title="struct competitive::math::min_plus_convolution::concave::ConcaveEnvelope">ConcaveEnvelope</a>&lt;'a, T&gt;<div class="where">where
+    T: <a class="trait" href="../../../num/trait.Signed.html" title="trait competitive::num::Signed">Signed</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#29-42">Source</a><h4 class="code-header">fn <a href="#method.new" class="fn">new</a>(arbitrary: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>, concave: &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[24,24],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#206&#34;,&#34;line 206&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#206">line 206</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>182</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>concave_envelope&lt;T&gt;(arbitrary: <span class="kw-2">&amp;</span>[T], concave: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>183</span><span class="kw">where
+<span data-nosnippet>184</span>    </span>T: Signed,
+<span data-nosnippet>185</span>{
+<span data-nosnippet>186</span>    <span class="kw">if </span>concave.len() == <span class="number">1 </span>{
+<span data-nosnippet>187</span>        <span class="kw">return </span>arbitrary
+<span data-nosnippet>188</span>            .iter()
+<span data-nosnippet>189</span>            .map(|<span class="kw-2">&amp;</span>value| {
+<span data-nosnippet>190</span>                <span class="kw">if </span>value.is_maximum() {
+<span data-nosnippet>191</span>                    T::maximum()
+<span data-nosnippet>192</span>                } <span class="kw">else </span>{
+<span data-nosnippet>193</span>                    value + concave[<span class="number">0</span>]
+<span data-nosnippet>194</span>                }
+<span data-nosnippet>195</span>            })
+<span data-nosnippet>196</span>            .collect();
+<span data-nosnippet>197</span>    }
+<span data-nosnippet>198</span>    <span class="kw">if </span>arbitrary.len() == <span class="number">1 </span>{
+<span data-nosnippet>199</span>        <span class="kw">return if </span>arbitrary[<span class="number">0</span>].is_maximum() {
+<span data-nosnippet>200</span>            <span class="macro">vec!</span>[T::maximum(); concave.len()]
+<span data-nosnippet>201</span>        } <span class="kw">else </span>{
+<span data-nosnippet>202</span>            concave.iter().map(|<span class="kw-2">&amp;</span>value| arbitrary[<span class="number">0</span>] + value).collect()
+<span data-nosnippet>203</span>        };
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    <span class="highlight focus">ConcaveEnvelope::new</span>(arbitrary, concave).convolve()
+<span data-nosnippet>207</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.value" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#45-47">Source</a><h4 class="code-header">fn <a href="#method.value" class="fn">value</a>(&amp;self, curve: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, output: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#56&#34;,&#34;line 56&#34;],[[31,31],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#81&#34;,&#34;line 81&#34;],[[31,31],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#81&#34;,&#34;line 81&#34;],[[41,41],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#91&#34;,&#34;line 91&#34;],[[66,66],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#116&#34;,&#34;line 116&#34;],[[66,66],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#116&#34;,&#34;line 116&#34;],[[76,76],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#126&#34;,&#34;line 126&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#56">line 56</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>50</span>    <span class="kw">fn </span>query(<span class="kw-2">&amp;mut </span><span class="self">self</span>, output: usize) {
 <span data-nosnippet>51</span>        <span class="kw">let </span><span class="kw-2">mut </span>best = <span class="self">self</span>.result[output];
 <span data-nosnippet>52</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = (output + <span class="self">self</span>.leaf_count) &gt;&gt; <span class="number">1</span>;
 <span data-nosnippet>53</span>        <span class="kw">while </span>node &gt;= <span class="self">self</span>.query_root {
-<span data-nosnippet>54</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(curve) = <span class="self">self</span>.node_curves[node] {
-<span data-nosnippet>55</span>                best = best.min(<span class="self">self</span>.<span class="highlight focus">value</span>(curve, output));
-<span data-nosnippet>56</span>            }
-<span data-nosnippet>57</span>            node &gt;&gt;= <span class="number">1</span>;
-<span data-nosnippet>58</span>        }
-<span data-nosnippet>59</span>        <span class="self">self</span>.result[output] = best;
-<span data-nosnippet>60</span>    }
-<span data-nosnippet>61</span>
-<span data-nosnippet>62</span>    <span class="attr">#[inline]
-<span data-nosnippet>63</span>    </span><span class="kw">fn </span>insert_from_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize) {
-<span data-nosnippet>64</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = left + <span class="self">self</span>.concave.len();
-<span data-nosnippet>65</span>        <span class="kw">let </span>block = <span class="number">1_usize </span>&lt;&lt; (left ^ right).ilog2();
-<span data-nosnippet>66</span>        right &amp;= !(block - <span class="number">1</span>);
-<span data-nosnippet>67</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = bit_width(right - left - <span class="number">1</span>);
-<span data-nosnippet>68</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = (<span class="self">self</span>.leaf_count + left) &gt;&gt; depth;
-<span data-nosnippet>69</span>        <span class="kw">let </span><span class="kw-2">mut </span>pending = (!<span class="self">self</span>.arbitrary[left].is_maximum()).then_some(left);
-<span data-nosnippet>70</span>        <span class="kw">while </span>depth != <span class="number">0 </span>{
-<span data-nosnippet>71</span>            <span class="kw">let </span><span class="prelude-val">Some</span>(curve) = pending <span class="kw">else </span>{
-<span data-nosnippet>72</span>                <span class="kw">break</span>;
-<span data-nosnippet>73</span>            };
-<span data-nosnippet>74</span>            depth -= <span class="number">1</span>;
-<span data-nosnippet>75</span>            <span class="kw">let </span>middle = ((node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>) &lt;&lt; depth) - <span class="self">self</span>.leaf_count - <span class="number">1</span>;
-<span data-nosnippet>76</span>            <span class="kw">if </span>middle &lt; left {
-<span data-nosnippet>77</span>                node = node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>;
-<span data-nosnippet>78</span>            } <span class="kw">else if </span><span class="self">self</span>.node_curves[node]
-<span data-nosnippet>79</span>                .is_some_and(|old| <span class="self">self</span>.<span class="highlight">value</span>(old, middle) &lt; <span class="self">self</span>.<span class="highlight">value</span>(curve, middle))
-<span data-nosnippet>80</span>            {
-<span data-nosnippet>81</span>                node &lt;&lt;= <span class="number">1</span>;
-<span data-nosnippet>82</span>            } <span class="kw">else </span>{
-<span data-nosnippet>83</span>                std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.node_curves[node], <span class="kw-2">&amp;mut </span>pending);
-<span data-nosnippet>84</span>                node = node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>;
-<span data-nosnippet>85</span>            }
-<span data-nosnippet>86</span>        }
-<span data-nosnippet>87</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(curve) = pending {
-<span data-nosnippet>88</span>            <span class="kw">let </span>output = node - <span class="self">self</span>.leaf_count;
-<span data-nosnippet>89</span>            <span class="self">self</span>.result[output] = <span class="self">self</span>.result[output].min(<span class="self">self</span>.<span class="highlight">value</span>(curve, output));
-<span data-nosnippet>90</span>        }
-<span data-nosnippet>91</span>    }
-<span data-nosnippet>92</span>
-<span data-nosnippet>93</span>    <span class="attr">#[inline]
-<span data-nosnippet>94</span>    </span><span class="kw">fn </span>insert_from_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize) {
-<span data-nosnippet>95</span>        <span class="kw">let </span>curve = right - <span class="self">self</span>.concave.len();
-<span data-nosnippet>96</span>        <span class="kw">let </span>block = <span class="number">1_usize </span>&lt;&lt; (curve ^ right).ilog2();
-<span data-nosnippet>97</span>        <span class="kw">let </span>left = right &amp; !(block - <span class="number">1</span>);
-<span data-nosnippet>98</span>        <span class="kw">if </span>left == right {
+<span data-nosnippet>54</span>            <span class="kw">let </span>curve = <span class="self">self</span>.node_curves[node];
+<span data-nosnippet>55</span>            <span class="kw">if </span>curve != !<span class="number">0 </span>{
+<span data-nosnippet>56</span>                best = best.min(<span class="self">self</span>.<span class="highlight focus">value</span>(curve, output));
+<span data-nosnippet>57</span>            }
+<span data-nosnippet>58</span>            node &gt;&gt;= <span class="number">1</span>;
+<span data-nosnippet>59</span>        }
+<span data-nosnippet>60</span>        <span class="self">self</span>.result[output] = best;
+<span data-nosnippet>61</span>    }
+<span data-nosnippet>62</span>
+<span data-nosnippet>63</span>    <span class="attr">#[inline]
+<span data-nosnippet>64</span>    </span><span class="kw">fn </span>insert_from_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize) {
+<span data-nosnippet>65</span>        <span class="kw">if </span><span class="self">self</span>.arbitrary[left].is_maximum() {
+<span data-nosnippet>66</span>            <span class="kw">return</span>;
+<span data-nosnippet>67</span>        }
+<span data-nosnippet>68</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = left + <span class="self">self</span>.concave.len();
+<span data-nosnippet>69</span>        <span class="kw">let </span>block = <span class="number">1_usize </span>&lt;&lt; (left ^ right).ilog2();
+<span data-nosnippet>70</span>        right &amp;= !(block - <span class="number">1</span>);
+<span data-nosnippet>71</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = bit_width(right - left - <span class="number">1</span>);
+<span data-nosnippet>72</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = (<span class="self">self</span>.leaf_count + left) &gt;&gt; depth;
+<span data-nosnippet>73</span>        <span class="kw">let </span><span class="kw-2">mut </span>pending = left;
+<span data-nosnippet>74</span>        <span class="kw">while </span>depth != <span class="number">0 </span>&amp;&amp; pending != !<span class="number">0 </span>{
+<span data-nosnippet>75</span>            <span class="kw">let </span>curve = pending;
+<span data-nosnippet>76</span>            depth -= <span class="number">1</span>;
+<span data-nosnippet>77</span>            <span class="kw">let </span>middle = ((node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>) &lt;&lt; depth) - <span class="self">self</span>.leaf_count - <span class="number">1</span>;
+<span data-nosnippet>78</span>            <span class="kw">if </span>middle &lt; left {
+<span data-nosnippet>79</span>                node = node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>;
+<span data-nosnippet>80</span>            } <span class="kw">else if </span><span class="self">self</span>.node_curves[node] != !<span class="number">0
+<span data-nosnippet>81</span>                </span>&amp;&amp; <span class="self">self</span>.<span class="highlight">value</span>(<span class="self">self</span>.node_curves[node], middle) &lt; <span class="self">self</span>.<span class="highlight">value</span>(curve, middle)
+<span data-nosnippet>82</span>            {
+<span data-nosnippet>83</span>                node &lt;&lt;= <span class="number">1</span>;
+<span data-nosnippet>84</span>            } <span class="kw">else </span>{
+<span data-nosnippet>85</span>                std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.node_curves[node], <span class="kw-2">&amp;mut </span>pending);
+<span data-nosnippet>86</span>                node = node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>;
+<span data-nosnippet>87</span>            }
+<span data-nosnippet>88</span>        }
+<span data-nosnippet>89</span>        <span class="kw">if </span>pending != !<span class="number">0 </span>{
+<span data-nosnippet>90</span>            <span class="kw">let </span>output = node - <span class="self">self</span>.leaf_count;
+<span data-nosnippet>91</span>            <span class="self">self</span>.result[output] = <span class="self">self</span>.result[output].min(<span class="self">self</span>.<span class="highlight">value</span>(pending, output));
+<span data-nosnippet>92</span>        }
+<span data-nosnippet>93</span>    }
+<span data-nosnippet>94</span>
+<span data-nosnippet>95</span>    <span class="attr">#[inline]
+<span data-nosnippet>96</span>    </span><span class="kw">fn </span>insert_from_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize) {
+<span data-nosnippet>97</span>        <span class="kw">let </span>curve = right - <span class="self">self</span>.concave.len();
+<span data-nosnippet>98</span>        <span class="kw">if </span><span class="self">self</span>.arbitrary[curve].is_maximum() {
 <span data-nosnippet>99</span>            <span class="kw">return</span>;
 <span data-nosnippet>100</span>        }
-<span data-nosnippet>101</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = bit_width(right - left - <span class="number">1</span>);
-<span data-nosnippet>102</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = (<span class="self">self</span>.leaf_count + left) &gt;&gt; depth;
-<span data-nosnippet>103</span>        <span class="kw">let </span><span class="kw-2">mut </span>pending = (!<span class="self">self</span>.arbitrary[curve].is_maximum()).then_some(curve);
-<span data-nosnippet>104</span>        <span class="kw">while </span>depth != <span class="number">0 </span>{
-<span data-nosnippet>105</span>            <span class="kw">let </span><span class="prelude-val">Some</span>(curve) = pending <span class="kw">else </span>{
-<span data-nosnippet>106</span>                <span class="kw">break</span>;
-<span data-nosnippet>107</span>            };
-<span data-nosnippet>108</span>            depth -= <span class="number">1</span>;
-<span data-nosnippet>109</span>            <span class="kw">let </span>middle = ((node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>) &lt;&lt; depth) - <span class="self">self</span>.leaf_count;
-<span data-nosnippet>110</span>            <span class="kw">if </span>middle &gt;= right {
-<span data-nosnippet>111</span>                node &lt;&lt;= <span class="number">1</span>;
-<span data-nosnippet>112</span>            } <span class="kw">else if </span><span class="self">self</span>.node_curves[node]
-<span data-nosnippet>113</span>                .is_some_and(|old| <span class="self">self</span>.<span class="highlight">value</span>(old, middle) &lt; <span class="self">self</span>.<span class="highlight">value</span>(curve, middle))
-<span data-nosnippet>114</span>            {
-<span data-nosnippet>115</span>                node = node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>;
-<span data-nosnippet>116</span>            } <span class="kw">else </span>{
-<span data-nosnippet>117</span>                std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.node_curves[node], <span class="kw-2">&amp;mut </span>pending);
-<span data-nosnippet>118</span>                node &lt;&lt;= <span class="number">1</span>;
-<span data-nosnippet>119</span>            }
-<span data-nosnippet>120</span>        }
-<span data-nosnippet>121</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(curve) = pending {
-<span data-nosnippet>122</span>            <span class="kw">let </span>output = node - <span class="self">self</span>.leaf_count;
-<span data-nosnippet>123</span>            <span class="self">self</span>.result[output] = <span class="self">self</span>.result[output].min(<span class="self">self</span>.<span class="highlight">value</span>(curve, output));
-<span data-nosnippet>124</span>        }
-<span data-nosnippet>125</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.query" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#50-60">Source</a><h4 class="code-header">fn <a href="#method.query" class="fn">query</a>(&amp;mut self, output: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#132&#34;,&#34;line 132&#34;],[[8,8],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#135&#34;,&#34;line 135&#34;],[[16,16],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#143&#34;,&#34;line 143&#34;],[[19,19],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#146&#34;,&#34;line 146&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#132">line 132</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>127</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;T&gt; {
-<span data-nosnippet>128</span>        <span class="comment">// Curve i is valid on [i, i + concave.len()). The two passes insert
-<span data-nosnippet>129</span>        // opposite sides of each validity interval into the segment envelope.
-<span data-nosnippet>130</span>        </span><span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.arbitrary.len() {
-<span data-nosnippet>131</span>            <span class="self">self</span>.insert_from_left(left);
-<span data-nosnippet>132</span>            <span class="self">self</span>.<span class="highlight focus">query</span>(left);
-<span data-nosnippet>133</span>        }
-<span data-nosnippet>134</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.arbitrary.len()..<span class="self">self</span>.result.len() {
-<span data-nosnippet>135</span>            <span class="self">self</span>.<span class="highlight">query</span>(output);
+<span data-nosnippet>101</span>        <span class="kw">let </span>block = <span class="number">1_usize </span>&lt;&lt; (curve ^ right).ilog2();
+<span data-nosnippet>102</span>        <span class="kw">let </span>left = right &amp; !(block - <span class="number">1</span>);
+<span data-nosnippet>103</span>        <span class="kw">if </span>left == right {
+<span data-nosnippet>104</span>            <span class="kw">return</span>;
+<span data-nosnippet>105</span>        }
+<span data-nosnippet>106</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = bit_width(right - left - <span class="number">1</span>);
+<span data-nosnippet>107</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = (<span class="self">self</span>.leaf_count + left) &gt;&gt; depth;
+<span data-nosnippet>108</span>        <span class="kw">let </span><span class="kw-2">mut </span>pending = curve;
+<span data-nosnippet>109</span>        <span class="kw">while </span>depth != <span class="number">0 </span>&amp;&amp; pending != !<span class="number">0 </span>{
+<span data-nosnippet>110</span>            <span class="kw">let </span>curve = pending;
+<span data-nosnippet>111</span>            depth -= <span class="number">1</span>;
+<span data-nosnippet>112</span>            <span class="kw">let </span>middle = ((node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>) &lt;&lt; depth) - <span class="self">self</span>.leaf_count;
+<span data-nosnippet>113</span>            <span class="kw">if </span>middle &gt;= right {
+<span data-nosnippet>114</span>                node &lt;&lt;= <span class="number">1</span>;
+<span data-nosnippet>115</span>            } <span class="kw">else if </span><span class="self">self</span>.node_curves[node] != !<span class="number">0
+<span data-nosnippet>116</span>                </span>&amp;&amp; <span class="self">self</span>.<span class="highlight">value</span>(<span class="self">self</span>.node_curves[node], middle) &lt; <span class="self">self</span>.<span class="highlight">value</span>(curve, middle)
+<span data-nosnippet>117</span>            {
+<span data-nosnippet>118</span>                node = node &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>;
+<span data-nosnippet>119</span>            } <span class="kw">else </span>{
+<span data-nosnippet>120</span>                std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.node_curves[node], <span class="kw-2">&amp;mut </span>pending);
+<span data-nosnippet>121</span>                node &lt;&lt;= <span class="number">1</span>;
+<span data-nosnippet>122</span>            }
+<span data-nosnippet>123</span>        }
+<span data-nosnippet>124</span>        <span class="kw">if </span>pending != !<span class="number">0 </span>{
+<span data-nosnippet>125</span>            <span class="kw">let </span>output = node - <span class="self">self</span>.leaf_count;
+<span data-nosnippet>126</span>            <span class="self">self</span>.result[output] = <span class="self">self</span>.result[output].min(<span class="self">self</span>.<span class="highlight">value</span>(pending, output));
+<span data-nosnippet>127</span>        }
+<span data-nosnippet>128</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.query" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#50-61">Source</a><h4 class="code-header">fn <a href="#method.query" class="fn">query</a>(&amp;mut self, output: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#135&#34;,&#34;line 135&#34;],[[8,8],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#138&#34;,&#34;line 138&#34;],[[16,16],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#146&#34;,&#34;line 146&#34;],[[19,19],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#149&#34;,&#34;line 149&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#135">line 135</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>130</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;T&gt; {
+<span data-nosnippet>131</span>        <span class="comment">// Curve i is valid on [i, i + concave.len()). The two passes insert
+<span data-nosnippet>132</span>        // opposite sides of each validity interval into the segment envelope.
+<span data-nosnippet>133</span>        </span><span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.arbitrary.len() {
+<span data-nosnippet>134</span>            <span class="self">self</span>.insert_from_left(left);
+<span data-nosnippet>135</span>            <span class="self">self</span>.<span class="highlight focus">query</span>(left);
 <span data-nosnippet>136</span>        }
-<span data-nosnippet>137</span>
-<span data-nosnippet>138</span>        <span class="self">self</span>.node_curves.fill(<span class="prelude-val">None</span>);
-<span data-nosnippet>139</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.result.len();
-<span data-nosnippet>140</span>        <span class="kw">while </span>right &gt;= <span class="self">self</span>.concave.len() {
-<span data-nosnippet>141</span>            <span class="self">self</span>.insert_from_right(right);
-<span data-nosnippet>142</span>            right -= <span class="number">1</span>;
-<span data-nosnippet>143</span>            <span class="self">self</span>.<span class="highlight">query</span>(right);
-<span data-nosnippet>144</span>        }
-<span data-nosnippet>145</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.concave.len() {
-<span data-nosnippet>146</span>            <span class="self">self</span>.<span class="highlight">query</span>(output);
+<span data-nosnippet>137</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.arbitrary.len()..<span class="self">self</span>.result.len() {
+<span data-nosnippet>138</span>            <span class="self">self</span>.<span class="highlight">query</span>(output);
+<span data-nosnippet>139</span>        }
+<span data-nosnippet>140</span>
+<span data-nosnippet>141</span>        <span class="self">self</span>.node_curves.fill(!<span class="number">0</span>);
+<span data-nosnippet>142</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.result.len();
+<span data-nosnippet>143</span>        <span class="kw">while </span>right &gt;= <span class="self">self</span>.concave.len() {
+<span data-nosnippet>144</span>            <span class="self">self</span>.insert_from_right(right);
+<span data-nosnippet>145</span>            right -= <span class="number">1</span>;
+<span data-nosnippet>146</span>            <span class="self">self</span>.<span class="highlight">query</span>(right);
 <span data-nosnippet>147</span>        }
-<span data-nosnippet>148</span>        <span class="self">self</span>.result
-<span data-nosnippet>149</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.insert_from_left" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#63-91">Source</a><h4 class="code-header">fn <a href="#method.insert_from_left" class="fn">insert_from_left</a>(&amp;mut self, left: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#131&#34;,&#34;line 131&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#131">line 131</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>127</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;T&gt; {
-<span data-nosnippet>128</span>        <span class="comment">// Curve i is valid on [i, i + concave.len()). The two passes insert
-<span data-nosnippet>129</span>        // opposite sides of each validity interval into the segment envelope.
-<span data-nosnippet>130</span>        </span><span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.arbitrary.len() {
-<span data-nosnippet>131</span>            <span class="self">self</span>.<span class="highlight focus">insert_from_left</span>(left);
-<span data-nosnippet>132</span>            <span class="self">self</span>.query(left);
-<span data-nosnippet>133</span>        }
-<span data-nosnippet>134</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.arbitrary.len()..<span class="self">self</span>.result.len() {
-<span data-nosnippet>135</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>148</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.concave.len() {
+<span data-nosnippet>149</span>            <span class="self">self</span>.<span class="highlight">query</span>(output);
+<span data-nosnippet>150</span>        }
+<span data-nosnippet>151</span>        <span class="self">self</span>.result
+<span data-nosnippet>152</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.insert_from_left" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#64-93">Source</a><h4 class="code-header">fn <a href="#method.insert_from_left" class="fn">insert_from_left</a>(&amp;mut self, left: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#134&#34;,&#34;line 134&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#134">line 134</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>130</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;T&gt; {
+<span data-nosnippet>131</span>        <span class="comment">// Curve i is valid on [i, i + concave.len()). The two passes insert
+<span data-nosnippet>132</span>        // opposite sides of each validity interval into the segment envelope.
+<span data-nosnippet>133</span>        </span><span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.arbitrary.len() {
+<span data-nosnippet>134</span>            <span class="self">self</span>.<span class="highlight focus">insert_from_left</span>(left);
+<span data-nosnippet>135</span>            <span class="self">self</span>.query(left);
 <span data-nosnippet>136</span>        }
-<span data-nosnippet>137</span>
-<span data-nosnippet>138</span>        <span class="self">self</span>.node_curves.fill(<span class="prelude-val">None</span>);
-<span data-nosnippet>139</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.result.len();
-<span data-nosnippet>140</span>        <span class="kw">while </span>right &gt;= <span class="self">self</span>.concave.len() {
-<span data-nosnippet>141</span>            <span class="self">self</span>.insert_from_right(right);
-<span data-nosnippet>142</span>            right -= <span class="number">1</span>;
-<span data-nosnippet>143</span>            <span class="self">self</span>.query(right);
-<span data-nosnippet>144</span>        }
-<span data-nosnippet>145</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.concave.len() {
-<span data-nosnippet>146</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>137</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.arbitrary.len()..<span class="self">self</span>.result.len() {
+<span data-nosnippet>138</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>139</span>        }
+<span data-nosnippet>140</span>
+<span data-nosnippet>141</span>        <span class="self">self</span>.node_curves.fill(!<span class="number">0</span>);
+<span data-nosnippet>142</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.result.len();
+<span data-nosnippet>143</span>        <span class="kw">while </span>right &gt;= <span class="self">self</span>.concave.len() {
+<span data-nosnippet>144</span>            <span class="self">self</span>.insert_from_right(right);
+<span data-nosnippet>145</span>            right -= <span class="number">1</span>;
+<span data-nosnippet>146</span>            <span class="self">self</span>.query(right);
 <span data-nosnippet>147</span>        }
-<span data-nosnippet>148</span>        <span class="self">self</span>.result
-<span data-nosnippet>149</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.insert_from_right" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#94-125">Source</a><h4 class="code-header">fn <a href="#method.insert_from_right" class="fn">insert_from_right</a>(&amp;mut self, right: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#141&#34;,&#34;line 141&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#141">line 141</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>127</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;T&gt; {
-<span data-nosnippet>128</span>        <span class="comment">// Curve i is valid on [i, i + concave.len()). The two passes insert
-<span data-nosnippet>129</span>        // opposite sides of each validity interval into the segment envelope.
-<span data-nosnippet>130</span>        </span><span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.arbitrary.len() {
-<span data-nosnippet>131</span>            <span class="self">self</span>.insert_from_left(left);
-<span data-nosnippet>132</span>            <span class="self">self</span>.query(left);
-<span data-nosnippet>133</span>        }
-<span data-nosnippet>134</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.arbitrary.len()..<span class="self">self</span>.result.len() {
-<span data-nosnippet>135</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>148</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.concave.len() {
+<span data-nosnippet>149</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>150</span>        }
+<span data-nosnippet>151</span>        <span class="self">self</span>.result
+<span data-nosnippet>152</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.insert_from_right" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#96-128">Source</a><h4 class="code-header">fn <a href="#method.insert_from_right" class="fn">insert_from_right</a>(&amp;mut self, right: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#144&#34;,&#34;line 144&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#144">line 144</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>130</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;T&gt; {
+<span data-nosnippet>131</span>        <span class="comment">// Curve i is valid on [i, i + concave.len()). The two passes insert
+<span data-nosnippet>132</span>        // opposite sides of each validity interval into the segment envelope.
+<span data-nosnippet>133</span>        </span><span class="kw">for </span>left <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.arbitrary.len() {
+<span data-nosnippet>134</span>            <span class="self">self</span>.insert_from_left(left);
+<span data-nosnippet>135</span>            <span class="self">self</span>.query(left);
 <span data-nosnippet>136</span>        }
-<span data-nosnippet>137</span>
-<span data-nosnippet>138</span>        <span class="self">self</span>.node_curves.fill(<span class="prelude-val">None</span>);
-<span data-nosnippet>139</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.result.len();
-<span data-nosnippet>140</span>        <span class="kw">while </span>right &gt;= <span class="self">self</span>.concave.len() {
-<span data-nosnippet>141</span>            <span class="self">self</span>.<span class="highlight focus">insert_from_right</span>(right);
-<span data-nosnippet>142</span>            right -= <span class="number">1</span>;
-<span data-nosnippet>143</span>            <span class="self">self</span>.query(right);
-<span data-nosnippet>144</span>        }
-<span data-nosnippet>145</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.concave.len() {
-<span data-nosnippet>146</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>137</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="self">self</span>.arbitrary.len()..<span class="self">self</span>.result.len() {
+<span data-nosnippet>138</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>139</span>        }
+<span data-nosnippet>140</span>
+<span data-nosnippet>141</span>        <span class="self">self</span>.node_curves.fill(!<span class="number">0</span>);
+<span data-nosnippet>142</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.result.len();
+<span data-nosnippet>143</span>        <span class="kw">while </span>right &gt;= <span class="self">self</span>.concave.len() {
+<span data-nosnippet>144</span>            <span class="self">self</span>.<span class="highlight focus">insert_from_right</span>(right);
+<span data-nosnippet>145</span>            right -= <span class="number">1</span>;
+<span data-nosnippet>146</span>            <span class="self">self</span>.query(right);
 <span data-nosnippet>147</span>        }
-<span data-nosnippet>148</span>        <span class="self">self</span>.result
-<span data-nosnippet>149</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.convolve" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#127-149">Source</a><h4 class="code-header">fn <a href="#method.convolve" class="fn">convolve</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[24,24],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#205&#34;,&#34;line 205&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#205">line 205</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>181</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>concave_envelope&lt;T&gt;(arbitrary: <span class="kw-2">&amp;</span>[T], concave: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>182</span><span class="kw">where
-<span data-nosnippet>183</span>    </span>T: Signed,
-<span data-nosnippet>184</span>{
-<span data-nosnippet>185</span>    <span class="kw">if </span>concave.len() == <span class="number">1 </span>{
-<span data-nosnippet>186</span>        <span class="kw">return </span>arbitrary
-<span data-nosnippet>187</span>            .iter()
-<span data-nosnippet>188</span>            .map(|<span class="kw-2">&amp;</span>value| {
-<span data-nosnippet>189</span>                <span class="kw">if </span>value.is_maximum() {
-<span data-nosnippet>190</span>                    T::maximum()
-<span data-nosnippet>191</span>                } <span class="kw">else </span>{
-<span data-nosnippet>192</span>                    value + concave[<span class="number">0</span>]
-<span data-nosnippet>193</span>                }
-<span data-nosnippet>194</span>            })
-<span data-nosnippet>195</span>            .collect();
-<span data-nosnippet>196</span>    }
-<span data-nosnippet>197</span>    <span class="kw">if </span>arbitrary.len() == <span class="number">1 </span>{
-<span data-nosnippet>198</span>        <span class="kw">return if </span>arbitrary[<span class="number">0</span>].is_maximum() {
-<span data-nosnippet>199</span>            <span class="macro">vec!</span>[T::maximum(); concave.len()]
-<span data-nosnippet>200</span>        } <span class="kw">else </span>{
-<span data-nosnippet>201</span>            concave.iter().map(|<span class="kw-2">&amp;</span>value| arbitrary[<span class="number">0</span>] + value).collect()
-<span data-nosnippet>202</span>        };
-<span data-nosnippet>203</span>    }
-<span data-nosnippet>204</span>
-<span data-nosnippet>205</span>    ConcaveEnvelope::new(arbitrary, concave).<span class="highlight focus">convolve</span>()
-<span data-nosnippet>206</span>}</code></pre></div></div></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-ConcaveEnvelope%3C'a,+T%3E" class="impl"><a href="#impl-Freeze-for-ConcaveEnvelope%3C'a,+T%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.ConcaveEnvelope.html" title="struct competitive::math::min_plus_convolution::concave::ConcaveEnvelope">ConcaveEnvelope</a>&lt;'a, T&gt;<div class="where">where
+<span data-nosnippet>148</span>        <span class="kw">for </span>output <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.concave.len() {
+<span data-nosnippet>149</span>            <span class="self">self</span>.query(output);
+<span data-nosnippet>150</span>        }
+<span data-nosnippet>151</span>        <span class="self">self</span>.result
+<span data-nosnippet>152</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.convolve" class="method"><a class="src rightside" href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#130-152">Source</a><h4 class="code-header">fn <a href="#method.convolve" class="fn">convolve</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[24,24],&#34;../../../../src/competitive/math/min_plus_convolution/concave.rs.html#206&#34;,&#34;line 206&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../../src/competitive/math/min_plus_convolution/concave.rs.html#206">line 206</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>182</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>concave_envelope&lt;T&gt;(arbitrary: <span class="kw-2">&amp;</span>[T], concave: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>183</span><span class="kw">where
+<span data-nosnippet>184</span>    </span>T: Signed,
+<span data-nosnippet>185</span>{
+<span data-nosnippet>186</span>    <span class="kw">if </span>concave.len() == <span class="number">1 </span>{
+<span data-nosnippet>187</span>        <span class="kw">return </span>arbitrary
+<span data-nosnippet>188</span>            .iter()
+<span data-nosnippet>189</span>            .map(|<span class="kw-2">&amp;</span>value| {
+<span data-nosnippet>190</span>                <span class="kw">if </span>value.is_maximum() {
+<span data-nosnippet>191</span>                    T::maximum()
+<span data-nosnippet>192</span>                } <span class="kw">else </span>{
+<span data-nosnippet>193</span>                    value + concave[<span class="number">0</span>]
+<span data-nosnippet>194</span>                }
+<span data-nosnippet>195</span>            })
+<span data-nosnippet>196</span>            .collect();
+<span data-nosnippet>197</span>    }
+<span data-nosnippet>198</span>    <span class="kw">if </span>arbitrary.len() == <span class="number">1 </span>{
+<span data-nosnippet>199</span>        <span class="kw">return if </span>arbitrary[<span class="number">0</span>].is_maximum() {
+<span data-nosnippet>200</span>            <span class="macro">vec!</span>[T::maximum(); concave.len()]
+<span data-nosnippet>201</span>        } <span class="kw">else </span>{
+<span data-nosnippet>202</span>            concave.iter().map(|<span class="kw-2">&amp;</span>value| arbitrary[<span class="number">0</span>] + value).collect()
+<span data-nosnippet>203</span>        };
+<span data-nosnippet>204</span>    }
+<span data-nosnippet>205</span>
+<span data-nosnippet>206</span>    ConcaveEnvelope::new(arbitrary, concave).<span class="highlight focus">convolve</span>()
+<span data-nosnippet>207</span>}</code></pre></div></div></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-ConcaveEnvelope%3C'a,+T%3E" class="impl"><a href="#impl-Freeze-for-ConcaveEnvelope%3C'a,+T%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.ConcaveEnvelope.html" title="struct competitive::math::min_plus_convolution::concave::ConcaveEnvelope">ConcaveEnvelope</a>&lt;'a, T&gt;<div class="where">where
     &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,
     <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,</div></h3></section><section id="impl-RefUnwindSafe-for-ConcaveEnvelope%3C'a,+T%3E" class="impl"><a href="#impl-RefUnwindSafe-for-ConcaveEnvelope%3C'a,+T%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.ConcaveEnvelope.html" title="struct competitive::math::min_plus_convolution::concave::ConcaveEnvelope">ConcaveEnvelope</a>&lt;'a, T&gt;<div class="where">where
     &amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,
