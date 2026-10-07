@@ -1,4 +1,4 @@
-use super::{Graph, UndirectedSparseGraph};
+use super::{AbelianGroup, BinaryIndexedTree, Graph, UndirectedSparseGraph};
 use std::mem::swap;
 
 #[derive(Debug, Clone)]
@@ -190,6 +190,28 @@ impl ContourQueryRange {
         self.comp_range.windows(2).map(|range| range[1] - range[0])
     }
 
+    pub fn build_point_add<M: AbelianGroup>(&self, values: &[M::T]) -> ContourQueryPointAdd<'_, M> {
+        assert_eq!(values.len() + 1, self.info_indptr.len());
+        let mut components: Vec<_> = self.component_sizes().map(|n| vec![M::unit(); n]).collect();
+        for (v, value) in values.iter().enumerate() {
+            self.for_each_index(v, |c, i| M::operate_assign(&mut components[c][i], value));
+        }
+        ContourQueryPointAdd {
+            geometry: self,
+            values: values.to_vec(),
+            components: components
+                .into_iter()
+                .map(|values| {
+                    if values.len() <= 32 {
+                        ContourComponent::Values(values)
+                    } else {
+                        ContourComponent::Bit(BinaryIndexedTree::from_slice(&values))
+                    }
+                })
+                .collect(),
+        }
+    }
+
     /// Calls `f(component, index)` for each position representing `v`.
     pub fn for_each_index(&self, v: usize, mut f: impl FnMut(usize, usize)) {
         for info in &self.infos[self.info_indptr[v]..self.info_indptr[v + 1]] {
@@ -243,6 +265,53 @@ impl ContourQueryRange {
     }
 }
 
+enum ContourComponent<M: AbelianGroup> {
+    Values(Vec<M::T>),
+    Bit(BinaryIndexedTree<M>),
+}
+
+pub struct ContourQueryPointAdd<'a, M: AbelianGroup> {
+    geometry: &'a ContourQueryRange,
+    values: Vec<M::T>,
+    components: Vec<ContourComponent<M>>,
+}
+
+impl<M: AbelianGroup> ContourQueryPointAdd<'_, M> {
+    pub fn update(&mut self, v: usize, value: M::T) {
+        M::operate_assign(&mut self.values[v], &value);
+        self.geometry
+            .for_each_index(v, |c, i| match &mut self.components[c] {
+                ContourComponent::Values(values) => M::operate_assign(&mut values[i], &value),
+                ContourComponent::Bit(bit) => bit.update(i, value.clone()),
+            });
+    }
+
+    pub fn fold(&self, v: usize, l: usize, r: usize) -> M::T {
+        let mut result = if l == 0 && r != 0 {
+            self.values[v].clone()
+        } else {
+            M::unit()
+        };
+        self.geometry.for_each_contour_range(
+            v,
+            l,
+            r,
+            #[inline(always)]
+            |c, start, end| match &self.components[c] {
+                ContourComponent::Values(values) => {
+                    for value in &values[start..end] {
+                        M::operate_assign(&mut result, value);
+                    }
+                }
+                ContourComponent::Bit(bit) => {
+                    M::operate_assign(&mut result, &bit.fold_abelian(start, end))
+                }
+            },
+        );
+        result
+    }
+}
+
 impl UndirectedSparseGraph {
     /// 1/3 centroid decomposition
     ///
@@ -268,20 +337,33 @@ impl UndirectedSparseGraph {
                 local_masks: vec![],
             };
         }
-        let (vertices, graph) = {
+        let (vertices, start, neighbors) = {
             let (vertices, parents) = self.tree_order(0);
             let mut indices = vec![0; n];
             for (i, &v) in vertices.iter().enumerate() {
                 indices[v] = i;
             }
-            let edges = vertices
+            let parents: Vec<_> = vertices
                 .iter()
-                .enumerate()
                 .skip(1)
-                .map(|(i, &v)| (i, indices[parents[v]]))
+                .map(|&v| indices[parents[v]] as u32)
                 .collect();
-            let graph = UndirectedSparseGraph::from_edges(n, edges);
-            (vertices, graph)
+            let mut start = vec![0usize; n + 1];
+            for (i, &p) in parents.iter().enumerate() {
+                start[i + 1] += 1;
+                start[p as usize] += 1;
+            }
+            for i in 1..=n {
+                start[i] += start[i - 1];
+            }
+            let mut neighbors = vec![0u32; 2 * (n - 1)];
+            for (i, &p) in parents.iter().enumerate() {
+                start[i + 1] -= 1;
+                neighbors[start[i + 1]] = p;
+                start[p as usize] -= 1;
+                neighbors[start[p as usize]] = i as u32 + 1;
+            }
+            (vertices, start, neighbors)
         };
         let mut comp_range = vec![0usize];
         let mut vertex_info = Vec::with_capacity(n * (n.ilog2() as usize + 1));
@@ -307,10 +389,11 @@ impl UndirectedSparseGraph {
             while i < order.len() {
                 let v = order[i];
                 sizes[v] = 1;
-                for edge in graph.neighbors(v) {
-                    if !removed[edge.to] && edge.to != parents[v] {
-                        parents[edge.to] = v;
-                        order.push(edge.to);
+                for &to in &neighbors[start[v]..start[v + 1]] {
+                    let to = to as usize;
+                    if !removed[to] && to != parents[v] {
+                        parents[to] = v;
+                        order.push(to);
                     }
                 }
                 i += 1;
@@ -361,8 +444,8 @@ impl UndirectedSparseGraph {
             entries.push((centroid, 0));
             boundaries.clear();
             boundaries.extend([0, 1]);
-            for edge in graph.neighbors(centroid) {
-                let v = edge.to;
+            for &v in &neighbors[start[centroid]..start[centroid + 1]] {
+                let v = v as usize;
                 if removed[v] {
                     continue;
                 }
@@ -372,10 +455,11 @@ impl UndirectedSparseGraph {
                 entries.push((v, 1));
                 while i < entries.len() {
                     let (v, distance) = entries[i];
-                    for edge in graph.neighbors(v) {
-                        if !removed[edge.to] && edge.to != parents[v] {
-                            parents[edge.to] = v;
-                            entries.push((edge.to, distance + 1));
+                    for &to in &neighbors[start[v]..start[v + 1]] {
+                        let to = to as usize;
+                        if !removed[to] && to != parents[v] {
+                            parents[to] = v;
+                            entries.push((to, distance + 1));
                         }
                     }
                     i += 1;
@@ -445,8 +529,12 @@ impl UndirectedSparseGraph {
 #[cfg(test)]
 mod tests {
     use crate::{
+        algebra::AdditiveOperation,
         graph::UndirectedSparseGraph,
-        tools::{Xorshift, testutil::exhaustive_sequences},
+        tools::{
+            Xorshift,
+            testutil::{exhaustive_sequences, sample_usize},
+        },
         tree::{MixedTree, PathTree, StarTree},
     };
 
@@ -471,12 +559,19 @@ mod tests {
         for n in 1..=80 {
             graphs.extend([rng.random(PathTree(n)), rng.random(StarTree(n))]);
         }
+        for n in sample_usize(&mut rng, 5, 1..=257, 10) {
+            graphs.extend([rng.random(PathTree(n)), rng.random(StarTree(n))]);
+        }
         graphs.extend((0..200).map(|_| rng.random(MixedTree(1usize..80))));
         for graph in graphs {
             let n = graph.vertices_size();
             let query = graph.contour_query_range();
-            let mut values = vec![0i64; n];
+            let mut values: Vec<_> = (0..n).map(|v| v as i64 + 1).collect();
+            let mut point_add = query.build_point_add::<AdditiveOperation<_>>(&values);
             let mut data: Vec<_> = query.component_sizes().map(|n| vec![0i64; n]).collect();
+            for (v, &value) in values.iter().enumerate() {
+                query.for_each_index(v, |c, i| data[c][i] += value);
+            }
             assert_eq!(query.len(), data.iter().map(Vec::len).sum());
             assert_eq!(query.is_empty(), n <= 1);
             let updates: Vec<_> = if n <= 5 {
@@ -490,6 +585,7 @@ mod tests {
             };
             for (u, delta) in updates {
                 values[u] += delta;
+                point_add.update(u, delta);
                 query.for_each_index(u, |c, i| data[c][i] += delta);
                 let ranges: Vec<_> = if n <= 5 {
                     (0..n)
@@ -515,6 +611,10 @@ mod tests {
                         actual += data[c][start..end].iter().sum::<i64>()
                     });
                     assert_eq!(actual, expected);
+                    assert_eq!(
+                        point_add.fold(v, l, r),
+                        expected + if l == 0 && r != 0 { values[v] } else { 0 }
+                    );
                 }
             }
         }

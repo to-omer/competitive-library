@@ -18,7 +18,7 @@ struct ConcaveEnvelope<'a, T> {
     concave: &'a [T],
     leaf_count: usize,
     query_root: usize,
-    node_curves: Vec<Option<usize>>,
+    node_curves: Vec<usize>,
     result: Vec<T>,
 }
 
@@ -36,7 +36,7 @@ where
             concave,
             leaf_count,
             query_root: leaf_count >> bit_width(concave.len() - 1),
-            node_curves: vec![None; leaf_count],
+            node_curves: vec![!0; leaf_count],
             result: vec![T::maximum(); output_len],
         }
     }
@@ -51,7 +51,8 @@ where
         let mut best = self.result[output];
         let mut node = (output + self.leaf_count) >> 1;
         while node >= self.query_root {
-            if let Some(curve) = self.node_curves[node] {
+            let curve = self.node_curves[node];
+            if curve != !0 {
                 best = best.min(self.value(curve, output));
             }
             node >>= 1;
@@ -61,22 +62,23 @@ where
 
     #[inline]
     fn insert_from_left(&mut self, left: usize) {
+        if self.arbitrary[left].is_maximum() {
+            return;
+        }
         let mut right = left + self.concave.len();
         let block = 1_usize << (left ^ right).ilog2();
         right &= !(block - 1);
         let mut depth = bit_width(right - left - 1);
         let mut node = (self.leaf_count + left) >> depth;
-        let mut pending = (!self.arbitrary[left].is_maximum()).then_some(left);
-        while depth != 0 {
-            let Some(curve) = pending else {
-                break;
-            };
+        let mut pending = left;
+        while depth != 0 && pending != !0 {
+            let curve = pending;
             depth -= 1;
             let middle = ((node << 1 | 1) << depth) - self.leaf_count - 1;
             if middle < left {
                 node = node << 1 | 1;
-            } else if self.node_curves[node]
-                .is_some_and(|old| self.value(old, middle) < self.value(curve, middle))
+            } else if self.node_curves[node] != !0
+                && self.value(self.node_curves[node], middle) < self.value(curve, middle)
             {
                 node <<= 1;
             } else {
@@ -84,15 +86,18 @@ where
                 node = node << 1 | 1;
             }
         }
-        if let Some(curve) = pending {
+        if pending != !0 {
             let output = node - self.leaf_count;
-            self.result[output] = self.result[output].min(self.value(curve, output));
+            self.result[output] = self.result[output].min(self.value(pending, output));
         }
     }
 
     #[inline]
     fn insert_from_right(&mut self, right: usize) {
         let curve = right - self.concave.len();
+        if self.arbitrary[curve].is_maximum() {
+            return;
+        }
         let block = 1_usize << (curve ^ right).ilog2();
         let left = right & !(block - 1);
         if left == right {
@@ -100,17 +105,15 @@ where
         }
         let mut depth = bit_width(right - left - 1);
         let mut node = (self.leaf_count + left) >> depth;
-        let mut pending = (!self.arbitrary[curve].is_maximum()).then_some(curve);
-        while depth != 0 {
-            let Some(curve) = pending else {
-                break;
-            };
+        let mut pending = curve;
+        while depth != 0 && pending != !0 {
+            let curve = pending;
             depth -= 1;
             let middle = ((node << 1 | 1) << depth) - self.leaf_count;
             if middle >= right {
                 node <<= 1;
-            } else if self.node_curves[node]
-                .is_some_and(|old| self.value(old, middle) < self.value(curve, middle))
+            } else if self.node_curves[node] != !0
+                && self.value(self.node_curves[node], middle) < self.value(curve, middle)
             {
                 node = node << 1 | 1;
             } else {
@@ -118,9 +121,9 @@ where
                 node <<= 1;
             }
         }
-        if let Some(curve) = pending {
+        if pending != !0 {
             let output = node - self.leaf_count;
-            self.result[output] = self.result[output].min(self.value(curve, output));
+            self.result[output] = self.result[output].min(self.value(pending, output));
         }
     }
 
@@ -135,7 +138,7 @@ where
             self.query(output);
         }
 
-        self.node_curves.fill(None);
+        self.node_curves.fill(!0);
         let mut right = self.result.len();
         while right >= self.concave.len() {
             self.insert_from_right(right);
@@ -166,11 +169,9 @@ where
     if len == 0 {
         return Vec::new();
     }
-    let a_is_concave = !a.iter().any(T::is_maximum) && is_concave(a);
-    let b_is_concave = !b.iter().any(T::is_maximum) && is_concave(b);
-    let (arbitrary, concave) = if b_is_concave {
+    let (arbitrary, concave) = if !b.iter().any(T::is_maximum) && is_concave(b) {
         (a, b)
-    } else if a_is_concave {
+    } else if !a.iter().any(T::is_maximum) && is_concave(a) {
         (b, a)
     } else {
         panic!("at least one min-plus convolution input must be finite and concave")

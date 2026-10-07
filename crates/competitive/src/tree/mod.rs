@@ -1,10 +1,11 @@
 //! tree algorithms
 
 use crate::{
-    algebra::{LazyMapMonoid, Magma, Monoid, Unital},
+    algebra::{AbelianGroup, LazyMapMonoid, Magma, Monoid, Unital},
     algorithm::CartesianTree,
     data_structure::{
-        Allocator, MemoryPool, RangeMinimumQuery, binary_search_tree, splay_operations,
+        Allocator, BinaryIndexedTree, MemoryPool, RangeMinimumQuery, binary_search_tree,
+        splay_operations,
     },
     graph::{Graph, UndirectedSparseGraph},
     math::{ConvolveSteps, U64Convolve},
@@ -12,7 +13,7 @@ use crate::{
 };
 
 #[codesnip::entry("centroid_decomposition")]
-pub use self::centroid_decomposition::ContourQueryRange;
+pub use self::centroid_decomposition::{ContourQueryPointAdd, ContourQueryRange};
 #[codesnip::entry("EulerTour")]
 pub use self::euler_tour::LowestCommonAncestor;
 #[codesnip::entry("tree_generator")]
@@ -38,7 +39,10 @@ pub use self::xor_linked_tree::*;
 
 #[cfg_attr(
     nightly,
-    codesnip::entry("centroid_decomposition", include("SparseGraph", "tree_order"))
+    codesnip::entry(
+        "centroid_decomposition",
+        include("SparseGraph", "tree_order", "BinaryIndexedTree")
+    )
 )]
 mod centroid_decomposition;
 mod depth;

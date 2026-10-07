@@ -629,10 +629,12 @@ where
         t.len()
     }
     fn transform(mut t: Self::T, len: usize) -> Self::F {
+        #[cfg(target_arch = "x86_64")]
+        let input_len = t.len();
         t.resize_with(len.max(1).next_power_of_two(), Zero::zero);
         #[cfg(target_arch = "x86_64")]
         if use_block_ntt::<M>(t.len()) {
-            unsafe { ntt_simd::transform_blocks_avx2(&mut t) };
+            unsafe { ntt_simd::transform_blocks_avx2(&mut t, input_len) };
             return t;
         }
         ntt(&mut t);
@@ -719,13 +721,14 @@ where
         let same = a == b;
         #[cfg(target_arch = "x86_64")]
         if use_block_ntt::<M>(size) {
+            let input_len = (a.len(), b.len());
             a.reserve(size - a.len());
             b.reserve(size - b.len());
             advise_huge_pages(&mut a);
             advise_huge_pages(&mut b);
             a.resize_with(size, Zero::zero);
             b.resize_with(size, Zero::zero);
-            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same) };
+            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same, input_len) };
             a.truncate(len);
             return a;
         }
@@ -1557,9 +1560,12 @@ where
 mod tests {
     use super::*;
     use crate::num::{mint_basic::Modulo1000000009, montgomery::MInt998244353};
-    use crate::tools::Xorshift;
     #[cfg(target_arch = "x86_64")]
     use crate::tools::avx512_supported;
+    use crate::tools::{
+        Xorshift,
+        testutil::{exhaustive_sequences, sample_usize},
+    };
 
     #[test]
     fn test_ntt_batch() {
@@ -1662,8 +1668,13 @@ mod tests {
     #[test]
     fn test_ntt998244353() {
         let mut rng = Xorshift::default();
-        for _ in 0..1000 {
-            let (n, m) = if rng.random(0..100) == 0 {
+        let sizes = sample_usize(&mut rng, 5, 0..=1025, 0);
+        let mut lengths: Vec<_> = sizes
+            .iter()
+            .flat_map(|&n| sizes.iter().map(move |&m| (n, m)))
+            .collect();
+        lengths.extend((0..1000).map(|_| {
+            if rng.random(0..100) == 0 {
                 let w = rng.random(6..=8);
                 ((1usize << w) + 1usize, (1usize << w) + 1usize)
             } else {
@@ -1673,7 +1684,9 @@ mod tests {
                     if n == 5 { rng.random(70..=120) } else { n },
                     if m == 5 { rng.random(70..=120) } else { m },
                 )
-            };
+            }
+        }));
+        for (n, m) in lengths {
             let a: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
             let mut b: Vec<MInt998244353> = rng.random_iter(..).take(m).collect();
             if n == m && rng.random(0..2) == 0 {
@@ -1686,6 +1699,8 @@ mod tests {
                     c[i + j] += a[i] * b[j];
                 }
             }
+            let f = Convolve998244353::transform(a.clone(), n);
+            assert_eq!(Convolve998244353::inverse_transform(f, n), a);
             let d = Convolve998244353::convolve(a, b);
             assert_eq!(c, d);
         }
@@ -1891,26 +1906,54 @@ mod tests {
         impl Montgomery32NttModulus for Modulo97 {}
         type SmallCrt = Convolve<(u64, (Modulo998244353, Modulo469762049, Modulo97))>;
         let mut rng = Xorshift::default();
-        for case in 0..1000 {
-            let (n, m) = if case < 36 {
-                (case / 6, case % 6)
-            } else if rng.gen_bool(0.01) {
-                (rng.random(1537..=2000), rng.random(513..=800))
+        let inputs: Vec<_> = exhaustive_sequences([0u64, 1, u64::MAX], 0..=3).collect();
+        let exhaustive = inputs
+            .iter()
+            .flat_map(|a| inputs.iter().map(move |b| (a.clone(), b.clone())));
+        let mut cases = Vec::new();
+        let lengths: Vec<_> = (0..=5)
+            .flat_map(|n| (0..=5).map(move |m| (n, m)))
+            .chain((0..1000).map(|_| {
+                if rng.gen_bool(0.01) {
+                    (rng.random(1537..=2000), rng.random(513..=800))
+                } else {
+                    (rng.random(0..=400), rng.random(0..=400))
+                }
+            }))
+            .collect();
+        for (n, m) in lengths {
+            let a: Vec<u64> = if rng.gen_bool(0.5) {
+                rng.random_iter(0..=u32::MAX as u64).take(n).collect()
             } else {
-                (rng.random(0..=400), rng.random(0..=400))
+                rng.random_iter(..).take(n).collect()
             };
-            let mask = if rng.gen_bool(0.5) {
-                u32::MAX as u64
+            let b: Vec<u64> = if rng.gen_bool(0.5) {
+                rng.random_iter(0..=u32::MAX as u64).take(m).collect()
             } else {
-                u64::MAX
+                rng.random_iter(..).take(m).collect()
             };
-            let a: Vec<u64> = rng.random_iter(..).map(|a: u64| a & mask).take(n).collect();
-            let mask = if rng.gen_bool(0.5) {
-                u32::MAX as u64
-            } else {
-                u64::MAX
-            };
-            let b: Vec<u64> = rng.random_iter(..).map(|b: u64| b & mask).take(m).collect();
+            cases.push((a, b));
+        }
+        let mut limits = vec![0, 1, u32::MAX as u64, u64::MAX];
+        let mut limit = 0u64;
+        for i in 1..=4 {
+            for bits in i * 13 - 1..=i * 13 {
+                limits.push((1u64 << bits) - 1);
+            }
+            limit = (limit << 13) + ((1 << 12) - 1);
+            limits.extend(limit - 1..=limit + 1);
+        }
+        limits.sort_unstable();
+        limits.dedup();
+        for &a in &limits {
+            for &b in &limits {
+                let n = rng.random(1537..=2000);
+                let m = rng.random(513..=800);
+                cases.push((vec![a; n], vec![b; m]));
+            }
+        }
+        for (a, b) in exhaustive.chain(cases) {
+            let (n, m) = (a.len(), b.len());
             let mut c = vec![0u64; (n + m).saturating_sub(1)];
             for i in 0..n {
                 for j in 0..m {

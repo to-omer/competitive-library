@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Field, Group, Invertible, bitwise_transform};
+use super::{ConvolveSteps, Field, Group, Invertible};
 use std::{fmt::Debug, marker::PhantomData};
 
 trait FromLength<const EXACT_DIVISION: bool> {
@@ -34,11 +34,32 @@ where
     G: Group,
 {
     pub fn hadamard_transform(f: &mut [G::T]) {
-        bitwise_transform(f, |x, y| {
-            let t = G::operate(x, y);
-            *y = G::rinv_operate(x, y);
-            *x = t;
-        });
+        let k = f.len().trailing_zeros() as usize;
+        assert!(f.len() == 1 << k);
+        if k & 1 != 0 {
+            for [x, y] in f.as_chunks_mut::<2>().0 {
+                let t = G::operate(x, y);
+                *y = G::rinv_operate(x, y);
+                *x = t;
+            }
+        }
+        for i in (k & 1..k).step_by(2) {
+            for chunk in f.chunks_exact_mut(4 << i) {
+                let (left, right) = chunk.split_at_mut(2 << i);
+                let (a, b) = left.split_at_mut(1 << i);
+                let (c, d) = right.split_at_mut(1 << i);
+                for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
+                    let x = G::operate(a, b);
+                    let y = G::rinv_operate(a, b);
+                    let z = G::operate(c, d);
+                    let w = G::rinv_operate(c, d);
+                    *a = G::operate(&x, &z);
+                    *b = G::operate(&y, &w);
+                    *c = G::rinv_operate(&x, &z);
+                    *d = G::rinv_operate(&y, &w);
+                }
+            }
+        }
     }
 }
 

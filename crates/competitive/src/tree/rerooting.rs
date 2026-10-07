@@ -89,25 +89,19 @@ where
             }
         }
         if let Some(inverse) = inverse {
+            self.dp[0] = self.graph.neighbors(0).fold(M::unit(), |sum, a| {
+                self.merge(&sum, &self.ep[self.eidx(0, a)])
+            });
             for u in order {
-                let sum = if u == 0 {
-                    self.graph.neighbors(u).fold(M::unit(), |sum, a| {
-                        self.merge(&sum, &self.ep[self.eidx(u, a)])
-                    })
-                } else {
-                    let a = self
-                        .graph
-                        .neighbors(u)
-                        .find(|a| a.to == parents[u])
-                        .unwrap();
-                    self.merge(&self.dp[u], &self.ep[self.eidx(u, a)])
-                };
+                let sum = std::mem::replace(&mut self.dp[u], M::unit());
                 self.dp[u] = self.add_root(&sum, u);
                 for a in self.graph.neighbors(u) {
                     if a.to != parents[u] {
                         let value = inverse(&sum, &self.ep[self.eidx(u, a)]);
                         let i = self.reidx(u, a);
-                        self.ep[i] = self.add_subroot(&value, u, a.label);
+                        let value = self.add_subroot(&value, u, a.label);
+                        self.dp[a.to] = self.merge(&self.dp[a.to], &value);
+                        self.ep[i] = value;
                     }
                 }
             }

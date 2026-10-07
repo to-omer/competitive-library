@@ -52,36 +52,19 @@ where
     T: Signed,
 {
     let len = output_len(a.len(), b.len());
-    let mut a_slopes = a.windows(2).map(|window| window[1] - window[0]);
-    let mut b_slopes = b.windows(2).map(|window| window[1] - window[0]);
-    let mut next_a = a_slopes.next();
-    let mut next_b = b_slopes.next();
-    let mut current = a[0] + b[0];
+    let (mut i, mut j) = (0, 0);
     let mut result = Vec::with_capacity(len);
-    result.push(current);
-    while next_a.is_some() || next_b.is_some() {
-        let slope = match (next_a, next_b) {
-            (Some(left), Some(right)) if left <= right => {
-                next_a = a_slopes.next();
-                left
-            }
-            (Some(_), Some(right)) => {
-                next_b = b_slopes.next();
-                right
-            }
-            (Some(left), None) => {
-                next_a = a_slopes.next();
-                left
-            }
-            (None, Some(right)) => {
-                next_b = b_slopes.next();
-                right
-            }
-            (None, None) => break,
-        };
-        current += slope;
-        result.push(current);
+    result.push(a[i] + b[j]);
+    while i + 1 < a.len() && j + 1 < b.len() {
+        if a[i + 1] - a[i] <= b[j + 1] - b[j] {
+            i += 1;
+        } else {
+            j += 1;
+        }
+        result.push(a[i] + b[j]);
     }
+    result.extend(a[i + 1..].iter().map(|&value| value + b[j]));
+    result.extend(b[j + 1..].iter().map(|&value| a[i] + value));
     result
 }
 

@@ -169,30 +169,32 @@ impl HeavyLightDecomposition {
     }
 
     #[inline]
-    pub fn jump(&self, mut u: usize, mut v: usize, mut k: usize) -> Option<usize> {
+    pub fn jump(&self, u: usize, v: usize, mut k: usize) -> Option<usize> {
         let target = v;
+        let mut u = self.nodes[u];
+        let mut v = self.nodes[v];
         let mut down = 0;
-        while self.nodes[u].head != self.nodes[v].head {
-            if self.nodes[u].index > self.nodes[v].index {
-                let up = self.nodes[u].index as usize - self.nodes[u].head as usize + 1;
+        while u.head != v.head {
+            if u.index > v.index {
+                let up = u.index as usize - u.head as usize + 1;
                 if k < up {
-                    return Some(self.order[self.nodes[u].index as usize - k]);
+                    return Some(self.order[u.index as usize - k]);
                 }
                 k -= up;
-                u = self.nodes[u].parent as usize;
+                u = self.nodes[u.parent as usize];
             } else {
-                down += self.nodes[v].index as usize - self.nodes[v].head as usize + 1;
-                v = self.nodes[v].parent as usize;
+                down += v.index as usize - v.head as usize + 1;
+                v = self.nodes[v.parent as usize];
             }
         }
-        if self.nodes[u].index >= self.nodes[v].index {
-            let up = self.nodes[u].index as usize - self.nodes[v].index as usize;
+        if u.index >= v.index {
+            let up = u.index as usize - v.index as usize;
             if k <= up {
-                return Some(self.order[self.nodes[u].index as usize - k]);
+                return Some(self.order[u.index as usize - k]);
             }
             k -= up;
         } else {
-            down += self.nodes[v].index as usize - self.nodes[u].index as usize;
+            down += v.index as usize - u.index as usize;
         }
         down.checked_sub(k)
             .and_then(|k| self.kth_ancestor(target, k))

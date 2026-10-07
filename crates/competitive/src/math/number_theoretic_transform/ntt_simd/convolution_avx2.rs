@@ -88,7 +88,7 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-unsafe fn ntt_blocks_avx2<M>(a: *mut u32, n: usize)
+unsafe fn ntt_blocks_avx2<M>(a: *mut u32, n: usize, input_len: usize)
 where
     M: Montgomery32NttModulus,
 {
@@ -117,17 +117,45 @@ where
     let tile_len = n.min(64);
 
     if nn != n {
-        let mut i = 0;
-        while i < nn {
-            let x0 = load_block_avx2(a, i);
-            let x1 = load_block_avx2(a, nn + i);
-            store_block_avx2(a, i, add_mod_avx2(x0, x1, modulus2));
-            store_block_avx2(a, nn + i, lazy_sub_avx2(x0, x1, modulus2));
-            i += 1;
+        if input_len <= nn << 3 {
+            std::ptr::copy_nonoverlapping(a, a.add(nn << 3), nn << 3);
+        } else {
+            let mut i = 0;
+            while i < nn {
+                let x0 = load_block_avx2(a, i);
+                let x1 = load_block_avx2(a, nn + i);
+                store_block_avx2(a, i, add_mod_avx2(x0, x1, modulus2));
+                store_block_avx2(a, nn + i, lazy_sub_avx2(x0, x1, modulus2));
+                i += 1;
+            }
         }
     }
 
     let mut size = nn >> 2;
+    if nn == n && input_len <= n << 2 {
+        let mut i = 0;
+        while i < size {
+            let x0 = load_block_avx2(a, i);
+            let x1 = load_block_avx2(a, size + i);
+            let g3 = montgomery_simd::montgomery_mul_256_fixed(x1, imag, imag_r, modulus);
+            let mut y0 = _mm256_add_epi32(x0, x1);
+            let mut y1 = lazy_sub_avx2(x0, x1, modulus2);
+            let mut y2 = _mm256_add_epi32(x0, g3);
+            let mut y3 = lazy_sub_avx2(x0, g3, modulus2);
+            if size == 1 {
+                y0 = normalize_avx2(y0, modulus, modulus2);
+                y1 = normalize_avx2(y1, modulus, modulus2);
+                y2 = normalize_avx2(y2, modulus, modulus2);
+                y3 = normalize_avx2(y3, modulus, modulus2);
+            }
+            store_block_avx2(a, i, y0);
+            store_block_avx2(a, size + i, y1);
+            store_block_avx2(a, size * 2 + i, y2);
+            store_block_avx2(a, size * 3 + i, y3);
+            i += 1;
+        }
+        size >>= 2;
+    }
     while size > 0 {
         let final_stage = size == 1;
         let mut i = 0;
@@ -402,8 +430,8 @@ where
                     let mut y2 = sub_mod_avx2(g0, g2, modulus2);
                     let mut y3 = sub_mod_avx2(g1, g3, modulus2);
                     if final_stage {
-                        y0 = shrink_avx2(y0, modulus);
-                        y1 = shrink_avx2(y1, modulus);
+                        y0 = normalize_avx2(y0, modulus, modulus2);
+                        y1 = normalize_avx2(y1, modulus, modulus2);
                         y2 = shrink_avx2(y2, modulus);
                         y3 = shrink_avx2(y3, modulus);
                     } else {
@@ -484,31 +512,11 @@ where
         while i < nn {
             let x0 = load_block_avx2(a, i);
             let x1 = load_block_avx2(a, nn + i);
-            store_block_avx2(
-                a,
-                i,
-                shrink_avx2(
-                    shrink_avx2(add_mod_avx2(x0, x1, modulus2), modulus),
-                    modulus,
-                ),
-            );
+            store_block_avx2(a, i, shrink_avx2(add_mod_avx2(x0, x1, modulus2), modulus));
             store_block_avx2(
                 a,
                 nn + i,
-                shrink_avx2(
-                    shrink_avx2(sub_mod_avx2(x0, x1, modulus2), modulus),
-                    modulus,
-                ),
-            );
-            i += 1;
-        }
-    } else {
-        let mut i = 0;
-        while i < n {
-            store_block_avx2(
-                a,
-                i,
-                shrink_avx2(shrink_avx2(load_block_avx2(a, i), modulus), modulus),
+                shrink_avx2(sub_mod_avx2(x0, x1, modulus2), modulus),
             );
             i += 1;
         }
@@ -597,13 +605,13 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-pub unsafe fn transform_blocks_avx2<M>(f: &mut [MInt<M>])
+pub unsafe fn transform_blocks_avx2<M>(f: &mut [MInt<M>], input_len: usize)
 where
     M: Montgomery32NttModulus,
 {
     let n = f.len() >> 3;
     let f = f.as_mut_ptr() as *mut u32;
-    ntt_blocks_avx2::<M>(f, n);
+    ntt_blocks_avx2::<M>(f, n, input_len);
 }
 
 #[target_feature(enable = "avx2")]
@@ -628,18 +636,22 @@ where
 }
 
 #[target_feature(enable = "avx2")]
-pub unsafe fn convolve_blocks_avx2<M>(f: &mut [MInt<M>], g: &mut [MInt<M>], same: bool)
-where
+pub unsafe fn convolve_blocks_avx2<M>(
+    f: &mut [MInt<M>],
+    g: &mut [MInt<M>],
+    same: bool,
+    input_len: (usize, usize),
+) where
     M: Montgomery32NttModulus,
 {
     let n = f.len() >> 3;
     let f = f.as_mut_ptr().cast();
     let g = g.as_mut_ptr().cast();
-    ntt_blocks_avx2::<M>(f, n);
+    ntt_blocks_avx2::<M>(f, n, input_len.0);
     if same {
         std::ptr::copy_nonoverlapping(f, g, n << 3);
     } else {
-        ntt_blocks_avx2::<M>(g, n);
+        ntt_blocks_avx2::<M>(g, n, input_len.1);
     }
     convolve_8_avx2::<M>(f, g, n);
     intt_blocks_avx2::<M>(f, n);

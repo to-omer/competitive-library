@@ -148,40 +148,42 @@ unsafe fn split_u64_coefficients(values: &[u64], n: usize) -> [Vec<Complex4>; 5]
 }
 
 #[target_feature(enable = "avx2,fma")]
-unsafe fn dot_u64_soa(a: &mut [Vec<Complex4>; 5], b: &[Vec<Complex4>; 5]) {
+unsafe fn dot_u64_soa<const PARTS: usize>(a: &mut [Vec<Complex4>; 5], b: &[Vec<Complex4>; 5]) {
     let n = a[0].len() * 4;
     RotateCache::ensure(n / 2);
     RotateCache::with(|cache| {
         for block in 0..a[0].len() {
-            let mut br = [_mm256_setzero_pd(); 5];
+            let mut br = [_mm256_setzero_pd(); PARTS];
             let mut bi = br;
-            let mut rr = br;
-            let mut ri = br;
-            for part in 0..5 {
+            let mut rr = [_mm256_setzero_pd(); 5];
+            let mut ri = rr;
+            for part in 0..PARTS {
                 (br[part], bi[part]) = load4(&b[part][block]);
             }
             let w = eval_twiddle(cache, 1, a[0].len(), block);
             let wr = _mm256_setr_pd(w.re, 1.0, 1.0, 1.0);
             let wi = _mm256_setr_pd(w.im, 0.0, 0.0, 0.0);
             for lane in 0..4 {
-                let ar: [__m256d; 5] =
+                let ar: [__m256d; PARTS] =
                     std::array::from_fn(|part| _mm256_set1_pd(a[part][block].re[lane]));
-                let ai: [__m256d; 5] =
+                let ai: [__m256d; PARTS] =
                     std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[lane]));
-                for part in 0..5 {
+                for part in 0..5.min(2 * PARTS - 1) {
                     for left in 0..=part {
-                        multiply_accumulate4(
-                            &mut rr[part],
-                            &mut ri[part],
-                            ar[left],
-                            ai[left],
-                            br[part - left],
-                            bi[part - left],
-                        );
+                        if PARTS == 5 || (left < PARTS && part - left < PARTS) {
+                            multiply_accumulate4(
+                                &mut rr[part],
+                                &mut ri[part],
+                                ar[left],
+                                ai[left],
+                                br[part - left],
+                                bi[part - left],
+                            );
+                        }
                     }
                 }
                 if lane != 3 {
-                    for part in 0..5 {
+                    for part in 0..PARTS {
                         br[part] = _mm256_permute4x64_pd::<0x93>(br[part]);
                         bi[part] = _mm256_permute4x64_pd::<0x93>(bi[part]);
                         (br[part], bi[part]) = mul4(br[part], bi[part], wr, wi);
@@ -199,33 +201,48 @@ unsafe fn dot_u64_soa(a: &mut [Vec<Complex4>; 5], b: &[Vec<Complex4>; 5]) {
 pub unsafe fn convolve_u64_avx2(a: Vec<u64>, b: Vec<u64>) -> Vec<u64> {
     let len = a.len() + b.len() - 1;
     let n = len.next_power_of_two() / 2;
-    let a_parts = if a.iter().all(|&value| value <= u32::MAX as u64) {
-        3
-    } else {
-        5
+    let parts = |values: &[u64]| {
+        let maximum = values
+            .iter()
+            .try_fold(0, |maximum, &value| {
+                (value <= 4095 * (1 + (1u64 << 13) + (1u64 << 26) + (1u64 << 39)))
+                    .then_some(maximum.max(value))
+            })
+            .unwrap_or(u64::MAX);
+        let mut limit = (1u64 << 12) - 1;
+        let mut parts = 1;
+        while parts < 5 && maximum > limit {
+            limit = (limit << 13) + ((1 << 12) - 1);
+            parts += 1;
+        }
+        parts
     };
+    let a_parts = parts(&a);
     let mut fa = split_u64_coefficients(&a, n);
     drop(a);
-    let b_parts = if b.iter().all(|&value| value <= u32::MAX as u64) {
-        3
-    } else {
-        5
-    };
+    let b_parts = parts(&b);
     let mut fb = split_u64_coefficients(&b, n);
     drop(b);
-    for part in 0..3 {
+    let shared = a_parts.min(b_parts).min(3);
+    for part in 0..shared {
         fft_soa(&mut fa[part]);
         fft_soa(&mut fb[part]);
     }
-    for part in &mut fa[3..a_parts] {
+    for part in &mut fa[shared..a_parts] {
         fft_soa(part);
     }
-    for part in &mut fb[3..b_parts] {
+    for part in &mut fb[shared..b_parts] {
         fft_soa(part);
     }
-    dot_u64_soa(&mut fa, &fb);
+    match a_parts.max(b_parts) {
+        1 => dot_u64_soa::<1>(&mut fa, &fb),
+        2 => dot_u64_soa::<2>(&mut fa, &fb),
+        3 => dot_u64_soa::<3>(&mut fa, &fb),
+        4 => dot_u64_soa::<4>(&mut fa, &fb),
+        _ => dot_u64_soa::<5>(&mut fa, &fb),
+    }
     drop(fb);
-    for part in &mut fa {
+    for part in &mut fa[..5.min(a_parts + b_parts - 1)] {
         ifft_soa(part);
     }
     let mut result = vec![0; len];

@@ -6,9 +6,12 @@ pub fn jump_on_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, (g, _): @TreeGraphScanner::<usize>::new(n));
     let hld = g.hld(0);
-    for _ in 0..q {
-        sc!(s, t, i);
-        pp!(hld.jump(s, t, i).unwrap_or(!0) as isize);
+    for _ in 0..q / 4 {
+        sc!(queries: [(u32, u32, u32); const 4]);
+        pp!(@lf @it queries.map(|(s, t, i)| hld.jump(s as usize, t as usize, i as usize).unwrap_or(!0) as isize));
+    }
+    for (s, t, i) in sv!([(u32, u32, u32); iter q % 4]) {
+        pp!(hld.jump(s as usize, t as usize, i as usize).unwrap_or(!0) as isize);
     }
 }
 

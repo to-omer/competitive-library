@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Group, Invertible, Monoid, Ring, bitwise_transform};
+use super::{ConvolveSteps, Group, Invertible, Monoid, Ring};
 use std::marker::PhantomData;
 
 pub struct BitwiseandConvolve<M> {
@@ -11,7 +11,27 @@ where
 {
     /// $$g(m) = \sum_{n \mid m}f(n)$$
     pub fn zeta_transform(f: &mut [M::T]) {
-        bitwise_transform(f, |x, y| *x = M::operate(x, y));
+        let k = f.len().trailing_zeros() as usize;
+        assert!(f.len() == 1 << k);
+        if k & 1 != 0 {
+            for [x, y] in f.as_chunks_mut::<2>().0 {
+                *x = M::operate(x, y);
+            }
+        }
+        for i in (k & 1..k).step_by(2) {
+            for chunk in f.chunks_exact_mut(4 << i) {
+                let (left, right) = chunk.split_at_mut(2 << i);
+                let (a, b) = left.split_at_mut(1 << i);
+                let (c, d) = right.split_at_mut(1 << i);
+                for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
+                    let x = M::operate(a, b);
+                    let y = M::operate(c, d);
+                    *a = M::operate(&x, &y);
+                    *b = M::operate(b, d);
+                    *c = y;
+                }
+            }
+        }
     }
 }
 
@@ -21,7 +41,27 @@ where
 {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(f: &mut [G::T]) {
-        bitwise_transform(f, |x, y| *x = G::rinv_operate(x, y));
+        let k = f.len().trailing_zeros() as usize;
+        assert!(f.len() == 1 << k);
+        if k & 1 != 0 {
+            for [x, y] in f.as_chunks_mut::<2>().0 {
+                *x = G::rinv_operate(x, y);
+            }
+        }
+        for i in (k & 1..k).step_by(2) {
+            for chunk in f.chunks_exact_mut(4 << i) {
+                let (left, right) = chunk.split_at_mut(2 << i);
+                let (a, b) = left.split_at_mut(1 << i);
+                let (c, d) = right.split_at_mut(1 << i);
+                for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
+                    let x = G::rinv_operate(a, b);
+                    let y = G::rinv_operate(c, d);
+                    *a = G::rinv_operate(&x, &y);
+                    *b = G::rinv_operate(b, d);
+                    *c = y;
+                }
+            }
+        }
     }
 }
 
