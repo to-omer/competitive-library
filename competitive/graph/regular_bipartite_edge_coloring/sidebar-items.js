@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["regular_bipartite_edge_coloring"]};

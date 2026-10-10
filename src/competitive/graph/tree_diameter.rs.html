@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/tree_diameter.rs`."><title>tree_diameter.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (a30aa9064 2026-10-08)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/graph/</div>tree_diameter.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="edge_list.rs.html#6-9">EdgeListGraph</a>, <a href="../tree/xor_linked_tree.rs.html#212-236">XorLinkedRootedTree</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>};
+<a href=#2 id=2 data-nosnippet>2</a>
+<a href=#3 id=3 data-nosnippet>3</a><span class="kw">impl </span><a href="edge_list.rs.html#6-9">EdgeListGraph</a> {
+<a href=#4 id=4 data-nosnippet>4</a>    <span class="doccomment">/// `(diameter, vertex_path)` for a nonempty undirected tree; `weight` maps edge IDs to nonnegative values.
+<a href=#5 id=5 data-nosnippet>5</a>    </span><span class="kw">pub fn </span>tree_diameter&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, weight: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T) -&gt; (T, <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)
+<a href=#6 id=6 data-nosnippet>6</a>    <span class="kw">where
+<a href=#7 id=7 data-nosnippet>7</a>        </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="../num/zero_one.rs.html#1-14">Zero</a> + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">std::ops::Add</a>&lt;Output = T&gt;,
+<a href=#8 id=8 data-nosnippet>8</a>    {
+<a href=#9 id=9 data-nosnippet>9</a>        <span class="kw">let </span>n = <a class="self" href="#5">self</a>.<a href="edge_list.rs.html#19-21">vertices_size</a>();
+<a href=#10 id=10 data-nosnippet>10</a>        <span class="kw">let </span><span class="kw-2">mut </span>parent = <a href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0</span>; n];
+<a href=#11 id=11 data-nosnippet>11</a>        <span class="kw">let </span><span class="kw-2">mut </span>farthest: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.map">map</a>(|u| (T::<a href="../num/zero_one.rs.html#2">zero</a>(), <a href="#11">u</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.collect">collect</a>();
+<a href=#12 id=12 data-nosnippet>12</a>        <span class="kw">let </span>(<span class="kw-2">mut </span>diameter, <span class="kw-2">mut </span>left, <span class="kw-2">mut </span>right, <span class="kw-2">mut </span>center) = (T::<a href="../num/zero_one.rs.html#2">zero</a>(), <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
+<a href=#13 id=13 data-nosnippet>13</a>        <a href="../tree/xor_linked_tree.rs.html#212-236">XorLinkedRootedTree</a>::<a href="../tree/xor_linked_tree.rs.html#253-258">builder</a>(<a href="#9">n</a>)
+<a href=#14 id=14 data-nosnippet>14</a>            .<a href="../tree/xor_linked_tree.rs.html#307-314">with_eindexed</a>()
+<a href=#15 id=15 data-nosnippet>15</a>            .<a href="../tree/xor_linked_tree.rs.html#428-440">run</a>(<span class="number">0</span>, <a class="self" href="#5">self</a>.<a href="edge_list.rs.html#30-32">edges</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.copied">copied</a>(), |u, p, e| {
+<a href=#16 id=16 data-nosnippet>16</a>                <a href="#10">parent</a>[<a href="#15">u</a>] = <a href="#15">p</a>;
+<a href=#17 id=17 data-nosnippet>17</a>                <span class="kw">let </span>distance = <a href="#11">farthest</a>[<a href="#15">u</a>].<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>() + <a href="#5">weight</a>(<span class="kw-2">&amp;</span><a href="#15">e</a>);
+<a href=#18 id=18 data-nosnippet>18</a>                <span class="kw">let </span>candidate = <a href="#17">distance</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>() + <a href="#11">farthest</a>[<a href="#15">p</a>].<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#19 id=19 data-nosnippet>19</a>                <span class="kw">if </span><a href="#12">diameter</a> &lt; <a href="#18">candidate</a> {
+<a href=#20 id=20 data-nosnippet>20</a>                    <a href="#12">diameter</a> = <a href="#18">candidate</a>;
+<a href=#21 id=21 data-nosnippet>21</a>                    <a href="#12">left</a> = <a href="#11">farthest</a>[<a href="#15">u</a>].<span class="number">1</span>;
+<a href=#22 id=22 data-nosnippet>22</a>                    <a href="#12">right</a> = <a href="#11">farthest</a>[<a href="#15">p</a>].<span class="number">1</span>;
+<a href=#23 id=23 data-nosnippet>23</a>                    <a href="#12">center</a> = <a href="#15">p</a>;
+<a href=#24 id=24 data-nosnippet>24</a>                }
+<a href=#25 id=25 data-nosnippet>25</a>                <span class="kw">if </span><a href="#11">farthest</a>[<a href="#15">p</a>].<span class="number">0 </span>&lt; <a href="#17">distance</a> {
+<a href=#26 id=26 data-nosnippet>26</a>                    <a href="#11">farthest</a>[<a href="#15">p</a>] = (<a href="#17">distance</a>, <a href="#11">farthest</a>[<a href="#15">u</a>].<span class="number">1</span>);
+<a href=#27 id=27 data-nosnippet>27</a>                }
+<a href=#28 id=28 data-nosnippet>28</a>            });
+<a href=#29 id=29 data-nosnippet>29</a>        <span class="kw">let </span><span class="kw-2">mut </span>path = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">new</a>();
+<a href=#30 id=30 data-nosnippet>30</a>        <span class="kw">while </span>left != center {
+<a href=#31 id=31 data-nosnippet>31</a>            path.push(left);
+<a href=#32 id=32 data-nosnippet>32</a>            left = parent[left];
+<a href=#33 id=33 data-nosnippet>33</a>        }
+<a href=#34 id=34 data-nosnippet>34</a>        <a href="#29">path</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#12">center</a>);
+<a href=#35 id=35 data-nosnippet>35</a>        <span class="kw">let </span>middle = <a href="#29">path</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
+<a href=#36 id=36 data-nosnippet>36</a>        <span class="kw">while </span>right != center {
+<a href=#37 id=37 data-nosnippet>37</a>            path.push(right);
+<a href=#38 id=38 data-nosnippet>38</a>            right = parent[right];
+<a href=#39 id=39 data-nosnippet>39</a>        }
+<a href=#40 id=40 data-nosnippet>40</a>        <a href="#29">path</a>[middle..].<a href="https://doc.rust-lang.org/nightly/core/primitive.slice.html#method.reverse">reverse</a>();
+<a href=#41 id=41 data-nosnippet>41</a>        (<a href="#12">diameter</a>, <a href="#29">path</a>)
+<a href=#42 id=42 data-nosnippet>42</a>    }
+<a href=#43 id=43 data-nosnippet>43</a>}
+<a href=#44 id=44 data-nosnippet>44</a>
+<a href=#45 id=45 data-nosnippet>45</a><span class="attr">#[cfg(test)]
+<a href=#46 id=46 data-nosnippet>46</a></span><span class="kw">mod </span>tests {
+<a href=#47 id=47 data-nosnippet>47</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#48 id=48 data-nosnippet>48</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::testutil::exhaustive_sequences;
+<a href=#49 id=49 data-nosnippet>49</a>
+<a href=#50 id=50 data-nosnippet>50</a>    <span class="attr">#[test]
+<a href=#51 id=51 data-nosnippet>51</a>    </span><span class="kw">fn </span>test_tree_diameter() {
+<a href=#52 id=52 data-nosnippet>52</a>        <span class="kw">for </span>n <span class="kw">in </span><span class="number">1</span>..=<span class="number">5usize </span>{
+<a href=#53 id=53 data-nosnippet>53</a>            <span class="kw">for </span>prufer <span class="kw">in </span>exhaustive_sequences(<span class="number">0</span>..n, n.saturating_sub(<span class="number">2</span>)..=n.saturating_sub(<span class="number">2</span>)) {
+<a href=#54 id=54 data-nosnippet>54</a>                <span class="kw">let </span><span class="kw-2">mut </span>degree = <span class="macro">vec!</span>[<span class="number">1</span>; n];
+<a href=#55 id=55 data-nosnippet>55</a>                <span class="kw">for </span><span class="kw-2">&amp;</span>u <span class="kw">in </span><span class="kw-2">&amp;</span>prufer {
+<a href=#56 id=56 data-nosnippet>56</a>                    degree[u] += <span class="number">1</span>;
+<a href=#57 id=57 data-nosnippet>57</a>                }
+<a href=#58 id=58 data-nosnippet>58</a>                <span class="kw">let </span><span class="kw-2">mut </span>edges = Vec::new();
+<a href=#59 id=59 data-nosnippet>59</a>                <span class="kw">for </span>u <span class="kw">in </span>prufer {
+<a href=#60 id=60 data-nosnippet>60</a>                    <span class="kw">let </span>leaf = (<span class="number">0</span>..n).find(|<span class="kw-2">&amp;</span>v| degree[v] == <span class="number">1</span>).unwrap();
+<a href=#61 id=61 data-nosnippet>61</a>                    edges.push((leaf, u));
+<a href=#62 id=62 data-nosnippet>62</a>                    degree[leaf] -= <span class="number">1</span>;
+<a href=#63 id=63 data-nosnippet>63</a>                    degree[u] -= <span class="number">1</span>;
+<a href=#64 id=64 data-nosnippet>64</a>                }
+<a href=#65 id=65 data-nosnippet>65</a>                <span class="kw">if </span>n &gt; <span class="number">1 </span>{
+<a href=#66 id=66 data-nosnippet>66</a>                    <span class="kw">let </span>last: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).filter(|<span class="kw-2">&amp;</span>u| degree[u] == <span class="number">1</span>).collect();
+<a href=#67 id=67 data-nosnippet>67</a>                    edges.push((last[<span class="number">0</span>], last[<span class="number">1</span>]));
+<a href=#68 id=68 data-nosnippet>68</a>                }
+<a href=#69 id=69 data-nosnippet>69</a>                <span class="kw">let </span>graph = EdgeListGraph::from_edges(n, edges);
+<a href=#70 id=70 data-nosnippet>70</a>                <span class="kw">let </span>edges = graph.edges().as_slice();
+<a href=#71 id=71 data-nosnippet>71</a>                <span class="kw">for </span>weights <span class="kw">in </span>exhaustive_sequences(<span class="number">0</span>..<span class="number">3u64</span>, edges.len()..=edges.len())
+<a href=#72 id=72 data-nosnippet>72</a>                    .chain([<span class="macro">vec!</span>[u64::MAX / edges.len().max(<span class="number">1</span>) <span class="kw">as </span>u64; edges.len()]])
+<a href=#73 id=73 data-nosnippet>73</a>                {
+<a href=#74 id=74 data-nosnippet>74</a>                    <span class="kw">let </span><span class="kw-2">mut </span>distance = <span class="macro">vec!</span>[<span class="macro">vec!</span>[u64::MAX; n]; n];
+<a href=#75 id=75 data-nosnippet>75</a>                    <span class="kw">for </span>(u, row) <span class="kw">in </span>distance.iter_mut().enumerate() {
+<a href=#76 id=76 data-nosnippet>76</a>                        row[u] = <span class="number">0</span>;
+<a href=#77 id=77 data-nosnippet>77</a>                    }
+<a href=#78 id=78 data-nosnippet>78</a>                    <span class="kw">for </span>(e, <span class="kw-2">&amp;</span>(u, v)) <span class="kw">in </span>edges.iter().enumerate() {
+<a href=#79 id=79 data-nosnippet>79</a>                        distance[u][v] = weights[e];
+<a href=#80 id=80 data-nosnippet>80</a>                        distance[v][u] = weights[e];
+<a href=#81 id=81 data-nosnippet>81</a>                    }
+<a href=#82 id=82 data-nosnippet>82</a>                    <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#83 id=83 data-nosnippet>83</a>                        <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#84 id=84 data-nosnippet>84</a>                            <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#85 id=85 data-nosnippet>85</a>                                distance[u][v] = distance[u][v]
+<a href=#86 id=86 data-nosnippet>86</a>                                    .min(distance[u][k].saturating_add(distance[k][v]));
+<a href=#87 id=87 data-nosnippet>87</a>                            }
+<a href=#88 id=88 data-nosnippet>88</a>                        }
+<a href=#89 id=89 data-nosnippet>89</a>                    }
+<a href=#90 id=90 data-nosnippet>90</a>                    <span class="kw">let </span>(diameter, path) = graph.tree_diameter(|<span class="kw-2">&amp;</span>e| weights[e]);
+<a href=#91 id=91 data-nosnippet>91</a>                    <span class="macro">assert_eq!</span>(diameter, <span class="kw-2">*</span>distance.iter().flatten().max().unwrap());
+<a href=#92 id=92 data-nosnippet>92</a>                    <span class="macro">assert!</span>(!path.is_empty());
+<a href=#93 id=93 data-nosnippet>93</a>                    <span class="macro">assert_eq!</span>(
+<a href=#94 id=94 data-nosnippet>94</a>                        path.iter()
+<a href=#95 id=95 data-nosnippet>95</a>                            .copied()
+<a href=#96 id=96 data-nosnippet>96</a>                            .collect::&lt;std::collections::HashSet&lt;<span class="kw">_</span>&gt;&gt;()
+<a href=#97 id=97 data-nosnippet>97</a>                            .len(),
+<a href=#98 id=98 data-nosnippet>98</a>                        path.len()
+<a href=#99 id=99 data-nosnippet>99</a>                    );
+<a href=#100 id=100 data-nosnippet>100</a>                    <span class="kw">let </span>actual: u64 = path
+<a href=#101 id=101 data-nosnippet>101</a>                        .windows(<span class="number">2</span>)
+<a href=#102 id=102 data-nosnippet>102</a>                        .map(|w| {
+<a href=#103 id=103 data-nosnippet>103</a>                            <span class="kw">let </span>e = edges
+<a href=#104 id=104 data-nosnippet>104</a>                                .iter()
+<a href=#105 id=105 data-nosnippet>105</a>                                .position(|<span class="kw-2">&amp;</span>(u, v)| {
+<a href=#106 id=106 data-nosnippet>106</a>                                    (u == w[<span class="number">0</span>] &amp;&amp; v == w[<span class="number">1</span>]) || (v == w[<span class="number">0</span>] &amp;&amp; u == w[<span class="number">1</span>])
+<a href=#107 id=107 data-nosnippet>107</a>                                })
+<a href=#108 id=108 data-nosnippet>108</a>                                .unwrap();
+<a href=#109 id=109 data-nosnippet>109</a>                            weights[e]
+<a href=#110 id=110 data-nosnippet>110</a>                        })
+<a href=#111 id=111 data-nosnippet>111</a>                        .sum();
+<a href=#112 id=112 data-nosnippet>112</a>                    <span class="macro">assert_eq!</span>(actual, diameter);
+<a href=#113 id=113 data-nosnippet>113</a>                }
+<a href=#114 id=114 data-nosnippet>114</a>            }
+<a href=#115 id=115 data-nosnippet>115</a>        }
+<a href=#116 id=116 data-nosnippet>116</a>    }
+<a href=#117 id=117 data-nosnippet>117</a>}
+</code></pre></div></section></main></body></html>

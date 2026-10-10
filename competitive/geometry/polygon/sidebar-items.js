@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["convex_diameter","convex_hull"]};
+window.SIDEBAR_ITEMS = {"fn":["polygon_area2","polygon_centroid","polygon_edge_moments","polygon_moments"]};

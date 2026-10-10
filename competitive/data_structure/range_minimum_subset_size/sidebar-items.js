@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RangeMinimumSubsetSizeEvent"],"struct":["RangeMinimumSubsetSize","RangeMinimumSubsetSizeSolver"]};
