@@ -8,7 +8,8 @@ use crate::{
         splay_operations,
     },
     graph::{Graph, UndirectedSparseGraph},
-    math::{ConvolveSteps, U64Convolve},
+    math::{Convolve998244353, ConvolveSteps, U64Convolve},
+    num::MInt,
     tools::{MarkedScan, RandomSpec, Scan, ScanSource, Xorshift},
 };
 
@@ -50,7 +51,7 @@ mod depth;
     nightly,
     codesnip::entry(
         "distance_frequencies",
-        include("centroid_decomposition", "NumberTheoreticTransform")
+        include("SparseGraph", "NumberTheoreticTransform")
     )
 )]
 mod distance_frequencies;
