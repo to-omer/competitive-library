@@ -368,7 +368,7 @@ pub trait SerdeByteStr {
     {
         let bytes = from_bytestring(bytes);
         let bytes = huffman_decoding(&bytes);
-        Self::deserialize(&mut bytes.as_slice().iter().cloned())
+        Self::deserialize(&mut bytes.iter().cloned())
     }
 }
 
