@@ -2264,7 +2264,34 @@
 <span data-nosnippet>72</span>{
 <span data-nosnippet>73</span>    <span class="kw">fn </span>serialize(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
 <span data-nosnippet>74</span>        <span class="self">self</span>.<span class="highlight">inner</span>().serialize(buf)
-<span data-nosnippet>75</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[21,21],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#795&#34;,&#34;line 795&#34;],[[22,22],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#796&#34;,&#34;line 796&#34;],[[24,24],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#798&#34;,&#34;line 798&#34;],[[227,227],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1001&#34;,&#34;line 1001&#34;],[[228,228],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1002&#34;,&#34;line 1002&#34;],[[230,230],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1004&#34;,&#34;line 1004&#34;],[[263,263],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1037&#34;,&#34;line 1037&#34;],[[263,263],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1037&#34;,&#34;line 1037&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../src/competitive/math/number_theoretic_transform.rs.html#795">line 795</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>774</span><span class="kw">fn </span>reconstruct_mint_crt&lt;M, N1, N2, N3&gt;(f: (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;)) -&gt; MVec&lt;M&gt;
+<span data-nosnippet>75</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[22,22],&#34;../../src/competitive/tree/distance_frequencies.rs.html#468&#34;,&#34;line 468&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/distance_frequencies.rs (<a href="../../src/competitive/tree/distance_frequencies.rs.html#468">line 468</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>446</span><span class="kw">fn </span>distance_frequencies_convolve(a: <span class="kw-2">&amp;</span>[u64], b: <span class="kw-2">&amp;</span>[u64]) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>447</span>    <span class="kw">if </span>a.len().saturating_mul(b.len()) &gt; <span class="number">4096 </span>&amp;&amp; a.len().min(b.len()) &gt; <span class="number">16 </span>{
+<span data-nosnippet>448</span>        <span class="comment">// These are nonnegative counts. The bound makes reduction modulo p exact.
+<span data-nosnippet>449</span>        </span><span class="kw">let </span>stats = |values: <span class="kw-2">&amp;</span>[u64]| {
+<span data-nosnippet>450</span>            values.iter().try_fold((<span class="number">0u64</span>, <span class="number">0u64</span>), |(sum, max), <span class="kw-2">&amp;</span>value| {
+<span data-nosnippet>451</span>                <span class="kw">let </span>sum = sum.checked_add(value)<span class="question-mark">?</span>;
+<span data-nosnippet>452</span>                (sum &lt; <span class="number">998244353</span>).then_some((sum, max.max(value)))
+<span data-nosnippet>453</span>            })
+<span data-nosnippet>454</span>        };
+<span data-nosnippet>455</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((sum_a, max_a)) = stats(a)
+<span data-nosnippet>456</span>            &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>((sum_b, max_b)) = stats(b)
+<span data-nosnippet>457</span>            &amp;&amp; sum_a.saturating_mul(max_b).min(sum_b.saturating_mul(max_a)) &lt; <span class="number">998244353
+<span data-nosnippet>458</span>        </span>{
+<span data-nosnippet>459</span>            <span class="kw">let </span>input = a.iter().copied().map(MInt::from).collect();
+<span data-nosnippet>460</span>            <span class="comment">// Raw square is limited to this modulus's 2^23-point transform.
+<span data-nosnippet>461</span>            </span><span class="kw">let </span>product = <span class="kw">if </span>std::ptr::eq(a, b) &amp;&amp; a.len() &lt;= <span class="number">1 </span>&lt;&lt; <span class="number">22 </span>{
+<span data-nosnippet>462</span>                Convolve998244353::square(input, a.len() * <span class="number">2 </span>- <span class="number">1</span>)
+<span data-nosnippet>463</span>            } <span class="kw">else </span>{
+<span data-nosnippet>464</span>                Convolve998244353::convolve(input, b.iter().copied().map(MInt::from).collect())
+<span data-nosnippet>465</span>            };
+<span data-nosnippet>466</span>            <span class="kw">return </span>product
+<span data-nosnippet>467</span>                .into_iter()
+<span data-nosnippet>468</span>                .map(|value| value.<span class="highlight focus">inner</span>() <span class="kw">as </span>u64)
+<span data-nosnippet>469</span>                .collect();
+<span data-nosnippet>470</span>        }
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>    U64Convolve::convolve(a.to_vec(), b.to_vec())
+<span data-nosnippet>473</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[21,21],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#795&#34;,&#34;line 795&#34;],[[22,22],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#796&#34;,&#34;line 796&#34;],[[24,24],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#798&#34;,&#34;line 798&#34;],[[227,227],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1001&#34;,&#34;line 1001&#34;],[[228,228],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1002&#34;,&#34;line 1002&#34;],[[230,230],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1004&#34;,&#34;line 1004&#34;],[[263,263],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1037&#34;,&#34;line 1037&#34;],[[263,263],&#34;../../src/competitive/math/number_theoretic_transform.rs.html#1037&#34;,&#34;line 1037&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../src/competitive/math/number_theoretic_transform.rs.html#795">line 795</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>774</span><span class="kw">fn </span>reconstruct_mint_crt&lt;M, N1, N2, N3&gt;(f: (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;)) -&gt; MVec&lt;M&gt;
 <span data-nosnippet>775</span><span class="kw">where
 <span data-nosnippet>776</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
 <span data-nosnippet>777</span>    N1: Montgomery32NttModulus,

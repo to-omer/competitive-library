@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {};
+window.SIDEBAR_ITEMS = {"fn":["distance_frequencies_convolve","distance_frequencies_direct","distance_frequencies_path"],"struct":["DistanceFrequencyDiagonal"]};

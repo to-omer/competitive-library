@@ -1,0 +1,493 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `distance_frequencies_convolve` fn in crate `competitive`."><title>distance_frequencies_convolve in competitive::tree::distance_frequencies - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (32dba69d6 2026-10-09)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">distance_frequencies_convolve</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>tree::<wbr>distance_<wbr>frequencies</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">tree</a>::<wbr><a href="index.html">distance_frequencies</a></div><h1>Function <span class="fn">distance_<wbr>frequencies_<wbr>convolve</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/tree/distance_frequencies.rs.html#446-473">Source</a> </span></div><pre class="rust item-decl"><code>fn distance_frequencies_convolve(a: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>], b: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>]) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[151,154],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#157-160&#34;,&#34;lines 157-160&#34;],[[161,161],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#167&#34;,&#34;line 167&#34;],[[172,172],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#178&#34;,&#34;line 178&#34;],[[270,270],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#276&#34;,&#34;line 276&#34;],[[298,298],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#304&#34;,&#34;line 304&#34;],[[404,404],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#410&#34;,&#34;line 410&#34;],[[417,417],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#423&#34;,&#34;line 423&#34;],[[420,420],&#34;../../../src/competitive/tree/distance_frequencies.rs.html#426&#34;,&#34;line 426&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/distance_frequencies.rs (<a href="../../../src/competitive/tree/distance_frequencies.rs.html#157-160">lines 157-160</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>6</span>    <span class="kw">pub fn </span>distance_frequencies(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>7</span>        <span class="kw">let </span>n = <span class="self">self</span>.vertices_size();
+<span data-nosnippet>8</span>        <span class="kw">let </span><span class="kw-2">mut </span>table = <span class="macro">vec!</span>[<span class="number">0u64</span>; n];
+<span data-nosnippet>9</span>        <span class="kw">if </span>n == <span class="number">0 </span>{
+<span data-nosnippet>10</span>            <span class="kw">return </span>table;
+<span data-nosnippet>11</span>        }
+<span data-nosnippet>12</span>        table[<span class="number">0</span>] = n <span class="kw">as </span>u64;
+<span data-nosnippet>13</span>
+<span data-nosnippet>14</span>        <span class="kw">let </span>root = (<span class="number">0</span>..n).max_by_key(|<span class="kw-2">&amp;</span>u| <span class="self">self</span>.neighbors(u).len()).unwrap();
+<span data-nosnippet>15</span>        <span class="kw">if </span><span class="self">self</span>.neighbors(root).len() &lt;= <span class="number">2 </span>{
+<span data-nosnippet>16</span>            <span class="kw">for </span>(d, a) <span class="kw">in </span>table.iter_mut().enumerate().skip(<span class="number">1</span>) {
+<span data-nosnippet>17</span>                <span class="kw-2">*</span>a = <span class="number">2 </span>* (n - d) <span class="kw">as </span>u64;
+<span data-nosnippet>18</span>            }
+<span data-nosnippet>19</span>            <span class="kw">return </span>table;
+<span data-nosnippet>20</span>        }
+<span data-nosnippet>21</span>        <span class="comment">// BFS numbering makes each vertex's children a contiguous interval.
+<span data-nosnippet>22</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>order = Vec::with_capacity(n);
+<span data-nosnippet>23</span>        <span class="kw">let </span><span class="kw-2">mut </span>children = Vec::with_capacity(n + <span class="number">1</span>);
+<span data-nosnippet>24</span>        order.push((root, n));
+<span data-nosnippet>25</span>        children.push(<span class="number">1</span>);
+<span data-nosnippet>26</span>        <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>27</span>            <span class="kw">let </span>(v, parent) = order[u];
+<span data-nosnippet>28</span>            order.extend(
+<span data-nosnippet>29</span>                <span class="self">self</span>.neighbors(v)
+<span data-nosnippet>30</span>                    .filter(|a| a.to != parent)
+<span data-nosnippet>31</span>                    .map(|a| (a.to, v)),
+<span data-nosnippet>32</span>            );
+<span data-nosnippet>33</span>            children.push(order.len());
+<span data-nosnippet>34</span>        }
+<span data-nosnippet>35</span>        drop(order);
+<span data-nosnippet>36</span>        <span class="kw">let </span><span class="kw-2">mut </span>height = <span class="macro">vec!</span>[<span class="number">1usize</span>; n];
+<span data-nosnippet>37</span>        <span class="kw">let </span><span class="kw-2">mut </span>heavy = <span class="macro">vec!</span>[n; n];
+<span data-nosnippet>38</span>        <span class="kw">for </span>u <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
+<span data-nosnippet>39</span>            <span class="kw">for </span>v <span class="kw">in </span>children[u]..children[u + <span class="number">1</span>] {
+<span data-nosnippet>40</span>                <span class="kw">if </span>height[u] &lt; height[v] + <span class="number">1 </span>{
+<span data-nosnippet>41</span>                    height[u] = height[v] + <span class="number">1</span>;
+<span data-nosnippet>42</span>                    heavy[u] = v;
+<span data-nosnippet>43</span>                }
+<span data-nosnippet>44</span>            }
+<span data-nosnippet>45</span>        }
+<span data-nosnippet>46</span>        <span class="kw">let </span><span class="kw-2">mut </span>end = <span class="number">1</span>;
+<span data-nosnippet>47</span>        <span class="kw">for </span>a <span class="kw">in </span>table.iter_mut().take(height[<span class="number">0</span>]).skip(<span class="number">1</span>) {
+<span data-nosnippet>48</span>            <span class="kw">let </span>next = children[end];
+<span data-nosnippet>49</span>            <span class="kw-2">*</span>a = (next - end) <span class="kw">as </span>u64;
+<span data-nosnippet>50</span>            end = next;
+<span data-nosnippet>51</span>        }
+<span data-nosnippet>52</span>        <span class="comment">// Each vertex at depth &gt;= d has exactly one ancestor at distance d.
+<span data-nosnippet>53</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">0</span>;
+<span data-nosnippet>54</span>        <span class="kw">for </span>a <span class="kw">in </span>table[<span class="number">1</span>..height[<span class="number">0</span>]].iter_mut().rev() {
+<span data-nosnippet>55</span>            sum += <span class="kw-2">*</span>a;
+<span data-nosnippet>56</span>            <span class="kw-2">*</span>a = <span class="number">2 </span>* sum;
+<span data-nosnippet>57</span>        }
+<span data-nosnippet>58</span>        <span class="comment">// Bound the direct algorithm's product count, aggregating leaf children first.
+<span data-nosnippet>59</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>work = <span class="number">0usize</span>;
+<span data-nosnippet>60</span>        <span class="kw">if </span>height[<span class="number">0</span>] &gt; <span class="number">128 </span>{
+<span data-nosnippet>61</span>            <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>62</span>                <span class="kw">let </span><span class="kw-2">mut </span>light = <span class="number">0</span>;
+<span data-nosnippet>63</span>                <span class="kw">let </span><span class="kw-2">mut </span>leaves = <span class="bool-val">false</span>;
+<span data-nosnippet>64</span>                <span class="kw">for </span>(v, <span class="kw-2">&amp;</span>h) <span class="kw">in </span>height
+<span data-nosnippet>65</span>                    .iter()
+<span data-nosnippet>66</span>                    .enumerate()
+<span data-nosnippet>67</span>                    .take(children[u + <span class="number">1</span>])
+<span data-nosnippet>68</span>                    .skip(children[u])
+<span data-nosnippet>69</span>                {
+<span data-nosnippet>70</span>                    <span class="kw">if </span>v != heavy[u] {
+<span data-nosnippet>71</span>                        <span class="kw">if </span>h == <span class="number">1 </span>{
+<span data-nosnippet>72</span>                            leaves = <span class="bool-val">true</span>;
+<span data-nosnippet>73</span>                        } <span class="kw">else </span>{
+<span data-nosnippet>74</span>                            light += h;
+<span data-nosnippet>75</span>                        }
+<span data-nosnippet>76</span>                    }
+<span data-nosnippet>77</span>                }
+<span data-nosnippet>78</span>                work = work
+<span data-nosnippet>79</span>                    .saturating_add((height[u] - <span class="number">1</span>).saturating_mul(light + usize::from(leaves)));
+<span data-nosnippet>80</span>                <span class="kw">if </span>work &gt; n.saturating_mul(<span class="number">128</span>) {
+<span data-nosnippet>81</span>                    <span class="kw">break</span>;
+<span data-nosnippet>82</span>                }
+<span data-nosnippet>83</span>            }
+<span data-nosnippet>84</span>        }
+<span data-nosnippet>85</span>        <span class="kw">let </span>direct = work &lt;= n.saturating_mul(<span class="number">128</span>);
+<span data-nosnippet>86</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<span data-nosnippet>87</span>        <span class="kw">let </span><span class="kw-2">mut </span>heads = <span class="macro">vec!</span>[<span class="number">0</span>];
+<span data-nosnippet>88</span>        <span class="kw">let </span><span class="kw-2">mut </span>size = height[<span class="number">0</span>];
+<span data-nosnippet>89</span>        <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>90</span>            <span class="kw">for </span>v <span class="kw">in </span>children[u]..children[u + <span class="number">1</span>] {
+<span data-nosnippet>91</span>                <span class="kw">if </span>v == heavy[u] {
+<span data-nosnippet>92</span>                    offset[v] = offset[u] + <span class="number">1</span>;
+<span data-nosnippet>93</span>                } <span class="kw">else </span>{
+<span data-nosnippet>94</span>                    offset[v] = size;
+<span data-nosnippet>95</span>                    size += height[v];
+<span data-nosnippet>96</span>                    <span class="kw">if </span>!direct &amp;&amp; height[v] &gt; <span class="number">1 </span>{
+<span data-nosnippet>97</span>                        heads.push(v);
+<span data-nosnippet>98</span>                    }
+<span data-nosnippet>99</span>                }
+<span data-nosnippet>100</span>            }
+<span data-nosnippet>101</span>        }
+<span data-nosnippet>102</span>        <span class="kw">if </span>direct {
+<span data-nosnippet>103</span>            distance_frequencies_direct(<span class="kw-2">&amp;</span>children, <span class="kw-2">&amp;</span>height, <span class="kw-2">&amp;</span>heavy, <span class="kw-2">&amp;</span>offset, <span class="kw-2">&amp;mut </span>table);
+<span data-nosnippet>104</span>            <span class="kw">return </span>table;
+<span data-nosnippet>105</span>        }
+<span data-nosnippet>106</span>
+<span data-nosnippet>107</span>        <span class="comment">// Longest-child paths share suffixes; the disjoint head arrays contain n coefficients.
+<span data-nosnippet>108</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>counts = <span class="macro">vec!</span>[<span class="number">1u64</span>; n];
+<span data-nosnippet>109</span>        <span class="kw">let </span><span class="kw-2">mut </span>branch_begin = <span class="macro">vec!</span>[<span class="number">0</span>; n + <span class="number">1</span>];
+<span data-nosnippet>110</span>        <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>111</span>            <span class="kw">let </span>len = (children[u]..children[u + <span class="number">1</span>])
+<span data-nosnippet>112</span>                .filter(|<span class="kw-2">&amp;</span>v| v != heavy[u])
+<span data-nosnippet>113</span>                .map(|v| height[v])
+<span data-nosnippet>114</span>                .max()
+<span data-nosnippet>115</span>                .unwrap_or(<span class="number">0</span>);
+<span data-nosnippet>116</span>            branch_begin[u + <span class="number">1</span>] = branch_begin[u] + len;
+<span data-nosnippet>117</span>        }
+<span data-nosnippet>118</span>        <span class="kw">let </span><span class="kw-2">mut </span>branches = <span class="macro">vec!</span>[<span class="number">0u64</span>; branch_begin[n]];
+<span data-nosnippet>119</span>        <span class="kw">for </span>u <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
+<span data-nosnippet>120</span>            <span class="kw">let </span>branch = <span class="kw-2">&amp;mut </span>branches[branch_begin[u]..branch_begin[u + <span class="number">1</span>]];
+<span data-nosnippet>121</span>            <span class="kw">if </span>branch.is_empty() {
+<span data-nosnippet>122</span>                <span class="kw">continue</span>;
+<span data-nosnippet>123</span>            }
+<span data-nosnippet>124</span>            <span class="kw">let </span><span class="kw-2">mut </span>leaves = <span class="number">0u64</span>;
+<span data-nosnippet>125</span>            <span class="kw">let </span><span class="kw-2">mut </span>light = <span class="number">0</span>;
+<span data-nosnippet>126</span>            <span class="kw">let </span><span class="kw-2">mut </span>first = n;
+<span data-nosnippet>127</span>            <span class="kw">let </span><span class="kw-2">mut </span>second = n;
+<span data-nosnippet>128</span>            <span class="kw">for </span>(v, <span class="kw-2">&amp;</span>h) <span class="kw">in </span>height
+<span data-nosnippet>129</span>                .iter()
+<span data-nosnippet>130</span>                .enumerate()
+<span data-nosnippet>131</span>                .take(children[u + <span class="number">1</span>])
+<span data-nosnippet>132</span>                .skip(children[u])
+<span data-nosnippet>133</span>            {
+<span data-nosnippet>134</span>                <span class="kw">if </span>v == heavy[u] {
+<span data-nosnippet>135</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>136</span>                }
+<span data-nosnippet>137</span>                <span class="kw">if </span>h == <span class="number">1 </span>{
+<span data-nosnippet>138</span>                    leaves += <span class="number">1</span>;
+<span data-nosnippet>139</span>                } <span class="kw">else </span>{
+<span data-nosnippet>140</span>                    light += <span class="number">1</span>;
+<span data-nosnippet>141</span>                    <span class="kw">if </span>first == n {
+<span data-nosnippet>142</span>                        first = v;
+<span data-nosnippet>143</span>                    } <span class="kw">else </span>{
+<span data-nosnippet>144</span>                        second = v;
+<span data-nosnippet>145</span>                    }
+<span data-nosnippet>146</span>                    <span class="kw">for </span>(a, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>branch.iter_mut().zip(<span class="kw-2">&amp;</span>counts[offset[v]..offset[v] + h]) {
+<span data-nosnippet>147</span>                        <span class="kw-2">*</span>a += b;
+<span data-nosnippet>148</span>                    }
+<span data-nosnippet>149</span>                }
+<span data-nosnippet>150</span>            }
+<span data-nosnippet>151</span>            <span class="kw">for </span>(a, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>table[<span class="number">2</span>..].iter_mut().zip(branch.iter()) {
+<span data-nosnippet>152</span>                <span class="kw-2">*</span>a += <span class="number">2 </span>* leaves * b;
+<span data-nosnippet>153</span>            }
+<span data-nosnippet>154</span>            table[<span class="number">2</span>] += leaves * leaves.saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>155</span>            <span class="kw">if </span>light == <span class="number">2 </span>{
+<span data-nosnippet>156</span>                <span class="kw">let </span>[v, w] = [first, second];
+<span data-nosnippet>157</span>                <span class="kw">let </span>product = <span class="highlight focus">distance_frequencies_convolve</span>(
+<span data-nosnippet>158</span>                    <span class="kw-2">&amp;</span>counts[offset[v]..offset[v] + height[v]],
+<span data-nosnippet>159</span>                    <span class="kw-2">&amp;</span>counts[offset[w]..offset[w] + height[w]],
+<span data-nosnippet>160</span>                );
+<span data-nosnippet>161</span>                <span class="kw">for </span>(a, b) <span class="kw">in </span>table[<span class="number">2</span>..].iter_mut().zip(product) {
+<span data-nosnippet>162</span>                    <span class="kw-2">*</span>a += <span class="number">2 </span>* b;
+<span data-nosnippet>163</span>                }
+<span data-nosnippet>164</span>            } <span class="kw">else if </span>light &gt; <span class="number">2 </span>{
+<span data-nosnippet>165</span>                <span class="kw">for </span>(a, b) <span class="kw">in </span>table[<span class="number">2</span>..]
+<span data-nosnippet>166</span>                    .iter_mut()
+<span data-nosnippet>167</span>                    .zip(<span class="highlight">distance_frequencies_convolve</span>(branch, branch))
+<span data-nosnippet>168</span>                {
+<span data-nosnippet>169</span>                    <span class="kw-2">*</span>a = a.wrapping_add(b);
+<span data-nosnippet>170</span>                }
+<span data-nosnippet>171</span>                <span class="kw">for </span>v <span class="kw">in </span>children[u]..children[u + <span class="number">1</span>] {
+<span data-nosnippet>172</span>                    <span class="kw">if </span>v == heavy[u] || height[v] == <span class="number">1 </span>{
+<span data-nosnippet>173</span>                        <span class="kw">continue</span>;
+<span data-nosnippet>174</span>                    }
+<span data-nosnippet>175</span>                    <span class="kw">let </span>child = <span class="kw-2">&amp;</span>counts[offset[v]..offset[v] + height[v]];
+<span data-nosnippet>176</span>                    <span class="kw">for </span>(a, b) <span class="kw">in </span>table[<span class="number">2</span>..]
+<span data-nosnippet>177</span>                        .iter_mut()
+<span data-nosnippet>178</span>                        .zip(<span class="highlight">distance_frequencies_convolve</span>(child, child))
+<span data-nosnippet>179</span>                    {
+<span data-nosnippet>180</span>                        <span class="kw-2">*</span>a = a.wrapping_sub(b);
+<span data-nosnippet>181</span>                    }
+<span data-nosnippet>182</span>                }
+<span data-nosnippet>183</span>            }
+<span data-nosnippet>184</span>            branch[<span class="number">0</span>] += leaves;
+<span data-nosnippet>185</span>            <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>branch.iter().enumerate() {
+<span data-nosnippet>186</span>                counts[offset[u] + d + <span class="number">1</span>] += a;
+<span data-nosnippet>187</span>            }
+<span data-nosnippet>188</span>        }
+<span data-nosnippet>189</span>
+<span data-nosnippet>190</span>        drop(counts);
+<span data-nosnippet>191</span>        drop(offset);
+<span data-nosnippet>192</span>        drop(children);
+<span data-nosnippet>193</span>        <span class="kw">let </span><span class="kw-2">mut </span>difference = <span class="macro">vec!</span>[<span class="number">0u64</span>; n + <span class="number">1</span>];
+<span data-nosnippet>194</span>        <span class="kw">for </span>head <span class="kw">in </span>heads {
+<span data-nosnippet>195</span>            <span class="kw">let </span>len = height[head];
+<span data-nosnippet>196</span>            <span class="kw">let </span><span class="kw-2">mut </span>path = Vec::new();
+<span data-nosnippet>197</span>            <span class="kw">let </span><span class="kw-2">mut </span>u = head;
+<span data-nosnippet>198</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..len {
+<span data-nosnippet>199</span>                <span class="kw">let </span>branch = <span class="kw-2">&amp;</span>branches[branch_begin[u]..branch_begin[u + <span class="number">1</span>]];
+<span data-nosnippet>200</span>                <span class="kw">if </span>!branch.is_empty() {
+<span data-nosnippet>201</span>                    <span class="comment">// Ancestor pairs are already counted; add distances to later path vertices.
+<span data-nosnippet>202</span>                    </span><span class="kw">for </span>(d, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>branch.iter().enumerate() {
+<span data-nosnippet>203</span>                        difference[d + <span class="number">2</span>] = difference[d + <span class="number">2</span>].wrapping_add(<span class="number">2 </span>* a);
+<span data-nosnippet>204</span>                        difference[d + len - i + <span class="number">1</span>] =
+<span data-nosnippet>205</span>                            difference[d + len - i + <span class="number">1</span>].wrapping_sub(<span class="number">2 </span>* a);
+<span data-nosnippet>206</span>                    }
+<span data-nosnippet>207</span>                    path.push((i, branch));
+<span data-nosnippet>208</span>                }
+<span data-nosnippet>209</span>                u = heavy[u];
+<span data-nosnippet>210</span>            }
+<span data-nosnippet>211</span>            distance_frequencies_path(<span class="kw-2">&amp;</span>path, <span class="kw-2">&amp;mut </span>table);
+<span data-nosnippet>212</span>        }
+<span data-nosnippet>213</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">0u64</span>;
+<span data-nosnippet>214</span>        <span class="kw">for </span>(a, d) <span class="kw">in </span>table.iter_mut().zip(difference) {
+<span data-nosnippet>215</span>            sum = sum.wrapping_add(d);
+<span data-nosnippet>216</span>            <span class="kw-2">*</span>a = a.wrapping_add(sum);
+<span data-nosnippet>217</span>        }
+<span data-nosnippet>218</span>        table
+<span data-nosnippet>219</span>    }
+<span data-nosnippet>220</span>}
+<span data-nosnippet>221</span>
+<span data-nosnippet>222</span><span class="kw">fn </span>distance_frequencies_direct(
+<span data-nosnippet>223</span>    children: <span class="kw-2">&amp;</span>[usize],
+<span data-nosnippet>224</span>    height: <span class="kw-2">&amp;</span>[usize],
+<span data-nosnippet>225</span>    heavy: <span class="kw-2">&amp;</span>[usize],
+<span data-nosnippet>226</span>    offset: <span class="kw-2">&amp;</span>[usize],
+<span data-nosnippet>227</span>    table: <span class="kw-2">&amp;mut </span>[u64],
+<span data-nosnippet>228</span>) {
+<span data-nosnippet>229</span>    <span class="kw">let </span>n = table.len();
+<span data-nosnippet>230</span>    <span class="kw">let </span><span class="kw-2">mut </span>counts = <span class="macro">vec!</span>[<span class="number">1u64</span>; n];
+<span data-nosnippet>231</span>    <span class="kw">for </span>u <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
+<span data-nosnippet>232</span>        <span class="kw">let </span><span class="kw-2">mut </span>leaves = <span class="number">0u64</span>;
+<span data-nosnippet>233</span>        <span class="kw">for </span>v <span class="kw">in </span>children[u]..children[u + <span class="number">1</span>] {
+<span data-nosnippet>234</span>            <span class="kw">if </span>v == heavy[u] {
+<span data-nosnippet>235</span>                <span class="kw">continue</span>;
+<span data-nosnippet>236</span>            }
+<span data-nosnippet>237</span>            <span class="kw">if </span>height[v] == <span class="number">1 </span>{
+<span data-nosnippet>238</span>                leaves += <span class="number">1</span>;
+<span data-nosnippet>239</span>                <span class="kw">continue</span>;
+<span data-nosnippet>240</span>            }
+<span data-nosnippet>241</span>            <span class="kw">for </span>d <span class="kw">in </span><span class="number">0</span>..height[v] {
+<span data-nosnippet>242</span>                <span class="kw">let </span>b = <span class="number">2 </span>* counts[offset[v] + d];
+<span data-nosnippet>243</span>                <span class="kw">for </span>(a, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>table[d + <span class="number">2</span>..]
+<span data-nosnippet>244</span>                    .iter_mut()
+<span data-nosnippet>245</span>                    .zip(<span class="kw-2">&amp;</span>counts[offset[u] + <span class="number">1</span>..offset[u] + height[u]])
+<span data-nosnippet>246</span>                {
+<span data-nosnippet>247</span>                    <span class="kw-2">*</span>a += b * c;
+<span data-nosnippet>248</span>                }
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>            <span class="kw">for </span>d <span class="kw">in </span><span class="number">0</span>..height[v] {
+<span data-nosnippet>251</span>                counts[offset[u] + d + <span class="number">1</span>] += counts[offset[v] + d];
+<span data-nosnippet>252</span>            }
+<span data-nosnippet>253</span>        }
+<span data-nosnippet>254</span>        <span class="kw">if </span>leaves != <span class="number">0 </span>{
+<span data-nosnippet>255</span>            <span class="kw">for </span>(a, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>table[<span class="number">2</span>..]
+<span data-nosnippet>256</span>                .iter_mut()
+<span data-nosnippet>257</span>                .zip(<span class="kw-2">&amp;</span>counts[offset[u] + <span class="number">1</span>..offset[u] + height[u]])
+<span data-nosnippet>258</span>            {
+<span data-nosnippet>259</span>                <span class="kw-2">*</span>a += <span class="number">2 </span>* leaves * b;
+<span data-nosnippet>260</span>            }
+<span data-nosnippet>261</span>            table[<span class="number">2</span>] += leaves * (leaves - <span class="number">1</span>);
+<span data-nosnippet>262</span>            counts[offset[u] + <span class="number">1</span>] += leaves;
+<span data-nosnippet>263</span>        }
+<span data-nosnippet>264</span>    }
+<span data-nosnippet>265</span>}
+<span data-nosnippet>266</span>
+<span data-nosnippet>267</span><span class="kw">fn </span>distance_frequencies_path(path: <span class="kw-2">&amp;</span>[(usize, <span class="kw-2">&amp;</span>[u64])], table: <span class="kw-2">&amp;mut </span>[u64]) {
+<span data-nosnippet>268</span>    <span class="kw">if </span>path.len() &lt; <span class="number">2 </span>{
+<span data-nosnippet>269</span>        <span class="kw">return</span>;
+<span data-nosnippet>270</span>    }
+<span data-nosnippet>271</span>    <span class="kw">if </span>path.len() &lt;= <span class="number">4 </span>|| path.iter().map(|(<span class="kw">_</span>, a)| a.len()).sum::&lt;usize&gt;() &lt;= <span class="number">64 </span>{
+<span data-nosnippet>272</span>        <span class="kw">for </span>(k, (i, a)) <span class="kw">in </span>path.iter().enumerate() {
+<span data-nosnippet>273</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span><span class="kw-2">&amp;</span>path[k + <span class="number">1</span>..] {
+<span data-nosnippet>274</span>                <span class="kw">for </span>(value, product) <span class="kw">in </span>table[j - i + <span class="number">2</span>..]
+<span data-nosnippet>275</span>                    .iter_mut()
+<span data-nosnippet>276</span>                    .zip(<span class="highlight">distance_frequencies_convolve</span>(a, b))
+<span data-nosnippet>277</span>                {
+<span data-nosnippet>278</span>                    <span class="kw-2">*</span>value += <span class="number">2 </span>* product;
+<span data-nosnippet>279</span>                }
+<span data-nosnippet>280</span>            }
+<span data-nosnippet>281</span>        }
+<span data-nosnippet>282</span>        <span class="kw">return</span>;
+<span data-nosnippet>283</span>    }
+<span data-nosnippet>284</span>    <span class="kw">let </span>first = path[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>285</span>    <span class="kw">let </span>len = path.last().unwrap().<span class="number">0 </span>- first + <span class="number">1</span>;
+<span data-nosnippet>286</span>    <span class="kw">let </span>max_len = path.iter().map(|(<span class="kw">_</span>, a)| a.len()).max().unwrap();
+<span data-nosnippet>287</span>    <span class="kw">let </span><span class="kw-2">mut </span>forward = <span class="macro">vec!</span>[<span class="number">0u64</span>; len + max_len - <span class="number">1</span>];
+<span data-nosnippet>288</span>    <span class="kw">let </span><span class="kw-2">mut </span>backward = <span class="macro">vec!</span>[<span class="number">0u64</span>; len + max_len - <span class="number">1</span>];
+<span data-nosnippet>289</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>path {
+<span data-nosnippet>290</span>        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
+<span data-nosnippet>291</span>            forward[i - first + d] += a;
+<span data-nosnippet>292</span>            backward[len - <span class="number">1 </span>- (i - first) + d] += a;
+<span data-nosnippet>293</span>        }
+<span data-nosnippet>294</span>    }
+<span data-nosnippet>295</span>    <span class="kw">while </span>forward.last() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>) {
+<span data-nosnippet>296</span>        forward.pop();
+<span data-nosnippet>297</span>    }
+<span data-nosnippet>298</span>    <span class="kw">while </span>backward.last() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>) {
+<span data-nosnippet>299</span>        backward.pop();
+<span data-nosnippet>300</span>    }
+<span data-nosnippet>301</span>    <span class="comment">// P+ P- contains the desired pairs, self products, and reverse-direction pairs.
+<span data-nosnippet>302</span>    </span><span class="kw">let </span>skip = usize::from(max_len == <span class="number">1</span>);
+<span data-nosnippet>303</span>    <span class="kw">for </span>(a, b) <span class="kw">in </span>table[<span class="number">2 </span>+ skip..].iter_mut().zip(
+<span data-nosnippet>304</span>        <span class="highlight">distance_frequencies_convolve</span>(<span class="kw-2">&amp;</span>forward, <span class="kw-2">&amp;</span>backward)
+<span data-nosnippet>305</span>            .into_iter()
+<span data-nosnippet>306</span>            .skip(len - <span class="number">1 </span>+ skip),
+<span data-nosnippet>307</span>    ) {
+<span data-nosnippet>308</span>        <span class="kw-2">*</span>a = a.wrapping_add(<span class="number">2 </span>* b);
+<span data-nosnippet>309</span>    }
+<span data-nosnippet>310</span>    <span class="kw">if </span>max_len == <span class="number">1 </span>{
+<span data-nosnippet>311</span>        <span class="kw">return</span>;
+<span data-nosnippet>312</span>    }
+<span data-nosnippet>313</span>    drop(forward);
+<span data-nosnippet>314</span>    drop(backward);
+<span data-nosnippet>315</span>    <span class="kw">for </span>(<span class="kw">_</span>, a) <span class="kw">in </span>path {
+<span data-nosnippet>316</span>        <span class="kw">if </span>a.len() &lt;= <span class="number">9 </span>{
+<span data-nosnippet>317</span>            <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>x) <span class="kw">in </span>a.iter().enumerate() {
+<span data-nosnippet>318</span>                <span class="kw">for </span>(b, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>table[d + <span class="number">2</span>..].iter_mut().zip(a.iter()) {
+<span data-nosnippet>319</span>                    <span class="kw-2">*</span>b = b.wrapping_sub(<span class="number">2 </span>* x * y);
+<span data-nosnippet>320</span>                }
+<span data-nosnippet>321</span>            }
+<span data-nosnippet>322</span>        }
+<span data-nosnippet>323</span>    }
+<span data-nosnippet>324</span>    <span class="comment">// Short profiles can only contribute reverse terms between nearby positions.
+<span data-nosnippet>325</span>    </span><span class="kw">if </span>max_len &lt;= <span class="number">9 </span>{
+<span data-nosnippet>326</span>        <span class="kw">for </span>(k, (i, a)) <span class="kw">in </span>path.iter().enumerate() {
+<span data-nosnippet>327</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span>path[k + <span class="number">1</span>..]
+<span data-nosnippet>328</span>                .iter()
+<span data-nosnippet>329</span>                .take_while(|(j, <span class="kw">_</span>)| j - i &lt; <span class="number">2 </span>* max_len - <span class="number">1</span>)
+<span data-nosnippet>330</span>            {
+<span data-nosnippet>331</span>                <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>x) <span class="kw">in </span>a.iter().enumerate() {
+<span data-nosnippet>332</span>                    <span class="kw">for </span>(e, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>b.iter().enumerate().skip((j - i).saturating_sub(d)) {
+<span data-nosnippet>333</span>                        <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>table[d + e + <span class="number">2 </span>- (j - i)];
+<span data-nosnippet>334</span>                        <span class="kw-2">*</span>value = value.wrapping_sub(<span class="number">2 </span>* x * y);
+<span data-nosnippet>335</span>                    }
+<span data-nosnippet>336</span>                }
+<span data-nosnippet>337</span>            }
+<span data-nosnippet>338</span>        }
+<span data-nosnippet>339</span>        <span class="kw">return</span>;
+<span data-nosnippet>340</span>    }
+<span data-nosnippet>341</span>
+<span data-nosnippet>342</span>    <span class="kw">let </span><span class="kw-2">mut </span>order: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..path.len()).collect();
+<span data-nosnippet>343</span>    order.sort_unstable_by_key(|<span class="kw-2">&amp;</span>i| (path[i].<span class="number">1</span>.len(), i));
+<span data-nosnippet>344</span>    <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="macro">vec!</span>[<span class="number">0</span>; path.len()];
+<span data-nosnippet>345</span>    <span class="kw">let </span><span class="kw-2">mut </span>begin = <span class="macro">vec!</span>[<span class="number">0</span>; path.len() + <span class="number">1</span>];
+<span data-nosnippet>346</span>    <span class="kw">for </span>(k, <span class="kw-2">&amp;</span>i) <span class="kw">in </span>order.iter().enumerate() {
+<span data-nosnippet>347</span>        rank[i] = k;
+<span data-nosnippet>348</span>    }
+<span data-nosnippet>349</span>    <span class="kw">for </span>(k, (<span class="kw">_</span>, a)) <span class="kw">in </span>path.iter().enumerate() {
+<span data-nosnippet>350</span>        begin[k + <span class="number">1</span>] = begin[k] + a.len();
+<span data-nosnippet>351</span>    }
+<span data-nosnippet>352</span>    <span class="kw">let </span><span class="kw-2">mut </span>diagonals = <span class="prelude-val">None</span>;
+<span data-nosnippet>353</span>    <span class="kw">for </span>(k, <span class="kw-2">&amp;</span>index) <span class="kw">in </span>order.iter().enumerate() {
+<span data-nosnippet>354</span>        <span class="kw">let </span>(i, a) = path[index];
+<span data-nosnippet>355</span>        <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">degree</a> = a.len() - <span class="number">1</span>;
+<span data-nosnippet>356</span>        <span class="kw">if </span>degree == <span class="number">0 </span>{
+<span data-nosnippet>357</span>            <span class="kw">continue</span>;
+<span data-nosnippet>358</span>        }
+<span data-nosnippet>359</span>        <span class="kw">let </span>previous_degree = <span class="kw">if </span>k == <span class="number">0 </span>{
+<span data-nosnippet>360</span>            <span class="number">0
+<span data-nosnippet>361</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>362</span>            path[order[k - <span class="number">1</span>]].<span class="number">1</span>.len() - <span class="number">1
+<span data-nosnippet>363</span>        </span>};
+<span data-nosnippet>364</span>        <span class="comment">// Only exponents -degree .. previous_degree-1 can survive multiplication by a.
+<span data-nosnippet>365</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>correction = <span class="macro">vec!</span>[<span class="number">0u64</span>; degree + previous_degree];
+<span data-nosnippet>366</span>        <span class="kw">if </span>previous_degree &lt;= <span class="number">8 </span>{
+<span data-nosnippet>367</span>            <span class="kw">let </span>radius = degree + previous_degree;
+<span data-nosnippet>368</span>            <span class="kw">let </span>left = path.partition_point(|(j, <span class="kw">_</span>)| <span class="kw-2">*</span>j &lt; i.saturating_sub(radius));
+<span data-nosnippet>369</span>            <span class="kw">for </span>(j, <span class="kw-2">&amp;</span>(position, b)) <span class="kw">in </span>path.iter().enumerate().skip(left) {
+<span data-nosnippet>370</span>                <span class="kw">if </span>position &gt; i + radius {
+<span data-nosnippet>371</span>                    <span class="kw">break</span>;
+<span data-nosnippet>372</span>                }
+<span data-nosnippet>373</span>                <span class="kw">if </span>rank[j] &gt;= k {
+<span data-nosnippet>374</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>375</span>                }
+<span data-nosnippet>376</span>                <span class="kw">let </span>distance = position.abs_diff(i);
+<span data-nosnippet>377</span>                <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>value) <span class="kw">in </span>b.iter().enumerate().skip(distance.saturating_sub(degree)) {
+<span data-nosnippet>378</span>                    correction[degree + d - distance] += value;
+<span data-nosnippet>379</span>                }
+<span data-nosnippet>380</span>            }
+<span data-nosnippet>381</span>        } <span class="kw">else </span>{
+<span data-nosnippet>382</span>            <span class="kw">let </span>diagonals = diagonals.get_or_insert_with(|| {
+<span data-nosnippet>383</span>                [<span class="bool-val">false</span>, <span class="bool-val">true</span>]
+<span data-nosnippet>384</span>                    .map(|reverse| DistanceFrequencyDiagonal::new(path, <span class="kw-2">&amp;</span>begin, <span class="kw-2">&amp;</span>rank, k, reverse))
+<span data-nosnippet>385</span>            });
+<span data-nosnippet>386</span>            <span class="kw">for </span>(d, value) <span class="kw">in </span>correction.iter_mut().enumerate() {
+<span data-nosnippet>387</span>                <span class="kw">let </span>exponent = d <span class="kw">as </span>isize - degree <span class="kw">as </span>isize;
+<span data-nosnippet>388</span>                <span class="kw-2">*</span>value = diagonals[<span class="number">0</span>].query(i - first, exponent, begin[index])
+<span data-nosnippet>389</span>                    + diagonals[<span class="number">1</span>].query(len - <span class="number">1 </span>- (i - first), exponent, begin[index]);
+<span data-nosnippet>390</span>            }
+<span data-nosnippet>391</span>        }
+<span data-nosnippet>392</span>        <span class="kw">let </span>nonzero_begin = correction
+<span data-nosnippet>393</span>            .iter()
+<span data-nosnippet>394</span>            .position(|<span class="kw-2">&amp;</span>a| a != <span class="number">0</span>)
+<span data-nosnippet>395</span>            .unwrap_or(correction.len());
+<span data-nosnippet>396</span>        <span class="kw">let </span>nonzero_end = correction
+<span data-nosnippet>397</span>            .iter()
+<span data-nosnippet>398</span>            .rposition(|<span class="kw-2">&amp;</span>a| a != <span class="number">0</span>)
+<span data-nosnippet>399</span>            .map_or(nonzero_begin, |i| i + <span class="number">1</span>);
+<span data-nosnippet>400</span>        <span class="kw">let </span>combined_begin = nonzero_begin.min(degree);
+<span data-nosnippet>401</span>        <span class="comment">// Fold a^2 into a * (correction + x^degree a) when the transform stays the same size.
+<span data-nosnippet>402</span>        </span><span class="kw">let </span>fuse = a.len() &gt; <span class="number">9
+<span data-nosnippet>403</span>            </span>&amp;&amp; nonzero_begin &lt; nonzero_end
+<span data-nosnippet>404</span>            &amp;&amp; a.len().saturating_mul(nonzero_end - nonzero_begin) &gt; <span class="number">4096
+<span data-nosnippet>405</span>            </span>&amp;&amp; (<span class="number">3 </span>* degree + <span class="number">1 </span>- combined_begin).next_power_of_two()
+<span data-nosnippet>406</span>                == (degree + nonzero_end - nonzero_begin).next_power_of_two();
+<span data-nosnippet>407</span>        <span class="kw">if </span>a.len() &gt; <span class="number">9 </span>&amp;&amp; !fuse {
+<span data-nosnippet>408</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>table[<span class="number">2</span>..]
+<span data-nosnippet>409</span>                .iter_mut()
+<span data-nosnippet>410</span>                .zip(<span class="highlight">distance_frequencies_convolve</span>(a, a))
+<span data-nosnippet>411</span>            {
+<span data-nosnippet>412</span>                <span class="kw-2">*</span>b = b.wrapping_sub(<span class="number">2 </span>* c);
+<span data-nosnippet>413</span>            }
+<span data-nosnippet>414</span>        }
+<span data-nosnippet>415</span>        <span class="kw">if </span>nonzero_begin &lt; nonzero_end {
+<span data-nosnippet>416</span>            <span class="kw">let </span>(product, shift) = <span class="kw">if </span>fuse {
+<span data-nosnippet>417</span>                <span class="kw">let </span><span class="kw-2">mut </span>combined = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">2 </span>* degree + <span class="number">1 </span>- combined_begin];
+<span data-nosnippet>418</span>                combined[nonzero_begin - combined_begin..nonzero_end - combined_begin]
+<span data-nosnippet>419</span>                    .copy_from_slice(<span class="kw-2">&amp;</span>correction[nonzero_begin..nonzero_end]);
+<span data-nosnippet>420</span>                <span class="kw">for </span>(c, <span class="kw-2">&amp;</span>value) <span class="kw">in </span>combined[degree - combined_begin..].iter_mut().zip(a) {
+<span data-nosnippet>421</span>                    <span class="kw-2">*</span>c += value;
+<span data-nosnippet>422</span>                }
+<span data-nosnippet>423</span>                (<span class="highlight">distance_frequencies_convolve</span>(a, <span class="kw-2">&amp;</span>combined), combined_begin)
+<span data-nosnippet>424</span>            } <span class="kw">else </span>{
+<span data-nosnippet>425</span>                (
+<span data-nosnippet>426</span>                    <span class="highlight">distance_frequencies_convolve</span>(a, <span class="kw-2">&amp;</span>correction[nonzero_begin..nonzero_end]),
+<span data-nosnippet>427</span>                    nonzero_begin,
+<span data-nosnippet>428</span>                )
+<span data-nosnippet>429</span>            };
+<span data-nosnippet>430</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>table[<span class="number">2 </span>+ shift.saturating_sub(degree)..]
+<span data-nosnippet>431</span>                .iter_mut()
+<span data-nosnippet>432</span>                .zip(product.into_iter().skip(degree.saturating_sub(shift)))
+<span data-nosnippet>433</span>            {
+<span data-nosnippet>434</span>                <span class="kw-2">*</span>b = b.wrapping_sub(<span class="number">2 </span>* c);
+<span data-nosnippet>435</span>            }
+<span data-nosnippet>436</span>        }
+<span data-nosnippet>437</span>        <span class="kw">if </span><a href="../algebra/lazy_map.rs.html#345">k</a> + <span class="number">1 </span>&lt; order.len()
+<span data-nosnippet>438</span>            &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(diagonals) = <span class="kw-2">&amp;mut </span>diagonals
+<span data-nosnippet>439</span>        {
+<span data-nosnippet>440</span>            diagonals[<span class="number">0</span>].insert(i - first, begin[index], a);
+<span data-nosnippet>441</span>            diagonals[<span class="number">1</span>].insert(len - <span class="number">1 </span>- (i - first), begin[index], a);
+<span data-nosnippet>442</span>        }
+<span data-nosnippet>443</span>    }
+<span data-nosnippet>444</span>}</code></pre></div></div></div></section></div></main></body></html>
