@@ -98,6 +98,8 @@ pub use self::range_frequency::RangeFrequency;
 pub use self::range_map::{RangeMap, RangeSet};
 #[codesnip::entry("RangeMinimumQuery")]
 pub use self::range_minimum_query::RangeMinimumQuery;
+#[codesnip::entry("RangeMinimumSubsetSize")]
+pub use self::range_minimum_subset_size::RangeMinimumSubsetSize;
 #[codesnip::entry("SegmentTree")]
 pub use self::segment_tree::SegmentTree;
 #[codesnip::entry("SegmentTreeMap")]
@@ -265,6 +267,14 @@ mod range_frequency;
 mod range_map;
 #[cfg_attr(nightly, codesnip::entry("RangeMinimumQuery"))]
 mod range_minimum_query;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "RangeMinimumSubsetSize",
+        include("BinaryIndexedTree", "AdditiveOperation", "TupleOperation")
+    )
+)]
+mod range_minimum_subset_size;
 #[cfg_attr(
     nightly,
     codesnip::entry("SegmentTree", include("algebra", "discrete_steps"))

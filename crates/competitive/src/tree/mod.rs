@@ -101,6 +101,11 @@ mod tree_center;
 mod tree_centroid;
 mod tree_dp;
 mod tree_hash;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("tree_mo_algorithm", include("EulerTour", "mo_algorithm"))
+)]
+mod tree_mo_algorithm;
 mod tree_order;
 #[cfg_attr(nightly, codesnip::entry("XorLinkedRootedTree", include("scanner")))]
 mod xor_linked_tree;

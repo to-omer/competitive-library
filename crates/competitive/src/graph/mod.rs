@@ -1,11 +1,16 @@
 //! graph structures and algorithms
 
 use crate::{
-    algebra::{AddMulOperation, AdditiveOperation, DotProduct, Group, Monoid, MonoidAct, SemiRing},
+    algebra::{
+        AddMulOperation, AdditiveOperation, DotProduct, Field, Group, Invertible, Monoid,
+        MonoidAct, Ring, SemiRing,
+    },
     algorithm::BitDpExt,
     data_structure::{MergingUnionFind, PairingHeap, UnionFind},
+    math::Matrix,
     num::{Bounded, One, Zero},
     tools::{MarkedScan, PartialIgnoredOrd, Scan, ScanSource, comparator},
+    tree::XorLinkedRootedTree,
 };
 
 #[codesnip::entry("AdjacencyListGraph")]
@@ -40,6 +45,8 @@ pub use self::network_simplex::NetworkSimplex;
 pub use self::order::GraphOrderExt;
 #[codesnip::entry("ProjectSelectionProblem")]
 pub use self::project_selection_problem::ProjectSelectionProblem;
+#[codesnip::entry("regular_bipartite_edge_coloring")]
+pub use self::regular_bipartite_edge_coloring::regular_bipartite_edge_coloring;
 #[codesnip::entry("shortest_path")]
 pub use self::shortest_path::{ShortestPathExt, ShortestPathSemiRing};
 #[codesnip::entry("SparseGraph")]
@@ -63,10 +70,17 @@ pub use self::two_satisfiability::TwoSatisfiability;
 mod adjacency_list;
 #[cfg_attr(nightly, codesnip::entry("minimum_assignment"))]
 mod assignment;
+#[cfg_attr(nightly, codesnip::entry("bipartite_coloring", include("SparseGraph")))]
+mod bipartite_coloring;
 #[cfg_attr(nightly, codesnip::entry("BipartiteMatching"))]
 mod bipartite_matching;
 #[cfg_attr(nightly, codesnip::entry("ClosureGraph", include("Graph")))]
 mod closure;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("count_spanning_tree", include("EdgeListGraph", "Matrix"))
+)]
+mod count_spanning_tree;
 #[cfg_attr(
     nightly,
     codesnip::entry(
@@ -117,6 +131,11 @@ mod order;
 mod project_selection_problem;
 #[cfg_attr(
     nightly,
+    codesnip::entry("regular_bipartite_edge_coloring", include("BipartiteMatching"))
+)]
+mod regular_bipartite_edge_coloring;
+#[cfg_attr(
+    nightly,
     codesnip::entry(
         "shortest_path",
         include("Graph", "ring", "PartialIgnoredOrd", "bounded")
@@ -137,6 +156,14 @@ mod steiner_tree;
 mod strongly_connected_component;
 #[cfg_attr(nightly, codesnip::entry("topological_sort", include("Graph")))]
 mod topological_sort;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "tree_diameter",
+        include("EdgeListGraph", "XorLinkedRootedTree", "zero_one")
+    )
+)]
+mod tree_diameter;
 #[cfg_attr(
     nightly,
     codesnip::entry("TwoSatisfiability", include("StronglyConnectedComponent"))

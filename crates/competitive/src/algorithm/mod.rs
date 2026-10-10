@@ -1,7 +1,7 @@
 //! algorithm
 
 use crate::algebra::{Field, Group, Invertible, Magma, Monoid, Unital};
-use crate::data_structure::{BitSet, UnionFindBase, union_find};
+use crate::data_structure::{BitSet, DaryPrefixSumTreeU32, FibHashMap, UnionFindBase, union_find};
 use crate::graph::UndirectedSparseGraph;
 use crate::math::{Convolve998244353, ConvolveSteps, Matrix};
 use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero, montgomery};
@@ -26,6 +26,8 @@ pub use self::combinations::SliceCombinationsExt;
 pub use self::convex_hull_trick::ConvexHullTrick;
 #[codesnip::entry("Doubling")]
 pub use self::doubling::{Doubling, FunctionalGraphDoubling};
+#[codesnip::entry("dyadic_ranges")]
+pub use self::dyadic_ranges::dyadic_ranges;
 #[codesnip::entry("esper")]
 pub use self::esper::{EsperEstimator, EsperSolver};
 #[codesnip::entry("HornSatisfiability")]
@@ -51,6 +53,8 @@ pub use self::sort::{RadixSortKey, SliceSortExt};
 pub use self::sqrt_decomposition::{
     RangeUpdateRangeFoldSqrtDecomposition, SqrtDecomposition, SqrtDecompositionBuckets,
 };
+#[codesnip::entry("static_range_count_distinct")]
+pub use self::static_range_count_distinct::static_range_count_distinct;
 #[codesnip::entry("stern_brocot_tree")]
 pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree, rational_binary_search};
 #[codesnip::entry("ternary_search")]
@@ -87,6 +91,8 @@ mod convex_hull_trick;
     codesnip::entry("Doubling", include("LevelAncestor", "SparseGraph", "algebra"))
 )]
 mod doubling;
+#[cfg_attr(nightly, codesnip::entry("dyadic_ranges"))]
+mod dyadic_ranges;
 #[cfg_attr(nightly, codesnip::entry("esper", include("Matrix")))]
 mod esper;
 #[cfg_attr(nightly, codesnip::entry("HornSatisfiability"))]
@@ -119,6 +125,14 @@ mod sort;
     codesnip::entry("SqrtDecomposition", include("algebra", "discrete_steps"))
 )]
 mod sqrt_decomposition;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "static_range_count_distinct",
+        include("DaryPrefixSumTree", "FibonacciHash")
+    )
+)]
+mod static_range_count_distinct;
 #[cfg_attr(nightly, codesnip::entry("stern_brocot_tree", include("URational")))]
 mod stern_brocot_tree;
 #[cfg_attr(nightly, codesnip::entry)]

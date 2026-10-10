@@ -1260,6 +1260,134 @@ mod counting_operation_impl {
     }
 }
 
+#[codesnip::entry("PrefixFoldOperation")]
+pub use self::prefix_fold_operation_impl::PrefixFoldOperation;
+#[codesnip::entry("PrefixFoldOperation", include("algebra"))]
+mod prefix_fold_operation_impl {
+    use super::*;
+    use std::marker::PhantomData;
+
+    /// `(total, prefix_fold)`: `M` folds values; `N` folds all prefix totals, including empty.
+    /// Requires `M` to left-distribute over `N`, and `N(M::unit(), p) = N(p, s) = p` for `(s, p)`.
+    pub struct PrefixFoldOperation<M, N> {
+        _marker: PhantomData<fn() -> (M, N)>,
+    }
+    impl<M, N> PrefixFoldOperation<M, N>
+    where
+        M: Unital,
+        N: Associative<T = M::T> + Idempotent,
+    {
+        #[inline]
+        pub fn from_value(value: M::T) -> (M::T, M::T) {
+            let prefix = N::operate(&M::unit(), &value);
+            (value, prefix)
+        }
+    }
+    impl<M, N> Magma for PrefixFoldOperation<M, N>
+    where
+        M: Magma,
+        N: Magma<T = M::T> + Idempotent,
+    {
+        type T = (M::T, M::T);
+        #[inline]
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            (
+                M::operate(&x.0, &y.0),
+                N::operate(&x.1, &M::operate(&x.0, &y.1)),
+            )
+        }
+    }
+    impl<M, N> Unital for PrefixFoldOperation<M, N>
+    where
+        M: Unital,
+        N: Magma<T = M::T> + Idempotent,
+    {
+        #[inline]
+        fn unit() -> Self::T {
+            (M::unit(), M::unit())
+        }
+    }
+    impl<M, N> Associative for PrefixFoldOperation<M, N>
+    where
+        M: Associative,
+        N: Associative<T = M::T> + Idempotent,
+    {
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::testutil;
+
+        #[test]
+        fn test_prefix_fold_operation() {
+            macro_rules! check {
+                ($aggregate:ty) => {{
+                    type M = PrefixFoldOperation<AdditiveOperation<i32>, $aggregate>;
+                    let iter = (-5..=5)
+                        .flat_map(|sum| (-5..=5).map(move |prefix| (sum, prefix)))
+                        .filter(|&(sum, prefix)| {
+                            <$aggregate>::operate(&0, &prefix) == prefix
+                                && <$aggregate>::operate(&prefix, &sum) == prefix
+                        });
+                    for a in iter.clone() {
+                        assert!(M::check_unital(&a));
+                        for b in iter.clone() {
+                            for c in iter.clone() {
+                                assert!(M::check_associative(&a, &b, &c));
+                            }
+                        }
+                    }
+                    for values in testutil::exhaustive_sequences(-2i32..=2, 0..=6) {
+                        let expected = (0..=values.len())
+                            .map(|end| values[..end].iter().sum())
+                            .reduce(|a, b| <$aggregate>::operate(&a, &b))
+                            .unwrap();
+                        assert_eq!(
+                            M::fold(values.iter().copied().map(M::from_value)),
+                            (values.iter().sum(), expected)
+                        );
+                    }
+                }};
+            }
+            check!(MinOperation<i32>);
+            check!(MaxOperation<i32>);
+        }
+
+        #[test]
+        fn test_prefix_fold_linear_operation() {
+            type M = PrefixFoldOperation<
+                ReverseOperation<LinearOperation<u32>>,
+                (MaxOperation<u32>, MaxOperation<u32>),
+            >;
+            let alphabet = (0..=2).flat_map(|a| (0..=2).map(move |b| (a, b)));
+            for values in testutil::exhaustive_sequences(alphabet, 0..=4) {
+                let prefixes: Vec<_> = (0..=values.len())
+                    .map(|end| {
+                        let f0 = values[..end].iter().rev().fold(0, |x, &(a, b)| a * x + b);
+                        let f1 = values[..end].iter().rev().fold(1, |x, &(a, b)| a * x + b);
+                        (f1 - f0, f0)
+                    })
+                    .collect();
+                let result = M::fold(values.iter().copied().map(M::from_value));
+                assert_eq!(result.0, *prefixes.last().unwrap());
+                assert_eq!(result.1.0, prefixes.iter().map(|f| f.0).max().unwrap());
+                assert_eq!(result.1.1, prefixes.iter().map(|f| f.1).max().unwrap());
+                assert!(M::check_unital(&result));
+                for l in 0..=values.len() {
+                    for r in l..=values.len() {
+                        assert!(M::check_associative(
+                            &M::fold(values[..l].iter().copied().map(M::from_value)),
+                            &M::fold(values[l..r].iter().copied().map(M::from_value)),
+                            &M::fold(values[r..].iter().copied().map(M::from_value)),
+                        ));
+                    }
+                }
+            }
+        }
+    }
+}
+
 #[codesnip::entry("ReverseOperation")]
 pub use self::reverse_operation_impl::ReverseOperation;
 #[codesnip::entry("ReverseOperation", include("algebra"))]
