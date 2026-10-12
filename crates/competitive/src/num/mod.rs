@@ -14,6 +14,8 @@ pub use self::discrete_steps::{DiscreteSteps, RangeBoundsExt};
 pub use self::double_double::DoubleDouble;
 #[codesnip::entry("DualNumber")]
 pub use self::dual_number::DualNumber;
+#[codesnip::entry("Dyadic")]
+pub use self::dyadic::Dyadic;
 #[codesnip::entry("float")]
 pub use self::float::{Float, Float32, Float64};
 #[codesnip::entry("integer")]
@@ -51,6 +53,8 @@ mod discrete_steps;
 mod double_double;
 #[cfg_attr(nightly, codesnip::entry("DualNumber", include("zero_one")))]
 mod dual_number;
+#[cfg_attr(nightly, codesnip::entry("Dyadic", include("integer")))]
+mod dyadic;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod float;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]

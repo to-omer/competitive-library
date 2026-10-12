@@ -2,9 +2,13 @@
 
 use crate::algebra::{Field, Group, Invertible, Magma, Monoid, Unital};
 use crate::data_structure::{BitSet, DaryPrefixSumTreeU32, FibHashMap, UnionFindBase, union_find};
-use crate::graph::UndirectedSparseGraph;
+use crate::graph::{
+    Graph, Neighbor, TopologicalSortExt, UndirectedSparseGraph, UsizeGraph, VertexMap,
+};
 use crate::math::{Convolve998244353, ConvolveSteps, Matrix};
-use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero, montgomery};
+use crate::num::{
+    Dyadic, MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero, montgomery,
+};
 use crate::tools::{RandomSpec, SerdeByteStr, Xorshift};
 use crate::tree::LevelAncestor;
 
@@ -30,17 +34,15 @@ pub use self::doubling::{Doubling, FunctionalGraphDoubling};
 pub use self::dyadic_ranges::dyadic_ranges;
 #[codesnip::entry("esper")]
 pub use self::esper::{EsperEstimator, EsperSolver};
+#[codesnip::entry("GameAnalyzer")]
+pub use self::game_analyzer::*;
 #[codesnip::entry("HornSatisfiability")]
 pub use self::horn_satisfiability::HornSatisfiability;
-#[codesnip::entry("ImpartialGame")]
-pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGamer};
 #[codesnip::entry("number_of_increasing_sequences_between")]
 pub use self::number_of_increasing_sequences_between::{
     number_of_increasing_sequences_between, number_of_increasing_sequences_between_998244353,
 };
 pub use self::other::*;
-#[codesnip::entry("PartisanGame")]
-pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
 #[codesnip::entry("QuotientIndex")]
 pub use self::quotient_index::{CeilQuotientIndex, FloorQuotientIndex};
 #[codesnip::entry("RhoPath")]
@@ -61,8 +63,6 @@ pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree, rational_bi
 pub use self::ternary_search::{golden_ternary_search, piecewise_ternary_search, ternary_search};
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
-#[codesnip::entry("ZeroSumGame")]
-pub use self::zero_sum_game::{ZeroSumGame, ZeroSumGameAnalyzer, ZeroSumGamer};
 
 #[cfg_attr(
     nightly,
@@ -95,10 +95,16 @@ mod doubling;
 mod dyadic_ranges;
 #[cfg_attr(nightly, codesnip::entry("esper", include("Matrix")))]
 mod esper;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "GameAnalyzer",
+        include("Graph", "Dyadic", "ClosureGraph", "topological_sort")
+    )
+)]
+mod game_analyzer;
 #[cfg_attr(nightly, codesnip::entry("HornSatisfiability"))]
 mod horn_satisfiability;
-#[cfg_attr(nightly, codesnip::entry("ImpartialGame"))]
-mod impartial_game;
 #[cfg_attr(nightly, codesnip::entry)]
 mod mo_algorithm;
 #[cfg_attr(
@@ -110,8 +116,6 @@ mod mo_algorithm;
 )]
 mod number_of_increasing_sequences_between;
 mod other;
-#[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
-mod partisan_game;
 #[cfg_attr(nightly, codesnip::entry("QuotientIndex"))]
 mod quotient_index;
 #[cfg_attr(nightly, codesnip::entry("RhoPath"))]
@@ -141,5 +145,3 @@ mod syakutori;
 pub mod ternary_search;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 mod xorbasis;
-#[cfg_attr(nightly, codesnip::entry("ZeroSumGame"))]
-mod zero_sum_game;
