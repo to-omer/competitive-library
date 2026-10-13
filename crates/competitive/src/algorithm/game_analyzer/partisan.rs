@@ -170,9 +170,7 @@ where
 {
     pub fn value(self) -> GameAnalysis<'a, Partisan<S, FL, FR>, [S], GameValue> {
         GameAnalysis::new(self.game, |g, state: &[S]| {
-            state
-                .iter()
-                .fold(GameValue::from(0), |value, s| value + g.value(s))
+            state.iter().map(|s| g.value(s)).sum()
         })
     }
 }
@@ -185,7 +183,7 @@ where
     IR: IntoIterator<Item = Neighbor<S, L>>,
 {
     /// Explores reachable sum positions, including the player to move.
-    /// Reuses cached number-plus-nimber values in normal play.
+    /// Reuses cached sums of numbers, ups, nimbers and switches in normal play.
     pub fn outcome(self) -> GameAnalysis<'a, Partisan<S, FL, FR>, [S], PartisanOutcome, MISERE> {
         GameAnalysis::new(self.game, |g, s| {
             match (
@@ -240,16 +238,27 @@ where
         } else {
             Ordering::Less
         };
-        let number = moves.iter().try_fold(None, |best, m| {
-            let (q, _) = m.value.as_number_nimber()?;
-            Some(Some(
-                best.map_or(q, |b| if q.cmp(&b) == preferred { q } else { b }),
-            ))
+        let best = moves.iter().try_fold(None, |best, m| {
+            let (q, k, n) = m.value.as_number_up_nimber()?;
+            let pair = (q, k);
+            Some(Some(match best {
+                Some((previous, nimber)) => match pair.cmp(&previous) {
+                    Ordering::Equal => (previous, if nimber == Some(n) { nimber } else { None }),
+                    order if order == preferred => (pair, Some(n)),
+                    _ => (previous, nimber),
+                },
+                None => (pair, Some(n)),
+            }))
         });
-        if let Some(best) = number {
+        if let Some(best) = best {
             return moves
                 .into_iter()
-                .filter(|m| m.value.as_number_nimber().map(|(q, _)| q) == best)
+                .filter(|m| {
+                    let (q, k, n) = m.value.as_number_up_nimber().unwrap();
+                    best.is_some_and(|((b, l), nimber)| {
+                        q == b && (k == l || k.abs_diff(l) == 1 && nimber == Some(n ^ 1))
+                    })
+                })
                 .map(|m| m.next)
                 .collect();
         }
@@ -465,13 +474,13 @@ where
             &mut self.sums[usize::from(misere)],
             |(s, p)| {
                 if !misere
-                    && let Some(value) = s.iter().try_fold(GameValue::from(0), |sum, s| {
+                    && s.iter().all(|s| {
                         self.values
                             .get(s)
-                            .filter(|g| g.as_number_nimber().is_some())
-                            .map(|g| sum + g.clone())
+                            .is_some_and(|g| g.as_switch_sum().is_some())
                     })
                 {
+                    let value: GameValue = s.iter().map(|s| self.values[s].clone()).sum();
                     return ControlFlow::Break(value.wins(*p));
                 }
                 // Losing as starter in every component implies losing in the sum.
@@ -594,9 +603,18 @@ mod tests {
     fn values_and_fold() {
         type Trace = (usize, Vec<(Player, usize)>);
 
-        let basic = basic_games();
+        let mut basic = basic_games();
+        let up_star = basic.len();
+        basic.extend([
+            [vec![0, 3], vec![0]],
+            [vec![0], vec![0, 3]],
+            [vec![0], vec![up_star]],
+            [vec![up_star + 1], vec![0]],
+        ]);
         let mut rng = crate::tools::Xorshift::default();
+        let nus = [0, 3, 4, 5, 6].into_iter().chain(up_star..basic.len());
         for moves in crate::tools::testutil::structured_sequences(&mut rng, 0..basic.len(), 0..=12)
+            .chain(exhaustive_sequences(nus, 3..=3))
         {
             let mut options = basic.clone();
             options.push([moves.clone(), moves]);
@@ -630,7 +648,7 @@ mod tests {
                 .collect();
             let notation = ["0", "1", "-1", "*", "*2", "↑", "↓", "{1|-1}", "1/2", "0"];
             assert_eq!(
-                values[..basic.len()]
+                values[..notation.len()]
                     .iter()
                     .map(ToString::to_string)
                     .collect::<Vec<_>>(),
@@ -794,7 +812,7 @@ mod tests {
                     }
                     wins
                 });
-                let variants = (0..6)
+                let variants = (0..7)
                     .map(|cache| (cache, true))
                     .chain([(0, false), (2, false)]);
                 for (cache, tagged) in variants {
@@ -815,11 +833,12 @@ mod tests {
                                 .map(move |(label, &to)| Neighbor::new((i, to), label))
                         },
                     );
+                    let mut compact = vec![false; n];
                     for i in 0..len {
-                        for s in 0..n {
+                        for (s, compact) in compact.iter_mut().enumerate() {
                             match cache {
-                                1 => {
-                                    game.value().eval(&(i, s));
+                                1 | 6 if cache == 1 || s % 2 == 0 => {
+                                    *compact = game.value().eval(&(i, s)).as_switch_sum().is_some();
                                 }
                                 2 => {
                                     game.outcome().eval(&(i, s));
@@ -842,6 +861,8 @@ mod tests {
                     }
                     for (misere, wins) in [false, true].into_iter().zip(&tables) {
                         for state in states.iter().rev() {
+                            let all_compact =
+                                matches!(cache, 1 | 6) && state.iter().all(|&s| compact[s]);
                             let mut components: Vec<_> = state
                                 .iter()
                                 .copied()
@@ -869,6 +890,7 @@ mod tests {
                                     let all_lose = state.iter().all(|&s| !local[s][p]);
                                     let all_opponent_lose = state.iter().all(|&s| !local[s][p ^ 1]);
                                     let known = match cache {
+                                        1 | 6 if all_compact => true,
                                         1 | 2 => {
                                             all_lose
                                                 || state.iter().enumerate().any(|(i, &s)| {
@@ -971,6 +993,12 @@ mod tests {
                                     game.sum().outcome().eval(&components)
                                 };
                                 assert_eq!(actual, expected);
+                                if all_compact && !misere {
+                                    assert_eq!(
+                                        game.sum().value().eval(&components).outcome(),
+                                        expected
+                                    );
+                                }
                                 if let [single] = components.as_slice() {
                                     let actual = if misere {
                                         game.misere().outcome().eval(single)
