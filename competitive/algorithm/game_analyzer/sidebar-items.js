@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["GameOutcome","PartisanOutcome","Player"],"fn":["canonical_sum","game_mex","memoized_game","memoized_wins"],"mod":["graph","impartial","partisan","scoring","value"],"struct":["EvaluatedMove","GameAnalysis","GameAnalyzer","GameMismatch","GameSum","Misere"]};

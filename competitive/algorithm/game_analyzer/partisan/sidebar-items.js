@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["partisan_moves"],"struct":["Partisan"]};

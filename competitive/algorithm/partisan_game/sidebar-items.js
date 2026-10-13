@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["PartisanGameAnalyzer","PartisanGamer"],"trait":["PartisanGame"],"type":["Marker"]};

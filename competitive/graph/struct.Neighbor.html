@@ -66,7 +66,926 @@
 <span data-nosnippet>23</span>        <span class="self">self</span>.graph[u].push(<span class="highlight">Neighbor::new</span>(v, <span class="self">self</span>.esize));
 <span data-nosnippet>24</span>        <span class="self">self</span>.graph[v].push(<span class="highlight">Neighbor::new</span>(u, <span class="self">self</span>.esize));
 <span data-nosnippet>25</span>        <span class="self">self</span>.esize += <span class="number">1</span>;
-<span data-nosnippet>26</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/graph/sparse_graph.rs.html#77&#34;,&#34;line 77&#34;],[[39,39],&#34;../../src/competitive/graph/sparse_graph.rs.html#104&#34;,&#34;line 104&#34;],[[41,41],&#34;../../src/competitive/graph/sparse_graph.rs.html#106&#34;,&#34;line 106&#34;],[[68,68],&#34;../../src/competitive/graph/sparse_graph.rs.html#133&#34;,&#34;line 133&#34;],[[70,70],&#34;../../src/competitive/graph/sparse_graph.rs.html#135&#34;,&#34;line 135&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/sparse_graph.rs (<a href="../../src/competitive/graph/sparse_graph.rs.html#77">line 77</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>65</span>    <span class="kw">fn </span>construct_graph(vsize: usize, edges: Vec&lt;(usize, usize)&gt;) -&gt; SparseGraph&lt;<span class="self">Self</span>&gt; {
+<span data-nosnippet>26</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[10,10],&#34;../../src/competitive/algorithm/game_analyzer/impartial.rs.html#26&#34;,&#34;line 26&#34;],[[201,201],&#34;../../src/competitive/algorithm/game_analyzer/impartial.rs.html#217&#34;,&#34;line 217&#34;],[[232,232],&#34;../../src/competitive/algorithm/game_analyzer/impartial.rs.html#248&#34;,&#34;line 248&#34;],[[244,244],&#34;../../src/competitive/algorithm/game_analyzer/impartial.rs.html#260&#34;,&#34;line 260&#34;],[[329,329],&#34;../../src/competitive/algorithm/game_analyzer/impartial.rs.html#345&#34;,&#34;line 345&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/impartial.rs (<a href="../../src/competitive/algorithm/game_analyzer/impartial.rs.html#26">line 26</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>16</span>    <span class="kw">pub fn </span>impartial&lt;S, F, I&gt;(
+<span data-nosnippet>17</span>        <span class="self">self</span>,
+<span data-nosnippet>18</span>        <span class="kw-2">mut </span>moves: F,
+<span data-nosnippet>19</span>    ) -&gt; GameAnalyzer&lt;
+<span data-nosnippet>20</span>        Impartial&lt;S, <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>S) -&gt; std::iter::Map&lt;I::IntoIter, <span class="kw">fn</span>(S) -&gt; Neighbor&lt;S, ()&gt;&gt;&gt;,
+<span data-nosnippet>21</span>    &gt;
+<span data-nosnippet>22</span>    <span class="kw">where
+<span data-nosnippet>23</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>24</span>        I: IntoIterator&lt;Item = S&gt;,
+<span data-nosnippet>25</span>    {
+<span data-nosnippet>26</span>        <span class="kw">let </span>label: <span class="kw">fn</span>(S) -&gt; Neighbor&lt;S, ()&gt; = |to| <span class="highlight focus">Neighbor::new</span>(to, ());
+<span data-nosnippet>27</span>        <span class="self">self</span>.impartial_moves(<span class="kw">move </span>|s: <span class="kw-2">&amp;</span>S| moves(s).into_iter().map(label))
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>
+<span data-nosnippet>30</span>    <span class="kw">pub fn </span>impartial_moves&lt;S, L, F, I&gt;(<span class="self">self</span>, moves: F) -&gt; GameAnalyzer&lt;Impartial&lt;S, F&gt;&gt;
+<span data-nosnippet>31</span>    <span class="kw">where
+<span data-nosnippet>32</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>33</span>        I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>34</span>    {
+<span data-nosnippet>35</span>        GameAnalyzer {
+<span data-nosnippet>36</span>            game: Impartial {
+<span data-nosnippet>37</span>                moves,
+<span data-nosnippet>38</span>                grundy: HashMap::new(),
+<span data-nosnippet>39</span>                outcomes: std::array::from_fn(|<span class="kw">_</span>| HashMap::new()),
+<span data-nosnippet>40</span>                sums: HashMap::new(),
+<span data-nosnippet>41</span>                sum_ids: HashMap::new(),
+<span data-nosnippet>42</span>            },
+<span data-nosnippet>43</span>        }
+<span data-nosnippet>44</span>    }
+<span data-nosnippet>45</span>}
+<span data-nosnippet>46</span>
+<span data-nosnippet>47</span><span class="kw">impl</span>&lt;S, F&gt; GameAnalyzer&lt;Impartial&lt;S, F&gt;&gt; {
+<span data-nosnippet>48</span>    <span class="kw">pub fn </span>misere(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Misere&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;&gt; {
+<span data-nosnippet>49</span>        Misere {
+<span data-nosnippet>50</span>            game: <span class="kw-2">&amp;mut </span><span class="self">self</span>.game,
+<span data-nosnippet>51</span>        }
+<span data-nosnippet>52</span>    }
+<span data-nosnippet>53</span>
+<span data-nosnippet>54</span>    <span class="kw">pub fn </span>sum(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameSum&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;&gt; {
+<span data-nosnippet>55</span>        GameSum {
+<span data-nosnippet>56</span>            game: <span class="kw-2">&amp;mut </span><span class="self">self</span>.game,
+<span data-nosnippet>57</span>        }
+<span data-nosnippet>58</span>    }
+<span data-nosnippet>59</span>
+<span data-nosnippet>60</span>    <span class="kw">pub fn </span>clear_cache(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>61</span>        <span class="self">self</span>.game.grundy.clear();
+<span data-nosnippet>62</span>        <span class="self">self</span>.game.outcomes.iter_mut().for_each(HashMap::clear);
+<span data-nosnippet>63</span>        <span class="self">self</span>.game.sums.clear();
+<span data-nosnippet>64</span>        <span class="self">self</span>.game.sum_ids.clear();
+<span data-nosnippet>65</span>    }
+<span data-nosnippet>66</span>}
+<span data-nosnippet>67</span>
+<span data-nosnippet>68</span><span class="kw">impl</span>&lt;S, L, F, I&gt; GameAnalyzer&lt;Impartial&lt;S, F&gt;&gt;
+<span data-nosnippet>69</span><span class="kw">where
+<span data-nosnippet>70</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>71</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>72</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>73</span>{
+<span data-nosnippet>74</span>    <span class="kw">pub fn </span>grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, u64&gt; {
+<span data-nosnippet>75</span>        GameAnalysis::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game, Impartial::grundy)
+<span data-nosnippet>76</span>    }
+<span data-nosnippet>77</span>
+<span data-nosnippet>78</span>    <span class="kw">pub fn </span>value(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, GameValue&gt; {
+<span data-nosnippet>79</span>        GameAnalysis::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game, |g, s| GameValue::nimber(g.grundy(s)))
+<span data-nosnippet>80</span>    }
+<span data-nosnippet>81</span>
+<span data-nosnippet>82</span>    <span class="kw">pub fn </span>outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, GameOutcome&gt; {
+<span data-nosnippet>83</span>        GameAnalysis::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game, |g, s| g.outcome(s, <span class="bool-val">false</span>))
+<span data-nosnippet>84</span>    }
+<span data-nosnippet>85</span>
+<span data-nosnippet>86</span>    <span class="doccomment">/// `combine` receives each move's label and the value of its destination.
+<span data-nosnippet>87</span>    </span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// The query owns the fold and its cache.
+<span data-nosnippet>88</span>    </span><span class="kw">pub fn </span>fold&lt;V, C&gt;(
+<span data-nosnippet>89</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>90</span>        <span class="kw-2">mut </span>combine: C,
+<span data-nosnippet>91</span>    ) -&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, V, <span class="bool-val">false</span>, <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;mut </span>Impartial&lt;S, F&gt;, <span class="kw-2">&amp;</span>S) -&gt; V&gt;
+<span data-nosnippet>92</span>    <span class="kw">where
+<span data-nosnippet>93</span>        </span>V: Clone,
+<span data-nosnippet>94</span>        C: FnMut(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>[(L, V)]) -&gt; V,
+<span data-nosnippet>95</span>    {
+<span data-nosnippet>96</span>        <span class="kw">let </span><span class="kw-2">mut </span>cache = HashMap::new();
+<span data-nosnippet>97</span>        GameAnalysis::new(
+<span data-nosnippet>98</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.game,
+<span data-nosnippet>99</span>            <span class="kw">move </span>|game: <span class="kw-2">&amp;mut </span>Impartial&lt;S, F&gt;, state: <span class="kw-2">&amp;</span>S| {
+<span data-nosnippet>100</span>                memoized_game(
+<span data-nosnippet>101</span>                    state,
+<span data-nosnippet>102</span>                    <span class="kw-2">&amp;mut </span>cache,
+<span data-nosnippet>103</span>                    <span class="kw-2">&amp;mut </span>HashSet::new(),
+<span data-nosnippet>104</span>                    <span class="kw-2">&amp;mut </span>|s| {
+<span data-nosnippet>105</span>                        ControlFlow::Continue((
+<span data-nosnippet>106</span>                            (game.moves)(s).into_iter().map(|n| (n.to, n.label)),
+<span data-nosnippet>107</span>                            Vec::new(),
+<span data-nosnippet>108</span>                        ))
+<span data-nosnippet>109</span>                    },
+<span data-nosnippet>110</span>                    <span class="kw-2">&amp;mut </span>|<span class="kw">_</span>, moves| moves.next(),
+<span data-nosnippet>111</span>                    <span class="kw-2">&amp;mut </span>|values, label, value| {
+<span data-nosnippet>112</span>                        values.push((label, value));
+<span data-nosnippet>113</span>                        ControlFlow::Continue(())
+<span data-nosnippet>114</span>                    },
+<span data-nosnippet>115</span>                    <span class="kw-2">&amp;mut </span>|s, values| combine(s, <span class="kw-2">&amp;</span>values),
+<span data-nosnippet>116</span>                )
+<span data-nosnippet>117</span>            },
+<span data-nosnippet>118</span>        )
+<span data-nosnippet>119</span>    }
+<span data-nosnippet>120</span>}
+<span data-nosnippet>121</span>
+<span data-nosnippet>122</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, S, L, F, I&gt; Misere&lt;<span class="lifetime">'a</span>, Impartial&lt;S, F&gt;&gt;
+<span data-nosnippet>123</span><span class="kw">where
+<span data-nosnippet>124</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>125</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>126</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>127</span>{
+<span data-nosnippet>128</span>    <span class="kw">pub fn </span>outcome(<span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'a</span>, Impartial&lt;S, F&gt;, S, GameOutcome, <span class="bool-val">true</span>&gt; {
+<span data-nosnippet>129</span>        GameAnalysis::new(<span class="self">self</span>.game, |g, s| g.outcome(s, <span class="bool-val">true</span>))
+<span data-nosnippet>130</span>    }
+<span data-nosnippet>131</span>}
+<span data-nosnippet>132</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, S, L, F, I&gt; GameSum&lt;<span class="lifetime">'a</span>, Impartial&lt;S, F&gt;&gt;
+<span data-nosnippet>133</span><span class="kw">where
+<span data-nosnippet>134</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>135</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>136</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>137</span>{
+<span data-nosnippet>138</span>    <span class="kw">pub fn </span>grundy(<span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'a</span>, Impartial&lt;S, F&gt;, [S], u64&gt; {
+<span data-nosnippet>139</span>        GameAnalysis::new(<span class="self">self</span>.game, Impartial::sum_grundy)
+<span data-nosnippet>140</span>    }
+<span data-nosnippet>141</span>}
+<span data-nosnippet>142</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, S, L, F, I, <span class="kw">const </span>MISERE: bool&gt; GameSum&lt;<span class="lifetime">'a</span>, Impartial&lt;S, F&gt;, MISERE&gt;
+<span data-nosnippet>143</span><span class="kw">where
+<span data-nosnippet>144</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>145</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>146</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>147</span>{
+<span data-nosnippet>148</span>    <span class="kw">pub fn </span>outcome(<span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'a</span>, Impartial&lt;S, F&gt;, [S], GameOutcome, MISERE&gt; {
+<span data-nosnippet>149</span>        GameAnalysis::new(<span class="self">self</span>.game, |g, s| g.sum_outcome(s, MISERE))
+<span data-nosnippet>150</span>    }
+<span data-nosnippet>151</span>}
+<span data-nosnippet>152</span>
+<span data-nosnippet>153</span><span class="kw">impl</span>&lt;S, L, F, I, V, <span class="kw">const </span>MISERE: bool, E&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, V, MISERE, E&gt;
+<span data-nosnippet>154</span><span class="kw">where
+<span data-nosnippet>155</span>    </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>156</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>157</span>    E: FnMut(<span class="kw-2">&amp;mut </span>Impartial&lt;S, F&gt;, <span class="kw-2">&amp;</span>S) -&gt; V,
+<span data-nosnippet>158</span>{
+<span data-nosnippet>159</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; Vec&lt;EvaluatedMove&lt;S, L, V&gt;&gt; {
+<span data-nosnippet>160</span>        (<span class="self">self</span>.game.moves)(state)
+<span data-nosnippet>161</span>            .into_iter()
+<span data-nosnippet>162</span>            .map(|next| {
+<span data-nosnippet>163</span>                <span class="kw">let </span>value = <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>next.to);
+<span data-nosnippet>164</span>                EvaluatedMove { next, value }
+<span data-nosnippet>165</span>            })
+<span data-nosnippet>166</span>            .collect()
+<span data-nosnippet>167</span>    }
+<span data-nosnippet>168</span>}
+<span data-nosnippet>169</span>
+<span data-nosnippet>170</span><span class="kw">impl</span>&lt;S, L, F, I&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, u64&gt;
+<span data-nosnippet>171</span><span class="kw">where
+<span data-nosnippet>172</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>173</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>174</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>175</span>{
+<span data-nosnippet>176</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; Vec&lt;Neighbor&lt;S, L&gt;&gt; {
+<span data-nosnippet>177</span>        <span class="self">self</span>.game.winning_moves(state, <span class="bool-val">false</span>).collect()
+<span data-nosnippet>178</span>    }
+<span data-nosnippet>179</span>}
+<span data-nosnippet>180</span><span class="kw">impl</span>&lt;S, L, F, I&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, GameValue&gt;
+<span data-nosnippet>181</span><span class="kw">where
+<span data-nosnippet>182</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>183</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>184</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>185</span>{
+<span data-nosnippet>186</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; Vec&lt;Neighbor&lt;S, L&gt;&gt; {
+<span data-nosnippet>187</span>        <span class="self">self</span>.game.winning_moves(state, <span class="bool-val">false</span>).collect()
+<span data-nosnippet>188</span>    }
+<span data-nosnippet>189</span>}
+<span data-nosnippet>190</span><span class="kw">impl</span>&lt;S, L, F, I, <span class="kw">const </span>MISERE: bool&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, S, GameOutcome, MISERE&gt;
+<span data-nosnippet>191</span><span class="kw">where
+<span data-nosnippet>192</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>193</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>194</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>195</span>{
+<span data-nosnippet>196</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; Vec&lt;Neighbor&lt;S, L&gt;&gt; {
+<span data-nosnippet>197</span>        <span class="self">self</span>.game.winning_moves(state, MISERE).collect()
+<span data-nosnippet>198</span>    }
+<span data-nosnippet>199</span>}
+<span data-nosnippet>200</span>
+<span data-nosnippet>201</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>202</span></span><span class="kw">impl</span>&lt;S, L, F, I, V, <span class="kw">const </span>MISERE: bool, E&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, [S], V, MISERE, E&gt;
+<span data-nosnippet>203</span><span class="kw">where
+<span data-nosnippet>204</span>    </span>S: Clone,
+<span data-nosnippet>205</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>206</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>207</span>    E: FnMut(<span class="kw-2">&amp;mut </span>Impartial&lt;S, F&gt;, <span class="kw-2">&amp;</span>[S]) -&gt; V,
+<span data-nosnippet>208</span>{
+<span data-nosnippet>209</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (usize, L), V&gt;&gt; {
+<span data-nosnippet>210</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>211</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>212</span>            <span class="kw">for </span>next <span class="kw">in </span>(<span class="self">self</span>.game.moves)(component) {
+<span data-nosnippet>213</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>214</span>                to[i] = next.to;
+<span data-nosnippet>215</span>                <span class="kw">let </span>value = <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>to);
+<span data-nosnippet>216</span>                result.push(EvaluatedMove {
+<span data-nosnippet>217</span>                    next: <span class="highlight">Neighbor::new</span>(to, (i, next.label)),
+<span data-nosnippet>218</span>                    value,
+<span data-nosnippet>219</span>                });
+<span data-nosnippet>220</span>            }
+<span data-nosnippet>221</span>        }
+<span data-nosnippet>222</span>        result
+<span data-nosnippet>223</span>    }
+<span data-nosnippet>224</span>}
+<span data-nosnippet>225</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>226</span></span><span class="kw">impl</span>&lt;S, L, F, I&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, [S], u64&gt;
+<span data-nosnippet>227</span><span class="kw">where
+<span data-nosnippet>228</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>229</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>230</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>231</span>{
+<span data-nosnippet>232</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>233</span>        <span class="self">self</span>.game.sum_winning_moves(state)
+<span data-nosnippet>234</span>    }
+<span data-nosnippet>235</span>}
+<span data-nosnippet>236</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>237</span></span><span class="kw">impl</span>&lt;S, L, F, I, <span class="kw">const </span>MISERE: bool&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Impartial&lt;S, F&gt;, [S], GameOutcome, MISERE&gt;
+<span data-nosnippet>238</span><span class="kw">where
+<span data-nosnippet>239</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>240</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>241</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>242</span>{
+<span data-nosnippet>243</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>244</span>        <span class="kw">if let </span>[single] = state {
+<span data-nosnippet>245</span>            <span class="kw">return </span><span class="self">self
+<span data-nosnippet>246</span>                </span>.game
+<span data-nosnippet>247</span>                .winning_moves(single, MISERE)
+<span data-nosnippet>248</span>                .map(|next| <span class="highlight">Neighbor::new</span>(<span class="macro">vec!</span>[next.to], (<span class="number">0</span>, next.label)))
+<span data-nosnippet>249</span>                .collect();
+<span data-nosnippet>250</span>        }
+<span data-nosnippet>251</span>        <span class="kw">if </span>!MISERE {
+<span data-nosnippet>252</span>            <span class="kw">return </span><span class="self">self</span>.game.sum_winning_moves(state);
+<span data-nosnippet>253</span>        }
+<span data-nosnippet>254</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>255</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>256</span>            <span class="kw">for </span>next <span class="kw">in </span>(<span class="self">self</span>.game.moves)(component) {
+<span data-nosnippet>257</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>258</span>                to[i] = next.to;
+<span data-nosnippet>259</span>                <span class="kw">if </span><span class="self">self</span>.eval(<span class="kw-2">&amp;</span>to) == GameOutcome::Lose {
+<span data-nosnippet>260</span>                    result.push(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>261</span>                }
+<span data-nosnippet>262</span>            }
+<span data-nosnippet>263</span>        }
+<span data-nosnippet>264</span>        result
+<span data-nosnippet>265</span>    }
+<span data-nosnippet>266</span>}
+<span data-nosnippet>267</span>
+<span data-nosnippet>268</span><span class="kw">impl</span>&lt;S, L, F, I&gt; Impartial&lt;S, F&gt;
+<span data-nosnippet>269</span><span class="kw">where
+<span data-nosnippet>270</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>271</span>    F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; I,
+<span data-nosnippet>272</span>    I: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>273</span>{
+<span data-nosnippet>274</span>    <span class="kw">fn </span>grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; u64 {
+<span data-nosnippet>275</span>        memoized_game(
+<span data-nosnippet>276</span>            state,
+<span data-nosnippet>277</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.grundy,
+<span data-nosnippet>278</span>            <span class="kw-2">&amp;mut </span>HashSet::new(),
+<span data-nosnippet>279</span>            <span class="kw-2">&amp;mut </span>|s| {
+<span data-nosnippet>280</span>                <span class="kw">if </span><span class="self">self</span>.outcomes[<span class="number">0</span>].get(s) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="bool-val">false</span>) {
+<span data-nosnippet>281</span>                    <span class="kw">return </span>ControlFlow::Break(<span class="number">0</span>);
+<span data-nosnippet>282</span>                }
+<span data-nosnippet>283</span>                <span class="kw">let </span>moves = (<span class="self">self</span>.moves)(s).into_iter().map(|n| (n.to, ()));
+<span data-nosnippet>284</span>                ControlFlow::Continue((moves, Vec::new()))
+<span data-nosnippet>285</span>            },
+<span data-nosnippet>286</span>            <span class="kw-2">&amp;mut </span>|<span class="kw">_</span>, moves| moves.next(),
+<span data-nosnippet>287</span>            <span class="kw-2">&amp;mut </span>|values, (), value| {
+<span data-nosnippet>288</span>                values.push(value);
+<span data-nosnippet>289</span>                ControlFlow::Continue(())
+<span data-nosnippet>290</span>            },
+<span data-nosnippet>291</span>            <span class="kw-2">&amp;mut </span>|<span class="kw">_</span>, values| game_mex(values),
+<span data-nosnippet>292</span>        )
+<span data-nosnippet>293</span>    }
+<span data-nosnippet>294</span>
+<span data-nosnippet>295</span>    <span class="kw">fn </span>outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S, misere: bool) -&gt; GameOutcome {
+<span data-nosnippet>296</span>        <span class="kw">let </span>win = memoized_wins(
+<span data-nosnippet>297</span>            state,
+<span data-nosnippet>298</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.outcomes[usize::from(misere)],
+<span data-nosnippet>299</span>            |s| {
+<span data-nosnippet>300</span>                <span class="kw">if </span>!misere &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>value) = <span class="self">self</span>.grundy.get(s) {
+<span data-nosnippet>301</span>                    <span class="kw">return </span>ControlFlow::Break(value != <span class="number">0</span>);
+<span data-nosnippet>302</span>                }
+<span data-nosnippet>303</span>                <span class="kw">let </span>moves = (<span class="self">self</span>.moves)(s).into_iter().map(|n| n.to);
+<span data-nosnippet>304</span>                ControlFlow::Continue(moves)
+<span data-nosnippet>305</span>            },
+<span data-nosnippet>306</span>            |<span class="kw">_</span>, moves| moves.next(),
+<span data-nosnippet>307</span>            misere,
+<span data-nosnippet>308</span>        );
+<span data-nosnippet>309</span>        GameOutcome::from_win(win)
+<span data-nosnippet>310</span>    }
+<span data-nosnippet>311</span>
+<span data-nosnippet>312</span>    <span class="kw">fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S, misere: bool) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Neighbor&lt;S, L&gt;&gt; {
+<span data-nosnippet>313</span>        (<span class="self">self</span>.moves)(state).into_iter().filter(<span class="kw">move </span>|next| {
+<span data-nosnippet>314</span>            <span class="kw">if </span>!misere &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>value) = <span class="self">self</span>.grundy.get(<span class="kw-2">&amp;</span>next.to) {
+<span data-nosnippet>315</span>                value == <span class="number">0
+<span data-nosnippet>316</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>317</span>                <span class="self">self</span>.outcome(<span class="kw-2">&amp;</span>next.to, misere) == GameOutcome::Lose
+<span data-nosnippet>318</span>            }
+<span data-nosnippet>319</span>        })
+<span data-nosnippet>320</span>    }
+<span data-nosnippet>321</span>
+<span data-nosnippet>322</span>    <span class="kw">fn </span>sum_grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; u64 {
+<span data-nosnippet>323</span>        <span class="kw">match </span>state {
+<span data-nosnippet>324</span>            [] =&gt; <span class="kw">return </span><span class="number">0</span>,
+<span data-nosnippet>325</span>            [single] =&gt; <span class="kw">return </span><span class="self">self</span>.grundy(single),
+<span data-nosnippet>326</span>            <span class="kw">_ </span>=&gt; {}
+<span data-nosnippet>327</span>        }
+<span data-nosnippet>328</span>        <span class="kw">let </span>(xor, odd) = <span class="self">self</span>.reduce_sum(state);
+<span data-nosnippet>329</span>        odd.into_iter().fold(xor, |value, s| value ^ <span class="self">self</span>.grundy(s))
+<span data-nosnippet>330</span>    }
+<span data-nosnippet>331</span>
+<span data-nosnippet>332</span>    <span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>333</span>    </span><span class="kw">fn </span>sum_winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>334</span>        <span class="kw">let </span>xor = <a class="self" href="../../num/zero_one.rs.html#1-14">self</a>.sum_grundy(state);
+<span data-nosnippet>335</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>336</span>        <span class="kw">if </span>xor == <span class="number">0 </span>{
+<span data-nosnippet>337</span>            <span class="kw">return </span>result;
+<span data-nosnippet>338</span>        }
+<span data-nosnippet>339</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>340</span>            <span class="kw">let </span>target = xor ^ <span class="self">self</span>.grundy(component);
+<span data-nosnippet>341</span>            <span class="kw">for </span>next <span class="kw">in </span>(<span class="self">self</span>.moves)(component) {
+<span data-nosnippet>342</span>                <span class="kw">if </span><span class="self">self</span>.grundy(<span class="kw-2">&amp;</span>next.to) == target {
+<span data-nosnippet>343</span>                    <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>344</span>                    to[i] = next.to;
+<span data-nosnippet>345</span>                    result.push(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>346</span>                }
+<span data-nosnippet>347</span>            }
+<span data-nosnippet>348</span>        }
+<span data-nosnippet>349</span>        result
+<span data-nosnippet>350</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#232&#34;,&#34;line 232&#34;],[[35,35],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#258&#34;,&#34;line 258&#34;],[[61,61],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#284&#34;,&#34;line 284&#34;],[[100,100],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#323&#34;,&#34;line 323&#34;],[[121,121],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#344&#34;,&#34;line 344&#34;],[[145,145],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#368&#34;,&#34;line 368&#34;],[[196,196],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#419&#34;,&#34;line 419&#34;],[[227,227],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#450&#34;,&#34;line 450&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/graph.rs (<a href="../../src/competitive/algorithm/game_analyzer/graph.rs.html#232">line 232</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>223</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (usize, L), V&gt;&gt; {
+<span data-nosnippet>224</span>        <span class="self">self</span>.eval(state);
+<span data-nosnippet>225</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>226</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>227</span>            <span class="kw">for </span>next <span class="kw">in </span><span class="self">self</span>.game.graph.neighbors(component) {
+<span data-nosnippet>228</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>229</span>                to[i] = next.to;
+<span data-nosnippet>230</span>                <span class="kw">let </span>value = <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>to);
+<span data-nosnippet>231</span>                result.push(EvaluatedMove {
+<span data-nosnippet>232</span>                    next: <span class="highlight focus">Neighbor::new</span>(to, (i, next.label)),
+<span data-nosnippet>233</span>                    value,
+<span data-nosnippet>234</span>                });
+<span data-nosnippet>235</span>            }
+<span data-nosnippet>236</span>        }
+<span data-nosnippet>237</span>        result
+<span data-nosnippet>238</span>    }
+<span data-nosnippet>239</span>}
+<span data-nosnippet>240</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>241</span></span><span class="kw">impl</span>&lt;S, L, G&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, [S], u64&gt;
+<span data-nosnippet>242</span><span class="kw">where
+<span data-nosnippet>243</span>    </span>S: Copy,
+<span data-nosnippet>244</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
+<span data-nosnippet>245</span>{
+<span data-nosnippet>246</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>247</span>        <span class="kw">let </span>xor = <span class="self">self</span>.eval(state);
+<span data-nosnippet>248</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>249</span>        <span class="kw">if </span>xor == <span class="number">0 </span>{
+<span data-nosnippet>250</span>            <span class="kw">return </span>result;
+<span data-nosnippet>251</span>        }
+<span data-nosnippet>252</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>253</span>            <span class="kw">let </span>target = xor ^ <span class="self">self</span>.game.grundy(component);
+<span data-nosnippet>254</span>            <span class="kw">for </span>next <span class="kw">in </span><span class="self">self</span>.game.graph.neighbors(<span class="kw-2">*</span>component) {
+<span data-nosnippet>255</span>                <span class="kw">if </span><span class="self">self</span>.game.grundy(<span class="kw-2">&amp;</span>next.to) == target {
+<span data-nosnippet>256</span>                    <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>257</span>                    to[i] = next.to;
+<span data-nosnippet>258</span>                    result.push(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>259</span>                }
+<span data-nosnippet>260</span>            }
+<span data-nosnippet>261</span>        }
+<span data-nosnippet>262</span>        result
+<span data-nosnippet>263</span>    }
+<span data-nosnippet>264</span>}
+<span data-nosnippet>265</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>266</span></span><span class="kw">impl</span>&lt;S, L, G, <span class="kw">const </span>MISERE: bool&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, [S], GameOutcome, MISERE&gt;
+<span data-nosnippet>267</span><span class="kw">where
+<span data-nosnippet>268</span>    </span>S: Copy,
+<span data-nosnippet>269</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
+<span data-nosnippet>270</span>{
+<span data-nosnippet>271</span>    <span class="doccomment">/// Moves to losing positions; use `best_move` to avoid cycling.
+<span data-nosnippet>272</span>    </span><span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>273</span>        <span class="kw">if </span>state.is_empty() {
+<span data-nosnippet>274</span>            <span class="kw">return </span>Vec::new();
+<span data-nosnippet>275</span>        }
+<span data-nosnippet>276</span>        <span class="kw">if let </span>[single] = state {
+<span data-nosnippet>277</span>            <span class="kw">let </span><span class="kw-2">mut </span>query: GameAnalysis&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, S, GameOutcome, MISERE&gt; =
+<span data-nosnippet>278</span>                GameAnalysis::new(<span class="self">self</span>.game, |g: <span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, s| {
+<span data-nosnippet>279</span>                    g.outcome(s, MISERE)
+<span data-nosnippet>280</span>                });
+<span data-nosnippet>281</span>            <span class="kw">return </span>query
+<span data-nosnippet>282</span>                .winning_moves(single)
+<span data-nosnippet>283</span>                .into_iter()
+<span data-nosnippet>284</span>                .map(|next| <span class="highlight">Neighbor::new</span>(<span class="macro">vec!</span>[next.to], (<span class="number">0</span>, next.label)))
+<span data-nosnippet>285</span>                .collect();
+<span data-nosnippet>286</span>        }
+<span data-nosnippet>287</span>        <span class="kw">if </span><span class="self">self</span>.eval(state) != GameOutcome::Win {
+<span data-nosnippet>288</span>            <span class="kw">return </span>Vec::new();
+<span data-nosnippet>289</span>        }
+<span data-nosnippet>290</span>        <span class="kw">let </span><span class="kw-2">mut </span>indices = <span class="self">self</span>.game.sum_indices(state);
+<span data-nosnippet>291</span>        <span class="kw">let </span>game = <span class="kw-2">&amp;</span><span class="self">self</span>.game;
+<span data-nosnippet>292</span>        <span class="kw">let </span><span class="kw-2">mut </span>xor = <span class="number">0</span>;
+<span data-nosnippet>293</span>        <span class="kw">let </span><span class="kw-2">mut </span>infinite = <span class="number">0</span>;
+<span data-nosnippet>294</span>        <span class="kw">if </span>!MISERE {
+<span data-nosnippet>295</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>v <span class="kw">in </span><span class="kw-2">&amp;</span>indices {
+<span data-nosnippet>296</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>((value, <span class="kw">_</span>)) = game.generalized_grundy[v] {
+<span data-nosnippet>297</span>                    xor ^= value;
+<span data-nosnippet>298</span>                } <span class="kw">else </span>{
+<span data-nosnippet>299</span>                    infinite += <span class="number">1</span>;
+<span data-nosnippet>300</span>                }
+<span data-nosnippet>301</span>            }
+<span data-nosnippet>302</span>        }
+<span data-nosnippet>303</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>305</span>            <span class="kw">let </span>source = indices[i];
+<span data-nosnippet>306</span>            <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
+<span data-nosnippet>307</span>                indices[i] = game.index_of(next.to);
+<span data-nosnippet>308</span>                <span class="kw">let </span>wins = <span class="kw">if </span>MISERE {
+<span data-nosnippet>309</span>                    <span class="kw">let </span>key =
+<span data-nosnippet>310</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
+<span data-nosnippet>311</span>                    game.sums.outcomes.values[game.sums.indices[<span class="kw-2">&amp;</span>key]] == GameOutcome::Lose
+<span data-nosnippet>312</span>                } <span class="kw">else if let </span><span class="prelude-val">Some</span>((value, <span class="kw">_</span>)) = game.generalized_grundy[indices[i]] {
+<span data-nosnippet>313</span>                    <span class="kw">match </span>game.generalized_grundy[source] {
+<span data-nosnippet>314</span>                        <span class="prelude-val">Some</span>((g, <span class="kw">_</span>)) =&gt; infinite == <span class="number">0 </span>&amp;&amp; xor ^ g == value,
+<span data-nosnippet>315</span>                        <span class="prelude-val">None </span>=&gt; infinite == <span class="number">1 </span>&amp;&amp; xor == value,
+<span data-nosnippet>316</span>                    }
+<span data-nosnippet>317</span>                } <span class="kw">else </span>{
+<span data-nosnippet>318</span>                    <span class="bool-val">false
+<span data-nosnippet>319</span>                </span>};
+<span data-nosnippet>320</span>                <span class="kw">if </span>wins {
+<span data-nosnippet>321</span>                    <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>322</span>                    to[i] = next.to;
+<span data-nosnippet>323</span>                    result.push(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>324</span>                }
+<span data-nosnippet>325</span>            }
+<span data-nosnippet>326</span>            indices[i] = source;
+<span data-nosnippet>327</span>        }
+<span data-nosnippet>328</span>        result
+<span data-nosnippet>329</span>    }
+<span data-nosnippet>330</span>
+<span data-nosnippet>331</span>    <span class="doccomment">/// A move that guarantees termination when winning, or preserves a draw.
+<span data-nosnippet>332</span>    /// Returns `None` at terminal or losing positions.
+<span data-nosnippet>333</span>    </span><span class="kw">pub fn </span>best_move(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; <span class="prelude-ty">Option</span>&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>334</span>        <span class="kw">if </span>state.is_empty() {
+<span data-nosnippet>335</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>336</span>        }
+<span data-nosnippet>337</span>        <span class="kw">if let </span>[single] = state {
+<span data-nosnippet>338</span>            <span class="kw">let </span><span class="kw-2">mut </span>query: GameAnalysis&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, S, GameOutcome, MISERE&gt; =
+<span data-nosnippet>339</span>                GameAnalysis::new(<span class="self">self</span>.game, |g: <span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, s| {
+<span data-nosnippet>340</span>                    g.outcome(s, MISERE)
+<span data-nosnippet>341</span>                });
+<span data-nosnippet>342</span>            <span class="kw">return </span>query
+<span data-nosnippet>343</span>                .best_move(single)
+<span data-nosnippet>344</span>                .map(|next| <span class="highlight">Neighbor::new</span>(<span class="macro">vec!</span>[next.to], (<span class="number">0</span>, next.label)));
+<span data-nosnippet>345</span>        }
+<span data-nosnippet>346</span>        <span class="kw">let </span>outcome = <span class="self">self</span>.eval(state);
+<span data-nosnippet>347</span>        <span class="kw">if </span>outcome == GameOutcome::Lose {
+<span data-nosnippet>348</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>349</span>        }
+<span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>indices = <span class="self">self</span>.game.sum_indices(state);
+<span data-nosnippet>351</span>        <span class="kw">let </span>game = <span class="kw-2">&amp;</span><span class="self">self</span>.game;
+<span data-nosnippet>352</span>        <span class="kw">if </span>MISERE {
+<span data-nosnippet>353</span>            <span class="kw">let </span>key = GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
+<span data-nosnippet>354</span>            <span class="kw">let </span>winner = game.sums.outcomes.winning[game.sums.indices[<span class="kw-2">&amp;</span>key]];
+<span data-nosnippet>355</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>356</span>                <span class="kw">let </span>original = indices[i];
+<span data-nosnippet>357</span>                <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
+<span data-nosnippet>358</span>                    indices[i] = game.index_of(next.to);
+<span data-nosnippet>359</span>                    <span class="kw">let </span>key =
+<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
+<span data-nosnippet>361</span>                    <span class="kw">let </span>id = game.sums.indices[<span class="kw-2">&amp;</span>key];
+<span data-nosnippet>362</span>                    <span class="kw">if </span><span class="prelude-val">Some</span>(id) == winner
+<span data-nosnippet>363</span>                        || outcome == GameOutcome::Draw
+<span data-nosnippet>364</span>                            &amp;&amp; game.sums.outcomes.values[id] == GameOutcome::Draw
+<span data-nosnippet>365</span>                    {
+<span data-nosnippet>366</span>                        <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>367</span>                        to[i] = next.to;
+<span data-nosnippet>368</span>                        <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>369</span>                    }
+<span data-nosnippet>370</span>                }
+<span data-nosnippet>371</span>                indices[i] = original;
+<span data-nosnippet>372</span>            }
+<span data-nosnippet>373</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>374</span>        }
+<span data-nosnippet>375</span>        <span class="kw">let </span><span class="kw-2">mut </span>xor = <span class="number">0</span>;
+<span data-nosnippet>376</span>        <span class="kw">let </span><span class="kw-2">mut </span>infinite = <span class="prelude-val">None</span>;
+<span data-nosnippet>377</span>        <span class="kw">let </span><span class="kw-2">mut </span>multiple = <span class="bool-val">false</span>;
+<span data-nosnippet>378</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>v) <span class="kw">in </span>indices.iter().enumerate() {
+<span data-nosnippet>379</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((value, <span class="kw">_</span>)) = game.generalized_grundy[v] {
+<span data-nosnippet>380</span>                xor ^= <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>;
+<span data-nosnippet>381</span>            } <span class="kw">else if </span>infinite.replace(i).is_some() {
+<span data-nosnippet>382</span>                multiple = <span class="bool-val">true</span>;
+<span data-nosnippet>383</span>                <span class="kw">break</span>;
+<span data-nosnippet>384</span>            }
+<span data-nosnippet>385</span>        }
+<span data-nosnippet>386</span>        <span class="kw">if </span>outcome == GameOutcome::Draw {
+<span data-nosnippet>387</span>            <span class="kw">let </span>i = infinite.unwrap();
+<span data-nosnippet>388</span>            <span class="kw">let </span>v = indices[i];
+<span data-nosnippet>389</span>            <span class="kw">let </span>edges = <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges;
+<span data-nosnippet>390</span>            <span class="kw">let </span>target = (!multiple).then(|| {
+<span data-nosnippet>391</span>                <span class="kw">let </span>values = edges[v]
+<span data-nosnippet>392</span>                    .iter()
+<span data-nosnippet>393</span>                    .filter_map(|<span class="kw-2">&amp;</span>u| game.generalized_grundy[u].map(|(g, <span class="kw">_</span>)| g))
+<span data-nosnippet>394</span>                    .collect();
+<span data-nosnippet>395</span>                game_mex(values)
+<span data-nosnippet>396</span>            });
+<span data-nosnippet>397</span>            <span class="comment">// Preserve two infinite components, or keep the finite XOR outside
+<span data-nosnippet>398</span>            // the remaining infinite component's finite follower values.
+<span data-nosnippet>399</span>            </span><span class="kw">if </span>target.is_none_or(|g| g == xor) {
+<span data-nosnippet>400</span>                <span class="kw">let </span>to = edges[v]
+<span data-nosnippet>401</span>                    .iter()
+<span data-nosnippet>402</span>                    .copied()
+<span data-nosnippet>403</span>                    .find(|<span class="kw-2">&amp;</span>u| {
+<span data-nosnippet>404</span>                        game.generalized_grundy[u].is_none()
+<span data-nosnippet>405</span>                            &amp;&amp; target.is_none_or(|g| {
+<span data-nosnippet>406</span>                                !edges[u].iter().any(|<span class="kw-2">&amp;</span>w| {
+<span data-nosnippet>407</span>                                    game.generalized_grundy[w].is_some_and(|(value, <span class="kw">_</span>)| value == g)
+<span data-nosnippet>408</span>                                })
+<span data-nosnippet>409</span>                            })
+<span data-nosnippet>410</span>                    })
+<span data-nosnippet>411</span>                    .unwrap();
+<span data-nosnippet>412</span>                <span class="kw">let </span>next = game
+<span data-nosnippet>413</span>                    .graph
+<span data-nosnippet>414</span>                    .neighbors(state[i])
+<span data-nosnippet>415</span>                    .find(|next| game.index_of(next.to) == to)
+<span data-nosnippet>416</span>                    .unwrap();
+<span data-nosnippet>417</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>418</span>                to[i] = next.to;
+<span data-nosnippet>419</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>420</span>            }
+<span data-nosnippet>421</span>            <span class="comment">// The current finite XOR exceeds this mex, so a finite component
+<span data-nosnippet>422</span>            // can decrease it to the mex without moving the infinite component.
+<span data-nosnippet>423</span>            </span>xor ^= target.unwrap();
+<span data-nosnippet>424</span>            infinite = <span class="prelude-val">None</span>;
+<span data-nosnippet>425</span>        }
+<span data-nosnippet>426</span>        <span class="comment">// Reduce the largest (Grundy, counter) pair, then minimize the
+<span data-nosnippet>427</span>        // destination counter so repeated winning moves terminate.
+<span data-nosnippet>428</span>        </span><span class="kw">let </span>(i, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
+<span data-nosnippet>429</span>            (i, xor)
+<span data-nosnippet>430</span>        } <span class="kw">else </span>{
+<span data-nosnippet>431</span>            <span class="kw">let </span>(i, (g, <span class="kw">_</span>)) = indices
+<span data-nosnippet>432</span>                .iter()
+<span data-nosnippet>433</span>                .enumerate()
+<span data-nosnippet>434</span>                .filter_map(|(i, <span class="kw-2">&amp;</span>v)| game.generalized_grundy[v].map(|g| (i, g)))
+<span data-nosnippet>435</span>                .filter(|(<span class="kw">_</span>, (g, <span class="kw">_</span>))| g ^ xor &lt; <span class="kw-2">*</span>g)
+<span data-nosnippet>436</span>                .max_by_key(|<span class="kw-2">&amp;</span>(i, g)| (g, Reverse(i)))<span class="question-mark">?</span>;
+<span data-nosnippet>437</span>            (i, g ^ xor)
+<span data-nosnippet>438</span>        };
+<span data-nosnippet>439</span>        <span class="kw">let </span>next = game
+<span data-nosnippet>440</span>            .graph
+<span data-nosnippet>441</span>            .neighbors(state[i])
+<span data-nosnippet>442</span>            .filter_map(|next| {
+<span data-nosnippet>443</span>                <span class="kw">let </span>(g, counter) = game.generalized_grundy[game.index_of(next.to)]<span class="question-mark">?</span>;
+<span data-nosnippet>444</span>                (g == target).then_some((next, counter))
+<span data-nosnippet>445</span>            })
+<span data-nosnippet>446</span>            .min_by_key(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, counter)| counter)<span class="question-mark">?
+<span data-nosnippet>447</span>            </span>.<span class="number">0</span>;
+<span data-nosnippet>448</span>        <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>449</span>        to[i] = next.to;
+<span data-nosnippet>450</span>        <span class="prelude-val">Some</span>(<span class="highlight">Neighbor::new</span>(to, (i, next.label)))
+<span data-nosnippet>451</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[17,17],&#34;../../src/competitive/algorithm/game_analyzer/partisan.rs.html#36&#34;,&#34;line 36&#34;],[[317,317],&#34;../../src/competitive/algorithm/game_analyzer/partisan.rs.html#336&#34;,&#34;line 336&#34;],[[352,352],&#34;../../src/competitive/algorithm/game_analyzer/partisan.rs.html#371&#34;,&#34;line 371&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/partisan.rs (<a href="../../src/competitive/algorithm/game_analyzer/partisan.rs.html#36">line 36</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>19</span>    <span class="kw">pub fn </span>partisan&lt;S, FL, FR, IL, IR&gt;(
+<span data-nosnippet>20</span>        <span class="self">self</span>,
+<span data-nosnippet>21</span>        <span class="kw-2">mut </span>left: FL,
+<span data-nosnippet>22</span>        <span class="kw-2">mut </span>right: FR,
+<span data-nosnippet>23</span>    ) -&gt; GameAnalyzer&lt;
+<span data-nosnippet>24</span>        Partisan&lt;
+<span data-nosnippet>25</span>            S,
+<span data-nosnippet>26</span>            <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>S) -&gt; std::iter::Map&lt;IL::IntoIter, <span class="kw">fn</span>(S) -&gt; Neighbor&lt;S, ()&gt;&gt;,
+<span data-nosnippet>27</span>            <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>S) -&gt; std::iter::Map&lt;IR::IntoIter, <span class="kw">fn</span>(S) -&gt; Neighbor&lt;S, ()&gt;&gt;,
+<span data-nosnippet>28</span>        &gt;,
+<span data-nosnippet>29</span>    &gt;
+<span data-nosnippet>30</span>    <span class="kw">where
+<span data-nosnippet>31</span>        </span>FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>32</span>        FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>33</span>        IL: IntoIterator&lt;Item = S&gt;,
+<span data-nosnippet>34</span>        IR: IntoIterator&lt;Item = S&gt;,
+<span data-nosnippet>35</span>    {
+<span data-nosnippet>36</span>        <span class="kw">let </span>label: <span class="kw">fn</span>(S) -&gt; Neighbor&lt;S, ()&gt; = |to| <span class="highlight focus">Neighbor::new</span>(to, ());
+<span data-nosnippet>37</span>        <span class="self">self</span>.partisan_moves(
+<span data-nosnippet>38</span>            <span class="kw">move </span>|s: <span class="kw-2">&amp;</span>S| left(s).into_iter().map(label),
+<span data-nosnippet>39</span>            <span class="kw">move </span>|s: <span class="kw-2">&amp;</span>S| right(s).into_iter().map(label),
+<span data-nosnippet>40</span>        )
+<span data-nosnippet>41</span>    }
+<span data-nosnippet>42</span>
+<span data-nosnippet>43</span>    <span class="kw">pub fn </span>partisan_moves&lt;S, L, FL, FR, IL, IR&gt;(
+<span data-nosnippet>44</span>        <span class="self">self</span>,
+<span data-nosnippet>45</span>        left: FL,
+<span data-nosnippet>46</span>        right: FR,
+<span data-nosnippet>47</span>    ) -&gt; GameAnalyzer&lt;Partisan&lt;S, FL, FR&gt;&gt;
+<span data-nosnippet>48</span>    <span class="kw">where
+<span data-nosnippet>49</span>        </span>FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>50</span>        FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>51</span>        IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>52</span>        IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>53</span>    {
+<span data-nosnippet>54</span>        GameAnalyzer {
+<span data-nosnippet>55</span>            game: Partisan {
+<span data-nosnippet>56</span>                left,
+<span data-nosnippet>57</span>                right,
+<span data-nosnippet>58</span>                values: HashMap::new(),
+<span data-nosnippet>59</span>                outcomes: std::array::from_fn(|<span class="kw">_</span>| HashMap::new()),
+<span data-nosnippet>60</span>                sums: std::array::from_fn(|<span class="kw">_</span>| HashMap::new()),
+<span data-nosnippet>61</span>                sum_ids: HashMap::new(),
+<span data-nosnippet>62</span>            },
+<span data-nosnippet>63</span>        }
+<span data-nosnippet>64</span>    }
+<span data-nosnippet>65</span>}
+<span data-nosnippet>66</span>
+<span data-nosnippet>67</span><span class="kw">impl</span>&lt;S, FL, FR&gt; GameAnalyzer&lt;Partisan&lt;S, FL, FR&gt;&gt; {
+<span data-nosnippet>68</span>    <span class="kw">pub fn </span>misere(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Misere&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;&gt; {
+<span data-nosnippet>69</span>        Misere {
+<span data-nosnippet>70</span>            game: <span class="kw-2">&amp;mut </span><span class="self">self</span>.game,
+<span data-nosnippet>71</span>        }
+<span data-nosnippet>72</span>    }
+<span data-nosnippet>73</span>
+<span data-nosnippet>74</span>    <span class="kw">pub fn </span>sum(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameSum&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;&gt; {
+<span data-nosnippet>75</span>        GameSum {
+<span data-nosnippet>76</span>            game: <span class="kw-2">&amp;mut </span><span class="self">self</span>.game,
+<span data-nosnippet>77</span>        }
+<span data-nosnippet>78</span>    }
+<span data-nosnippet>79</span>
+<span data-nosnippet>80</span>    <span class="kw">pub fn </span>clear_cache(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>81</span>        <span class="self">self</span>.game.values.clear();
+<span data-nosnippet>82</span>        <span class="self">self</span>.game.outcomes.iter_mut().for_each(HashMap::clear);
+<span data-nosnippet>83</span>        <span class="self">self</span>.game.sums.iter_mut().for_each(HashMap::clear);
+<span data-nosnippet>84</span>        <span class="self">self</span>.game.sum_ids.clear();
+<span data-nosnippet>85</span>    }
+<span data-nosnippet>86</span>}
+<span data-nosnippet>87</span>
+<span data-nosnippet>88</span><span class="kw">impl</span>&lt;S, L, FL, FR, IL, IR&gt; GameAnalyzer&lt;Partisan&lt;S, FL, FR&gt;&gt;
+<span data-nosnippet>89</span><span class="kw">where
+<span data-nosnippet>90</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>91</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>92</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>93</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>94</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>95</span>{
+<span data-nosnippet>96</span>    <span class="kw">pub fn </span>value(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, S, GameValue&gt; {
+<span data-nosnippet>97</span>        GameAnalysis::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game, Partisan::value)
+<span data-nosnippet>98</span>    }
+<span data-nosnippet>99</span>
+<span data-nosnippet>100</span>    <span class="kw">pub fn </span>outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, S, PartisanOutcome&gt; {
+<span data-nosnippet>101</span>        GameAnalysis::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game, |g, s| g.outcome(s, <span class="bool-val">false</span>))
+<span data-nosnippet>102</span>    }
+<span data-nosnippet>103</span>
+<span data-nosnippet>104</span>    <span class="doccomment">/// `combine` receives all Left options followed by all Right options.
+<span data-nosnippet>105</span>    </span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// The query owns the fold and its cache.
+<span data-nosnippet>106</span>    </span><span class="kw">pub fn </span>fold&lt;V, C&gt;(
+<span data-nosnippet>107</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>108</span>        <span class="kw-2">mut </span>combine: C,
+<span data-nosnippet>109</span>    ) -&gt; GameAnalysis&lt;
+<span data-nosnippet>110</span>        <span class="lifetime">'_</span>,
+<span data-nosnippet>111</span>        Partisan&lt;S, FL, FR&gt;,
+<span data-nosnippet>112</span>        S,
+<span data-nosnippet>113</span>        V,
+<span data-nosnippet>114</span>        <span class="bool-val">false</span>,
+<span data-nosnippet>115</span>        <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;mut </span>Partisan&lt;S, FL, FR&gt;, <span class="kw-2">&amp;</span>S) -&gt; V,
+<span data-nosnippet>116</span>    &gt;
+<span data-nosnippet>117</span>    <span class="kw">where
+<span data-nosnippet>118</span>        </span>V: Clone,
+<span data-nosnippet>119</span>        C: FnMut(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>[(Player, L, V)]) -&gt; V,
+<span data-nosnippet>120</span>    {
+<span data-nosnippet>121</span>        <span class="kw">let </span><span class="kw-2">mut </span>cache = HashMap::new();
+<span data-nosnippet>122</span>        GameAnalysis::new(
+<span data-nosnippet>123</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.game,
+<span data-nosnippet>124</span>            <span class="kw">move </span>|game: <span class="kw-2">&amp;mut </span>Partisan&lt;S, FL, FR&gt;, state: <span class="kw-2">&amp;</span>S| {
+<span data-nosnippet>125</span>                memoized_game(
+<span data-nosnippet>126</span>                    state,
+<span data-nosnippet>127</span>                    <span class="kw-2">&amp;mut </span>cache,
+<span data-nosnippet>128</span>                    <span class="kw-2">&amp;mut </span>HashSet::new(),
+<span data-nosnippet>129</span>                    <span class="kw-2">&amp;mut </span>|s| {
+<span data-nosnippet>130</span>                        <span class="kw">let </span>moves = (game.left)(s)
+<span data-nosnippet>131</span>                            .into_iter()
+<span data-nosnippet>132</span>                            .map(|n| (n.to, (Player::Left, n.label)))
+<span data-nosnippet>133</span>                            .chain(
+<span data-nosnippet>134</span>                                (game.right)(s)
+<span data-nosnippet>135</span>                                    .into_iter()
+<span data-nosnippet>136</span>                                    .map(|n| (n.to, (Player::Right, n.label))),
+<span data-nosnippet>137</span>                            );
+<span data-nosnippet>138</span>                        ControlFlow::Continue((moves, Vec::new()))
+<span data-nosnippet>139</span>                    },
+<span data-nosnippet>140</span>                    <span class="kw-2">&amp;mut </span>|<span class="kw">_</span>, moves| moves.next(),
+<span data-nosnippet>141</span>                    <span class="kw-2">&amp;mut </span>|values, (player, label), value| {
+<span data-nosnippet>142</span>                        values.push((player, label, value));
+<span data-nosnippet>143</span>                        ControlFlow::Continue(())
+<span data-nosnippet>144</span>                    },
+<span data-nosnippet>145</span>                    <span class="kw-2">&amp;mut </span>|s, values| combine(s, <span class="kw-2">&amp;</span>values),
+<span data-nosnippet>146</span>                )
+<span data-nosnippet>147</span>            },
+<span data-nosnippet>148</span>        )
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>}
+<span data-nosnippet>151</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, S, L, FL, FR, IL, IR&gt; Misere&lt;<span class="lifetime">'a</span>, Partisan&lt;S, FL, FR&gt;&gt;
+<span data-nosnippet>152</span><span class="kw">where
+<span data-nosnippet>153</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>154</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>155</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>156</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>157</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>158</span>{
+<span data-nosnippet>159</span>    <span class="kw">pub fn </span>outcome(<span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'a</span>, Partisan&lt;S, FL, FR&gt;, S, PartisanOutcome, <span class="bool-val">true</span>&gt; {
+<span data-nosnippet>160</span>        GameAnalysis::new(<span class="self">self</span>.game, |g, s| g.outcome(s, <span class="bool-val">true</span>))
+<span data-nosnippet>161</span>    }
+<span data-nosnippet>162</span>}
+<span data-nosnippet>163</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, S, L, FL, FR, IL, IR&gt; GameSum&lt;<span class="lifetime">'a</span>, Partisan&lt;S, FL, FR&gt;&gt;
+<span data-nosnippet>164</span><span class="kw">where
+<span data-nosnippet>165</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>166</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>167</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>168</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>169</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>170</span>{
+<span data-nosnippet>171</span>    <span class="kw">pub fn </span>value(<span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'a</span>, Partisan&lt;S, FL, FR&gt;, [S], GameValue&gt; {
+<span data-nosnippet>172</span>        GameAnalysis::new(<span class="self">self</span>.game, |g, state: <span class="kw-2">&amp;</span>[S]| {
+<span data-nosnippet>173</span>            state.iter().map(|s| g.value(s)).sum()
+<span data-nosnippet>174</span>        })
+<span data-nosnippet>175</span>    }
+<span data-nosnippet>176</span>}
+<span data-nosnippet>177</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, S, L, FL, FR, IL, IR, <span class="kw">const </span>MISERE: bool&gt; GameSum&lt;<span class="lifetime">'a</span>, Partisan&lt;S, FL, FR&gt;, MISERE&gt;
+<span data-nosnippet>178</span><span class="kw">where
+<span data-nosnippet>179</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>180</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>181</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>182</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>183</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>184</span>{
+<span data-nosnippet>185</span>    <span class="doccomment">/// Explores reachable sum positions, including the player to move.
+<span data-nosnippet>186</span>    /// Reuses cached sums of numbers, ups, nimbers and switches in normal play.
+<span data-nosnippet>187</span>    </span><span class="kw">pub fn </span>outcome(<span class="self">self</span>) -&gt; GameAnalysis&lt;<span class="lifetime">'a</span>, Partisan&lt;S, FL, FR&gt;, [S], PartisanOutcome, MISERE&gt; {
+<span data-nosnippet>188</span>        GameAnalysis::new(<span class="self">self</span>.game, |g, s| {
+<span data-nosnippet>189</span>            <span class="kw">match </span>(
+<span data-nosnippet>190</span>                g.sum_wins(s, Player::Left, MISERE),
+<span data-nosnippet>191</span>                g.sum_wins(s, Player::Right, MISERE),
+<span data-nosnippet>192</span>            ) {
+<span data-nosnippet>193</span>                (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; PartisanOutcome::Next,
+<span data-nosnippet>194</span>                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; PartisanOutcome::Previous,
+<span data-nosnippet>195</span>                (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; PartisanOutcome::Left,
+<span data-nosnippet>196</span>                (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; PartisanOutcome::Right,
+<span data-nosnippet>197</span>            }
+<span data-nosnippet>198</span>        })
+<span data-nosnippet>199</span>    }
+<span data-nosnippet>200</span>}
+<span data-nosnippet>201</span>
+<span data-nosnippet>202</span><span class="kw">impl</span>&lt;S, L, FL, FR, IL, IR, V, <span class="kw">const </span>MISERE: bool, E&gt;
+<span data-nosnippet>203</span>    GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, S, V, MISERE, E&gt;
+<span data-nosnippet>204</span><span class="kw">where
+<span data-nosnippet>205</span>    </span>FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>206</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>207</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>208</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>209</span>    E: FnMut(<span class="kw-2">&amp;mut </span>Partisan&lt;S, FL, FR&gt;, <span class="kw-2">&amp;</span>S) -&gt; V,
+<span data-nosnippet>210</span>{
+<span data-nosnippet>211</span>    <span class="doccomment">/// Values describe the destination game for both choices of starting player.
+<span data-nosnippet>212</span>    </span><span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S, player: Player) -&gt; Vec&lt;EvaluatedMove&lt;S, L, V&gt;&gt; {
+<span data-nosnippet>213</span>        partisan_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.game.right, state, player)
+<span data-nosnippet>214</span>            .map(|next| {
+<span data-nosnippet>215</span>                <span class="kw">let </span>value = <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>next.to);
+<span data-nosnippet>216</span>                EvaluatedMove { next, value }
+<span data-nosnippet>217</span>            })
+<span data-nosnippet>218</span>            .collect()
+<span data-nosnippet>219</span>    }
+<span data-nosnippet>220</span>}
+<span data-nosnippet>221</span>
+<span data-nosnippet>222</span><span class="kw">impl</span>&lt;S, L, FL, FR, IL, IR&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, S, GameValue&gt;
+<span data-nosnippet>223</span><span class="kw">where
+<span data-nosnippet>224</span>    </span>FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>225</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>226</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>227</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>228</span>{
+<span data-nosnippet>229</span>    <span class="kw">pub fn </span>compare(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: <span class="kw-2">&amp;</span>S, right: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
+<span data-nosnippet>230</span>        <span class="self">self</span>.eval(left).partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>.eval(right))
+<span data-nosnippet>231</span>    }
+<span data-nosnippet>232</span>
+<span data-nosnippet>233</span>    <span class="doccomment">/// Undominated moves for the selected player; incomparable alternatives remain.
+<span data-nosnippet>234</span>    </span><span class="kw">pub fn </span>undominated_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S, player: Player) -&gt; Vec&lt;Neighbor&lt;S, L&gt;&gt; {
+<span data-nosnippet>235</span>        <span class="kw">let </span>moves = <span class="self">self</span>.moves(state, player);
+<span data-nosnippet>236</span>        <span class="kw">let </span>preferred = <span class="kw">if </span>player == Player::Left {
+<span data-nosnippet>237</span>            Ordering::Greater
+<span data-nosnippet>238</span>        } <span class="kw">else </span>{
+<span data-nosnippet>239</span>            Ordering::Less
+<span data-nosnippet>240</span>        };
+<span data-nosnippet>241</span>        <span class="kw">let </span>best = moves.iter().try_fold(<span class="prelude-val">None</span>, |best, m| {
+<span data-nosnippet>242</span>            <span class="kw">let </span>(q, k, n) = m.value.as_number_up_nimber()<span class="question-mark">?</span>;
+<span data-nosnippet>243</span>            <span class="kw">let </span>pair = (q, k);
+<span data-nosnippet>244</span>            <span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(<span class="kw">match </span>best {
+<span data-nosnippet>245</span>                <span class="prelude-val">Some</span>((previous, nimber)) =&gt; <span class="kw">match </span>pair.cmp(<span class="kw-2">&amp;</span>previous) {
+<span data-nosnippet>246</span>                    Ordering::Equal =&gt; (previous, <span class="kw">if </span>nimber == <span class="prelude-val">Some</span>(n) { nimber } <span class="kw">else </span>{ <span class="prelude-val">None </span>}),
+<span data-nosnippet>247</span>                    order <span class="kw">if </span>order == preferred =&gt; (pair, <span class="prelude-val">Some</span>(n)),
+<span data-nosnippet>248</span>                    <span class="kw">_ </span>=&gt; (previous, nimber),
+<span data-nosnippet>249</span>                },
+<span data-nosnippet>250</span>                <span class="prelude-val">None </span>=&gt; (pair, <span class="prelude-val">Some</span>(n)),
+<span data-nosnippet>251</span>            }))
+<span data-nosnippet>252</span>        });
+<span data-nosnippet>253</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(best) = best {
+<span data-nosnippet>254</span>            <span class="kw">return </span>moves
+<span data-nosnippet>255</span>                .into_iter()
+<span data-nosnippet>256</span>                .filter(|m| {
+<span data-nosnippet>257</span>                    <span class="kw">let </span>(q, k, n) = m.value.as_number_up_nimber().unwrap();
+<span data-nosnippet>258</span>                    best.is_some_and(|((b, l), nimber)| {
+<span data-nosnippet>259</span>                        q == b &amp;&amp; (k == l || k.abs_diff(l) == <span class="number">1 </span>&amp;&amp; nimber == <span class="prelude-val">Some</span>(n ^ <span class="number">1</span>))
+<span data-nosnippet>260</span>                    })
+<span data-nosnippet>261</span>                })
+<span data-nosnippet>262</span>                .map(|m| m.next)
+<span data-nosnippet>263</span>                .collect();
+<span data-nosnippet>264</span>        }
+<span data-nosnippet>265</span>        <span class="kw">let </span><span class="kw-2">mut </span>dominated = <span class="macro">vec!</span>[<span class="bool-val">false</span>; moves.len()];
+<span data-nosnippet>266</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..moves.len() {
+<span data-nosnippet>267</span>            <span class="kw">if </span>dominated[i] {
+<span data-nosnippet>268</span>                <span class="kw">continue</span>;
+<span data-nosnippet>269</span>            }
+<span data-nosnippet>270</span>            <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..moves.len() {
+<span data-nosnippet>271</span>                <span class="kw">if </span>dominated[j] {
+<span data-nosnippet>272</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>273</span>                }
+<span data-nosnippet>274</span>                <span class="kw">let </span>order = moves[i].value.partial_cmp(<span class="kw-2">&amp;</span>moves[j].value);
+<span data-nosnippet>275</span>                <span class="kw">if </span>order == <span class="prelude-val">Some</span>(preferred) {
+<span data-nosnippet>276</span>                    dominated[j] = <span class="bool-val">true</span>;
+<span data-nosnippet>277</span>                } <span class="kw">else if </span>order == <span class="prelude-val">Some</span>(preferred.reverse()) {
+<span data-nosnippet>278</span>                    dominated[i] = <span class="bool-val">true</span>;
+<span data-nosnippet>279</span>                    <span class="kw">break</span>;
+<span data-nosnippet>280</span>                }
+<span data-nosnippet>281</span>            }
+<span data-nosnippet>282</span>        }
+<span data-nosnippet>283</span>        moves
+<span data-nosnippet>284</span>            .into_iter()
+<span data-nosnippet>285</span>            .zip(dominated)
+<span data-nosnippet>286</span>            .filter(|(<span class="kw">_</span>, d)| !d)
+<span data-nosnippet>287</span>            .map(|(m, <span class="kw">_</span>)| m.next)
+<span data-nosnippet>288</span>            .collect()
+<span data-nosnippet>289</span>    }
+<span data-nosnippet>290</span>}
+<span data-nosnippet>291</span><span class="kw">impl</span>&lt;S, L, FL, FR, IL, IR, <span class="kw">const </span>MISERE: bool&gt;
+<span data-nosnippet>292</span>    GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, S, PartisanOutcome, MISERE&gt;
+<span data-nosnippet>293</span><span class="kw">where
+<span data-nosnippet>294</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>295</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>296</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>297</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>298</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>299</span>{
+<span data-nosnippet>300</span>    <span class="doccomment">/// Whether the selected starting player can force a win.
+<span data-nosnippet>301</span>    </span><span class="kw">pub fn </span>wins(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S, player: Player) -&gt; bool {
+<span data-nosnippet>302</span>        <span class="self">self</span>.game.wins(state, player, MISERE)
+<span data-nosnippet>303</span>    }
+<span data-nosnippet>304</span>
+<span data-nosnippet>305</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S, player: Player) -&gt; Vec&lt;Neighbor&lt;S, L&gt;&gt; {
+<span data-nosnippet>306</span>        partisan_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.game.right, state, player)
+<span data-nosnippet>307</span>            .filter(|next| !<span class="self">self</span>.game.wins(<span class="kw-2">&amp;</span>next.to, player.opponent(), MISERE))
+<span data-nosnippet>308</span>            .collect()
+<span data-nosnippet>309</span>    }
+<span data-nosnippet>310</span>}
+<span data-nosnippet>311</span>
+<span data-nosnippet>312</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>313</span></span><span class="kw">impl</span>&lt;S, L, FL, FR, IL, IR, V, <span class="kw">const </span>MISERE: bool, E&gt;
+<span data-nosnippet>314</span>    GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, [S], V, MISERE, E&gt;
+<span data-nosnippet>315</span><span class="kw">where
+<span data-nosnippet>316</span>    </span>S: Clone,
+<span data-nosnippet>317</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>318</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>319</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>320</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>321</span>    E: FnMut(<span class="kw-2">&amp;mut </span>Partisan&lt;S, FL, FR&gt;, <span class="kw-2">&amp;</span>[S]) -&gt; V,
+<span data-nosnippet>322</span>{
+<span data-nosnippet>323</span>    <span class="kw">pub fn </span>moves(
+<span data-nosnippet>324</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>325</span>        state: <span class="kw-2">&amp;</span>[S],
+<span data-nosnippet>326</span>        player: Player,
+<span data-nosnippet>327</span>    ) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (usize, L), V&gt;&gt; {
+<span data-nosnippet>328</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>329</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>330</span>            <span class="kw">for </span>next <span class="kw">in </span>partisan_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.game.right, component, player)
+<span data-nosnippet>331</span>            {
+<span data-nosnippet>332</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>333</span>                to[i] = next.to;
+<span data-nosnippet>334</span>                <span class="kw">let </span>value = <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>to);
+<span data-nosnippet>335</span>                result.push(EvaluatedMove {
+<span data-nosnippet>336</span>                    next: <span class="highlight">Neighbor::new</span>(to, (i, next.label)),
+<span data-nosnippet>337</span>                    value,
+<span data-nosnippet>338</span>                });
+<span data-nosnippet>339</span>            }
+<span data-nosnippet>340</span>        }
+<span data-nosnippet>341</span>        result
+<span data-nosnippet>342</span>    }
+<span data-nosnippet>343</span>}
+<span data-nosnippet>344</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
+<span data-nosnippet>345</span></span><span class="kw">impl</span>&lt;S, L, FL, FR, IL, IR, <span class="kw">const </span>MISERE: bool&gt;
+<span data-nosnippet>346</span>    GameAnalysis&lt;<span class="lifetime">'_</span>, Partisan&lt;S, FL, FR&gt;, [S], PartisanOutcome, MISERE&gt;
+<span data-nosnippet>347</span><span class="kw">where
+<span data-nosnippet>348</span>    </span>S: Clone + Eq + Hash,
+<span data-nosnippet>349</span>    FL: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IL,
+<span data-nosnippet>350</span>    FR: FnMut(<span class="kw-2">&amp;</span>S) -&gt; IR,
+<span data-nosnippet>351</span>    IL: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>352</span>    IR: IntoIterator&lt;Item = Neighbor&lt;S, L&gt;&gt;,
+<span data-nosnippet>353</span>{
+<span data-nosnippet>354</span>    <span class="doccomment">/// Whether the selected starting player can force a win.
+<span data-nosnippet>355</span>    </span><span class="kw">pub fn </span>wins(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S], player: Player) -&gt; bool {
+<span data-nosnippet>356</span>        <span class="self">self</span>.game.sum_wins(state, player, MISERE)
+<span data-nosnippet>357</span>    }
+<span data-nosnippet>358</span>
+<span data-nosnippet>359</span>    <span class="kw">pub fn </span>winning_moves(
+<span data-nosnippet>360</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>361</span>        state: <span class="kw-2">&amp;</span>[S],
+<span data-nosnippet>362</span>        player: Player,
+<span data-nosnippet>363</span>    ) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+<span data-nosnippet>365</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>366</span>            <span class="kw">for </span>next <span class="kw">in </span>partisan_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.game.right, component, player)
+<span data-nosnippet>367</span>            {
+<span data-nosnippet>368</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
+<span data-nosnippet>369</span>                to[i] = next.to;
+<span data-nosnippet>370</span>                <span class="kw">if </span>!<span class="self">self</span>.game.sum_wins(<span class="kw-2">&amp;</span>to, player.opponent(), MISERE) {
+<span data-nosnippet>371</span>                    result.push(<span class="highlight">Neighbor::new</span>(to, (i, next.label)));
+<span data-nosnippet>372</span>                }
+<span data-nosnippet>373</span>            }
+<span data-nosnippet>374</span>        }
+<span data-nosnippet>375</span>        result
+<span data-nosnippet>376</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/graph/sparse_graph.rs.html#77&#34;,&#34;line 77&#34;],[[39,39],&#34;../../src/competitive/graph/sparse_graph.rs.html#104&#34;,&#34;line 104&#34;],[[41,41],&#34;../../src/competitive/graph/sparse_graph.rs.html#106&#34;,&#34;line 106&#34;],[[68,68],&#34;../../src/competitive/graph/sparse_graph.rs.html#133&#34;,&#34;line 133&#34;],[[70,70],&#34;../../src/competitive/graph/sparse_graph.rs.html#135&#34;,&#34;line 135&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/sparse_graph.rs (<a href="../../src/competitive/graph/sparse_graph.rs.html#77">line 77</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>65</span>    <span class="kw">fn </span>construct_graph(vsize: usize, edges: Vec&lt;(usize, usize)&gt;) -&gt; SparseGraph&lt;<span class="self">Self</span>&gt; {
 <span data-nosnippet>66</span>        <span class="kw">let </span><span class="kw-2">mut </span>start: Vec&lt;<span class="kw">_</span>&gt; = <span class="macro">vec!</span>[<span class="number">0usize</span>; vsize + <span class="number">1</span>];
 <span data-nosnippet>67</span>        <span class="kw">for </span>(from, <span class="kw">_</span>) <span class="kw">in </span>edges.iter().cloned() {
 <span data-nosnippet>68</span>            start[from] += <span class="number">1</span>;

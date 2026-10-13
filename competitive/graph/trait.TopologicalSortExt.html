@@ -65,5 +65,84 @@
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(vs, es, (graph, <span class="kw">_</span>): @DirectedGraphScanner::&lt;usize, ()&gt;::new(vs, es));
 <span data-nosnippet>8</span>    <span class="macro">pp!</span>((graph.<span class="highlight focus">topological_sort</span>().len() != vs) <span class="kw">as </span>u32);
-<span data-nosnippet>9</span>}</code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><section id="impl-TopologicalSortExt-for-G" class="impl"><a class="src rightside" href="../../src/competitive/graph/topological_sort.rs.html#33">Source</a><a href="#impl-TopologicalSortExt-for-G" class="anchor">§</a><h3 class="code-header">impl&lt;G&gt; <a class="trait" href="trait.TopologicalSortExt.html" title="trait competitive::graph::TopologicalSortExt">TopologicalSortExt</a> for G<div class="where">where
+<span data-nosnippet>9</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../src/competitive/algorithm/game_analyzer/graph.rs.html#595&#34;,&#34;line 595&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/graph.rs (<a href="../../src/competitive/algorithm/game_analyzer/graph.rs.html#595">line 595</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>586</span>    <span class="kw">fn </span>solve_generalized_grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<span data-nosnippet>587</span>        <span class="kw">let </span>index = <span class="self">self</span>.index.as_ref().unwrap();
+<span data-nosnippet>588</span>        <span class="kw">let </span>n = index.edges.len();
+<span data-nosnippet>589</span>        <span class="kw">if </span><span class="self">self</span>.generalized_grundy.len() == n {
+<span data-nosnippet>590</span>            <span class="kw">return</span>;
+<span data-nosnippet>591</span>        }
+<span data-nosnippet>592</span>        <span class="kw">let </span><span class="kw-2">mut </span>values: Vec&lt;<span class="prelude-ty">Option</span>&lt;(u64, usize)&gt;&gt; = <span class="macro">vec!</span>[<span class="prelude-val">None</span>; n];
+<span data-nosnippet>593</span>        <span class="comment">// Visit acyclic followers first, so DAGs need only one pass.
+<span data-nosnippet>594</span>        </span><span class="kw">let </span>reverse = UsizeGraph::new(n, |v: usize| index.reverse[v].iter().map(|<span class="kw-2">&amp;</span>u| (u, ())));
+<span data-nosnippet>595</span>        <span class="kw">let </span>order = reverse.<span class="highlight focus">topological_sort</span>();
+<span data-nosnippet>596</span>        <span class="kw">if </span>order.len() == n {
+<span data-nosnippet>597</span>            <span class="kw">for </span>(counter, v) <span class="kw">in </span>order.into_iter().enumerate() {
+<span data-nosnippet>598</span>                <span class="kw">let </span>mex = <span class="self">self</span>.grundy.get(v).copied().flatten().unwrap_or_else(|| {
+<span data-nosnippet>599</span>                    <span class="kw">let </span>options = index.edges[v]
+<span data-nosnippet>600</span>                        .iter()
+<span data-nosnippet>601</span>                        .map(|<span class="kw-2">&amp;</span>u| values[u].unwrap().<span class="number">0</span>)
+<span data-nosnippet>602</span>                        .collect();
+<span data-nosnippet>603</span>                    game_mex(options)
+<span data-nosnippet>604</span>                });
+<span data-nosnippet>605</span>                values[v] = <span class="prelude-val">Some</span>((mex, counter));
+<span data-nosnippet>606</span>            }
+<span data-nosnippet>607</span>            <span class="self">self</span>.generalized_grundy = values;
+<span data-nosnippet>608</span>            <span class="kw">return</span>;
+<span data-nosnippet>609</span>        }
+<span data-nosnippet>610</span>        <span class="kw">let </span><span class="kw-2">mut </span>queue: VecDeque&lt;<span class="kw">_</span>&gt; = order.into();
+<span data-nosnippet>611</span>        <span class="kw">let </span><span class="kw-2">mut </span>queued = <span class="macro">vec!</span>[<span class="bool-val">false</span>; n];
+<span data-nosnippet>612</span>        <span class="kw">for </span><span class="kw-2">&amp;</span>v <span class="kw">in </span><span class="kw-2">&amp;</span>queue {
+<span data-nosnippet>613</span>            queued[v] = <span class="bool-val">true</span>;
+<span data-nosnippet>614</span>        }
+<span data-nosnippet>615</span>        <span class="kw">for </span>(v, pending) <span class="kw">in </span>queued.iter_mut().enumerate() {
+<span data-nosnippet>616</span>            <span class="kw">if </span>!<span class="kw-2">*</span>pending {
+<span data-nosnippet>617</span>                <span class="kw-2">*</span>pending = <span class="bool-val">true</span>;
+<span data-nosnippet>618</span>                queue.push_back(v);
+<span data-nosnippet>619</span>            }
+<span data-nosnippet>620</span>        }
+<span data-nosnippet>621</span>        <span class="kw">let </span><span class="kw-2">mut </span>counter = <span class="number">0</span>;
+<span data-nosnippet>622</span>        <span class="kw">let </span><span class="kw-2">mut </span>options = <span class="macro">vec!</span>[HashSet::new(); n];
+<span data-nosnippet>623</span>        <span class="kw">let </span><span class="kw-2">mut </span>mexes = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+<span data-nosnippet>624</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(v) = queue.pop_front() {
+<span data-nosnippet>625</span>            queued[v] = <span class="bool-val">false</span>;
+<span data-nosnippet>626</span>            <span class="kw">let </span>mex = mexes[v];
+<span data-nosnippet>627</span>            <span class="comment">// Every unresolved option must be able to return to this mex.
+<span data-nosnippet>628</span>            </span><span class="kw">let </span>ready = index.edges[v]
+<span data-nosnippet>629</span>                .iter()
+<span data-nosnippet>630</span>                .all(|<span class="kw-2">&amp;</span>u| values[u].is_some() || options[u].contains(<span class="kw-2">&amp;</span>mex));
+<span data-nosnippet>631</span>            <span class="kw">if </span>!ready {
+<span data-nosnippet>632</span>                <span class="kw">continue</span>;
+<span data-nosnippet>633</span>            }
+<span data-nosnippet>634</span>            values[v] = <span class="prelude-val">Some</span>((mex, counter));
+<span data-nosnippet>635</span>            counter += <span class="number">1</span>;
+<span data-nosnippet>636</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>u <span class="kw">in </span><span class="kw-2">&amp;</span>index.reverse[v] {
+<span data-nosnippet>637</span>                <span class="kw">if </span>values[u].is_some() {
+<span data-nosnippet>638</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>639</span>                }
+<span data-nosnippet>640</span>                <span class="kw">let </span>inserted = options[u].insert(mex);
+<span data-nosnippet>641</span>                <span class="kw">if </span>inserted {
+<span data-nosnippet>642</span>                    <span class="kw">while </span>options[u].contains(<span class="kw-2">&amp;</span>mexes[u]) {
+<span data-nosnippet>643</span>                        mexes[u] += <span class="number">1</span>;
+<span data-nosnippet>644</span>                    }
+<span data-nosnippet>645</span>                }
+<span data-nosnippet>646</span>                <span class="comment">// A larger value already had a follower at this vertex's mex.
+<span data-nosnippet>647</span>                </span><span class="kw">if </span>mex &lt; mexes[u] &amp;&amp; !queued[u] {
+<span data-nosnippet>648</span>                    queued[u] = <span class="bool-val">true</span>;
+<span data-nosnippet>649</span>                    queue.push_back(u);
+<span data-nosnippet>650</span>                }
+<span data-nosnippet>651</span>                <span class="kw">if </span>inserted {
+<span data-nosnippet>652</span>                    <span class="kw">for </span><span class="kw-2">&amp;</span>w <span class="kw">in </span><span class="kw-2">&amp;</span>index.reverse[u] {
+<span data-nosnippet>653</span>                        <span class="kw">if </span>queue.len() == n - counter {
+<span data-nosnippet>654</span>                            <span class="kw">break</span>; <span class="comment">// All unresolved vertices are already queued.
+<span data-nosnippet>655</span>                        </span>}
+<span data-nosnippet>656</span>                        <span class="kw">if </span>values[w].is_none() &amp;&amp; !queued[w] &amp;&amp; mexes[w] == mex {
+<span data-nosnippet>657</span>                            queued[w] = <span class="bool-val">true</span>;
+<span data-nosnippet>658</span>                            queue.push_back(w);
+<span data-nosnippet>659</span>                        }
+<span data-nosnippet>660</span>                    }
+<span data-nosnippet>661</span>                }
+<span data-nosnippet>662</span>            }
+<span data-nosnippet>663</span>        }
+<span data-nosnippet>664</span>        <span class="self">self</span>.generalized_grundy = values;
+<span data-nosnippet>665</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><section id="impl-TopologicalSortExt-for-G" class="impl"><a class="src rightside" href="../../src/competitive/graph/topological_sort.rs.html#33">Source</a><a href="#impl-TopologicalSortExt-for-G" class="anchor">§</a><h3 class="code-header">impl&lt;G&gt; <a class="trait" href="trait.TopologicalSortExt.html" title="trait competitive::graph::TopologicalSortExt">TopologicalSortExt</a> for G<div class="where">where
     G: <a class="trait" href="trait.DirectedGraph.html" title="trait competitive::graph::DirectedGraph">DirectedGraph</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></div><script src="../../trait.impl/competitive/graph/topological_sort/trait.TopologicalSortExt.js" async></script></section></div></main></body></html>
