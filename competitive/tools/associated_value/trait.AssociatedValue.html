@@ -181,7 +181,7 @@
 <span data-nosnippet>186</span>                    <span class="kw">for </span>part <span class="kw">in </span><span class="number">0</span>..PARTS {
 <span data-nosnippet>187</span>                        br[part] = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(br[part]);
 <span data-nosnippet>188</span>                        bi[part] = _mm256_permute4x64_pd::&lt;<span class="number">0x93</span>&gt;(bi[part]);
-<span data-nosnippet>189</span>                        (br[<a href="../algebra/ring.rs.html#1-164">part</a>], bi[part]) = mul4(br[part], bi[part], wr, wi);
+<span data-nosnippet>189</span>                        (br[part], bi[part]) = mul4(br[part], bi[part], wr, wi);
 <span data-nosnippet>190</span>                    }
 <span data-nosnippet>191</span>                }
 <span data-nosnippet>192</span>            }
@@ -356,7 +356,7 @@
 <span data-nosnippet>272</span>                <span class="kw">let </span>wr = _mm256_setr_pd(w.re, <span class="number">1.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);
 <span data-nosnippet>273</span>                <span class="kw">let </span>wi = _mm256_setr_pd(w.im, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
 <span data-nosnippet>274</span>                <span class="kw">for </span>lane <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
-<span data-nosnippet>275</span>                    <span class="kw">let </span>ar = _mm256_set1_pd(<a href="../algebra/lazy_map.rs.html#44">a</a>[i].re[lane]);
+<span data-nosnippet>275</span>                    <span class="kw">let </span>ar = _mm256_set1_pd(a[i].re[lane]);
 <span data-nosnippet>276</span>                    <span class="kw">let </span>ai = _mm256_set1_pd(a[i].im[lane]);
 <span data-nosnippet>277</span>                    multiply_accumulate4(<span class="kw-2">&amp;mut </span>rr, <span class="kw-2">&amp;mut </span>ri, ar, ai, br, bi);
 <span data-nosnippet>278</span>                    <span class="kw">if </span>lane != <span class="number">3 </span>{
@@ -520,7 +520,7 @@
 <span data-nosnippet>436</span>            }
 <span data-nosnippet>437</span>        }
 <span data-nosnippet>438</span>    }
-<span data-nosnippet>439</span>    c
+<span data-nosnippet>439</span>    <a href="../algebra/lazy_map.rs.html#222">c</a>
 <span data-nosnippet>440</span>}
 <span data-nosnippet>441</span>
 <span data-nosnippet>442</span><span class="kw">impl </span>ConvolveSteps <span class="kw">for </span>ConvolveRealFft {
@@ -533,24 +533,24 @@
 <span data-nosnippet>449</span>        transform_real(t.into_iter().map(|t| t <span class="kw">as </span>f64), len)
 <span data-nosnippet>450</span>    }
 <span data-nosnippet>451</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>452</span>        inverse_transform_real(f, <a href="../algebra/lazy_map.rs.html#263">len</a>)
+<span data-nosnippet>452</span>        inverse_transform_real(f, len)
 <span data-nosnippet>453</span>            .into_iter()
 <span data-nosnippet>454</span>            .map(|value| value.round() <span class="kw">as </span>i64)
 <span data-nosnippet>455</span>            .collect()
 <span data-nosnippet>456</span>    }
 <span data-nosnippet>457</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>458</span>        <span class="kw">let </span>len = (a.len() + <a href="../algebra/lazy_map.rs.html#266">b</a>.len()).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>458</span>        <span class="kw">let </span>len = (a.len() + b.len()).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>459</span>        <span class="comment">// Keep accumulation overflow-free and exact in the FFT's f64 representation.
 <span data-nosnippet>460</span>        </span><span class="kw">if </span>(a.len().min(b.len()) &lt;= <span class="number">32 </span>|| {
 <span data-nosnippet>461</span>            <span class="kw">let </span>size = len.next_power_of_two();
 <span data-nosnippet>462</span>            <span class="kw">let </span>log = size.ilog2();
-<span data-nosnippet>463</span>            <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">limit</a> = <span class="macro">crate::avx_helper!</span>(@dispatch simd_backend, SimdBackend;
+<span data-nosnippet>463</span>            <span class="kw">let </span>limit = <span class="macro">crate::avx_helper!</span>(@dispatch simd_backend, SimdBackend;
 <span data-nosnippet>464</span>                <span class="number">3 </span>* log + <span class="number">16</span>, <span class="number">2 </span>* log + <span class="number">16</span>, <span class="number">4 </span>* log + <span class="number">16
 <span data-nosnippet>465</span>            </span>);
 <span data-nosnippet>466</span>            <span class="number">2 </span>* a.len() <span class="kw">as </span>u128 * b.len() <span class="kw">as </span>u128 &lt;= limit <span class="kw">as </span>u128 * size <span class="kw">as </span>u128
 <span data-nosnippet>467</span>        }) &amp;&amp; a.iter().map(|x| x.unsigned_abs()).max().unwrap_or(<span class="number">0</span>) <span class="kw">as </span>u128
 <span data-nosnippet>468</span>            * b.iter().map(|x| x.unsigned_abs()).max().unwrap_or(<span class="number">0</span>) <span class="kw">as </span>u128
-<span data-nosnippet>469</span>            &lt;= (<span class="number">1u128 </span>&lt;&lt; <span class="number">53</span>) / <a href="../algebra/lazy_map.rs.html#291">a</a>.len().min(b.len()).max(<span class="number">1</span>) <span class="kw">as </span>u128
+<span data-nosnippet>469</span>            &lt;= (<span class="number">1u128 </span>&lt;&lt; <span class="number">53</span>) / a.len().min(b.len()).max(<span class="number">1</span>) <span class="kw">as </span>u128
 <span data-nosnippet>470</span>        {
 <span data-nosnippet>471</span>            <span class="kw">return </span><span class="macro">crate::avx_helper!</span>(@dispatch simd_backend, SimdBackend;
 <span data-nosnippet>472</span>                <span class="kw">unsafe </span>{
@@ -561,7 +561,7 @@
 <span data-nosnippet>477</span>                    }
 <span data-nosnippet>478</span>                },
 <span data-nosnippet>479</span>                <span class="kw">unsafe </span>{ simd::convolve_i64_avx2(a, b, len) },
-<span data-nosnippet>480</span>                convolve_i64_naive(a, b, len)
+<span data-nosnippet>480</span>                convolve_i64_naive(a, b, <a href="../algebra/action.rs.html#12">len</a>)
 <span data-nosnippet>481</span>            );
 <span data-nosnippet>482</span>        }
 <span data-nosnippet>483</span>        <span class="kw">if </span>!a.is_empty() &amp;&amp; !b.is_empty() {
@@ -576,10 +576,10 @@
 <span data-nosnippet>492</span>                .collect()
 <span data-nosnippet>493</span>            }, ());
 <span data-nosnippet>494</span>        }
-<span data-nosnippet>495</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(<a href="../algebra/lazy_map.rs.html#345">a</a>, len);
+<span data-nosnippet>495</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or">transform</a>(<a href="../algebra/lazy_map.rs.html#296">a</a>, len);
 <span data-nosnippet>496</span>        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
 <span data-nosnippet>497</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>498</span>        <span class="self">Self</span>::inverse_transform(<a href="../algebra/lazy_map.rs.html#345">a</a>, len)
+<span data-nosnippet>498</span>        <span class="self">Self</span>::inverse_transform(a, len)
 <span data-nosnippet>499</span>    }
 <span data-nosnippet>500</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>501</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
@@ -592,7 +592,7 @@
 <span data-nosnippet>508</span>}
 <span data-nosnippet>509</span>
 <span data-nosnippet>510</span><span class="kw">fn </span>middle_product_f64_scalar(
-<span data-nosnippet>511</span>    a: <span class="kw">impl </span>ExactSizeIterator&lt;<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Item</a> = f64&gt;,
+<span data-nosnippet>511</span>    a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
 <span data-nosnippet>512</span>    b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
 <span data-nosnippet>513</span>) -&gt; Vec&lt;f64&gt; {
 <span data-nosnippet>514</span>    <span class="kw">let </span>a_len = a.len();
@@ -613,7 +613,7 @@
 <span data-nosnippet>529</span>    ) -&gt; Vec&lt;f64&gt; {
 <span data-nosnippet>530</span>        <span class="macro">assert!</span>(<span class="number">0 </span>&lt; b.len() &amp;&amp; b.len() &lt;= a.len());
 <span data-nosnippet>531</span>        <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">return unsafe </span>{
-<span data-nosnippet>532</span>            <span class="kw">let </span>range = b.len() - <span class="number">1</span>..a.len();
+<span data-nosnippet>532</span>            <span class="kw">let </span>range = b.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">len</a>() - <span class="number">1</span>..a.len();
 <span data-nosnippet>533</span>            simd::convolve_f64_avx2(a, b, range)
 <span data-nosnippet>534</span>        }, ());
 <span data-nosnippet>535</span>        middle_product_f64_scalar(a, b)
@@ -636,7 +636,7 @@
 <span data-nosnippet>552</span>                v = <span class="number">2</span>;
 <span data-nosnippet>553</span>            }
 <span data-nosnippet>554</span>            <span class="kw">while </span>v &lt; n {
-<span data-nosnippet>555</span>                <span class="kw">for </span>(<a href="../algebra/lazy_map.rs.html#436">q</a>, block) <span class="kw">in </span>a.chunks_exact_mut(v * <span class="number">4</span>).enumerate() {
+<span data-nosnippet>555</span>                <span class="kw">for </span>(q, block) <span class="kw">in </span>a.chunks_exact_mut(v * <span class="number">4</span>).enumerate() {
 <span data-nosnippet>556</span>                    <span class="kw">let </span>(a, rest) = block.split_at_mut(v);
 <span data-nosnippet>557</span>                    <span class="kw">let </span>(b, rest) = rest.split_at_mut(v);
 <span data-nosnippet>558</span>                    <span class="kw">let </span>(c, d) = rest.split_at_mut(v);
@@ -664,7 +664,7 @@
 <span data-nosnippet>580</span>                <span class="kw">for </span>(q, block) <span class="kw">in </span>a.chunks_exact_mut(l * <span class="number">4</span>).enumerate() {
 <span data-nosnippet>581</span>                    <span class="kw">let </span>(a, rest) = block.split_at_mut(l);
 <span data-nosnippet>582</span>                    <span class="kw">let </span>(b, rest) = rest.split_at_mut(l);
-<span data-nosnippet>583</span>                    <span class="kw">let </span>(c, d) = rest.split_at_mut(l);
+<span data-nosnippet>583</span>                    <span class="kw">let </span>(c, <a href="../algebra/lazy_map.rs.html#416">d</a>) = rest.split_at_mut(l);
 <span data-nosnippet>584</span>                    <span class="kw">let </span>w0 = cache[q];
 <span data-nosnippet>585</span>                    <span class="kw">let </span>w1 = cache[q &lt;&lt; <span class="number">1</span>];
 <span data-nosnippet>586</span>                    <span class="kw">let </span>w3 = w0 * w1;
@@ -676,7 +676,7 @@
 <span data-nosnippet>592</span>                        <span class="kw">let </span>ac1 = <span class="kw-2">*</span>a - cv;
 <span data-nosnippet>593</span>                        <span class="kw">let </span>bd0 = bv + dv;
 <span data-nosnippet>594</span>                        <span class="kw">let </span>bd1 = bv - dv;
-<span data-nosnippet>595</span>                        <span class="kw">let </span>bd1 = Complex::new(bd1.im, -bd1.re);
+<span data-nosnippet>595</span>                        <span class="kw">let </span>bd1 = Complex::new(<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">bd1</a>.im, -bd1.re);
 <span data-nosnippet>596</span>                        <span class="kw-2">*</span>a = ac0 + bd0;
 <span data-nosnippet>597</span>                        <span class="kw-2">*</span>b = ac0 - bd0;
 <span data-nosnippet>598</span>                        <span class="kw-2">*</span>c = ac1 + bd1;

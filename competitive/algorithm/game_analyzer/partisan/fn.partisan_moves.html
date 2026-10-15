@@ -215,7 +215,7 @@
 <span data-nosnippet>363</span>    ) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
 <span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
 <span data-nosnippet>365</span>        <span class="kw">for </span>(i, component) <span class="kw">in </span>state.iter().enumerate() {
-<span data-nosnippet>366</span>            <span class="kw">for </span>next <span class="kw">in </span><span class="highlight">partisan_moves</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.game.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">right</a>, component, player)
+<span data-nosnippet>366</span>            <span class="kw">for </span>next <span class="kw">in </span><span class="highlight">partisan_moves</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.game.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.game.right, component, player)
 <span data-nosnippet>367</span>            {
 <span data-nosnippet>368</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
 <span data-nosnippet>369</span>                to[i] = next.to;
@@ -284,7 +284,7 @@
 <span data-nosnippet>432</span>                }
 <span data-nosnippet>433</span>                <span class="kw">let </span>next_player = p.opponent();
 <span data-nosnippet>434</span>                <span class="kw">let </span>moves = <span class="highlight">partisan_moves</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.left, <span class="kw-2">&amp;mut </span><span class="self">self</span>.right, s, <span class="kw-2">*</span>p)
-<span data-nosnippet>435</span>                    .map(<span class="kw">move </span>|n| (<a href="../../algebra/lazy_map.rs.html#44">n</a>.to, next_player));
+<span data-nosnippet>435</span>                    .map(<span class="kw">move </span>|n| (n.to, next_player));
 <span data-nosnippet>436</span>                ControlFlow::Continue(moves)
 <span data-nosnippet>437</span>            },
 <span data-nosnippet>438</span>            |<span class="kw">_</span>, moves| moves.next(),
@@ -332,7 +332,7 @@
 <span data-nosnippet>480</span>                            .is_some_and(|g| g.as_switch_sum().is_some())
 <span data-nosnippet>481</span>                    })
 <span data-nosnippet>482</span>                {
-<span data-nosnippet>483</span>                    <span class="kw">let </span>value: GameValue = s.<a href="../../num/zero_one.rs.html#1-14">iter</a>().<a href="../../num/zero_one.rs.html#15-28">map</a>(|s| <span class="self">self</span>.values[s].clone()).sum();
+<span data-nosnippet>483</span>                    <span class="kw">let </span>value: GameValue = s.iter().map(|s| <span class="self">self</span>.values[s].clone()).sum();
 <span data-nosnippet>484</span>                    <span class="kw">return </span>ControlFlow::Break(value.wins(<span class="kw-2">*</span>p));
 <span data-nosnippet>485</span>                }
 <span data-nosnippet>486</span>                <span class="comment">// Losing as starter in every component implies losing in the sum.

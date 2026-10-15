@@ -276,7 +276,7 @@
 <span data-nosnippet>461</span>            }
 <span data-nosnippet>462</span>            derivative_ffts.push(C::transform_ntt(values.data, block * <span class="number">2</span>));
 <span data-nosnippet>463</span>        }
-<span data-nosnippet>464</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = kernel_data.clone();
+<span data-nosnippet>464</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../algebra/magma.rs.html#145-176">result</a> = kernel_data.clone();
 <span data-nosnippet>465</span>        result.reserve(deg - block);
 <span data-nosnippet>466</span>        <span class="kw">let </span><span class="kw-2">mut </span>result_ffts = Vec::with_capacity(blocks - <span class="number">1</span>);
 <span data-nosnippet>467</span>        <span class="kw">for </span>q <span class="kw">in </span><span class="number">1</span>..blocks {
@@ -287,7 +287,7 @@
 <span data-nosnippet>472</span>            <span class="kw">let </span><span class="kw-2">mut </span>values = <span class="self">Self</span>::sum_products(<span class="kw-2">&amp;</span>derivative_ffts[..q], <span class="kw-2">&amp;</span>result_ffts, block);
 <span data-nosnippet>473</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(rhs) = <span class="kw-2">&amp;</span>power {
 <span data-nosnippet>474</span>                <span class="kw">let </span>product = <span class="self">Self</span>::sum_products(<span class="kw-2">&amp;</span>polynomial_ffts[..q], <span class="kw-2">&amp;</span>result_ffts, block);
-<span data-nosnippet>475</span>                <span class="kw">let </span>factor = rhs.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>() + T::one();
+<span data-nosnippet>475</span>                <span class="kw">let </span>factor = rhs.clone() + T::one();
 <span data-nosnippet>476</span>                <span class="comment">// The power satisfies f g' = rhs f' g.
 <span data-nosnippet>477</span>                </span><span class="kw">for </span>(i, value) <span class="kw">in </span>values.iter_mut().take(deg - q * block).enumerate() {
 <span data-nosnippet>478</span>                    <span class="kw-2">*</span>value = value.clone() * <span class="kw-2">&amp;</span>factor - product[i].clone() * <span class="kw-2">&amp;</span>indices[q * block + i];
@@ -311,7 +311,7 @@
 <span data-nosnippet>496</span>        <span class="self">Self</span>::from_vec(result)
 <span data-nosnippet>497</span>    }
 <span data-nosnippet>498</span>
-<span data-nosnippet>499</span>    <span class="kw">fn </span>exp_newton(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize, indices: <span class="kw-2">&amp;</span>[T], inv: <span class="kw-2">&amp;</span>[T]) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>, C::F)
+<span data-nosnippet>499</span>    <span class="kw">fn </span>exp_newton(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize, indices: <span class="kw-2">&amp;</span>[T], inv: <span class="kw-2">&amp;</span>[T]) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>, C::<a href="../../algebra/action.rs.html#86">F</a>)
 <span data-nosnippet>500</span>    <span class="kw">where
 <span data-nosnippet>501</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>502</span>        C::F: Clone,
@@ -346,7 +346,7 @@
 <span data-nosnippet>531</span>                    .take(m)
 <span data-nosnippet>532</span>                    .enumerate()
 <span data-nosnippet>533</span>                    .skip(<span class="number">1</span>)
-<span data-nosnippet>534</span>                    .map(|(i, value)| value.clone() * <span class="kw-2">&amp;</span>indices[i])
+<span data-nosnippet>534</span>                    .map(|(<a href="../../algebra/lazy_map.rs.html#41">i</a>, value)| value.clone() * <span class="kw-2">&amp;</span>indices[i])
 <span data-nosnippet>535</span>                    .collect(),
 <span data-nosnippet>536</span>            );
 <span data-nosnippet>537</span>            delta.resize(m);
@@ -481,7 +481,7 @@
 <span data-nosnippet>666</span>            <span class="kw">let </span>deg = deg - k * rhs;
 <span data-nosnippet>667</span>            <span class="kw">let </span>x0 = <span class="self">self</span>[k].clone();
 <span data-nosnippet>668</span>            <span class="kw">let </span><span class="kw-2">mut </span>f = (<span class="self">self</span>.prefix_ref(k + deg) &gt;&gt; k) / <span class="kw-2">&amp;</span>x0;
-<span data-nosnippet>669</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(step) = f.sparse_stride(deg, <span class="number">12</span>) {
+<span data-nosnippet>669</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(step) = f.sparse_stride(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">deg</a>, <span class="number">12</span>) {
 <span data-nosnippet>670</span>                f = f.pow_sparse1(T::from(rhs), deg, step);
 <span data-nosnippet>671</span>            } <span class="kw">else if </span>rhs &lt;= <span class="number">4 </span>{
 <span data-nosnippet>672</span>                <span class="kw">let </span>squared = (<span class="kw-2">&amp;</span>f * <span class="kw-2">&amp;</span>f).prefix(deg);
@@ -512,7 +512,7 @@
 <span data-nosnippet>697</span>            .filter(|(<span class="kw">_</span>, x)| !x.is_zero())
 <span data-nosnippet>698</span>            .map(|(i, x)| (i, x.clone(), T::from(i) * <span class="kw-2">&amp;</span>rhs * x))
 <span data-nosnippet>699</span>            .collect();
-<span data-nosnippet>700</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::zeros(deg);
+<span data-nosnippet>700</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html"><span class="self">Self</span>::zeros</a>(deg);
 <span data-nosnippet>701</span>        f[<span class="number">0</span>] = T::one();
 <span data-nosnippet>702</span>        <span class="kw">if </span>pos.is_empty() {
 <span data-nosnippet>703</span>            <span class="kw">return </span>f;
@@ -521,7 +521,7 @@
 <span data-nosnippet>706</span>        <span class="kw">for </span>(<span class="kw">_</span>, coefficient, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;mut </span>pos {
 <span data-nosnippet>707</span>            <span class="kw-2">*</span>coefficient <span class="kw-2">*</span>= T::from(step);
 <span data-nosnippet>708</span>        }
-<span data-nosnippet>709</span>        <span class="kw">for </span>i <span class="kw">in </span>(pos.first().map_or(deg, |x| x.<span class="number">0</span>)..deg).step_by(step) {
+<span data-nosnippet>709</span>        <span class="kw">for </span>i <span class="kw">in </span>(pos.first().map_or(<a href="../../algebra/lazy_map.rs.html#267">deg</a>, |x| x.<span class="number">0</span>)..deg).step_by(step) {
 <span data-nosnippet>710</span>            <span class="kw">let </span><span class="kw-2">mut </span>tot = T::zero();
 <span data-nosnippet>711</span>            <span class="kw">for </span>(j, coefficient, weight) <span class="kw">in </span><span class="kw-2">&amp;mut </span>pos {
 <span data-nosnippet>712</span>                <span class="kw">if </span><span class="kw-2">*</span>j &gt; i {
@@ -548,7 +548,7 @@
 <span data-nosnippet>733</span>        q: <span class="kw-2">&amp;</span><span class="self">Self</span>,
 <span data-nosnippet>734</span>        x: <span class="kw-2">&amp;</span><span class="self">Self</span>,
 <span data-nosnippet>735</span>        alpha: T,
-<span data-nosnippet>736</span>        beta: <a href="../../algebra/lazy_map.rs.html#345">T</a>,
+<span data-nosnippet>736</span>        beta: <a href="../../algebra/lazy_map.rs.html#296">T</a>,
 <span data-nosnippet>737</span>        deg: usize,
 <span data-nosnippet>738</span>    ) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>739</span>        <span class="kw">if </span>deg == <span class="number">0 </span>{
@@ -584,7 +584,7 @@
 <span data-nosnippet>769</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..deg - <span class="number">1 </span>{
 <span data-nosnippet>770</span>            qf[i] = f.sparse_fold(q.iter().cloned(), i);
 <span data-nosnippet>771</span>            dq_f[i] = f.sparse_fold(dq.iter().cloned(), i);
-<span data-nosnippet>772</span>            <span class="kw">let </span>dp_qf_i = qf.sparse_fold(dp.iter().cloned(), i);
+<span data-nosnippet>772</span>            <span class="kw">let </span>dp_qf_i = qf.sparse_fold(dp.<a href="../../num/zero_one.rs.html#1-14">iter</a>().cloned(), i);
 <span data-nosnippet>773</span>            <span class="kw">let </span>p_dq_f_i = dq_f.sparse_fold(p.iter().cloned(), i);
 <span data-nosnippet>774</span>            <span class="kw">let </span>x_d_qf_i = d_qf.sparse_fold(
 <span data-nosnippet>775</span>                x.iter()
@@ -596,7 +596,7 @@
 <span data-nosnippet>781</span>            <span class="kw">let </span><span class="kw-2">mut </span>f_ip1 = d_qf[i].clone();
 <span data-nosnippet>782</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>(j, <span class="kw-2">ref </span>q) <span class="kw">in </span>q.iter().take_while(|&amp;&amp;(j, <span class="kw">_</span>)| j &lt;= i) {
 <span data-nosnippet>783</span>                <span class="kw">if </span>j &gt; <span class="number">0 </span>{
-<span data-nosnippet>784</span>                    f_ip1 -= q.clone() * <span class="kw-2">&amp;</span>f[i - (<a href="../../algebra/lazy_map.rs.html#436">j</a> - <span class="number">1</span>)] * T::from(i - (j - <span class="number">1</span>));
+<span data-nosnippet>784</span>                    f_ip1 -= q.clone() * <span class="kw-2">&amp;</span>f[i - (j - <span class="number">1</span>)] * T::from(i - (j - <span class="number">1</span>));
 <span data-nosnippet>785</span>                }
 <span data-nosnippet>786</span>            }
 <span data-nosnippet>787</span>            f[i + <span class="number">1</span>] = f_ip1 * T::memorized_inv(<span class="kw-2">&amp;</span>mf, i + <span class="number">1</span>);
@@ -606,7 +606,7 @@
 <span data-nosnippet>791</span>
 <span data-nosnippet>792</span>    <span class="doccomment">/// P^exp_p * Q^exp_q
 <span data-nosnippet>793</span>    </span><span class="kw">pub fn </span>mul_of_pow_sparse(<span class="kw-2">&amp;</span><span class="self">self</span>, q: <span class="kw-2">&amp;</span><span class="self">Self</span>, exp_p: isize, exp_q: isize, deg: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>794</span>        <span class="kw">if </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">deg</a> == <span class="number">0 </span>{
+<span data-nosnippet>794</span>        <span class="kw">if </span>deg == <span class="number">0 </span>{
 <span data-nosnippet>795</span>            <span class="kw">return </span><span class="self">Self</span>::zero();
 <span data-nosnippet>796</span>        }
 <span data-nosnippet>797</span>        <span class="kw">if </span>exp_p == <span class="number">0 </span>&amp;&amp; exp_q == <span class="number">0 </span>{
@@ -695,13 +695,13 @@
 <span data-nosnippet>880</span>    </span>T: FormalPowerSeriesCoefficientSqrt,
 <span data-nosnippet>881</span>    C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>882</span>{
-<span data-nosnippet>883</span>    <span class="kw">pub fn </span>sqrt(<span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>, deg: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+<span data-nosnippet>883</span>    <span class="kw">pub fn </span>sqrt(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
 <span data-nosnippet>884</span>        <span class="kw">if </span><span class="self">self</span>[<span class="number">0</span>].is_zero() {
-<span data-nosnippet>885</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(k) = <span class="self">self</span>.iter().position(|x| !x.is_zero()) {
+<span data-nosnippet>885</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(k) = <span class="self">self</span>.iter().position(|x| !x.<a href="../../num/bounded.rs.html#2-17">is_zero</a>()) {
 <span data-nosnippet>886</span>                <span class="kw">if </span>k % <span class="number">2 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>887</span>                    <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>888</span>                } <span class="kw">else if </span>deg &gt; k / <span class="number">2 </span>{
-<span data-nosnippet>889</span>                    <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="self">self </span>&gt;&gt; k).sqrt(deg - <a href="../../algebra/lazy_map.rs.html#552">k</a> / <span class="number">2</span>)<span class="question-mark">? </span>&lt;&lt; (k / <span class="number">2</span>));
+<span data-nosnippet>889</span>                    <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="self">self </span>&gt;&gt; k).sqrt(deg - k / <span class="number">2</span>)<span class="question-mark">? </span>&lt;&lt; (k / <span class="number">2</span>));
 <span data-nosnippet>890</span>                }
 <span data-nosnippet>891</span>            }
 <span data-nosnippet>892</span>        } <span class="kw">else </span>{
@@ -711,14 +711,14 @@
 <span data-nosnippet>896</span>            }
 <span data-nosnippet>897</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(step) = <span class="self">self</span>.sparse_stride(deg, <span class="number">4</span>) {
 <span data-nosnippet>898</span>                <span class="kw">let </span>t = <span class="self">self</span>[<span class="number">0</span>].clone();
-<span data-nosnippet>899</span>                <span class="kw">let </span><span class="kw-2">mut </span><a href="../../algebra/lazy_map.rs.html#552">f</a> = <span class="self">self</span>.prefix_ref(deg) / t;
-<span data-nosnippet>900</span>                f = f.pow_sparse1(T::one() / T::from(<span class="number">2usize</span>), deg, step);
+<span data-nosnippet>899</span>                <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">self</span>.prefix_ref(deg) / t;
+<span data-nosnippet>900</span>                f = f.pow_sparse1(T::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">one</a>() / T::from(<span class="number">2usize</span>), deg, step);
 <span data-nosnippet>901</span>                f <span class="kw-2">*</span>= s;
 <span data-nosnippet>902</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(f);
 <span data-nosnippet>903</span>            }
 <span data-nosnippet>904</span>
 <span data-nosnippet>905</span>            <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::from(s);
-<span data-nosnippet>906</span>            <span class="kw">let </span>inv2 = T::one() / (T::one() + T::one());
+<span data-nosnippet>906</span>            <span class="kw">let </span>inv2 = T::one() / (T::<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">one</a>() + T::one());
 <span data-nosnippet>907</span>            <span class="kw">let </span>inv2s = inv2.clone() / <span class="kw-2">&amp;</span>f[<span class="number">0</span>];
 <span data-nosnippet>908</span>            <span class="kw">let </span>extend = |f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>, end| {
 <span data-nosnippet>909</span>                <span class="kw">for </span>i <span class="kw">in </span>f.length()..end {
@@ -737,12 +737,12 @@
 <span data-nosnippet>922</span>            <span class="kw">let </span><span class="kw-2">mut </span>inverse = f.inv(f.length());
 <span data-nosnippet>923</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = f.length();
 <span data-nosnippet>924</span>            <span class="kw">while </span>i &lt; deg {
-<span data-nosnippet>925</span>                <span class="kw">if </span>deg - i &lt;= <span class="number">4 </span>{
+<span data-nosnippet>925</span>                <span class="kw">if </span>deg - <a href="../../algebra/lazy_map.rs.html#535">i</a> &lt;= <span class="number">4 </span>{
 <span data-nosnippet>926</span>                    extend(<span class="kw-2">&amp;mut </span>f, deg);
 <span data-nosnippet>927</span>                    <span class="kw">break</span>;
 <span data-nosnippet>928</span>                }
 <span data-nosnippet>929</span>                <span class="kw">let </span>len = (i * <span class="number">2</span>).min(deg);
-<span data-nosnippet>930</span>                <span class="kw">let </span>factor = C::transform(inverse.data.clone(), i * <span class="number">2</span>);
+<span data-nosnippet>930</span>                <span class="kw">let </span>factor = C::transform(inverse.data.clone(), <a href="../../algebra/lazy_map.rs.html#535">i</a> * <span class="number">2</span>);
 <span data-nosnippet>931</span>                <span class="kw">let </span>error = <span class="kw">if </span>!C::CYCLIC || i &lt; <span class="number">128 </span>{
 <span data-nosnippet>932</span>                    (<span class="self">self</span>.prefix_ref(len) - <span class="kw-2">&amp;</span>f * <span class="kw-2">&amp;</span>f) &gt;&gt; i
 <span data-nosnippet>933</span>                } <span class="kw">else </span>{
@@ -795,9 +795,9 @@
 <span data-nosnippet>980</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::zeros(n);
 <span data-nosnippet>981</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>982</span>            <span class="kw">if </span>!<span class="self">self</span>[i].is_zero() {
-<span data-nosnippet>983</span>                <span class="kw">for </span>(j, d) <span class="kw">in </span>(<span class="number">0</span>..n).step_by(i).enumerate().skip(<span class="number">1</span>) {
+<span data-nosnippet>983</span>                <span class="kw">for </span>(j, <a href="../../algebra/lazy_map.rs.html#648">d</a>) <span class="kw">in </span>(<span class="number">0</span>..n).step_by(i).enumerate().skip(<span class="number">1</span>) {
 <span data-nosnippet>984</span>                    <span class="kw">if </span>j &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
-<span data-nosnippet>985</span>                        f[d] += <span class="self">self</span>[i].clone() * <span class="kw-2">&amp;</span>inverse(j);
+<span data-nosnippet>985</span>                        f[d] += <span class="self">self</span>[<a href="../../algebra/lazy_map.rs.html#648">i</a>].clone() * <span class="kw-2">&amp;</span>inverse(j);
 <span data-nosnippet>986</span>                    } <span class="kw">else </span>{
 <span data-nosnippet>987</span>                        f[d] -= <span class="self">self</span>[i].clone() * <span class="kw-2">&amp;</span>inverse(j);
 <span data-nosnippet>988</span>                    }
@@ -813,7 +813,7 @@
 <span data-nosnippet>998</span>        C::F: Clone,
 <span data-nosnippet>999</span>    {
 <span data-nosnippet>1000</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
-<span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::zeros(n);
+<span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../algebra/lazy_map.rs.html#666">f</a> = <span class="self">Self</span>::zeros(n);
 <span data-nosnippet>1002</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>1003</span>            <span class="kw">if </span>!<span class="self">self</span>[i].is_zero() {
 <span data-nosnippet>1004</span>                <span class="kw">for </span>(j, d) <span class="kw">in </span>(<span class="number">0</span>..n).step_by(i).enumerate().skip(<span class="number">1</span>) {
@@ -830,7 +830,7 @@
 <span data-nosnippet>1015</span>    {
 <span data-nosnippet>1016</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = T::zero();
 <span data-nosnippet>1017</span>        rhs.trim_tail_zeros();
-<span data-nosnippet>1018</span>        <span class="kw">if </span><span class="self">self</span>.<a href="../../algebra/magma.rs.html#54-81">length</a>() &gt;= rhs.length() {
+<span data-nosnippet>1018</span>        <span class="kw">if </span><span class="self">self</span>.length() &gt;= rhs.length() {
 <span data-nosnippet>1019</span>            <span class="kw">let </span>r = <span class="kw-2">&amp;</span><span class="self">self </span>/ <span class="kw-2">&amp;</span>rhs;
 <span data-nosnippet>1020</span>            <span class="kw">if </span>n &lt; r.length() {
 <span data-nosnippet>1021</span>                res = r[n].clone();
@@ -1165,7 +1165,7 @@
 <span data-nosnippet>1350</span>        }
 <span data-nosnippet>1351</span>
 <span data-nosnippet>1352</span>        <span class="kw">let </span>h_fps = <span class="self">Self</span>::from_vec(h);
-<span data-nosnippet>1353</span>        <span class="kw">let </span>inv_n = T::one() / n_t;
+<span data-nosnippet>1353</span>        <span class="kw">let </span><a href="../../algebra/magma.rs.html#4-18">inv_n</a> = T::one() / n_t;
 <span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>t = h_fps.log(n);
 <span data-nosnippet>1355</span>        t <span class="kw-2">*</span>= -inv_n;
 <span data-nosnippet>1356</span>        <span class="kw">let </span>g_over_x = t.exp(n);

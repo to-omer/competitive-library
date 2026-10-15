@@ -270,7 +270,7 @@
 <span data-nosnippet>388</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(c) = next
 <span data-nosnippet>389</span>                    &amp;&amp; basis[c] != n
 <span data-nosnippet>390</span>                {
-<span data-nosnippet>391</span>                    <span class="kw">let </span>(<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">upper</a>, lower) = <span class="self">self</span>.data.split_at_mut(basis[c]);
+<span data-nosnippet>391</span>                    <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(basis[c]);
 <span data-nosnippet>392</span>                    <span class="highlight">xor</span>(
 <span data-nosnippet>393</span>                        <span class="kw-2">&amp;mut </span>upper[i].words_mut()[c / <span class="number">64</span>..],
 <span data-nosnippet>394</span>                        <span class="kw-2">&amp;</span>lower[<span class="number">0</span>].words()[c / <span class="number">64</span>..],
@@ -319,21 +319,21 @@
 <span data-nosnippet>437</span>        <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>).step_by(<span class="number">64</span>) {
 <span data-nosnippet>438</span>            <span class="kw">for </span>(t, table) <span class="kw">in </span>table.chunks_exact_mut(group).enumerate() {
 <span data-nosnippet>439</span>                <span class="kw">let </span>col = start + t * <span class="number">8</span>;
-<span data-nosnippet>440</span>                <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>.saturating_sub(col).<a href="../num/zero_one.rs.html#15-28">min</a>(<span class="number">8</span>) {
+<span data-nosnippet>440</span>                <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>.saturating_sub(col).min(<span class="number">8</span>) {
 <span data-nosnippet>441</span>                    <span class="kw">let </span>row = rhs[col + bit].words();
 <span data-nosnippet>442</span>                    <span class="kw">let </span>half = (<span class="number">1 </span>&lt;&lt; bit) * width;
 <span data-nosnippet>443</span>                    <span class="kw">let </span>(lower, upper) = table.split_at_mut(half);
 <span data-nosnippet>444</span>                    <span class="kw">for </span>(source, dest) <span class="kw">in
 <span data-nosnippet>445</span>                        </span>lower.chunks_exact(width).zip(upper.chunks_exact_mut(width))
 <span data-nosnippet>446</span>                    {
-<span data-nosnippet>447</span>                        <span class="kw">for </span>((x, y), z) <span class="kw">in </span>dest.iter_mut().zip(source).zip(row) {
-<span data-nosnippet>448</span>                            <span class="kw-2">*</span>x = y ^ <a href="../algebra/lazy_map.rs.html#157">z</a>;
+<span data-nosnippet>447</span>                        <span class="kw">for </span>((x, y), <a href="../algebra/lazy_map.rs.html#142">z</a>) <span class="kw">in </span>dest.iter_mut().zip(source).zip(row) {
+<span data-nosnippet>448</span>                            <span class="kw-2">*</span>x = y ^ z;
 <span data-nosnippet>449</span>                        }
 <span data-nosnippet>450</span>                    }
 <span data-nosnippet>451</span>                }
 <span data-nosnippet>452</span>            }
 <span data-nosnippet>453</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
-<span data-nosnippet>454</span>                <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">key</a> = a.words()[start / <span class="number">64</span>];
+<span data-nosnippet>454</span>                <span class="kw">let </span>key = a.words()[start / <span class="number">64</span>];
 <span data-nosnippet>455</span>                <span class="kw">let </span>offset = (key &amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>456</span>                <span class="kw">let </span>p0 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>457</span>                <span class="kw">let </span>offset = group + (key &gt;&gt; <span class="number">8 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
@@ -342,7 +342,7 @@
 <span data-nosnippet>460</span>                <span class="kw">let </span>p2 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>461</span>                <span class="kw">let </span>offset = <span class="number">3 </span>* group + (key &gt;&gt; <span class="number">24 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>462</span>                <span class="kw">let </span>p3 = <span class="kw-2">&amp;</span>table[offset..offset + width];
-<span data-nosnippet>463</span>                <span class="kw">let </span>offset = <span class="number">4 </span>* group + (key &gt;&gt; <span class="number">32 </span>&amp; <span class="number">255</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a> * width;
+<span data-nosnippet>463</span>                <span class="kw">let </span>offset = <span class="number">4 </span>* group + (key &gt;&gt; <span class="number">32 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>464</span>                <span class="kw">let </span>p4 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>465</span>                <span class="kw">let </span>offset = <span class="number">5 </span>* group + (key &gt;&gt; <span class="number">40 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>466</span>                <span class="kw">let </span>p5 = <span class="kw-2">&amp;</span>table[offset..offset + width];

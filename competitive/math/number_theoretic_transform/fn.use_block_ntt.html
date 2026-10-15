@@ -209,7 +209,7 @@
 <span data-nosnippet>784</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64;
 <span data-nosnippet>785</span>    <span class="kw">let </span>m1 = N1::get_mod() <span class="kw">as </span>u64;
 <span data-nosnippet>786</span>    <span class="kw">let </span>m2 = m1 * N2::get_mod() <span class="kw">as </span>u64 % modulus;
-<span data-nosnippet>787</span>    <span class="kw">let </span>fits_u64 = (N1::get_mod() - <span class="number">1</span>) <span class="kw">as </span><a href="../algebra/magma.rs.html#56">u128</a>
+<span data-nosnippet>787</span>    <span class="kw">let </span>fits_u64 = (N1::get_mod() - <span class="number">1</span>) <span class="kw">as </span>u128
 <span data-nosnippet>788</span>        + (N2::get_mod() - <span class="number">1</span>) <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128
 <span data-nosnippet>789</span>        + (N3::get_mod() - <span class="number">1</span>) <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128
 <span data-nosnippet>790</span>        &lt;= u64::MAX <span class="kw">as </span>u128;
@@ -253,7 +253,7 @@
 <span data-nosnippet>828</span>            Convolve::&lt;N3&gt;::transform(f.<span class="number">2</span>, npot),
 <span data-nosnippet>829</span>        )
 <span data-nosnippet>830</span>    }
-<span data-nosnippet>831</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>831</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">usize</a>) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>832</span>        reconstruct_mint_crt((
 <span data-nosnippet>833</span>            Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len),
 <span data-nosnippet>834</span>            Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, len),
@@ -263,11 +263,11 @@
 <span data-nosnippet>838</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>839</span>        Convolve::&lt;N1&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
 <span data-nosnippet>840</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
-<span data-nosnippet>841</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
+<span data-nosnippet>841</span>        Convolve::&lt;N3&gt;<a href="../algebra/lazy_map.rs.html#8">::multiply</a>(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>842</span>    }
 <span data-nosnippet>843</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>844</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
-<span data-nosnippet>845</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">length</a>(<span class="kw-2">&amp;</span>b));
+<span data-nosnippet>845</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>846</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">30</span>, <span class="number">10</span>), (<span class="number">384</span>, <span class="number">128</span>));
 <span data-nosnippet>847</span>        <span class="kw">if </span>max_len &lt;= balanced || min_len &lt;= short {
 <span data-nosnippet>848</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
@@ -390,7 +390,7 @@
 <span data-nosnippet>965</span>                <span class="kw">if </span>part &gt;= parts {
 <span data-nosnippet>966</span>                    <span class="kw">return </span>Vec::new();
 <span data-nosnippet>967</span>                }
-<span data-nosnippet>968</span>                Convolve::&lt;M&gt;::<a href="../algebra/action.rs.html#75-77">transform</a>(
+<span data-nosnippet>968</span>                Convolve::&lt;M&gt;::transform(
 <span data-nosnippet>969</span>                    t.iter()
 <span data-nosnippet>970</span>                        .map(|<span class="kw-2">&amp;</span>t| MInt::from((t &gt;&gt; (part * bits)) &amp; ((<span class="number">1u64 </span>&lt;&lt; bits) - <span class="number">1</span>)))
 <span data-nosnippet>971</span>                        .collect(),
@@ -400,7 +400,7 @@
 <span data-nosnippet>975</span>        }
 <span data-nosnippet>976</span>        (
 <span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
-<span data-nosnippet>978</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
+<span data-nosnippet>978</span>            split(<span class="kw-2">&amp;</span>t, <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">npot</a>, bits, parts),
 <span data-nosnippet>979</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>980</span>        )
 <span data-nosnippet>981</span>    }
@@ -439,7 +439,7 @@
 <span data-nosnippet>1014</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1015</span>        <span class="kw">fn </span>multiply&lt;M: Montgomery32NttModulus&gt;(f: <span class="kw-2">&amp;mut </span>[MVec&lt;M&gt;; <span class="number">3</span>], g: <span class="kw-2">&amp;</span>[MVec&lt;M&gt;; <span class="number">3</span>]) {
 <span data-nosnippet>1016</span>            <span class="macro">assert_eq!</span>(f[<span class="number">0</span>].len(), g[<span class="number">0</span>].len());
-<span data-nosnippet>1017</span>            <span class="kw">if </span><a href="../algebra/lazy_map.rs.html#266">f</a>[<span class="number">1</span>].is_empty() || g[<span class="number">1</span>].is_empty() {
+<span data-nosnippet>1017</span>            <span class="kw">if </span>f[<span class="number">1</span>].is_empty() || g[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1018</span>                <span class="kw">if </span>f[<span class="number">1</span>].is_empty() &amp;&amp; !g[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1019</span>                    f[<span class="number">1</span>] = f[<span class="number">0</span>].clone();
 <span data-nosnippet>1020</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">1</span>], <span class="kw-2">&amp;</span>g[<span class="number">1</span>]);
@@ -456,7 +456,7 @@
 <span data-nosnippet>1031</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>g[part]);
 <span data-nosnippet>1032</span>                    <span class="kw">for </span>left <span class="kw">in </span><span class="number">1</span>..=part {
 <span data-nosnippet>1033</span>                        <span class="kw">let </span><span class="kw-2">mut </span>product = f[left].clone();
-<span data-nosnippet>1034</span>                        Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>product, <span class="kw-2">&amp;</span>g[<a href="../num/zero_one.rs.html#1-14">part</a> - left]);
+<span data-nosnippet>1034</span>                        Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>product, <span class="kw-2">&amp;</span>g[part - left]);
 <span data-nosnippet>1035</span>                        <span class="kw">for </span>(value, product) <span class="kw">in </span>sum.iter_mut().zip(product) {
 <span data-nosnippet>1036</span>                            <span class="comment">// Block products contain lazy Montgomery residues.
 <span data-nosnippet>1037</span>                            </span><span class="kw-2">*</span>value = MInt::new(value.inner() + product.inner());
@@ -475,8 +475,8 @@
 <span data-nosnippet>1050</span>                <span class="kw">return</span>;
 <span data-nosnippet>1051</span>            }
 <span data-nosnippet>1052</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..f[<span class="number">0</span>].len() {
-<span data-nosnippet>1053</span>                f[<span class="number">2</span>][i] = f[<span class="number">0</span>][i] * g[<span class="number">2</span>][i] + f[<span class="number">1</span>][<a href="../algebra/lazy_map.rs.html#345">i</a>] * g[<span class="number">1</span>][i] + f[<span class="number">2</span>][i] * g[<span class="number">0</span>][<a href="../algebra/lazy_map.rs.html#345">i</a>];
-<span data-nosnippet>1054</span>                f[<span class="number">1</span>][<a href="../algebra/lazy_map.rs.html#345">i</a>] = f[<span class="number">0</span>][i] * g[<span class="number">1</span>][i] + f[<span class="number">1</span>][i] * g[<span class="number">0</span>][i];
+<span data-nosnippet>1053</span>                f[<span class="number">2</span>][i] = f[<span class="number">0</span>][i] * g[<span class="number">2</span>][i] + f[<span class="number">1</span>][<a href="../algebra/lazy_map.rs.html#296">i</a>] * g[<span class="number">1</span>][i] + f[<span class="number">2</span>][i] * g[<span class="number">0</span>][i];
+<span data-nosnippet>1054</span>                f[<span class="number">1</span>][i] = f[<span class="number">0</span>][i] * g[<span class="number">1</span>][i] + f[<span class="number">1</span>][i] * g[<span class="number">0</span>][i];
 <span data-nosnippet>1055</span>                f[<span class="number">0</span>][i] <span class="kw-2">*</span>= g[<span class="number">0</span>][i];
 <span data-nosnippet>1056</span>            }
 <span data-nosnippet>1057</span>        }</code></pre></div></div></div></section></div></main></body></html>

@@ -342,7 +342,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>819</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
 <span data-nosnippet>820</span>        t.len()
 <span data-nosnippet>821</span>    }
-<span data-nosnippet>822</span>    <span class="kw">fn </span>transform(<a href="../algebra/lazy_map.rs.html#44">t</a>: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>822</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>823</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
 <span data-nosnippet>824</span>        <span class="kw">let </span>f = convert_crt_input(t, npot);
 <span data-nosnippet>825</span>        (
@@ -433,11 +433,11 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>910</span>    <span class="kw">if </span>block_len == <span class="number">0 </span>{
 <span data-nosnippet>911</span>        <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>912</span>    }
-<span data-nosnippet>913</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
+<span data-nosnippet>913</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + <a href="../algebra/lazy_map.rs.html#173">b</a>.len() - <span class="number">1</span>];
 <span data-nosnippet>914</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>915</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
 <span data-nosnippet>916</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.to_vec());
-<span data-nosnippet>917</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
+<span data-nosnippet>917</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().<a href="../algebra/lazy_map.rs.html#181">zip</a>(product) {
 <span data-nosnippet>918</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>919</span>            }
 <span data-nosnippet>920</span>        }
@@ -497,7 +497,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>974</span>            })
 <span data-nosnippet>975</span>        }
 <span data-nosnippet>976</span>        (
-<span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">bits</a>, parts),
+<span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>978</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>979</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>980</span>        )
@@ -522,13 +522,13 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>999</span>                    .zip(Convolve::&lt;N3&gt;::inverse_transform(f3, len)),
 <span data-nosnippet>1000</span>            ) {
 <span data-nosnippet>1001</span>                <span class="kw">let </span>d1 = c1.inner();
-<span data-nosnippet>1002</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
+<span data-nosnippet>1002</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">inner</a>();
 <span data-nosnippet>1003</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
 <span data-nosnippet>1004</span>                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>1005</span>                <span class="kw">let </span>limb = (d1 <span class="kw">as </span>u64)
 <span data-nosnippet>1006</span>                    .wrapping_add((d2 <span class="kw">as </span>u64).wrapping_mul(m1))
 <span data-nosnippet>1007</span>                    .wrapping_add((d3 <span class="kw">as </span>u64).wrapping_mul(m2));
-<span data-nosnippet>1008</span>                <span class="kw-2">*</span>value = value.wrapping_add(limb &lt;&lt; (part * <a href="../num/zero_one.rs.html#1-14">bits</a>));
+<span data-nosnippet>1008</span>                <span class="kw-2">*</span>value = value.wrapping_add(limb &lt;&lt; (part * bits));
 <span data-nosnippet>1009</span>            }
 <span data-nosnippet>1010</span>        }
 <span data-nosnippet>1011</span>        result
@@ -590,7 +590,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1067</span>        <span class="self">Self</span>::inverse_transform(f, len)
 <span data-nosnippet>1068</span>    }
 <span data-nosnippet>1069</span>
-<span data-nosnippet>1070</span>    <span class="kw">fn </span>convolve(<a href="../algebra/lazy_map.rs.html#436">a</a>: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>1070</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1071</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1072</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1073</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">300</span>, <span class="number">64</span>), (<span class="number">1536</span>, <span class="number">512</span>));
@@ -658,7 +658,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1135</span>        result
 <span data-nosnippet>1136</span>    }
 <span data-nosnippet>1137</span>
-<span data-nosnippet>1138</span>    <span class="kw">let </span>len = <a href="../algebra/lazy_map.rs.html#552">a</a>.len() + b.len() - <span class="number">1</span>;
+<span data-nosnippet>1138</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
 <span data-nosnippet>1139</span>    <span class="kw">let </span>transform = |values: <span class="kw-2">&amp;</span>[u64]| {
 <span data-nosnippet>1140</span>        <span class="kw">if </span>values.iter().any(|<span class="kw-2">&amp;</span>value| value &gt; u32::MAX <span class="kw">as </span>u64) {
 <span data-nosnippet>1141</span>            <span class="kw">return </span>split(values).map(|part| ConvolveRealFft::transform(part, len));
@@ -674,9 +674,9 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1151</span>            <span class="macro">vec!</span>[Zero::zero(); size],
 <span data-nosnippet>1152</span>        ]
 <span data-nosnippet>1153</span>    };
-<span data-nosnippet>1154</span>    <span class="kw">let </span>fa = transform(<span class="kw-2">&amp;</span>a);
+<span data-nosnippet>1154</span>    <span class="kw">let </span>fa = transform(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#535">a</a>);
 <span data-nosnippet>1155</span>    drop(a);
-<span data-nosnippet>1156</span>    <span class="kw">let </span>fb = transform(<span class="kw-2">&amp;</span>b);
+<span data-nosnippet>1156</span>    <span class="kw">let </span>fb = transform(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#535">b</a>);
 <span data-nosnippet>1157</span>    drop(b);
 <span data-nosnippet>1158</span>    <span class="kw">let </span>values: [Vec&lt;i64&gt;; <span class="number">5</span>] = std::array::from_fn(|part| {
 <span data-nosnippet>1159</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = fa[<span class="number">0</span>].clone();
@@ -1123,7 +1123,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>538</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta_fft = <span class="highlight">C::transform_ntt</span>(delta.data, m);
 <span data-nosnippet>539</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span>f_fft);
 <span data-nosnippet>540</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = <span class="self">Self</span>::from_vec(C::inverse_transform_ntt(delta_fft, m));
-<span data-nosnippet>541</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..f.length() {
+<span data-nosnippet>541</span>            <span class="kw">for </span><a href="../../algebra/action.rs.html#70">i</a> <span class="kw">in </span><span class="number">1</span>..f.length() {
 <span data-nosnippet>542</span>                delta[i - <span class="number">1</span>] -= f[i].clone() * <span class="kw-2">&amp;</span>indices[i];
 <span data-nosnippet>543</span>            }
 <span data-nosnippet>544</span>            delta.resize(<span class="number">2 </span>* m);
@@ -1169,7 +1169,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>584</span>                .take(deg)
 <span data-nosnippet>585</span>                .enumerate()
 <span data-nosnippet>586</span>                .skip(<span class="number">1</span>)
-<span data-nosnippet>587</span>                .filter_map(|(<a href="../../algebra/lazy_map.rs.html#48">i</a>, x)| (!x.is_zero()).then_some(i))
+<span data-nosnippet>587</span>                .filter_map(|(<a href="../../algebra/lazy_map.rs.html#41">i</a>, <a href="../../algebra/lazy_map.rs.html#41">x</a>)| (!x.is_zero()).then_some(i))
 <span data-nosnippet>588</span>                .collect();
 <span data-nosnippet>589</span>            <span class="kw">let </span><span class="kw-2">mut </span>derivative = <span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>590</span>            <span class="kw">let </span>inverse = T::one() / <span class="self">self</span>[<span class="number">0</span>].clone();
@@ -1218,7 +1218,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>633</span>        C::multiply(<span class="kw-2">&amp;mut </span>error, <span class="kw-2">&amp;</span>quotient);
 <span data-nosnippet>634</span>        <span class="kw">let </span><span class="kw-2">mut </span>error = C::inverse_transform(error, half * <span class="number">2</span>);
 <span data-nosnippet>635</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n - half {
-<span data-nosnippet>636</span>            error[<a href="../../algebra/lazy_map.rs.html#131">i</a>] = derivative.coeff(half + i) - <span class="kw-2">&amp;</span>error[half + i];
+<span data-nosnippet>636</span>            error[i] = derivative.coeff(half + i) - <span class="kw-2">&amp;</span>error[half + i];
 <span data-nosnippet>637</span>        }
 <span data-nosnippet>638</span>        error.truncate(n - half);
 <span data-nosnippet>639</span>        <span class="kw">let </span><span class="kw-2">mut </span>error = C::transform(error, half * <span class="number">2</span>);
@@ -1229,13 +1229,13 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>644</span>    }
 <span data-nosnippet>645</span>    <span class="kw">pub fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: usize, deg: usize) -&gt; <span class="self">Self
 <span data-nosnippet>646</span>    </span><span class="kw">where
-<span data-nosnippet>647</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>647</span>        </span>C: NttReuse&lt;T = <a href="../../num/zero_one.rs.html#16">Vec</a>&lt;T&gt;&gt;,
 <span data-nosnippet>648</span>        C::F: Clone,
 <span data-nosnippet>649</span>    {
 <span data-nosnippet>650</span>        <span class="kw">if </span>rhs == <span class="number">0 </span>{
 <span data-nosnippet>651</span>            <span class="kw">return </span><span class="self">Self</span>::from_vec(
 <span data-nosnippet>652</span>                once(T::one())
-<span data-nosnippet>653</span>                    .chain(repeat_with(T::zero))
+<span data-nosnippet>653</span>                    .chain(repeat_with(<a href="../../algebra/lazy_map.rs.html#142">T</a>::zero))
 <span data-nosnippet>654</span>                    .take(deg)
 <span data-nosnippet>655</span>                    .collect(),
 <span data-nosnippet>656</span>            );
@@ -1245,14 +1245,14 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>660</span>        }
 <span data-nosnippet>661</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(k) = <span class="self">self
 <span data-nosnippet>662</span>            </span>.iter()
-<span data-nosnippet>663</span>            .take(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">deg</a>.div_ceil(rhs))
+<span data-nosnippet>663</span>            .take(deg.div_ceil(rhs))
 <span data-nosnippet>664</span>            .position(|x| !x.is_zero())
 <span data-nosnippet>665</span>        {
 <span data-nosnippet>666</span>            <span class="kw">let </span>deg = deg - k * rhs;
 <span data-nosnippet>667</span>            <span class="kw">let </span>x0 = <span class="self">self</span>[k].clone();
 <span data-nosnippet>668</span>            <span class="kw">let </span><span class="kw-2">mut </span>f = (<span class="self">self</span>.prefix_ref(k + deg) &gt;&gt; k) / <span class="kw-2">&amp;</span>x0;
 <span data-nosnippet>669</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(step) = f.sparse_stride(deg, <span class="number">12</span>) {
-<span data-nosnippet>670</span>                f = f.pow_sparse1(T::from(rhs), <a href="../../algebra/lazy_map.rs.html#175">deg</a>, step);
+<span data-nosnippet>670</span>                f = f.pow_sparse1(T::from(rhs), deg, step);
 <span data-nosnippet>671</span>            } <span class="kw">else if </span>rhs &lt;= <span class="number">4 </span>{
 <span data-nosnippet>672</span>                <span class="kw">let </span>squared = (<span class="kw-2">&amp;</span>f * <span class="kw-2">&amp;</span>f).prefix(deg);
 <span data-nosnippet>673</span>                f = <span class="kw">match </span>rhs {
@@ -1264,7 +1264,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>679</span>            } <span class="kw">else </span>{
 <span data-nosnippet>680</span>                f = f.exp_or_pow(<span class="prelude-val">Some</span>(T::from(rhs)), deg);
 <span data-nosnippet>681</span>            }
-<span data-nosnippet>682</span>            f <span class="kw-2">*</span>= x0.pow(rhs);
+<span data-nosnippet>682</span>            f <span class="kw-2">*</span>= x0.pow(<a href="../../num/zero_one.rs.html#15-28">rhs</a>);
 <span data-nosnippet>683</span>            f &lt;&lt;= k * rhs;
 <span data-nosnippet>684</span>            f
 <span data-nosnippet>685</span>        } <span class="kw">else </span>{
@@ -1336,7 +1336,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>751</span>        <span class="kw">let </span>p = collect_sparse(p);
 <span data-nosnippet>752</span>        <span class="kw">let </span>q = collect_sparse(q);
 <span data-nosnippet>753</span>        <span class="kw">let </span>x = collect_sparse(x);
-<span data-nosnippet>754</span>        <span class="kw">let </span>diff = |p: <span class="kw-2">&amp;</span>[(usize, T)]| -&gt; Vec&lt;(usize, T)&gt; {
+<span data-nosnippet>754</span>        <span class="kw">let </span>diff = |p: <span class="kw-2">&amp;</span>[(usize, <a href="../../algebra/lazy_map.rs.html#244">T</a>)]| -&gt; Vec&lt;(usize, T)&gt; {
 <span data-nosnippet>755</span>            p.iter()
 <span data-nosnippet>756</span>                .filter(|&amp;&amp;(i, <span class="kw">_</span>)| i &gt; <span class="number">0</span>)
 <span data-nosnippet>757</span>                .map(|<span class="kw-2">&amp;</span>(i, <span class="kw-2">ref </span>x)| (i - <span class="number">1</span>, x.clone() * T::from(i)))
@@ -1456,7 +1456,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>871</span>        p /= c.clone();
 <span data-nosnippet>872</span>        q /= c;
 <span data-nosnippet>873</span>
-<span data-nosnippet>874</span>        <span class="self">Self</span>::solve_sparse_differential2(<span class="kw-2">&amp;</span>p, <span class="kw-2">&amp;</span>q, <span class="kw-2">&amp;</span>q, T::one(), -T::one(), deg)
+<span data-nosnippet>874</span>        <span class="self">Self</span>::solve_sparse_differential2(<span class="kw-2">&amp;</span>p, <span class="kw-2">&amp;</span><a href="../../algebra/lazy_map.rs.html#382">q</a>, <span class="kw-2">&amp;</span>q, T::one(), -T::one(), deg)
 <span data-nosnippet>875</span>    }
 <span data-nosnippet>876</span>}
 <span data-nosnippet>877</span>
@@ -1477,7 +1477,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>892</span>        } <span class="kw">else </span>{
 <span data-nosnippet>893</span>            <span class="kw">let </span>s = <span class="self">self</span>[<span class="number">0</span>].sqrt_coefficient()<span class="question-mark">?</span>;
 <span data-nosnippet>894</span>            <span class="kw">if </span>deg &lt;= <span class="number">1 </span>{
-<span data-nosnippet>895</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">Self</span>::from(s).prefix(deg));
+<span data-nosnippet>895</span>                <span class="kw">return </span><a class="prelude-val" href="../../num/zero_one.rs.html#2">Some</a>(<span class="self">Self</span>::from(s).prefix(deg));
 <span data-nosnippet>896</span>            }
 <span data-nosnippet>897</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(step) = <span class="self">self</span>.sparse_stride(deg, <span class="number">4</span>) {
 <span data-nosnippet>898</span>                <span class="kw">let </span>t = <span class="self">self</span>[<span class="number">0</span>].clone();
@@ -1493,7 +1493,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>908</span>            <span class="kw">let </span>extend = |f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>, end| {
 <span data-nosnippet>909</span>                <span class="kw">for </span>i <span class="kw">in </span>f.length()..end {
 <span data-nosnippet>910</span>                    <span class="kw">let </span><span class="kw-2">mut </span>value = <span class="self">self</span>.coeff(i);
-<span data-nosnippet>911</span>                    <span class="kw">for </span>j <span class="kw">in </span><span class="number">1</span>..i {
+<span data-nosnippet>911</span>                    <span class="kw">for </span><a href="../../algebra/lazy_map.rs.html#444">j</a> <span class="kw">in </span><span class="number">1</span>..i {
 <span data-nosnippet>912</span>                        value -= f[j].clone() * <span class="kw-2">&amp;</span>f[i - j];
 <span data-nosnippet>913</span>                    }
 <span data-nosnippet>914</span>                    f.data.push(value * <span class="kw-2">&amp;</span>inv2s);
@@ -1536,12 +1536,12 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>951</span>                    <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform(f.data.clone(), i * <span class="number">2</span>);
 <span data-nosnippet>952</span>                    C::multiply(<span class="kw-2">&amp;mut </span>error_fft, <span class="kw-2">&amp;</span>factor);
 <span data-nosnippet>953</span>                    <span class="kw">let </span>error = C::inverse_transform(error_fft, i * <span class="number">2</span>);
-<span data-nosnippet>954</span>                    <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform(error.into_iter().skip(i).collect(), i * <span class="number">2</span>);
+<span data-nosnippet>954</span>                    <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform(error.into_iter().skip(<a href="../../algebra/lazy_map.rs.html#535">i</a>).collect(), i * <span class="number">2</span>);
 <span data-nosnippet>955</span>                    C::multiply(<span class="kw-2">&amp;mut </span>error_fft, <span class="kw-2">&amp;</span>factor);
 <span data-nosnippet>956</span>                    <span class="kw">let </span>error = C::inverse_transform(error_fft, i * <span class="number">2</span>);
 <span data-nosnippet>957</span>                    inverse.data.extend(error.into_iter().take(i).map(Neg::neg));
 <span data-nosnippet>958</span>                }
-<span data-nosnippet>959</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>959</span>                <a href="../../algebra/lazy_map.rs.html#535">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>960</span>            }
 <span data-nosnippet>961</span>            f.truncate(deg);
 <span data-nosnippet>962</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -1550,7 +1550,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>965</span>    }
 <span data-nosnippet>966</span>}
 <span data-nosnippet>967</span>
-<span data-nosnippet>968</span><span class="kw">impl</span>&lt;T, C&gt; FormalPowerSeries&lt;T, <a href="../../algebra/magma.rs.html#15">C</a>&gt;
+<span data-nosnippet>968</span><span class="kw">impl</span>&lt;T, C&gt; FormalPowerSeries&lt;T, C&gt;
 <span data-nosnippet>969</span><span class="kw">where
 <span data-nosnippet>970</span>    </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>971</span>    C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
@@ -1558,7 +1558,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>973</span>    <span class="kw">pub fn </span>count_subset_sum&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize, <span class="kw-2">mut </span>inverse: F) -&gt; <span class="self">Self
 <span data-nosnippet>974</span>    </span><span class="kw">where
 <span data-nosnippet>975</span>        </span>F: FnMut(usize) -&gt; T,
-<span data-nosnippet>976</span>        C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>976</span>        C: NttReuse&lt;T = Vec&lt;<a href="../../algebra/lazy_map.rs.html#535">T</a>&gt;&gt;,
 <span data-nosnippet>977</span>        C::F: Clone,
 <span data-nosnippet>978</span>    {
 <span data-nosnippet>979</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
@@ -1623,7 +1623,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1038</span>            <span class="kw">if </span>n != <span class="number">0 </span>{
 <span data-nosnippet>1039</span>                <span class="kw">if </span>n &lt; k / <span class="number">2 </span>{
 <span data-nosnippet>1040</span>                    p = <span class="highlight">C::transform_ntt</span>(C::inverse_transform_ntt(p, k / <span class="number">2</span>), k);
-<span data-nosnippet>1041</span>                    q = <span class="highlight">C::transform_ntt</span>(C::inverse_transform_ntt(q, k / <span class="number">2</span>), k);
+<span data-nosnippet>1041</span>                    q = <span class="highlight">C::transform_ntt</span>(C::inverse_transform_ntt(<a href="../../algebra/lazy_map.rs.html#648">q</a>, k / <span class="number">2</span>), k);
 <span data-nosnippet>1042</span>                    k /= <span class="number">2</span>;
 <span data-nosnippet>1043</span>                } <span class="kw">else if </span>C::MULTIPLE {
 <span data-nosnippet>1044</span>                    p = <span class="highlight">C::transform_ntt</span>(C::inverse_transform_ntt(p, k), k * <span class="number">2</span>);
@@ -1924,7 +1924,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>514</span>
 <span data-nosnippet>515</span>            <span class="kw">let </span>previous_inverse_fft = inverse_fft;
 <span data-nosnippet>516</span>            <span class="kw">let </span><span class="kw-2">mut </span>error_fft = previous_inverse_fft.clone();
-<span data-nosnippet>517</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>error_fft, <span class="kw-2">&amp;</span>f_fft);
+<span data-nosnippet>517</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span><a href="../../algebra/action.rs.html#59-61">error_fft</a>, <span class="kw-2">&amp;</span>f_fft);
 <span data-nosnippet>518</span>            <span class="kw">let </span><span class="kw-2">mut </span>error = <span class="highlight">C::inverse_transform_ntt</span>(error_fft, m);
 <span data-nosnippet>519</span>            error[..m / <span class="number">2</span>].fill(T::zero());
 <span data-nosnippet>520</span>            <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform_ntt(error, m);
@@ -1971,9 +1971,9 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>561</span>                delta[i] += <span class="self">self</span>[i].clone();
 <span data-nosnippet>562</span>            }
 <span data-nosnippet>563</span>            delta[..m].fill(T::zero());
-<span data-nosnippet>564</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta_fft = <a href="../../algebra/lazy_map.rs.html#48">C</a>::transform_ntt(delta, <span class="number">2 </span>* m);
+<span data-nosnippet>564</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta_fft = C::transform_ntt(delta, <span class="number">2 </span>* m);
 <span data-nosnippet>565</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span>f_fft);
-<span data-nosnippet>566</span>            <span class="kw">let </span>delta = <span class="highlight">C::inverse_transform_ntt</span>(delta_fft, <span class="number">2 </span>* m);
+<span data-nosnippet>566</span>            <span class="kw">let </span>delta = <span class="highlight"><a href="../../algebra/lazy_map.rs.html#45">C</a>::inverse_transform_ntt</span>(delta_fft, <span class="number">2 </span>* m);
 <span data-nosnippet>567</span>            f.data
 <span data-nosnippet>568</span>                .extend(delta.into_iter().skip(m).take((deg - m).min(m)));
 <span data-nosnippet>569</span>            m <span class="kw-2">*</span>= <span class="number">2</span>;
@@ -2052,14 +2052,14 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>642</span>        result.extend(error.into_iter().take(n - half));
 <span data-nosnippet>643</span>        <span class="self">Self</span>::from_vec(result).integral()
 <span data-nosnippet>644</span>    }
-<span data-nosnippet>645</span>    <span class="kw">pub fn </span><a href="../../algebra/lazy_map.rs.html#175">pow</a>(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: usize, deg: usize) -&gt; <span class="self">Self
+<span data-nosnippet>645</span>    <span class="kw">pub fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: usize, deg: usize) -&gt; <span class="self">Self
 <span data-nosnippet>646</span>    </span><span class="kw">where
 <span data-nosnippet>647</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>648</span>        C::F: Clone,
 <span data-nosnippet>649</span>    {
 <span data-nosnippet>650</span>        <span class="kw">if </span>rhs == <span class="number">0 </span>{
 <span data-nosnippet>651</span>            <span class="kw">return </span><span class="self">Self</span>::from_vec(
-<span data-nosnippet>652</span>                once(T::one())
+<span data-nosnippet>652</span>                once(T::<a href="../../algebra/lazy_map.rs.html#170">one</a>())
 <span data-nosnippet>653</span>                    .chain(repeat_with(T::zero))
 <span data-nosnippet>654</span>                    .take(deg)
 <span data-nosnippet>655</span>                    .collect(),
@@ -2113,7 +2113,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>703</span>            <span class="kw">return </span>f;
 <span data-nosnippet>704</span>        }
 <span data-nosnippet>705</span>        <span class="kw">let </span>mf = T::memorized_factorial(deg);
-<span data-nosnippet>706</span>        <span class="kw">for </span>(<span class="kw">_</span>, coefficient, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;mut </span>pos {
+<span data-nosnippet>706</span>        <span class="kw">for </span>(<span class="kw">_</span>, coefficient, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;mut </span><a href="../../num/zero_one.rs.html#15-28">pos</a> {
 <span data-nosnippet>707</span>            <span class="kw-2">*</span>coefficient <span class="kw-2">*</span>= T::from(step);
 <span data-nosnippet>708</span>        }
 <span data-nosnippet>709</span>        <span class="kw">for </span>i <span class="kw">in </span>(pos.first().map_or(deg, |x| x.<span class="number">0</span>)..deg).step_by(step) {
@@ -2214,7 +2214,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>804</span>        }
 <span data-nosnippet>805</span>        <span class="kw">if </span>exp_p != <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.iter().all(|x| x.is_zero()) {
 <span data-nosnippet>806</span>            <span class="macro">assert!</span>(exp_p &gt; <span class="number">0</span>);
-<span data-nosnippet>807</span>            <span class="kw">return </span><span class="self">Self</span>::zeros(<a href="../../algebra/lazy_map.rs.html#410">deg</a>);
+<span data-nosnippet>807</span>            <span class="kw">return </span><span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>808</span>        }
 <span data-nosnippet>809</span>        <span class="kw">if </span>exp_q != <span class="number">0 </span>&amp;&amp; q.iter().all(|x| x.is_zero()) {
 <span data-nosnippet>810</span>            <span class="macro">assert!</span>(exp_q &gt; <span class="number">0</span>);
@@ -2231,7 +2231,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>821</span>                <span class="string">"Negative exponent with zero constant term"
 <span data-nosnippet>822</span>            </span>);
 <span data-nosnippet>823</span>            <span class="kw">let </span>c = f[k].clone();
-<span data-nosnippet>824</span>            <span class="kw">let </span>f = (f.clone() &gt;&gt; <a href="../../algebra/lazy_map.rs.html#436">k</a>) / <span class="kw-2">&amp;</span>c;
+<span data-nosnippet>824</span>            <span class="kw">let </span>f = (f.clone() &gt;&gt; k) / <span class="kw-2">&amp;</span>c;
 <span data-nosnippet>825</span>            (k, c, f)
 <span data-nosnippet>826</span>        };
 <span data-nosnippet>827</span>        <span class="kw">let </span>(sp, cp, <span class="kw-2">mut </span>p) = normalize(<span class="self">self</span>, exp_p);
@@ -2324,7 +2324,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>914</span>                    f.data.push(value * <span class="kw-2">&amp;</span>inv2s);
 <span data-nosnippet>915</span>                }
 <span data-nosnippet>916</span>            };
-<span data-nosnippet>917</span>            extend(<span class="kw-2">&amp;mut </span>f, deg.min(<span class="number">32</span>));
+<span data-nosnippet>917</span>            extend(<span class="kw-2">&amp;mut </span>f, deg.<a href="../../num/zero_one.rs.html#15-28">min</a>(<span class="number">32</span>));
 <span data-nosnippet>918</span>            f.truncate(deg);
 <span data-nosnippet>919</span>            <span class="kw">if </span>f.length() == deg {
 <span data-nosnippet>920</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -2403,7 +2403,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>993</span>    }
 <span data-nosnippet>994</span>    <span class="kw">pub fn </span>count_multiset_sum&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize, <span class="kw-2">mut </span>inverse: F) -&gt; <span class="self">Self
 <span data-nosnippet>995</span>    </span><span class="kw">where
-<span data-nosnippet>996</span>        </span>F: FnMut(usize) -&gt; T,
+<span data-nosnippet>996</span>        </span>F: FnMut(usize) -&gt; <a href="../../algebra/lazy_map.rs.html#625">T</a>,
 <span data-nosnippet>997</span>        C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>998</span>        C::F: Clone,
 <span data-nosnippet>999</span>    {
@@ -2437,7 +2437,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1027</span>        <span class="kw">let </span><span class="kw-2">mut </span>p = C::transform_ntt(<span class="self">self</span>.data, k * <span class="number">2</span>);
 <span data-nosnippet>1028</span>        <span class="kw">let </span><span class="kw-2">mut </span>q = C::transform_ntt(rhs.data, k * <span class="number">2</span>);
 <span data-nosnippet>1029</span>        <span class="kw">while </span>n &gt; <span class="number">0 </span>{
-<span data-nosnippet>1030</span>            <span class="kw">let </span>t = C::even_mul_normal_neg(<span class="kw-2">&amp;</span>q, <span class="kw-2">&amp;</span>q);
+<span data-nosnippet>1030</span>            <span class="kw">let </span>t = C::even_mul_normal_neg(<span class="kw-2">&amp;</span>q, <span class="kw-2">&amp;</span><a href="../../algebra/lazy_map.rs.html#656">q</a>);
 <span data-nosnippet>1031</span>            p = <span class="kw">if </span>n.is_multiple_of(<span class="number">2</span>) {
 <span data-nosnippet>1032</span>                C::even_mul_normal_neg(<span class="kw-2">&amp;</span>p, <span class="kw-2">&amp;</span>q)
 <span data-nosnippet>1033</span>            } <span class="kw">else </span>{
@@ -2491,7 +2491,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1081</span>    }
 <span data-nosnippet>1082</span>    <span class="kw">fn </span>middle_product(<span class="self">self</span>, other: <span class="kw-2">&amp;</span>C::F, deg: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>1083</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
-<span data-nosnippet>1084</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = <a href="../../algebra/magma.rs.html#189">C</a>::transform(<span class="self">self</span>.reversed().data, deg);
+<span data-nosnippet>1084</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
 <span data-nosnippet>1085</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
 <span data-nosnippet>1086</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
 <span data-nosnippet>1087</span>    }
@@ -2812,7 +2812,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>819</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
 <span data-nosnippet>820</span>        t.len()
 <span data-nosnippet>821</span>    }
-<span data-nosnippet>822</span>    <span class="kw">fn </span>transform(<a href="../algebra/lazy_map.rs.html#44">t</a>: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>822</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>823</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
 <span data-nosnippet>824</span>        <span class="kw">let </span>f = convert_crt_input(t, npot);
 <span data-nosnippet>825</span>        (
@@ -2903,11 +2903,11 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>910</span>    <span class="kw">if </span>block_len == <span class="number">0 </span>{
 <span data-nosnippet>911</span>        <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>912</span>    }
-<span data-nosnippet>913</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
+<span data-nosnippet>913</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + <a href="../algebra/lazy_map.rs.html#173">b</a>.len() - <span class="number">1</span>];
 <span data-nosnippet>914</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>915</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
 <span data-nosnippet>916</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.to_vec());
-<span data-nosnippet>917</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
+<span data-nosnippet>917</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().<a href="../algebra/lazy_map.rs.html#181">zip</a>(product) {
 <span data-nosnippet>918</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>919</span>            }
 <span data-nosnippet>920</span>        }
@@ -2967,7 +2967,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>974</span>            })
 <span data-nosnippet>975</span>        }
 <span data-nosnippet>976</span>        (
-<span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">bits</a>, parts),
+<span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>978</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>979</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>980</span>        )
@@ -2992,13 +2992,13 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>999</span>                    .zip(Convolve::&lt;N3&gt;::inverse_transform(f3, len)),
 <span data-nosnippet>1000</span>            ) {
 <span data-nosnippet>1001</span>                <span class="kw">let </span>d1 = c1.inner();
-<span data-nosnippet>1002</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
+<span data-nosnippet>1002</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">inner</a>();
 <span data-nosnippet>1003</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
 <span data-nosnippet>1004</span>                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>1005</span>                <span class="kw">let </span>limb = (d1 <span class="kw">as </span>u64)
 <span data-nosnippet>1006</span>                    .wrapping_add((d2 <span class="kw">as </span>u64).wrapping_mul(m1))
 <span data-nosnippet>1007</span>                    .wrapping_add((d3 <span class="kw">as </span>u64).wrapping_mul(m2));
-<span data-nosnippet>1008</span>                <span class="kw-2">*</span>value = value.wrapping_add(limb &lt;&lt; (part * <a href="../num/zero_one.rs.html#1-14">bits</a>));
+<span data-nosnippet>1008</span>                <span class="kw-2">*</span>value = value.wrapping_add(limb &lt;&lt; (part * bits));
 <span data-nosnippet>1009</span>            }
 <span data-nosnippet>1010</span>        }
 <span data-nosnippet>1011</span>        result
@@ -3060,7 +3060,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1067</span>        <span class="self">Self</span>::inverse_transform(f, len)
 <span data-nosnippet>1068</span>    }
 <span data-nosnippet>1069</span>
-<span data-nosnippet>1070</span>    <span class="kw">fn </span>convolve(<a href="../algebra/lazy_map.rs.html#436">a</a>: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>1070</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1071</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1072</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1073</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">300</span>, <span class="number">64</span>), (<span class="number">1536</span>, <span class="number">512</span>));
@@ -3128,7 +3128,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1135</span>        result
 <span data-nosnippet>1136</span>    }
 <span data-nosnippet>1137</span>
-<span data-nosnippet>1138</span>    <span class="kw">let </span>len = <a href="../algebra/lazy_map.rs.html#552">a</a>.len() + b.len() - <span class="number">1</span>;
+<span data-nosnippet>1138</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
 <span data-nosnippet>1139</span>    <span class="kw">let </span>transform = |values: <span class="kw-2">&amp;</span>[u64]| {
 <span data-nosnippet>1140</span>        <span class="kw">if </span>values.iter().any(|<span class="kw-2">&amp;</span>value| value &gt; u32::MAX <span class="kw">as </span>u64) {
 <span data-nosnippet>1141</span>            <span class="kw">return </span>split(values).map(|part| ConvolveRealFft::transform(part, len));
@@ -3144,9 +3144,9 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1151</span>            <span class="macro">vec!</span>[Zero::zero(); size],
 <span data-nosnippet>1152</span>        ]
 <span data-nosnippet>1153</span>    };
-<span data-nosnippet>1154</span>    <span class="kw">let </span>fa = transform(<span class="kw-2">&amp;</span>a);
+<span data-nosnippet>1154</span>    <span class="kw">let </span>fa = transform(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#535">a</a>);
 <span data-nosnippet>1155</span>    drop(a);
-<span data-nosnippet>1156</span>    <span class="kw">let </span>fb = transform(<span class="kw-2">&amp;</span>b);
+<span data-nosnippet>1156</span>    <span class="kw">let </span>fb = transform(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#535">b</a>);
 <span data-nosnippet>1157</span>    drop(b);
 <span data-nosnippet>1158</span>    <span class="kw">let </span>values: [Vec&lt;i64&gt;; <span class="number">5</span>] = std::array::from_fn(|part| {
 <span data-nosnippet>1159</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = fa[<span class="number">0</span>].clone();

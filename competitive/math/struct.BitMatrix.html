@@ -199,7 +199,7 @@
 <span data-nosnippet>173</span>    </span><span class="kw">fn </span>eliminate_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, require_full_rank: bool) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>174</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>175</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::with_capacity(n.min(cols));
-<span data-nosnippet>176</span>        <span class="kw">if </span><a href="../algebra/action.rs.html#14">n</a> &lt; <span class="number">32 </span>{
+<span data-nosnippet>176</span>        <span class="kw">if </span>n &lt; <span class="number">32 </span>{
 <span data-nosnippet>177</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0</span>;
 <span data-nosnippet>178</span>            <span class="kw">while </span>c &lt; cols {
 <span data-nosnippet>179</span>                <span class="kw">let </span>r = pivots.len();
@@ -328,7 +328,7 @@
 <span data-nosnippet>302</span>            }
 <span data-nosnippet>303</span>            <span class="kw">for </span>i <span class="kw">in </span>(rank..n).chain(<span class="number">0</span>..<span class="kw">if </span>full { first } <span class="kw">else </span>{ <span class="number">0 </span>}) {
 <span data-nosnippet>304</span>                <span class="kw">let </span>key = (<span class="self">self</span>[i].words()[word] &gt;&gt; (start &amp; <span class="number">63</span>)) <span class="kw">as </span>usize;
-<span data-nosnippet>305</span>                <span class="kw">let </span>x = indices[<span class="number">0</span>][key &amp; masks[<span class="number">0</span>]];
+<span data-nosnippet>305</span>                <span class="kw">let </span>x = indices[<span class="number">0</span>][<a href="../num/zero_one.rs.html#15-28">key</a> &amp; masks[<span class="number">0</span>]];
 <span data-nosnippet>306</span>                <span class="kw">if </span>block &lt;= <span class="number">8 </span>{
 <span data-nosnippet>307</span>                    <span class="kw">if </span>x != <span class="number">0 </span>{
 <span data-nosnippet>308</span>                        xor(<span class="kw-2">&amp;mut </span><span class="self">self</span>[i].words_mut()[word..], <span class="kw-2">&amp;</span>table[x].words()[word..]);
@@ -367,7 +367,7 @@
 <span data-nosnippet>341</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
 <span data-nosnippet>342</span>            <span class="kw">let </span>bits = <span class="self">self</span>.data[row..]
 <span data-nosnippet>343</span>                .iter()
-<span data-nosnippet>344</span>                .fold(<span class="number">0</span>, |x, row| x | row.words()[word])
+<span data-nosnippet>344</span>                .fold(<span class="number">0</span>, |x, row| x | <a href="../num/zero_one.rs.html#15-28">row</a>.words()[word])
 <span data-nosnippet>345</span>                &amp; (u64::MAX &lt;&lt; (start &amp; <span class="number">63</span>));
 <span data-nosnippet>346</span>            <span class="kw">if </span>bits != <span class="number">0 </span>{
 <span data-nosnippet>347</span>                <span class="kw">return </span>(word * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
@@ -405,7 +405,7 @@
 <span data-nosnippet>379</span>        pivots.sort_unstable();
 <span data-nosnippet>380</span>        <span class="self">self</span>.data
 <span data-nosnippet>381</span>            .sort_by_cached_key(|row| row.iter_ones().next().filter(|<span class="kw-2">&amp;</span>c| c &lt; cols).unwrap_or(cols));
-<span data-nosnippet>382</span>        <span class="kw">if </span><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">full</a> {
+<span data-nosnippet>382</span>        <span class="kw">if </span>full {
 <span data-nosnippet>383</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>pivots.iter().enumerate() {
 <span data-nosnippet>384</span>                basis[c] = i;
 <span data-nosnippet>385</span>            }
@@ -431,7 +431,7 @@
 <span data-nosnippet>405</span>        <span class="kw">let </span>ones = <span class="self">self</span>.data.iter().map(BitSet::count_ones).sum::&lt;u64&gt;();
 <span data-nosnippet>406</span>        <span class="kw">let </span>size = <span class="self">self</span>.shape.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64;
 <span data-nosnippet>407</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256 </span>|| <span class="self">self</span>.shape.<span class="number">1 </span>&lt; <span class="number">32 </span>|| ones &lt;= size / <span class="number">8 </span>{
-<span data-nosnippet>408</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
+<span data-nosnippet>408</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">iter</a>().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>409</span>                <span class="kw">for </span>j <span class="kw">in </span>a.iter_ones() {
 <span data-nosnippet>410</span>                    xor(c.words_mut(), rhs[j].words());
 <span data-nosnippet>411</span>                }
@@ -440,7 +440,7 @@
 <span data-nosnippet>414</span>        }
 <span data-nosnippet>415</span>        <span class="kw">if </span>size - ones &lt;= size / <span class="number">8 </span>{
 <span data-nosnippet>416</span>            <span class="kw">let </span><span class="kw-2">mut </span>sum = BitSet::new(rhs.shape.<span class="number">1</span>);
-<span data-nosnippet>417</span>            <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;</span>rhs.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">data</a> {
+<span data-nosnippet>417</span>            <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;</span>rhs.data {
 <span data-nosnippet>418</span>                sum ^= row;
 <span data-nosnippet>419</span>            }
 <span data-nosnippet>420</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
@@ -476,10 +476,10 @@
 <span data-nosnippet>450</span>                    }
 <span data-nosnippet>451</span>                }
 <span data-nosnippet>452</span>            }
-<span data-nosnippet>453</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.<a href="../num/zero_one.rs.html#1-14">data</a>) {
+<span data-nosnippet>453</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>454</span>                <span class="kw">let </span>key = a.words()[start / <span class="number">64</span>];
-<span data-nosnippet>455</span>                <span class="kw">let </span>offset = (<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">key</a> &amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
-<span data-nosnippet>456</span>                <span class="kw">let </span>p0 = <span class="kw-2">&amp;</span>table[offset..offset + width];
+<span data-nosnippet>455</span>                <span class="kw">let </span>offset = (key &amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
+<span data-nosnippet>456</span>                <span class="kw">let </span>p0 = <span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">table</a>[offset..offset + width];
 <span data-nosnippet>457</span>                <span class="kw">let </span>offset = group + (key &gt;&gt; <span class="number">8 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>458</span>                <span class="kw">let </span>p1 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>459</span>                <span class="kw">let </span>offset = <span class="number">2 </span>* group + (key &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
@@ -950,7 +950,7 @@
 <span data-nosnippet>297</span>                }
 <span data-nosnippet>298</span>                masks[group] = keys[(<span class="number">1 </span>&lt;&lt; count) - <span class="number">1</span>];
 <span data-nosnippet>299</span>                <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>key) <span class="kw">in </span>keys[..<span class="number">1 </span>&lt;&lt; count].iter().enumerate() {
-<span data-nosnippet>300</span>                    indices[group][key] = <a href="../algebra/action.rs.html#54">i</a>;
+<span data-nosnippet>300</span>                    indices[group][key] = i;
 <span data-nosnippet>301</span>                }
 <span data-nosnippet>302</span>            }
 <span data-nosnippet>303</span>            <span class="kw">for </span>i <span class="kw">in </span>(rank..n).chain(<span class="number">0</span>..<span class="kw">if </span>full { first } <span class="kw">else </span>{ <span class="number">0 </span>}) {
@@ -965,12 +965,12 @@
 <span data-nosnippet>312</span>                <span class="kw">let </span>y = indices[<span class="number">1</span>][(key &gt;&gt; <span class="number">8</span>) &amp; masks[<span class="number">1</span>]];
 <span data-nosnippet>313</span>                <span class="kw">let </span>z = indices[<span class="number">2</span>][(key &gt;&gt; <span class="number">16</span>) &amp; masks[<span class="number">2</span>]];
 <span data-nosnippet>314</span>                <span class="kw">let </span>w = indices[<span class="number">3</span>][(key &gt;&gt; <span class="number">24</span>) &amp; masks[<span class="number">3</span>]];
-<span data-nosnippet>315</span>                <span class="kw">if </span>x | y | z | <a href="../algebra/action.rs.html#86">w</a> != <span class="number">0 </span>{
+<span data-nosnippet>315</span>                <span class="kw">if </span>x | y | z | w != <span class="number">0 </span>{
 <span data-nosnippet>316</span>                    <span class="kw">let </span>p = <span class="kw-2">&amp;</span>table[x].words()[word..];
 <span data-nosnippet>317</span>                    <span class="kw">let </span>q = <span class="kw-2">&amp;</span>table[<span class="number">256 </span>+ y].words()[word..];
 <span data-nosnippet>318</span>                    <span class="kw">let </span>r = <span class="kw-2">&amp;</span>table[<span class="number">512 </span>+ z].words()[word..];
 <span data-nosnippet>319</span>                    <span class="kw">let </span>s = <span class="kw-2">&amp;</span>table[<span class="number">768 </span>+ w].words()[word..];
-<span data-nosnippet>320</span>                    <span class="kw">for </span>((((x, y), z), r), s) <span class="kw">in </span><span class="self">self</span>[i].words_mut()[word..]
+<span data-nosnippet>320</span>                    <span class="kw">for </span>((((x, y), z), r), <a href="../algebra/magma.rs.html#6">s</a>) <span class="kw">in </span><span class="self">self</span>[i].words_mut()[word..]
 <span data-nosnippet>321</span>                        .iter_mut()
 <span data-nosnippet>322</span>                        .zip(p)
 <span data-nosnippet>323</span>                        .zip(q)
@@ -991,8 +991,8 @@
 <span data-nosnippet>338</span>
 <span data-nosnippet>339</span>    <span class="kw">fn </span>next_column(<span class="kw-2">&amp;</span><span class="self">self</span>, row: usize, <span class="kw-2">mut </span>start: usize, cols: usize) -&gt; usize {
 <span data-nosnippet>340</span>        <span class="kw">while </span>start &lt; cols {
-<span data-nosnippet>341</span>            <span class="kw">let </span><a href="../algebra/magma.rs.html#56">word</a> = start / <span class="number">64</span>;
-<span data-nosnippet>342</span>            <span class="kw">let </span>bits = <span class="self">self</span>.data[row..]
+<span data-nosnippet>341</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
+<span data-nosnippet>342</span>            <span class="kw">let </span><a href="../algebra/magma.rs.html#56">bits</a> = <span class="self">self</span>.data[row..]
 <span data-nosnippet>343</span>                .iter()
 <span data-nosnippet>344</span>                .fold(<span class="number">0</span>, |x, row| x | row.words()[word])
 <span data-nosnippet>345</span>                &amp; (u64::MAX &lt;&lt; (start &amp; <span class="number">63</span>));

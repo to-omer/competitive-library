@@ -251,7 +251,7 @@
 <span data-nosnippet>213</span>                }
 <span data-nosnippet>214</span>                <span class="kw">if </span>k + kk &lt; ord {
 <span data-nosnippet>215</span>                    k += kk;
-<span data-nosnippet>216</span>                    gk = br.rem(gk <span class="kw">as </span>u128 * gkk <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>216</span>                    gk = br.rem(gk <span class="kw">as </span><a href="../num/zero_one.rs.html#1-14">u128</a> * <a href="../num/zero_one.rs.html#15-28">gkk</a> <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>217</span>                } <span class="kw">else </span>{
 <span data-nosnippet>218</span>                    kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
 <span data-nosnippet>219</span>                    gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
@@ -264,12 +264,12 @@
 <span data-nosnippet>226</span>                <span class="kw">if </span>row[j] != <span class="number">0 </span>{
 <span data-nosnippet>227</span>                    <span class="kw">let </span>b = mul(modinv(mat[j][j], ord), row[j]);
 <span data-nosnippet>228</span>                    <span class="kw">for </span>(r, a) <span class="kw">in </span>row[j..].iter_mut().zip(<span class="kw-2">&amp;</span>mat[j][j..]) {
-<span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span>r, mul(<span class="kw-2">*</span>a, b));
+<span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span>r, mul(<span class="kw-2">*</span><a href="../algebra/action.rs.html#86">a</a>, b));
 <span data-nosnippet>230</span>                    }
 <span data-nosnippet>231</span>                }
 <span data-nosnippet>232</span>                <span class="macro">assert_eq!</span>(row[j], <span class="number">0</span>);
 <span data-nosnippet>233</span>            }
-<span data-nosnippet>234</span>            <span class="kw">if </span><span class="highlight">gcd</span>(row[i], ord) == <span class="number">1 </span>{
+<span data-nosnippet>234</span>            <span class="kw">if </span><span class="highlight">gcd</span>(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">row</a>[i], ord) == <span class="number">1 </span>{
 <span data-nosnippet>235</span>                <span class="kw">let </span>last = rows.len() - <span class="number">1</span>;
 <span data-nosnippet>236</span>                rows.swap(ri, last);
 <span data-nosnippet>237</span>                mat.push(rows.pop().unwrap());
@@ -331,7 +331,7 @@
 <span data-nosnippet>293</span>                <span class="kw">let </span><span class="kw-2">mut </span>res = ord - k;
 <span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
 <span data-nosnippet>295</span>                    <span class="kw">for _ in </span><span class="number">0</span>..r {
-<span data-nosnippet>296</span>                        res += c;
+<span data-nosnippet>296</span>                        <a href="../algebra/lazy_map.rs.html#64">res</a> += c;
 <span data-nosnippet>297</span>                        <span class="kw">if </span>res &gt;= ord {
 <span data-nosnippet>298</span>                            res -= ord;
 <span data-nosnippet>299</span>                        }
@@ -386,8 +386,8 @@
 <span data-nosnippet>348</span><span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
 <span data-nosnippet>349</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
 <span data-nosnippet>350</span>    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as </span>u128);
-<span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">f64</a>).sqrt().ceil() <span class="kw">as </span>u64;
+<span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: <a href="../num/zero_one.rs.html#15-28">u64</a>, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
 <span data-nosnippet>353</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;u64, u64&gt;::new();
 <span data-nosnippet>354</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
@@ -401,7 +401,7 @@
 <span data-nosnippet>363</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = pow(mul(modinv(pow(a, t, <span class="kw-2">&amp;</span>br), n), b), p.pow(e - <span class="number">1 </span>- k), <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="bool-val">false</span>;
 <span data-nosnippet>365</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..block_size * block_size).step_by(block_size <span class="kw">as </span>usize) {
-<span data-nosnippet>366</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(j) = baby.get(<span class="kw-2">&amp;</span>h) {
+<span data-nosnippet>366</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(j) = baby.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">get</a>(<span class="kw-2">&amp;</span>h) {
 <span data-nosnippet>367</span>                t += (i + j) * p.pow(k);
 <span data-nosnippet>368</span>                ok = <span class="bool-val">true</span>;
 <span data-nosnippet>369</span>                <span class="kw">break</span>;

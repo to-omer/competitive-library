@@ -234,7 +234,7 @@
 <span data-nosnippet>238</span>    }
 <span data-nosnippet>239</span>}
 <span data-nosnippet>240</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
-<span data-nosnippet>241</span></span><span class="kw">impl</span>&lt;S, L, <a href="../../algebra/action.rs.html#54">G</a>&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, [S], u64&gt;
+<span data-nosnippet>241</span></span><span class="kw">impl</span>&lt;S, L, G&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, [S], u64&gt;
 <span data-nosnippet>242</span><span class="kw">where
 <span data-nosnippet>243</span>    </span>S: Copy,
 <span data-nosnippet>244</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
@@ -301,11 +301,11 @@
 <span data-nosnippet>305</span>            <span class="kw">let </span>source = indices[i];
 <span data-nosnippet>306</span>            <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>307</span>                indices[i] = game.index_of(next.to);
-<span data-nosnippet>308</span>                <span class="kw">let </span>wins = <span class="kw">if </span>MISERE {
+<span data-nosnippet>308</span>                <span class="kw">let </span>wins = <span class="kw">if </span><a href="../../algebra/magma.rs.html#145-176">MISERE</a> {
 <span data-nosnippet>309</span>                    <span class="kw">let </span>key =
 <span data-nosnippet>310</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>311</span>                    game.sums.outcomes.values[game.sums.indices[<span class="kw-2">&amp;</span>key]] == GameOutcome::Lose
-<span data-nosnippet>312</span>                } <span class="kw">else if let </span><span class="prelude-val">Some</span>((value, <span class="kw">_</span>)) = game.generalized_grundy[indices[i]] {
+<span data-nosnippet>312</span>                } <span class="kw">else if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((value, <span class="kw">_</span>)) = game.generalized_grundy[indices[i]] {
 <span data-nosnippet>313</span>                    <span class="kw">match </span>game.generalized_grundy[source] {
 <span data-nosnippet>314</span>                        <span class="prelude-val">Some</span>((g, <span class="kw">_</span>)) =&gt; infinite == <span class="number">0 </span>&amp;&amp; xor ^ g == value,
 <span data-nosnippet>315</span>                        <span class="prelude-val">None </span>=&gt; infinite == <span class="number">1 </span>&amp;&amp; xor == value,
@@ -346,11 +346,11 @@
 <span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>indices = <span class="self">self</span>.game.sum_indices(state);
 <span data-nosnippet>351</span>        <span class="kw">let </span>game = <span class="kw-2">&amp;</span><span class="self">self</span>.game;
 <span data-nosnippet>352</span>        <span class="kw">if </span>MISERE {
-<span data-nosnippet>353</span>            <span class="kw">let </span>key = GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">game</a>.index.as_ref().unwrap().edges);
+<span data-nosnippet>353</span>            <span class="kw">let </span>key = GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>354</span>            <span class="kw">let </span>winner = game.sums.outcomes.winning[game.sums.indices[<span class="kw-2">&amp;</span>key]];
 <span data-nosnippet>355</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
 <span data-nosnippet>356</span>                <span class="kw">let </span>original = indices[i];
-<span data-nosnippet>357</span>                <span class="kw">for </span>next <span class="kw">in </span>game.graph.<a href="../../algebra/action.rs.html#59-61">neighbors</a>(component) {
+<span data-nosnippet>357</span>                <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>358</span>                    indices[i] = game.index_of(next.to);
 <span data-nosnippet>359</span>                    <span class="kw">let </span>key =
 <span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
@@ -396,7 +396,7 @@
 <span data-nosnippet>400</span>                <span class="kw">let </span>to = edges[v]
 <span data-nosnippet>401</span>                    .iter()
 <span data-nosnippet>402</span>                    .copied()
-<span data-nosnippet>403</span>                    .find(|<span class="kw-2">&amp;</span><a href="../../algebra/lazy_map.rs.html#220">u</a>| {
+<span data-nosnippet>403</span>                    .find(|<span class="kw-2">&amp;</span>u| {
 <span data-nosnippet>404</span>                        game.generalized_grundy[u].is_none()
 <span data-nosnippet>405</span>                            &amp;&amp; target.is_none_or(|g| {
 <span data-nosnippet>406</span>                                !edges[u].iter().any(|<span class="kw-2">&amp;</span>w| {
@@ -644,7 +644,7 @@
 <span data-nosnippet>221</span>    E: FnMut(<span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'g</span>, G&gt;, <span class="kw-2">&amp;</span>[S]) -&gt; V,
 <span data-nosnippet>222</span>{
 <span data-nosnippet>223</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (usize, L), V&gt;&gt; {
-<span data-nosnippet>224</span>        <a class="self" href="../../algebra/magma.rs.html#56">self</a>.eval(state);
+<span data-nosnippet>224</span>        <span class="self">self</span>.eval(state);
 <span data-nosnippet>225</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
 <span data-nosnippet>226</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
 <span data-nosnippet>227</span>            <span class="kw">for </span>next <span class="kw">in </span><span class="self">self</span>.game.graph.neighbors(component) {
@@ -652,7 +652,7 @@
 <span data-nosnippet>229</span>                to[i] = next.to;
 <span data-nosnippet>230</span>                <span class="kw">let </span>value = <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>to);
 <span data-nosnippet>231</span>                result.push(EvaluatedMove {
-<span data-nosnippet>232</span>                    next: Neighbor::new(to, (i, next.label)),
+<span data-nosnippet>232</span>                    next: <a href="../../algebra/action.rs.html#28-30">Neighbor</a>::new(to, (i, next.label)),
 <span data-nosnippet>233</span>                    value,
 <span data-nosnippet>234</span>                });
 <span data-nosnippet>235</span>            }
@@ -666,7 +666,7 @@
 <span data-nosnippet>243</span>    </span>S: Copy,
 <span data-nosnippet>244</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
 <span data-nosnippet>245</span>{
-<span data-nosnippet>246</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[<a href="../../algebra/action.rs.html#54">S</a>]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
+<span data-nosnippet>246</span>    <span class="kw">pub fn </span>winning_moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
 <span data-nosnippet>247</span>        <span class="kw">let </span>xor = <span class="self">self</span>.eval(state);
 <span data-nosnippet>248</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
 <span data-nosnippet>249</span>        <span class="kw">if </span>xor == <span class="number">0 </span>{
@@ -704,7 +704,7 @@
 <span data-nosnippet>281</span>            <span class="kw">return </span>query
 <span data-nosnippet>282</span>                .winning_moves(single)
 <span data-nosnippet>283</span>                .into_iter()
-<span data-nosnippet>284</span>                .map(|next| Neighbor::new(<span class="macro">vec!</span>[<a href="../../algebra/magma.rs.html#56">next</a>.to], (<span class="number">0</span>, next.label)))
+<span data-nosnippet>284</span>                .map(|next| Neighbor::new(<span class="macro">vec!</span>[next.to], (<span class="number">0</span>, next.label)))
 <span data-nosnippet>285</span>                .collect();
 <span data-nosnippet>286</span>        }
 <span data-nosnippet>287</span>        <span class="kw">if </span><span class="self">self</span>.eval(state) != GameOutcome::Win {
@@ -759,7 +759,7 @@
 <span data-nosnippet>336</span>        }
 <span data-nosnippet>337</span>        <span class="kw">if let </span>[single] = state {
 <span data-nosnippet>338</span>            <span class="kw">let </span><span class="kw-2">mut </span>query: GameAnalysis&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, S, GameOutcome, MISERE&gt; =
-<span data-nosnippet>339</span>                GameAnalysis::new(<a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.game, |g: <span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, s| {
+<span data-nosnippet>339</span>                GameAnalysis::new(<span class="self">self</span>.game, |g: <span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, s| {
 <span data-nosnippet>340</span>                    g.<span class="highlight">outcome</span>(s, MISERE)
 <span data-nosnippet>341</span>                });
 <span data-nosnippet>342</span>            <span class="kw">return </span>query
@@ -771,7 +771,7 @@
 <span data-nosnippet>348</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>349</span>        }
 <span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>indices = <span class="self">self</span>.game.sum_indices(state);
-<span data-nosnippet>351</span>        <span class="kw">let </span>game = <span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.game;
+<span data-nosnippet>351</span>        <span class="kw">let </span>game = <span class="kw-2">&amp;</span><span class="self">self</span>.game;
 <span data-nosnippet>352</span>        <span class="kw">if </span>MISERE {
 <span data-nosnippet>353</span>            <span class="kw">let </span>key = GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>354</span>            <span class="kw">let </span>winner = game.sums.outcomes.winning[game.sums.indices[<span class="kw-2">&amp;</span>key]];
@@ -855,7 +855,7 @@
 <span data-nosnippet>432</span>                .iter()
 <span data-nosnippet>433</span>                .enumerate()
 <span data-nosnippet>434</span>                .filter_map(|(i, <span class="kw-2">&amp;</span>v)| game.generalized_grundy[v].map(|g| (i, g)))
-<span data-nosnippet>435</span>                .filter(|(<span class="kw">_</span>, (g, <span class="kw">_</span>))| g ^ xor &lt; <span class="kw-2">*</span><a href="../../algebra/lazy_map.rs.html#266">g</a>)
+<span data-nosnippet>435</span>                .filter(|(<span class="kw">_</span>, (g, <span class="kw">_</span>))| g ^ xor &lt; <span class="kw-2">*</span>g)
 <span data-nosnippet>436</span>                .max_by_key(|<span class="kw-2">&amp;</span>(i, g)| (g, Reverse(i)))<span class="question-mark">?</span>;
 <span data-nosnippet>437</span>            (i, g ^ xor)
 <span data-nosnippet>438</span>        };
@@ -900,7 +900,7 @@
 <span data-nosnippet>477</span>                    .map(|<span class="kw-2">&amp;</span>u| <span class="self">self</span>.grundy[u].unwrap())
 <span data-nosnippet>478</span>                    .collect();
 <span data-nosnippet>479</span>                <span class="self">self</span>.grundy[<span class="kw-2">*</span>v] = <span class="prelude-val">Some</span>(game_mex(values));
-<span data-nosnippet>480</span>                active.remove(v);
+<span data-nosnippet>480</span>                <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">active</a>.remove(v);
 <span data-nosnippet>481</span>                stack.pop();
 <span data-nosnippet>482</span>            }
 <span data-nosnippet>483</span>        }
@@ -1151,7 +1151,7 @@
 <span data-nosnippet>467</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(root, index.edges[root].iter())];
 <span data-nosnippet>468</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>((v, moves)) = stack.last_mut() {
 <span data-nosnippet>469</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>u) = moves.next() {
-<span data-nosnippet>470</span>                <span class="kw">if </span><span class="self">self</span>.grundy[<a href="../../algebra/lazy_map.rs.html#44">u</a>].is_none() {
+<span data-nosnippet>470</span>                <span class="kw">if </span><span class="self">self</span>.grundy[u].is_none() {
 <span data-nosnippet>471</span>                    <span class="macro">assert!</span>(active.insert(u), <span class="string">"cycle in a finite game"</span>);
 <span data-nosnippet>472</span>                    stack.push((u, index.edges[u].iter()));
 <span data-nosnippet>473</span>                }
@@ -1368,7 +1368,7 @@
 <span data-nosnippet>301</span>            }
 <span data-nosnippet>302</span>        }
 <span data-nosnippet>303</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
-<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().<a href="../../algebra/action.rs.html#7-26">enumerate</a>() {
 <span data-nosnippet>305</span>            <span class="kw">let </span>source = indices[i];
 <span data-nosnippet>306</span>            <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>307</span>                indices[i] = game.index_of(next.to);
@@ -1424,7 +1424,7 @@
 <span data-nosnippet>357</span>                <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>358</span>                    indices[i] = game.index_of(next.to);
 <span data-nosnippet>359</span>                    <span class="kw">let </span>key =
-<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">edges</a>);
+<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>361</span>                    <span class="kw">let </span>id = game.sums.indices[<span class="kw-2">&amp;</span>key];
 <span data-nosnippet>362</span>                    <span class="kw">if </span><span class="prelude-val">Some</span>(id) == winner
 <span data-nosnippet>363</span>                        || outcome == GameOutcome::Draw
@@ -1492,7 +1492,7 @@
 <span data-nosnippet>425</span>        }
 <span data-nosnippet>426</span>        <span class="comment">// Reduce the largest (Grundy, counter) pair, then minimize the
 <span data-nosnippet>427</span>        // destination counter so repeated winning moves terminate.
-<span data-nosnippet>428</span>        </span><span class="kw">let </span>(<a href="../../algebra/lazy_map.rs.html#178">i</a>, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
+<span data-nosnippet>428</span>        </span><span class="kw">let </span>(i, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
 <span data-nosnippet>429</span>            (i, xor)
 <span data-nosnippet>430</span>        } <span class="kw">else </span>{
 <span data-nosnippet>431</span>            <span class="kw">let </span>(i, (g, <span class="kw">_</span>)) = indices
@@ -1525,7 +1525,7 @@
 <span data-nosnippet>458</span>    <span class="kw">fn </span>grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>G::Vertex) -&gt; u64 {
 <span data-nosnippet>459</span>        <span class="self">self</span>.<span class="highlight">prepare</span>();
 <span data-nosnippet>460</span>        <span class="kw">let </span>root = <span class="self">self</span>.index_of(<span class="kw-2">*</span>state);
-<span data-nosnippet>461</span>        <span class="kw">let </span>index = <span class="self">self</span>.index.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_ref">as_ref</a>().unwrap();
+<span data-nosnippet>461</span>        <span class="kw">let </span>index = <span class="self">self</span>.index.as_ref().unwrap();
 <span data-nosnippet>462</span>        <span class="self">self</span>.grundy.resize(index.edges.len(), <span class="prelude-val">None</span>);
 <span data-nosnippet>463</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = <span class="self">self</span>.grundy[root] {
 <span data-nosnippet>464</span>            <span class="kw">return </span>value;
@@ -1576,9 +1576,9 @@
 <span data-nosnippet>509</span>            <span class="self">self</span>.solve_generalized_grundy();
 <span data-nosnippet>510</span>            <span class="kw">return </span><span class="self">self</span>.sum_normal_outcome(<span class="kw-2">&amp;</span>indices);
 <span data-nosnippet>511</span>        }
-<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">edges</a>;
+<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().edges;
 <span data-nosnippet>513</span>        <span class="kw">let </span>root = <span class="self">self</span>.sums.prepare(indices, edges);
-<span data-nosnippet>514</span>        <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/derive.Copy.html">self</a>.sums.outcomes.values[root]
+<span data-nosnippet>514</span>        <span class="self">self</span>.sums.outcomes.values[root]
 <span data-nosnippet>515</span>    }
 <span data-nosnippet>516</span>
 <span data-nosnippet>517</span>    <span class="kw">fn </span>sum_normal_outcome(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[usize]) -&gt; GameOutcome {
@@ -1609,7 +1609,7 @@
 <span data-nosnippet>542</span>
 <span data-nosnippet>543</span>    <span class="kw">fn </span>sum_indices(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex]) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>544</span>        <span class="self">self</span>.<span class="highlight">prepare</span>();
-<span data-nosnippet>545</span>        state.iter().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">map</a>(|<span class="kw-2">&amp;</span>s| <span class="self">self</span>.index_of(s)).collect()
+<span data-nosnippet>545</span>        state.iter().map(|<span class="kw-2">&amp;</span>s| <span class="self">self</span>.index_of(s)).collect()
 <span data-nosnippet>546</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.index_of" class="method"><a class="src rightside" href="../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#580-584">Source</a><h4 class="code-header">fn <a href="#method.index_of" class="fn">index_of</a>(&amp;self, v: G::<a class="associatedtype" href="../../../graph/trait.Graph.html#associatedtype.Vertex" title="type competitive::graph::Graph::Vertex">Vertex</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#134&#34;,&#34;line 134&#34;],[[20,20],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#152&#34;,&#34;line 152&#34;],[[35,35],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#167&#34;,&#34;line 167&#34;],[[52,52],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#184&#34;,&#34;line 184&#34;],[[68,68],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#200&#34;,&#34;line 200&#34;],[[72,72],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#204&#34;,&#34;line 204&#34;],[[175,175],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#307&#34;,&#34;line 307&#34;],[[226,226],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#358&#34;,&#34;line 358&#34;],[[283,283],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#415&#34;,&#34;line 415&#34;],[[311,311],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#443&#34;,&#34;line 443&#34;],[[328,328],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#460&#34;,&#34;line 460&#34;],[[362,362],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#494&#34;,&#34;line 494&#34;],[[413,413],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#545&#34;,&#34;line 545&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/graph.rs (<a href="../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#134">line 134</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>132</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; Vec&lt;EvaluatedMove&lt;S, L, V&gt;&gt; {
 <span data-nosnippet>133</span>        <span class="self">self</span>.game.prepare();
 <span data-nosnippet>134</span>        <span class="self">self</span>.game.<span class="highlight focus">index_of</span>(<span class="kw-2">*</span>state);
@@ -1782,7 +1782,7 @@
 <span data-nosnippet>301</span>            }
 <span data-nosnippet>302</span>        }
 <span data-nosnippet>303</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
-<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().<a href="../../algebra/action.rs.html#7-26">enumerate</a>() {
 <span data-nosnippet>305</span>            <span class="kw">let </span>source = indices[i];
 <span data-nosnippet>306</span>            <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>307</span>                indices[i] = game.<span class="highlight">index_of</span>(next.to);
@@ -1838,7 +1838,7 @@
 <span data-nosnippet>357</span>                <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>358</span>                    indices[i] = game.<span class="highlight">index_of</span>(next.to);
 <span data-nosnippet>359</span>                    <span class="kw">let </span>key =
-<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">edges</a>);
+<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>361</span>                    <span class="kw">let </span>id = game.sums.indices[<span class="kw-2">&amp;</span>key];
 <span data-nosnippet>362</span>                    <span class="kw">if </span><span class="prelude-val">Some</span>(id) == winner
 <span data-nosnippet>363</span>                        || outcome == GameOutcome::Draw
@@ -1906,7 +1906,7 @@
 <span data-nosnippet>425</span>        }
 <span data-nosnippet>426</span>        <span class="comment">// Reduce the largest (Grundy, counter) pair, then minimize the
 <span data-nosnippet>427</span>        // destination counter so repeated winning moves terminate.
-<span data-nosnippet>428</span>        </span><span class="kw">let </span>(<a href="../../algebra/lazy_map.rs.html#178">i</a>, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
+<span data-nosnippet>428</span>        </span><span class="kw">let </span>(i, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
 <span data-nosnippet>429</span>            (i, xor)
 <span data-nosnippet>430</span>        } <span class="kw">else </span>{
 <span data-nosnippet>431</span>            <span class="kw">let </span>(i, (g, <span class="kw">_</span>)) = indices
@@ -1939,7 +1939,7 @@
 <span data-nosnippet>458</span>    <span class="kw">fn </span>grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>G::Vertex) -&gt; u64 {
 <span data-nosnippet>459</span>        <span class="self">self</span>.prepare();
 <span data-nosnippet>460</span>        <span class="kw">let </span>root = <span class="self">self</span>.<span class="highlight">index_of</span>(<span class="kw-2">*</span>state);
-<span data-nosnippet>461</span>        <span class="kw">let </span>index = <span class="self">self</span>.index.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_ref">as_ref</a>().unwrap();
+<span data-nosnippet>461</span>        <span class="kw">let </span>index = <span class="self">self</span>.index.as_ref().unwrap();
 <span data-nosnippet>462</span>        <span class="self">self</span>.grundy.resize(index.edges.len(), <span class="prelude-val">None</span>);
 <span data-nosnippet>463</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = <span class="self">self</span>.grundy[root] {
 <span data-nosnippet>464</span>            <span class="kw">return </span>value;
@@ -1990,9 +1990,9 @@
 <span data-nosnippet>509</span>            <span class="self">self</span>.solve_generalized_grundy();
 <span data-nosnippet>510</span>            <span class="kw">return </span><span class="self">self</span>.sum_normal_outcome(<span class="kw-2">&amp;</span>indices);
 <span data-nosnippet>511</span>        }
-<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">edges</a>;
+<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().edges;
 <span data-nosnippet>513</span>        <span class="kw">let </span>root = <span class="self">self</span>.sums.prepare(indices, edges);
-<span data-nosnippet>514</span>        <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/derive.Copy.html">self</a>.sums.outcomes.values[root]
+<span data-nosnippet>514</span>        <span class="self">self</span>.sums.outcomes.values[root]
 <span data-nosnippet>515</span>    }
 <span data-nosnippet>516</span>
 <span data-nosnippet>517</span>    <span class="kw">fn </span>sum_normal_outcome(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[usize]) -&gt; GameOutcome {
@@ -2023,7 +2023,7 @@
 <span data-nosnippet>542</span>
 <span data-nosnippet>543</span>    <span class="kw">fn </span>sum_indices(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex]) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>544</span>        <span class="self">self</span>.prepare();
-<span data-nosnippet>545</span>        state.iter().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">map</a>(|<span class="kw-2">&amp;</span>s| <span class="self">self</span>.<span class="highlight">index_of</span>(s)).collect()
+<span data-nosnippet>545</span>        state.iter().map(|<span class="kw-2">&amp;</span>s| <span class="self">self</span>.<span class="highlight">index_of</span>(s)).collect()
 <span data-nosnippet>546</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.solve_generalized_grundy" class="method"><a class="src rightside" href="../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#586-665">Source</a><h4 class="code-header">fn <a href="#method.solve_generalized_grundy" class="fn">solve_generalized_grundy</a>(&amp;mut self)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#509&#34;,&#34;line 509&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/graph.rs (<a href="../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#509">line 509</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>501</span>    <span class="kw">fn </span>sum_outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex], misere: bool) -&gt; GameOutcome {
 <span data-nosnippet>502</span>        <span class="kw">match </span>state {
 <span data-nosnippet>503</span>            [] =&gt; <span class="kw">return </span>GameOutcome::from_win(misere),

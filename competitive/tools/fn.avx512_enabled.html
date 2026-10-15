@@ -354,7 +354,7 @@
 <span data-nosnippet>302</span>    }
 <span data-nosnippet>303</span>
 <span data-nosnippet>304</span>    <span class="doccomment">/// Assigns `self | (self &gt;&gt; rhs)` to `self`.
-<span data-nosnippet>305</span>    </span><span class="attr">#[<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">inline</a>]
+<span data-nosnippet>305</span>    </span><span class="attr">#[inline]
 <span data-nosnippet>306</span>    </span><span class="kw">pub fn </span>shr_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
 <span data-nosnippet>307</span>        <span class="self">self</span>.shift_right::&lt;<span class="bool-val">true</span>&gt;(rhs);
 <span data-nosnippet>308</span>    }
@@ -385,14 +385,14 @@
 <span data-nosnippet>333</span>        }
 <span data-nosnippet>334</span>    }
 <span data-nosnippet>335</span>
-<span data-nosnippet>336</span>    <span class="attr">#[inline]
+<span data-nosnippet>336</span>    <span class="attr">#[<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">inline</a>]
 <span data-nosnippet>337</span>    </span><span class="kw">fn </span>bitop_assign&lt;<span class="kw">const </span>OP: u8&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
 <span data-nosnippet>338</span>        <span class="macro">assert_eq!</span>(
 <span data-nosnippet>339</span>            <span class="self">self</span>.size, rhs.size,
 <span data-nosnippet>340</span>            <span class="string">"bitwise operations require equal lengths"
 <span data-nosnippet>341</span>        </span>);
 <span data-nosnippet>342</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>343</span>        </span><span class="kw">if </span><span class="self">self</span>.bits.len() &gt;= SIMD_MIN_BLOCKS {
+<span data-nosnippet>343</span>        </span><span class="kw">if </span><span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">bits</a>.len() &gt;= SIMD_MIN_BLOCKS {
 <span data-nosnippet>344</span>            <span class="kw">if </span><span class="highlight">avx512_enabled</span>() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
 <span data-nosnippet>345</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
 <span data-nosnippet>346</span>                </span><span class="kw">unsafe </span>{ simd::bitop_avx512::&lt;OP&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
@@ -426,7 +426,7 @@
 <span data-nosnippet>374</span>            <span class="kw">return</span>;
 <span data-nosnippet>375</span>        }
 <span data-nosnippet>376</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>377</span>        </span><span class="kw">if </span><span class="self">self</span>.bits.len() &gt;= SIMD_MIN_BLOCKS {
+<span data-nosnippet>377</span>        </span><span class="kw">if </span><span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">bits</a>.len() &gt;= SIMD_MIN_BLOCKS {
 <span data-nosnippet>378</span>            <span class="kw">if </span><span class="highlight">avx512_enabled</span>()
 <span data-nosnippet>379</span>                &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>)
 <span data-nosnippet>380</span>                &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512vbmi2"</span>)
@@ -493,7 +493,7 @@
 <span data-nosnippet>441</span>            }
 <span data-nosnippet>442</span>            <span class="kw">return</span>;
 <span data-nosnippet>443</span>        }
-<span data-nosnippet>444</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>444</span>        <span class="attr">#[cfg(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">target_arch</a> = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>445</span>        </span><span class="kw">if </span><span class="self">self</span>.bits.len() &gt;= SIMD_MIN_BLOCKS {
 <span data-nosnippet>446</span>            <span class="kw">if </span><span class="highlight">avx512_enabled</span>()
 <span data-nosnippet>447</span>                &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>)

@@ -210,7 +210,7 @@
 <span data-nosnippet>328</span>                store_ntt_avx2(rr.add(i), y3, step);
 <span data-nosnippet>329</span>                i += step;
 <span data-nosnippet>330</span>            }
-<span data-nosnippet>331</span>            <span class="kw">while </span>i &lt; half {
+<span data-nosnippet>331</span>            <span class="kw">while </span><a href="../../../algebra/action.rs.html#39">i</a> &lt; half {
 <span data-nosnippet>332</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>ll.add(i);
 <span data-nosnippet>333</span>                <span class="kw">let </span>a1 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>lr.add(i), w1);
 <span data-nosnippet>334</span>                <span class="kw">let </span>a2 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>rl.add(i), w2);
@@ -229,7 +229,7 @@
 <span data-nosnippet>347</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
 <span data-nosnippet>348</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
 <span data-nosnippet>349</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
-<span data-nosnippet>350</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
+<span data-nosnippet>350</span>            w3 = <a href="../../../algebra/action.rs.html#86">M</a>::mod_mul(w3, rate[<span class="number">5</span>]);
 <span data-nosnippet>351</span>        }
 <span data-nosnippet>352</span>        v &gt;&gt;= <span class="number">2</span>;
 <span data-nosnippet>353</span>    }
@@ -238,7 +238,7 @@
 <span data-nosnippet>356</span>
 <span data-nosnippet>357</span><span class="attr">#[inline]
 <span data-nosnippet>358</span>#[target_feature(enable = <span class="string">"avx2"</span>)]
-<span data-nosnippet>359</span></span><span class="kw">pub unsafe fn </span>intt_batch_avx2&lt;M, <span class="kw">const </span>PARTIAL: bool&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
+<span data-nosnippet>359</span></span><span class="kw">pub unsafe fn </span>intt_batch_avx2&lt;M, <span class="kw">const </span>PARTIAL: bool&gt;(<a href="../../../algebra/magma.rs.html#6">a</a>: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;], width: usize)
 <span data-nosnippet>360</span><span class="kw">where
 <span data-nosnippet>361</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>362</span>{
@@ -338,11 +338,11 @@
 <span data-nosnippet>456</span>        v &lt;&lt;= <span class="number">2</span>;
 <span data-nosnippet>457</span>    }
 <span data-nosnippet>458</span>    <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>459</span>        <span class="kw">let </span>half = (n &gt;&gt; <span class="number">1</span>) * width;
+<span data-nosnippet>459</span>        <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">half</a> = (n &gt;&gt; <span class="number">1</span>) * width;
 <span data-nosnippet>460</span>        <span class="kw">let </span>step = <span class="kw">if </span>PARTIAL &amp;&amp; half == <span class="number">4 </span>{ <span class="number">4 </span>} <span class="kw">else </span>{ <span class="number">8 </span>};
 <span data-nosnippet>461</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>462</span>        <span class="kw">while </span>i + step &lt;= half {
-<span data-nosnippet>463</span>            <span class="kw">let </span>x0 = load_ntt_avx2(a.as_ptr().add(i), step);
+<span data-nosnippet>463</span>            <span class="kw">let </span>x0 = load_ntt_avx2(a.as_ptr().<a href="../../../algebra/lazy_map.rs.html#155">add</a>(i), step);
 <span data-nosnippet>464</span>            <span class="kw">let </span>x1 = load_ntt_avx2(a.as_ptr().add(half + i), step);
 <span data-nosnippet>465</span>            <span class="kw">let </span>y0 = add_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>466</span>            <span class="kw">let </span>y1 = sub_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);

@@ -328,7 +328,7 @@
 <span data-nosnippet>364</span>            <span class="kw">let </span>r1 = _mm256_permutevar8x32_epi32(root, root_indices);
 <span data-nosnippet>365</span>            root = update_root_avx2(
 <span data-nosnippet>366</span>                root,
-<span data-nosnippet>367</span>                packed_rate_avx2::&lt;M&gt;((!(i &gt;&gt; <span class="number">2</span>)).trailing_zeros() <span class="kw">as </span>usize, <span class="bool-val">true</span>),
+<span data-nosnippet>367</span>                packed_rate_avx2::&lt;M&gt;((!(<a href="../../../algebra/lazy_map.rs.html#142">i</a> &gt;&gt; <span class="number">2</span>)).trailing_zeros() <span class="kw">as </span>usize, <span class="bool-val">true</span>),
 <span data-nosnippet>368</span>                modulus,
 <span data-nosnippet>369</span>            );
 <span data-nosnippet>370</span>            <span class="kw">let </span>r2 = _mm256_shuffle_epi32::&lt;<span class="number">0x55</span>&gt;(r1);
@@ -478,7 +478,7 @@
 <span data-nosnippet>514</span>            <span class="kw">let </span>x1 = load_block_avx2(a, nn + i);
 <span data-nosnippet>515</span>            <span class="highlight">store_block_avx2</span>(a, i, shrink_avx2(add_mod_avx2(x0, x1, modulus2), modulus));
 <span data-nosnippet>516</span>            <span class="highlight">store_block_avx2</span>(
-<span data-nosnippet>517</span>                <a href="../../../algebra/lazy_map.rs.html#436">a</a>,
+<span data-nosnippet>517</span>                a,
 <span data-nosnippet>518</span>                nn + i,
 <span data-nosnippet>519</span>                shrink_avx2(sub_mod_avx2(x0, x1, modulus2), modulus),
 <span data-nosnippet>520</span>            );
@@ -488,7 +488,7 @@
 <span data-nosnippet>524</span>}
 <span data-nosnippet>525</span>
 <span data-nosnippet>526</span><span class="attr">#[inline]
-<span data-nosnippet>527</span>#[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>527</span>#[target_feature(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">enable</a> = <span class="string">"avx2"</span>)]
 <span data-nosnippet>528</span></span><span class="kw">unsafe fn </span>reduce_sum_avx2(
 <span data-nosnippet>529</span>    even: __m256i,
 <span data-nosnippet>530</span>    odd: __m256i,
@@ -508,7 +508,7 @@
 <span data-nosnippet>544</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>545</span>{
 <span data-nosnippet>546</span>    <span class="attr">#[repr(C, align(<span class="number">32</span>))]
-<span data-nosnippet>547</span>    </span><span class="kw">struct </span>AlignedWork([<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">u32</a>; <span class="number">64</span>]);
+<span data-nosnippet>547</span>    </span><span class="kw">struct </span>AlignedWork([u32; <span class="number">64</span>]);
 <span data-nosnippet>548</span>
 <span data-nosnippet>549</span>    <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
 <span data-nosnippet>550</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);

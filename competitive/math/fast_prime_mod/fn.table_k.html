@@ -226,7 +226,7 @@
 <span data-nosnippet>194</span>    }
 <span data-nosnippet>195</span>}
 <span data-nosnippet>196</span>
-<span data-nosnippet>197</span><span class="kw">fn </span>build_pow&lt;<span class="kw">const </span>P: u32&gt;(root: u32) -&gt; (Box&lt;[u32]&gt;, Box&lt;[u32]&gt;) {
+<span data-nosnippet>197</span><span class="kw">fn </span>build_pow&lt;<span class="kw">const </span>P: u32&gt;(root: u32) -&gt; (Box&lt;[u32]&gt;, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Box</a>&lt;[u32]&gt;) {
 <span data-nosnippet>198</span>    <span class="kw">let </span><span class="kw-2">mut </span>pow_lo = <span class="macro">vec!</span>[<span class="number">0</span>; POW_BLOCK + <span class="number">1</span>].into_boxed_slice();
 <span data-nosnippet>199</span>    <span class="kw">let </span><span class="kw-2">mut </span>pow_hi = <span class="macro">vec!</span>[<span class="number">0</span>; POW_BLOCK + <span class="number">1</span>].into_boxed_slice();
 <span data-nosnippet>200</span>    pow_lo[<span class="number">0</span>] = <span class="number">1</span>;
@@ -317,7 +317,7 @@
 <span data-nosnippet>285</span>                <span class="kw">let </span><span class="kw-2">mut </span>x = mul_mod_raw::&lt;P&gt;(i <span class="kw">as </span>u32, pow_root_raw::&lt;P&gt;(exp, pow_lo, pow_hi));
 <span data-nosnippet>286</span>                <span class="kw">for </span>q <span class="kw">in </span>small_primes {
 <span data-nosnippet>287</span>                    <span class="kw">while </span>x.is_multiple_of(q) {
-<span data-nosnippet>288</span>                        x /= <a href="../algebra/lazy_map.rs.html#40">q</a>;
+<span data-nosnippet>288</span>                        x /= q;
 <span data-nosnippet>289</span>                        ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
 <span data-nosnippet>290</span>                    }
 <span data-nosnippet>291</span>                }
@@ -327,14 +327,14 @@
 <span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span>u32) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span>u32 {
 <span data-nosnippet>296</span>                    <span class="kw">let </span>q = lpf[x <span class="kw">as </span>usize];
 <span data-nosnippet>297</span>                    x /= q;
-<span data-nosnippet>298</span>                    ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
+<span data-nosnippet>298</span>                    ans = add_mod(ans, log[k + <a href="../algebra/lazy_map.rs.html#45">q</a> <span class="kw">as </span>usize], ord);
 <span data-nosnippet>299</span>                }
 <span data-nosnippet>300</span>                <span class="kw">if </span><span class="number">1 </span>&lt; x &amp;&amp; x &lt; i <span class="kw">as </span>u32 {
 <span data-nosnippet>301</span>                    ans = add_mod(ans, log[k + x <span class="kw">as </span>usize], ord);
 <span data-nosnippet>302</span>                    x = <span class="number">1</span>;
 <span data-nosnippet>303</span>                }
 <span data-nosnippet>304</span>                <span class="kw">if </span>x == <span class="number">1 </span>{
-<span data-nosnippet>305</span>                    <a href="../algebra/lazy_map.rs.html#66">log</a>[k + i] = ans;
+<span data-nosnippet>305</span>                    log[k + i] = ans;
 <span data-nosnippet>306</span>                    <span class="kw">break</span>;
 <span data-nosnippet>307</span>                }
 <span data-nosnippet>308</span>            }

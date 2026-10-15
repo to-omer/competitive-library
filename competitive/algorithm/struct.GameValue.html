@@ -190,7 +190,7 @@
 <span data-nosnippet>206</span>                    -temperatures[<span class="number">0</span>]
 <span data-nosnippet>207</span>                };
 <span data-nosnippet>208</span>                <span class="kw">let </span>option = <span class="kw">if </span>temperatures.len() == <span class="number">1 </span>{
-<span data-nosnippet>209</span>                    <span class="highlight"><span class="self">Self</span>::number_up_nimber</span>(value.number + t, value.up, value.nimber)
+<span data-nosnippet>209</span>                    <span class="highlight"><span class="self">Self</span>::number_up_nimber</span>(<a href="../../lib.rs.html#21">value</a>.number + t, value.up, value.nimber)
 <span data-nosnippet>210</span>                } <span class="kw">else </span>{
 <span data-nosnippet>211</span>                    <span class="self">Self</span>(GameValueNode::Switches(Rc::new(GameValueSwitches {
 <span data-nosnippet>212</span>                        number: value.number + t,
@@ -225,7 +225,7 @@
 <span data-nosnippet>241</span>    ) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>242</span>        <span class="kw">loop </span>{
 <span data-nosnippet>243</span>            <span class="kw">if </span>left.iter().chain(<span class="kw-2">&amp;</span>right).all(|g| g.as_number().is_some()) {
-<span data-nosnippet>244</span>                <span class="kw">let </span>l = left.iter().filter_map(<a href="../../algebra/operations.rs.html#392-397"><span class="self">Self</span>::as_number</a>).max();
+<span data-nosnippet>244</span>                <span class="kw">let </span>l = left.iter().filter_map(<span class="self">Self</span>::as_number).max();
 <span data-nosnippet>245</span>                <span class="kw">let </span>r = right.iter().filter_map(<span class="self">Self</span>::as_number).min();
 <span data-nosnippet>246</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(n) = Dyadic::simplest_between(l, r) {
 <span data-nosnippet>247</span>                    <span class="kw">return </span>n.into();
@@ -267,7 +267,7 @@
 <span data-nosnippet>283</span>                }
 <span data-nosnippet>284</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n)) = replies[<span class="number">0</span>].as_number_up_nimber() {
 <span data-nosnippet>285</span>                    <span class="kw">if </span>moves.len() == <span class="number">1
-<span data-nosnippet>286</span>                        </span>&amp;&amp; moves[<span class="number">0</span>].as_number() == <span class="prelude-val">Some</span>(<a href="../../algebra/lazy_map.rs.html#48">q</a>)
+<span data-nosnippet>286</span>                        </span>&amp;&amp; moves[<span class="number">0</span>].as_number() == <span class="prelude-val">Some</span>(q)
 <span data-nosnippet>287</span>                        &amp;&amp; (k == <span class="number">0 </span>|| k.signum() == sign)
 <span data-nosnippet>288</span>                    {
 <span data-nosnippet>289</span>                        <span class="kw">return </span><span class="highlight"><span class="self">Self</span>::number_up_nimber</span>(q, k + sign, n ^ <span class="number">1</span>);
@@ -327,7 +327,7 @@
 <span data-nosnippet>343</span>                    </span>{
 <span data-nosnippet>344</span>                        <span class="kw">let </span>number = <span class="self">Self</span>::from(q);
 <span data-nosnippet>345</span>                        <span class="kw">let </span>(lower, upper) = <span class="kw">match </span>player {
-<span data-nosnippet>346</span>                            Player::Left =&gt; (<span class="kw-2">&amp;</span>game, <span class="kw-2">&amp;</span>number),
+<span data-nosnippet>346</span>                            Player::Left =&gt; (<span class="kw-2">&amp;</span><a href="../../num/zero_one.rs.html#1-14">game</a>, <span class="kw-2">&amp;</span>number),
 <span data-nosnippet>347</span>                            Player::Right =&gt; (<span class="kw-2">&amp;</span>number, <span class="kw-2">&amp;</span>game),
 <span data-nosnippet>348</span>                        };
 <span data-nosnippet>349</span>                        <span class="comment">// A strict inequality against q excludes every reply q + *m.
@@ -336,7 +336,7 @@
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
 <span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
-<span data-nosnippet>355</span>                        Player::<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Left</a> =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
+<span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
 <span data-nosnippet>358</span>                        reversible.push((player, i, reply));
@@ -414,7 +414,7 @@
 <span data-nosnippet>430</span>        }
 <span data-nosnippet>431</span>        <span class="kw">let </span>value = sides.into_iter().all(|(game, other, player)| {
 <span data-nosnippet>432</span>            <span class="kw">let </span><span class="kw-2">mut </span>preferred = |a: <span class="kw-2">&amp;</span><span class="self">Self</span>, b: <span class="kw-2">&amp;</span><span class="self">Self</span>| <span class="kw">match </span>player {
-<span data-nosnippet>433</span>                Player::Left =&gt; b.leq_memoized(a, cache),
+<span data-nosnippet>433</span>                Player::Left =&gt; b.<a href="../../algebra/operations.rs.html#12-17">leq_memoized</a>(a, cache),
 <span data-nosnippet>434</span>                Player::Right =&gt; a.leq_memoized(b, cache),
 <span data-nosnippet>435</span>            };
 <span data-nosnippet>436</span>            <span class="kw">if let </span>GameValueNode::NumberUpNimber(q, <span class="number">0</span>, n) = game.<span class="number">0
@@ -522,7 +522,7 @@
 <span data-nosnippet>538</span>            moves
 <span data-nosnippet>539</span>        };
 <span data-nosnippet>540</span>        <span class="kw">let </span>value =
-<span data-nosnippet>541</span>            <span class="self">Self</span>::from_options_memoized(options(Player::Left), options(Player::Right), comparisons);
+<span data-nosnippet>541</span>            <span class="self">Self</span>::from_options_memoized(options(Player::<a href="../../num/zero_one.rs.html#2">Left</a>), options(Player::Right), comparisons);
 <span data-nosnippet>542</span>        cache.insert(key, value.clone());
 <span data-nosnippet>543</span>        value
 <span data-nosnippet>544</span>    }
@@ -613,11 +613,11 @@
 <span data-nosnippet>629</span>        player: Player,
 <span data-nosnippet>630</span>        cache: <span class="kw-2">&amp;mut </span>HashMap&lt;GameValueNode, HashMap&lt;GameValueNode, bool&gt;&gt;,
 <span data-nosnippet>631</span>    ) {
-<span data-nosnippet>632</span>        <span class="kw">let </span><span class="kw-2">mut </span>retained = <span class="macro">vec!</span>[<span class="bool-val">true</span>; options.len()];
+<span data-nosnippet>632</span>        <span class="kw">let </span><span class="kw-2">mut </span>retained = <span class="macro">vec!</span>[<span class="bool-val">true</span>; options.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">len</a>()];
 <span data-nosnippet>633</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..options.len() {
 <span data-nosnippet>634</span>            <span class="kw">let </span>dominated = (<span class="number">0</span>..options.len()).any(|j| {
 <span data-nosnippet>635</span>                i != j
-<span data-nosnippet>636</span>                    &amp;&amp; retained[<a href="../../algebra/magma.rs.html#11">j</a>]
+<span data-nosnippet>636</span>                    &amp;&amp; retained[j]
 <span data-nosnippet>637</span>                    &amp;&amp; <span class="kw">match </span>player {
 <span data-nosnippet>638</span>                        Player::Left =&gt; options[i].leq_memoized(<span class="kw-2">&amp;</span>options[j], cache),
 <span data-nosnippet>639</span>                        Player::Right =&gt; options[j].leq_memoized(<span class="kw-2">&amp;</span>options[i], cache),
@@ -755,7 +755,7 @@
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -818,7 +818,7 @@
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
-<span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
+<span data-nosnippet>417</span>            <span class="kw">return </span><a href="../../algebra/lazy_map.rs.html#33">a</a> &lt;= b;
 <span data-nosnippet>418</span>        }
 <span data-nosnippet>419</span>        <span class="comment">// Normalize only memo keys: from_options also compares unreduced candidates.
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
@@ -1203,7 +1203,7 @@
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -1399,7 +1399,7 @@
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -1637,7 +1637,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -1700,7 +1700,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
-<span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
+<span data-nosnippet>417</span>            <span class="kw">return </span><a href="../../algebra/lazy_map.rs.html#33">a</a> &lt;= b;
 <span data-nosnippet>418</span>        }
 <span data-nosnippet>419</span>        <span class="comment">// Normalize only memo keys: from_options also compares unreduced candidates.
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
@@ -1956,7 +1956,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>670</span>}
 <span data-nosnippet>671</span><span class="kw">impl </span>Sub <span class="kw">for </span>GameValue {
 <span data-nosnippet>672</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">rhs</a>: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>674</span>        <span class="kw">if </span><span class="self">self</span>.<span class="number">0 </span>== rhs.<span class="number">0 </span>{
 <span data-nosnippet>675</span>            <span class="self">Self</span>::from(<span class="number">0</span>)
 <span data-nosnippet>676</span>        } <span class="kw">else </span>{
@@ -1974,7 +1974,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>688</span>        <span class="kw">let </span><span class="kw-2">mut </span>fingerprint = <span class="number">0</span>;
 <span data-nosnippet>689</span>        <span class="kw">let </span><span class="kw-2">mut </span>general = <span class="self">Self</span>::from(<span class="number">0</span>);
 <span data-nosnippet>690</span>        <span class="kw">for </span>value <span class="kw">in </span>iter {
-<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = value.<span class="highlight">as_switch_sum</span>() {
+<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>.<span class="highlight">as_switch_sum</span>() {
 <span data-nosnippet>692</span>                number = number + q;
 <span data-nosnippet>693</span>                up += k;
 <span data-nosnippet>694</span>                nimber ^= n;
@@ -2035,7 +2035,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>749</span>}
 <span data-nosnippet>750</span><span class="kw">impl </span>fmt::Display <span class="kw">for </span>GameValue {
 <span data-nosnippet>751</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<span data-nosnippet>752</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, temperatures)) = <span class="self">self</span>.<span class="highlight">as_switch_sum</span>() {
+<span data-nosnippet>752</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, <a href="../../algebra/lazy_map.rs.html#444">n</a>, temperatures)) = <span class="self">self</span>.<span class="highlight">as_switch_sum</span>() {
 <span data-nosnippet>753</span>            <span class="kw">let </span><span class="kw-2">mut </span>separator = <span class="string">""</span>;
 <span data-nosnippet>754</span>            <span class="kw">if </span>q.numerator() != <span class="number">0 </span>|| k == <span class="number">0 </span>&amp;&amp; n == <span class="number">0 </span>&amp;&amp; temperatures.is_empty() {
 <span data-nosnippet>755</span>                <span class="macro">write!</span>(f, <span class="string">"{q}"</span>)<span class="question-mark">?</span>;
@@ -2333,7 +2333,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.<span class="highlight focus">options</span>(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.<span class="highlight focus">options</span>(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -2396,7 +2396,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
-<span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
+<span data-nosnippet>417</span>            <span class="kw">return </span><a href="../../algebra/lazy_map.rs.html#33">a</a> &lt;= b;
 <span data-nosnippet>418</span>        }
 <span data-nosnippet>419</span>        <span class="comment">// Normalize only memo keys: from_options also compares unreduced candidates.
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
@@ -2652,7 +2652,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>670</span>}
 <span data-nosnippet>671</span><span class="kw">impl </span>Sub <span class="kw">for </span>GameValue {
 <span data-nosnippet>672</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">rhs</a>: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>674</span>        <span class="kw">if </span><span class="self">self</span>.<span class="number">0 </span>== rhs.<span class="number">0 </span>{
 <span data-nosnippet>675</span>            <span class="self">Self</span>::from(<span class="number">0</span>)
 <span data-nosnippet>676</span>        } <span class="kw">else </span>{
@@ -2670,7 +2670,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>688</span>        <span class="kw">let </span><span class="kw-2">mut </span>fingerprint = <span class="number">0</span>;
 <span data-nosnippet>689</span>        <span class="kw">let </span><span class="kw-2">mut </span>general = <span class="self">Self</span>::from(<span class="number">0</span>);
 <span data-nosnippet>690</span>        <span class="kw">for </span>value <span class="kw">in </span>iter {
-<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = value.as_switch_sum() {
+<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>.as_switch_sum() {
 <span data-nosnippet>692</span>                number = number + q;
 <span data-nosnippet>693</span>                up += k;
 <span data-nosnippet>694</span>                nimber ^= n;
@@ -2731,7 +2731,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>749</span>}
 <span data-nosnippet>750</span><span class="kw">impl </span>fmt::Display <span class="kw">for </span>GameValue {
 <span data-nosnippet>751</span>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<span data-nosnippet>752</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, temperatures)) = <span class="self">self</span>.as_switch_sum() {
+<span data-nosnippet>752</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, <a href="../../algebra/lazy_map.rs.html#444">n</a>, temperatures)) = <span class="self">self</span>.as_switch_sum() {
 <span data-nosnippet>753</span>            <span class="kw">let </span><span class="kw-2">mut </span>separator = <span class="string">""</span>;
 <span data-nosnippet>754</span>            <span class="kw">if </span>q.numerator() != <span class="number">0 </span>|| k == <span class="number">0 </span>&amp;&amp; n == <span class="number">0 </span>&amp;&amp; temperatures.is_empty() {
 <span data-nosnippet>755</span>                <span class="macro">write!</span>(f, <span class="string">"{q}"</span>)<span class="question-mark">?</span>;
@@ -2860,13 +2860,13 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>242</span>        <span class="kw">loop </span>{
 <span data-nosnippet>243</span>            <span class="kw">if </span>left.iter().chain(<span class="kw-2">&amp;</span>right).all(|g| g.as_number().is_some()) {
 <span data-nosnippet>244</span>                <span class="kw">let </span>l = left.iter().filter_map(<span class="self">Self</span>::as_number).max();
-<span data-nosnippet>245</span>                <span class="kw">let </span>r = right.<a href="../../tree/mod.rs.html#1-112">iter</a>().filter_map(<span class="self">Self</span>::as_number).min();
+<span data-nosnippet>245</span>                <span class="kw">let </span>r = right.<a href="../../tree/mod.rs.html#1-115">iter</a>().filter_map(<span class="self">Self</span>::as_number).min();
 <span data-nosnippet>246</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(n) = Dyadic::simplest_between(l, r) {
 <span data-nosnippet>247</span>                    <span class="kw">return </span>n.into();
 <span data-nosnippet>248</span>                }
 <span data-nosnippet>249</span>                <span class="kw">let </span>(l, r) = (l.unwrap(), r.unwrap());
 <span data-nosnippet>250</span>                <span class="kw">if </span>l == r {
-<span data-nosnippet>251</span>                    <span class="kw">return </span><span class="self">Self</span>::<a href="../../algebra/mod.rs.html#41">number_up_nimber</a>(l, <span class="number">0</span>, <span class="number">1</span>);
+<span data-nosnippet>251</span>                    <span class="kw">return </span><span class="self">Self</span>::<a href="../../algebra/mod.rs.html#42">number_up_nimber</a>(l, <span class="number">0</span>, <span class="number">1</span>);
 <span data-nosnippet>252</span>                }
 <span data-nosnippet>253</span>                <span class="kw">let </span>(sum, difference) = (l + r, l - r);
 <span data-nosnippet>254</span>                <span class="kw">let </span>temperature = Dyadic::new(difference.numerator(), difference.exponent() + <span class="number">1</span>);
@@ -2909,7 +2909,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>291</span>                    <span class="kw">if </span>k == <span class="number">0 </span>&amp;&amp; n == <span class="number">0 </span>&amp;&amp; moves.len() == <span class="number">2 </span>{
 <span data-nosnippet>292</span>                        <span class="kw">let </span>a = moves[<span class="number">0</span>].as_number_nimber();
 <span data-nosnippet>293</span>                        <span class="kw">let </span>b = moves[<span class="number">1</span>].as_number_nimber();
-<span data-nosnippet>294</span>                        <span class="kw">if </span>(a == <span class="prelude-val">Some</span>((q, <span class="number">0</span>)) &amp;&amp; b == <span class="prelude-val">Some</span>((q, <span class="number">1</span>)))
+<span data-nosnippet>294</span>                        <span class="kw">if </span>(a == <span class="prelude-val">Some</span>((q, <span class="number">0</span>)) &amp;&amp; b == <span class="prelude-val">Some</span>((<a href="../../algebra/action.rs.html#54">q</a>, <span class="number">1</span>)))
 <span data-nosnippet>295</span>                            || (a == <span class="prelude-val">Some</span>((q, <span class="number">1</span>)) &amp;&amp; b == <span class="prelude-val">Some</span>((q, <span class="number">0</span>)))
 <span data-nosnippet>296</span>                        {
 <span data-nosnippet>297</span>                            <span class="kw">return </span><span class="self">Self</span>::number_up_nimber(q, sign, <span class="number">1</span>);
@@ -2918,7 +2918,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>300</span>                }
 <span data-nosnippet>301</span>            }
 <span data-nosnippet>302</span>            <span class="kw">if </span>left.len() == <span class="number">1
-<span data-nosnippet>303</span>                </span>&amp;&amp; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">right</a>.len() == <span class="number">1
+<span data-nosnippet>303</span>                </span>&amp;&amp; right.len() == <span class="number">1
 <span data-nosnippet>304</span>                </span>&amp;&amp; <span class="kw">let </span>(<span class="prelude-val">Some</span>((a, k, n, ts)), <span class="prelude-val">Some</span>((b, l, m, us))) =
 <span data-nosnippet>305</span>                    (left[<span class="number">0</span>].as_switch_sum(), right[<span class="number">0</span>].as_switch_sum())
 <span data-nosnippet>306</span>                &amp;&amp; k == l
@@ -2952,7 +2952,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>334</span>            </span><span class="kw">let </span><span class="kw-2">mut </span>reversible = Vec::new();
 <span data-nosnippet>335</span>            <span class="kw">for </span>player <span class="kw">in </span>[Player::Left, Player::Right] {
 <span data-nosnippet>336</span>                <span class="kw">let </span>moves = <span class="kw">match </span>player {
-<span data-nosnippet>337</span>                    Player::Left =&gt; <span class="kw-2">&amp;</span>options.<span class="number">0</span>,
+<span data-nosnippet>337</span>                    Player::Left =&gt; <span class="kw-2">&amp;</span><a href="../../algebra/magma.rs.html#9">options</a>.<span class="number">0</span>,
 <span data-nosnippet>338</span>                    Player::Right =&gt; <span class="kw-2">&amp;</span>options.<span class="number">1</span>,
 <span data-nosnippet>339</span>                };
 <span data-nosnippet>340</span>                <span class="kw">for </span>(i, g) <span class="kw">in </span>moves.iter().enumerate() {
@@ -3098,7 +3098,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>480</span>    <span class="kw">fn </span>sum(
 <span data-nosnippet>481</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>482</span>        rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>,
-<span data-nosnippet>483</span>        <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">cache</a>: <span class="kw-2">&amp;mut </span>HashMap&lt;(GameValueNode, GameValueNode), <span class="self">Self</span>&gt;,
+<span data-nosnippet>483</span>        cache: <span class="kw-2">&amp;mut </span>HashMap&lt;(GameValueNode, GameValueNode), <span class="self">Self</span>&gt;,
 <span data-nosnippet>484</span>        comparisons: <span class="kw-2">&amp;mut </span>HashMap&lt;GameValueNode, HashMap&lt;GameValueNode, bool&gt;&gt;,
 <span data-nosnippet>485</span>    ) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>486</span>        <span class="kw">if let </span>(GameValueNode::NumberUpNimber(a, k, n), GameValueNode::NumberUpNimber(b, l, m)) =
@@ -3109,7 +3109,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>491</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q) = <span class="self">self</span>.as_number() {
 <span data-nosnippet>492</span>            <span class="kw">return </span>rhs.translated(q);
 <span data-nosnippet>493</span>        }
-<span data-nosnippet>494</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q) = rhs.as_number() {
+<span data-nosnippet>494</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q) = <a href="../../algebra/lazy_map.rs.html#252">rhs</a>.as_number() {
 <span data-nosnippet>495</span>            <span class="kw">return </span><span class="self">self</span>.translated(q);
 <span data-nosnippet>496</span>        }
 <span data-nosnippet>497</span>        <span class="kw">if let </span>(<span class="prelude-val">Some</span>((a, k, n, ts)), <span class="prelude-val">Some</span>((b, l, m, us))) =
@@ -3128,7 +3128,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>510</span>        <span class="kw">if </span>a.numerator() != <span class="number">0 </span>|| b.numerator() != <span class="number">0 </span>{
 <span data-nosnippet>511</span>            <span class="kw">return </span><span class="self">self
 <span data-nosnippet>512</span>                </span>.translated(-a)
-<span data-nosnippet>513</span>                .sum(<span class="kw-2">&amp;</span>rhs.translated(-b), cache, comparisons)
+<span data-nosnippet>513</span>                .<a href="../../algebra/lazy_map.rs.html#278">sum</a>(<span class="kw-2">&amp;</span>rhs.translated(-b), cache, comparisons)
 <span data-nosnippet>514</span>                .translated(a + b);
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="kw">let </span><span class="kw-2">mut </span>key = (<span class="self">self</span>.<span class="number">0</span>.clone(), rhs.<span class="number">0</span>.clone());
@@ -3150,7 +3150,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>532</span>            <span class="kw">for </span>g <span class="kw">in </span><span class="self">self</span>.options(player) {
 <span data-nosnippet>533</span>                moves.push(g.sum(rhs, cache, comparisons));
 <span data-nosnippet>534</span>            }
-<span data-nosnippet>535</span>            <span class="kw">for </span>g <span class="kw">in </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">rhs</a>.options(player) {
+<span data-nosnippet>535</span>            <span class="kw">for </span>g <span class="kw">in </span>rhs.options(player) {
 <span data-nosnippet>536</span>                moves.push(<span class="self">self</span>.sum(<span class="kw-2">&amp;</span>g, cache, comparisons));
 <span data-nosnippet>537</span>            }
 <span data-nosnippet>538</span>            moves
@@ -3285,7 +3285,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.<span class="highlight">leq_memoized</span>(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.<span class="highlight">leq_memoized</span>(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -3348,7 +3348,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
-<span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
+<span data-nosnippet>417</span>            <span class="kw">return </span><a href="../../algebra/lazy_map.rs.html#33">a</a> &lt;= b;
 <span data-nosnippet>418</span>        }
 <span data-nosnippet>419</span>        <span class="comment">// Normalize only memo keys: from_options also compares unreduced candidates.
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
@@ -3604,7 +3604,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>670</span>}
 <span data-nosnippet>671</span><span class="kw">impl </span>Sub <span class="kw">for </span>GameValue {
 <span data-nosnippet>672</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">rhs</a>: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>674</span>        <span class="kw">if </span><span class="self">self</span>.<span class="number">0 </span>== rhs.<span class="number">0 </span>{
 <span data-nosnippet>675</span>            <span class="self">Self</span>::from(<span class="number">0</span>)
 <span data-nosnippet>676</span>        } <span class="kw">else </span>{
@@ -3622,7 +3622,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>688</span>        <span class="kw">let </span><span class="kw-2">mut </span>fingerprint = <span class="number">0</span>;
 <span data-nosnippet>689</span>        <span class="kw">let </span><span class="kw-2">mut </span>general = <span class="self">Self</span>::from(<span class="number">0</span>);
 <span data-nosnippet>690</span>        <span class="kw">for </span>value <span class="kw">in </span>iter {
-<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = value.as_switch_sum() {
+<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>.as_switch_sum() {
 <span data-nosnippet>692</span>                number = number + q;
 <span data-nosnippet>693</span>                up += k;
 <span data-nosnippet>694</span>                nimber ^= n;
@@ -3863,7 +3863,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>632</span>        <span class="kw">let </span><span class="kw-2">mut </span>retained = <span class="macro">vec!</span>[<span class="bool-val">true</span>; options.len()];
 <span data-nosnippet>633</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..options.len() {
 <span data-nosnippet>634</span>            <span class="kw">let </span>dominated = (<span class="number">0</span>..options.len()).any(|j| {
-<span data-nosnippet>635</span>                i != j
+<span data-nosnippet>635</span>                i != <a href="../../algebra/action.rs.html#70">j</a>
 <span data-nosnippet>636</span>                    &amp;&amp; retained[j]
 <span data-nosnippet>637</span>                    &amp;&amp; <span class="kw">match </span>player {
 <span data-nosnippet>638</span>                        Player::Left =&gt; options[i].leq_memoized(<span class="kw-2">&amp;</span>options[j], cache),
@@ -4216,7 +4216,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>511</span>            <span class="kw">return </span><span class="self">self
 <span data-nosnippet>512</span>                </span>.translated(-a)
 <span data-nosnippet>513</span>                .sum(<span class="kw-2">&amp;</span>rhs.translated(-b), cache, comparisons)
-<span data-nosnippet>514</span>                .translated(<a href="../../algebra/action.rs.html#20">a</a> + b);
+<span data-nosnippet>514</span>                .translated(a + b);
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="kw">let </span><span class="kw-2">mut </span>key = (<span class="self">self</span>.<span class="number">0</span>.clone(), rhs.<span class="number">0</span>.clone());
 <span data-nosnippet>517</span>        <span class="kw">let </span>swap = <span class="kw">match </span>(<span class="kw-2">&amp;</span>key.<span class="number">0</span>, <span class="kw-2">&amp;</span>key.<span class="number">1</span>) {
@@ -4388,7 +4388,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>308</span>                &amp;&amp; ts == us
 <span data-nosnippet>309</span>                &amp;&amp; a &gt; b
 <span data-nosnippet>310</span>            {
-<span data-nosnippet>311</span>                <span class="kw">let </span>(sum, difference) = (a + b, <a href="../../algebra/action.rs.html#70">a</a> - b);
+<span data-nosnippet>311</span>                <span class="kw">let </span>(sum, difference) = (a + b, a - b);
 <span data-nosnippet>312</span>                <span class="kw">let </span>temperature = Dyadic::new(difference.numerator(), difference.exponent() + <span class="number">1</span>);
 <span data-nosnippet>313</span>                <span class="kw">if </span>ts.first().is_none_or(|<span class="kw-2">&amp;</span>t| temperature &gt; t) {
 <span data-nosnippet>314</span>                    <span class="kw">return </span><span class="self">Self</span>::from_switches(
@@ -4419,7 +4419,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>339</span>                };
 <span data-nosnippet>340</span>                <span class="kw">for </span>(i, g) <span class="kw">in </span>moves.iter().enumerate() {
 <span data-nosnippet>341</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>((q, n)) = g.as_number_nimber()
-<span data-nosnippet>342</span>                        &amp;&amp; <a href="../../algebra/lazy_map.rs.html#40">n</a> &gt; <span class="number">1
+<span data-nosnippet>342</span>                        &amp;&amp; n &gt; <span class="number">1
 <span data-nosnippet>343</span>                    </span>{
 <span data-nosnippet>344</span>                        <span class="kw">let </span>number = <span class="self">Self</span>::from(q);
 <span data-nosnippet>345</span>                        <span class="kw">let </span>(lower, upper) = <span class="kw">match </span>player {
@@ -4492,7 +4492,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>412</span>            };
 <span data-nosnippet>413</span>        }
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
-<span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(<a href="../../algebra/lazy_map.rs.html#157">g</a>, h)
+<span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
 <span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
 <span data-nosnippet>418</span>        }
@@ -4566,7 +4566,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>486</span>        <span class="kw">if let </span>(GameValueNode::NumberUpNimber(a, k, n), GameValueNode::NumberUpNimber(b, l, m)) =
 <span data-nosnippet>487</span>            (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>488</span>        {
-<span data-nosnippet>489</span>            <span class="kw">return </span><span class="self">Self</span>::number_up_nimber(<span class="kw-2">*</span>a + <span class="kw-2">*</span>b, k + l, <a href="../../algebra/lazy_map.rs.html#266">n</a> ^ m);
+<span data-nosnippet>489</span>            <span class="kw">return </span><span class="self">Self</span>::number_up_nimber(<span class="kw-2">*</span>a + <span class="kw-2">*</span>b, k + l, n ^ m);
 <span data-nosnippet>490</span>        }
 <span data-nosnippet>491</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q) = <span class="self">self</span>.as_number() {
 <span data-nosnippet>492</span>            <span class="kw">return </span>rhs.<span class="highlight">translated</span>(q);
@@ -4763,7 +4763,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>308</span>                &amp;&amp; ts == us
 <span data-nosnippet>309</span>                &amp;&amp; a &gt; b
 <span data-nosnippet>310</span>            {
-<span data-nosnippet>311</span>                <span class="kw">let </span>(sum, difference) = (a + b, <a href="../../algebra/action.rs.html#70">a</a> - b);
+<span data-nosnippet>311</span>                <span class="kw">let </span>(sum, difference) = (a + b, a - b);
 <span data-nosnippet>312</span>                <span class="kw">let </span>temperature = Dyadic::new(difference.numerator(), difference.exponent() + <span class="number">1</span>);
 <span data-nosnippet>313</span>                <span class="kw">if </span>ts.first().is_none_or(|<span class="kw-2">&amp;</span>t| temperature &gt; t) {
 <span data-nosnippet>314</span>                    <span class="kw">return </span><span class="self">Self</span>::from_switches(
@@ -4794,7 +4794,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>339</span>                };
 <span data-nosnippet>340</span>                <span class="kw">for </span>(i, g) <span class="kw">in </span>moves.iter().enumerate() {
 <span data-nosnippet>341</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>((q, n)) = g.as_number_nimber()
-<span data-nosnippet>342</span>                        &amp;&amp; <a href="../../algebra/lazy_map.rs.html#40">n</a> &gt; <span class="number">1
+<span data-nosnippet>342</span>                        &amp;&amp; n &gt; <span class="number">1
 <span data-nosnippet>343</span>                    </span>{
 <span data-nosnippet>344</span>                        <span class="kw">let </span>number = <span class="self">Self</span>::from(q);
 <span data-nosnippet>345</span>                        <span class="kw">let </span>(lower, upper) = <span class="kw">match </span>player {
@@ -4946,7 +4946,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -5009,7 +5009,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
-<span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
+<span data-nosnippet>417</span>            <span class="kw">return </span><a href="../../algebra/lazy_map.rs.html#33">a</a> &lt;= b;
 <span data-nosnippet>418</span>        }
 <span data-nosnippet>419</span>        <span class="comment">// Normalize only memo keys: from_options also compares unreduced candidates.
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
@@ -5265,7 +5265,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>670</span>}
 <span data-nosnippet>671</span><span class="kw">impl </span>Sub <span class="kw">for </span>GameValue {
 <span data-nosnippet>672</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">rhs</a>: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>674</span>        <span class="kw">if </span><span class="self">self</span>.<span class="number">0 </span>== rhs.<span class="number">0 </span>{
 <span data-nosnippet>675</span>            <span class="self">Self</span>::from(<span class="number">0</span>)
 <span data-nosnippet>676</span>        } <span class="kw">else </span>{
@@ -5283,7 +5283,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>688</span>        <span class="kw">let </span><span class="kw-2">mut </span>fingerprint = <span class="number">0</span>;
 <span data-nosnippet>689</span>        <span class="kw">let </span><span class="kw-2">mut </span>general = <span class="self">Self</span>::from(<span class="number">0</span>);
 <span data-nosnippet>690</span>        <span class="kw">for </span>value <span class="kw">in </span>iter {
-<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = value.as_switch_sum() {
+<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>.as_switch_sum() {
 <span data-nosnippet>692</span>                number = number + q;
 <span data-nosnippet>693</span>                up += k;
 <span data-nosnippet>694</span>                nimber ^= n;
@@ -5433,7 +5433,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {
@@ -5496,7 +5496,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
-<span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
+<span data-nosnippet>417</span>            <span class="kw">return </span><a href="../../algebra/lazy_map.rs.html#33">a</a> &lt;= b;
 <span data-nosnippet>418</span>        }
 <span data-nosnippet>419</span>        <span class="comment">// Normalize only memo keys: from_options also compares unreduced candidates.
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
@@ -5752,7 +5752,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>670</span>}
 <span data-nosnippet>671</span><span class="kw">impl </span>Sub <span class="kw">for </span>GameValue {
 <span data-nosnippet>672</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">rhs</a>: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>673</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>674</span>        <span class="kw">if </span><span class="self">self</span>.<span class="number">0 </span>== rhs.<span class="number">0 </span>{
 <span data-nosnippet>675</span>            <span class="self">Self</span>::from(<span class="number">0</span>)
 <span data-nosnippet>676</span>        } <span class="kw">else </span>{
@@ -5770,7 +5770,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>688</span>        <span class="kw">let </span><span class="kw-2">mut </span>fingerprint = <span class="number">0</span>;
 <span data-nosnippet>689</span>        <span class="kw">let </span><span class="kw-2">mut </span>general = <span class="self">Self</span>::from(<span class="number">0</span>);
 <span data-nosnippet>690</span>        <span class="kw">for </span>value <span class="kw">in </span>iter {
-<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = value.as_switch_sum() {
+<span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>.as_switch_sum() {
 <span data-nosnippet>692</span>                number = number + q;
 <span data-nosnippet>693</span>                up += k;
 <span data-nosnippet>694</span>                nimber ^= n;
@@ -5931,7 +5931,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>511</span>            <span class="kw">return </span><span class="self">self
 <span data-nosnippet>512</span>                </span>.translated(-a)
 <span data-nosnippet>513</span>                .sum(<span class="kw-2">&amp;</span>rhs.translated(-b), cache, comparisons)
-<span data-nosnippet>514</span>                .translated(<a href="../../algebra/action.rs.html#20">a</a> + b);
+<span data-nosnippet>514</span>                .translated(a + b);
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="kw">let </span><span class="kw-2">mut </span>key = (<span class="self">self</span>.<span class="number">0</span>.clone(), rhs.<span class="number">0</span>.clone());
 <span data-nosnippet>517</span>        <span class="kw">let </span>swap = <span class="kw">match </span>(<span class="kw-2">&amp;</span>key.<span class="number">0</span>, <span class="kw-2">&amp;</span>key.<span class="number">1</span>) {
@@ -6082,7 +6082,7 @@ Temperatures are positive and strictly decreasing; the slice may be empty.</p>
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }
-<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|r| <span class="kw">match </span>player {
+<span data-nosnippet>354</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(reply) = g.options(player.opponent()).find(|<a href="../../algebra/action.rs.html#23">r</a>| <span class="kw">match </span>player {
 <span data-nosnippet>355</span>                        Player::Left =&gt; r.leq_memoized(<span class="kw-2">&amp;</span>game, cache),
 <span data-nosnippet>356</span>                        Player::Right =&gt; game.leq_memoized(r, cache),
 <span data-nosnippet>357</span>                    }) {

@@ -68,176 +68,176 @@
 <span data-nosnippet>140</span>        </span>Seek: BstSeeker&lt;Spec = Spec&gt;,
 <span data-nosnippet>141</span>    {
 <span data-nosnippet>142</span>        <span class="highlight focus">Split::new</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.mid, seeker, equal_side)
-<span data-nosnippet>143</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,9],&#34;../../../../src/competitive/data_structure/treap.rs.html#422-426&#34;,&#34;lines 422-426&#34;],[[20,24],&#34;../../../../src/competitive/data_structure/treap.rs.html#437-441&#34;,&#34;lines 437-441&#34;],[[33,37],&#34;../../../../src/competitive/data_structure/treap.rs.html#450-454&#34;,&#34;lines 450-454&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#422-426">lines 422-426</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>417</span>    <span class="kw">pub fn </span>find_by_key&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
-<span data-nosnippet>418</span>    <span class="kw">where
-<span data-nosnippet>419</span>        </span>M: MonoidAct&lt;Key: Borrow&lt;Q&gt;&gt;,
-<span data-nosnippet>420</span>        Q: Ord + <span class="question-mark">?</span>Sized,
-<span data-nosnippet>421</span>    {
-<span data-nosnippet>422</span>        <span class="kw">let </span>split = <span class="highlight focus">Split::new</span>(
-<span data-nosnippet>423</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
-<span data-nosnippet>424</span>            SeekByKey::&lt;TreapSpec&lt;M, L&gt;, M::Key, Q&gt;::new(key),
-<span data-nosnippet>425</span>            EqualSide::Right,
-<span data-nosnippet>426</span>        );
-<span data-nosnippet>427</span>        <span class="kw">let </span>node = split.right()<span class="question-mark">?</span>.leftmost();
-<span data-nosnippet>428</span>        <span class="macro">matches!</span>(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
-<span data-nosnippet>429</span>            .then(|| <span class="self">self</span>.node_id_manager.registered_node_id(node))
-<span data-nosnippet>430</span>            .flatten()
-<span data-nosnippet>431</span>    }
-<span data-nosnippet>432</span>
-<span data-nosnippet>433</span>    <span class="kw">pub fn </span>find_by_acc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
-<span data-nosnippet>434</span>    <span class="kw">where
-<span data-nosnippet>435</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>L::Agg) -&gt; bool,
-<span data-nosnippet>436</span>    {
-<span data-nosnippet>437</span>        <span class="kw">let </span>split = <span class="highlight">Split::new</span>(
-<span data-nosnippet>438</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
-<span data-nosnippet>439</span>            SeekByAccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
-<span data-nosnippet>440</span>            EqualSide::Right,
-<span data-nosnippet>441</span>        );
-<span data-nosnippet>442</span>        <span class="kw">let </span>node = split.right()<span class="question-mark">?</span>.leftmost();
-<span data-nosnippet>443</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
-<span data-nosnippet>444</span>    }
-<span data-nosnippet>445</span>
-<span data-nosnippet>446</span>    <span class="kw">pub fn </span>find_by_racc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
-<span data-nosnippet>447</span>    <span class="kw">where
-<span data-nosnippet>448</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>L::Agg) -&gt; bool,
-<span data-nosnippet>449</span>    {
-<span data-nosnippet>450</span>        <span class="kw">let </span>split = <span class="highlight">Split::new</span>(
-<span data-nosnippet>451</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
-<span data-nosnippet>452</span>            SeekByRaccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
-<span data-nosnippet>453</span>            EqualSide::Left,
-<span data-nosnippet>454</span>        );
-<span data-nosnippet>455</span>        <span class="kw">let </span>node = split.left()<span class="question-mark">?</span>.rightmost();
-<span data-nosnippet>456</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
-<span data-nosnippet>457</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#419&#34;,&#34;line 419&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../../src/competitive/data_structure/implicit_treap.rs.html#419">line 419</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>410</span>    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, x: T::Key) {
-<span data-nosnippet>411</span>        <span class="macro">assert!</span>(index &lt;= <span class="self">self</span>.length);
-<span data-nosnippet>412</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(x);
-<span data-nosnippet>413</span>        <span class="kw">if </span>index == <span class="number">0 </span>{
-<span data-nosnippet>414</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="prelude-val">Some</span>(node), <span class="self">self</span>.root.take());
-<span data-nosnippet>415</span>        } <span class="kw">else if </span>index == <span class="self">self</span>.length {
-<span data-nosnippet>416</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="self">self</span>.root.take(), <span class="prelude-val">Some</span>(node));
-<span data-nosnippet>417</span>        } <span class="kw">else </span>{
-<span data-nosnippet>418</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>419</span>            <span class="kw">let </span><span class="kw-2">mut </span>split = <span class="highlight focus">Split::new</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, SeekBySize::new(index), EqualSide::Right);
-<span data-nosnippet>420</span>            split.manually_merge(|left, right| {
-<span data-nosnippet>421</span>                ImplicitTreapSpec::&lt;T&gt;::merge(
-<span data-nosnippet>422</span>                    ImplicitTreapSpec::&lt;T&gt;::merge(left, node.take()),
-<span data-nosnippet>423</span>                    right,
-<span data-nosnippet>424</span>                )
-<span data-nosnippet>425</span>            });
-<span data-nosnippet>426</span>        }
-<span data-nosnippet>427</span>        <span class="self">self</span>.length += <span class="number">1</span>;
-<span data-nosnippet>428</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.left" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#40-42">Source</a><h4 class="code-header">pub fn <a href="#method.left" class="fn">left</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstImmutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstImmutRef">BstImmutRef</a>&lt;'_, Spec&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/treap.rs.html#455&#34;,&#34;line 455&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#455">line 455</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>446</span>    <span class="kw">pub fn </span>find_by_racc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
-<span data-nosnippet>447</span>    <span class="kw">where
-<span data-nosnippet>448</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>L::Agg) -&gt; bool,
-<span data-nosnippet>449</span>    {
-<span data-nosnippet>450</span>        <span class="kw">let </span>split = Split::new(
-<span data-nosnippet>451</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
-<span data-nosnippet>452</span>            SeekByRaccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
-<span data-nosnippet>453</span>            EqualSide::Left,
-<span data-nosnippet>454</span>        );
-<span data-nosnippet>455</span>        <span class="kw">let </span>node = split.<span class="highlight focus">left</span>()<span class="question-mark">?</span>.rightmost();
-<span data-nosnippet>456</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
-<span data-nosnippet>457</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#371&#34;,&#34;line 371&#34;],[[24,24],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#384&#34;,&#34;line 384&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#371">line 371</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>360</span>    <span class="kw">pub fn </span>partition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
-<span data-nosnippet>361</span>    <span class="kw">where
-<span data-nosnippet>362</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>T::Agg) -&gt; bool,
-<span data-nosnippet>363</span>    {
-<span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, left..);
-<span data-nosnippet>365</span>        <span class="kw">let </span>front_size = split3
-<span data-nosnippet>366</span>            .left()
-<span data-nosnippet>367</span>            .map(|node| node.into_data().size)
-<span data-nosnippet>368</span>            .unwrap_or_default();
-<span data-nosnippet>369</span>        <span class="kw">let </span>split = split3.split_mid(SeekByAccCond::new(|acc| !pred(acc)), EqualSide::Right);
-<span data-nosnippet>370</span>        <span class="kw">let </span>index = split
-<span data-nosnippet>371</span>            .<span class="highlight focus">left</span>()
-<span data-nosnippet>372</span>            .map(|node| node.into_data().size)
-<span data-nosnippet>373</span>            .unwrap_or_default();
-<span data-nosnippet>374</span>        front_size + index
-<span data-nosnippet>375</span>    }
-<span data-nosnippet>376</span>
-<span data-nosnippet>377</span>    <span class="kw">pub fn </span>rpartition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
-<span data-nosnippet>378</span>    <span class="kw">where
-<span data-nosnippet>379</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>T::Agg) -&gt; bool,
-<span data-nosnippet>380</span>    {
-<span data-nosnippet>381</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, ..right);
-<span data-nosnippet>382</span>        <span class="kw">let </span>split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
-<span data-nosnippet>383</span>        split
-<span data-nosnippet>384</span>            .<span class="highlight">left</span>()
-<span data-nosnippet>385</span>            .map(|node| node.into_data().size)
-<span data-nosnippet>386</span>            .unwrap_or_default()
-<span data-nosnippet>387</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#480&#34;,&#34;line 480&#34;],[[24,24],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#493&#34;,&#34;line 493&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../../src/competitive/data_structure/implicit_treap.rs.html#480">line 480</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>469</span>    <span class="kw">pub fn </span>partition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
-<span data-nosnippet>470</span>    <span class="kw">where
-<span data-nosnippet>471</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>T::Agg) -&gt; bool,
-<span data-nosnippet>472</span>    {
-<span data-nosnippet>473</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, left..);
-<span data-nosnippet>474</span>        <span class="kw">let </span>front_size = split3
-<span data-nosnippet>475</span>            .left()
-<span data-nosnippet>476</span>            .map(|node| node.into_data().size)
-<span data-nosnippet>477</span>            .unwrap_or_default();
-<span data-nosnippet>478</span>        <span class="kw">let </span>split = split3.split_mid(SeekByAccCond::new(|acc| !pred(acc)), EqualSide::Right);
-<span data-nosnippet>479</span>        <span class="kw">let </span>index = split
-<span data-nosnippet>480</span>            .<span class="highlight focus">left</span>()
-<span data-nosnippet>481</span>            .map(|node| node.into_data().size)
-<span data-nosnippet>482</span>            .unwrap_or_default();
-<span data-nosnippet>483</span>        front_size + index
-<span data-nosnippet>484</span>    }
-<span data-nosnippet>485</span>
-<span data-nosnippet>486</span>    <span class="kw">pub fn </span>rpartition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
-<span data-nosnippet>487</span>    <span class="kw">where
-<span data-nosnippet>488</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>T::Agg) -&gt; bool,
-<span data-nosnippet>489</span>    {
-<span data-nosnippet>490</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, ..right);
-<span data-nosnippet>491</span>        <span class="kw">let </span>split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
-<span data-nosnippet>492</span>        split
-<span data-nosnippet>493</span>            .<span class="highlight">left</span>()
-<span data-nosnippet>494</span>            .map(|node| node.into_data().size)
-<span data-nosnippet>495</span>            .unwrap_or_default()
-<span data-nosnippet>496</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.right" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#44-46">Source</a><h4 class="code-header">pub fn <a href="#method.right" class="fn">right</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstImmutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstImmutRef">BstImmutRef</a>&lt;'_, Spec&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../../src/competitive/data_structure/treap.rs.html#427&#34;,&#34;line 427&#34;],[[25,25],&#34;../../../../src/competitive/data_structure/treap.rs.html#442&#34;,&#34;line 442&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#427">line 427</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>417</span>    <span class="kw">pub fn </span>find_by_key&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
-<span data-nosnippet>418</span>    <span class="kw">where
-<span data-nosnippet>419</span>        </span>M: MonoidAct&lt;Key: Borrow&lt;Q&gt;&gt;,
-<span data-nosnippet>420</span>        Q: Ord + <span class="question-mark">?</span>Sized,
-<span data-nosnippet>421</span>    {
-<span data-nosnippet>422</span>        <span class="kw">let </span>split = Split::new(
-<span data-nosnippet>423</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
-<span data-nosnippet>424</span>            SeekByKey::&lt;TreapSpec&lt;M, L&gt;, M::Key, Q&gt;::new(key),
-<span data-nosnippet>425</span>            EqualSide::Right,
-<span data-nosnippet>426</span>        );
-<span data-nosnippet>427</span>        <span class="kw">let </span>node = split.<span class="highlight focus">right</span>()<span class="question-mark">?</span>.leftmost();
-<span data-nosnippet>428</span>        <span class="macro">matches!</span>(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
-<span data-nosnippet>429</span>            .then(|| <span class="self">self</span>.node_id_manager.registered_node_id(node))
-<span data-nosnippet>430</span>            .flatten()
-<span data-nosnippet>431</span>    }
-<span data-nosnippet>432</span>
-<span data-nosnippet>433</span>    <span class="kw">pub fn </span>find_by_acc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
-<span data-nosnippet>434</span>    <span class="kw">where
-<span data-nosnippet>435</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>L::Agg) -&gt; bool,
-<span data-nosnippet>436</span>    {
-<span data-nosnippet>437</span>        <span class="kw">let </span>split = Split::new(
-<span data-nosnippet>438</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
-<span data-nosnippet>439</span>            SeekByAccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
-<span data-nosnippet>440</span>            EqualSide::Right,
-<span data-nosnippet>441</span>        );
-<span data-nosnippet>442</span>        <span class="kw">let </span>node = split.<span class="highlight">right</span>()<span class="question-mark">?</span>.leftmost();
-<span data-nosnippet>443</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
-<span data-nosnippet>444</span>    }</code></pre></div></div></div></details><section id="method.left_datamut" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#48-50">Source</a><h4 class="code-header">pub fn <a href="#method.left_datamut" class="fn">left_datamut</a>(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Spec&gt;&gt;</h4></section><section id="method.right_datamut" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#52-54">Source</a><h4 class="code-header">pub fn <a href="#method.right_datamut" class="fn">right_datamut</a>(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Spec&gt;&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.manually_merge" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#56-61">Source</a><h4 class="code-header">pub fn <a href="#method.manually_merge" class="fn">manually_merge</a>&lt;F&gt;(&amp;mut self, f: F)<div class="where">where
-    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Spec&gt;&gt;, <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Spec&gt;&gt;) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Spec&gt;&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,15],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#420-425&#34;,&#34;lines 420-425&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../../src/competitive/data_structure/implicit_treap.rs.html#420-425">lines 420-425</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>410</span>    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, x: T::Key) {
-<span data-nosnippet>411</span>        <span class="macro">assert!</span>(index &lt;= <span class="self">self</span>.length);
-<span data-nosnippet>412</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(x);
-<span data-nosnippet>413</span>        <span class="kw">if </span>index == <span class="number">0 </span>{
-<span data-nosnippet>414</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="prelude-val">Some</span>(node), <span class="self">self</span>.root.take());
-<span data-nosnippet>415</span>        } <span class="kw">else if </span>index == <span class="self">self</span>.length {
-<span data-nosnippet>416</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="self">self</span>.root.take(), <span class="prelude-val">Some</span>(node));
-<span data-nosnippet>417</span>        } <span class="kw">else </span>{
-<span data-nosnippet>418</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>419</span>            <span class="kw">let </span><span class="kw-2">mut </span>split = Split::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, SeekBySize::new(index), EqualSide::Right);
-<span data-nosnippet>420</span>            split.<span class="highlight focus">manually_merge</span>(|left, right| {
-<span data-nosnippet>421</span>                ImplicitTreapSpec::&lt;T&gt;::merge(
-<span data-nosnippet>422</span>                    ImplicitTreapSpec::&lt;T&gt;::merge(left, node.take()),
-<span data-nosnippet>423</span>                    right,
-<span data-nosnippet>424</span>                )
-<span data-nosnippet>425</span>            });
-<span data-nosnippet>426</span>        }
-<span data-nosnippet>427</span>        <span class="self">self</span>.length += <span class="number">1</span>;
-<span data-nosnippet>428</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Drop-for-Split%3C'a,+Spec%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#64-71">Source</a><a href="#impl-Drop-for-Split%3C'a,+Spec%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, Spec&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html" title="trait core::ops::drop::Drop">Drop</a> for <a class="struct" href="struct.Split.html" title="struct competitive::data_structure::binary_search_tree::split::Split">Split</a>&lt;'a, Spec&gt;<div class="where">where
+<span data-nosnippet>143</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,9],&#34;../../../../src/competitive/data_structure/treap.rs.html#425-429&#34;,&#34;lines 425-429&#34;],[[20,24],&#34;../../../../src/competitive/data_structure/treap.rs.html#440-444&#34;,&#34;lines 440-444&#34;],[[33,37],&#34;../../../../src/competitive/data_structure/treap.rs.html#453-457&#34;,&#34;lines 453-457&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#425-429">lines 425-429</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>420</span>    <span class="kw">pub fn </span>find_by_key&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
+<span data-nosnippet>421</span>    <span class="kw">where
+<span data-nosnippet>422</span>        </span>M: MonoidAct&lt;Key: Borrow&lt;Q&gt;&gt;,
+<span data-nosnippet>423</span>        Q: Ord + <span class="question-mark">?</span>Sized,
+<span data-nosnippet>424</span>    {
+<span data-nosnippet>425</span>        <span class="kw">let </span>split = <span class="highlight focus">Split::new</span>(
+<span data-nosnippet>426</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
+<span data-nosnippet>427</span>            SeekByKey::&lt;TreapSpec&lt;M, L&gt;, M::Key, Q&gt;::new(key),
+<span data-nosnippet>428</span>            EqualSide::Right,
+<span data-nosnippet>429</span>        );
+<span data-nosnippet>430</span>        <span class="kw">let </span>node = split.right()<span class="question-mark">?</span>.leftmost();
+<span data-nosnippet>431</span>        <span class="macro">matches!</span>(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
+<span data-nosnippet>432</span>            .then(|| <span class="self">self</span>.node_id_manager.registered_node_id(node))
+<span data-nosnippet>433</span>            .flatten()
+<span data-nosnippet>434</span>    }
+<span data-nosnippet>435</span>
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>find_by_acc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
+<span data-nosnippet>437</span>    <span class="kw">where
+<span data-nosnippet>438</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;L&gt;) -&gt; bool,
+<span data-nosnippet>439</span>    {
+<span data-nosnippet>440</span>        <span class="kw">let </span>split = <span class="highlight">Split::new</span>(
+<span data-nosnippet>441</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
+<span data-nosnippet>442</span>            SeekByAccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
+<span data-nosnippet>443</span>            EqualSide::Right,
+<span data-nosnippet>444</span>        );
+<span data-nosnippet>445</span>        <span class="kw">let </span>node = split.right()<span class="question-mark">?</span>.leftmost();
+<span data-nosnippet>446</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
+<span data-nosnippet>447</span>    }
+<span data-nosnippet>448</span>
+<span data-nosnippet>449</span>    <span class="kw">pub fn </span>find_by_racc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
+<span data-nosnippet>450</span>    <span class="kw">where
+<span data-nosnippet>451</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;L&gt;) -&gt; bool,
+<span data-nosnippet>452</span>    {
+<span data-nosnippet>453</span>        <span class="kw">let </span>split = <span class="highlight">Split::new</span>(
+<span data-nosnippet>454</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
+<span data-nosnippet>455</span>            SeekByRaccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
+<span data-nosnippet>456</span>            EqualSide::Left,
+<span data-nosnippet>457</span>        );
+<span data-nosnippet>458</span>        <span class="kw">let </span>node = split.left()<span class="question-mark">?</span>.rightmost();
+<span data-nosnippet>459</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
+<span data-nosnippet>460</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#422&#34;,&#34;line 422&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../../src/competitive/data_structure/implicit_treap.rs.html#422">line 422</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>413</span>    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, x: T::Key) {
+<span data-nosnippet>414</span>        <span class="macro">assert!</span>(index &lt;= <span class="self">self</span>.length);
+<span data-nosnippet>415</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(x);
+<span data-nosnippet>416</span>        <span class="kw">if </span>index == <span class="number">0 </span>{
+<span data-nosnippet>417</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="prelude-val">Some</span>(node), <span class="self">self</span>.root.take());
+<span data-nosnippet>418</span>        } <span class="kw">else if </span>index == <span class="self">self</span>.length {
+<span data-nosnippet>419</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="self">self</span>.root.take(), <span class="prelude-val">Some</span>(node));
+<span data-nosnippet>420</span>        } <span class="kw">else </span>{
+<span data-nosnippet>421</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="prelude-val">Some</span>(node);
+<span data-nosnippet>422</span>            <span class="kw">let </span><span class="kw-2">mut </span>split = <span class="highlight focus">Split::new</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, SeekBySize::new(index), EqualSide::Right);
+<span data-nosnippet>423</span>            split.manually_merge(|left, right| {
+<span data-nosnippet>424</span>                ImplicitTreapSpec::&lt;T&gt;::merge(
+<span data-nosnippet>425</span>                    ImplicitTreapSpec::&lt;T&gt;::merge(left, node.take()),
+<span data-nosnippet>426</span>                    right,
+<span data-nosnippet>427</span>                )
+<span data-nosnippet>428</span>            });
+<span data-nosnippet>429</span>        }
+<span data-nosnippet>430</span>        <span class="self">self</span>.length += <span class="number">1</span>;
+<span data-nosnippet>431</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.left" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#40-42">Source</a><h4 class="code-header">pub fn <a href="#method.left" class="fn">left</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstImmutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstImmutRef">BstImmutRef</a>&lt;'_, Spec&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/treap.rs.html#458&#34;,&#34;line 458&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#458">line 458</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>449</span>    <span class="kw">pub fn </span>find_by_racc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
+<span data-nosnippet>450</span>    <span class="kw">where
+<span data-nosnippet>451</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;L&gt;) -&gt; bool,
+<span data-nosnippet>452</span>    {
+<span data-nosnippet>453</span>        <span class="kw">let </span>split = Split::new(
+<span data-nosnippet>454</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
+<span data-nosnippet>455</span>            SeekByRaccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
+<span data-nosnippet>456</span>            EqualSide::Left,
+<span data-nosnippet>457</span>        );
+<span data-nosnippet>458</span>        <span class="kw">let </span>node = split.<span class="highlight focus">left</span>()<span class="question-mark">?</span>.rightmost();
+<span data-nosnippet>459</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
+<span data-nosnippet>460</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#373&#34;,&#34;line 373&#34;],[[24,24],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#386&#34;,&#34;line 386&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#373">line 373</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>362</span>    <span class="kw">pub fn </span>partition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
+<span data-nosnippet>363</span>    <span class="kw">where
+<span data-nosnippet>364</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;T&gt;) -&gt; bool,
+<span data-nosnippet>365</span>    {
+<span data-nosnippet>366</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, left..);
+<span data-nosnippet>367</span>        <span class="kw">let </span>front_size = split3
+<span data-nosnippet>368</span>            .left()
+<span data-nosnippet>369</span>            .map(|node| node.into_data().size)
+<span data-nosnippet>370</span>            .unwrap_or_default();
+<span data-nosnippet>371</span>        <span class="kw">let </span>split = split3.split_mid(SeekByAccCond::new(|acc| !pred(acc)), EqualSide::Right);
+<span data-nosnippet>372</span>        <span class="kw">let </span>index = split
+<span data-nosnippet>373</span>            .<span class="highlight focus">left</span>()
+<span data-nosnippet>374</span>            .map(|node| node.into_data().size)
+<span data-nosnippet>375</span>            .unwrap_or_default();
+<span data-nosnippet>376</span>        front_size + index
+<span data-nosnippet>377</span>    }
+<span data-nosnippet>378</span>
+<span data-nosnippet>379</span>    <span class="kw">pub fn </span>rpartition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
+<span data-nosnippet>380</span>    <span class="kw">where
+<span data-nosnippet>381</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;T&gt;) -&gt; bool,
+<span data-nosnippet>382</span>    {
+<span data-nosnippet>383</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, ..right);
+<span data-nosnippet>384</span>        <span class="kw">let </span>split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
+<span data-nosnippet>385</span>        split
+<span data-nosnippet>386</span>            .<span class="highlight">left</span>()
+<span data-nosnippet>387</span>            .map(|node| node.into_data().size)
+<span data-nosnippet>388</span>            .unwrap_or_default()
+<span data-nosnippet>389</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#483&#34;,&#34;line 483&#34;],[[24,24],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#496&#34;,&#34;line 496&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../../src/competitive/data_structure/implicit_treap.rs.html#483">line 483</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>472</span>    <span class="kw">pub fn </span>partition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
+<span data-nosnippet>473</span>    <span class="kw">where
+<span data-nosnippet>474</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;T&gt;) -&gt; bool,
+<span data-nosnippet>475</span>    {
+<span data-nosnippet>476</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, left..);
+<span data-nosnippet>477</span>        <span class="kw">let </span>front_size = split3
+<span data-nosnippet>478</span>            .left()
+<span data-nosnippet>479</span>            .map(|node| node.into_data().size)
+<span data-nosnippet>480</span>            .unwrap_or_default();
+<span data-nosnippet>481</span>        <span class="kw">let </span>split = split3.split_mid(SeekByAccCond::new(|acc| !pred(acc)), EqualSide::Right);
+<span data-nosnippet>482</span>        <span class="kw">let </span>index = split
+<span data-nosnippet>483</span>            .<span class="highlight focus">left</span>()
+<span data-nosnippet>484</span>            .map(|node| node.into_data().size)
+<span data-nosnippet>485</span>            .unwrap_or_default();
+<span data-nosnippet>486</span>        front_size + index
+<span data-nosnippet>487</span>    }
+<span data-nosnippet>488</span>
+<span data-nosnippet>489</span>    <span class="kw">pub fn </span>rpartition_point_acc&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize, <span class="kw-2">mut </span>pred: F) -&gt; usize
+<span data-nosnippet>490</span>    <span class="kw">where
+<span data-nosnippet>491</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;T&gt;) -&gt; bool,
+<span data-nosnippet>492</span>    {
+<span data-nosnippet>493</span>        <span class="kw">let </span><span class="kw-2">mut </span>split3 = Split3::seek_by_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, ..right);
+<span data-nosnippet>494</span>        <span class="kw">let </span>split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
+<span data-nosnippet>495</span>        split
+<span data-nosnippet>496</span>            .<span class="highlight">left</span>()
+<span data-nosnippet>497</span>            .map(|node| node.into_data().size)
+<span data-nosnippet>498</span>            .unwrap_or_default()
+<span data-nosnippet>499</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.right" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#44-46">Source</a><h4 class="code-header">pub fn <a href="#method.right" class="fn">right</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstImmutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstImmutRef">BstImmutRef</a>&lt;'_, Spec&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../../src/competitive/data_structure/treap.rs.html#430&#34;,&#34;line 430&#34;],[[25,25],&#34;../../../../src/competitive/data_structure/treap.rs.html#445&#34;,&#34;line 445&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#430">line 430</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>420</span>    <span class="kw">pub fn </span>find_by_key&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
+<span data-nosnippet>421</span>    <span class="kw">where
+<span data-nosnippet>422</span>        </span>M: MonoidAct&lt;Key: Borrow&lt;Q&gt;&gt;,
+<span data-nosnippet>423</span>        Q: Ord + <span class="question-mark">?</span>Sized,
+<span data-nosnippet>424</span>    {
+<span data-nosnippet>425</span>        <span class="kw">let </span>split = Split::new(
+<span data-nosnippet>426</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
+<span data-nosnippet>427</span>            SeekByKey::&lt;TreapSpec&lt;M, L&gt;, M::Key, Q&gt;::new(key),
+<span data-nosnippet>428</span>            EqualSide::Right,
+<span data-nosnippet>429</span>        );
+<span data-nosnippet>430</span>        <span class="kw">let </span>node = split.<span class="highlight focus">right</span>()<span class="question-mark">?</span>.leftmost();
+<span data-nosnippet>431</span>        <span class="macro">matches!</span>(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
+<span data-nosnippet>432</span>            .then(|| <span class="self">self</span>.node_id_manager.registered_node_id(node))
+<span data-nosnippet>433</span>            .flatten()
+<span data-nosnippet>434</span>    }
+<span data-nosnippet>435</span>
+<span data-nosnippet>436</span>    <span class="kw">pub fn </span>find_by_acc_cond&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;&gt;
+<span data-nosnippet>437</span>    <span class="kw">where
+<span data-nosnippet>438</span>        </span>F: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;L&gt;) -&gt; bool,
+<span data-nosnippet>439</span>    {
+<span data-nosnippet>440</span>        <span class="kw">let </span>split = Split::new(
+<span data-nosnippet>441</span>            <span class="kw-2">&amp;mut </span><span class="self">self</span>.root,
+<span data-nosnippet>442</span>            SeekByAccCond::&lt;TreapSpec&lt;M, L&gt;, L, F&gt;::new(f),
+<span data-nosnippet>443</span>            EqualSide::Right,
+<span data-nosnippet>444</span>        );
+<span data-nosnippet>445</span>        <span class="kw">let </span>node = split.<span class="highlight">right</span>()<span class="question-mark">?</span>.leftmost();
+<span data-nosnippet>446</span>        <span class="self">self</span>.node_id_manager.registered_node_id(node)
+<span data-nosnippet>447</span>    }</code></pre></div></div></div></details><section id="method.left_datamut" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#48-50">Source</a><h4 class="code-header">pub fn <a href="#method.left_datamut" class="fn">left_datamut</a>(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Spec&gt;&gt;</h4></section><section id="method.right_datamut" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#52-54">Source</a><h4 class="code-header">pub fn <a href="#method.right_datamut" class="fn">right_datamut</a>(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Spec&gt;&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.manually_merge" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#56-61">Source</a><h4 class="code-header">pub fn <a href="#method.manually_merge" class="fn">manually_merge</a>&lt;F&gt;(&amp;mut self, f: F)<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Spec&gt;&gt;, <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Spec&gt;&gt;) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../node/type.BstRoot.html" title="type competitive::data_structure::binary_search_tree::node::BstRoot">BstRoot</a>&lt;Spec&gt;&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,15],&#34;../../../../src/competitive/data_structure/implicit_treap.rs.html#423-428&#34;,&#34;lines 423-428&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../../src/competitive/data_structure/implicit_treap.rs.html#423-428">lines 423-428</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>413</span>    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize, x: T::Key) {
+<span data-nosnippet>414</span>        <span class="macro">assert!</span>(index &lt;= <span class="self">self</span>.length);
+<span data-nosnippet>415</span>        <span class="kw">let </span>node = <span class="self">self</span>.node(x);
+<span data-nosnippet>416</span>        <span class="kw">if </span>index == <span class="number">0 </span>{
+<span data-nosnippet>417</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="prelude-val">Some</span>(node), <span class="self">self</span>.root.take());
+<span data-nosnippet>418</span>        } <span class="kw">else if </span>index == <span class="self">self</span>.length {
+<span data-nosnippet>419</span>            <span class="self">self</span>.root = ImplicitTreapSpec::&lt;T&gt;::merge(<span class="self">self</span>.root.take(), <span class="prelude-val">Some</span>(node));
+<span data-nosnippet>420</span>        } <span class="kw">else </span>{
+<span data-nosnippet>421</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="prelude-val">Some</span>(node);
+<span data-nosnippet>422</span>            <span class="kw">let </span><span class="kw-2">mut </span>split = Split::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root, SeekBySize::new(index), EqualSide::Right);
+<span data-nosnippet>423</span>            split.<span class="highlight focus">manually_merge</span>(|left, right| {
+<span data-nosnippet>424</span>                ImplicitTreapSpec::&lt;T&gt;::merge(
+<span data-nosnippet>425</span>                    ImplicitTreapSpec::&lt;T&gt;::merge(left, node.take()),
+<span data-nosnippet>426</span>                    right,
+<span data-nosnippet>427</span>                )
+<span data-nosnippet>428</span>            });
+<span data-nosnippet>429</span>        }
+<span data-nosnippet>430</span>        <span class="self">self</span>.length += <span class="number">1</span>;
+<span data-nosnippet>431</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Drop-for-Split%3C'a,+Spec%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#64-71">Source</a><a href="#impl-Drop-for-Split%3C'a,+Spec%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, Spec&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html" title="trait core::ops::drop::Drop">Drop</a> for <a class="struct" href="struct.Split.html" title="struct competitive::data_structure::binary_search_tree::split::Split">Split</a>&lt;'a, Spec&gt;<div class="where">where
     Spec: <a class="trait" href="../node/trait.BstSpec.html" title="trait competitive::data_structure::binary_search_tree::node::BstSpec">BstSpec</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.drop" class="method trait-impl"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/split.rs.html#68-70">Source</a><a href="#method.drop" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.drop" class="fn">drop</a>(&amp;mut self)</h4></section></summary><div class='docblock'>Executes the destructor for this type. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.drop">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.pin_drop" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/ops/drop.rs.html#267">Source</a><a href="#method.pin_drop" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.pin_drop" class="fn">pin_drop</a>(self: <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;&amp;mut Self&gt;)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>pin_ergonomics</code>)</span></div></span><div class='docblock'>Execute the destructor for this type, but different to <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.drop" title="method core::ops::drop::Drop::drop"><code>Drop::drop</code></a>, it requires <code>self</code>
 to be pinned. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#method.pin_drop">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Send-for-Split%3C'a,+Spec%3E" class="impl"><a href="#impl-Send-for-Split%3C'a,+Spec%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, Spec&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.Split.html" title="struct competitive::data_structure::binary_search_tree::split::Split">Split</a>&lt;'a, Spec&gt;</h3></section><section id="impl-Sync-for-Split%3C'a,+Spec%3E" class="impl"><a href="#impl-Sync-for-Split%3C'a,+Spec%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, Spec&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.Split.html" title="struct competitive::data_structure::binary_search_tree::split::Split">Split</a>&lt;'a, Spec&gt;</h3></section><section id="impl-UnwindSafe-for-Split%3C'a,+Spec%3E" class="impl"><a href="#impl-UnwindSafe-for-Split%3C'a,+Spec%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, Spec&gt; !<a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.Split.html" title="struct competitive::data_structure::binary_search_tree::split::Split">Split</a>&lt;'a, Spec&gt;</h3></section><section id="impl-Freeze-for-Split%3C'a,+Spec%3E" class="impl"><a href="#impl-Freeze-for-Split%3C'a,+Spec%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a, Spec&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.Split.html" title="struct competitive::data_structure::binary_search_tree::split::Split">Split</a>&lt;'a, Spec&gt;<div class="where">where
     <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../node/struct.BstNodeRef.html" title="struct competitive::data_structure::binary_search_tree::node::BstNodeRef">BstNodeRef</a>&lt;<a class="enum" href="../node/marker/enum.Owned.html" title="enum competitive::data_structure::binary_search_tree::node::marker::Owned">Owned</a>, Spec&gt;&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,

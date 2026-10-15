@@ -869,7 +869,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>301</span>            }
 <span data-nosnippet>302</span>        }
 <span data-nosnippet>303</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
-<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
+<span data-nosnippet>304</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().<a href="../../algebra/action.rs.html#7-26">enumerate</a>() {
 <span data-nosnippet>305</span>            <span class="kw">let </span>source = indices[i];
 <span data-nosnippet>306</span>            <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>307</span>                indices[i] = game.index_of(next.to);
@@ -925,7 +925,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>357</span>                <span class="kw">for </span>next <span class="kw">in </span>game.graph.neighbors(component) {
 <span data-nosnippet>358</span>                    indices[i] = game.index_of(next.to);
 <span data-nosnippet>359</span>                    <span class="kw">let </span>key =
-<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">edges</a>);
+<span data-nosnippet>360</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>361</span>                    <span class="kw">let </span>id = game.sums.indices[<span class="kw-2">&amp;</span>key];
 <span data-nosnippet>362</span>                    <span class="kw">if </span><span class="prelude-val">Some</span>(id) == winner
 <span data-nosnippet>363</span>                        || outcome == GameOutcome::Draw
@@ -993,7 +993,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>425</span>        }
 <span data-nosnippet>426</span>        <span class="comment">// Reduce the largest (Grundy, counter) pair, then minimize the
 <span data-nosnippet>427</span>        // destination counter so repeated winning moves terminate.
-<span data-nosnippet>428</span>        </span><span class="kw">let </span>(<a href="../../algebra/lazy_map.rs.html#178">i</a>, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
+<span data-nosnippet>428</span>        </span><span class="kw">let </span>(i, target) = <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = infinite {
 <span data-nosnippet>429</span>            (i, xor)
 <span data-nosnippet>430</span>        } <span class="kw">else </span>{
 <span data-nosnippet>431</span>            <span class="kw">let </span>(i, (g, <span class="kw">_</span>)) = indices
@@ -1440,7 +1440,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>275</span>        }
 <span data-nosnippet>276</span>        <span class="kw">if let </span>[single] = state {
 <span data-nosnippet>277</span>            <span class="kw">let </span><span class="kw-2">mut </span>query: GameAnalysis&lt;<span class="lifetime">'_</span>, <span class="kw">_</span>, S, GameOutcome, MISERE&gt; =
-<span data-nosnippet>278</span>                <span class="highlight">GameAnalysis::new</span>(<a class="self" href="../../algebra/magma.rs.html#56">self</a>.game, |g: <span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, s| {
+<span data-nosnippet>278</span>                <span class="highlight">GameAnalysis::new</span>(<span class="self">self</span>.game, |g: <span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, s| {
 <span data-nosnippet>279</span>                    g.outcome(s, MISERE)
 <span data-nosnippet>280</span>                });
 <span data-nosnippet>281</span>            <span class="kw">return </span>query
@@ -1509,7 +1509,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>344</span>                .map(|next| Neighbor::new(<span class="macro">vec!</span>[next.to], (<span class="number">0</span>, next.label)));
 <span data-nosnippet>345</span>        }
 <span data-nosnippet>346</span>        <span class="kw">let </span>outcome = <span class="self">self</span>.eval(state);
-<span data-nosnippet>347</span>        <span class="kw">if </span>outcome == GameOutcome::Lose {
+<span data-nosnippet>347</span>        <span class="kw">if </span>outcome == GameOutcome::<a href="../../num/zero_one.rs.html#1-14">Lose</a> {
 <span data-nosnippet>348</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>349</span>        }
 <span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>indices = <span class="self">self</span>.game.sum_indices(state);
@@ -1540,7 +1540,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>375</span>        <span class="kw">let </span><span class="kw-2">mut </span>xor = <span class="number">0</span>;
 <span data-nosnippet>376</span>        <span class="kw">let </span><span class="kw-2">mut </span>infinite = <span class="prelude-val">None</span>;
 <span data-nosnippet>377</span>        <span class="kw">let </span><span class="kw-2">mut </span>multiple = <span class="bool-val">false</span>;
-<span data-nosnippet>378</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>v) <span class="kw">in </span>indices.iter().enumerate() {
+<span data-nosnippet>378</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span><a href="../../algebra/lazy_map.rs.html#173">v</a>) <span class="kw">in </span>indices.iter().enumerate() {
 <span data-nosnippet>379</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((value, <span class="kw">_</span>)) = game.generalized_grundy[v] {
 <span data-nosnippet>380</span>                xor ^= value;
 <span data-nosnippet>381</span>            } <span class="kw">else if </span>infinite.replace(i).is_some() {

@@ -178,7 +178,7 @@
 <span data-nosnippet>370</span></span><span class="kw">unsafe fn </span>range_mask_i32x8(start: usize, end: usize, offset: i32) -&gt; __m256i {
 <span data-nosnippet>371</span>    <span class="kw">let </span>lanes = _mm256_setr_epi32(
 <span data-nosnippet>372</span>        offset,
-<span data-nosnippet>373</span>        <a href="../algebra/magma.rs.html#145-176">offset</a> + <span class="number">1</span>,
+<span data-nosnippet>373</span>        offset + <span class="number">1</span>,
 <span data-nosnippet>374</span>        offset + <span class="number">2</span>,
 <span data-nosnippet>375</span>        offset + <span class="number">3</span>,
 <span data-nosnippet>376</span>        offset + <span class="number">4</span>,
@@ -217,7 +217,7 @@
 <span data-nosnippet>409</span>    <span class="kw">let </span>unit = _mm256_set1_epi32(i32::MIN);
 <span data-nosnippet>410</span>    <span class="kw">let </span>low = _mm256_blendv_epi8(
 <span data-nosnippet>411</span>        unit,
-<span data-nosnippet>412</span>        _mm256_loadu_si256(values.as_ptr().cast()),
+<span data-nosnippet>412</span>        _mm256_loadu_si256(values.<a href="../algebra/magma.rs.html#145-176">as_ptr</a>().cast()),
 <span data-nosnippet>413</span>        range_mask_i32x8(start, end, <span class="number">0</span>),
 <span data-nosnippet>414</span>    );
 <span data-nosnippet>415</span>    <span class="kw">let </span>high = _mm256_blendv_epi8(
@@ -276,7 +276,7 @@
 <span data-nosnippet>468</span>#[target_feature(enable = <span class="string">"avx512f"</span>)]
 <span data-nosnippet>469</span>#[inline]
 <span data-nosnippet>470</span></span><span class="kw">pub unsafe fn </span>maximum_range_i32x16_avx512(values: <span class="kw-2">&amp;</span>[i32; <span class="number">16</span>], start: usize, end: usize) -&gt; i32 {
-<span data-nosnippet>471</span>    <span class="kw">let </span>mask = (u16::MAX &lt;&lt; start) &amp; (u16::MAX &gt;&gt; (<span class="number">16 </span>- end));
+<span data-nosnippet>471</span>    <span class="kw">let </span>mask = (u16::MAX &lt;&lt; start) &amp; (<a href="../algebra/action.rs.html#28-30">u16::MAX</a> &gt;&gt; (<span class="number">16 </span>- end));
 <span data-nosnippet>472</span>    _mm512_mask_reduce_max_epi32(mask, _mm512_loadu_si512(values.as_ptr().cast()))
 <span data-nosnippet>473</span>}
 <span data-nosnippet>474</span>
@@ -288,10 +288,10 @@
 <span data-nosnippet>480</span>    _mm512_mask_reduce_add_epi32(mask, _mm512_loadu_si512(values.as_ptr().cast()))
 <span data-nosnippet>481</span>}
 <span data-nosnippet>482</span>
-<span data-nosnippet>483</span><span class="attr">#[<a href="../algebra/lazy_map.rs.html#107">cfg</a>(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>483</span><span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>484</span>#[target_feature(enable = <span class="string">"avx2"</span>)]
-<span data-nosnippet>485</span>#[<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">inline</a>]
-<span data-nosnippet>486</span></span><span class="kw">unsafe fn </span>min_i64x4(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">left</a>: __m256i, right: __m256i) -&gt; __m256i {
+<span data-nosnippet>485</span>#[inline]
+<span data-nosnippet>486</span></span><span class="kw">unsafe fn </span>min_i64x4(left: __m256i, right: __m256i) -&gt; __m256i {
 <span data-nosnippet>487</span>    _mm256_blendv_epi8(left, right, _mm256_cmpgt_epi64(left, right))
 <span data-nosnippet>488</span>}
 <span data-nosnippet>489</span>
@@ -367,7 +367,7 @@
 <span data-nosnippet>559</span>    )
 <span data-nosnippet>560</span>}
 <span data-nosnippet>561</span>
-<span data-nosnippet>562</span><span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>562</span><span class="attr">#[<a href="../num/zero_one.rs.html#15-28">cfg</a>(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>563</span>#[target_feature(enable = <span class="string">"avx2"</span>)]
 <span data-nosnippet>564</span>#[inline]
 <span data-nosnippet>565</span></span><span class="kw">pub unsafe fn </span>minimum_range_i64x8_avx2(values: <span class="kw-2">&amp;</span>[i64; <span class="number">8</span>], start: usize, end: usize) -&gt; i64 {
@@ -400,5 +400,5 @@
 <span data-nosnippet>592</span>        _mm256_loadu_si256(values.as_ptr().add(<span class="number">4</span>).cast()),
 <span data-nosnippet>593</span>        range_mask_i64x4(start, end, <span class="number">4</span>),
 <span data-nosnippet>594</span>    );
-<span data-nosnippet>595</span>    <a href="../../../../../algebra/struct.RangeMinRangeAdd.html">reduce_max_i64x4</a>(<span class="highlight">max_i64x4</span>(low, high))
+<span data-nosnippet>595</span>    reduce_max_i64x4(<span class="highlight">max_i64x4</span>(low, high))
 <span data-nosnippet>596</span>}</code></pre></div></div></div></section></div></main></body></html>

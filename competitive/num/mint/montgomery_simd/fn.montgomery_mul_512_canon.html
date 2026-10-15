@@ -196,8 +196,8 @@
 <span data-nosnippet>180</span>                <span class="kw">let </span>a1na3 = sub_vec_avx512::&lt;M&gt;(a1, a3, mod_vec, mod2_vec);
 <span data-nosnippet>181</span>                <span class="kw">let </span>a1na3imag = mul_vec_avx512::&lt;M&gt;(a1na3, imag_vec, r_vec, mod_vec);
 <span data-nosnippet>182</span>
-<span data-nosnippet>183</span>                <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(a0pa2, a1pa3, mod_vec, mod2_vec);
-<span data-nosnippet>184</span>                <span class="kw">let </span>y1 = sub_vec_avx512::&lt;M&gt;(a0pa2, a1pa3, mod_vec, mod2_vec);
+<span data-nosnippet>183</span>                <span class="kw">let </span>y0 = add_vec_avx512::&lt;<a href="../../../algebra/action.rs.html#20">M</a>&gt;(a0pa2, a1pa3, mod_vec, mod2_vec);
+<span data-nosnippet>184</span>                <span class="kw">let </span>y1 = sub_vec_avx512::&lt;<a href="../../../algebra/action.rs.html#23">M</a>&gt;(a0pa2, a1pa3, mod_vec, mod2_vec);
 <span data-nosnippet>185</span>                <span class="kw">let </span>y2 = add_vec_avx512::&lt;M&gt;(a0na2, a1na3imag, mod_vec, mod2_vec);
 <span data-nosnippet>186</span>                <span class="kw">let </span>y3 = sub_vec_avx512::&lt;M&gt;(a0na2, a1na3imag, mod_vec, mod2_vec);
 <span data-nosnippet>187</span>
@@ -255,7 +255,7 @@
 <span data-nosnippet>239</span>        v = <span class="number">4</span>;
 <span data-nosnippet>240</span>    }
 <span data-nosnippet>241</span>    <span class="kw">let </span>limit = <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>242</span>        n / <span class="number">2
+<span data-nosnippet>242</span>        <a href="../../../algebra/lazy_map.rs.html#33">n</a> / <span class="number">2
 <span data-nosnippet>243</span>    </span>} <span class="kw">else </span>{
 <span data-nosnippet>244</span>        n
 <span data-nosnippet>245</span>    };
@@ -351,9 +351,9 @@
 <span data-nosnippet>335</span>        }
 <span data-nosnippet>336</span>    }
 <span data-nosnippet>337</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
-<span data-nosnippet>338</span>    <span class="kw">let </span>inv_vec = _mm512_set1_epi32(inv <span class="kw">as </span>i32);
+<span data-nosnippet>338</span>    <span class="kw">let </span>inv_vec = _mm512_set1_epi32(inv <span class="kw">as </span><a href="../../../num/zero_one.rs.html#15-28">i32</a>);
 <span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-<span data-nosnippet>340</span>    <span class="kw">while </span>i + <span class="number">16 </span>&lt;= a.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">len</a>() {
+<span data-nosnippet>340</span>    <span class="kw">while </span>i + <span class="number">16 </span>&lt;= a.len() {
 <span data-nosnippet>341</span>        <span class="kw">let </span>x = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>342</span>        <span class="kw">let </span>y = <span class="highlight">montgomery_simd::montgomery_mul_512_canon</span>(x, inv_vec, r_vec, mod_vec);
 <span data-nosnippet>343</span>        _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y);

@@ -265,13 +265,13 @@
 <span data-nosnippet>871</span>    }
 <span data-nosnippet>872</span>
 <span data-nosnippet>873</span>    <span class="doccomment">/// get k-th value
-<span data-nosnippet>874</span>    </span><span class="kw">pub fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; <a href="../algebra/action.rs.html#86">T</a> {
+<span data-nosnippet>874</span>    </span><span class="kw">pub fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; T {
 <span data-nosnippet>875</span>        <span class="kw">if </span>!<span class="self">self</span>.quad_vectors.is_empty() {
 <span data-nosnippet>876</span>            <span class="kw">let </span><span class="kw-2">mut </span>index = <span class="number">0</span>;
 <span data-nosnippet>877</span>            <span class="kw">for </span>vector <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.quad_vectors {
 <span data-nosnippet>878</span>                <span class="kw">let </span>(digit, rank) = vector.access_rank(k);
 <span data-nosnippet>879</span>                index = index * <span class="number">4 </span>+ digit;
-<span data-nosnippet>880</span>                k = vector.<a href="../algebra/magma.rs.html#145-176">starts</a>[digit] + rank;
+<span data-nosnippet>880</span>                k = vector.starts[digit] + rank;
 <span data-nosnippet>881</span>            }
 <span data-nosnippet>882</span>            <span class="kw">return </span><span class="self">self</span>.compress.values()[index].clone();
 <span data-nosnippet>883</span>        }
@@ -279,7 +279,7 @@
 <span data-nosnippet>885</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.bit_length - <span class="self">self</span>.compress.size().is_power_of_two() <span class="kw">as </span>usize).rev() {
 <span data-nosnippet>886</span>            <span class="kw">let </span>level = <span class="self">self</span>.level(d);
 <span data-nosnippet>887</span>            <span class="kw">let </span>(bit, rank1) = <span class="self">self</span>.bit_vectors[level].access_rank1(k);
-<span data-nosnippet>888</span>            <a href="../algebra/lazy_map.rs.html#18">idx</a> |= (bit <span class="kw">as </span>usize) &lt;&lt; d;
+<span data-nosnippet>888</span>            idx |= (bit <span class="kw">as </span>usize) &lt;&lt; d;
 <span data-nosnippet>889</span>            k = <span class="kw">if </span>bit {
 <span data-nosnippet>890</span>                <span class="self">self</span>.zeros[level] + rank1
 <span data-nosnippet>891</span>            } <span class="kw">else </span>{
@@ -299,7 +299,7 @@
 <span data-nosnippet>905</span>                <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.len);
 <span data-nosnippet>906</span>                state[<span class="number">0</span>] = index;
 <span data-nosnippet>907</span>            }
-<span data-nosnippet>908</span>            <span class="self">self</span>.batch::&lt;ACCESS&gt;(<span class="kw-2">&amp;mut </span>states, <a href="../algebra/magma.rs.html#9">indices</a>.len());
+<span data-nosnippet>908</span>            <span class="self">self</span>.batch::&lt;ACCESS&gt;(<span class="kw-2">&amp;mut </span>states, indices.len());
 <span data-nosnippet>909</span>            result.extend(
 <span data-nosnippet>910</span>                states[..indices.len()]
 <span data-nosnippet>911</span>                    .iter()
@@ -332,7 +332,7 @@
 <span data-nosnippet>938</span>            <span class="self">self</span>.batch::&lt;RANK&gt;(<span class="kw-2">&amp;mut </span>states, queries.len());
 <span data-nosnippet>939</span>            result.extend(
 <span data-nosnippet>940</span>                states[..queries.len()]
-<span data-nosnippet>941</span>                    .iter()
+<span data-nosnippet>941</span>                    .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">iter</a>()
 <span data-nosnippet>942</span>                    .map(|state| state[<span class="number">1</span>] - state[<span class="number">0</span>]),
 <span data-nosnippet>943</span>            );
 <span data-nosnippet>944</span>        }
@@ -341,7 +341,7 @@
 <span data-nosnippet>947</span>
 <span data-nosnippet>948</span>    <span class="doccomment">/// index of k-th val
 <span data-nosnippet>949</span>    </span><span class="kw">pub fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
-<span data-nosnippet>950</span>        <span class="kw">let </span>idx = <span class="self">self</span>.compress.<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">index_exact</a>(<span class="kw-2">&amp;</span>val)<span class="question-mark">?</span>;
+<span data-nosnippet>950</span>        <span class="kw">let </span>idx = <span class="self">self</span>.compress.index_exact(<span class="kw-2">&amp;</span>val)<span class="question-mark">?</span>;
 <span data-nosnippet>951</span>        <span class="kw">let </span>range = <span class="self">self</span>.range_by_index(idx, <span class="number">0</span>..<span class="self">self</span>.len);
 <span data-nosnippet>952</span>        <span class="kw">if </span>range.len() &lt;= k {
 <span data-nosnippet>953</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
@@ -355,7 +355,7 @@
 <span data-nosnippet>961</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(i);
 <span data-nosnippet>962</span>        }
 <span data-nosnippet>963</span>        <span class="kw">for </span>level <span class="kw">in </span>(<span class="self">self</span>.compress.size().is_power_of_two() <span class="kw">as </span>usize..<span class="self">self</span>.bit_length).rev() {
-<span data-nosnippet>964</span>            <span class="kw">if </span><a href="../algebra/lazy_map.rs.html#131">i</a> &gt;= <span class="self">self</span>.zeros[level] {
+<span data-nosnippet>964</span>            <span class="kw">if </span>i &gt;= <span class="self">self</span>.zeros[level] {
 <span data-nosnippet>965</span>                i = <span class="self">self</span>.bit_vectors[level]
 <span data-nosnippet>966</span>                    .select1(i - <span class="self">self</span>.zeros[level])
 <span data-nosnippet>967</span>                    .unwrap();
@@ -405,7 +405,7 @@
 <span data-nosnippet>1011</span>            <span class="kw">let </span>end = vector.<span class="highlight">ranks</span>(range.end);
 <span data-nosnippet>1012</span>            <span class="kw">let </span><span class="kw-2">mut </span>digit = <span class="number">0</span>;
 <span data-nosnippet>1013</span>            <span class="kw">while </span>digit &lt; <span class="number">3 </span>&amp;&amp; k &gt;= end[digit] - start[digit] {
-<span data-nosnippet>1014</span>                k -= end[digit] - start[digit];
+<span data-nosnippet>1014</span>                k -= <a href="../algebra/lazy_map.rs.html#181">end</a>[digit] - start[digit];
 <span data-nosnippet>1015</span>                digit += <span class="number">1</span>;
 <span data-nosnippet>1016</span>            }
 <span data-nosnippet>1017</span>            index = index * <span class="number">4 </span>+ digit;
@@ -419,11 +419,11 @@
 <span data-nosnippet>1025</span>        queries: <span class="kw">impl </span>IntoIterator&lt;Item = (Range&lt;usize&gt;, usize)&gt;,
 <span data-nosnippet>1026</span>    ) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>1027</span>        <span class="kw">let </span>queries: Vec&lt;<span class="kw">_</span>&gt; = queries.into_iter().collect();
-<span data-nosnippet>1028</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(queries.len());
+<span data-nosnippet>1028</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <a href="../num/zero_one.rs.html#16">Vec</a>::with_capacity(queries.len());
 <span data-nosnippet>1029</span>        <span class="kw">for </span>queries <span class="kw">in </span>queries.chunks(<span class="number">16</span>) {
-<span data-nosnippet>1030</span>            <span class="kw">let </span><span class="kw-2">mut </span><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">states</a> = [[<span class="number">0</span>; <span class="number">4</span>]; <span class="number">16</span>];
+<span data-nosnippet>1030</span>            <span class="kw">let </span><span class="kw-2">mut </span>states = [[<span class="number">0</span>; <span class="number">4</span>]; <span class="number">16</span>];
 <span data-nosnippet>1031</span>            <span class="kw">for </span>(state, (range, k)) <span class="kw">in </span>states.iter_mut().zip(queries) {
-<span data-nosnippet>1032</span>                <span class="macro">assert!</span>(range.start &lt;= range.end &amp;&amp; range.end &lt;= <span class="self">self</span>.len &amp;&amp; <span class="kw-2">*</span>k &lt; range.len());
+<span data-nosnippet>1032</span>                <span class="macro">assert!</span>(range.start &lt;= range.end &amp;&amp; range.end &lt;= <span class="self">self</span>.len &amp;&amp; <span class="kw-2">*</span>k &lt; range.<a href="../num/zero_one.rs.html#16">len</a>());
 <span data-nosnippet>1033</span>                <span class="kw-2">*</span>state = [range.start, range.end, <span class="kw-2">*</span>k, <span class="number">0</span>];
 <span data-nosnippet>1034</span>            }
 <span data-nosnippet>1035</span>            <span class="kw">if let </span>[(range, k)] = queries {
@@ -434,7 +434,7 @@
 <span data-nosnippet>1040</span>            result.extend(
 <span data-nosnippet>1041</span>                states[..queries.len()]
 <span data-nosnippet>1042</span>                    .iter()
-<span data-nosnippet>1043</span>                    .map(|state| <span class="self">self</span>.compress.values()[state[<span class="number">3</span>]].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()),
+<span data-nosnippet>1043</span>                    .map(|state| <span class="self">self</span>.compress.values()[state[<span class="number">3</span>]].clone()),
 <span data-nosnippet>1044</span>            );
 <span data-nosnippet>1045</span>        }
 <span data-nosnippet>1046</span>        result
@@ -445,7 +445,7 @@
 <span data-nosnippet>1051</span>    </span><span class="kw">pub fn </span>quantiles_sorted(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;, ranks: <span class="kw-2">&amp;</span>[usize]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>1052</span>        <span class="macro">assert!</span>(range.start &lt;= range.end &amp;&amp; range.end &lt;= <span class="self">self</span>.len);
 <span data-nosnippet>1053</span>        <span class="macro">assert!</span>(ranks.windows(<span class="number">2</span>).all(|pair| pair[<span class="number">0</span>] &lt;= pair[<span class="number">1</span>]));
-<span data-nosnippet>1054</span>        <span class="macro">assert!</span>(ranks.last().is_none_or(|<span class="kw-2">&amp;</span>k| k &lt; range.len()));
+<span data-nosnippet>1054</span>        <span class="macro">assert!</span>(ranks.<a href="../num/zero_one.rs.html#1-14">last</a>().is_none_or(|<span class="kw-2">&amp;</span>k| k &lt; range.len()));
 <span data-nosnippet>1055</span>        <span class="kw">if </span>ranks.is_empty() {
 <span data-nosnippet>1056</span>            <span class="kw">return </span>Vec::new();
 <span data-nosnippet>1057</span>        }
@@ -456,7 +456,7 @@
 <span data-nosnippet>1062</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>1063</span>        </span><span class="kw">let </span>use_batch = use_batch || <span class="self">self</span>.backend == <span class="kw">super</span>::SimdBackend::Avx512;
 <span data-nosnippet>1064</span>        <span class="comment">// Sparse requests amortize less of the shared traversal's branching work.
-<span data-nosnippet>1065</span>        </span><span class="kw">if </span>use_batch &amp;&amp; ranks.len() &lt; <span class="self">self</span>.compress.size().div_ceil(<span class="number">16</span>) {
+<span data-nosnippet>1065</span>        </span><span class="kw">if </span>use_batch &amp;&amp; ranks.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">len</a>() &lt; <span class="self">self</span>.compress.size().div_ceil(<span class="number">16</span>) {
 <span data-nosnippet>1066</span>            <span class="kw">return </span><span class="self">self</span>.quantile_batch(ranks.iter().map(|<span class="kw-2">&amp;</span>k| (range.clone(), k)));
 <span data-nosnippet>1067</span>        }
 <span data-nosnippet>1068</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(ranks.len());
@@ -465,7 +465,7 @@
 <span data-nosnippet>1071</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>((range, base, index, level, ranks)) = stack.pop() {
 <span data-nosnippet>1072</span>                <span class="kw">if </span>level == <span class="self">self</span>.quad_vectors.len() {
 <span data-nosnippet>1073</span>                    result.resize(
-<span data-nosnippet>1074</span>                        result.len() + ranks.len(),
+<span data-nosnippet>1074</span>                        result.<a href="../algebra/lazy_map.rs.html#267">len</a>() + ranks.len(),
 <span data-nosnippet>1075</span>                        <span class="self">self</span>.compress.values()[index].clone(),
 <span data-nosnippet>1076</span>                    );
 <span data-nosnippet>1077</span>                    <span class="kw">continue</span>;
@@ -500,7 +500,7 @@
 <span data-nosnippet>1106</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>((range, base, index, bits, ranks)) = stack.pop() {
 <span data-nosnippet>1107</span>            <span class="kw">if </span>bits == <span class="number">0 </span>{
 <span data-nosnippet>1108</span>                result.resize(
-<span data-nosnippet>1109</span>                    result.len() + ranks.len(),
+<span data-nosnippet>1109</span>                    <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">result</a>.len() + ranks.len(),
 <span data-nosnippet>1110</span>                    <span class="self">self</span>.compress.values()[index].clone(),
 <span data-nosnippet>1111</span>                );
 <span data-nosnippet>1112</span>                <span class="kw">continue</span>;
@@ -549,7 +549,7 @@
 <span data-nosnippet>1155</span>                    digit += <span class="number">1</span>;
 <span data-nosnippet>1156</span>                }
 <span data-nosnippet>1157</span>                index = index * <span class="number">4 </span>+ digit;
-<span data-nosnippet>1158</span>                range = vector.starts[digit] + start[digit]..vector.starts[digit] + end[digit];
+<span data-nosnippet>1158</span>                range = vector.starts[digit] + start[<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">digit</a>]..vector.starts[digit] + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">end</a>[digit];
 <span data-nosnippet>1159</span>                outer = vector.starts[digit] + outer_start[digit]
 <span data-nosnippet>1160</span>                    ..vector.starts[digit] + outer_end[digit];
 <span data-nosnippet>1161</span>            }
@@ -632,7 +632,7 @@
 <span data-nosnippet>1238</span>    ) -&gt; usize {
 <span data-nosnippet>1239</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="number">0</span>;
 <span data-nosnippet>1240</span>        <span class="kw">for </span>(level, vector) <span class="kw">in </span><span class="self">self</span>.quad_vectors.iter().enumerate().skip(start_level) {
-<span data-nosnippet>1241</span>            <span class="kw">let </span><a href="../algebra/magma.rs.html#11">d</a> = (<span class="self">self</span>.quad_vectors.len() - level - <span class="number">1</span>) * <span class="number">2</span>;
+<span data-nosnippet>1241</span>            <span class="kw">let </span>d = (<span class="self">self</span>.quad_vectors.len() - level - <span class="number">1</span>) * <span class="number">2</span>;
 <span data-nosnippet>1242</span>            <span class="kw">if </span>d + <span class="number">2 </span>&lt;= index.trailing_zeros() <span class="kw">as </span>usize {
 <span data-nosnippet>1243</span>                <span class="kw">break</span>;
 <span data-nosnippet>1244</span>            }
@@ -702,7 +702,7 @@
 <span data-nosnippet>1308</span>                <span class="kw">let </span>low = (lower &gt;&gt; d) &amp; <span class="number">3</span>;
 <span data-nosnippet>1309</span>                <span class="kw">let </span>high = (upper &gt;&gt; d) &amp; <span class="number">3</span>;
 <span data-nosnippet>1310</span>                <span class="kw">if </span>low == high {
-<span data-nosnippet>1311</span>                    range = vector.starts[low] + vector.rank(<a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">low</a>, range.start)
+<span data-nosnippet>1311</span>                    range = vector.starts[low] + vector.rank(low, range.start)
 <span data-nosnippet>1312</span>                        ..vector.starts[low] + vector.rank(low, range.end);
 <span data-nosnippet>1313</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>1314</span>                }
@@ -776,7 +776,7 @@
 <span data-nosnippet>1382</span>    <span class="kw">where
 <span data-nosnippet>1383</span>        </span>F: FnMut(usize, Range&lt;usize&gt;),
 <span data-nosnippet>1384</span>    {
-<span data-nosnippet>1385</span>        <span class="kw">let </span><a href="../algebra/magma.rs.html#229">idx</a> = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>val);
+<span data-nosnippet>1385</span>        <span class="kw">let </span>idx = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>val);
 <span data-nosnippet>1386</span>        <span class="kw">if </span>!<span class="self">self</span>.quad_vectors.is_empty() {
 <span data-nosnippet>1387</span>            <span class="kw">if </span>idx == <span class="self">self</span>.compress.size() &amp;&amp; idx.is_power_of_two() {
 <span data-nosnippet>1388</span>                f(<span class="self">self</span>.bit_length - <span class="number">1</span>, range);
@@ -1045,7 +1045,7 @@
 <span data-nosnippet>338</span>
 <span data-nosnippet>339</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx512f,avx512vpopcntdq"</span>)]
 <span data-nosnippet>340</span>    </span><span class="kw">pub unsafe fn </span>quad_avx512(
-<span data-nosnippet>341</span>        layers: <span class="kw-2">&amp;</span>[<span class="kw">super</span>::WaveletMatrixQuadVector],
+<span data-nosnippet>341</span>        <a href="../algebra/magma.rs.html#145-176">layers</a>: <span class="kw-2">&amp;</span>[<span class="kw">super</span>::WaveletMatrixQuadVector],
 <span data-nosnippet>342</span>        states: <span class="kw-2">&amp;mut </span>[[usize; <span class="number">4</span>]],
 <span data-nosnippet>343</span>    ) {
 <span data-nosnippet>344</span>        <span class="kw">for </span>chunk <span class="kw">in </span>states.as_chunks_mut::&lt;<span class="number">8</span>&gt;().<span class="number">0 </span>{
@@ -1121,7 +1121,7 @@
 <span data-nosnippet>414</span>                <span class="kw">let </span>base1 = <span class="macro">blend!</span>(
 <span data-nosnippet>415</span>                    high,
 <span data-nosnippet>416</span>                    _mm512_set1_epi64(layer.starts[<span class="number">1</span>] <span class="kw">as </span>i64),
-<span data-nosnippet>417</span>                    <a href="../algebra/operations.rs.html#243-248">_mm512_set1_epi64</a>(layer.starts[<span class="number">3</span>] <span class="kw">as </span>i64)
+<span data-nosnippet>417</span>                    _mm512_set1_epi64(layer.starts[<span class="number">3</span>] <span class="kw">as </span>i64)
 <span data-nosnippet>418</span>                );
 <span data-nosnippet>419</span>                <span class="kw">let </span>offset = <span class="macro">blend!</span>(low, base0, base1);
 <span data-nosnippet>420</span>                start = _mm512_add_epi64(offset, <span class="macro">blend!</span>(low, l0, l1));
@@ -1190,13 +1190,13 @@
 <span data-nosnippet>483</span>                v,
 <span data-nosnippet>484</span>                |i| i,
 <span data-nosnippet>485</span>                |i| i,
-<span data-nosnippet>486</span>                |indices, d| <span class="self">Self</span>::pack_words(indices, |i| (i &gt;&gt; <a href="../algebra/lazy_map.rs.html#345">d</a>) &amp; <span class="number">1 </span>!= <span class="number">0</span>),
+<span data-nosnippet>486</span>                |indices, d| <span class="self">Self</span>::pack_words(indices, |i| (i &gt;&gt; d) &amp; <span class="number">1 </span>!= <span class="number">0</span>),
 <span data-nosnippet>487</span>                <span class="self">Self</span>::partition,
 <span data-nosnippet>488</span>            )
 <span data-nosnippet>489</span>        }
 <span data-nosnippet>490</span>    }
 <span data-nosnippet>491</span>
-<span data-nosnippet>492</span>    <span class="kw">fn </span>pack_words&lt;<a href="../algebra/lazy_map.rs.html#345">I</a>: Copy&gt;(indices: <span class="kw-2">&amp;</span>[I], bit: <span class="kw">impl </span>Fn(I) -&gt; bool) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>492</span>    <span class="kw">fn </span>pack_words&lt;I: Copy&gt;(indices: <span class="kw-2">&amp;</span>[I], bit: <span class="kw">impl </span>Fn(I) -&gt; bool) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>493</span>        indices
 <span data-nosnippet>494</span>            .chunks(<span class="number">64</span>)
 <span data-nosnippet>495</span>            .map(|chunk| {
@@ -1208,12 +1208,12 @@
 <span data-nosnippet>501</span>            .collect()
 <span data-nosnippet>502</span>    }
 <span data-nosnippet>503</span>
-<span data-nosnippet>504</span>    <span class="kw">fn </span>partition&lt;I: Copy&gt;(indices: <span class="kw-2">&amp;</span>[I], words: <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">u64</a>], <span class="kw-2">mut </span>one: usize, next: <span class="kw-2">&amp;mut </span>[I]) {
+<span data-nosnippet>504</span>    <span class="kw">fn </span>partition&lt;I: Copy&gt;(indices: <span class="kw-2">&amp;</span>[I], words: <span class="kw-2">&amp;</span>[u64], <span class="kw-2">mut </span>one: usize, next: <span class="kw-2">&amp;mut </span>[I]) {
 <span data-nosnippet>505</span>        <span class="kw">let </span><span class="kw-2">mut </span>zero = <span class="number">0</span>;
 <span data-nosnippet>506</span>        <span class="kw">for </span>(chunk, <span class="kw-2">&amp;</span>word) <span class="kw">in </span>indices.chunks(<span class="number">64</span>).zip(words) {
 <span data-nosnippet>507</span>            <span class="kw">if </span>word == <span class="number">0 </span>{
 <span data-nosnippet>508</span>                next[zero..zero + chunk.len()].copy_from_slice(chunk);
-<span data-nosnippet>509</span>                zero += <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">chunk</a>.len();
+<span data-nosnippet>509</span>                zero += chunk.len();
 <span data-nosnippet>510</span>            } <span class="kw">else if </span>word == u64::MAX {
 <span data-nosnippet>511</span>                next[one..one + chunk.len()].copy_from_slice(chunk);
 <span data-nosnippet>512</span>                one += chunk.len();
@@ -1277,7 +1277,7 @@
 <span data-nosnippet>570</span>            }
 <span data-nosnippet>571</span>            partition(<span class="kw-2">&amp;</span>indices, <span class="kw-2">&amp;</span>words, zero_count, <span class="kw-2">&amp;mut </span>next);
 <span data-nosnippet>572</span>            zeros.push(zero_count);
-<span data-nosnippet>573</span>            bit_vectors.push(bits);
+<span data-nosnippet>573</span>            bit_vectors.push(<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">bits</a>);
 <span data-nosnippet>574</span>            mem::swap(<span class="kw-2">&amp;mut </span>indices, <span class="kw-2">&amp;mut </span>next);
 <span data-nosnippet>575</span>        }
 <span data-nosnippet>576</span>        <span class="self">Self </span>{
@@ -1313,12 +1313,12 @@
 <span data-nosnippet>606</span>                    <span class="kw">let </span>d = (this.quad_vectors.len() - level - <span class="number">1</span>) * <span class="number">2</span>;
 <span data-nosnippet>607</span>                    <span class="kw">let </span>(digit, rank) = vector.access_rank(k);
 <span data-nosnippet>608</span>                    <span class="kw">if </span>d + <span class="number">1 </span>&lt; bits {
-<span data-nosnippet>609</span>                        <span class="kw">let </span>block = <span class="kw-2">&amp;</span>vector.blocks[<a href="../algebra/lazy_map.rs.html#552">k</a> / <span class="number">64</span>];
+<span data-nosnippet>609</span>                        <span class="kw">let </span>block = <span class="kw-2">&amp;</span>vector.blocks[k / <span class="number">64</span>];
 <span data-nosnippet>610</span>                        <span class="kw">let </span>high = block.rank[<span class="number">2</span>] <span class="kw">as </span>usize
 <span data-nosnippet>611</span>                            + block.rank[<span class="number">3</span>] <span class="kw">as </span>usize
 <span data-nosnippet>612</span>                            + (block.hi &amp; !(u64::MAX &lt;&lt; (k % <span class="number">64</span>))).count_ones() <span class="kw">as </span>usize;
 <span data-nosnippet>613</span>                        <span class="kw">let </span>middle = <span class="kw">if </span>digit &amp; <span class="number">2 </span>== <span class="number">0 </span>{
-<span data-nosnippet>614</span>                            <a href="../algebra/lazy_map.rs.html#552">k</a> - high
+<span data-nosnippet>614</span>                            k - high
 <span data-nosnippet>615</span>                        } <span class="kw">else </span>{
 <span data-nosnippet>616</span>                            this.zeros[this.level(d + <span class="number">1</span>)] + high
 <span data-nosnippet>617</span>                        };
@@ -1339,7 +1339,7 @@
 <span data-nosnippet>632</span>                } <span class="kw">else </span>{
 <span data-nosnippet>633</span>                    k - rank1
 <span data-nosnippet>634</span>                };
-<span data-nosnippet>635</span>                f(d, k, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">value</a>.clone());
+<span data-nosnippet>635</span>                f(d, k, value.clone());
 <span data-nosnippet>636</span>            }
 <span data-nosnippet>637</span>        }
 <span data-nosnippet>638</span>        this
@@ -1353,7 +1353,7 @@
 <span data-nosnippet>646</span>        <span class="self">self</span>.bit_vectors[level].rank1(k)
 <span data-nosnippet>647</span>    }
 <span data-nosnippet>648</span>
-<span data-nosnippet>649</span>    <span class="kw">fn </span>reorder&lt;U&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, level: usize, current: Vec&lt;U&gt;) -&gt; Vec&lt;U&gt; {
+<span data-nosnippet>649</span>    <span class="kw">fn </span>reorder&lt;<a href="../algebra/lazy_map.rs.html#535">U</a>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, level: usize, current: Vec&lt;U&gt;) -&gt; Vec&lt;U&gt; {
 <span data-nosnippet>650</span>        <span class="macro">assert_eq!</span>(current.len(), <span class="self">self</span>.len);
 <span data-nosnippet>651</span>        <span class="kw">let </span><span class="kw-2">mut </span>next = Vec::with_capacity(<span class="self">self</span>.len);
 <span data-nosnippet>652</span>        next.resize_with(<span class="self">self</span>.len, MaybeUninit::uninit);
@@ -1383,7 +1383,7 @@
 <span data-nosnippet>676</span>        <span class="comment">// SAFETY: the partition counts fill every slot once, and `MaybeUninit&lt;U&gt;` has `U`'s layout.
 <span data-nosnippet>677</span>        </span><span class="kw">unsafe </span>{
 <span data-nosnippet>678</span>            <span class="kw">let </span><span class="kw-2">mut </span>next = mem::ManuallyDrop::new(next);
-<span data-nosnippet>679</span>            Vec::from_raw_parts(next.as_mut_ptr().cast(), next.len(), next.capacity())
+<span data-nosnippet>679</span>            <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Vec</a>::from_raw_parts(next.as_mut_ptr().cast(), next.len(), next.capacity())
 <span data-nosnippet>680</span>        }
 <span data-nosnippet>681</span>    }
 <span data-nosnippet>682</span>
@@ -1637,12 +1637,12 @@
 <span data-nosnippet>930</span>        <span class="kw">for </span>queries <span class="kw">in </span>queries.chunks(<span class="number">16</span>) {
 <span data-nosnippet>931</span>            <span class="kw">let </span><span class="kw-2">mut </span>states = [[<span class="number">0</span>; <span class="number">4</span>]; <span class="number">16</span>];
 <span data-nosnippet>932</span>            <span class="kw">for </span>(state, (value, range)) <span class="kw">in </span>states.iter_mut().zip(queries) {
-<span data-nosnippet>933</span>                <span class="macro">assert!</span>(range.start &lt;= range.end &amp;&amp; <a href="../algebra/magma.rs.html#4-18">range</a>.end &lt;= <span class="self">self</span>.len);
+<span data-nosnippet>933</span>                <span class="macro">assert!</span>(range.start &lt;= range.end &amp;&amp; range.end &lt;= <span class="self">self</span>.len);
 <span data-nosnippet>934</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = <span class="self">self</span>.compress.index_exact(value) {
 <span data-nosnippet>935</span>                    <span class="kw-2">*</span>state = [range.start, range.end, index, <span class="number">0</span>];
 <span data-nosnippet>936</span>                }
 <span data-nosnippet>937</span>            }
-<span data-nosnippet>938</span>            <span class="self">self</span>.batch::&lt;RANK&gt;(<span class="kw-2">&amp;mut </span><a href="../algebra/magma.rs.html#54-81">states</a>, queries.len());
+<span data-nosnippet>938</span>            <span class="self">self</span>.batch::&lt;RANK&gt;(<span class="kw-2">&amp;mut </span>states, queries.len());
 <span data-nosnippet>939</span>            result.extend(
 <span data-nosnippet>940</span>                states[..queries.len()]
 <span data-nosnippet>941</span>                    .iter()
@@ -1654,7 +1654,7 @@
 <span data-nosnippet>947</span>
 <span data-nosnippet>948</span>    <span class="doccomment">/// index of k-th val
 <span data-nosnippet>949</span>    </span><span class="kw">pub fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
-<span data-nosnippet>950</span>        <span class="kw">let </span>idx = <span class="self">self</span>.compress.index_exact(<span class="kw-2">&amp;</span>val)<span class="question-mark">?</span>;
+<span data-nosnippet>950</span>        <span class="kw">let </span>idx = <a class="self" href="../algebra/magma.rs.html#151">self</a>.compress.index_exact(<span class="kw-2">&amp;</span>val)<span class="question-mark">?</span>;
 <span data-nosnippet>951</span>        <span class="kw">let </span>range = <span class="self">self</span>.range_by_index(idx, <span class="number">0</span>..<span class="self">self</span>.len);
 <span data-nosnippet>952</span>        <span class="kw">if </span>range.len() &lt;= k {
 <span data-nosnippet>953</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
@@ -1680,7 +1680,7 @@
 <span data-nosnippet>973</span>    }
 <span data-nosnippet>974</span>
 <span data-nosnippet>975</span>    <span class="doccomment">/// get k-th smallest value in range
-<span data-nosnippet>976</span>    </span><span class="kw">pub fn </span>quantile(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, <span class="kw-2">mut </span>k: <a href="../algebra/magma.rs.html#4-18">usize</a>) -&gt; T {
+<span data-nosnippet>976</span>    </span><span class="kw">pub fn </span>quantile(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, <span class="kw-2">mut </span>k: usize) -&gt; T {
 <span data-nosnippet>977</span>        <span class="kw">if </span>!<span class="self">self</span>.quad_vectors.is_empty() {
 <span data-nosnippet>978</span>            <span class="kw">return </span><span class="self">self</span>.quad_quantile(range, k, <span class="number">0</span>, <span class="number">0</span>);
 <span data-nosnippet>979</span>        }
@@ -1722,7 +1722,7 @@
 <span data-nosnippet>1015</span>                digit += <span class="number">1</span>;
 <span data-nosnippet>1016</span>            }
 <span data-nosnippet>1017</span>            index = index * <span class="number">4 </span>+ digit;
-<span data-nosnippet>1018</span>            range = vector.starts[digit] + start[digit]..vector.starts[<a href="../algebra/magma.rs.html#4-18">digit</a>] + end[digit];
+<span data-nosnippet>1018</span>            range = vector.starts[digit] + start[digit]..vector.starts[digit] + end[digit];
 <span data-nosnippet>1019</span>        }
 <span data-nosnippet>1020</span>        <span class="self">self</span>.compress.values()[index].clone()
 <span data-nosnippet>1021</span>    }
@@ -1763,7 +1763,7 @@
 <span data-nosnippet>1056</span>            <span class="kw">return </span>Vec::new();
 <span data-nosnippet>1057</span>        }
 <span data-nosnippet>1058</span>        <span class="kw">if </span>ranks[<span class="number">0</span>] == ranks[ranks.len() - <span class="number">1</span>] {
-<span data-nosnippet>1059</span>            <span class="kw">return </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">vec!</a>[<span class="self">self</span>.quantile(range, ranks[<span class="number">0</span>]); ranks.len()];
+<span data-nosnippet>1059</span>            <span class="kw">return </span><span class="macro">vec!</span>[<span class="self">self</span>.quantile(range, ranks[<span class="number">0</span>]); ranks.len()];
 <span data-nosnippet>1060</span>        }
 <span data-nosnippet>1061</span>        <span class="kw">let </span>use_batch = ranks.len() &lt; <span class="number">1024</span>;
 <span data-nosnippet>1062</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
@@ -1797,7 +1797,7 @@
 <span data-nosnippet>1090</span>                    <span class="kw">let </span>boundary = ranks[..requested].partition_point(|<span class="kw-2">&amp;</span>k| k &lt; split);
 <span data-nosnippet>1091</span>                    <span class="kw">if </span>boundary &lt; requested {
 <span data-nosnippet>1092</span>                        stack.push((
-<span data-nosnippet>1093</span>                            vector.starts[digit] + start[digit]..vector.starts[digit] + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">end</a>[digit],
+<span data-nosnippet>1093</span>                            vector.starts[digit] + start[digit]..vector.starts[digit] + end[digit],
 <span data-nosnippet>1094</span>                            split,
 <span data-nosnippet>1095</span>                            index * <span class="number">4 </span>+ digit,
 <span data-nosnippet>1096</span>                            level + <span class="number">1</span>,
@@ -1873,9 +1873,9 @@
 <span data-nosnippet>1166</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.bit_length - <span class="self">self</span>.compress.size().is_power_of_two() <span class="kw">as </span>usize).rev() {
 <span data-nosnippet>1167</span>            <span class="kw">let </span>level = <span class="self">self</span>.level(d);
 <span data-nosnippet>1168</span>            <span class="kw">let </span>range_start1 = <span class="self">self</span>.rank1(level, range.start);
-<span data-nosnippet>1169</span>            <span class="kw">let </span>range_end1 = <span class="self">self</span>.rank1(<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">level</a>, range.end);
+<span data-nosnippet>1169</span>            <span class="kw">let </span>range_end1 = <span class="self">self</span>.rank1(level, range.end);
 <span data-nosnippet>1170</span>            <span class="kw">let </span>outer_start1 = <span class="self">self</span>.rank1(level, orange.start);
-<span data-nosnippet>1171</span>            <span class="kw">let </span>outer_end1 = <span class="self">self</span>.rank1(level, orange.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">end</a>);
+<span data-nosnippet>1171</span>            <span class="kw">let </span>outer_end1 = <span class="self">self</span>.rank1(level, orange.end);
 <span data-nosnippet>1172</span>            <span class="kw">let </span>range_start0 = range.start - range_start1;
 <span data-nosnippet>1173</span>            <span class="kw">let </span>range_end0 = range.end - range_end1;
 <span data-nosnippet>1174</span>            <span class="kw">let </span>outer_start0 = orange.start - outer_start1;
@@ -1946,7 +1946,7 @@
 <span data-nosnippet>1239</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="number">0</span>;
 <span data-nosnippet>1240</span>        <span class="kw">for </span>(level, vector) <span class="kw">in </span><span class="self">self</span>.quad_vectors.iter().enumerate().skip(start_level) {
 <span data-nosnippet>1241</span>            <span class="kw">let </span>d = (<span class="self">self</span>.quad_vectors.len() - level - <span class="number">1</span>) * <span class="number">2</span>;
-<span data-nosnippet>1242</span>            <span class="kw">if </span>d + <span class="number">2 </span>&lt;= <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">index</a>.trailing_zeros() <span class="kw">as </span>usize {
+<span data-nosnippet>1242</span>            <span class="kw">if </span>d + <span class="number">2 </span>&lt;= index.trailing_zeros() <span class="kw">as </span>usize {
 <span data-nosnippet>1243</span>                <span class="kw">break</span>;
 <span data-nosnippet>1244</span>            }
 <span data-nosnippet>1245</span>            <span class="kw">let </span>digit = (index &gt;&gt; d) &amp; <span class="number">3</span>;
@@ -1959,13 +1959,13 @@
 <span data-nosnippet>1252</span>                <span class="kw">let </span>less = <span class="kw">match </span>digit {
 <span data-nosnippet>1253</span>                    <span class="number">0 </span>=&gt; <span class="number">0</span>,
 <span data-nosnippet>1254</span>                    <span class="number">1 </span>=&gt; {
-<span data-nosnippet>1255</span>                        <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">block</a>.rank[<span class="number">0</span>] <span class="kw">as </span>usize
+<span data-nosnippet>1255</span>                        block.rank[<span class="number">0</span>] <span class="kw">as </span>usize
 <span data-nosnippet>1256</span>                            + (!(block.lo | block.hi) &amp; mask).count_ones() <span class="kw">as </span>usize
 <span data-nosnippet>1257</span>                    }
 <span data-nosnippet>1258</span>                    <span class="number">2 </span>=&gt; {
 <span data-nosnippet>1259</span>                        block.rank[<span class="number">0</span>] <span class="kw">as </span>usize
 <span data-nosnippet>1260</span>                            + block.rank[<span class="number">1</span>] <span class="kw">as </span>usize
-<span data-nosnippet>1261</span>                            + (!<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">block</a>.hi &amp; mask).count_ones() <span class="kw">as </span>usize
+<span data-nosnippet>1261</span>                            + (!block.hi &amp; mask).count_ones() <span class="kw">as </span>usize
 <span data-nosnippet>1262</span>                    }
 <span data-nosnippet>1263</span>                    <span class="kw">_ </span>=&gt; position - exact,
 <span data-nosnippet>1264</span>                };
@@ -1987,7 +1987,7 @@
 <span data-nosnippet>1280</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.rank1(level, range.end);
 <span data-nosnippet>1281</span>            <span class="kw">let </span>bit = (idx &gt;&gt; d) &amp; <span class="number">1 </span>!= <span class="number">0</span>;
 <span data-nosnippet>1282</span>            <span class="kw">let </span>start0 = range.start - start1;
-<span data-nosnippet>1283</span>            <span class="kw">let </span>end0 = range.end - end1;
+<span data-nosnippet>1283</span>            <span class="kw">let </span><a href="../num/zero_one.rs.html#1-14">end0</a> = range.end - end1;
 <span data-nosnippet>1284</span>            res += <span class="kw">if </span>bit { end0 - start0 } <span class="kw">else </span>{ <span class="number">0 </span>};
 <span data-nosnippet>1285</span>            range.start = <span class="kw">if </span>bit {
 <span data-nosnippet>1286</span>                <span class="self">self</span>.zeros[level] + start1
@@ -2199,7 +2199,7 @@
 <span data-nosnippet>712</span>
 <span data-nosnippet>713</span>    <span class="kw">fn </span>batch&lt;<span class="kw">const </span>OP: u8&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, states: <span class="kw-2">&amp;mut </span>[[usize; <span class="number">4</span>]; <span class="number">16</span>], count: usize) {
 <span data-nosnippet>714</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>715</span>        </span><span class="kw">if </span>!<span class="macro">cfg!</span>(target_feature = <span class="string">"popcnt"</span>) &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"popcnt"</span>) {
+<span data-nosnippet>715</span>        </span><span class="kw">if </span>!<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">cfg!</a>(target_feature = <span class="string">"popcnt"</span>) &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"popcnt"</span>) {
 <span data-nosnippet>716</span>            <span class="comment">// SAFETY: POPCNT is checked above.
 <span data-nosnippet>717</span>            </span><span class="kw">unsafe </span>{
 <span data-nosnippet>718</span>                <span class="self">self</span>.batch_popcnt::&lt;OP&gt;(states, count);
@@ -2322,7 +2322,7 @@
 <span data-nosnippet>835</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.bit_length - first).rev() {
 <span data-nosnippet>836</span>            <span class="kw">let </span>level = <span class="self">self</span>.level(d);
 <span data-nosnippet>837</span>            <span class="kw">for </span>state <span class="kw">in </span><span class="kw-2">&amp;mut </span>states[..count] {
-<span data-nosnippet>838</span>                <span class="kw">let </span>(<a href="../algebra/lazy_map.rs.html#154">bit</a>, start1) = <span class="self">self</span>.bit_vectors[level].access_rank1(state[<span class="number">0</span>]);
+<span data-nosnippet>838</span>                <span class="kw">let </span>(bit, start1) = <span class="self">self</span>.bit_vectors[level].access_rank1(state[<span class="number">0</span>]);
 <span data-nosnippet>839</span>                <span class="kw">let </span>start0 = state[<span class="number">0</span>] - start1;
 <span data-nosnippet>840</span>                <span class="kw">let </span>end1 = <span class="kw">if </span>OP == ACCESS {
 <span data-nosnippet>841</span>                    <span class="number">0
