@@ -1,6 +1,9 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::{Associative, EmptyAct, LazyMapMonoid, LinearOperation, Magma, Unital},
+    algebra::{
+        Associative, EmptyAct, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct,
+        LinearOperation, Magma, MonoidAct, Unital,
+    },
     num::mint_basic::MInt998244353 as M,
     tree::{PathLinkCutTree, TopTree, TopTreeSpec},
 };
@@ -33,22 +36,24 @@ struct PathComposite;
 
 impl LazyMapMonoid for PathComposite {
     type Key = Affine;
-    type Agg = (Affine, Affine);
-    type Act = ();
     type AggMonoid = BidirectionalAffine;
     type ActMonoid = ();
-    type KeyAct = EmptyAct<Affine>;
 
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         (*key, *key)
     }
 
-    fn toggle(value: &mut Self::Agg) {
+    fn toggle(value: &mut LazyMapAgg<Self>) {
         std::mem::swap(&mut value.0, &mut value.1);
     }
 
-    fn act_agg(value: &Self::Agg, _action: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(value: &LazyMapAgg<Self>, _action: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(*value)
+    }
+}
+impl LazyMapMonoidWithKeyAct for PathComposite {
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        EmptyAct::act(key, act)
     }
 }
 

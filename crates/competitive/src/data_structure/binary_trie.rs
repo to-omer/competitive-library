@@ -1,4 +1,4 @@
-use super::{AbelianMonoid, LazyMapMonoid};
+use super::{AbelianMonoid, LazyMapAct, LazyMapAgg, LazyMapMonoid};
 use std::{
     mem::replace,
     ops::{Bound, RangeBounds},
@@ -10,8 +10,8 @@ where
 {
     child: [usize; 2],
     parent: usize,
-    agg: M::Agg,
-    lazy: M::Act,
+    agg: LazyMapAgg<M>,
+    lazy: LazyMapAct<M>,
 }
 
 impl<M> Node<M>
@@ -84,11 +84,11 @@ where
         self.nodes.push(Node::new(usize::MAX));
     }
 
-    pub fn set(&mut self, key: u64, value: M::Agg) {
+    pub fn set(&mut self, key: u64, value: LazyMapAgg<M>) {
         self.modify_or_insert(key, |x| *x = value);
     }
 
-    pub fn modify_or_insert(&mut self, key: u64, f: impl FnOnce(&mut M::Agg)) {
+    pub fn modify_or_insert(&mut self, key: u64, f: impl FnOnce(&mut LazyMapAgg<M>)) {
         assert!(key <= self.max_key);
         if self.bit_len == 0 {
             if self.is_empty() {
@@ -121,7 +121,7 @@ where
         self.recalc_up(node);
     }
 
-    pub fn get(&mut self, key: u64) -> Option<M::Agg> {
+    pub fn get(&mut self, key: u64) -> Option<LazyMapAgg<M>> {
         assert!(key <= self.max_key);
         if self.is_empty() {
             return None;
@@ -144,7 +144,7 @@ where
         Some(self.nodes[node].agg.clone())
     }
 
-    pub fn update<R>(&mut self, range: R, act: M::Act)
+    pub fn update<R>(&mut self, range: R, act: LazyMapAct<M>)
     where
         R: RangeBounds<u64>,
     {
@@ -187,7 +187,7 @@ where
         }
     }
 
-    pub fn fold<R>(&mut self, range: R) -> M::Agg
+    pub fn fold<R>(&mut self, range: R) -> LazyMapAgg<M>
     where
         R: RangeBounds<u64>,
     {
@@ -227,7 +227,7 @@ where
         res
     }
 
-    fn apply_at(&mut self, node: usize, depth: usize, act: &M::Act) {
+    fn apply_at(&mut self, node: usize, depth: usize, act: &LazyMapAct<M>) {
         if M::is_act_unit(act) {
             return;
         }
@@ -332,10 +332,7 @@ where
 mod tests {
     use super::*;
     use crate::{
-        algebra::{
-            AdditiveOperation, Associative, FlattenAct, LazyMapMonoid, Magma, RangeSumRangeAdd,
-            Unital,
-        },
+        algebra::{AdditiveOperation, Associative, LazyMapMonoid, Magma, RangeSumRangeAdd, Unital},
         tools::Xorshift,
     };
     use std::{
@@ -497,17 +494,14 @@ mod tests {
 
     impl LazyMapMonoid for DescendAdd {
         type Key = i32;
-        type Agg = Vec<i32>;
-        type Act = i32;
         type AggMonoid = Concat;
         type ActMonoid = AdditiveOperation<i32>;
-        type KeyAct = FlattenAct<AdditiveOperation<i32>>;
 
-        fn single_agg(key: &Self::Key) -> Self::Agg {
+        fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
             vec![*key]
         }
 
-        fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+        fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
             Self::is_act_unit(a)
                 .then_some(x.clone())
                 .or_else(|| (x.len() <= 1).then(|| x.iter().map(|x| x + a).collect()))

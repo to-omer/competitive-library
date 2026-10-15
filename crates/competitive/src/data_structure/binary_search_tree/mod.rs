@@ -1,4 +1,6 @@
-use super::{Allocator, LazyMapMonoid, Monoid, MonoidAct};
+use super::{
+    Allocator, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Monoid, MonoidAct,
+};
 
 pub use data::BstDataAccess;
 pub use node::{

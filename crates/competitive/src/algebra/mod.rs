@@ -28,6 +28,7 @@ mod action;
         include(
             "MonoidAct",
             "AdditiveOperation",
+            "ArrayOperation",
             "MaxOperation",
             "MinOperation",
             "CountingOperation",

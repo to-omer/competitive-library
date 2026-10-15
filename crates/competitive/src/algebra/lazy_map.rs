@@ -5,49 +5,50 @@ use std::{
     ops::{Add, Mul, Sub},
 };
 
+pub type LazyMapAgg<L> = <<L as LazyMapMonoid>::AggMonoid as Magma>::T;
+pub type LazyMapAct<L> = <<L as LazyMapMonoid>::ActMonoid as Magma>::T;
+
 pub trait LazyMapMonoid {
     type Key;
-    type Agg: Clone;
-    type Act: Clone + PartialEq;
-    type AggMonoid: Monoid<T = Self::Agg>;
-    type ActMonoid: Monoid<T = Self::Act>;
-    type KeyAct: MonoidAct<Key = Self::Key, Act = Self::Act, ActMonoid = Self::ActMonoid>;
-    fn single_agg(key: &Self::Key) -> Self::Agg;
-    fn toggle(_x: &mut Self::Agg) {}
+    type AggMonoid: Monoid;
+    type ActMonoid: Monoid<T: PartialEq>;
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self>;
+    fn toggle(_x: &mut LazyMapAgg<Self>) {}
     #[inline]
-    fn is_act_unit(act: &Self::Act) -> bool {
+    fn is_act_unit(act: &LazyMapAct<Self>) -> bool {
         <Self::ActMonoid as Unital>::is_unit(act)
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg>;
-
-    fn act_key(x: &Self::Key, a: &Self::Act) -> Self::Key {
-        <Self::KeyAct as MonoidAct>::act(x, a)
-    }
+    /// Returns `None` when descent is needed; must succeed on single-key aggregates.
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>>;
 
     #[inline]
-    fn agg_unit() -> Self::Agg {
+    fn agg_unit() -> LazyMapAgg<Self> {
         <Self::AggMonoid as Unital>::unit()
     }
     #[inline]
-    fn act_unit() -> Self::Act {
+    fn act_unit() -> LazyMapAct<Self> {
         <Self::ActMonoid as Unital>::unit()
     }
     #[inline]
-    fn agg_operate(x: &Self::Agg, y: &Self::Agg) -> Self::Agg {
+    fn agg_operate(x: &LazyMapAgg<Self>, y: &LazyMapAgg<Self>) -> LazyMapAgg<Self> {
         <Self::AggMonoid as Magma>::operate(x, y)
     }
     #[inline]
-    fn act_operate(x: &Self::Act, y: &Self::Act) -> Self::Act {
+    fn act_operate(x: &LazyMapAct<Self>, y: &LazyMapAct<Self>) -> LazyMapAct<Self> {
         <Self::ActMonoid as Magma>::operate(x, y)
     }
     #[inline]
-    fn agg_operate_assign(x: &mut Self::Agg, y: &Self::Agg) {
+    fn agg_operate_assign(x: &mut LazyMapAgg<Self>, y: &LazyMapAgg<Self>) {
         *x = <Self::AggMonoid as Magma>::operate(x, y);
     }
     #[inline]
-    fn act_operate_assign(x: &mut Self::Act, y: &Self::Act) {
+    fn act_operate_assign(x: &mut LazyMapAct<Self>, y: &LazyMapAct<Self>) {
         *x = <Self::ActMonoid as Magma>::operate(x, y);
     }
+}
+
+pub trait LazyMapMonoidWithKeyAct: LazyMapMonoid {
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key;
 }
 
 pub struct EmptyActLazy<M> {
@@ -58,35 +59,42 @@ where
     M: Monoid,
 {
     type Key = M::T;
-    type Agg = M::T;
-    type Act = ();
     type AggMonoid = M;
     type ActMonoid = ();
-    type KeyAct = EmptyAct<M::T>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &Self::Agg, _a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, _a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(x.clone())
+    }
+}
+impl<M> LazyMapMonoidWithKeyAct for EmptyActLazy<M>
+where
+    M: Monoid,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        EmptyAct::act(key, act)
     }
 }
 
 pub struct EmptyAggActLazy<T> {
     _marker: PhantomData<fn() -> T>,
 }
-impl<T> LazyMapMonoid for EmptyAggActLazy<T>
+impl<T> LazyMapMonoid for EmptyAggActLazy<T> {
+    type Key = T;
+    type AggMonoid = ();
+    type ActMonoid = ();
+    fn single_agg(_key: &Self::Key) -> LazyMapAgg<Self> {}
+    fn act_agg(_x: &LazyMapAgg<Self>, _a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+        Some(())
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for EmptyAggActLazy<T>
 where
     T: Clone,
 {
-    type Key = T;
-    type Agg = ();
-    type Act = ();
-    type AggMonoid = ();
-    type ActMonoid = ();
-    type KeyAct = EmptyAct<T>;
-    fn single_agg(_key: &Self::Key) -> Self::Agg {}
-    fn act_agg(_x: &Self::Agg, _a: &Self::Act) -> Option<Self::Agg> {
-        Some(())
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        EmptyAct::act(key, act)
     }
 }
 
@@ -99,16 +107,22 @@ where
     M::T: PartialEq,
 {
     type Key = M::T;
-    type Agg = M::T;
-    type Act = M::T;
     type AggMonoid = M;
     type ActMonoid = M;
-    type KeyAct = FlattenAct<M>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(M::operate(x, a))
+    }
+}
+impl<M> LazyMapMonoidWithKeyAct for FlattenLazy<M>
+where
+    M: Monoid,
+    M::T: PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        FlattenAct::<M>::act(key, act)
     }
 }
 
@@ -120,21 +134,26 @@ where
     T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
 {
     type Key = T;
-    type Agg = (T, T);
-    type Act = T;
     type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
     type ActMonoid = AdditiveOperation<T>;
-    type KeyAct = FlattenAct<Self::ActMonoid>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         (*key, T::one())
     }
-    fn act_agg(&(x, y): &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(&(x, y): &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             (x, y)
         } else {
             let a = *a;
             (x + a * y, y)
         })
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeSumRangeAdd<T>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        FlattenAct::<Self::ActMonoid>::act(key, act)
     }
 }
 
@@ -146,16 +165,66 @@ where
     T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
 {
     type Key = T;
-    type Agg = (T, T);
-    type Act = (T, T);
     type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
     type ActMonoid = LinearOperation<T>;
-    type KeyAct = LinearAct<T>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         (*key, T::one())
     }
-    fn act_agg(&(x, y): &Self::Agg, &(a, b): &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(&(x, y): &LazyMapAgg<Self>, &(a, b): &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some((a * x + b * y, y))
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeSumRangeLinear<T>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        LinearAct::act(key, act)
+    }
+}
+
+pub struct RangePowerSumRangeLinear<T, const K: usize> {
+    _marker: PhantomData<fn() -> T>,
+}
+impl<T, const K: usize> LazyMapMonoid for RangePowerSumRangeLinear<T, K>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+{
+    type Key = T;
+    type AggMonoid = ArrayOperation<AdditiveOperation<T>, K>;
+    type ActMonoid = LinearOperation<T>;
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+        let mut power = T::one();
+        std::array::from_fn(|k| {
+            if k != 0 {
+                power = power * *key;
+            }
+            power
+        })
+    }
+    fn act_agg(x: &LazyMapAgg<Self>, &(a, b): &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+        let mut coefficients = [T::one(); K];
+        let mut result = *x;
+        for k in 1..K {
+            coefficients[k] = a * coefficients[k - 1];
+            for j in (1..k).rev() {
+                coefficients[j] = b * coefficients[j] + a * coefficients[j - 1];
+            }
+            coefficients[0] = b * coefficients[0];
+            result[k] = coefficients[..=k]
+                .iter()
+                .zip(x)
+                .fold(T::zero(), |sum, (&c, &p)| sum + c * p);
+        }
+        Some(result)
+    }
+}
+impl<T, const K: usize> LazyMapMonoidWithKeyAct for RangePowerSumRangeLinear<T, K>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        LinearAct::act(key, act)
     }
 }
 
@@ -167,16 +236,21 @@ where
     T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
 {
     type Key = T;
-    type Agg = (T, T);
-    type Act = Option<T>;
     type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
     type ActMonoid = LastOperation<T>;
-    type KeyAct = UpdateAct<T>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         (*key, T::one())
     }
-    fn act_agg(&(x, y): &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(&(x, y): &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some((a.map(|a| a * y).unwrap_or(x), y))
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeSumRangeUpdate<T>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        UpdateAct::act(key, act)
     }
 }
 
@@ -188,16 +262,21 @@ where
     T: Clone + PartialEq + Ord + Bounded,
 {
     type Key = T;
-    type Agg = T;
-    type Act = Option<T>;
     type AggMonoid = MaxOperation<T>;
     type ActMonoid = LastOperation<T>;
-    type KeyAct = UpdateAct<T>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(a.as_ref().unwrap_or(x).clone())
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeMaxRangeUpdate<T>
+where
+    T: Clone + PartialEq + Ord + Bounded,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        UpdateAct::act(key, act)
     }
 }
 
@@ -209,16 +288,21 @@ where
     T: Clone + PartialEq + Ord + Bounded,
 {
     type Key = T;
-    type Agg = T;
-    type Act = Option<T>;
     type AggMonoid = MinOperation<T>;
     type ActMonoid = LastOperation<T>;
-    type KeyAct = UpdateAct<T>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(a.as_ref().unwrap_or(x).clone())
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeMinRangeUpdate<T>
+where
+    T: Clone + PartialEq + Ord + Bounded,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        UpdateAct::act(key, act)
     }
 }
 
@@ -230,20 +314,25 @@ where
     T: Clone + Ord + Bounded + Zero + Add<Output = T>,
 {
     type Key = T;
-    type Agg = T;
-    type Act = T;
     type AggMonoid = MaxOperation<T>;
     type ActMonoid = AdditiveOperation<T>;
-    type KeyAct = FlattenAct<Self::ActMonoid>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             x.clone()
         } else {
             x.clone() + a.clone()
         })
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeMaxRangeAdd<T>
+where
+    T: Clone + Ord + Bounded + Zero + Add<Output = T>,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        FlattenAct::<Self::ActMonoid>::act(key, act)
     }
 }
 
@@ -255,20 +344,25 @@ where
     T: Clone + Ord + Bounded + Zero + Add<Output = T>,
 {
     type Key = T;
-    type Agg = T;
-    type Act = T;
     type AggMonoid = MinOperation<T>;
     type ActMonoid = AdditiveOperation<T>;
-    type KeyAct = FlattenAct<Self::ActMonoid>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             x.clone()
         } else {
             x.clone() + a.clone()
         })
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeMinRangeAdd<T>
+where
+    T: Clone + Ord + Bounded + Zero + Add<Output = T>,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        FlattenAct::<Self::ActMonoid>::act(key, act)
     }
 }
 
@@ -280,20 +374,25 @@ where
     T: Clone + Ord + Bounded + Zero + Add<Output = T>,
 {
     type Key = T;
-    type Agg = (T, usize);
-    type Act = T;
     type AggMonoid = CountingOperation<MinOperation<T>>;
     type ActMonoid = AdditiveOperation<T>;
-    type KeyAct = FlattenAct<Self::ActMonoid>;
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         (key.clone(), 1)
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(if x.1 == 0 {
             x.clone()
         } else {
             (x.0.clone() + a.clone(), x.1)
         })
+    }
+}
+impl<T> LazyMapMonoidWithKeyAct for RangeMinCountRangeAdd<T>
+where
+    T: Clone + Ord + Bounded + Zero + Add<Output = T>,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        FlattenAct::<Self::ActMonoid>::act(key, act)
     }
 }
 
@@ -541,15 +640,12 @@ where
         + PartialEq,
 {
     type Key = T;
-    type Agg = Self;
-    type Act = RangeChminChmaxAdd<T>;
     type AggMonoid = Self;
     type ActMonoid = RangeChminChmaxAdd<T>;
-    type KeyAct = RangeChminChmaxAdd<T>;
-    fn single_agg(&key: &Self::Key) -> Self::Agg {
+    fn single_agg(&key: &Self::Key) -> LazyMapAgg<Self> {
         Self::single(key, T::one())
     }
-    fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             x.clone()
         } else if x.size.is_zero() {
@@ -579,5 +675,153 @@ where
         } else {
             return None;
         })
+    }
+}
+
+impl<T> LazyMapMonoidWithKeyAct for RangeSumRangeChminChmaxAdd<T>
+where
+    T: Copy
+        + Zero
+        + One
+        + Ord
+        + Bounded
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        RangeChminChmaxAdd::act(key, act)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        data_structure::LazySegmentTree,
+        num::mint_basic::MInt998244353 as M,
+        tools::{
+            Xorshift,
+            testutil::{exhaustive_sequences, sequence_cases},
+        },
+    };
+    use std::num::Wrapping;
+
+    fn check_mapping<const K: usize>() {
+        type W = Wrapping<u64>;
+        let mut rng = Xorshift::default();
+        let inputs =
+            exhaustive_sequences(-2i64..=2, 0..=3).chain(sequence_cases(&mut rng, -8..=8, 0..=65));
+        for values in inputs {
+            let leaves: Vec<_> = values
+                .iter()
+                .enumerate()
+                .map(|(i, &x)| (Wrapping(x as u64), Wrapping([0, 1, u64::MAX, 2][i % 4])))
+                .collect();
+            let agg: [W; K] = std::array::from_fn(|k| {
+                leaves
+                    .iter()
+                    .map(|&(x, w)| w * Wrapping(x.0.wrapping_pow(k as u32)))
+                    .sum()
+            });
+            assert_eq!(
+                RangePowerSumRangeLinear::act_agg(&agg, &(W::one(), W::zero())),
+                Some(agg)
+            );
+            for a in -2i64..=2 {
+                for b in -2i64..=2 {
+                    let act = (Wrapping(a as u64), Wrapping(b as u64));
+                    let mapped = RangePowerSumRangeLinear::act_agg(&agg, &act).unwrap();
+                    let expected: [W; K] = std::array::from_fn(|k| {
+                        leaves
+                            .iter()
+                            .map(|&(x, w)| {
+                                w * Wrapping((act.0 * x + act.1).0.wrapping_pow(k as u32))
+                            })
+                            .sum()
+                    });
+                    assert_eq!(mapped, expected);
+                    for &(key, _) in &leaves {
+                        let leaf = RangePowerSumRangeLinear::<W, K>::single_agg(&key);
+                        let updated = RangePowerSumRangeLinear::<W, K>::act_key(&key, &act);
+                        assert_eq!(
+                            RangePowerSumRangeLinear::act_agg(&leaf, &act),
+                            Some(RangePowerSumRangeLinear::single_agg(&updated))
+                        );
+                    }
+                    for c in -2i64..=2 {
+                        let next = (Wrapping(c as u64), Wrapping(3));
+                        let composed = RangePowerSumRangeLinear::<W, K>::act_operate(&act, &next);
+                        assert_eq!(
+                            RangePowerSumRangeLinear::act_agg(&mapped, &next),
+                            RangePowerSumRangeLinear::act_agg(&agg, &composed)
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_power_sum_mapping() {
+        check_mapping::<0>();
+        check_mapping::<1>();
+        check_mapping::<2>();
+        check_mapping::<5>();
+        check_mapping::<8>();
+    }
+
+    #[test]
+    fn test_power_sum_range_updates() {
+        let mut rng = Xorshift::default();
+        let inputs: Vec<_> = sequence_cases(&mut rng, -100i64..=100, 0..=257).collect();
+        for input in inputs {
+            let mut values: Vec<_> = input.into_iter().map(M::from).collect();
+            let n = values.len();
+            let mut seg = LazySegmentTree::<RangePowerSumRangeLinear<M, 5>>::from_keys(
+                values.iter().copied(),
+            );
+            for step in 0..128 {
+                let (l, r) = match step % 8 {
+                    0 | 1 => (0, n),
+                    2 => (n, n),
+                    3 => (0, n.min(1)),
+                    _ => {
+                        let a = rng.random(0..=n);
+                        let b = rng.random(0..=n);
+                        (a.min(b), a.max(b))
+                    }
+                };
+                let act = match step % 6 {
+                    0 => (M::from(2), M::from(3)),
+                    1 => (M::from(3), M::from(4)),
+                    2 => (M::zero(), rng.random(..)),
+                    3 => (M::one(), rng.random(..)),
+                    4 => (rng.random(..), M::zero()),
+                    _ => (M::one(), M::zero()),
+                };
+                seg.update(l..r, act);
+                for x in &mut values[l..r] {
+                    *x = act.0 * *x + act.1;
+                }
+                if n != 0 && step % 7 == 0 {
+                    let i = rng.random(0..n);
+                    values[i] = rng.random(..);
+                    seg.set(i, RangePowerSumRangeLinear::single_agg(&values[i]));
+                }
+                let expected: [M; 5] =
+                    std::array::from_fn(|k| values[l..r].iter().map(|&x| x.pow(k)).sum());
+                assert_eq!(seg.fold(l..r), expected);
+                assert_eq!(
+                    seg.fold_all(),
+                    std::array::from_fn(|k| values.iter().map(|&x| x.pow(k)).sum())
+                );
+                if n != 0 {
+                    let i = rng.random(0..n);
+                    assert_eq!(seg.get(i), std::array::from_fn(|k| values[i].pow(k)));
+                }
+            }
+        }
     }
 }

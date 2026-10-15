@@ -1,4 +1,4 @@
-use super::{LazyMapMonoid, RangeBoundsExt};
+use super::{LazyMapAct, LazyMapAgg, LazyMapMonoid, RangeBoundsExt};
 use std::{
     fmt::{self, Debug, Formatter},
     mem::replace,
@@ -11,8 +11,8 @@ where
 {
     len: usize,
     n: usize,
-    seg: Vec<M::Agg>,
-    lazy: Vec<M::Act>,
+    seg: Vec<LazyMapAgg<M>>,
+    lazy: Vec<LazyMapAct<M>>,
 }
 
 impl<M> Clone for LazySegmentTree<M>
@@ -31,7 +31,9 @@ where
 
 impl<M> Debug for LazySegmentTree<M>
 where
-    M: LazyMapMonoid<Agg: Debug, Act: Debug>,
+    M: LazyMapMonoid,
+    LazyMapAgg<M>: Debug,
+    LazyMapAct<M>: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTree")
@@ -53,7 +55,7 @@ where
         let lazy = vec![M::act_unit(); n];
         Self { len, n, seg, lazy }
     }
-    pub fn from_vec(v: Vec<M::Agg>) -> Self {
+    pub fn from_vec(v: Vec<LazyMapAgg<M>>) -> Self {
         let len = v.len();
         let n = len.next_power_of_two();
         let mut seg = vec![M::agg_unit(); 2 * n];
@@ -80,7 +82,7 @@ where
         Self { len, n, seg, lazy }
     }
     #[inline]
-    fn update_at(&mut self, k: usize, x: &M::Act) {
+    fn update_at(&mut self, k: usize, x: &LazyMapAct<M>) {
         if M::is_act_unit(x) {
             return;
         }
@@ -124,7 +126,7 @@ where
             self.recalc_at(k);
         }
     }
-    pub fn update<R>(&mut self, range: R, x: M::Act)
+    pub fn update<R>(&mut self, range: R, x: LazyMapAct<M>)
     where
         R: RangeBounds<usize>,
     {
@@ -165,7 +167,7 @@ where
             }
         }
     }
-    pub fn fold<R>(&mut self, range: R) -> M::Agg
+    pub fn fold<R>(&mut self, range: R) -> LazyMapAgg<M>
     where
         R: RangeBounds<usize>,
     {
@@ -227,22 +229,22 @@ where
         }
         M::agg_operate(&vl, &vr)
     }
-    pub fn set(&mut self, k: usize, x: M::Agg) {
+    pub fn set(&mut self, k: usize, x: LazyMapAgg<M>) {
         assert!(k < self.len);
         let k = k + self.n;
         self.propagate(k);
         self.seg[k] = x;
         self.recalc(k);
     }
-    pub fn get(&mut self, k: usize) -> M::Agg {
+    pub fn get(&mut self, k: usize) -> LazyMapAgg<M> {
         self.fold(k..k + 1)
     }
-    pub fn fold_all(&self) -> M::Agg {
+    pub fn fold_all(&self) -> LazyMapAgg<M> {
         self.seg[1].clone()
     }
     pub fn partition_point_acc<P>(&mut self, left: usize, mut pred: P) -> usize
     where
-        P: FnMut(&M::Agg) -> bool,
+        P: FnMut(&LazyMapAgg<M>) -> bool,
     {
         let mut acc = M::agg_unit();
         if left == self.len {
@@ -276,7 +278,7 @@ where
     }
     pub fn rpartition_point_acc<P>(&mut self, right: usize, mut pred: P) -> usize
     where
-        P: FnMut(&M::Agg) -> bool,
+        P: FnMut(&LazyMapAgg<M>) -> bool,
     {
         let mut acc = M::agg_unit();
         if right == 0 {
@@ -315,16 +317,87 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{
-            RangeChminChmaxAdd, RangeMaxRangeUpdate, RangeSumRangeAdd, RangeSumRangeChminChmaxAdd,
+            AdditiveOperation, ArrayOperation, Associative, Magma, RangeChminChmaxAdd,
+            RangeMaxRangeUpdate, RangeSumRangeAdd, RangeSumRangeChminChmaxAdd, Unital,
         },
         num::Saturating,
         rand,
-        tools::{NotEmptySegment, Xorshift},
+        tools::{NotEmptySegment, Xorshift, testutil::sequence_cases},
     };
 
     const N: usize = 1_000;
     const Q: usize = 20_000;
     const A: i64 = 1_000_000_000;
+
+    crate::define_monoid!(
+        HistoryAction,
+        [i64; 4],
+        |x, y| {
+            let &[a, b, c, d] = x;
+            let &[e, f, g, h] = y;
+            [a * e, b * e + f, c + a * g, d + b * g + h]
+        },
+        [1, 0, 0, 0]
+    );
+
+    struct History;
+    impl LazyMapMonoid for History {
+        type Key = i64;
+        type AggMonoid = ArrayOperation<AdditiveOperation<i64>, 3>;
+        type ActMonoid = HistoryAction;
+
+        fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+            [1, *key, 0]
+        }
+
+        fn act_agg(x: &LazyMapAgg<Self>, act: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+            let &[n, current, history] = x;
+            let &[a, b, c, d] = act;
+            Some([n, a * current + b * n, history + c * current + d * n])
+        }
+    }
+
+    #[test]
+    fn test_aggregate_only_action() {
+        let mut rng = Xorshift::default();
+        let inputs: Vec<_> = sequence_cases(&mut rng, -5i64..=5, 0..=65).collect();
+        for input in inputs {
+            let n = input.len();
+            let mut seg = LazySegmentTree::<History>::from_keys(input.iter().copied());
+            let mut values: Vec<_> = input.into_iter().map(|x| (x, 0)).collect();
+            for step in 0..64 {
+                let a = rng.random(0..=n);
+                let b = rng.random(0..=n);
+                let (l, r) = if step < 2 {
+                    (0, n)
+                } else {
+                    (a.min(b), a.max(b))
+                };
+                if step % 2 == 0 {
+                    let value = rng.random(-5..=5);
+                    seg.update(l..r, [0, value, 0, 0]);
+                    for x in &mut values[l..r] {
+                        x.0 = value;
+                    }
+                } else {
+                    seg.update(l..r, [1, 0, 1, 0]);
+                    for x in &mut values[l..r] {
+                        x.1 += x.0;
+                    }
+                }
+                let expected = [
+                    (r - l) as i64,
+                    values[l..r].iter().map(|x| x.0).sum(),
+                    values[l..r].iter().map(|x| x.1).sum(),
+                ];
+                assert_eq!(seg.fold(l..r), expected);
+                if n != 0 {
+                    let i = rng.random(0..n);
+                    assert_eq!(seg.get(i), [1, values[i].0, values[i].1]);
+                }
+            }
+        }
+    }
 
     #[test]
     fn test_lazy_segment_tree() {

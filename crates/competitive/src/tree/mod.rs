@@ -1,7 +1,10 @@
 //! tree algorithms
 
 use crate::{
-    algebra::{AbelianGroup, LazyMapMonoid, Magma, Monoid, Unital},
+    algebra::{
+        AbelianGroup, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma,
+        Monoid, Unital,
+    },
     algorithm::CartesianTree,
     data_structure::{
         Allocator, BinaryIndexedTree, MemoryPool, RangeMinimumQuery, binary_search_tree,

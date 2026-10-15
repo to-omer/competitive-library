@@ -1,5 +1,5 @@
 use super::{
-    Allocator, LazyMapMonoid, MemoryPool,
+    Allocator, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, MemoryPool,
     binary_search_tree::{
         BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, EqualSide, data::LazyMapElement,
         node::WithParent,
@@ -432,10 +432,10 @@ pub struct PathLinkCutTreeSpec<L>(PhantomData<fn() -> L>);
 
 impl<L> PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoid,
+    L: LazyMapMonoidWithKeyAct,
 {
     #[inline]
-    fn apply_non_unit(data: &mut PathLinkCutTreeData<L>, action: &L::Act) {
+    fn apply_non_unit(data: &mut PathLinkCutTreeData<L>, action: &LazyMapAct<L>) {
         L::act_operate_assign(&mut data.value.act, action);
         data.value.key = L::act_key(&data.value.key, action);
         data.value.agg = L::act_agg(&data.value.agg, action)
@@ -445,7 +445,7 @@ where
 
 impl<L> LinkCutTreeSpec for PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoid,
+    L: LazyMapMonoidWithKeyAct,
 {
     type Value = L::Key;
     type Data = PathLinkCutTreeData<L>;
@@ -495,9 +495,9 @@ where
 
 impl<L> LinkCutTreePathFold for PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoid,
+    L: LazyMapMonoidWithKeyAct,
 {
-    type Path = L::Agg;
+    type Path = LazyMapAgg<L>;
 
     fn fold_path(data: &Self::Data) -> Self::Path {
         data.value.agg.clone()
@@ -506,9 +506,9 @@ where
 
 impl<L> LinkCutTreePathUpdate for PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoid,
+    L: LazyMapMonoidWithKeyAct,
 {
-    type PathAction = L::Act;
+    type PathAction = LazyMapAct<L>;
 
     fn update_path(data: &mut Self::Data, action: &Self::PathAction) {
         if !L::is_act_unit(action) {
@@ -524,7 +524,7 @@ pub type PathLinkCutTree<L> = LinkCutTree<PathLinkCutTreeSpec<L>>;
 mod tests {
     use super::*;
     use crate::{
-        algebra::{Associative, EmptyAct, Magma, RangeSumRangeLinear, Unital},
+        algebra::{Associative, EmptyAct, Magma, MonoidAct, RangeSumRangeLinear, Unital},
         graph::{Graph, UndirectedSparseGraph},
         tools::Xorshift,
         tree::{MixedTree, PathTree, StarTree},
@@ -741,22 +741,27 @@ mod tests {
 
     impl LazyMapMonoid for StringPath {
         type Key = char;
-        type Agg = (String, String);
-        type Act = ();
         type AggMonoid = BidirectionalString;
         type ActMonoid = ();
-        type KeyAct = EmptyAct<char>;
 
-        fn single_agg(key: &Self::Key) -> Self::Agg {
+        fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
             (key.to_string(), key.to_string())
         }
 
-        fn toggle(value: &mut Self::Agg) {
+        fn toggle(value: &mut LazyMapAgg<Self>) {
             std::mem::swap(&mut value.0, &mut value.1);
         }
 
-        fn act_agg(value: &Self::Agg, _action: &Self::Act) -> Option<Self::Agg> {
+        fn act_agg(
+            value: &LazyMapAgg<Self>,
+            _action: &LazyMapAct<Self>,
+        ) -> Option<LazyMapAgg<Self>> {
             Some(value.clone())
+        }
+    }
+    impl LazyMapMonoidWithKeyAct for StringPath {
+        fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+            EmptyAct::act(key, act)
         }
     }
 

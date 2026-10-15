@@ -1,4 +1,7 @@
-use super::{BstDataMutRef, BstSpec, LazyMapMonoid, Monoid, MonoidAct};
+use super::{
+    BstDataMutRef, BstSpec, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Monoid,
+    MonoidAct,
+};
 use std::{fmt, fmt::Debug, mem::replace};
 
 pub trait BstDataAccess<Tag> {
@@ -110,13 +113,15 @@ where
     L: LazyMapMonoid,
 {
     pub key: L::Key,
-    pub agg: L::Agg,
-    pub act: L::Act,
+    pub agg: LazyMapAgg<L>,
+    pub act: LazyMapAct<L>,
 }
 
 impl<L> Debug for LazyMapElement<L>
 where
-    L: LazyMapMonoid<Key: Debug, Agg: Debug, Act: Debug>,
+    L: LazyMapMonoid<Key: Debug>,
+    LazyMapAgg<L>: Debug,
+    LazyMapAct<L>: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazyMapElement")
@@ -140,8 +145,9 @@ where
         }
     }
 
-    pub fn update_act<Spec>(mut node: BstDataMutRef<'_, Spec>, act: &L::Act)
+    pub fn update_act<Spec>(mut node: BstDataMutRef<'_, Spec>, act: &LazyMapAct<L>)
     where
+        L: LazyMapMonoidWithKeyAct,
         Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
         if L::is_act_unit(act) {
@@ -160,6 +166,7 @@ where
 
     pub fn top_down<Spec>(mut node: BstDataMutRef<'_, Spec>)
     where
+        L: LazyMapMonoidWithKeyAct,
         Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
         if L::is_act_unit(&node.reborrow().into_data().bst_data().act) {

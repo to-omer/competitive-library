@@ -990,7 +990,7 @@ mod logical_linear_operation_impl {
         marker::PhantomData,
         ops::{BitAnd, BitXor},
     };
-    /// $(a, b) \circ (c, d) = \lambda x. c \wedge (a \wedge x \oplus b) \oplus d$
+    /// `f(x) = (x & mask) ^ xor`
     pub struct LogicalLinearOperation<T>
     where
         T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>,
@@ -1001,6 +1001,13 @@ mod logical_linear_operation_impl {
     where
         T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>,
     {
+        /// Builds `(mask, xor)` for `f` acting independently on each bit.
+        pub fn from_bitwise_fn(f: impl Fn(T) -> T) -> (T, T) {
+            let zero = f(T::xor_zero());
+            let one = f(T::all_one());
+            (zero.clone() ^ one, zero)
+        }
+
         pub fn eval((a, b): &<Self as Magma>::T, x: &T) -> T {
             a.clone() & x.clone() ^ b.clone()
         }
@@ -1054,6 +1061,39 @@ mod logical_linear_operation_impl {
                     }
                 }
             }
+        }
+
+        #[test]
+        fn test_from_bitwise_fn() {
+            type M = LogicalLinearOperation<u8>;
+            let eval = |table: u8, x: u8, c: u8| {
+                (0..8).fold(0, |out, bit| {
+                    let index = ((x >> bit & 1) << 1) | (c >> bit & 1);
+                    out | ((table >> index & 1) << bit)
+                })
+            };
+            for table in 0..16 {
+                for c in 0..=u8::MAX {
+                    let f = M::from_bitwise_fn(|x| eval(table, x, c));
+                    for x in 0..=u8::MAX {
+                        assert_eq!(M::eval(&f, &x), eval(table, x, c));
+                    }
+                }
+            }
+            for first in 0..16 {
+                for second in 0..16 {
+                    let f = M::from_bitwise_fn(|x| eval(first, x, 0b10100101));
+                    let g = M::from_bitwise_fn(|x| eval(second, x, 0b01101001));
+                    for x in 0..=u8::MAX {
+                        assert_eq!(
+                            M::eval(&M::operate(&f, &g), &x),
+                            eval(second, eval(first, x, 0b10100101), 0b01101001)
+                        );
+                    }
+                }
+            }
+            let negate = LogicalLinearOperation::<bool>::from_bitwise_fn(|x| !x);
+            assert_eq!(negate, (true, true));
         }
     }
 }
@@ -2152,6 +2192,104 @@ mod permutation_operation_impl {
                 assert!(M::check_invertible(&a));
                 assert!(M::check_associative(&a, &b, &c));
             }
+        }
+    }
+}
+
+#[codesnip::entry("FixedPermutationOperation")]
+pub use self::fixed_permutation_operation_impl::FixedPermutationOperation;
+#[codesnip::entry("FixedPermutationOperation", include("algebra"))]
+mod fixed_permutation_operation_impl {
+    use super::*;
+
+    pub enum FixedPermutationOperation<const N: usize> {}
+
+    impl<const N: usize> FixedPermutationOperation<N> {
+        pub fn apply<T>(permutation: &[usize; N], values: &[T; N]) -> [T; N]
+        where
+            T: Clone,
+        {
+            permutation.map(|i| values[i].clone())
+        }
+    }
+
+    impl<const N: usize> Magma for FixedPermutationOperation<N> {
+        type T = [usize; N];
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            y.map(|i| x[i])
+        }
+    }
+    impl<const N: usize> Associative for FixedPermutationOperation<N> {}
+    impl<const N: usize> Unital for FixedPermutationOperation<N> {
+        fn unit() -> Self::T {
+            std::array::from_fn(|i| i)
+        }
+    }
+    impl<const N: usize> Invertible for FixedPermutationOperation<N> {
+        fn inverse(x: &Self::T) -> Self::T {
+            let mut inverse = [0; N];
+            for (i, &j) in x.iter().enumerate() {
+                inverse[j] = i;
+            }
+            inverse
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::{Xorshift, testutil::exhaustive_sequences};
+
+        fn check<const N: usize>() {
+            let mut rng = Xorshift::default();
+            let cases: Vec<[usize; N]> = if N <= 4 {
+                exhaustive_sequences(0..N, N..=N)
+                    .filter(|p| (0..N).all(|i| p.contains(&i)))
+                    .map(|p| p.try_into().unwrap())
+                    .collect()
+            } else {
+                let identity = FixedPermutationOperation::unit();
+                let mut cases = vec![identity, std::array::from_fn(|i| N - 1 - i)];
+                for _ in 0..128 {
+                    let mut p = identity;
+                    rng.shuffle(&mut p);
+                    cases.push(p);
+                }
+                cases
+            };
+            let values: [String; N] = std::array::from_fn(|i| i.to_string());
+            for a in &cases {
+                assert!(FixedPermutationOperation::check_unital(a));
+                assert!(FixedPermutationOperation::check_invertible(a));
+                let applied = FixedPermutationOperation::apply(a, &values);
+                assert_eq!(
+                    FixedPermutationOperation::apply(
+                        &FixedPermutationOperation::inverse(a),
+                        &applied
+                    ),
+                    values
+                );
+                for b in &cases {
+                    let composed = FixedPermutationOperation::operate(a, b);
+                    assert_eq!(
+                        FixedPermutationOperation::apply(&composed, &values),
+                        FixedPermutationOperation::apply(b, &applied)
+                    );
+                    let c = &cases[rng.random(0..cases.len())];
+                    assert!(FixedPermutationOperation::check_associative(a, b, c));
+                }
+            }
+        }
+
+        #[test]
+        fn test_fixed_permutation_operation() {
+            check::<0>();
+            check::<1>();
+            check::<2>();
+            check::<3>();
+            check::<4>();
+            check::<8>();
+            check::<32>();
         }
     }
 }

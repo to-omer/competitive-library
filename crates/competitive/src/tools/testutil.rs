@@ -1,6 +1,9 @@
 use super::{RandomSpec, Xorshift};
 use crate::{
-    algebra::{ConcatenateOperation, LastOperation, LazyMapMonoid, UpdateAct},
+    algebra::{
+        ConcatenateOperation, LastOperation, LazyMapAct, LazyMapAgg, LazyMapMonoid,
+        LazyMapMonoidWithKeyAct, MonoidAct, UpdateAct,
+    },
     num::IntBase,
 };
 use std::ops::RangeInclusive;
@@ -200,22 +203,24 @@ pub struct ConcatUpdate;
 
 impl LazyMapMonoid for ConcatUpdate {
     type Key = i64;
-    type Agg = Vec<i64>;
-    type Act = Option<i64>;
     type AggMonoid = ConcatenateOperation<i64>;
     type ActMonoid = LastOperation<i64>;
-    type KeyAct = UpdateAct<i64>;
 
-    fn single_agg(key: &Self::Key) -> Self::Agg {
+    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
         vec![*key]
     }
 
-    fn toggle(agg: &mut Self::Agg) {
+    fn toggle(agg: &mut LazyMapAgg<Self>) {
         agg.reverse();
     }
 
-    fn act_agg(agg: &Self::Agg, act: &Self::Act) -> Option<Self::Agg> {
+    fn act_agg(agg: &LazyMapAgg<Self>, act: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
         Some(act.map_or_else(|| agg.clone(), |value| vec![value; agg.len()]))
+    }
+}
+impl LazyMapMonoidWithKeyAct for ConcatUpdate {
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        UpdateAct::act(key, act)
     }
 }
 

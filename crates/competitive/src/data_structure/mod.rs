@@ -1,8 +1,9 @@
 //! data structures
 
 use crate::algebra::{
-    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapMonoid,
-    Magma, MaxOperation, MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
+    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapAct,
+    LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma, MaxOperation, MinOperation, Monoid,
+    MonoidAct, SemiGroup, Unital,
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceSortExt};
 use crate::num::{Bounded, IntBase, RangeBoundsExt, Zero};
