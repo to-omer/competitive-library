@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/shortest_path.rs`."><title>shortest_path.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (e9bbadf68 2026-10-12)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/shortest_path.rs`."><title>shortest_path.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (7df81381d 2026-10-14)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -71,7 +71,7 @@
 <a href=#17 id=17 data-nosnippet>17</a><span class="kw">pub struct </span><a href="../../../competitive/graph/shortest_path/struct.StandardSp.html">StandardSp</a>&lt;M&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; M&gt;);
 <a href=#18 id=18 data-nosnippet>18</a><span class="kw">impl</span>&lt;M&gt; <a href="#9-15">ShortestPathSemiRing</a> <span class="kw">for </span><a href="#17">StandardSp</a>&lt;M&gt;
 <a href=#19 id=19 data-nosnippet>19</a><span class="kw">where
-<a href=#20 id=20 data-nosnippet>20</a>    </span>M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#20 id=20 data-nosnippet>20</a>    </span>M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#21 id=21 data-nosnippet>21</a>{
 <a href=#22 id=22 data-nosnippet>22</a>    <span class="kw">type </span>T = M::T;
 <a href=#23 id=23 data-nosnippet>23</a>    <span class="attr">#[inline]
@@ -100,7 +100,7 @@
 <a href=#46 id=46 data-nosnippet>46</a><span class="kw">pub struct </span><a href="../../../competitive/graph/shortest_path/struct.OptionSp.html">OptionSp</a>&lt;M&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; M&gt;);
 <a href=#47 id=47 data-nosnippet>47</a><span class="kw">impl</span>&lt;M&gt; <a href="#9-15">ShortestPathSemiRing</a> <span class="kw">for </span><a href="#46">OptionSp</a>&lt;M&gt;
 <a href=#48 id=48 data-nosnippet>48</a><span class="kw">where
-<a href=#49 id=49 data-nosnippet>49</a>    </span>M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#49 id=49 data-nosnippet>49</a>    </span>M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#50 id=50 data-nosnippet>50</a>{
 <a href=#51 id=51 data-nosnippet>51</a>    <span class="kw">type </span>T = <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;M::T&gt;;
 <a href=#52 id=52 data-nosnippet>52</a>    <span class="attr">#[inline]
@@ -141,7 +141,7 @@
 <a href=#87 id=87 data-nosnippet>87</a><span class="kw">pub struct </span><a href="../../../competitive/graph/shortest_path/struct.PathFoldingSp.html">PathFoldingSp</a>&lt;M, S&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; (M, S)&gt;);
 <a href=#88 id=88 data-nosnippet>88</a><span class="kw">impl</span>&lt;M, S&gt; <a href="#9-15">ShortestPathSemiRing</a> <span class="kw">for </span><a href="#87">PathFoldingSp</a>&lt;M, S&gt;
 <a href=#89 id=89 data-nosnippet>89</a><span class="kw">where
-<a href=#90 id=90 data-nosnippet>90</a>    </span>M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#90 id=90 data-nosnippet>90</a>    </span>M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#91 id=91 data-nosnippet>91</a>    S: <a href="../algebra/ring.rs.html#8-67">SemiRing</a>,
 <a href=#92 id=92 data-nosnippet>92</a>{
 <a href=#93 id=93 data-nosnippet>93</a>    <span class="kw">type </span>T = <a href="../tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>&lt;M::T, S::T&gt;;
@@ -241,7 +241,7 @@
 <a href=#187 id=187 data-nosnippet>187</a>    <span class="kw">fn </span>standard_sp&lt;<span class="lifetime">'a</span>, M&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; <a href="#263-271">ShortestPathBuilder</a>&lt;<span class="lifetime">'a</span>, <span class="self">Self</span>, <a href="#17">StandardSp</a>&lt;M&gt;&gt;
 <a href=#188 id=188 data-nosnippet>188</a>    <span class="kw">where
 <a href=#189 id=189 data-nosnippet>189</a>        </span><span class="self">Self</span>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
-<a href=#190 id=190 data-nosnippet>190</a>        M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#190 id=190 data-nosnippet>190</a>        M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#191 id=191 data-nosnippet>191</a>    {
 <a href=#192 id=192 data-nosnippet>192</a>        <a href="#263-271">ShortestPathBuilder</a> {
 <a href=#193 id=193 data-nosnippet>193</a>            graph: <a class="self" href="#187">self</a>,
@@ -265,7 +265,7 @@
 <a href=#211 id=211 data-nosnippet>211</a>    <span class="kw">fn </span>option_sp&lt;<span class="lifetime">'a</span>, M&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; <a href="#263-271">ShortestPathBuilder</a>&lt;<span class="lifetime">'a</span>, <span class="self">Self</span>, <a href="#46">OptionSp</a>&lt;M&gt;&gt;
 <a href=#212 id=212 data-nosnippet>212</a>    <span class="kw">where
 <a href=#213 id=213 data-nosnippet>213</a>        </span><span class="self">Self</span>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
-<a href=#214 id=214 data-nosnippet>214</a>        M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#214 id=214 data-nosnippet>214</a>        M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#215 id=215 data-nosnippet>215</a>    {
 <a href=#216 id=216 data-nosnippet>216</a>        <a href="#263-271">ShortestPathBuilder</a> {
 <a href=#217 id=217 data-nosnippet>217</a>            graph: <a class="self" href="#211">self</a>,
@@ -289,7 +289,7 @@
 <a href=#235 id=235 data-nosnippet>235</a>    <span class="kw">fn </span>path_folding_sp&lt;<span class="lifetime">'a</span>, M, S&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; <a href="#263-271">ShortestPathBuilder</a>&lt;<span class="lifetime">'a</span>, <span class="self">Self</span>, <a href="#87">PathFoldingSp</a>&lt;M, S&gt;&gt;
 <a href=#236 id=236 data-nosnippet>236</a>    <span class="kw">where
 <a href=#237 id=237 data-nosnippet>237</a>        </span><span class="self">Self</span>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
-<a href=#238 id=238 data-nosnippet>238</a>        M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#238 id=238 data-nosnippet>238</a>        M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#239 id=239 data-nosnippet>239</a>        S: <a href="../algebra/ring.rs.html#8-67">SemiRing</a>,
 <a href=#240 id=240 data-nosnippet>240</a>    {
 <a href=#241 id=241 data-nosnippet>241</a>        <a href="#263-271">ShortestPathBuilder</a> {
@@ -581,7 +581,7 @@
 <a href=#527 id=527 data-nosnippet>527</a><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, G, M, P&gt; <a href="#263-271">ShortestPathBuilder</a>&lt;<span class="lifetime">'a</span>, G, <a href="#17">StandardSp</a>&lt;M&gt;, P&gt;
 <a href=#528 id=528 data-nosnippet>528</a><span class="kw">where
 <a href=#529 id=529 data-nosnippet>529</a>    </span>G: <a href="graph_base.rs.html#23-36">Graph</a>,
-<a href=#530 id=530 data-nosnippet>530</a>    M: <a href="../algebra/magma.rs.html#145-172">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
+<a href=#530 id=530 data-nosnippet>530</a>    M: <a href="../algebra/magma.rs.html#145-176">Monoid</a>&lt;T: <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt;,
 <a href=#531 id=531 data-nosnippet>531</a>    P: <a href="#122-129">ParentPolicy</a>&lt;G&gt;,
 <a href=#532 id=532 data-nosnippet>532</a>{
 <a href=#533 id=533 data-nosnippet>533</a>    <span class="doccomment">/// Distances other than the target may remain tentative.
