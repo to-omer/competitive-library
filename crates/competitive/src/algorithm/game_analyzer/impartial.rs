@@ -412,14 +412,14 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::{Xorshift, testutil::sequence_cases};
     use std::cell::Cell;
 
     #[test]
     fn queries_and_caches() {
-        let mut rng = crate::tools::Xorshift::default();
-        let rules: Vec<_> =
-            crate::tools::testutil::structured_sequences(&mut rng, 1..=4, 0..=4).collect();
-        for takes in rules {
+        let mut rng = Xorshift::default();
+        let mut input_rng = Xorshift::default();
+        for takes in sequence_cases(&mut input_rng, 1..=8, 0..=8) {
             let edges: Vec<Vec<_>> = (0usize..65)
                 .map(|n| {
                     takes

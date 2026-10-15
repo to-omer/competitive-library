@@ -30,7 +30,8 @@ pub use self::ord_tools::PartialOrdExt;
 pub use self::partial_ignored_ord::PartialIgnoredOrd;
 #[codesnip::entry("random_generator")]
 pub use self::random_generator::{
-    NotEmptySegment, RandIter, RandRange, RandomSpec, WeightedSampler, WithEmptySegment,
+    NotEmptySegment, RandIter, RandRange, RandomSpec, Spec, WeightedSampler, WithEmptySegment,
+    from_fn, spec,
 };
 #[codesnip::entry("scanner")]
 pub use self::scanner::*;

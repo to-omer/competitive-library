@@ -27,26 +27,41 @@ fn wildcard_pattern_matching_with_rng(p: &[u8], s: &[u8], rng: &mut Xorshift) ->
 
 #[cfg(test)]
 mod tests {
-    use super::{wildcard_pattern_matching, wildcard_pattern_matching_with_rng};
+    use super::wildcard_pattern_matching_with_rng;
     use crate::tools::Xorshift;
-    use crate::tools::testutil::{exhaustive_sequences, sample_usize};
+    use crate::tools::testutil::{exhaustive_sequences, sample_usize, sequence_cases};
 
     #[test]
     fn test_wildcard_pattern_matching() {
         let mut rng = Xorshift::default();
-        let inputs: Vec<_> = exhaustive_sequences([0, b'?', u8::MAX], 0..=5)
-            .filter(|s| !s.is_empty())
-            .collect();
-        let mut cases: Vec<_> = inputs
-            .iter()
-            .flat_map(|p| {
-                inputs
-                    .iter()
-                    .filter(|s| s.len() >= p.len())
-                    .map(move |s| (p.clone(), s.clone()))
-            })
-            .collect();
-        for _ in 0..1000 {
+        for n in sample_usize(&mut rng, 16, 0..=1024, 0)
+            .into_iter()
+            .filter(|&n| n != 0)
+        {
+            for c in 0..=u8::MAX {
+                let p = vec![c; n];
+                assert_eq!(
+                    wildcard_pattern_matching_with_rng(&p, &p, &mut Xorshift::default()),
+                    [true]
+                );
+                assert_eq!(
+                    wildcard_pattern_matching_with_rng(
+                        &vec![b'?'; n],
+                        &p,
+                        &mut Xorshift::default()
+                    ),
+                    [true]
+                );
+            }
+        }
+        let inputs: Vec<_> = exhaustive_sequences([0, b'?', u8::MAX], 1..=5).collect();
+        let exhaustive = inputs.iter().flat_map(|p| {
+            inputs
+                .iter()
+                .filter(|s| s.len() >= p.len())
+                .map(move |s| (p.clone(), s.clone()))
+        });
+        let sampled = (0..1000).map(|_| {
             let n = rng.rand(128) as usize + 1;
             let m = n + rng.rand(256) as usize;
             let mut p: Vec<_> = (0..n).map(|_| b"abc?"[rng.rand(4) as usize]).collect();
@@ -57,19 +72,14 @@ mod tests {
                 2 => s.fill(b'?'),
                 _ => {}
             }
-            cases.push((p, s));
-        }
-        for n in sample_usize(&mut rng, 16, 0..=1024, 0)
-            .into_iter()
-            .filter(|&n| n != 0)
-        {
-            for c in 0..=u8::MAX {
-                let p = vec![c; n];
-                assert_eq!(wildcard_pattern_matching(&p, &p), [true]);
-                assert_eq!(wildcard_pattern_matching(&vec![b'?'; n], &p), [true]);
-            }
-        }
-        for (p, s) in cases {
+            (p, s)
+        });
+        let mut input_rng = Xorshift::default();
+        let different_bytes = sequence_cases(&mut input_rng, 0..=u8::MAX, 1..=1024).map(|p| {
+            let s = p.iter().map(|&c| c ^ 0x80).collect();
+            (p, s)
+        });
+        for (p, s) in exhaustive.chain(sampled).chain(different_bytes) {
             let expected: Vec<_> = (0..=s.len() - p.len())
                 .map(|i| {
                     p.iter()

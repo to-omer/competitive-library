@@ -563,7 +563,10 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::testutil::exhaustive_sequences;
+    use crate::tools::{
+        Xorshift,
+        testutil::{exhaustive_sequences, sequence_cases},
+    };
     use std::cell::Cell;
 
     #[test]
@@ -611,9 +614,9 @@ mod tests {
             [vec![0], vec![up_star]],
             [vec![up_star + 1], vec![0]],
         ]);
-        let mut rng = crate::tools::Xorshift::default();
+        let mut rng = Xorshift::default();
         let nus = [0, 3, 4, 5, 6].into_iter().chain(up_star..basic.len());
-        for moves in crate::tools::testutil::structured_sequences(&mut rng, 0..basic.len(), 0..=12)
+        for moves in sequence_cases(&mut rng, 0..=basic.len() - 1, 0..=16)
             .chain(exhaustive_sequences(nus, 3..=3))
         {
             let mut options = basic.clone();
@@ -762,7 +765,7 @@ mod tests {
                 ));
             }
         }
-        let mut rng = crate::tools::Xorshift::default();
+        let mut rng = Xorshift::default();
         for n in 0..=8 {
             for degree in 0..=n {
                 let options = (0..n)
@@ -887,39 +890,46 @@ mod tests {
                                         actual, wins[id][p],
                                         "{options:?}, {state:?}, {player:?}, {misere}"
                                     );
-                                    let all_lose = state.iter().all(|&s| !local[s][p]);
-                                    let all_opponent_lose = state.iter().all(|&s| !local[s][p ^ 1]);
-                                    let known = match cache {
-                                        1 | 6 if all_compact => true,
-                                        1 | 2 => {
-                                            all_lose
-                                                || state.iter().enumerate().any(|(i, &s)| {
-                                                    local[s][p]
-                                                        && state.iter().enumerate().all(
-                                                            |(j, &t)| i == j || !local[t][p ^ 1],
-                                                        )
-                                                })
-                                                || state
-                                                    .iter()
-                                                    .filter(|&&s| local[s] != [false; 2])
-                                                    .count()
-                                                    <= 1
+                                    if !misere {
+                                        let all_lose = state.iter().all(|&s| !local[s][p]);
+                                        let all_opponent_lose =
+                                            state.iter().all(|&s| !local[s][p ^ 1]);
+                                        let known = match cache {
+                                            1 | 6 if all_compact => true,
+                                            1 | 2 => {
+                                                all_lose
+                                                    || state.iter().enumerate().any(|(i, &s)| {
+                                                        local[s][p]
+                                                            && state.iter().enumerate().all(
+                                                                |(j, &t)| {
+                                                                    i == j || !local[t][p ^ 1]
+                                                                },
+                                                            )
+                                                    })
+                                                    || state
+                                                        .iter()
+                                                        .filter(|&&s| local[s] != [false; 2])
+                                                        .count()
+                                                        <= 1
+                                            }
+                                            3 => p == 0 && all_lose,
+                                            4 => {
+                                                p == 1 && all_lose
+                                                    || p == 0
+                                                        && all_opponent_lose
+                                                        && state
+                                                            .first()
+                                                            .is_some_and(|&s| local[s][0])
+                                            }
+                                            _ => false,
+                                        };
+                                        if known {
+                                            assert_eq!(
+                                                calls.get(),
+                                                0,
+                                                "cache={cache}, {state:?}, {player:?}"
+                                            );
                                         }
-                                        3 => p == 0 && all_lose,
-                                        4 => {
-                                            p == 1 && all_lose
-                                                || p == 0
-                                                    && all_opponent_lose
-                                                    && state.first().is_some_and(|&s| local[s][0])
-                                        }
-                                        _ => false,
-                                    };
-                                    if !misere && known {
-                                        assert_eq!(
-                                            calls.get(),
-                                            0,
-                                            "cache={cache}, {state:?}, {player:?}"
-                                        );
                                     }
                                     let mut expected = Vec::new();
                                     let mut place = 1;
@@ -942,12 +952,14 @@ mod tests {
                                     } else {
                                         game.sum().outcome().winning_moves(&components, player)
                                     };
-                                    let winning: Vec<_> = expected
+                                    let winning = expected
                                         .iter()
                                         .filter(|(_, win)| !win[p ^ 1])
-                                        .map(|(next, _)| next.clone())
-                                        .collect();
-                                    assert_eq!(moves, winning);
+                                        .map(|(next, _)| next);
+                                    assert!(
+                                        moves.iter().eq(winning.clone()),
+                                        "actual={moves:?}, expected={expected:?}, player={player:?}"
+                                    );
                                     // Full component caches keep these extra queries out of partial-cache checks.
                                     if cache == 2 {
                                         let moves = if misere {
@@ -980,7 +992,6 @@ mod tests {
                                         };
                                         assert_eq!(win, wins[id][p]);
                                         let expected: Vec<_> = winning
-                                            .into_iter()
                                             .map(|next| Neighbor::new(next.to[0], next.label.1))
                                             .collect();
                                         assert_eq!(moves, expected);

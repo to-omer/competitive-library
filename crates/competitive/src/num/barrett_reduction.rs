@@ -88,29 +88,30 @@ impl Barrettable for u128 {
         let ad = self & MASK64;
         let imu = im >> 64;
         let imd = im & MASK64;
-        let mut res = au * imu;
-        let x = (ad * imd) >> 64;
-        let (x, c) = x.overflowing_add(au * imd);
-        res += c as u128;
+        let res = au * imu;
+        let x = ((ad * imd) >> 64) + au * imd;
         let (x, c) = x.overflowing_add(ad * imu);
-        res += c as u128;
-        res + (x >> 64)
+        res + ((c as u128) << 64) + (x >> 64)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::Xorshift;
+    use crate::tools::{Xorshift, testutil::integer_pairs};
 
     macro_rules! test_barrett {
-        ($test_name:ident, $ty:ty, |$rng:ident| $res:expr) => {
+        ($test_name:ident, $ty:ty) => {
             #[test]
             fn $test_name() {
-                let mut $rng = Xorshift::default();
-                const Q: usize = 10_000;
-                for _ in 0..Q {
-                    let (a, b): ($ty, $ty) = $res;
+                let mut rng = Xorshift::default();
+                let small = (0..=100).flat_map(|a| (1..=100).map(move |b| (a, b)));
+                let boundaries = integer_pairs(0..=<$ty>::MAX).filter(|&(_, b)| b != 0);
+                let generated = (0..8_000_000).map(|_| {
+                    let max_modulus = <$ty>::MAX >> rng.random(0..<$ty>::BITS);
+                    rng.random((0..=<$ty>::MAX, 1..=max_modulus))
+                });
+                for (a, b) in small.chain(boundaries).chain(generated) {
                     let barrett = BarrettReduction::<$ty>::new(b);
                     assert_eq!(a / b, barrett.div(a));
                     assert_eq!(a % b, barrett.rem(a));
@@ -118,55 +119,8 @@ mod tests {
             }
         };
     }
-    test_barrett!(test_barrett_u32_small, u32, |rng| (
-        rng.random(..=100),
-        rng.random(1..=100)
-    ));
-    test_barrett!(test_barrett_u64_small, u64, |rng| (
-        rng.random(..=100),
-        rng.random(1..=100)
-    ));
-    test_barrett!(test_barrett_u128_small, u128, |rng| {
-        (
-            rng.random(..=100u64) as u128 * rng.random(..=100u64) as u128,
-            rng.random(1..=100u64) as u128 * rng.random(1..=100u64) as u128,
-        )
-    });
 
-    test_barrett!(test_barrett_u32_large, u32, |rng| (
-        rng.random(..=!0),
-        rng.random(1..=!0)
-    ));
-    test_barrett!(test_barrett_u64_large, u64, |rng| (
-        rng.random(..=!0),
-        rng.random(1..=!0)
-    ));
-    test_barrett!(test_barrett_u128_large, u128, |rng| {
-        (
-            rng.random(..=!0u64) as u128 * rng.random(..=!0u64) as u128,
-            rng.random(1..=!0u64) as u128 * rng.random(1..=!0u64) as u128,
-        )
-    });
-
-    test_barrett!(test_barrett_u32_max, u32, |rng| (
-        rng.random(!0 - 100..=!0),
-        rng.random(!0 - 100..=!0)
-    ));
-    test_barrett!(test_barrett_u64_max, u64, |rng| (
-        rng.random(!0 - 100..=!0),
-        rng.random(!0 - 100..=!0)
-    ));
-    test_barrett!(test_barrett_u128_max, u128, |rng| {
-        (
-            rng.random(!0 - 100..=!0u64) as u128 * rng.random(!0 - 100..=!0u64) as u128,
-            rng.random(!0 - 100..=!0u64) as u128 * rng.random(!0 - 100..=!0u64) as u128,
-        )
-    });
-
-    test_barrett!(test_barrett_u128_mul, u128, |rng| {
-        (
-            rng.random(0u64..) as u128 * rng.random(0u64..) as u128,
-            rng.random(0u64..) as u128,
-        )
-    });
+    test_barrett!(test_barrett_u32, u32);
+    test_barrett!(test_barrett_u64, u64);
+    test_barrett!(test_barrett_u128, u128);
 }

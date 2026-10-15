@@ -148,12 +148,16 @@ pub trait Monoid: SemiGroup + Unital {
     where
         E: ExpBits,
     {
-        let mut res = Self::unit();
-        for bit in exp.bits() {
+        let mut bits = exp.bits();
+        let Some(first) = bits.next() else {
+            return Self::unit();
+        };
+        let mut res = if first { x.clone() } else { Self::unit() };
+        for bit in bits {
+            x = Self::operate(&x, &x);
             if bit {
                 res = Self::operate(&res, &x);
             }
-            x = Self::operate(&x, &x);
         }
         res
     }
@@ -297,10 +301,53 @@ macro_rules! define_monoid {
 mod tests {
     use super::*;
     use crate::{
-        algebra::operations::{AdditiveOperation, MaxOperation},
-        tools::Xorshift,
+        algebra::operations::{AdditiveOperation, MaxOperation, MultiplicativeOperation},
+        tools::{
+            Xorshift,
+            testutil::{integer_cases, integer_pairs},
+        },
     };
     use std::array;
+
+    #[test]
+    fn test_monoid_pow() {
+        for (x, n) in integer_pairs(0..=u64::MAX) {
+            if let Some(expected) = x.checked_mul(n) {
+                assert_eq!(AdditiveOperation::pow(x, n), expected);
+            }
+        }
+        for (x, n) in integer_pairs(0..=u128::MAX) {
+            if let Some(expected) = x.checked_mul(n) {
+                assert_eq!(AdditiveOperation::pow(x, n), expected);
+            }
+        }
+        for (x, n) in integer_pairs(0..=usize::MAX) {
+            if let Some(expected) = x.checked_mul(n) {
+                assert_eq!(AdditiveOperation::pow(x, n), expected);
+            }
+        }
+        for x in integer_cases(0..=u64::MAX) {
+            for n in 0..=u64::BITS {
+                if let Some(expected) = x.checked_pow(n) {
+                    assert_eq!(MultiplicativeOperation::pow(x, u64::from(n)), expected);
+                }
+            }
+        }
+        for x in integer_cases(0..=u128::MAX) {
+            for n in 0..=u128::BITS {
+                if let Some(expected) = x.checked_pow(n) {
+                    assert_eq!(MultiplicativeOperation::pow(x, u128::from(n)), expected);
+                }
+            }
+        }
+        for x in integer_cases(0..=usize::MAX) {
+            for n in 0..=usize::BITS {
+                if let Some(expected) = x.checked_pow(n) {
+                    assert_eq!(MultiplicativeOperation::pow(x, n as usize), expected);
+                }
+            }
+        }
+    }
 
     #[test]
     fn test_monoid_operations() {

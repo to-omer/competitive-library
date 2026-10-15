@@ -22,16 +22,13 @@ where
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+    use crate::tools::testutil::sequence_cases;
     use std::iter::repeat_n;
 
     #[test]
     fn test_run_length_encoding() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=100_000, 2);
-        for values in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..8, lengths))
-        {
+        for values in sequence_cases(&mut rng, 0..=7, 0..=1_000_000) {
             let runs = run_length_encoding(values.iter().copied());
             assert!(runs.iter().all(|&(_, len)| len > 0));
             assert!(runs.windows(2).all(|w| w[0].0 != w[1].0));

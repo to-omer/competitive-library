@@ -19,6 +19,55 @@ pub trait RandomSpec<T>: Sized {
     }
 }
 
+pub struct Spec<T, F> {
+    generate: F,
+    _marker: PhantomData<fn() -> T>,
+}
+
+/// Wraps a random specification for composition.
+pub fn spec<T, R>(source: R) -> Spec<T, impl Fn(&mut Xorshift) -> T>
+where
+    R: RandomSpec<T>,
+{
+    from_fn(move |rng| source.rand(rng))
+}
+
+/// Calls `generate` with the RNG whenever a value is requested.
+pub fn from_fn<T, F>(generate: F) -> Spec<T, F>
+where
+    F: Fn(&mut Xorshift) -> T,
+{
+    Spec {
+        generate,
+        _marker: PhantomData,
+    }
+}
+
+impl<T, F> Spec<T, F>
+where
+    F: Fn(&mut Xorshift) -> T,
+{
+    /// Samples the length once, then generates that many elements.
+    pub fn vec<R>(self, length: R) -> Spec<Vec<T>, impl Fn(&mut Xorshift) -> Vec<T>>
+    where
+        R: RandomSpec<usize>,
+    {
+        from_fn(move |rng| {
+            let n = rng.random(&length);
+            rng.random_iter(&self).take(n).collect()
+        })
+    }
+}
+
+impl<T, F> RandomSpec<T> for Spec<T, F>
+where
+    F: Fn(&mut Xorshift) -> T,
+{
+    fn rand(&self, rng: &mut Xorshift) -> T {
+        (self.generate)(rng)
+    }
+}
+
 impl Xorshift {
     pub fn random<T, R>(&mut self, spec: R) -> T
     where
@@ -51,6 +100,9 @@ where
     type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
         Some(self.spec.rand(self.rng))
+    }
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (usize::MAX, None)
     }
 }
 
@@ -301,33 +353,48 @@ impl WeightedSampler {
         let mut large = vec![];
         let sum: f64 = weights.iter().sum();
         assert!(sum > 0.0, "sum of weights must be positive");
+        let mut scale = n as f64 / sum;
+        if !sum.is_finite() || !scale.is_finite() {
+            let max = weights.iter().fold(0.0f64, |max, &weight| {
+                assert!(
+                    weight.is_finite() && weight >= 0.0,
+                    "weights must be finite and non-negative"
+                );
+                max.max(weight)
+            });
+            let sum: f64 = weights
+                .iter_mut()
+                .map(|weight| {
+                    *weight /= max;
+                    *weight
+                })
+                .sum();
+            scale = n as f64 / sum;
+        }
         for (i, weight) in weights.iter_mut().enumerate() {
             assert!(*weight >= 0.0, "weights must be non-negative");
-            *weight *= n as f64 / sum;
+            *weight *= scale;
             if *weight < 1.0 {
                 small.push(i);
             } else {
                 large.push(i);
             }
         }
-        loop {
-            match (small.pop(), large.pop()) {
-                (Some(l), Some(g)) => {
-                    prob[l] = weights[l];
-                    alias[l] = g;
-                    weights[g] -= 1.0 - weights[l];
-                    if weights[g] < 1.0 {
-                        small.push(g);
-                    } else {
-                        large.push(g);
-                    }
-                }
-                (Some(g), None) | (None, Some(g)) => {
-                    prob[g] = 1.0;
-                    alias[g] = g;
-                }
-                (None, None) => break,
+        while let Some(&g) = large.last() {
+            let Some(l) = small.pop() else {
+                break;
+            };
+            prob[l] = weights[l];
+            alias[l] = g;
+            weights[g] -= 1.0 - weights[l];
+            if weights[g] < 1.0 {
+                large.pop();
+                small.push(g);
             }
+        }
+        for g in small.into_iter().chain(large).rev() {
+            prob[g] = 1.0;
+            alias[g] = g;
         }
         Self { n, prob, alias }
     }
@@ -346,24 +413,34 @@ impl RandomSpec<usize> for WeightedSampler {
 
 #[macro_export]
 /// Return a random value using [`RandomSpec`].
+///
+/// ```
+/// use competitive::tools::Xorshift;
+///
+/// let mut rng = Xorshift::new_with_seed(42);
+/// let values: Vec<u32> = competitive::rand_value!(rng, [0..10; 4]);
+/// assert_eq!(values.len(), 4);
+/// assert!(values.into_iter().all(|value| value < 10));
+/// ```
 macro_rules! rand_value {
-    (@repeat $rng:expr, [$($t:tt)*] $($len:expr)?)                                    => { ::std::iter::repeat_with(|| $crate::rand_value!(@inner $rng, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
-    (@array $rng:expr, [$($t:tt)*] $len:expr)                                         => { $crate::array![|| $crate::rand_value!(@inner $rng, [] $($t)*); $len] };
-    (@tuple $rng:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*),*) };
+    (@repeat $rng:expr, [$($t:tt)*] $($len:expr)?)                                    => { ::std::iter::repeat_with(|| $crate::rand_value!(@inner $rng, [] $($t)*)) $(.take($len).collect::<::std::vec::Vec<_>>())? };
+    (@array $rng:expr, [$($t:tt)*] $len:expr)                                         => {{ let values: [_; $len] = ::std::array::from_fn(|_| $crate::rand_value!(@inner $rng, [] $($t)*)); values }};
+    (@group $rng:expr, [])                                                           => { () };
+    (@group $rng:expr, [$($args:tt)*] , $($t:tt)*)                                   => { $crate::rand_value!(@tuple $rng, [$($args)*] $($t)*) };
+    (@tuple $rng:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*,)*) };
     (@$tag:ident $rng:expr, [[$($args:tt)*]])                                         => { $($args)* };
-    (@$tag:ident $rng:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)                 => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@tuple $rng, [] $($tuple)*)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; const $len:expr] $($t:tt)*) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [[$($tt)*]] $len)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; $len:expr] $($t:tt)*)       => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [[$($tt)*]] $len)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [($($tt:tt)*); const $len:expr] $($t:tt)*) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [($($tt)*)] $len)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [($($tt:tt)*); $len:expr] $($t:tt)*)       => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [($($tt)*)] $len)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [$ty:expr; const $len:expr] $($t:tt)*)     => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [$ty] $len)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [$ty:expr; $len:expr] $($t:tt)*)           => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [$ty] $len)]] $($t)*) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)                    => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [$($tt)*])]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] ($($tuple:tt)*) $(, $($t:tt)*)?)           => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@group $rng, [] $($tuple)*)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; const $len:expr] $(, $($t:tt)*)?) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [[$($tt)*]] $len)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; $len:expr] $(, $($t:tt)*)?)       => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [[$($tt)*]] $len)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [($($tt:tt)*); const $len:expr] $(, $($t:tt)*)?) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [($($tt)*)] $len)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [($($tt:tt)*); $len:expr] $(, $($t:tt)*)?)       => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [($($tt)*)] $len)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [$ty:expr; const $len:expr] $(, $($t:tt)*)?)     => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [$ty] $len)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [$ty:expr; $len:expr] $(, $($t:tt)*)?)           => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [$ty] $len)]] $(, $($t)*)?) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [$($tt:tt)*] $(, $($t:tt)*)?)                    => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [$($tt)*])]] $(, $($t)*)?) };
     (@$tag:ident $rng:expr, [$($args:tt)*] $ty:expr)                                  => { $crate::rand_value!(@$tag $rng, [$($args)* [($rng).random($ty)]]) };
-    (@$tag:ident $rng:expr, [$($args:tt)*] $ty:expr, $($t:tt)*)                       => { $crate::rand_value!(@$tag $rng, [$($args)* [($rng).random($ty)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] $ty:expr, $($t:tt)*)                       => { $crate::rand_value!(@$tag $rng, [$($args)* [($rng).random($ty)]] , $($t)*) };
     (@$tag:ident $rng:expr, [$($args:tt)*] , $($t:tt)*)                               => { $crate::rand_value!(@$tag $rng, [$($args)*] $($t)*) };
     (@$tag:ident $rng:expr, [$($args:tt)*])                                           => { ::std::compile_error!(::std::stringify!($($args)*)) };
-    (seed = $src:expr, $($t:tt)*)                                                     => { { let mut __rng = Xorshift::new_with_seed($src); $crate::rand_value!(@inner __rng, [] $($t)*) } };
     ($rng:expr, $($t:tt)*)                                                            => { $crate::rand_value!(@inner $rng, [] $($t)*) }
 }
 #[macro_export]
@@ -380,8 +457,8 @@ macro_rules! rand {
     (@pat $rng:expr, [$($p:tt)*] [] [$($x:tt)*] $($t:tt)*)           => { $crate::rand!(@pat $rng, [$($p)* [$($x)*]] [] $($t)*) };
     (@pat $rng:expr, [$($p:tt)*] [] {$($x:tt)*} $($t:tt)*)           => { $crate::rand!(@pat $rng, [$($p)* {$($x)*}] [] $($t)*) };
     (@pat $rng:expr, [$($p:tt)*] [] : $($t:tt)*)                     => { $crate::rand!(@ty  $rng, [$($p)*] [] $($t)*) };
-    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] ($($x:tt)*) $($t:tt)*) => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* ($($x)*)] $($t)*) };
-    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] [$($x:tt)*] $($t:tt)*) => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* [$($x)*]] $($t)*) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] ($($x:tt)*) $(, $($t:tt)*)?) => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* ($($x)*)] $(, $($t)*)?) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] [$($x:tt)*] $(, $($t:tt)*)?) => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* [$($x)*]] $(, $($t)*)?) };
     (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:expr)               => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e]) };
     (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:expr, $($t:tt)*)    => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e], $($t)*) };
     (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:tt)                 => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e]) };
@@ -398,7 +475,68 @@ macro_rules! rand {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::num::mint_basic::MInt998244353;
     use crate::tools::testutil::integer_boundary_values;
+    use std::cell::Cell;
+
+    #[test]
+    fn test_spec_vec() {
+        let mut rng = Xorshift::default();
+        let mut expected = rng.clone();
+        for len in 0..=32 {
+            let vectors = spec(-100i64..=100).vec(len);
+            let actual = rng.random(&vectors);
+            let expected: Vec<_> = (0..len).map(|_| expected.random(-100i64..=100)).collect();
+            assert_eq!(actual, expected);
+        }
+        let vectors = spec(-100i64..=100).vec(0usize..=32);
+        for _ in 0..1000 {
+            let actual = rng.random(&vectors);
+            let len = expected.random(0usize..=32);
+            let values: Vec<_> = (0..len).map(|_| expected.random(-100i64..=100)).collect();
+            assert_eq!(actual, values);
+        }
+        let values: Vec<i64> = rng.random(spec(..).vec(4));
+        for value in values {
+            assert_eq!(value, expected.random(..));
+        }
+        let values: Vec<MInt998244353> = rng.random(spec(..).vec(4));
+        for value in values {
+            assert_eq!(value, expected.random(..));
+        }
+        rand!(rng, values: spec(-100i64..=100).vec(4));
+        for value in values {
+            assert_eq!(value, expected.random(-100i64..=100));
+        }
+        assert_eq!(rng.rand64(), expected.rand64());
+    }
+
+    #[test]
+    fn test_spec_vec_evaluation() {
+        let mut rng = Xorshift::default();
+        for len in 0..=32 {
+            let lengths = Cell::new(0);
+            let elements = Cell::new(0);
+            let length = from_fn(|_| {
+                lengths.set(lengths.get() + 1);
+                len
+            });
+            let vectors = from_fn(|_| {
+                let next = elements.get();
+                elements.set(next + 1);
+                next
+            })
+            .vec(length);
+            assert_eq!((lengths.get(), elements.get()), (0, 0));
+            for repetition in 0..3 {
+                let actual = rng.random(&vectors);
+                let start = repetition * len;
+                assert_eq!(actual, (start..start + len).collect::<Vec<_>>());
+                assert_eq!(lengths.get(), repetition + 1);
+                assert_eq!(elements.get(), (repetition + 1) * len);
+            }
+        }
+    }
 
     #[test]
     fn test_random_range() {
@@ -452,7 +590,7 @@ mod tests {
             assert!(lr.0 < lr.1 && lr.1 <= n);
             assert_eq!(a.len(), n);
             assert!(
-                [x, t, r.0, r.1]
+                [x, t.0, r.0, r.1]
                     .into_iter()
                     .chain(a)
                     .chain(p.into_iter().flat_map(|(a, b)| [a, b]))
@@ -462,26 +600,207 @@ mod tests {
     }
 
     #[test]
-    fn test_weighted_sampler() {
+    fn test_rand_iter() {
         let mut rng = Xorshift::default();
-        for _ in 0..100 {
-            let n = rng.random(1..=16);
-            let mut weights: Vec<_> = rng.random_iter(0..=100).take(n).map(f64::from).collect();
-            weights[rng.random(0..n)] += 1.0;
-            let sampler = WeightedSampler::new(weights.clone());
-            let mut counts = vec![0; n];
-            for _ in 0..100_000 {
+        let mut expected = rng.clone();
+        for len in [0, 1, 32] {
+            let values = rng.random_iter(0u32..100);
+            assert_eq!(values.size_hint(), (usize::MAX, None));
+            let mut values = values.take(len);
+            for remaining in (1..=len).rev() {
+                assert_eq!(values.size_hint(), (remaining, Some(remaining)));
+                assert_eq!(values.next(), Some(expected.random(0u32..100)));
+            }
+            assert_eq!(values.size_hint(), (0, Some(0)));
+            assert_eq!(values.next(), None);
+        }
+        assert_eq!(rng.rand64(), expected.rand64());
+    }
+
+    #[test]
+    fn test_rand_value_macro() {
+        let mut rng = Xorshift::default();
+        let mut expected = rng.clone();
+        let range = 0u32..100;
+        let (): () = rand_value!(rng, ());
+        assert_eq!(rand_value!(rng, (range.clone())), expected.random(&range));
+        assert_eq!(
+            rand_value!(rng, (range.clone(),)),
+            (expected.random(&range),)
+        );
+        assert_eq!(
+            rand_value!(rng, (0u32..100).clone()),
+            expected.random(&range)
+        );
+        assert_eq!(
+            rand_value!(rng, [range.clone()][0].clone()),
+            expected.random(&range)
+        );
+        let nested =
+            rand_value!(rng, ([[range.clone()][0].clone(); const 2], [(range.clone(),); 2]));
+        let expected_nested = (
+            std::array::from_fn(|_| expected.random(&range)),
+            (0..2)
+                .map(|_| (expected.random(&range),))
+                .collect::<Vec<_>>(),
+        );
+        assert_eq!(nested, expected_nested);
+        rand!(rng, x: (0u32..100).clone(), (y,): (range.clone(),), z: ([range.clone()][0].clone(), range.clone()), w: [range.clone()][0].clone());
+        for actual in [x, y, z.0, z.1, w] {
+            assert_eq!(actual, expected.random(&range));
+        }
+        assert_eq!(rng.rand64(), expected.rand64());
+    }
+
+    #[test]
+    fn test_rand_value_repetition() {
+        let mut rng = Xorshift::default();
+        let mut expected = rng.clone();
+        for len in [0, 1, 8] {
+            let spec_calls = Cell::new(0);
+            let len_calls = Cell::new(0);
+            let values: Vec<u32> = rand_value!(
+                rng,
+                [{
+                    spec_calls.set(spec_calls.get() + 1);
+                    0u32..100
+                }; {
+                    len_calls.set(len_calls.get() + 1);
+                    len
+                }]
+            );
+            assert_eq!(len_calls.get(), 1);
+            assert_eq!(spec_calls.get(), len);
+            assert_eq!(
+                values,
+                expected
+                    .random_iter(0u32..100)
+                    .take(len)
+                    .collect::<Vec<_>>()
+            );
+        }
+        let spec_calls = Cell::new(0);
+        let values = rand_value!(
+            &mut rng,
+            [{
+                spec_calls.set(spec_calls.get() + 1);
+                0u32..100
+            }]
+        );
+        assert_eq!(spec_calls.get(), 0);
+        let values: Vec<_> = values.take(8).collect();
+        assert_eq!(spec_calls.get(), 8);
+        assert_eq!(
+            values,
+            expected.random_iter(0u32..100).take(8).collect::<Vec<_>>()
+        );
+        let empty: [u32; 0] = rand_value!(rng, [0u32..100; const 0]);
+        assert!(empty.is_empty());
+        assert_eq!(rng.rand64(), expected.rand64());
+    }
+
+    #[test]
+    fn test_weighted_sampler_distribution() {
+        for (case, (weights, scale)) in weighted_cases(32_768, 1024).enumerate() {
+            let n = weights.len();
+            let sampler =
+                WeightedSampler::new(weights.iter().map(|&weight| f64::from(weight) * scale));
+            let mut distribution = vec![0.0; n];
+            for (i, (&prob, &alias)) in sampler.prob.iter().zip(&sampler.alias).enumerate() {
+                assert!((0.0..=1.0).contains(&prob));
+                assert!(alias < n);
+                distribution[i] += prob / n as f64;
+                distribution[alias] += (1.0 - prob) / n as f64;
+            }
+            let total = f64::from(weights.iter().sum::<u32>());
+            for (&weight, &actual) in weights.iter().zip(&distribution) {
+                let expected = f64::from(weight) / total;
+                assert!(
+                    (expected - actual).abs() < 1e-12,
+                    "case={case}, weights={weights:?}, scale={scale}: {distribution:?}"
+                );
+                if weight == 0 {
+                    assert_eq!(actual, 0.0);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_weighted_sampler() {
+        const DRAWS: usize = 100_000;
+        let mut rng = Xorshift::default();
+        for (case, (weights, scale)) in weighted_cases(1024, 256).enumerate() {
+            let sampler =
+                WeightedSampler::new(weights.iter().map(|&weight| f64::from(weight) * scale));
+            let mut counts = vec![0usize; weights.len()];
+            for _ in 0..DRAWS {
                 counts[sampler.rand(&mut rng)] += 1;
             }
-            let sum: f64 = weights.iter().sum();
+            let total = f64::from(weights.iter().sum::<u32>());
             for (&weight, &count) in weights.iter().zip(&counts) {
-                let expected = weight / sum;
-                let actual = count as f64 / 100_000.0;
-                assert!((expected - actual).abs() < 0.01, "{weights:?}: {counts:?}");
-                if weight == 0.0 {
+                let probability = f64::from(weight) / total;
+                let expected = probability * DRAWS as f64;
+                let deviation = (expected * (1.0 - probability)).sqrt();
+                // Eight standard deviations plus eight counts cover rare-event noise.
+                assert!(
+                    (count as f64 - expected).abs() <= 8.0 * deviation + 8.0,
+                    "case={case}, weights={weights:?}, scale={scale}: {counts:?}"
+                );
+                if weight == 0 {
                     assert_eq!(count, 0);
                 }
             }
         }
+    }
+
+    fn weighted_cases(cases: usize, max_len: usize) -> impl Iterator<Item = (Vec<u32>, f64)> {
+        let mut rng = Xorshift::default();
+        (0..cases).map(move |case| {
+            let n = match case {
+                0 => 1,
+                1 => 2,
+                2 => max_len,
+                _ => rng.random(if case % 4 == 2 { 3 } else { 2 }..=max_len),
+            };
+            let weights = match case % 4 {
+                0 => vec![rng.random(1u32..=256); n],
+                1 => {
+                    let mut weights = vec![0; n];
+                    weights[rng.random(0..n)] = 1;
+                    weights
+                }
+                2 => {
+                    let max = rng.random(1u32..=256);
+                    let mut weights = rng.random(spec(1..=max).vec(n));
+                    weights[..2].fill(max);
+                    let positive = rng.random(2..n);
+                    weights[positive..].fill(0);
+                    rng.shuffle(&mut weights);
+                    weights
+                }
+                _ => {
+                    let mut weights = rng.random(spec(1u32..=256).vec(n));
+                    let dominant = rng.random(0..n);
+                    weights[dominant] = weights.iter().sum::<u32>() * rng.random(2u32..=16);
+                    weights
+                }
+            };
+            let max = *weights.iter().max().unwrap();
+            let width = max.ilog2() as i32;
+            let exponent = match case / 4 % 4 {
+                0 => -1074,
+                1 => -1023 - width + (case / 16 % 3) as i32,
+                2 => rng.random(-1073..1023 - width),
+                _ => 1023 - width,
+            };
+            // Power-of-two scales keep the original integer ratios at floating-point boundaries.
+            let scale = if exponent < -1022 {
+                f64::from_bits(1 << (exponent + 1074))
+            } else {
+                f64::from_bits(((exponent + 1023) as u64) << 52)
+            };
+            (weights, scale)
+        })
     }
 }

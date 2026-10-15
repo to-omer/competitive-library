@@ -22,9 +22,12 @@ mod polynomial_impls {
             Self::from_vec(Vec::new())
         }
     }
-    impl<T: Zero + One> One for Polynomial<T> {
+    impl<T> One for Polynomial<T>
+    where
+        T: One,
+    {
         fn one() -> Self {
-            Self::from_vec(vec![Zero::zero(), One::one()])
+            Self::from_vec(vec![One::one()])
         }
     }
     impl<T: Clone + Zero + Add<Output = T> + Mul<Output = T>> Polynomial<T> {
@@ -62,17 +65,16 @@ mod polynomial_impls {
             x
         }
     }
-    impl<T: Copy + Sub<Output = T>> Sub<&Polynomial<T>> for &Polynomial<T> {
+    impl<T> Sub<&Polynomial<T>> for &Polynomial<T>
+    where
+        T: Copy + Zero + Sub<Output = T>,
+    {
         type Output = Polynomial<T>;
         fn sub(self, rhs: &Polynomial<T>) -> Self::Output {
-            let (x, y) = if self.length() < rhs.length() {
-                (rhs, self)
-            } else {
-                (self, rhs)
-            };
-            let mut x = x.clone();
-            for j in 0..y.length() {
-                x[j] = x[j] - y[j];
+            let mut x = self.clone();
+            x.data.resize(self.length().max(rhs.length()), Zero::zero());
+            for (a, &b) in x.data.iter_mut().zip(&rhs.data) {
+                *a = *a - b;
             }
             x
         }
@@ -80,6 +82,9 @@ mod polynomial_impls {
     impl<T: Copy + Zero + Add<Output = T> + Mul<Output = T>> Mul<&Polynomial<T>> for &Polynomial<T> {
         type Output = Polynomial<T>;
         fn mul(self, rhs: &Polynomial<T>) -> Self::Output {
+            if self.data.is_empty() || rhs.data.is_empty() {
+                return Polynomial::zero();
+            }
             let mut res =
                 Polynomial::from_vec(vec![Zero::zero(); self.length() + rhs.length() - 1]);
             for i in 0..self.length() {
@@ -132,10 +137,89 @@ mod polynomial_impls {
                 if n & 1 == 1 {
                     res = &res * &x;
                 }
-                x = &x * &x;
                 n >>= 1;
+                if n != 0 {
+                    x = &x * &x;
+                }
             }
             res
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        num::mint_basic::MInt998244353,
+        tools::{
+            Xorshift,
+            testutil::{integer_cases, sequence_cases},
+        },
+    };
+
+    #[test]
+    fn test_sub() {
+        let mut rng = Xorshift::default();
+        let cases: Vec<_> = sequence_cases(&mut rng, -1_000_000_000i64..=1_000_000_000, 0..=2048)
+            .map(Polynomial::from_vec)
+            .collect();
+        for lhs in &cases {
+            for rhs in &cases {
+                let actual = lhs - rhs;
+                assert_eq!(actual.length(), lhs.length().max(rhs.length()));
+                for (i, &coefficient) in actual.data.iter().enumerate() {
+                    let a = lhs.data.get(i).copied().unwrap_or(0);
+                    let b = rhs.data.get(i).copied().unwrap_or(0);
+                    assert_eq!(coefficient, a - b);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_mul_zero() {
+        let mut rng = Xorshift::default();
+        for values in sequence_cases(&mut rng, -4i64..=4, 0..=32) {
+            let polynomial = Polynomial::from_vec(values);
+            let zero = Polynomial::zero();
+            assert!((&polynomial * &zero).data.is_empty());
+            assert!((&zero * &polynomial).data.is_empty());
+        }
+    }
+
+    #[test]
+    fn test_pow() {
+        for x in integer_cases(i64::MIN..=i64::MAX) {
+            for exponent in 0..=i64::BITS {
+                if let Some(expected) = x.checked_pow(exponent) {
+                    let polynomial = Polynomial::from_vec(vec![x]);
+                    assert_eq!(polynomial.pow(exponent as usize).data, vec![expected]);
+                }
+            }
+        }
+        let mut input_rng = Xorshift::default();
+        for values in sequence_cases(&mut input_rng, -4i64..=4, 0..=32) {
+            let coefficients: Vec<_> = values.into_iter().map(MInt998244353::from).collect();
+            let polynomial = Polynomial::from_vec(coefficients.clone());
+            let mut expected = vec![MInt998244353::one()];
+            for exponent in 0..=16 {
+                if exponent != 0 {
+                    if coefficients.is_empty() {
+                        expected.clear();
+                    } else {
+                        let mut product =
+                            vec![MInt998244353::zero(); expected.len() + coefficients.len() - 1];
+                        for (i, &a) in expected.iter().enumerate() {
+                            for (j, &b) in coefficients.iter().enumerate() {
+                                product[i + j] += a * b;
+                            }
+                        }
+                        expected = product;
+                    }
+                }
+                assert_eq!(polynomial.pow(exponent).data, expected);
+            }
         }
     }
 }

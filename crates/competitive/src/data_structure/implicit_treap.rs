@@ -281,6 +281,11 @@ where
     T: LazyMapMonoid,
     A: Allocator<ImplicitTreapNode<T>>,
 {
+    pub fn with_rng(mut self, rng: Xorshift) -> Self {
+        self.rng = rng;
+        self
+    }
+
     fn node(&mut self, key: T::Key) -> ImplicitTreapRoot<T> {
         BstRoot::from_data(
             ImplicitTreapData {
@@ -527,18 +532,22 @@ mod tests {
     use crate::{
         algebra::{RangeChminChmaxAdd, RangeSumRangeChminChmaxAdd},
         num::Saturating,
-        tools::{NotEmptySegment, Xorshift},
+        tools::{
+            NotEmptySegment, WithEmptySegment, Xorshift,
+            testutil::{ConcatUpdate, sequence_cases},
+        },
     };
 
     #[test]
-    fn test_implicit_treap_range_sum_chmin_chmax_add_random() {
+    fn test_implicit_treap_range_sum_chmin_chmax_add() {
         const N: usize = 1_000;
         const Q: usize = 20_000;
         const A: i64 = 1_000;
 
         let mut rng = Xorshift::default();
         let mut arr: Vec<_> = (0..N).map(|_| Saturating(rng.random(0..=A))).collect();
-        let mut treap = ImplicitTreap::<RangeSumRangeChminChmaxAdd<_>>::with_capacity(N + Q);
+        let mut treap = ImplicitTreap::<RangeSumRangeChminChmaxAdd<_>>::with_capacity(N + Q)
+            .with_rng(Xorshift::default());
         treap.extend(arr.iter().copied());
 
         assert_eq!(
@@ -650,6 +659,149 @@ mod tests {
                     }
                 }
                 _ => {}
+            }
+        }
+    }
+
+    #[test]
+    fn test_implicit_treap_sequence() {
+        const MAX_LEN: usize = 1024;
+        const MAX_VALUE: i64 = 1_000_000_000;
+        let mut input_rng = Xorshift::default();
+        let mut rng = Xorshift::default();
+        for (case, mut arr) in
+            sequence_cases(&mut input_rng, -MAX_VALUE..=MAX_VALUE, 0..=MAX_LEN).enumerate()
+        {
+            let initial_len = arr.len();
+            let mut tree = ImplicitTreap::<ConcatUpdate>::new().with_rng(Xorshift::default());
+            tree.extend(arr.iter().copied());
+            assert_eq!(tree.fold(..), arr, "case {case}");
+            assert_eq!(tree.remove(arr.len()), None);
+            for step in 0..initial_len / 2 + 10 {
+                let n = arr.len();
+                let kind = if step < 10 { step } else { rng.random(0..10) };
+                let index = rng.random(0..=n);
+                let (l, r) = rng.random(WithEmptySegment(n));
+                let value = rng.random(-MAX_VALUE..=MAX_VALUE);
+                match kind {
+                    0 if n < MAX_LEN => {
+                        tree.insert(index, value);
+                        arr.insert(index, value);
+                    }
+                    1 => {
+                        let index = index.min(n.saturating_sub(1));
+                        let expected = (index < n).then(|| arr.remove(index));
+                        assert_eq!(tree.remove(index), expected);
+                    }
+                    3 if n != 0 => {
+                        let index = index.min(n - 1);
+                        tree.modify(index, |_| value);
+                        arr[index] = value;
+                    }
+                    4 => assert_eq!(tree.fold(l..r), arr[l..r]),
+                    5 => {
+                        tree.update(l..r, Some(value));
+                        arr[l..r].fill(value);
+                    }
+                    6 => {
+                        tree.reverse(l..r);
+                        arr[l..r].reverse();
+                    }
+                    7 => {
+                        tree.rotate_left(index);
+                        arr.rotate_left(index);
+                    }
+                    8 => {
+                        tree.rotate_right(index);
+                        arr.rotate_right(index);
+                    }
+                    9 => {
+                        let target = &arr[l..r];
+                        assert_eq!(
+                            tree.partition_point_acc(l, |agg| target.starts_with(agg)),
+                            r
+                        );
+                        assert_eq!(tree.rpartition_point_acc(r, |agg| target.ends_with(agg)), l);
+                        assert_eq!(
+                            tree.partition_point_acc(l, |agg| agg.iter().all(|x| *x < value)),
+                            arr[l..]
+                                .iter()
+                                .position(|x| *x >= value)
+                                .map_or(n, |i| l + i),
+                        );
+                        assert_eq!(
+                            tree.rpartition_point_acc(r, |agg| agg.iter().all(|x| *x < value)),
+                            arr[..r]
+                                .iter()
+                                .rposition(|x| *x >= value)
+                                .map_or(0, |i| i + 1),
+                        );
+                    }
+                    _ => assert_eq!(tree.get(index), arr.get(index)),
+                }
+                assert_eq!((tree.len(), tree.is_empty()), (arr.len(), arr.is_empty()));
+                assert_eq!(tree.fold(..), arr, "case {case}, step {step}");
+            }
+            while !arr.is_empty() {
+                let index = match arr.len() % 3 {
+                    0 => 0,
+                    1 => arr.len() - 1,
+                    _ if arr.len() > 2 => rng.random(1..arr.len() - 1),
+                    _ => rng.random(0..arr.len()),
+                };
+                assert_eq!(tree.remove(index), Some(arr.remove(index)));
+                assert_eq!(tree.fold(..), arr);
+            }
+            assert_eq!((tree.len(), tree.is_empty()), (0, true));
+            assert_eq!(tree.get(0), None);
+            assert_eq!(tree.remove(0), None);
+            tree.update(.., Some(rng.random(-MAX_VALUE..=MAX_VALUE)));
+            tree.reverse(..);
+            tree.rotate_left(0);
+            tree.rotate_right(0);
+            assert_eq!(tree.fold(..), arr);
+            assert_eq!(tree.partition_point_acc(0, |_| true), 0);
+            assert_eq!(tree.rpartition_point_acc(0, |_| true), 0);
+            for _ in 0..initial_len.max(2) {
+                let index = match arr.len() % 3 {
+                    0 => 0,
+                    1 => arr.len(),
+                    _ => rng.random(1..arr.len()),
+                };
+                let value = rng.random(-MAX_VALUE..=MAX_VALUE);
+                tree.insert(index, value);
+                arr.insert(index, value);
+                assert_eq!(tree.fold(..), arr);
+            }
+            let first = rng.random(-MAX_VALUE..MAX_VALUE);
+            let second = rng.random(first + 1..=MAX_VALUE);
+            let split = rng.random(1..arr.len());
+            let index = rng.random(0..arr.len());
+            tree.modify(index, |_| first);
+            arr[index] = first;
+            assert_eq!(tree.get(index), arr.get(index));
+            tree.update(.., Some(first));
+            arr.fill(first);
+            tree.update(split.., Some(second));
+            arr[split..].fill(second);
+            tree.reverse(..);
+            arr.reverse();
+            tree.update(.., None);
+            assert_eq!(tree.fold(..), arr);
+            let middle = arr.len() - split;
+            for (l, r) in [
+                (0, 0),
+                (0, arr.len()),
+                (middle, middle + 1),
+                (middle - 1, middle + 1),
+            ] {
+                let target = &arr[l..r];
+                assert_eq!(tree.fold(l..r), target);
+                assert_eq!(
+                    tree.partition_point_acc(l, |agg| target.starts_with(agg)),
+                    r
+                );
+                assert_eq!(tree.rpartition_point_acc(r, |agg| target.ends_with(agg)), l);
             }
         }
     }

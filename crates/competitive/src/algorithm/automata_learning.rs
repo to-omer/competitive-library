@@ -725,7 +725,7 @@ mod tests {
         num::mint_basic::MInt998244353 as M,
         tools::{
             Xorshift,
-            testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+            testutil::{exhaustive_sequences, sequence_cases},
         },
     };
     use std::{collections::VecDeque, iter::repeat_n};
@@ -875,12 +875,13 @@ mod tests {
                     .map(|(&a, &b)| a * b)
                     .sum::<M>()
             });
-            let lengths = sample_usize(&mut rng, 8, 0..=64, 100);
+            // Words shorter than n span both reachable and observable vector spaces.
             check_wfa(
                 &automaton,
-                2 * n,
+                2 * n - 1,
+                n - 1,
                 n,
-                dense_sampling(sigma, 6).chain(structured_sequences(&mut rng, 0..sigma, lengths)),
+                sequence_cases(&mut rng, 0..=sigma - 1, 0..=128),
             );
         }
     }
@@ -889,6 +890,7 @@ mod tests {
         automaton: &impl BlackBoxAutomaton<Output = M>,
         training_len: usize,
         batch_len: usize,
+        refinement_limit: usize,
         samples: impl IntoIterator<Item = Vec<usize>>,
     ) {
         let mut incremental = WfaLearning::<AddMulOperation<_>, _>::new(automaton);
@@ -896,7 +898,7 @@ mod tests {
         // every longer word evaluates to zero (for example a nilpotent matrix).
         incremental.train(
             dense_sampling(automaton.sigma(), training_len)
-                .flat_map(|sample| repeat_n(sample, batch_len.max(1))),
+                .flat_map(|sample| repeat_n(sample, refinement_limit)),
         );
         let mut batch = WfaLearning::<AddMulOperation<_>, _>::new(automaton);
         batch.batch_train(dense_sampling(automaton.sigma(), batch_len));
@@ -1001,13 +1003,12 @@ mod tests {
                     }
                     sum
                 });
-                let lengths = sample_usize(&mut rng, 16, 0..=64, 1000);
                 check_wfa(
                     &automaton,
                     4,
                     3,
-                    dense_sampling(sigma, if sigma == 3 { 8 } else { 12 })
-                        .chain(structured_sequences(&mut rng, 0..sigma, lengths)),
+                    3,
+                    sequence_cases(&mut rng, 0..=sigma - 1, 0..=1024),
                 );
             }
         }
@@ -1032,7 +1033,7 @@ mod tests {
             let n = input.into_iter().fold(1, |n, x| n * 2 + x);
             M::from(counts[n])
         });
-        check_wfa(&automaton, 4, 3, dense_sampling(2, 12));
+        check_wfa(&automaton, 4, 3, 3, dense_sampling(2, 12));
     }
 
     #[test]
@@ -1047,7 +1048,7 @@ mod tests {
                         .count(),
                 )
             });
-            check_wfa(&automaton, 6, 3, dense_sampling(2, 12));
+            check_wfa(&automaton, 6, 3, 3, dense_sampling(2, 12));
         }
     }
 }

@@ -800,7 +800,7 @@ mod tests {
     use super::*;
     use crate::tools::{
         Xorshift,
-        testutil::{integer_boundary_values, structured_sequences},
+        testutil::{integer_boundary_values, sequence_cases},
     };
 
     #[test]
@@ -970,7 +970,6 @@ mod tests {
                 compact.push((games.len() - 1, (Dyadic::new(q, 1), mex)));
             }
         }
-        let asymmetric = games.len();
         for i in 0..numbers.len() {
             for n in 0..8 {
                 for m in 0..8 {
@@ -1002,7 +1001,7 @@ mod tests {
             components.extend([a, b, switch]);
             switches.push(switch);
         }
-        let mut states: Vec<Vec<_>> = structured_sequences(&mut rng, 0..components.len(), 0..=5)
+        let mut states: Vec<Vec<_>> = sequence_cases(&mut rng, 0..=components.len() - 1, 0..=5)
             .map(|s| s.into_iter().map(|i| components[i]).collect())
             .collect();
         // At either numeric boundary, the up/nimber tail and turn parity decide.
@@ -1042,7 +1041,9 @@ mod tests {
         let mut products = Vec::new();
         let mut product_cache = HashMap::new();
         for parts in states {
-            let root = parts
+            let mut ordered = parts.clone();
+            ordered.sort_unstable();
+            let root = ordered
                 .iter()
                 .fold(0, |a, &b| sum_options(&mut games, a, b, &mut product_cache));
             products.push((root, parts));
@@ -1074,10 +1075,36 @@ mod tests {
             // Check arithmetic results with the same raw oracle and canonical-form checks.
             values[*root] = sum;
         }
+        // Share identical raw move sets without using canonical game values.
+        let mut oracle_games = Vec::new();
+        let mut oracle_ids = Vec::with_capacity(games.len());
+        let mut oracle_nodes = HashMap::new();
+        for (left, right) in &games {
+            let [left, right] = [left, right].map(|moves| {
+                let mut moves: Vec<_> = moves.iter().map(|&i| oracle_ids[i]).collect();
+                moves.sort_unstable();
+                moves.dedup();
+                moves
+            });
+            let id = *oracle_nodes
+                .entry((left, right))
+                .or_insert_with_key(|options| {
+                    let id = oracle_games.len();
+                    oracle_games.push(options.clone());
+                    id
+                });
+            oracle_ids.push(id);
+        }
+        drop(oracle_nodes);
         let zero = GameValue::from(0);
         let mut differences = HashMap::new();
         let mut sums = HashMap::new();
-        let roots = (0..products_start).chain(products.iter().map(|&(i, _)| i));
+        let mut roots: Vec<_> = (0..products_start)
+            .chain(products.iter().map(|&(i, _)| i))
+            .collect();
+        // Sequence-wise arithmetic was checked above; each raw game needs one oracle check.
+        roots.sort_unstable();
+        roots.dedup();
         for i in roots {
             let g = &values[i];
             let (left, right) = &games[i];
@@ -1088,7 +1115,16 @@ mod tests {
                     right.iter().map(|&j| values[j].clone()).collect(),
                 )),
             ));
-            let winning = [false, true].map(|right| wins(&games, i, 0, right, false, &mut sums));
+            let winning = [false, true].map(|right| {
+                wins(
+                    &oracle_games,
+                    oracle_ids[i],
+                    oracle_ids[0],
+                    right,
+                    false,
+                    &mut sums,
+                )
+            });
             for (player, win) in [Player::Left, Player::Right].into_iter().zip(winning) {
                 assert_eq!(g.wins(player), win);
                 let options: Vec<_> = g.options(player).collect();
@@ -1142,10 +1178,8 @@ mod tests {
                     .chain([tiny])
                     .chain(products[switch_products_start..].iter().map(|&(i, _)| i))
                     .collect()
-            } else if i >= asymmetric {
-                (start..symmetric).collect()
             } else if i >= start {
-                (start..asymmetric).collect()
+                (start..symmetric).collect()
             } else {
                 (0..32).map(|_| rng.random(0..products_start)).collect()
             };
@@ -1154,8 +1188,22 @@ mod tests {
             }
             for j in partners {
                 let expected = match (
-                    wins(&games, i, j, false, true, &mut differences),
-                    wins(&games, i, j, true, true, &mut differences),
+                    wins(
+                        &oracle_games,
+                        oracle_ids[i],
+                        oracle_ids[j],
+                        false,
+                        true,
+                        &mut differences,
+                    ),
+                    wins(
+                        &oracle_games,
+                        oracle_ids[i],
+                        oracle_ids[j],
+                        true,
+                        true,
+                        &mut differences,
+                    ),
                 ) {
                     (false, false) => Some(Ordering::Equal),
                     (true, false) => Some(Ordering::Greater),
@@ -1174,7 +1222,7 @@ mod tests {
                     "raw options {i} vs {j}"
                 );
                 assert_eq!(g == &values[j], expected == Some(Ordering::Equal));
-                if (i < 260 && j >= 4) || (asymmetric..products_start).contains(&i) {
+                if (i < 260 && j >= 4) || (symmetric..products_start).contains(&i) {
                     continue;
                 }
                 assert_eq!((g.clone() - values[j].clone()).partial_cmp(&zero), expected);
@@ -1185,7 +1233,14 @@ mod tests {
                 for player in [Player::Left, Player::Right] {
                     assert_eq!(
                         sum.wins(player),
-                        wins(&games, i, j, player == Player::Right, false, &mut sums),
+                        wins(
+                            &oracle_games,
+                            oracle_ids[i],
+                            oracle_ids[j],
+                            player == Player::Right,
+                            false,
+                            &mut sums
+                        ),
                         "{i} + {j}, {player:?}"
                     );
                 }
@@ -1206,7 +1261,8 @@ mod tests {
         if b == 0 {
             return a;
         }
-        if let Some(&i) = cache.get(&(a, b)) {
+        let key = (a.min(b), a.max(b));
+        if let Some(&i) = cache.get(&key) {
             return i;
         }
         let (al, ar) = games[a].clone();
@@ -1219,7 +1275,7 @@ mod tests {
         let i = games.len();
         let [left, right] = options;
         games.push((left, right));
-        cache.insert((a, b), i);
+        cache.insert(key, i);
         i
     }
 
@@ -1232,7 +1288,9 @@ mod tests {
         subtract: bool,
         cache: &mut HashMap<(usize, usize, bool), bool>,
     ) -> bool {
-        if let Some(&result) = cache.get(&(a, b, right)) {
+        // Swapping the terms negates a difference, which also swaps the players.
+        let key = (a.min(b), a.max(b), right ^ (subtract && a > b));
+        if let Some(&result) = cache.get(&key) {
             return result;
         }
         let first = if right { &games[a].1 } else { &games[a].0 };
@@ -1247,7 +1305,7 @@ mod tests {
             || second
                 .iter()
                 .any(|&c| !wins(games, a, c, !right, subtract, cache));
-        cache.insert((a, b, right), result);
+        cache.insert(key, result);
         result
     }
 }

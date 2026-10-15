@@ -914,8 +914,10 @@ where
             if n & 1 == 1 {
                 res = &res * &x;
             }
-            x = &x * &x;
             n >>= 1;
+            if n != 0 {
+                x = &x * &x;
+            }
         }
         res
     }
@@ -933,8 +935,10 @@ where
             if n & 1 == 1 {
                 res = res.mul_strassen(&x);
             }
-            x = x.mul_strassen(&x);
             n >>= 1;
+            if n != 0 {
+                x = x.mul_strassen(&x);
+            }
         }
         res
     }
@@ -947,7 +951,10 @@ mod tests {
         algebra::AddMulOperation,
         num::{One, Zero, mint_basic::DynMIntU32},
         rand, rand_value,
-        tools::Xorshift,
+        tools::{
+            Xorshift,
+            testutil::{integer_cases, sequence_cases},
+        },
     };
 
     type R = AddMulOperation<DynMIntU32>;
@@ -983,6 +990,45 @@ mod tests {
                 mat[i][j] = DynMIntU32::one();
             }
             mat
+        }
+    }
+
+    #[test]
+    fn test_pow() {
+        for x in integer_cases(i64::MIN..=i64::MAX) {
+            for exponent in 0..=i64::BITS {
+                if let Some(expected) = x.checked_pow(exponent) {
+                    let matrix = Matrix::<AddMulOperation<i64>>::from_vec(vec![vec![x]]);
+                    let expected = Matrix::from_vec(vec![vec![expected]]);
+                    assert_eq!(matrix.clone().pow(exponent as usize), expected);
+                    assert_eq!(matrix.pow_strassen(exponent as usize), expected);
+                }
+            }
+        }
+        DynMIntU32::set_mod(998_244_353);
+        let mut rng = Xorshift::default();
+        for n in 0..=8 {
+            for values in sequence_cases(&mut rng, 0..=998_244_352u32, n * n..=n * n) {
+                let matrix =
+                    Matrix::<R>::new_with((n, n), |i, j| DynMIntU32::from(values[i * n + j]));
+                let mut expected: Vec<Vec<_>> = (0..n)
+                    .map(|i| (0..n).map(|j| DynMIntU32::from((i == j) as u32)).collect())
+                    .collect();
+                for exponent in 0..=n + 2 {
+                    if exponent != 0 {
+                        expected = (0..n)
+                            .map(|i| {
+                                (0..n)
+                                    .map(|j| (0..n).map(|k| expected[i][k] * matrix[k][j]).sum())
+                                    .collect()
+                            })
+                            .collect();
+                    }
+                    let expected_matrix = Matrix::from_vec(expected.clone());
+                    assert_eq!(matrix.clone().pow(exponent), expected_matrix);
+                    assert_eq!(matrix.clone().pow_strassen(exponent), expected_matrix);
+                }
+            }
         }
     }
 

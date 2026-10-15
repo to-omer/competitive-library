@@ -440,8 +440,10 @@ where
             if n & 1 == 1 {
                 res = res.concat(&x);
             }
-            x = x.concat(&x);
             n >>= 1;
+            if n != 0 {
+                x = x.concat(&x);
+            }
         }
         res
     }
@@ -635,14 +637,17 @@ impl_rolling_hasher!(Gf2_63x3, Gf2_63, [_ _ _]);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::Xorshift;
+    use crate::tools::{
+        Xorshift,
+        testutil::{integer_cases, sequence_cases},
+    };
 
     #[test]
     fn test_rolling_hash() {
         const N: usize = 200;
         let mut rng = Xorshift::default();
         let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
-        Mersenne61x3::init(N);
+        Mersenne61x3::init_with_rng(N, &mut rng);
         let h = Mersenne61x3::hash_sequence(a.iter().copied());
         for k in 1..=N {
             for l1 in 0..=N - k {
@@ -664,7 +669,7 @@ mod tests {
         const N: usize = 200;
         let mut rng = Xorshift::default();
         let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
-        Mersenne61x3::init(0);
+        Mersenne61x3::init_with_rng(0, &mut rng);
         let h = Mersenne61x3::hash_sequence(a.iter().copied());
         for k in 1..=N {
             for l1 in 0..=N - k {
@@ -679,11 +684,36 @@ mod tests {
     }
 
     #[test]
+    fn test_rolling_hash_concat() {
+        const MAX_LEN: usize = 1024;
+        let mut input_rng = Xorshift::default();
+        let mut rng = Xorshift::default();
+        Mersenne61x3::init_with_rng(0, &mut rng);
+        for precalc in [0, MAX_LEN] {
+            Mersenne61x3::ensure(precalc);
+            for values in sequence_cases(&mut input_rng, 0..=Mersenne61::MOD - 1, 0..=MAX_LEN) {
+                let hashed = Mersenne61x3::hash_sequence(values.iter().copied());
+                let expected = hashed.hash_range(..);
+                for split in 0..=values.len() {
+                    let left = hashed.hash_range(..split);
+                    let right =
+                        Mersenne61x3::hash_sequence(values[split..].iter().copied()).hash_range(..);
+                    assert_eq!(
+                        left.concat(&right),
+                        expected,
+                        "precalc={precalc}, split={split}, values={values:?}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
     fn test_rolling_hash_pow() {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
-        Mersenne61x3::init(N);
+        Mersenne61x3::init_with_rng(N, &mut rng);
         for k in 0..=N {
             for l in 0..=N - k {
                 let a = &a[l..l + k];
@@ -696,6 +726,10 @@ mod tests {
                     assert_eq!(ha, hb);
                 }
             }
+        }
+        let zero = Mersenne61x3::hash_sequence([0]).hash_range(..);
+        for n in integer_cases(0usize..=usize::MAX) {
+            assert_eq!(zero.pow(n), Hashed::new(n, [0; 3]));
         }
     }
 }

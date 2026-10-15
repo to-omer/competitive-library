@@ -231,10 +231,10 @@ where
 mod tests {
     use super::*;
     use crate::{
-        algebra::{AdditiveOperation, MaxOperation},
+        algebra::{AdditiveOperation, ConcatenateOperation, MaxOperation},
         algorithm::SliceBisectExt as _,
         rand,
-        tools::{NotEmptySegment as Nes, Xorshift},
+        tools::{NotEmptySegment as Nes, WithEmptySegment, Xorshift, testutil::sequence_cases},
     };
 
     const N: usize = 1_000;
@@ -283,6 +283,51 @@ mod tests {
         for (l, r) in rng.random_iter(Nes(N)).take(Q) {
             let res = arr[l..r].iter().max().cloned().unwrap_or_default();
             assert_eq!(seg.fold(l..r), res);
+        }
+    }
+
+    #[test]
+    fn test_segment_tree_map_concat() {
+        let mut input_rng = Xorshift::default();
+        let mut rng = Xorshift::default();
+        for initial in sequence_cases(&mut input_rng, -A..=A, 0..=256) {
+            let n = initial.len();
+            let mut seg = SegmentTreeMap::<ConcatenateOperation<_>>::new(n);
+            assert!(seg.fold(0..n).is_empty());
+            assert_eq!(seg.partition_point_acc(0, |agg| agg.is_empty()), n);
+            assert_eq!(seg.rpartition_point_acc(n, |agg| agg.is_empty()), 0);
+            for (i, &value) in initial.iter().enumerate() {
+                assert!(seg.get(i).is_empty());
+                seg.set(i, vec![value]);
+                assert_eq!(seg.fold(0..n), initial[..=i]);
+            }
+            let mut arr: Vec<_> = initial.into_iter().map(|value| vec![value]).collect();
+            for append in [false, true] {
+                if append {
+                    for (i, values) in arr.iter_mut().enumerate() {
+                        let value = values[0] + 1;
+                        seg.update(i, vec![value]);
+                        values.push(value);
+                        assert_eq!(seg.get(i), *values);
+                    }
+                }
+                for (l, r) in (0..=n)
+                    .map(|i| (0, i))
+                    .chain((0..=n).map(|i| (i, n)))
+                    .chain(rng.random_iter(WithEmptySegment(n)).take(n))
+                {
+                    let expected: Vec<_> = arr[l..r].iter().flatten().copied().collect();
+                    assert_eq!(seg.fold(l..r), expected);
+                    assert_eq!(
+                        seg.partition_point_acc(l, |agg| expected.starts_with(agg)),
+                        r
+                    );
+                    assert_eq!(
+                        seg.rpartition_point_acc(r, |agg| expected.ends_with(agg)),
+                        l
+                    );
+                }
+            }
         }
     }
 }

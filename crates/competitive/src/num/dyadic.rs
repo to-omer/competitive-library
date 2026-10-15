@@ -185,19 +185,24 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::{Xorshift, testutil::integer_pairs};
 
     #[test]
     fn arithmetic_and_order() {
-        let mut rng = crate::tools::Xorshift::default();
-        for exponent in 0..=6 {
-            let pairs = crate::tools::testutil::structured_sequences(&mut rng, -128..=128, [2; 4]);
-            for pair in pairs {
-                for other_exponent in [0, exponent, 6] {
-                    let x = Dyadic::new(pair[0], exponent);
-                    let y = Dyadic::new(pair[1], other_exponent);
-                    let scaled = |v: Dyadic<i32>| v.numerator() << (6 - v.exponent());
-                    let a = pair[0] << (6 - exponent);
-                    let b = pair[1] << (6 - other_exponent);
+        let mut rng = Xorshift::default();
+        const MAX_EXPONENT: u32 = i32::BITS / 2;
+        let bound = i32::MAX >> (MAX_EXPONENT + 1);
+        for exponent in 0..=MAX_EXPONENT {
+            for (left, right) in integer_pairs(-bound..=bound).chain(
+                rng.random_iter((-bound..=bound, -bound..=bound))
+                    .take(60_000),
+            ) {
+                for other_exponent in [0, exponent, MAX_EXPONENT] {
+                    let x = Dyadic::new(left, exponent);
+                    let y = Dyadic::new(right, other_exponent);
+                    let scaled = |v: Dyadic<i32>| v.numerator() << (MAX_EXPONENT - v.exponent());
+                    let a = left << (MAX_EXPONENT - exponent);
+                    let b = right << (MAX_EXPONENT - other_exponent);
                     assert_eq!((scaled(x), scaled(y)), (a, b));
                     assert_eq!(x.cmp(&y), a.cmp(&b));
                     assert_eq!(scaled(x + y), a + b);
@@ -206,8 +211,8 @@ mod tests {
                     for v in [x, y, x + y, x - y, -x] {
                         assert!(v.exponent() == 0 || v.numerator() % 2 != 0);
                     }
-                    let wide = Dyadic::new(i64::from(pair[0]), exponent)
-                        + Dyadic::new(i64::from(pair[1]), other_exponent);
+                    let wide = Dyadic::new(i64::from(left), exponent)
+                        + Dyadic::new(i64::from(right), other_exponent);
                     assert_eq!(
                         (i64::from((x + y).numerator()), (x + y).exponent()),
                         (wide.numerator(), wide.exponent())

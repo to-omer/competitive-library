@@ -1284,10 +1284,10 @@ macro_rules! transducer {
 mod tests {
     use super::*;
     use crate::{
-        algebra::AdditiveOperation,
+        algebra::{AdditiveOperation, ConcatenateOperation},
         tools::{
             NotEmptySegment, ToDigitSequence, Xorshift,
-            testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+            testutil::{exhaustive_sequences, sequence_cases},
         },
     };
     use std::{collections::HashMap, iter::repeat_n};
@@ -1594,21 +1594,16 @@ mod tests {
             |_: &usize| true)
     }
 
-    fn transducer_inputs() -> Vec<Vec<usize>> {
-        let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 32, 0..=128, 100);
-        exhaustive_sequences(0..3, 0..=7)
-            .chain(
-                structured_sequences(&mut rng, 0..3, lengths)
-                    .map(|values| values.into_iter().map(|i| [0, 1, 10][i]).collect()),
-            )
-            .collect()
+    fn transducer_inputs(rng: &mut Xorshift) -> impl Iterator<Item = Vec<usize>> {
+        sequence_cases(rng, 0..=3, 0..=256)
+            .map(|values| values.into_iter().map(|i| [0, 1, 2, 10][i]).collect())
     }
 
     #[test]
     fn test_transducer_with_input() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1634,7 +1629,8 @@ mod tests {
     #[test]
     fn test_transducer_intersection() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1643,14 +1639,14 @@ mod tests {
                         Some(*sum)
                     })
                     .collect();
-                let base = sum_transducer(initial);
-                let mut intersection = base.clone().intersection(IdentityTransducer::new());
-                assert_eq!(intersection.start(), (initial, ()));
+                let other_initial = initial + 1;
+                let mut intersection =
+                    sum_transducer(initial).intersection(sum_transducer(other_initial));
+                assert_eq!(intersection.start(), (initial, other_initial));
                 assert_eq!(
                     trace(&mut intersection, inputs.iter().copied()),
                     sums.iter()
-                        .zip(&inputs)
-                        .map(|(&s, &x)| ((s, ()), (s, x)))
+                        .map(|&s| ((s, s + 1), (s, s + 1)))
                         .collect::<Vec<_>>()
                 );
             }
@@ -1660,7 +1656,8 @@ mod tests {
     #[test]
     fn test_transducer_product() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             let n = inputs.len();
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
@@ -1670,13 +1667,21 @@ mod tests {
                         Some(*sum)
                     })
                     .collect();
-                let base = sum_transducer(initial);
+                let other_initial = initial + 1;
                 let other: Vec<usize> = rng.random_iter(0..=10).take(n).collect();
-                let mut product = base.clone().product(AlwaysAcceptingTransducer::new());
-                assert_eq!(product.start(), (initial, ()));
+                let expected: Vec<_> = sums
+                    .iter()
+                    .zip(&other)
+                    .scan(other_initial, |sum, (&left, &right)| {
+                        *sum += right;
+                        Some(((left, *sum), (left, *sum)))
+                    })
+                    .collect();
+                let mut product = sum_transducer(initial).product(sum_transducer(other_initial));
+                assert_eq!(product.start(), (initial, other_initial));
                 assert_eq!(
                     trace(&mut product, inputs.iter().copied().zip(other)),
-                    sums.iter().map(|&s| ((s, ()), (s, ()))).collect::<Vec<_>>()
+                    expected
                 );
             }
         }
@@ -1685,7 +1690,8 @@ mod tests {
     #[test]
     fn test_transducer_chain() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1695,17 +1701,19 @@ mod tests {
                     })
                     .collect();
                 let base = sum_transducer(initial);
+                let other_initial = initial + 1;
                 for factor in (0..=2).chain([rng.random(0..=1024)]) {
-                    let mut chain = base.clone().chain(IdentityTransducer::new());
-                    assert_eq!(
-                        trace(&mut chain, inputs.iter().copied()),
-                        sums.iter().map(|&s| ((s, ()), s)).collect::<Vec<_>>()
-                    );
-                    let mut chain = base.clone().chain(transducer!(@map |x: &usize| x * factor));
+                    let mut chain = base
+                        .clone()
+                        .chain(sum_transducer(other_initial).map(|x: &usize| x * factor));
+                    assert_eq!(chain.start(), (initial, other_initial));
                     assert_eq!(
                         trace(&mut chain, inputs.iter().copied()),
                         sums.iter()
-                            .map(|&s| ((s, ()), s * factor))
+                            .scan(other_initial, |sum, &value| {
+                                *sum += value;
+                                Some(((value, *sum), *sum * factor))
+                            })
                             .collect::<Vec<_>>()
                     );
                 }
@@ -1716,7 +1724,8 @@ mod tests {
     #[test]
     fn test_transducer_map() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1728,12 +1737,17 @@ mod tests {
                 for factor in (0..=2).chain([rng.random(0..=1024)]) {
                     let mut mapped = transducer!((=> || initial,
                 |state: &usize, input: &usize| Some((state + input, state + input)),
-                |_: &usize| true) |> map(|x: &usize| x * factor));
+                |state: &usize| state.is_multiple_of(2)) |> map(|x: &usize| x * factor));
                     assert_eq!(mapped.start(), initial);
+                    assert_eq!(mapped.accept(&mapped.start()), initial.is_multiple_of(2));
+                    let actual = trace(&mut mapped, inputs.iter().copied());
                     assert_eq!(
-                        trace(&mut mapped, inputs.iter().copied()),
+                        actual,
                         sums.iter().map(|&s| (s, s * factor)).collect::<Vec<_>>()
                     );
+                    for (state, _) in actual {
+                        assert_eq!(mapped.accept(&state), state.is_multiple_of(2));
+                    }
                 }
             }
         }
@@ -1742,7 +1756,8 @@ mod tests {
     #[test]
     fn test_transducer_try_map() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1751,7 +1766,7 @@ mod tests {
                         Some(*sum)
                     })
                     .collect();
-                let base = sum_transducer(initial);
+                let base = sum_transducer(initial).accepting(|sum: &usize| sum.is_multiple_of(2));
                 for factor in (0..=2).chain([rng.random(0..=1024)]) {
                     let mut limits: Vec<_> = [initial]
                         .into_iter()
@@ -1765,12 +1780,20 @@ mod tests {
                             .clone()
                             .try_map(|x: &usize| (*x <= limit).then_some(x * factor));
                         assert_eq!(
-                            trace(&mut filtered, inputs.iter().copied()),
+                            filtered.accept(&filtered.start()),
+                            initial.is_multiple_of(2)
+                        );
+                        let actual = trace(&mut filtered, inputs.iter().copied());
+                        assert_eq!(
+                            actual,
                             sums.iter()
                                 .take_while(|&&s| s <= limit)
                                 .map(|&s| (s, s * factor))
                                 .collect::<Vec<_>>()
                         );
+                        for (state, _) in actual {
+                            assert_eq!(filtered.accept(&state), state.is_multiple_of(2));
+                        }
                     }
                 }
             }
@@ -1780,7 +1803,8 @@ mod tests {
     #[test]
     fn test_transducer_retain() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1789,7 +1813,7 @@ mod tests {
                         Some(*sum)
                     })
                     .collect();
-                let base = sum_transducer(initial);
+                let base = sum_transducer(initial).accepting(|sum: &usize| sum.is_multiple_of(2));
                 let mut limits: Vec<_> = [initial]
                     .into_iter()
                     .chain(sums.iter().copied())
@@ -1800,12 +1824,20 @@ mod tests {
                 for limit in limits {
                     let mut retained = base.clone().retain(|x: &usize| *x <= limit);
                     assert_eq!(
-                        trace(&mut retained, inputs.iter().copied()),
+                        retained.accept(&retained.start()),
+                        initial.is_multiple_of(2)
+                    );
+                    let actual = trace(&mut retained, inputs.iter().copied());
+                    assert_eq!(
+                        actual,
                         sums.iter()
                             .take_while(|&&s| s <= limit)
                             .map(|&s| (s, s))
                             .collect::<Vec<_>>()
                     );
+                    for (state, _) in actual {
+                        assert_eq!(retained.accept(&state), state.is_multiple_of(2));
+                    }
                 }
             }
         }
@@ -1814,7 +1846,8 @@ mod tests {
     #[test]
     fn test_transducer_try_map_input() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 for factor in (0..=2).chain([rng.random(0..=1024)]) {
                     let mut limits: Vec<_> = [initial]
@@ -1845,25 +1878,27 @@ mod tests {
     #[test]
     fn test_transducer_with_fold() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
-                let sums: Vec<_> = inputs
+                let expected: Vec<_> = inputs
                     .iter()
-                    .scan(initial, |sum, x| {
+                    .scan((0, initial), |(sum, acc), x| {
                         *sum += x;
-                        Some(*sum)
+                        *acc += *sum;
+                        Some(((*sum, *acc), *sum))
                     })
                     .collect();
-                let mut folded =
-                    transducer!(@id |> with_fold(initial, |acc: &usize, x: &usize| acc + x));
-                assert_eq!(folded.start(), ((), initial));
-                assert_eq!(
-                    trace(&mut folded, inputs.iter().copied()),
-                    sums.iter()
-                        .zip(&inputs)
-                        .map(|(&s, &x)| (((), s), x))
-                        .collect::<Vec<_>>()
-                );
+                let mut folded = sum_transducer(0)
+                    .accepting(|sum: &usize| sum.is_multiple_of(2))
+                    .with_fold(initial, |acc: &usize, x: &usize| acc + x);
+                assert_eq!(folded.start(), (0, initial));
+                assert!(folded.accept(&folded.start()));
+                let actual = trace(&mut folded, inputs.iter().copied());
+                assert_eq!(actual, expected);
+                for (state, _) in actual {
+                    assert_eq!(folded.accept(&state), state.0.is_multiple_of(2));
+                }
             }
         }
     }
@@ -1871,33 +1906,44 @@ mod tests {
     #[test]
     fn test_transducer_with_try_fold() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
-                let sums: Vec<_> = inputs
+                let expected: Vec<_> = inputs
                     .iter()
-                    .scan(initial, |sum, x| {
+                    .scan((0, initial), |(sum, acc), x| {
                         *sum += x;
-                        Some(*sum)
+                        *acc += *sum;
+                        Some(((*sum, *acc), *sum))
                     })
                     .collect();
                 let mut limits: Vec<_> = [initial]
                     .into_iter()
-                    .chain(sums.iter().copied())
+                    .chain(expected.iter().map(|&((_, acc), _)| acc))
                     .flat_map(|s| [s.saturating_sub(1), s, s + 1])
                     .collect();
                 limits.sort_unstable();
                 limits.dedup();
                 for limit in limits {
-                    let mut folded = transducer!(@id |> with_try_fold(initial, |acc: &usize, x: &usize| (acc + x <= limit).then_some(acc + x)));
-                    assert_eq!(folded.start(), ((), initial));
+                    let mut folded = sum_transducer(0)
+                        .accepting(|sum: &usize| sum.is_multiple_of(2))
+                        .with_try_fold(initial, |acc: &usize, x: &usize| {
+                            (acc + x <= limit).then_some(acc + x)
+                        });
+                    assert_eq!(folded.start(), (0, initial));
+                    assert!(folded.accept(&folded.start()));
+                    let actual = trace(&mut folded, inputs.iter().copied());
                     assert_eq!(
-                        trace(&mut folded, inputs.iter().copied()),
-                        sums.iter()
-                            .zip(&inputs)
-                            .take_while(|&(&s, _)| s <= limit)
-                            .map(|(&s, &x)| (((), s), x))
+                        actual,
+                        expected
+                            .iter()
+                            .copied()
+                            .take_while(|&((_, acc), _)| acc <= limit)
                             .collect::<Vec<_>>()
                     );
+                    for (state, _) in actual {
+                        assert_eq!(folded.accept(&state), state.0.is_multiple_of(2));
+                    }
                 }
             }
         }
@@ -1906,7 +1952,8 @@ mod tests {
     #[test]
     fn test_transducer_accepting() {
         let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             for initial in (0..=2).chain([rng.random(0..=1024)]) {
                 let sums: Vec<_> = inputs
                     .iter()
@@ -1915,7 +1962,7 @@ mod tests {
                         Some(*sum)
                     })
                     .collect();
-                let base = sum_transducer(initial);
+                let base = sum_transducer(initial).accepting(|sum: &usize| sum.is_multiple_of(2));
                 let mut limits: Vec<_> = [initial]
                     .into_iter()
                     .chain(sums.iter().copied())
@@ -1926,11 +1973,17 @@ mod tests {
                 for limit in limits {
                     let accepting = base.clone().accepting(|state: &usize| *state >= limit);
                     let mut state = accepting.start();
-                    assert_eq!(accepting.accept(&state), initial >= limit);
+                    assert_eq!(
+                        accepting.accept(&state),
+                        initial.is_multiple_of(2) && initial >= limit
+                    );
                     for (&x, &sum) in inputs.iter().zip(&sums) {
                         let (next, output) = accepting.relation(&state, &x).unwrap();
                         assert_eq!((next, output), (sum, sum));
-                        assert_eq!(accepting.accept(&next), sum >= limit);
+                        assert_eq!(
+                            accepting.accept(&next),
+                            sum.is_multiple_of(2) && sum >= limit
+                        );
                         state = next;
                     }
                 }
@@ -1975,7 +2028,8 @@ mod tests {
 
     #[test]
     fn test_transducer_iterator() {
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             let n = inputs.len();
             let mut iter = IteratorTransducer::<_, ()>::new(inputs.iter().copied());
             assert_eq!(
@@ -1988,32 +2042,25 @@ mod tests {
 
     #[test]
     fn test_transducer_monoidal() {
-        let mut rng = Xorshift::default();
-        for inputs in transducer_inputs() {
-            for initial in (0..=2).chain([rng.random(0..=1024)]) {
-                let sums: Vec<_> = inputs
-                    .iter()
-                    .scan(initial, |sum, x| {
-                        *sum += x;
-                        Some(*sum)
-                    })
-                    .collect();
-                let mut monoidal = MonoidalTransducer::<AdditiveOperation<usize>>::new();
-                assert_eq!(
-                    trace(&mut monoidal, inputs.iter().copied()),
-                    sums.iter().map(|&s| (s - initial, ())).collect::<Vec<_>>()
-                );
-                assert!(monoidal.accept(&0));
-                for &sum in &sums {
-                    assert!(monoidal.accept(&sum));
-                }
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
+            let monoidal = MonoidalTransducer::<ConcatenateOperation<usize>>::new();
+            let mut state = monoidal.start();
+            assert!(state.is_empty());
+            assert!(monoidal.accept(&state));
+            for (i, &x) in inputs.iter().enumerate() {
+                let (next, ()) = monoidal.relation(&state, &vec![x]).unwrap();
+                assert_eq!(next, inputs[..=i]);
+                assert!(monoidal.accept(&next));
+                state = next;
             }
         }
     }
 
     #[test]
     fn test_transducer_always_accepting() {
-        for inputs in transducer_inputs() {
+        let mut input_rng = Xorshift::default();
+        for inputs in transducer_inputs(&mut input_rng) {
             let n = inputs.len();
             let mut always = transducer!(@<usize>);
             assert_eq!(
@@ -2036,23 +2083,23 @@ mod tests {
         }
         for inputs in cases {
             for n in 0..=6 {
-                for divisor in 1..=10 {
-                    let mut dp = transducer!(=> || 0usize,
+                let mut dp = transducer!(=> || 0usize,
                 |state: &usize, input: &usize| Some((state + input, state + input)),
-                |_: &usize| true)
-                    .with_input()
-                    .dp::<M>(1)
-                    .with_hashmap();
-                    let mut expected = vec![0usize];
-                    for _ in 0..n {
-                        dp.step(|| inputs.iter().copied());
-                        expected = expected
-                            .iter()
-                            .flat_map(|&s| inputs.iter().map(move |&x| s + x))
-                            .collect();
-                    }
+                |state: &usize| state.is_multiple_of(2))
+                .with_input()
+                .dp::<M>(1)
+                .with_hashmap();
+                let mut expected = vec![0usize];
+                for _ in 0..n {
+                    dp.step(|| inputs.iter().copied());
+                    expected = expected
+                        .iter()
+                        .flat_map(|&s| inputs.iter().map(move |&x| s + x))
+                        .collect();
+                }
+                for divisor in 1..=10 {
                     let mut histogram = HashMap::new();
-                    for sum in expected {
+                    for sum in expected.iter().filter(|sum| sum.is_multiple_of(2)) {
                         *histogram.entry(sum % divisor).or_insert(0) += 1;
                     }
                     assert_eq!(

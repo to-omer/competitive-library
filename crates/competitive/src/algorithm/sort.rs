@@ -293,23 +293,14 @@ where
 mod tests {
     use super::*;
     use crate::tools::{
-        Xorshift,
-        testutil::{exhaustive_sequences, sample_usize},
+        Xorshift, spec,
+        testutil::{sample_usize, sequence_cases},
     };
 
     #[test]
     fn test_comparison_sorts() {
         let mut rng = Xorshift::default();
-        let mut cases: Vec<_> = exhaustive_sequences(-1..=1, 0..=8).collect();
-        for n in sample_usize(&mut rng, 16, 0..=3000, 100) {
-            let bound = rng.random(0..=1000i32);
-            let values: Vec<_> = rng.random_iter(-bound..=bound).take(n).collect();
-            cases.push(vec![0; n]);
-            cases.push((0..n as i32).collect());
-            cases.push((0..n as i32).rev().collect());
-            cases.push(values);
-        }
-        for values in cases {
+        for values in sequence_cases(&mut rng, -1000..=1000, 0..=3072) {
             let mut expected = values.clone();
             expected.sort();
             let mut actual = values.clone();
@@ -328,7 +319,7 @@ mod tests {
     fn test_large_comparison_sorts() {
         let mut rng = Xorshift::default();
         for n in sample_usize(&mut rng, 16, 0..=100_000, 10) {
-            let values: Vec<i32> = rng.random_iter(..).take(n).collect();
+            let values: Vec<i32> = rng.random(spec(..).vec(n));
             let mut expected = values.clone();
             expected.sort();
             let mut actual = values.clone();

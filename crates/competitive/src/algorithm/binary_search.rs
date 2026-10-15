@@ -139,30 +139,16 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::algorithm::SliceCombinationsExt;
     use crate::tools::{
         Xorshift,
-        testutil::{integer_boundary_values, sample_usize, structured_sequences},
+        testutil::{integer_boundary_values, sequence_cases},
     };
 
     #[test]
     fn test_slice_bisect() {
         let mut rng = Xorshift::default();
-        let mut cases = Vec::new();
-        // Every sorted sequence over {-1, 0, 1}, without enumerating its permutations.
-        for n in 0..=32 {
-            [-1, 0, 1].for_each_combinations_with_replacement(n, |xs| cases.push(xs.to_vec()));
-        }
-        let lengths = sample_usize(&mut rng, 32, 0..=1024, 1000);
-        cases.extend(
-            structured_sequences(&mut rng, -10..=10, lengths).map(|mut values| {
-                values.sort_unstable();
-                values
-            }),
-        );
-        cases.sort_unstable();
-        cases.dedup();
-        for values in cases {
+        for mut values in sequence_cases(&mut rng, -10..=10, 0..=262_144) {
+            values.sort_unstable();
             let n = values.len();
             let mut first = 0;
             let mut end = 0;

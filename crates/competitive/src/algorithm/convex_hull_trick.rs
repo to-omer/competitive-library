@@ -81,6 +81,12 @@ where
         } else if let Some(l) = self.deq.back()
             && l.slope >= a
         {
+            if l.slope == a {
+                if l.intercept <= b {
+                    return;
+                }
+                self.deq.pop_back();
+            }
             let line = ChtLine::new(a, b);
             while {
                 let k = self.deq.len();
@@ -92,6 +98,12 @@ where
         } else if let Some(l) = self.deq.front()
             && l.slope <= a
         {
+            if l.slope == a {
+                if l.intercept <= b {
+                    return;
+                }
+                self.deq.pop_front();
+            }
             let line = ChtLine::new(a, b);
             while {
                 let k = self.deq.len();
@@ -146,16 +158,21 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::Xorshift;
+    use crate::tools::{Xorshift, spec, testutil::exhaustive_sequences};
     const A: i64 = 1_000_000_000;
 
     #[test]
     fn test_convex_hull_trick() {
+        let mut input_rng = Xorshift::default();
         let mut rng = Xorshift::default();
-        for _ in 0..200 {
-            let q = rng.random(1..200);
-            let mut lines: Vec<_> = rng.random_iter((-A..=A, -A..=A)).take(q).collect();
-            let mut xs: Vec<_> = rng.random_iter(-A..=A).take(q).collect();
+        let alphabet = (-1..=1).flat_map(|a| (-1..=1).map(move |b| (a, b)));
+        let cases = exhaustive_sequences(alphabet, 1..=3).chain(
+            input_rng
+                .random_iter(spec((-A..=A, -A..=A)).vec(1..=1024))
+                .take(200),
+        );
+        for mut lines in cases {
+            let mut xs: Vec<_> = rng.random_iter(-A..=A).take(lines.len()).collect();
             for lty in 0..2 {
                 if lty == 0 {
                     lines.sort_unstable_by_key(|&(a, _)| -a);
@@ -178,6 +195,12 @@ mod tests {
                         let result = cht.query_min(x);
                         let expected = lines[..=i].iter().map(|&(a, b)| a * x + b).min().unwrap();
                         assert_eq!(result, expected);
+                    }
+                    if qty == 0 {
+                        for x in -1..=1 {
+                            let expected = lines.iter().map(|&(a, b)| a * x + b).min().unwrap();
+                            assert_eq!(cht.query_min(x), expected);
+                        }
                     }
                 }
             }

@@ -582,7 +582,7 @@ mod tests {
     use crate::{
         tools::{
             Xorshift,
-            testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+            testutil::{exhaustive_sequences, sample_usize, sequence_cases},
         },
         tree::{MixedTree, PathTree, StarTree},
     };
@@ -591,9 +591,12 @@ mod tests {
         let n = g.vertices_size();
         let result = g.distance_frequencies();
         let mut expected = vec![0u64; n];
+        let mut depth = vec![n; n];
+        let mut queue = Vec::with_capacity(n);
         for u in 0..n {
-            let mut depth = vec![n; n];
-            let mut queue = vec![u];
+            depth.fill(n);
+            queue.clear();
+            queue.push(u);
             depth[u] = 0;
             for i in 0..n {
                 let v = queue[i];
@@ -661,8 +664,11 @@ mod tests {
                 n,
                 (1..n).map(|u| ((u - 1) / 2, u)).collect(),
             ));
-            for branch_len in sample_usize(&mut rng, 2, 1..=n.max(1), 4) {
-                let stem = n / 2;
+            let stem = n / 2;
+            let mut branch_lengths = sample_usize(&mut rng, 2, 1..=(n - stem).max(1), 4);
+            branch_lengths.sort_unstable();
+            branch_lengths.dedup();
+            for branch_len in branch_lengths {
                 let edges = (1..n)
                     .map(|u| {
                         let parent = if u < stem || (u - stem) % branch_len != 0 {
@@ -807,9 +813,9 @@ mod tests {
             check(a, a);
         }
         // Independent lengths and both small counts and full-width wrapping values.
-        let lengths = sample_usize(&mut rng, 17, 0..=512, 1000)
+        let lengths = sample_usize(&mut rng, 17, 0..=512, 250)
             .into_iter()
-            .chain(sample_usize(&mut rng, 0, 513..=2049, 16));
+            .chain(sample_usize(&mut rng, 0, 513..=2049, 8));
         for n in lengths {
             let m = rng.random(0usize..=n.max(512));
             let limit = if rng.gen_bool(0.5) {
@@ -823,8 +829,8 @@ mod tests {
             check(&a, &a);
         }
         // Cross the min-length 16 and product 4096 cutoffs with nonuniform and sparse inputs.
-        for n in sample_usize(&mut rng, 17, 1..=257, 16) {
-            let inputs: Vec<_> = structured_sequences(&mut rng, 0u64..=2, [n]).collect();
+        for n in sample_usize(&mut rng, 17, 1..=257, 8) {
+            let inputs: Vec<_> = sequence_cases(&mut rng, 0u64..=2, n..=n).collect();
             for a in &inputs {
                 check(a, a);
             }

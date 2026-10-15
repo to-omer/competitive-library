@@ -415,18 +415,15 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+    use crate::tools::testutil::sequence_cases;
     use crate::tools::{WithEmptySegment as Wes, Xorshift};
     use std::collections::{BTreeMap, BTreeSet};
 
     #[test]
     fn test_longest_common_prefix_and_compare() {
-        let mut rng = Xorshift::default();
+        let mut input_rng = Xorshift::default();
         let mut query_rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut input_rng, 0..=9, 0..=8192) {
             let n = s.len();
             let search = StringSearch::new(s.clone());
             if n == 0 {
@@ -459,12 +456,9 @@ mod tests {
 
     #[test]
     fn test_range() {
-        let mut rng = Xorshift::default();
+        let mut input_rng = Xorshift::default();
         let mut query_rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut input_rng, 0..=9, 0..=1024) {
             let n = s.len();
             let csize = 10;
             let search = StringSearch::new(s.clone());
@@ -515,10 +509,7 @@ mod tests {
     #[test]
     fn test_kth_substring() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=160) {
             let n = s.len();
             let search = StringSearch::new(s.clone());
             let kth = search.kth_substrings();

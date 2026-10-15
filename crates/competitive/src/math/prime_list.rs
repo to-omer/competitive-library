@@ -619,7 +619,7 @@ mod tests {
     use crate::math::prime_factors;
     use crate::tools::{
         Xorshift,
-        testutil::{exhaustive_sequences, sample_usize, structured_sequences},
+        testutil::{sample_usize, sequence_cases},
     };
     use std::collections::VecDeque;
 
@@ -736,7 +736,8 @@ mod tests {
     #[test]
     fn test_prime_iterator() {
         let mut rng = Xorshift::default();
-        for n in sample_usize(&mut rng, 128, 0..=10_000, 300) {
+        let mut input_rng = Xorshift::default();
+        for n in sample_usize(&mut input_rng, PERIOD as usize + 1, 0..=10_000, 300) {
             let pl = PrimeList::new(n as u32);
             let expected: Vec<_> = primes(n).into_iter().map(|p| p as u32).collect();
             for skip in (0..=expected.len().min(16)).chain([expected.len(), expected.len() + 1]) {
@@ -766,12 +767,7 @@ mod tests {
                     );
                 }
             }
-            let directions: Vec<Vec<_>> = if n <= 20 {
-                exhaustive_sequences(0..2, expected.len()..=expected.len()).collect()
-            } else {
-                structured_sequences(&mut rng, 0..2, [expected.len()]).collect()
-            };
-            for directions in directions {
+            for directions in sequence_cases(&mut rng, 0..=1, expected.len()..=expected.len()) {
                 let mut queue = VecDeque::from(expected.clone());
                 let mut iter = pl.primes();
                 for back in directions.into_iter().map(|i| i != 0) {

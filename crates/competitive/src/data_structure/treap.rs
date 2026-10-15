@@ -288,6 +288,11 @@ where
     L: LazyMapMonoid,
     A: Allocator<TreapNode<M, L>>,
 {
+    pub fn with_rng(mut self, rng: Xorshift) -> Self {
+        self.rng = rng;
+        self
+    }
+
     pub fn len(&self) -> usize {
         self.node_id_manager.len()
     }
@@ -511,7 +516,8 @@ mod tests {
     fn test_treap() {
         const A: i64 = 100;
         let mut rng = Xorshift::default();
-        let mut treap = Treap::<FlattenAct<AdditiveOperation<i64>>, RangeMaxRangeAdd<i64>>::new();
+        let mut treap = Treap::<FlattenAct<AdditiveOperation<i64>>, RangeMaxRangeAdd<i64>>::new()
+            .with_rng(Xorshift::default());
         let mut node_ids = vec![];
         let mut data = vec![];
         for _ in 0..10000 {
@@ -600,7 +606,8 @@ mod tests {
             }
         }
 
-        let mut treap = Treap::<EmptyAct<i64>, RangeSumRangeAdd<i64>>::new();
+        let mut treap =
+            Treap::<EmptyAct<i64>, RangeSumRangeAdd<i64>>::new().with_rng(Xorshift::default());
         let mut node_ids = vec![];
         let mut data = vec![];
         for _ in 0..10000 {

@@ -603,16 +603,13 @@ where
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+    use crate::tools::testutil::sequence_cases;
     use std::collections::{BTreeMap, BTreeSet};
 
     #[test]
     fn test_suffix_tree_substrings() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=384) {
             let n = s.len();
             let st = SuffixTree::new(s.clone());
             let mut substrings = vec![];
@@ -648,10 +645,7 @@ mod tests {
     #[test]
     fn test_suffix_tree_distinct_substrings() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=256) {
             let n = s.len();
             let st = SuffixTree::new(s.clone());
             let mut substrings = vec![];
@@ -688,10 +682,7 @@ mod tests {
     #[test]
     fn test_suffix_tree_kth_distinct_substring() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=60, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=160) {
             let n = s.len();
             let st = SuffixTree::new(s.clone());
             let kth = st.kth_substrings();
@@ -725,23 +716,18 @@ mod tests {
     #[test]
     fn test_suffix_tree_kth_substring() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=60, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=192) {
             let st = SuffixTree::new(s.clone());
             let kth = st.kth_substrings();
 
-            let mut substrings = Vec::new();
-            for node_id in 1..st.node_size() {
-                let node = st.node(node_id);
-                for depth in st.depth_range(node_id) {
-                    for sa_idx in node.sa_range.clone() {
-                        let start = st.suffix_array[sa_idx];
-                        substrings.push(start..start + depth);
-                    }
-                }
-            }
+            let mut substrings: Vec<_> = (0..s.len())
+                .flat_map(|start| (start + 1..=s.len()).map(move |end| start..end))
+                .collect();
+            substrings.sort_unstable_by(|a, b| {
+                s[a.clone()]
+                    .cmp(&s[b.clone()])
+                    .then_with(|| s[a.start..].cmp(&s[b.start..]))
+            });
 
             for (k, range) in substrings.iter().enumerate() {
                 let got = kth.kth_substring(k as u64).unwrap();
@@ -920,17 +906,21 @@ mod tests {
             let st = MultipleSuffixTree::new(texts.clone());
             let kth = st.kth_substrings();
 
-            let mut substrings = Vec::new();
-            for node_id in 1..st.node_size() {
-                let node = st.node(node_id);
-                for depth in st.depth_range(node_id) {
-                    for sa_idx in node.sa_range.clone() {
-                        let start = st.suffix_array()[sa_idx];
-                        let (text_idx, pos) = st.position_map()[start];
-                        substrings.push((text_idx, pos..pos + depth));
-                    }
-                }
-            }
+            let mut substrings: Vec<_> = texts
+                .iter()
+                .enumerate()
+                .flat_map(|(i, s)| {
+                    (0..s.len()).flat_map(move |start| {
+                        (start + 1..=s.len()).map(move |end| (i, start..end))
+                    })
+                })
+                .collect();
+            substrings.sort_unstable_by(|(i, a), (j, b)| {
+                texts[*i][a.clone()]
+                    .cmp(&texts[*j][b.clone()])
+                    .then_with(|| texts[*i][a.start..].cmp(&texts[*j][b.start..]))
+                    .then_with(|| j.cmp(i))
+            });
 
             for (idx, (text_idx, range)) in substrings.iter().enumerate() {
                 let got = kth.kth_substring(idx as u64).unwrap();

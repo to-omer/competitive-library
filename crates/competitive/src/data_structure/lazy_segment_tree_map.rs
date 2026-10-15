@@ -144,6 +144,9 @@ where
         R: RangeBounds<usize>,
     {
         let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        if range.is_empty() {
+            return M::agg_unit();
+        }
         let mut l = range.start + self.n;
         let mut r = range.end + self.n;
         self.propagate(l, false, true);
@@ -334,7 +337,10 @@ mod tests {
     use crate::{
         algebra::{RangeMaxRangeUpdate, RangeSumRangeAdd},
         rand,
-        tools::{NotEmptySegment, Xorshift},
+        tools::{
+            NotEmptySegment, WithEmptySegment, Xorshift,
+            testutil::{ConcatUpdate, sequence_cases},
+        },
     };
 
     const N: usize = 1_000;
@@ -436,6 +442,94 @@ mod tests {
             rand!(rng, k: 0..N);
             assert_eq!(seg.get(k), arr[k]);
             assert_eq!(seg.fold_all(), *arr.iter().max().unwrap());
+        }
+    }
+
+    #[test]
+    fn test_lazy_segment_tree_map_concat() {
+        let mut input_rng = Xorshift::default();
+        let mut rng = Xorshift::default();
+        for mut arr in sequence_cases(&mut input_rng, -A..=A, 0..=256) {
+            let n = arr.len();
+            let mut seg = LazySegmentTreeMap::<ConcatUpdate>::new(n);
+            assert!(seg.fold_all().is_empty());
+            assert_eq!(seg.partition_point_acc(0, |agg| agg.is_empty()), n);
+            assert_eq!(seg.rpartition_point_acc(n, |agg| agg.is_empty()), 0);
+            let gap = n / 3..2 * n / 3;
+            let sparse_values: Vec<_> = arr
+                .iter()
+                .copied()
+                .enumerate()
+                .filter(|(i, _)| !gap.contains(i))
+                .collect();
+            for &(i, value) in &sparse_values {
+                assert!(seg.get(i).is_empty());
+                seg.set(i, vec![value]);
+            }
+            for (l, r) in (0..=n)
+                .map(|i| (0, i))
+                .chain((0..=n).map(|i| (i, n)))
+                .chain(rng.random_iter(WithEmptySegment(n)).take(n))
+            {
+                let start = sparse_values.partition_point(|&(i, _)| i < l);
+                let end = sparse_values.partition_point(|&(i, _)| i < r);
+                let expected: Vec<_> = sparse_values[start..end]
+                    .iter()
+                    .map(|&(_, value)| value)
+                    .collect();
+                let next = sparse_values.get(end).map_or(n, |&(i, _)| i);
+                let previous = sparse_values[..start].last().map_or(0, |&(i, _)| i + 1);
+                assert_eq!(seg.fold(l..r), expected);
+                assert_eq!(
+                    seg.partition_point_acc(l, |agg| expected.starts_with(agg)),
+                    next
+                );
+                assert_eq!(
+                    seg.rpartition_point_acc(r, |agg| expected.ends_with(agg)),
+                    previous
+                );
+            }
+            for (i, &value) in arr.iter().enumerate().take(gap.end).skip(gap.start) {
+                assert!(seg.get(i).is_empty());
+                seg.set(i, vec![value]);
+            }
+            assert_eq!(seg.fold_all(), arr);
+            for change in [false, true] {
+                if change {
+                    let first = rng.random(-A..A);
+                    let second = rng.random(first + 1..=A);
+                    seg.update(0..n, Some(first));
+                    arr.fill(first);
+                    seg.update(n / 2..n, Some(second));
+                    arr[n / 2..].fill(second);
+                    seg.update(n / 2..n / 2, Some(first - 1));
+                    if n != 0 {
+                        let index = rng.random(0..n);
+                        seg.set(index, vec![second + 1]);
+                        arr[index] = second + 1;
+                    }
+                    seg.update(0..n, None);
+                }
+                for (l, r) in (0..=n)
+                    .map(|i| (0, i))
+                    .chain((0..=n).map(|i| (i, n)))
+                    .chain(rng.random_iter(WithEmptySegment(n)).take(n))
+                {
+                    let expected = &arr[l..r];
+                    assert_eq!(seg.fold(l..r), expected);
+                    assert_eq!(
+                        seg.partition_point_acc(l, |agg| expected.starts_with(agg)),
+                        r
+                    );
+                    assert_eq!(
+                        seg.rpartition_point_acc(r, |agg| expected.ends_with(agg)),
+                        l
+                    );
+                }
+                for (i, &value) in arr.iter().enumerate() {
+                    assert_eq!(seg.get(i), vec![value]);
+                }
+            }
         }
     }
 }

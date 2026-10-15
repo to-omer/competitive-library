@@ -110,15 +110,12 @@ impl Extend<usize> for SuffixAutomaton {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+    use crate::tools::testutil::sequence_cases;
 
     #[test]
     fn test_suffix_automaton() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=512) {
             let n = s.len();
             let sa = SuffixAutomaton::from_iter(s.iter().cloned());
             let mut len = vec![0; sa.state_size()];
@@ -143,10 +140,7 @@ mod tests {
     #[test]
     fn test_number_of_substrings() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..10, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=9, 0..=192) {
             let n = s.len();
             let sa = SuffixAutomaton::from_iter(s.iter().cloned());
             let mut substrings = std::collections::HashSet::new();

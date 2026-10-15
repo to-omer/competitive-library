@@ -223,15 +223,12 @@ fn sa_is(s: &[usize], upper: usize) -> Vec<usize> {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    use crate::tools::testutil::{exhaustive_sequences, sample_usize, structured_sequences};
+    use crate::tools::testutil::sequence_cases;
 
     #[test]
     fn test_suffix_array() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=100, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..20, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=19, 0..=4_096) {
             let n = s.len();
             let sa = SuffixArray::new(&s);
             let mut suffixes: Vec<_> = (0..=n).collect();
@@ -243,10 +240,7 @@ mod tests {
     #[test]
     fn test_lcp_array() {
         let mut rng = Xorshift::default();
-        let lengths = sample_usize(&mut rng, 16, 0..=80, 100);
-        for s in
-            exhaustive_sequences(0..3, 0..=8).chain(structured_sequences(&mut rng, 0..20, lengths))
-        {
+        for s in sequence_cases(&mut rng, 0..=19, 0..=3_072) {
             let n = s.len();
             let suffix_array = SuffixArray::new(&s);
             let (lcp_array, rank) = suffix_array.lcp_array_with_rank(&s);
