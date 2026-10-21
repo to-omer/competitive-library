@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Entry","FixedVecMapFactory","VecMap","VecMapFactory","VecMapFactoryWithCapacity"]};
+window.SIDEBAR_ITEMS = {"struct":["Entry","VecMap"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BTreeMapDrain","BTreeMapFactory","HashMapFactory","HashMapFactoryWithCapacity"],"trait":["Container","ContainerEntry","ContainerFactory"]};
+window.SIDEBAR_ITEMS = {"struct":["BTreeMapDrain"],"trait":["Container","ContainerEntry"]};

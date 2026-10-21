@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["count_multiples_with_digits","count_words_with_remainder","digit_sum_count_and_sum","digit_sum_queries"]};
