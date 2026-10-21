@@ -3,10 +3,11 @@
 use crate::algebra::{
     AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapAct,
     LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma, MaxOperation, MinOperation, Monoid,
-    MonoidAct, SemiGroup, Unital,
+    MonoidAct, SemiGroup, SemiRing, Unital,
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceSortExt};
-use crate::num::{Bounded, IntBase, RangeBoundsExt, Zero};
+use crate::math::Matrix;
+use crate::num::{Bounded, IntBase, One, RangeBoundsExt, Saturating, Unsigned, Zero};
 #[cfg(target_arch = "x86_64")]
 use crate::tools::avx512_enabled;
 use crate::tools::{Comparator, SimdBackend, Xorshift, comparator, simd_backend};
@@ -40,10 +41,7 @@ pub use self::compressed_segment_tree::{
     CompressedSegmentTree3d, CompressedSegmentTree4d,
 };
 #[codesnip::entry("container")]
-pub use self::container::{
-    BTreeMapFactory, Container, ContainerEntry, ContainerFactory, HashMapFactory,
-    HashMapFactoryWithCapacity,
-};
+pub use self::container::{Container, ContainerEntry};
 #[codesnip::entry("Counter")]
 pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DaryHeap")]
@@ -121,6 +119,8 @@ pub use self::static_search::{SimdKey, StaticSearch};
 pub use self::submask_range_query::SubmaskRangeQuery;
 #[codesnip::entry("transducer")]
 pub use self::transducer::*;
+#[codesnip::entry("TransitionTable")]
+pub use self::transition_table::{SuffixCounts, TransitionTable};
 #[codesnip::entry("Treap")]
 pub use self::treap::{Treap, TreapData};
 #[codesnip::entry("Trie")]
@@ -130,7 +130,7 @@ pub use self::union_find::{
     MergingUnionFind, PotentializedUnionFind, UndoableUnionFind, UnionFind, UnionFindBase,
 };
 #[codesnip::entry("VecMap")]
-pub use self::vec_map::{FixedVecMapFactory, VecMap, VecMapFactory, VecMapFactoryWithCapacity};
+pub use self::vec_map::VecMap;
 #[codesnip::entry("WaveletMatrix")]
 pub use self::wavelet_matrix::{WaveletMatrix, WaveletMatrixPointAdd};
 
@@ -321,12 +321,15 @@ mod static_search;
 pub mod submask_range_query;
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "transducer",
-        include("algebra", "container", "VecMap", "digit_sequence")
-    )
+    codesnip::entry("transducer", include("AdditiveOperation", "container"))
 )]
 mod transducer;
+pub mod transducer_examples;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("TransitionTable", include("transducer", "integer", "Matrix"))
+)]
+mod transition_table;
 #[cfg_attr(
     nightly,
     codesnip::entry("Treap", include("binary_search_tree", "Xorshift"))

@@ -298,7 +298,7 @@ where
     }
 
     /// Apply a permutation to the elements.
-    /// self[i] <- self[p[i]] for each i
+    /// `self[i] <- self[p[i]]` for each `i`.
     fn apply_permutation(&mut self, p: &[usize]) {
         assert_eq!(self.len(), p.len());
         let mut visited = vec![false; self.len()];

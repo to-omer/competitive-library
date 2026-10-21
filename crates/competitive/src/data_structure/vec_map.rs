@@ -1,32 +1,12 @@
-use super::{Container, ContainerEntry, ContainerFactory};
+use super::{Container, ContainerEntry};
 use std::{
     fmt::{self, Debug},
-    iter::{FilterMap, Map, repeat_with},
-    marker::PhantomData,
+    iter::{FilterMap, Flatten, Map, repeat_with},
     mem::replace,
     slice,
 };
 
-#[derive(Debug, Clone)]
-pub struct VecMapFactory<K, V, F> {
-    key_to_index: F,
-    _marker: PhantomData<fn() -> (K, V)>,
-}
-
-#[derive(Debug, Clone)]
-pub struct FixedVecMapFactory<K, V, F> {
-    key_to_index: F,
-    len: usize,
-    _marker: PhantomData<fn() -> (K, V)>,
-}
-
-#[derive(Debug, Clone)]
-pub struct VecMapFactoryWithCapacity<K, V, F> {
-    key_to_index: F,
-    capacity: usize,
-    _marker: PhantomData<fn() -> (K, V)>,
-}
-
+/// Stores keys at distinct indices supplied by `key_to_index`.
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VecMap<const FIXED: bool, K, V, F> {
     pub data: Vec<Option<(K, V)>>,
@@ -51,73 +31,34 @@ pub struct Entry<'a, K, V> {
     entry: &'a mut Option<(K, V)>,
 }
 
-impl<K, V, F> VecMapFactory<K, V, F> {
-    pub fn new(key_to_index: F) -> Self {
+impl<K, V, F> VecMap<false, K, V, F> {
+    pub fn new(key_to_index: F) -> Self
+    where
+        F: Fn(&K) -> usize,
+    {
+        Self::with_capacity(0, key_to_index)
+    }
+
+    pub fn with_capacity(capacity: usize, key_to_index: F) -> Self
+    where
+        F: Fn(&K) -> usize,
+    {
         Self {
+            data: Vec::with_capacity(capacity),
             key_to_index,
-            _marker: PhantomData,
         }
     }
 }
 
-impl<K, V, F> ContainerFactory for VecMapFactory<K, V, F>
-where
-    F: Fn(&K) -> usize + Clone,
-{
-    type Container = VecMap<false, K, V, F>;
-
-    fn create_container(&self) -> Self::Container {
-        VecMap {
-            data: Vec::new(),
-            key_to_index: self.key_to_index.clone(),
-        }
-    }
-}
-
-impl<K, V, F> FixedVecMapFactory<K, V, F> {
-    pub fn new(key_to_index: F, len: usize) -> Self {
+impl<K, V, F> VecMap<true, K, V, F> {
+    /// Fixed storage: every key's index must be in `0..len`.
+    pub fn with_len(len: usize, key_to_index: F) -> Self
+    where
+        F: Fn(&K) -> usize,
+    {
         Self {
+            data: repeat_with(|| None).take(len).collect(),
             key_to_index,
-            len,
-            _marker: PhantomData,
-        }
-    }
-}
-
-impl<K, V, F> ContainerFactory for FixedVecMapFactory<K, V, F>
-where
-    F: Fn(&K) -> usize + Clone,
-{
-    type Container = VecMap<true, K, V, F>;
-
-    fn create_container(&self) -> Self::Container {
-        VecMap {
-            data: repeat_with(|| None).take(self.len).collect(),
-            key_to_index: self.key_to_index.clone(),
-        }
-    }
-}
-
-impl<K, V, F> VecMapFactoryWithCapacity<K, V, F> {
-    pub fn new(key_to_index: F, capacity: usize) -> Self {
-        Self {
-            key_to_index,
-            capacity,
-            _marker: PhantomData,
-        }
-    }
-}
-
-impl<K, V, F> ContainerFactory for VecMapFactoryWithCapacity<K, V, F>
-where
-    F: Fn(&K) -> usize + Clone,
-{
-    type Container = VecMap<false, K, V, F>;
-
-    fn create_container(&self) -> Self::Container {
-        VecMap {
-            data: Vec::with_capacity(self.capacity),
-            key_to_index: self.key_to_index.clone(),
         }
     }
 }
@@ -135,10 +76,7 @@ where
         Self::Key: 'a,
         Self::Value: 'a;
     type Iter<'a>
-        = Map<
-        FilterMap<slice::Iter<'a, Option<(K, V)>>, fn(&Option<(K, V)>) -> Option<&(K, V)>>,
-        fn(&(K, V)) -> (&K, &V),
-    >
+        = Map<Flatten<slice::Iter<'a, Option<(K, V)>>>, fn(&(K, V)) -> (&K, &V)>
     where
         Self: 'a,
         Self::Key: 'a,
@@ -201,16 +139,11 @@ where
     }
 
     fn iter(&self) -> Self::Iter<'_> {
-        self.data
-            .iter()
-            .filter_map::<_, fn(&Option<(K, V)>) -> Option<&(K, V)>>(Option::as_ref)
-            .map::<_, fn(&(K, V)) -> (&K, &V)>(|(k, v)| (k, v))
+        self.data.iter().flatten().map(|(k, v)| (k, v))
     }
 
     fn drain(&mut self) -> Self::Drain<'_> {
-        self.data
-            .iter_mut()
-            .filter_map::<_, fn(&mut Option<(K, V)>) -> Option<(K, V)>>(Option::take)
+        self.data.iter_mut().filter_map(Option::take)
     }
 }
 
@@ -292,9 +225,12 @@ mod tests {
     #[test]
     fn test_vec_map() {
         let mut rng = Xorshift::default();
-        for _ in 0..100 {
-            let mut map = VecMapFactory::new(|&x: &usize| x).create_container();
+        for capacity in 0..100 {
+            let mut map = VecMap::with_capacity(capacity, |&x: &usize| x);
+            assert!(map.data.capacity() >= capacity);
+            assert!(map.data.is_empty());
             let mut expected = BTreeMap::new();
+            assert!(map.iter().eq(expected.iter()));
             for _ in 0..1000 {
                 let key = rng.random(0..=100);
                 let value = rng.random(-100..=100);
@@ -329,6 +265,8 @@ mod tests {
                 for key in 0..=100 {
                     assert_eq!(map.get(&key), expected.get(&key));
                 }
+                assert!(map.iter().eq(expected.iter()));
+                assert!(map.iter().rev().eq(expected.iter().rev()));
             }
         }
     }

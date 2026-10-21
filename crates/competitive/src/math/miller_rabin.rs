@@ -38,7 +38,7 @@ macro_rules! impl_test_mr {
 impl_test_mr!(test_mr32, u32, u64);
 impl_test_mr!(test_mr64, u64, u128);
 
-/// http://miller-rabin.appspot.com/
+/// <http://miller-rabin.appspot.com/>
 macro_rules! impl_mr {
     ($name:ident, $test:ident, $ty:ty, $upty:ty, [$($th:expr, [$($a:expr),+]),+], |$n:ident, $br:ident|$last:expr) => {
         fn $name($n: $ty, $br: &BarrettReduction<$upty>) -> bool {

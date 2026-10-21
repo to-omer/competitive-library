@@ -1,16 +1,9 @@
 use std::{
     cmp::Ord,
     collections::{BTreeMap, HashMap, btree_map, hash_map},
-    hash::Hash,
+    hash::{BuildHasher, Hash},
     iter::FusedIterator,
-    marker::PhantomData,
 };
-
-pub trait ContainerFactory {
-    type Container: Container;
-
-    fn create_container(&self) -> Self::Container;
-}
 
 pub trait Container {
     type Key;
@@ -60,44 +53,9 @@ pub trait ContainerEntry<'a> {
         F: FnOnce(&mut Self::Value);
 }
 
-impl<F> ContainerFactory for &F
-where
-    F: ContainerFactory,
-{
-    type Container = F::Container;
-
-    fn create_container(&self) -> Self::Container {
-        F::create_container(self)
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct BTreeMapFactory<K, V> {
-    _marker: PhantomData<fn() -> (K, V)>,
-}
-
-impl<K, V> Default for BTreeMapFactory<K, V> {
-    fn default() -> Self {
-        Self {
-            _marker: Default::default(),
-        }
-    }
-}
-
 #[derive(Debug)]
 pub struct BTreeMapDrain<'a, K, V> {
     inner: &'a mut BTreeMap<K, V>,
-}
-
-impl<K, V> ContainerFactory for BTreeMapFactory<K, V>
-where
-    K: Ord,
-{
-    type Container = BTreeMap<K, V>;
-
-    fn create_container(&self) -> Self::Container {
-        BTreeMap::new()
-    }
 }
 
 impl<K, V> Container for BTreeMap<K, V>
@@ -227,75 +185,29 @@ where
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct HashMapFactory<K, V> {
-    _marker: PhantomData<fn() -> (K, V)>,
-}
-
-impl<K, V> Default for HashMapFactory<K, V> {
-    fn default() -> Self {
-        Self {
-            _marker: Default::default(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct HashMapFactoryWithCapacity<K, V> {
-    capacity: usize,
-    _marker: PhantomData<fn() -> (K, V)>,
-}
-
-impl<K, V> Default for HashMapFactoryWithCapacity<K, V> {
-    fn default() -> Self {
-        Self {
-            capacity: Default::default(),
-            _marker: Default::default(),
-        }
-    }
-}
-
-impl<K, V> ContainerFactory for HashMapFactory<K, V>
+impl<K, V, S> Container for HashMap<K, V, S>
 where
     K: Eq + Hash,
-{
-    type Container = HashMap<K, V>;
-
-    fn create_container(&self) -> Self::Container {
-        HashMap::new()
-    }
-}
-
-impl<K, V> ContainerFactory for HashMapFactoryWithCapacity<K, V>
-where
-    K: Eq + Hash,
-{
-    type Container = HashMap<K, V>;
-
-    fn create_container(&self) -> Self::Container {
-        HashMap::with_capacity(self.capacity)
-    }
-}
-
-impl<K, V> Container for HashMap<K, V>
-where
-    K: Eq + Hash,
+    S: BuildHasher,
 {
     type Key = K;
     type Value = V;
     type Entry<'a>
         = hash_map::Entry<'a, K, V>
     where
+        S: 'a,
         K: 'a,
         V: 'a;
     type Iter<'a>
         = hash_map::Iter<'a, K, V>
     where
+        S: 'a,
         K: 'a,
         V: 'a;
     type Drain<'a>
         = hash_map::Drain<'a, K, V>
     where
+        S: 'a,
         K: 'a,
         V: 'a;
 
@@ -370,5 +282,95 @@ where
         F: FnOnce(&mut Self::Value),
     {
         self.and_modify(f)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::{Xorshift, testutil::sequence_cases};
+    use std::hash::{BuildHasherDefault, DefaultHasher};
+
+    #[test]
+    fn test_hashmap_container() {
+        let mut rng = Xorshift::default();
+        for keys in sequence_cases(&mut rng, 0usize..=255, 0..=1 << 16) {
+            let mut map = HashMap::with_hasher(BuildHasherDefault::<DefaultHasher>::default());
+            let mut expected = BTreeMap::new();
+            for (i, key) in keys.into_iter().enumerate() {
+                let value = i as i64 - key as i64;
+                let occupied = i / 8 % 2 == 1;
+                if occupied {
+                    map.insert(key, -value - 1);
+                    expected.insert(key, -value - 1);
+                } else {
+                    map.remove(&key);
+                    expected.remove(&key);
+                }
+                match i % 8 {
+                    0 => {
+                        assert_eq!(
+                            Container::insert(&mut map, key, value),
+                            expected.insert(key, value)
+                        );
+                    }
+                    1 => {
+                        if let Some(x) = Container::get_mut(&mut map, &key) {
+                            *x += value;
+                        }
+                        if let Some(x) = expected.get_mut(&key) {
+                            *x += value;
+                        }
+                    }
+                    2 => {
+                        assert_eq!(
+                            Container::entry(&mut map, key)
+                                .and_modify(|x| *x += value)
+                                .or_default(),
+                            expected.entry(key).and_modify(|x| *x += value).or_default()
+                        );
+                    }
+                    3 => {
+                        assert_eq!(
+                            Container::entry(&mut map, key).or_insert(value),
+                            expected.entry(key).or_insert(value)
+                        );
+                    }
+                    4 => {
+                        assert_eq!(
+                            Container::entry(&mut map, key).or_insert_with(|| value),
+                            expected.entry(key).or_insert_with(|| value)
+                        );
+                    }
+                    5 => {
+                        assert_eq!(
+                            Container::entry(&mut map, key).or_insert_with_key(|&k| k as i64),
+                            expected.entry(key).or_insert_with_key(|&k| k as i64)
+                        );
+                    }
+                    6 => {
+                        assert_eq!(Container::remove(&mut map, &key), expected.remove(&key));
+                    }
+                    _ => {
+                        assert_eq!(
+                            Container::entry(&mut map, key).key(),
+                            expected.entry(key).key()
+                        );
+                    }
+                }
+                assert_eq!(Container::get(&map, &key), expected.get(&key));
+            }
+            assert_eq!(
+                Container::iter(&map)
+                    .map(|(&k, &v)| (k, v))
+                    .collect::<BTreeMap<_, _>>(),
+                expected
+            );
+            assert_eq!(
+                Container::drain(&mut map).collect::<BTreeMap<_, _>>(),
+                expected
+            );
+            assert!(Container::iter(&map).next().is_none());
+        }
     }
 }
