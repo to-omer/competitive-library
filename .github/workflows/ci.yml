@@ -86,17 +86,77 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
-      - name: cargo-install codesnip
-        run: cargo install codesnip --version 0.6.0 --locked
+      - name: Install codesnip
+        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: cargo:codesnip
+          cache: false # Resolve latest releases on each run.
 
       - name: Snippet Verification
         run: bash .github/workflows/snippet.sh
+
+  formal:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tool: verus
+            install: cargo-make jq github:verus-lang/verus
+          - tool: kani
+            install: cargo-make cargo:kani-verifier
+
+    name: Formal verification (${{ matrix.tool }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup `stable`
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install verification tools
+        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: ${{ matrix.install }}
+          cache: false # Resolve latest releases on each run.
+
+      - name: Update Verus standard library
+        if: matrix.tool == 'verus'
+        run: cargo update -p vstd
+
+      - name: Cache
+        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          key: formal-${{ matrix.tool }}
+
+      - name: Verify
+        id: formal-verify
+        shell: bash
+        run: |
+          if [ "${{ matrix.tool }}" = verus ]; then
+            makers formal-verus --output-json | tee "$RUNNER_TEMP/formal.json"
+          else
+            makers formal-kani -Z unstable-options --export-json "$RUNNER_TEMP/formal.json"
+          fi
+
+      - name: Formal verification summary
+        if: ${{ always() && steps.formal-verify.outcome != 'skipped' }}
+        shell: bash
+        run: python3 .github/workflows/formal_summary.py "${{ matrix.tool }}" "$RUNNER_TEMP/formal.json" --doc "$RUNNER_TEMP/formal.md" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload formal verification report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: formal-${{ matrix.tool }}
+          path: ${{ runner.temp }}/formal.md
+          if-no-files-found: error
 
   verify:
     strategy:
       fail-fast: false
       matrix:
-        job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
     name: Verify
     runs-on: ubuntu-latest
@@ -127,7 +187,7 @@ jobs:
         run: cargo build --release --workspace --lib --tests
 
       - id: testcases-hash
-        run: python ./.github/workflows/matrix.py ${{ matrix.job-id }} --hash >> $GITHUB_OUTPUT
+        run: python ./.github/workflows/matrix.py ${{ matrix.job-id }} ${{ strategy.job-total }} --hash >> "$GITHUB_OUTPUT"
 
       - name: Cache Testcases
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -141,7 +201,7 @@ jobs:
           RUST_LOG: verify=info
         run: |
           ulimit -s unlimited
-          python ./.github/workflows/matrix.py ${{ matrix.job-id }}
+          python ./.github/workflows/matrix.py ${{ matrix.job-id }} ${{ strategy.job-total }}
 
       - name: upload artifacts
         if: ${{ always() }}
@@ -249,7 +309,7 @@ jobs:
           path: coverage/**/*
 
   generate-doc:
-    needs: [verify, benchmark, coverage]
+    needs: [verify, benchmark, coverage, formal]
     if: github.ref_name == 'master'
 
     name: Generate Doc
@@ -278,7 +338,9 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
 
       - name: Arrange artifacts
-        run: cp -r artifact/* .
+        run: |
+          cp -r artifact/* .
+          cat formal-*/*.md > crates/competitive/src/formal.md
 
       - name: cargo-build
         run: cargo build --workspace --lib --features verify_doc
@@ -291,6 +353,10 @@ jobs:
             -Z unstable-options
             --generate-link-to-definition
             --extern-html-root-url competitive=https://to-omer.github.io/competitive-library
+
+      - name: Remove generated formal report
+        if: ${{ always() }}
+        run: rm -f crates/competitive/src/formal.md
 
       - name: Arrange benchmarks
         run: |

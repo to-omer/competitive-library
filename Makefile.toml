@@ -34,3 +34,39 @@ args = [
 
 [tasks.all]
 dependencies = ["fmt", "clippy", "test", "snippet"]
+
+[tasks.formal-verus]
+install_crate = false
+command = "cargo"
+args = [
+    "verus",
+    "verify",
+    "-p",
+    "competitive",
+    "--features",
+    "vstd",
+    "--fwd-verus-args-to",
+    "roots",
+    "--",
+    "--no-cheating",
+    "--triggers-mode",
+    "silent",
+    "--time-expanded",
+    "@@split(CARGO_MAKE_TASK_ARGS,;,remove-empty)",
+]
+
+[tasks.formal-kani]
+install_crate = false
+command = "cargo"
+args = [
+    "kani",
+    "-p",
+    "competitive",
+    "--output-format",
+    "terse",
+    "--jobs",
+    "@@split(CARGO_MAKE_TASK_ARGS,;,remove-empty)",
+]
+
+[tasks.formal]
+dependencies = ["formal-verus", "formal-kani"]

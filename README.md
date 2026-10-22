@@ -5,6 +5,12 @@
 
 competitive programming library
 
+Install development tools with [mise](https://mise.jdx.dev/) (Rust via rustup is required):
+```sh
+$ mise install
+```
+Run the commands below in a mise-activated shell, or prefix them with `mise exec --`.
+
 ## Lint
 ```sh
 $ makers all
@@ -13,10 +19,15 @@ $ makers all
 ## Verify
 [here](crates/tools/verify/README.md)
 
+## Formal verification
+```sh
+$ makers formal
+```
+
 ## Doc
 generate documentation with verify results
 ```sh
-$ cargo doc --no-deps --all-features
+$ cargo doc --no-deps --all-features --document-private-items
 $ cp -r util/gh-pages/* target/doc
 ```
 

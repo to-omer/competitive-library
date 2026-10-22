@@ -5,8 +5,6 @@ from pathlib import Path
 from shutil import move
 from subprocess import PIPE, run
 
-SIZE = 15
-
 verify_packages = ["aizu_online_judge", "library_checker"]
 
 # Generates about 12 GB of test data.
@@ -69,7 +67,8 @@ def arrange_artifacts():
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("nth", type=int, nargs="?")
+    parser.add_argument("nth", type=int)
+    parser.add_argument("size", type=int)
     parser.add_argument("--hash", action="store_true")
     args = parser.parse_args()
 
@@ -77,12 +76,12 @@ def main():
         h = sha256(
             " ".join(
                 f"{package}::{name}"
-                for package, name in islice(verify_list(), args.nth, None, SIZE)
+                for package, name in islice(verify_list(), args.nth, None, args.size)
             ).encode()
         ).hexdigest()
         print(f"hash={h}")
     else:
-        for package, name in islice(verify_list(), args.nth, None, SIZE):
+        for package, name in islice(verify_list(), args.nth, None, args.size):
             cargo_verify(package, name)
 
         arrange_artifacts()

@@ -4,13 +4,20 @@ version = "0.1.0"
 authors = ["to-omer <toomerhs@gmail.com>"]
 edition = "2024"
 
+[package.metadata.verus]
+verify = true
+
 [lib]
 doc-scrape-examples = true
+
+[features]
+verify_doc = []
 
 [dependencies]
 codesnip = { version = "0.6.0", package = "codesnip_attr", features = [
     "check",
 ] }
+vstd = { version = "0.0.0-2026-10-18-0147", optional = true }
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(nightly)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(nightly)', 'cfg(kani)', 'cfg(verus_keep_ghost)'] }

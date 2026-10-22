@@ -1096,6 +1096,75 @@ mod logical_linear_operation_impl {
             assert_eq!(negate, (true, true));
         }
     }
+
+    #[cfg(kani)]
+    mod verification {
+        use super::*;
+
+        #[kani::proof]
+        fn proof_composition() {
+            let a: (u64, u64) = kani::any();
+            let b: (u64, u64) = kani::any();
+            let x: u64 = kani::any();
+            let composition = LogicalLinearOperation::operate(&a, &b);
+            kani::assert(
+                LogicalLinearOperation::eval(&composition, &x)
+                    == LogicalLinearOperation::eval(&b, &LogicalLinearOperation::eval(&a, &x)),
+                "Composition applies a then b for all u64 masks, XOR terms and inputs",
+            );
+            kani::cover!(
+                LogicalLinearOperation::operate(&a, &b) != LogicalLinearOperation::operate(&b, &a)
+            );
+        }
+
+        #[kani::proof]
+        fn proof_laws() {
+            let a: (u64, u64) = kani::any();
+            let b: (u64, u64) = kani::any();
+            let c: (u64, u64) = kani::any();
+            let unit = LogicalLinearOperation::unit();
+            kani::assert(
+                LogicalLinearOperation::operate(&a, &unit) == a,
+                "Right identity for all u64 operations",
+            );
+            kani::assert(
+                LogicalLinearOperation::operate(&unit, &a) == a,
+                "Left identity for all u64 operations",
+            );
+            kani::assert(
+                LogicalLinearOperation::operate(&LogicalLinearOperation::operate(&a, &b), &c)
+                    == LogicalLinearOperation::operate(
+                        &a,
+                        &LogicalLinearOperation::operate(&b, &c),
+                    ),
+                "Associativity for all u64 operations",
+            );
+        }
+
+        #[kani::proof]
+        // Cover all bits of a u64 exponent and the iterator's termination.
+        #[kani::unwind(66)]
+        fn proof_power() {
+            let a: (u64, u64) = kani::any();
+            let exponent: u64 = kani::any();
+            let actual = LogicalLinearOperation::pow(a, exponent);
+            // Each bit is constant, identity, or negation; only negation depends on parity.
+            let expected = if exponent == 0 {
+                (!0, 0)
+            } else if exponent & 1 != 0 {
+                a
+            } else {
+                (a.0, a.1 & !a.0)
+            };
+            kani::assert(
+                actual == expected,
+                "For all u64 operations and exponents, power 0 is identity; positive powers preserve constant/identity bits and toggle negated bits exactly when the exponent is odd",
+            );
+            kani::cover!(exponent == 0);
+            kani::cover!(exponent == u64::MAX);
+            kani::cover!(exponent == 1 << 63);
+        }
+    }
 }
 
 #[codesnip::entry("TupleOperation", include("algebra"))]
@@ -2290,6 +2359,37 @@ mod fixed_permutation_operation_impl {
             check::<4>();
             check::<8>();
             check::<32>();
+        }
+    }
+
+    #[cfg(kani)]
+    mod verification {
+        use super::*;
+
+        #[kani::proof]
+        #[kani::unwind(5)]
+        fn proof_inverse() {
+            let p: [usize; 4] = kani::any();
+            for i in 0..4 {
+                kani::assume(p[i] < 4);
+                for j in 0..i {
+                    kani::assume(p[i] != p[j]);
+                }
+            }
+            let inverse = FixedPermutationOperation::inverse(&p);
+            let left = FixedPermutationOperation::operate(&inverse, &p);
+            let right = FixedPermutationOperation::operate(&p, &inverse);
+            for i in 0..4 {
+                kani::assert(
+                    left[i] == i,
+                    "Left inverse identity for every valid permutation of length 4",
+                );
+                kani::assert(
+                    right[i] == i,
+                    "Right inverse identity for every valid permutation of length 4",
+                );
+            }
+            kani::cover!(p[0] == 1 && p[1] == 2 && p[2] == 3 && p[3] == 0);
         }
     }
 }

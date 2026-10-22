@@ -1,0 +1,18 @@
+[tools]
+cargo-make = "latest"
+"cargo:codesnip" = { version = "latest", minimum_release_age = "0d", locked = true }
+"cargo:kani-verifier" = { version = "latest", minimum_release_age = "0d", locked = true }
+jq = "latest"
+
+[tools."github:verus-lang/verus"]
+version = "latest"
+minimum_release_age = "0d"
+depends = ["jq"]
+
+[tools."github:verus-lang/verus".postinstall]
+when = "always"
+run = '''
+rustup toolchain install \
+    "$(jq -r '.verus.toolchain | split(" ")[0]' "$MISE_TOOL_INSTALL_PATH/version.json")" \
+    --profile minimal
+'''
