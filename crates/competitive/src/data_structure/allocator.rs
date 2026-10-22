@@ -1,4 +1,5 @@
 use std::{
+    fmt::{self, Debug},
     marker::PhantomData,
     mem::{replace, size_of, take},
     ptr::{self, NonNull, read, write},
@@ -9,11 +10,21 @@ pub trait Allocator<T> {
     fn deallocate(&mut self, ptr: NonNull<T>) -> T;
 }
 
-#[derive(Debug)]
 pub struct MemoryPool<T> {
     pool: Vec<T>,
     chunks: Vec<Vec<T>>,
     unused: Vec<NonNull<T>>,
+}
+
+impl<T> Debug for MemoryPool<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Deallocated slots no longer contain values that can be formatted.
+        f.debug_struct("MemoryPool")
+            .field("pool_len", &self.pool.len())
+            .field("chunks", &self.chunks.len())
+            .field("unused", &self.unused.len())
+            .finish()
+    }
 }
 
 impl<T> Default for MemoryPool<T> {
@@ -40,6 +51,15 @@ impl<T> MemoryPool<T> {
 
 impl<T> Drop for MemoryPool<T> {
     fn drop(&mut self) {
+        if size_of::<T>() == 0 {
+            let mut unused = self.unused.len();
+            for chunk in std::iter::once(&mut self.pool).chain(&mut self.chunks) {
+                let removed = unused.min(chunk.len());
+                unsafe { chunk.set_len(chunk.len() - removed) };
+                unused -= removed;
+            }
+            return;
+        }
         self.chunks.push(take(&mut self.pool));
         let mut removed = vec![vec![]; self.chunks.len()];
         for p in self.unused.iter() {
@@ -54,7 +74,8 @@ impl<T> Drop for MemoryPool<T> {
         }
         for (chunk, removed) in self.chunks.iter_mut().zip(&mut removed) {
             removed.sort_unstable();
-            for &p in removed.iter() {
+            // Higher holes must be removed before they can become a copy source.
+            for &p in removed.iter().rev() {
                 unsafe {
                     let len = chunk.len();
                     let base_ptr = chunk.as_mut_ptr();
@@ -68,8 +89,8 @@ impl<T> Drop for MemoryPool<T> {
 
 impl<T> Allocator<T> for MemoryPool<T> {
     fn allocate(&mut self, value: T) -> NonNull<T> {
-        if let Some(mut ptr) = self.unused.pop() {
-            unsafe { write(ptr.as_mut(), value) };
+        if let Some(ptr) = self.unused.pop() {
+            unsafe { write(ptr.as_ptr(), value) };
             ptr
         } else {
             let len = self.pool.len();
@@ -113,7 +134,7 @@ impl<T> Allocator<T> for BoxAllocator<T> {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    use std::cell::RefCell;
+    use std::cell::Cell;
 
     #[test]
     fn test_alloc() {
@@ -139,36 +160,84 @@ mod tests {
 
     #[test]
     fn test_drop() {
-        #[derive(Debug)]
-        struct CheckDrop<T>(T);
-        thread_local! {
-            static CNT: RefCell<usize> = const { RefCell::new(0) };
+        struct CheckDrop<'a> {
+            id: usize,
+            counts: &'a [Cell<usize>],
         }
-        impl<T> Drop for CheckDrop<T> {
+        impl Drop for CheckDrop<'_> {
             fn drop(&mut self) {
-                CNT.with(|cnt| *cnt.borrow_mut() += 1);
+                self.counts[self.id].set(self.counts[self.id].get() + 1);
             }
         }
-        const Q: usize = 100;
-        let mut cnt = 0usize;
-        let mut rng = Xorshift::default();
-        for _ in 0..10 {
-            let mut pool = MemoryPool::new();
-            let mut a = vec![];
-            for _ in 0..Q {
-                if a.is_empty() || rng.gen_bool(0.8) {
-                    let k = rng.rand(!0);
-                    a.push(pool.allocate(CheckDrop(k)));
-                } else {
-                    let i = rng.rand(a.len() as _) as usize;
-                    let p = a.swap_remove(i);
-                    pool.deallocate(p);
-                    cnt += 1;
+        // All hole patterns include adjacent holes, the last slot, and multiple chunks.
+        for capacity in 0..=5 {
+            for n in 0..=8 {
+                for mask in 0..1 << n {
+                    let counts = vec![Cell::new(0); n];
+                    let mut pool = MemoryPool::with_capacity(capacity);
+                    let pointers: Vec<_> = (0..n)
+                        .map(|id| {
+                            pool.allocate(CheckDrop {
+                                id,
+                                counts: &counts,
+                            })
+                        })
+                        .collect();
+                    for (id, &ptr) in pointers.iter().enumerate() {
+                        if mask >> id & 1 != 0 {
+                            drop(pool.deallocate(ptr));
+                        }
+                        assert_eq!(counts[id].get(), mask >> id & 1);
+                    }
+                    drop(pool);
+                    assert!(counts.iter().all(|count| count.get() == 1));
                 }
-                assert_eq!(cnt, CNT.with(|cnt| *cnt.borrow()));
             }
-            cnt += a.len();
         }
-        assert_eq!(cnt, CNT.with(|cnt| *cnt.borrow()));
+    }
+
+    #[test]
+    fn test_drop_owned() {
+        let mut pool = MemoryPool::with_capacity(3);
+        let mut live: Vec<_> = (0..12).map(|i| pool.allocate(Box::new(i))).collect();
+        for i in [11, 9, 8, 5, 2, 0] {
+            let ptr = live.remove(i);
+            drop(pool.deallocate(ptr));
+        }
+        drop(format!("{pool:?}"));
+        for i in 12..24 {
+            live.push(pool.allocate(Box::new(i)));
+        }
+        let expected = [1, 3, 4, 6, 7, 10];
+        for (&ptr, value) in live.iter().zip(expected.into_iter().chain(12..24)) {
+            assert_eq!(unsafe { **ptr.as_ref() }, value);
+        }
+        for i in [17, 15, 12, 9, 5, 2, 0] {
+            drop(pool.deallocate(live.remove(i)));
+        }
+        drop(format!("{pool:?}"));
+    }
+
+    #[test]
+    fn test_drop_zst() {
+        #[repr(align(64))]
+        struct CheckDrop;
+        thread_local! {
+            static COUNT: Cell<usize> = const { Cell::new(0) };
+        }
+        impl Drop for CheckDrop {
+            fn drop(&mut self) {
+                COUNT.with(|count| count.set(count.get() + 1));
+            }
+        }
+        COUNT.with(|count| count.set(0));
+        let mut pool = MemoryPool::with_capacity(0);
+        let pointers: Vec<_> = (0..4).map(|_| pool.allocate(CheckDrop)).collect();
+        for &ptr in &pointers[..3] {
+            drop(pool.deallocate(ptr));
+        }
+        pool.allocate(CheckDrop);
+        drop(pool);
+        assert_eq!(COUNT.with(Cell::get), 5);
     }
 }
