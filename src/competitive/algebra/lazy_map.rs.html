@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algebra/lazy_map.rs`."><title>lazy_map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-009149e2.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (1a2c4797e 2026-10-21)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algebra/lazy_map.rs`."><title>lazy_map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-009149e2.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (7189d39d9 2026-10-22)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -749,134 +749,216 @@
 <a href=#695 id=695 data-nosnippet>695</a>    }
 <a href=#696 id=696 data-nosnippet>696</a>}
 <a href=#697 id=697 data-nosnippet>697</a>
-<a href=#698 id=698 data-nosnippet>698</a><span class="attr">#[cfg(test)]
-<a href=#699 id=699 data-nosnippet>699</a></span><span class="kw">mod </span>tests {
+<a href=#698 id=698 data-nosnippet>698</a><span class="attr">#[cfg(kani)]
+<a href=#699 id=699 data-nosnippet>699</a></span><span class="kw">mod </span>verification {
 <a href=#700 id=700 data-nosnippet>700</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#701 id=701 data-nosnippet>701</a>    <span class="kw">use crate</span>::{
-<a href=#702 id=702 data-nosnippet>702</a>        data_structure::LazySegmentTree,
-<a href=#703 id=703 data-nosnippet>703</a>        num::mint_basic::MInt998244353 <span class="kw">as </span>M,
-<a href=#704 id=704 data-nosnippet>704</a>        tools::{
-<a href=#705 id=705 data-nosnippet>705</a>            Xorshift,
-<a href=#706 id=706 data-nosnippet>706</a>            testutil::{exhaustive_sequences, sequence_cases},
-<a href=#707 id=707 data-nosnippet>707</a>        },
-<a href=#708 id=708 data-nosnippet>708</a>    };
-<a href=#709 id=709 data-nosnippet>709</a>    <span class="kw">use </span>std::num::Wrapping;
-<a href=#710 id=710 data-nosnippet>710</a>
-<a href=#711 id=711 data-nosnippet>711</a>    <span class="kw">fn </span>check_mapping&lt;<span class="kw">const </span>K: usize&gt;() {
-<a href=#712 id=712 data-nosnippet>712</a>        <span class="kw">type </span>W = Wrapping&lt;u64&gt;;
-<a href=#713 id=713 data-nosnippet>713</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#714 id=714 data-nosnippet>714</a>        <span class="kw">let </span>inputs =
-<a href=#715 id=715 data-nosnippet>715</a>            exhaustive_sequences(-<span class="number">2i64</span>..=<span class="number">2</span>, <span class="number">0</span>..=<span class="number">3</span>).chain(sequence_cases(<span class="kw-2">&amp;mut </span>rng, -<span class="number">8</span>..=<span class="number">8</span>, <span class="number">0</span>..=<span class="number">65</span>));
-<a href=#716 id=716 data-nosnippet>716</a>        <span class="kw">for </span>values <span class="kw">in </span>inputs {
-<a href=#717 id=717 data-nosnippet>717</a>            <span class="kw">let </span>leaves: Vec&lt;<span class="kw">_</span>&gt; = values
-<a href=#718 id=718 data-nosnippet>718</a>                .iter()
-<a href=#719 id=719 data-nosnippet>719</a>                .enumerate()
-<a href=#720 id=720 data-nosnippet>720</a>                .map(|(i, <span class="kw-2">&amp;</span>x)| (Wrapping(x <span class="kw">as </span>u64), Wrapping([<span class="number">0</span>, <span class="number">1</span>, u64::MAX, <span class="number">2</span>][i % <span class="number">4</span>])))
-<a href=#721 id=721 data-nosnippet>721</a>                .collect();
-<a href=#722 id=722 data-nosnippet>722</a>            <span class="kw">let </span>agg: [W; K] = std::array::from_fn(|k| {
-<a href=#723 id=723 data-nosnippet>723</a>                leaves
-<a href=#724 id=724 data-nosnippet>724</a>                    .iter()
-<a href=#725 id=725 data-nosnippet>725</a>                    .map(|<span class="kw-2">&amp;</span>(x, w)| w * Wrapping(x.<span class="number">0</span>.wrapping_pow(k <span class="kw">as </span>u32)))
-<a href=#726 id=726 data-nosnippet>726</a>                    .sum()
-<a href=#727 id=727 data-nosnippet>727</a>            });
-<a href=#728 id=728 data-nosnippet>728</a>            <span class="macro">assert_eq!</span>(
-<a href=#729 id=729 data-nosnippet>729</a>                RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>(W::one(), W::zero())),
-<a href=#730 id=730 data-nosnippet>730</a>                <span class="prelude-val">Some</span>(agg)
-<a href=#731 id=731 data-nosnippet>731</a>            );
-<a href=#732 id=732 data-nosnippet>732</a>            <span class="kw">for </span>a <span class="kw">in </span>-<span class="number">2i64</span>..=<span class="number">2 </span>{
-<a href=#733 id=733 data-nosnippet>733</a>                <span class="kw">for </span>b <span class="kw">in </span>-<span class="number">2i64</span>..=<span class="number">2 </span>{
-<a href=#734 id=734 data-nosnippet>734</a>                    <span class="kw">let </span>act = (Wrapping(a <span class="kw">as </span>u64), Wrapping(b <span class="kw">as </span>u64));
-<a href=#735 id=735 data-nosnippet>735</a>                    <span class="kw">let </span>mapped = RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>act).unwrap();
-<a href=#736 id=736 data-nosnippet>736</a>                    <span class="kw">let </span>expected: [W; K] = std::array::from_fn(|k| {
-<a href=#737 id=737 data-nosnippet>737</a>                        leaves
-<a href=#738 id=738 data-nosnippet>738</a>                            .iter()
-<a href=#739 id=739 data-nosnippet>739</a>                            .map(|<span class="kw-2">&amp;</span>(x, w)| {
-<a href=#740 id=740 data-nosnippet>740</a>                                w * Wrapping((act.<span class="number">0 </span>* x + act.<span class="number">1</span>).<span class="number">0</span>.wrapping_pow(k <span class="kw">as </span>u32))
-<a href=#741 id=741 data-nosnippet>741</a>                            })
-<a href=#742 id=742 data-nosnippet>742</a>                            .sum()
-<a href=#743 id=743 data-nosnippet>743</a>                    });
-<a href=#744 id=744 data-nosnippet>744</a>                    <span class="macro">assert_eq!</span>(mapped, expected);
-<a href=#745 id=745 data-nosnippet>745</a>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(key, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>leaves {
-<a href=#746 id=746 data-nosnippet>746</a>                        <span class="kw">let </span>leaf = RangePowerSumRangeLinear::&lt;W, K&gt;::single_agg(<span class="kw-2">&amp;</span>key);
-<a href=#747 id=747 data-nosnippet>747</a>                        <span class="kw">let </span>updated = RangePowerSumRangeLinear::&lt;W, K&gt;::act_key(<span class="kw-2">&amp;</span>key, <span class="kw-2">&amp;</span>act);
-<a href=#748 id=748 data-nosnippet>748</a>                        <span class="macro">assert_eq!</span>(
-<a href=#749 id=749 data-nosnippet>749</a>                            RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>leaf, <span class="kw-2">&amp;</span>act),
-<a href=#750 id=750 data-nosnippet>750</a>                            <span class="prelude-val">Some</span>(RangePowerSumRangeLinear::single_agg(<span class="kw-2">&amp;</span>updated))
-<a href=#751 id=751 data-nosnippet>751</a>                        );
-<a href=#752 id=752 data-nosnippet>752</a>                    }
-<a href=#753 id=753 data-nosnippet>753</a>                    <span class="kw">for </span>c <span class="kw">in </span>-<span class="number">2i64</span>..=<span class="number">2 </span>{
-<a href=#754 id=754 data-nosnippet>754</a>                        <span class="kw">let </span>next = (Wrapping(c <span class="kw">as </span>u64), Wrapping(<span class="number">3</span>));
-<a href=#755 id=755 data-nosnippet>755</a>                        <span class="kw">let </span>composed = RangePowerSumRangeLinear::&lt;W, K&gt;::act_operate(<span class="kw-2">&amp;</span>act, <span class="kw-2">&amp;</span>next);
-<a href=#756 id=756 data-nosnippet>756</a>                        <span class="macro">assert_eq!</span>(
-<a href=#757 id=757 data-nosnippet>757</a>                            RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>mapped, <span class="kw-2">&amp;</span>next),
-<a href=#758 id=758 data-nosnippet>758</a>                            RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>composed)
-<a href=#759 id=759 data-nosnippet>759</a>                        );
-<a href=#760 id=760 data-nosnippet>760</a>                    }
-<a href=#761 id=761 data-nosnippet>761</a>                }
-<a href=#762 id=762 data-nosnippet>762</a>            }
-<a href=#763 id=763 data-nosnippet>763</a>        }
-<a href=#764 id=764 data-nosnippet>764</a>    }
-<a href=#765 id=765 data-nosnippet>765</a>
-<a href=#766 id=766 data-nosnippet>766</a>    <span class="attr">#[test]
-<a href=#767 id=767 data-nosnippet>767</a>    </span><span class="kw">fn </span>test_power_sum_mapping() {
-<a href=#768 id=768 data-nosnippet>768</a>        check_mapping::&lt;<span class="number">0</span>&gt;();
-<a href=#769 id=769 data-nosnippet>769</a>        check_mapping::&lt;<span class="number">1</span>&gt;();
-<a href=#770 id=770 data-nosnippet>770</a>        check_mapping::&lt;<span class="number">2</span>&gt;();
-<a href=#771 id=771 data-nosnippet>771</a>        check_mapping::&lt;<span class="number">5</span>&gt;();
-<a href=#772 id=772 data-nosnippet>772</a>        check_mapping::&lt;<span class="number">8</span>&gt;();
-<a href=#773 id=773 data-nosnippet>773</a>    }
-<a href=#774 id=774 data-nosnippet>774</a>
-<a href=#775 id=775 data-nosnippet>775</a>    <span class="attr">#[test]
-<a href=#776 id=776 data-nosnippet>776</a>    </span><span class="kw">fn </span>test_power_sum_range_updates() {
-<a href=#777 id=777 data-nosnippet>777</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#778 id=778 data-nosnippet>778</a>        <span class="kw">let </span>inputs: Vec&lt;<span class="kw">_</span>&gt; = sequence_cases(<span class="kw-2">&amp;mut </span>rng, -<span class="number">100i64</span>..=<span class="number">100</span>, <span class="number">0</span>..=<span class="number">257</span>).collect();
-<a href=#779 id=779 data-nosnippet>779</a>        <span class="kw">for </span>input <span class="kw">in </span>inputs {
-<a href=#780 id=780 data-nosnippet>780</a>            <span class="kw">let </span><span class="kw-2">mut </span>values: Vec&lt;<span class="kw">_</span>&gt; = input.into_iter().map(M::from).collect();
-<a href=#781 id=781 data-nosnippet>781</a>            <span class="kw">let </span>n = values.len();
-<a href=#782 id=782 data-nosnippet>782</a>            <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangePowerSumRangeLinear&lt;M, <span class="number">5</span>&gt;&gt;::from_keys(
-<a href=#783 id=783 data-nosnippet>783</a>                values.iter().copied(),
-<a href=#784 id=784 data-nosnippet>784</a>            );
-<a href=#785 id=785 data-nosnippet>785</a>            <span class="kw">for </span>step <span class="kw">in </span><span class="number">0</span>..<span class="number">128 </span>{
-<a href=#786 id=786 data-nosnippet>786</a>                <span class="kw">let </span>(l, r) = <span class="kw">match </span>step % <span class="number">8 </span>{
-<a href=#787 id=787 data-nosnippet>787</a>                    <span class="number">0 </span>| <span class="number">1 </span>=&gt; (<span class="number">0</span>, n),
-<a href=#788 id=788 data-nosnippet>788</a>                    <span class="number">2 </span>=&gt; (n, n),
-<a href=#789 id=789 data-nosnippet>789</a>                    <span class="number">3 </span>=&gt; (<span class="number">0</span>, n.min(<span class="number">1</span>)),
-<a href=#790 id=790 data-nosnippet>790</a>                    <span class="kw">_ </span>=&gt; {
-<a href=#791 id=791 data-nosnippet>791</a>                        <span class="kw">let </span>a = rng.random(<span class="number">0</span>..=n);
-<a href=#792 id=792 data-nosnippet>792</a>                        <span class="kw">let </span>b = rng.random(<span class="number">0</span>..=n);
-<a href=#793 id=793 data-nosnippet>793</a>                        (a.min(b), a.max(b))
-<a href=#794 id=794 data-nosnippet>794</a>                    }
-<a href=#795 id=795 data-nosnippet>795</a>                };
-<a href=#796 id=796 data-nosnippet>796</a>                <span class="kw">let </span>act = <span class="kw">match </span>step % <span class="number">6 </span>{
-<a href=#797 id=797 data-nosnippet>797</a>                    <span class="number">0 </span>=&gt; (M::from(<span class="number">2</span>), M::from(<span class="number">3</span>)),
-<a href=#798 id=798 data-nosnippet>798</a>                    <span class="number">1 </span>=&gt; (M::from(<span class="number">3</span>), M::from(<span class="number">4</span>)),
-<a href=#799 id=799 data-nosnippet>799</a>                    <span class="number">2 </span>=&gt; (M::zero(), rng.random(..)),
-<a href=#800 id=800 data-nosnippet>800</a>                    <span class="number">3 </span>=&gt; (M::one(), rng.random(..)),
-<a href=#801 id=801 data-nosnippet>801</a>                    <span class="number">4 </span>=&gt; (rng.random(..), M::zero()),
-<a href=#802 id=802 data-nosnippet>802</a>                    <span class="kw">_ </span>=&gt; (M::one(), M::zero()),
-<a href=#803 id=803 data-nosnippet>803</a>                };
-<a href=#804 id=804 data-nosnippet>804</a>                seg.update(l..r, act);
-<a href=#805 id=805 data-nosnippet>805</a>                <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>values[l..r] {
-<a href=#806 id=806 data-nosnippet>806</a>                    <span class="kw-2">*</span>x = act.<span class="number">0 </span>* <span class="kw-2">*</span>x + act.<span class="number">1</span>;
-<a href=#807 id=807 data-nosnippet>807</a>                }
-<a href=#808 id=808 data-nosnippet>808</a>                <span class="kw">if </span>n != <span class="number">0 </span>&amp;&amp; step % <span class="number">7 </span>== <span class="number">0 </span>{
-<a href=#809 id=809 data-nosnippet>809</a>                    <span class="kw">let </span>i = rng.random(<span class="number">0</span>..n);
-<a href=#810 id=810 data-nosnippet>810</a>                    values[i] = rng.random(..);
-<a href=#811 id=811 data-nosnippet>811</a>                    seg.set(i, RangePowerSumRangeLinear::single_agg(<span class="kw-2">&amp;</span>values[i]));
-<a href=#812 id=812 data-nosnippet>812</a>                }
-<a href=#813 id=813 data-nosnippet>813</a>                <span class="kw">let </span>expected: [M; <span class="number">5</span>] =
-<a href=#814 id=814 data-nosnippet>814</a>                    std::array::from_fn(|k| values[l..r].iter().map(|<span class="kw-2">&amp;</span>x| x.pow(k)).sum());
-<a href=#815 id=815 data-nosnippet>815</a>                <span class="macro">assert_eq!</span>(seg.fold(l..r), expected);
-<a href=#816 id=816 data-nosnippet>816</a>                <span class="macro">assert_eq!</span>(
-<a href=#817 id=817 data-nosnippet>817</a>                    seg.fold_all(),
-<a href=#818 id=818 data-nosnippet>818</a>                    std::array::from_fn(|k| values.iter().map(|<span class="kw-2">&amp;</span>x| x.pow(k)).sum())
-<a href=#819 id=819 data-nosnippet>819</a>                );
-<a href=#820 id=820 data-nosnippet>820</a>                <span class="kw">if </span>n != <span class="number">0 </span>{
-<a href=#821 id=821 data-nosnippet>821</a>                    <span class="kw">let </span>i = rng.random(<span class="number">0</span>..n);
-<a href=#822 id=822 data-nosnippet>822</a>                    <span class="macro">assert_eq!</span>(seg.get(i), std::array::from_fn(|k| values[i].pow(k)));
-<a href=#823 id=823 data-nosnippet>823</a>                }
-<a href=#824 id=824 data-nosnippet>824</a>            }
-<a href=#825 id=825 data-nosnippet>825</a>        }
-<a href=#826 id=826 data-nosnippet>826</a>    }
-<a href=#827 id=827 data-nosnippet>827</a>}
+<a href=#701 id=701 data-nosnippet>701</a>    <span class="kw">use </span><span class="kw">crate</span>::num::Saturating;
+<a href=#702 id=702 data-nosnippet>702</a>
+<a href=#703 id=703 data-nosnippet>703</a>    <span class="attr">#[kani::proof]
+<a href=#704 id=704 data-nosnippet>704</a>    #[kani::unwind(<span class="number">7</span>)]
+<a href=#705 id=705 data-nosnippet>705</a>    </span><span class="kw">fn </span>proof_clamp_add_composition() {
+<a href=#706 id=706 data-nosnippet>706</a>        <span class="kw">let </span>key: i32 = kani::any();
+<a href=#707 id=707 data-nosnippet>707</a>        <span class="kw">let </span>values: [i16; <span class="number">3</span>] = kani::any();
+<a href=#708 id=708 data-nosnippet>708</a>        <span class="kw">let </span>kinds: [u8; <span class="number">3</span>] = kani::any();
+<a href=#709 id=709 data-nosnippet>709</a>        <span class="kw">let </span><span class="kw-2">mut </span>composed = &lt;RangeChminChmaxAdd&lt;Saturating&lt;i64&gt;&gt; <span class="kw">as </span>Unital&gt;::unit();
+<a href=#710 id=710 data-nosnippet>710</a>        <span class="kw">let </span><span class="kw-2">mut </span>expected = key <span class="kw">as </span>i64;
+<a href=#711 id=711 data-nosnippet>711</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">3 </span>{
+<a href=#712 id=712 data-nosnippet>712</a>            kani::assume(kinds[i] &lt; <span class="number">3</span>);
+<a href=#713 id=713 data-nosnippet>713</a>            <span class="kw">let </span>value = values[i] <span class="kw">as </span>i64;
+<a href=#714 id=714 data-nosnippet>714</a>            <span class="kw">let </span>action = <span class="kw">match </span>kinds[i] {
+<a href=#715 id=715 data-nosnippet>715</a>                <span class="number">0 </span>=&gt; {
+<a href=#716 id=716 data-nosnippet>716</a>                    expected = expected.min(value);
+<a href=#717 id=717 data-nosnippet>717</a>                    RangeChminChmaxAdd::chmin(Saturating(value))
+<a href=#718 id=718 data-nosnippet>718</a>                }
+<a href=#719 id=719 data-nosnippet>719</a>                <span class="number">1 </span>=&gt; {
+<a href=#720 id=720 data-nosnippet>720</a>                    expected = expected.max(value);
+<a href=#721 id=721 data-nosnippet>721</a>                    RangeChminChmaxAdd::chmax(Saturating(value))
+<a href=#722 id=722 data-nosnippet>722</a>                }
+<a href=#723 id=723 data-nosnippet>723</a>                <span class="kw">_ </span>=&gt; {
+<a href=#724 id=724 data-nosnippet>724</a>                    expected += value;
+<a href=#725 id=725 data-nosnippet>725</a>                    RangeChminChmaxAdd::add(Saturating(value))
+<a href=#726 id=726 data-nosnippet>726</a>                }
+<a href=#727 id=727 data-nosnippet>727</a>            };
+<a href=#728 id=728 data-nosnippet>728</a>            composed = &lt;RangeChminChmaxAdd&lt;<span class="kw">_</span>&gt; <span class="kw">as </span>Magma&gt;::operate(<span class="kw-2">&amp;</span>composed, <span class="kw-2">&amp;</span>action);
+<a href=#729 id=729 data-nosnippet>729</a>            kani::assert(
+<a href=#730 id=730 data-nosnippet>730</a>                RangeChminChmaxAdd::act(<span class="kw-2">&amp;</span>Saturating(key <span class="kw">as </span>i64), <span class="kw-2">&amp;</span>composed).<span class="number">0 </span>== expected,
+<a href=#731 id=731 data-nosnippet>731</a>                <span class="string">"For every i32 key and three i16 chmin/chmax/add updates widened to Saturating&lt;i64&gt;, composition equals direct commands in order, including all operation mixtures"</span>,
+<a href=#732 id=732 data-nosnippet>732</a>            );
+<a href=#733 id=733 data-nosnippet>733</a>        }
+<a href=#734 id=734 data-nosnippet>734</a>        <span class="macro">kani::cover!</span>(kinds == [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>]);
+<a href=#735 id=735 data-nosnippet>735</a>        <span class="macro">kani::cover!</span>(kinds == [<span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>]);
+<a href=#736 id=736 data-nosnippet>736</a>        <span class="macro">kani::cover!</span>(key == i32::MAX &amp;&amp; values == [i16::MAX; <span class="number">3</span>] &amp;&amp; kinds == [<span class="number">2</span>; <span class="number">3</span>]);
+<a href=#737 id=737 data-nosnippet>737</a>    }
+<a href=#738 id=738 data-nosnippet>738</a>
+<a href=#739 id=739 data-nosnippet>739</a>    <span class="macro">macro_rules!</span> proof_extremum_update {
+<a href=#740 id=740 data-nosnippet>740</a>        (<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$map</span>:ty) =&gt; {
+<a href=#741 id=741 data-nosnippet>741</a>            <span class="attr">#[kani::proof]
+<a href=#742 id=742 data-nosnippet>742</a>            </span><span class="kw">fn </span><span class="macro-nonterminal">$name</span>() {
+<a href=#743 id=743 data-nosnippet>743</a>                <span class="kw">type </span>M = <span class="macro-nonterminal">$map</span>;
+<a href=#744 id=744 data-nosnippet>744</a>                <span class="kw">let </span>x: i64 = kani::any();
+<a href=#745 id=745 data-nosnippet>745</a>                <span class="kw">let </span>y: i64 = kani::any();
+<a href=#746 id=746 data-nosnippet>746</a>                <span class="kw">let </span>a: <span class="prelude-ty">Option</span>&lt;i64&gt; = kani::any();
+<a href=#747 id=747 data-nosnippet>747</a>                <span class="kw">let </span>b: <span class="prelude-ty">Option</span>&lt;i64&gt; = kani::any();
+<a href=#748 id=748 data-nosnippet>748</a>                <span class="kw">let </span>mapped_x = M::act_agg(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>a).unwrap();
+<a href=#749 id=749 data-nosnippet>749</a>                <span class="kw">let </span>mapped_y = M::act_agg(<span class="kw-2">&amp;</span>y, <span class="kw-2">&amp;</span>a).unwrap();
+<a href=#750 id=750 data-nosnippet>750</a>                kani::assert(
+<a href=#751 id=751 data-nosnippet>751</a>                    M::act_agg(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>M::act_unit()) == <span class="prelude-val">Some</span>(x),
+<a href=#752 id=752 data-nosnippet>752</a>                    <span class="string">"For every i64 extremum aggregate, the identity update preserves its value"</span>,
+<a href=#753 id=753 data-nosnippet>753</a>                );
+<a href=#754 id=754 data-nosnippet>754</a>                kani::assert(
+<a href=#755 id=755 data-nosnippet>755</a>                    M::act_agg(<span class="kw-2">&amp;</span>M::agg_operate(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>y), <span class="kw-2">&amp;</span>a)
+<a href=#756 id=756 data-nosnippet>756</a>                        == <span class="prelude-val">Some</span>(M::agg_operate(<span class="kw-2">&amp;</span>mapped_x, <span class="kw-2">&amp;</span>mapped_y)),
+<a href=#757 id=757 data-nosnippet>757</a>                    <span class="string">"For all nonempty i64 extrema aggregates and optional assignments, updating after merging equals merging after updating"</span>,
+<a href=#758 id=758 data-nosnippet>758</a>                );
+<a href=#759 id=759 data-nosnippet>759</a>                <span class="kw">let </span>expected = <span class="prelude-val">Some</span>(b.or(a).unwrap_or(x));
+<a href=#760 id=760 data-nosnippet>760</a>                kani::assert(
+<a href=#761 id=761 data-nosnippet>761</a>                    M::act_agg(<span class="kw-2">&amp;</span>mapped_x, <span class="kw-2">&amp;</span>b) == expected
+<a href=#762 id=762 data-nosnippet>762</a>                        &amp;&amp; M::act_agg(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>M::act_operate(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b)) == expected,
+<a href=#763 id=763 data-nosnippet>763</a>                    <span class="string">"For every i64 aggregate and pair of optional assignments, composition applies them in order and the last present assignment wins"</span>,
+<a href=#764 id=764 data-nosnippet>764</a>                );
+<a href=#765 id=765 data-nosnippet>765</a>                kani::assert(
+<a href=#766 id=766 data-nosnippet>766</a>                    M::act_agg(<span class="kw-2">&amp;</span>M::single_agg(<span class="kw-2">&amp;</span>x), <span class="kw-2">&amp;</span>a)
+<a href=#767 id=767 data-nosnippet>767</a>                        == <span class="prelude-val">Some</span>(M::single_agg(<span class="kw-2">&amp;</span>M::act_key(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>a))),
+<a href=#768 id=768 data-nosnippet>768</a>                    <span class="string">"For every i64 key and optional assignment, updating its singleton aggregate agrees with updating the key"</span>,
+<a href=#769 id=769 data-nosnippet>769</a>                );
+<a href=#770 id=770 data-nosnippet>770</a>                <span class="macro">kani::cover!</span>(a.is_none());
+<a href=#771 id=771 data-nosnippet>771</a>                <span class="macro">kani::cover!</span>(a.is_some() &amp;&amp; b.is_some() &amp;&amp; a != b);
+<a href=#772 id=772 data-nosnippet>772</a>            }
+<a href=#773 id=773 data-nosnippet>773</a>        };
+<a href=#774 id=774 data-nosnippet>774</a>    }
+<a href=#775 id=775 data-nosnippet>775</a>
+<a href=#776 id=776 data-nosnippet>776</a>    <span class="macro">proof_extremum_update!</span>(proof_min_update, RangeMinRangeUpdate&lt;i64&gt;);
+<a href=#777 id=777 data-nosnippet>777</a>    <span class="macro">proof_extremum_update!</span>(proof_max_update, RangeMaxRangeUpdate&lt;i64&gt;);
+<a href=#778 id=778 data-nosnippet>778</a>}
+<a href=#779 id=779 data-nosnippet>779</a>
+<a href=#780 id=780 data-nosnippet>780</a><span class="attr">#[cfg(test)]
+<a href=#781 id=781 data-nosnippet>781</a></span><span class="kw">mod </span>tests {
+<a href=#782 id=782 data-nosnippet>782</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#783 id=783 data-nosnippet>783</a>    <span class="kw">use crate</span>::{
+<a href=#784 id=784 data-nosnippet>784</a>        data_structure::LazySegmentTree,
+<a href=#785 id=785 data-nosnippet>785</a>        num::mint_basic::MInt998244353 <span class="kw">as </span>M,
+<a href=#786 id=786 data-nosnippet>786</a>        tools::{
+<a href=#787 id=787 data-nosnippet>787</a>            Xorshift,
+<a href=#788 id=788 data-nosnippet>788</a>            testutil::{exhaustive_sequences, sequence_cases},
+<a href=#789 id=789 data-nosnippet>789</a>        },
+<a href=#790 id=790 data-nosnippet>790</a>    };
+<a href=#791 id=791 data-nosnippet>791</a>    <span class="kw">use </span>std::num::Wrapping;
+<a href=#792 id=792 data-nosnippet>792</a>
+<a href=#793 id=793 data-nosnippet>793</a>    <span class="kw">fn </span>check_mapping&lt;<span class="kw">const </span>K: usize&gt;() {
+<a href=#794 id=794 data-nosnippet>794</a>        <span class="kw">type </span>W = Wrapping&lt;u64&gt;;
+<a href=#795 id=795 data-nosnippet>795</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#796 id=796 data-nosnippet>796</a>        <span class="kw">let </span>inputs =
+<a href=#797 id=797 data-nosnippet>797</a>            exhaustive_sequences(-<span class="number">2i64</span>..=<span class="number">2</span>, <span class="number">0</span>..=<span class="number">3</span>).chain(sequence_cases(<span class="kw-2">&amp;mut </span>rng, -<span class="number">8</span>..=<span class="number">8</span>, <span class="number">0</span>..=<span class="number">65</span>));
+<a href=#798 id=798 data-nosnippet>798</a>        <span class="kw">for </span>values <span class="kw">in </span>inputs {
+<a href=#799 id=799 data-nosnippet>799</a>            <span class="kw">let </span>leaves: Vec&lt;<span class="kw">_</span>&gt; = values
+<a href=#800 id=800 data-nosnippet>800</a>                .iter()
+<a href=#801 id=801 data-nosnippet>801</a>                .enumerate()
+<a href=#802 id=802 data-nosnippet>802</a>                .map(|(i, <span class="kw-2">&amp;</span>x)| (Wrapping(x <span class="kw">as </span>u64), Wrapping([<span class="number">0</span>, <span class="number">1</span>, u64::MAX, <span class="number">2</span>][i % <span class="number">4</span>])))
+<a href=#803 id=803 data-nosnippet>803</a>                .collect();
+<a href=#804 id=804 data-nosnippet>804</a>            <span class="kw">let </span>agg: [W; K] = std::array::from_fn(|k| {
+<a href=#805 id=805 data-nosnippet>805</a>                leaves
+<a href=#806 id=806 data-nosnippet>806</a>                    .iter()
+<a href=#807 id=807 data-nosnippet>807</a>                    .map(|<span class="kw-2">&amp;</span>(x, w)| w * Wrapping(x.<span class="number">0</span>.wrapping_pow(k <span class="kw">as </span>u32)))
+<a href=#808 id=808 data-nosnippet>808</a>                    .sum()
+<a href=#809 id=809 data-nosnippet>809</a>            });
+<a href=#810 id=810 data-nosnippet>810</a>            <span class="macro">assert_eq!</span>(
+<a href=#811 id=811 data-nosnippet>811</a>                RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>(W::one(), W::zero())),
+<a href=#812 id=812 data-nosnippet>812</a>                <span class="prelude-val">Some</span>(agg)
+<a href=#813 id=813 data-nosnippet>813</a>            );
+<a href=#814 id=814 data-nosnippet>814</a>            <span class="kw">for </span>a <span class="kw">in </span>-<span class="number">2i64</span>..=<span class="number">2 </span>{
+<a href=#815 id=815 data-nosnippet>815</a>                <span class="kw">for </span>b <span class="kw">in </span>-<span class="number">2i64</span>..=<span class="number">2 </span>{
+<a href=#816 id=816 data-nosnippet>816</a>                    <span class="kw">let </span>act = (Wrapping(a <span class="kw">as </span>u64), Wrapping(b <span class="kw">as </span>u64));
+<a href=#817 id=817 data-nosnippet>817</a>                    <span class="kw">let </span>mapped = RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>act).unwrap();
+<a href=#818 id=818 data-nosnippet>818</a>                    <span class="kw">let </span>expected: [W; K] = std::array::from_fn(|k| {
+<a href=#819 id=819 data-nosnippet>819</a>                        leaves
+<a href=#820 id=820 data-nosnippet>820</a>                            .iter()
+<a href=#821 id=821 data-nosnippet>821</a>                            .map(|<span class="kw-2">&amp;</span>(x, w)| {
+<a href=#822 id=822 data-nosnippet>822</a>                                w * Wrapping((act.<span class="number">0 </span>* x + act.<span class="number">1</span>).<span class="number">0</span>.wrapping_pow(k <span class="kw">as </span>u32))
+<a href=#823 id=823 data-nosnippet>823</a>                            })
+<a href=#824 id=824 data-nosnippet>824</a>                            .sum()
+<a href=#825 id=825 data-nosnippet>825</a>                    });
+<a href=#826 id=826 data-nosnippet>826</a>                    <span class="macro">assert_eq!</span>(mapped, expected);
+<a href=#827 id=827 data-nosnippet>827</a>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(key, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>leaves {
+<a href=#828 id=828 data-nosnippet>828</a>                        <span class="kw">let </span>leaf = RangePowerSumRangeLinear::&lt;W, K&gt;::single_agg(<span class="kw-2">&amp;</span>key);
+<a href=#829 id=829 data-nosnippet>829</a>                        <span class="kw">let </span>updated = RangePowerSumRangeLinear::&lt;W, K&gt;::act_key(<span class="kw-2">&amp;</span>key, <span class="kw-2">&amp;</span>act);
+<a href=#830 id=830 data-nosnippet>830</a>                        <span class="macro">assert_eq!</span>(
+<a href=#831 id=831 data-nosnippet>831</a>                            RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>leaf, <span class="kw-2">&amp;</span>act),
+<a href=#832 id=832 data-nosnippet>832</a>                            <span class="prelude-val">Some</span>(RangePowerSumRangeLinear::single_agg(<span class="kw-2">&amp;</span>updated))
+<a href=#833 id=833 data-nosnippet>833</a>                        );
+<a href=#834 id=834 data-nosnippet>834</a>                    }
+<a href=#835 id=835 data-nosnippet>835</a>                    <span class="kw">for </span>c <span class="kw">in </span>-<span class="number">2i64</span>..=<span class="number">2 </span>{
+<a href=#836 id=836 data-nosnippet>836</a>                        <span class="kw">let </span>next = (Wrapping(c <span class="kw">as </span>u64), Wrapping(<span class="number">3</span>));
+<a href=#837 id=837 data-nosnippet>837</a>                        <span class="kw">let </span>composed = RangePowerSumRangeLinear::&lt;W, K&gt;::act_operate(<span class="kw-2">&amp;</span>act, <span class="kw-2">&amp;</span>next);
+<a href=#838 id=838 data-nosnippet>838</a>                        <span class="macro">assert_eq!</span>(
+<a href=#839 id=839 data-nosnippet>839</a>                            RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>mapped, <span class="kw-2">&amp;</span>next),
+<a href=#840 id=840 data-nosnippet>840</a>                            RangePowerSumRangeLinear::act_agg(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>composed)
+<a href=#841 id=841 data-nosnippet>841</a>                        );
+<a href=#842 id=842 data-nosnippet>842</a>                    }
+<a href=#843 id=843 data-nosnippet>843</a>                }
+<a href=#844 id=844 data-nosnippet>844</a>            }
+<a href=#845 id=845 data-nosnippet>845</a>        }
+<a href=#846 id=846 data-nosnippet>846</a>    }
+<a href=#847 id=847 data-nosnippet>847</a>
+<a href=#848 id=848 data-nosnippet>848</a>    <span class="attr">#[test]
+<a href=#849 id=849 data-nosnippet>849</a>    </span><span class="kw">fn </span>test_power_sum_mapping() {
+<a href=#850 id=850 data-nosnippet>850</a>        check_mapping::&lt;<span class="number">0</span>&gt;();
+<a href=#851 id=851 data-nosnippet>851</a>        check_mapping::&lt;<span class="number">1</span>&gt;();
+<a href=#852 id=852 data-nosnippet>852</a>        check_mapping::&lt;<span class="number">2</span>&gt;();
+<a href=#853 id=853 data-nosnippet>853</a>        check_mapping::&lt;<span class="number">5</span>&gt;();
+<a href=#854 id=854 data-nosnippet>854</a>        check_mapping::&lt;<span class="number">8</span>&gt;();
+<a href=#855 id=855 data-nosnippet>855</a>    }
+<a href=#856 id=856 data-nosnippet>856</a>
+<a href=#857 id=857 data-nosnippet>857</a>    <span class="attr">#[test]
+<a href=#858 id=858 data-nosnippet>858</a>    </span><span class="kw">fn </span>test_power_sum_range_updates() {
+<a href=#859 id=859 data-nosnippet>859</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#860 id=860 data-nosnippet>860</a>        <span class="kw">let </span>inputs: Vec&lt;<span class="kw">_</span>&gt; = sequence_cases(<span class="kw-2">&amp;mut </span>rng, -<span class="number">100i64</span>..=<span class="number">100</span>, <span class="number">0</span>..=<span class="number">257</span>).collect();
+<a href=#861 id=861 data-nosnippet>861</a>        <span class="kw">for </span>input <span class="kw">in </span>inputs {
+<a href=#862 id=862 data-nosnippet>862</a>            <span class="kw">let </span><span class="kw-2">mut </span>values: Vec&lt;<span class="kw">_</span>&gt; = input.into_iter().map(M::from).collect();
+<a href=#863 id=863 data-nosnippet>863</a>            <span class="kw">let </span>n = values.len();
+<a href=#864 id=864 data-nosnippet>864</a>            <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangePowerSumRangeLinear&lt;M, <span class="number">5</span>&gt;&gt;::from_keys(
+<a href=#865 id=865 data-nosnippet>865</a>                values.iter().copied(),
+<a href=#866 id=866 data-nosnippet>866</a>            );
+<a href=#867 id=867 data-nosnippet>867</a>            <span class="kw">for </span>step <span class="kw">in </span><span class="number">0</span>..<span class="number">128 </span>{
+<a href=#868 id=868 data-nosnippet>868</a>                <span class="kw">let </span>(l, r) = <span class="kw">match </span>step % <span class="number">8 </span>{
+<a href=#869 id=869 data-nosnippet>869</a>                    <span class="number">0 </span>| <span class="number">1 </span>=&gt; (<span class="number">0</span>, n),
+<a href=#870 id=870 data-nosnippet>870</a>                    <span class="number">2 </span>=&gt; (n, n),
+<a href=#871 id=871 data-nosnippet>871</a>                    <span class="number">3 </span>=&gt; (<span class="number">0</span>, n.min(<span class="number">1</span>)),
+<a href=#872 id=872 data-nosnippet>872</a>                    <span class="kw">_ </span>=&gt; {
+<a href=#873 id=873 data-nosnippet>873</a>                        <span class="kw">let </span>a = rng.random(<span class="number">0</span>..=n);
+<a href=#874 id=874 data-nosnippet>874</a>                        <span class="kw">let </span>b = rng.random(<span class="number">0</span>..=n);
+<a href=#875 id=875 data-nosnippet>875</a>                        (a.min(b), a.max(b))
+<a href=#876 id=876 data-nosnippet>876</a>                    }
+<a href=#877 id=877 data-nosnippet>877</a>                };
+<a href=#878 id=878 data-nosnippet>878</a>                <span class="kw">let </span>act = <span class="kw">match </span>step % <span class="number">6 </span>{
+<a href=#879 id=879 data-nosnippet>879</a>                    <span class="number">0 </span>=&gt; (M::from(<span class="number">2</span>), M::from(<span class="number">3</span>)),
+<a href=#880 id=880 data-nosnippet>880</a>                    <span class="number">1 </span>=&gt; (M::from(<span class="number">3</span>), M::from(<span class="number">4</span>)),
+<a href=#881 id=881 data-nosnippet>881</a>                    <span class="number">2 </span>=&gt; (M::zero(), rng.random(..)),
+<a href=#882 id=882 data-nosnippet>882</a>                    <span class="number">3 </span>=&gt; (M::one(), rng.random(..)),
+<a href=#883 id=883 data-nosnippet>883</a>                    <span class="number">4 </span>=&gt; (rng.random(..), M::zero()),
+<a href=#884 id=884 data-nosnippet>884</a>                    <span class="kw">_ </span>=&gt; (M::one(), M::zero()),
+<a href=#885 id=885 data-nosnippet>885</a>                };
+<a href=#886 id=886 data-nosnippet>886</a>                seg.update(l..r, act);
+<a href=#887 id=887 data-nosnippet>887</a>                <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>values[l..r] {
+<a href=#888 id=888 data-nosnippet>888</a>                    <span class="kw-2">*</span>x = act.<span class="number">0 </span>* <span class="kw-2">*</span>x + act.<span class="number">1</span>;
+<a href=#889 id=889 data-nosnippet>889</a>                }
+<a href=#890 id=890 data-nosnippet>890</a>                <span class="kw">if </span>n != <span class="number">0 </span>&amp;&amp; step % <span class="number">7 </span>== <span class="number">0 </span>{
+<a href=#891 id=891 data-nosnippet>891</a>                    <span class="kw">let </span>i = rng.random(<span class="number">0</span>..n);
+<a href=#892 id=892 data-nosnippet>892</a>                    values[i] = rng.random(..);
+<a href=#893 id=893 data-nosnippet>893</a>                    seg.set(i, RangePowerSumRangeLinear::single_agg(<span class="kw-2">&amp;</span>values[i]));
+<a href=#894 id=894 data-nosnippet>894</a>                }
+<a href=#895 id=895 data-nosnippet>895</a>                <span class="kw">let </span>expected: [M; <span class="number">5</span>] =
+<a href=#896 id=896 data-nosnippet>896</a>                    std::array::from_fn(|k| values[l..r].iter().map(|<span class="kw-2">&amp;</span>x| x.pow(k)).sum());
+<a href=#897 id=897 data-nosnippet>897</a>                <span class="macro">assert_eq!</span>(seg.fold(l..r), expected);
+<a href=#898 id=898 data-nosnippet>898</a>                <span class="macro">assert_eq!</span>(
+<a href=#899 id=899 data-nosnippet>899</a>                    seg.fold_all(),
+<a href=#900 id=900 data-nosnippet>900</a>                    std::array::from_fn(|k| values.iter().map(|<span class="kw-2">&amp;</span>x| x.pow(k)).sum())
+<a href=#901 id=901 data-nosnippet>901</a>                );
+<a href=#902 id=902 data-nosnippet>902</a>                <span class="kw">if </span>n != <span class="number">0 </span>{
+<a href=#903 id=903 data-nosnippet>903</a>                    <span class="kw">let </span>i = rng.random(<span class="number">0</span>..n);
+<a href=#904 id=904 data-nosnippet>904</a>                    <span class="macro">assert_eq!</span>(seg.get(i), std::array::from_fn(|k| values[i].pow(k)));
+<a href=#905 id=905 data-nosnippet>905</a>                }
+<a href=#906 id=906 data-nosnippet>906</a>            }
+<a href=#907 id=907 data-nosnippet>907</a>        }
+<a href=#908 id=908 data-nosnippet>908</a>    }
+<a href=#909 id=909 data-nosnippet>909</a>}
 </code></pre></div></section></main></body></html>
