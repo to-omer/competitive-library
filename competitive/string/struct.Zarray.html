@@ -100,7 +100,7 @@
 <span data-nosnippet>156</span>                    ==&gt; (occurs(s@, pat@, p) == res@.contains(p <span class="kw">as </span>usize)),
 <span data-nosnippet>157</span>                forall|q: int, r: int| <span class="number">0 </span>&lt;= q &lt; r &lt; res.len() ==&gt; res@[q] &lt; res@[r],
 <span data-nosnippet>158</span>        ))]
-<span data-nosnippet>159</span>        <span class="kw">for </span>i <span class="kw">in </span>pat.len() + <span class="number">1</span>..t.len() {
+<span data-nosnippet>159</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>z) <span class="kw">in </span>(pat.len() + <span class="number">1</span>..t.len()).zip(<span class="kw-2">&amp;</span>zarray.z[pat.len() + <span class="number">1</span>..]) {
 <span data-nosnippet>160</span>            <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>161</span>            </span><span class="macro">proof_decl!</span> { <span class="kw">let </span>ghost before = res@; }
 <span data-nosnippet>162</span>            <span class="attr">#[cfg(verus_keep_ghost)]
@@ -119,7 +119,7 @@
 <span data-nosnippet>175</span>                }
 <span data-nosnippet>176</span>                assert((z &gt;= pat.len()) == occurs(s@, pat@, pos));
 <span data-nosnippet>177</span>            }
-<span data-nosnippet>178</span>            <span class="kw">if </span>zarray.z[i] &gt;= pat.len() {
+<span data-nosnippet>178</span>            <span class="kw">if </span>z &gt;= pat.len() {
 <span data-nosnippet>179</span>                res.push(i - pat.len() - <span class="number">1</span>);
 <span data-nosnippet>180</span>            }
 <span data-nosnippet>181</span>            <span class="attr">#[cfg(verus_keep_ghost)]
@@ -141,7 +141,7 @@
 <span data-nosnippet>197</span>                }
 <span data-nosnippet>198</span>                assert forall|q: int, r: int| <span class="number">0 </span>&lt;= q &lt; r &lt; res.len() implies
 <span data-nosnippet>199</span>                    res@[q] &lt; res@[r] by {
-<span data-nosnippet>200</span>                    <span class="kw">if </span>r &lt; before.len() { <a href="../../../formal/index.html">assert</a>(before[q] &lt; before[r]); }
+<span data-nosnippet>200</span>                    <span class="kw">if </span>r &lt; before.len() { assert(before[q] &lt; before[r]); }
 <span data-nosnippet>201</span>                }
 <span data-nosnippet>202</span>            }
 <span data-nosnippet>203</span>        }
