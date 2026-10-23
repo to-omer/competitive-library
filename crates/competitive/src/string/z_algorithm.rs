@@ -156,7 +156,7 @@ impl Zarray {
                     ==> (occurs(s@, pat@, p) == res@.contains(p as usize)),
                 forall|q: int, r: int| 0 <= q < r < res.len() ==> res@[q] < res@[r],
         ))]
-        for i in pat.len() + 1..t.len() {
+        for (i, &z) in (pat.len() + 1..t.len()).zip(&zarray.z[pat.len() + 1..]) {
             #[cfg(verus_keep_ghost)]
             proof_decl! { let ghost before = res@; }
             #[cfg(verus_keep_ghost)]
@@ -175,7 +175,7 @@ impl Zarray {
                 }
                 assert((z >= pat.len()) == occurs(s@, pat@, pos));
             }
-            if zarray.z[i] >= pat.len() {
+            if z >= pat.len() {
                 res.push(i - pat.len() - 1);
             }
             #[cfg(verus_keep_ghost)]
