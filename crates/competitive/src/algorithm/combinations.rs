@@ -235,14 +235,14 @@ where
             return false;
         }
         let mut target = self.len() - 2;
-        while target > 0 && self[target] > self[target + 1] {
+        while target > 0 && self[target] >= self[target + 1] {
             target -= 1;
         }
-        if target == 0 && self[target] > self[target + 1] {
+        if target == 0 && self[target] >= self[target + 1] {
             return false;
         }
         let mut next = self.len() - 1;
-        while next > target && self[next] < self[target] {
+        while next > target && self[next] <= self[target] {
             next -= 1;
         }
         self.swap(next, target);
@@ -260,10 +260,10 @@ where
             return false;
         }
         let mut target = self.len() - 2;
-        while target > 0 && self[target] < self[target + 1] {
+        while target > 0 && self[target] <= self[target + 1] {
             target -= 1;
         }
-        if target == 0 && self[target] < self[target + 1] {
+        if target == 0 && self[target] <= self[target + 1] {
             return false;
         }
         self[target + 1..].reverse();

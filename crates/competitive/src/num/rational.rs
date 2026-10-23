@@ -62,7 +62,19 @@ where
     T: Signed,
 {
     pub fn new(num: T, den: T) -> Self {
-        let g = num.abs().unsigned().gcd(den.abs().unsigned()).signed();
+        let g = num
+            .abs_diff(T::zero())
+            .gcd(den.abs_diff(T::zero()))
+            .signed();
+        if g.is_negative() {
+            // Only the magnitude of MIN exceeds the positive signed range.
+            let num = if den.is_negative() {
+                -num.signum()
+            } else {
+                num.signum()
+            };
+            return Self::new_unchecked(num, if den.is_zero() { T::zero() } else { T::one() });
+        }
         let g = if den.is_negative() { -g } else { g };
         Self::new_unchecked(num / g, den / g)
     }

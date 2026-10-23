@@ -97,9 +97,23 @@ pub trait Unsigned: IntBase {
     }
     fn mod_inv(self, modulo: Self) -> Self {
         debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
-        let extgcd = self.signed().extgcd(modulo.signed());
-        debug_assert!(extgcd.g.is_one(), "not coprime");
-        extgcd.x.rem_euclid(modulo.signed()).unsigned()
+        if modulo.is_one() {
+            return Self::zero();
+        }
+        let (mut a, mut b) = (self, modulo);
+        let (mut u, mut v) = (Self::one(), Self::zero());
+        let mut negative = true;
+        // b * u + a * v equals the modulus, so coefficient updates fit.
+        while !a.is_zero() {
+            let k = b / a;
+            v += k * u;
+            b -= k * a;
+            std::mem::swap(&mut u, &mut v);
+            std::mem::swap(&mut b, &mut a);
+            negative = !negative;
+        }
+        debug_assert!(b.is_one(), "not coprime");
+        if negative { v.mod_neg(modulo) } else { v }
     }
     fn mod_add(self, rhs: Self, modulo: Self) -> Self;
     fn mod_sub(self, rhs: Self, modulo: Self) -> Self;

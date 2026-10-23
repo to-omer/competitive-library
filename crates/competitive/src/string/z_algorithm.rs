@@ -111,8 +111,8 @@ impl Zarray {
         t.push(&sep);
         t.extend(s);
         let zarray = Self::new(&t);
-        for i in 0..t.len() {
-            if zarray[i] == pat.len() {
+        for i in pat.len() + 1..t.len() {
+            if zarray[i] >= pat.len() {
                 res.push(i - pat.len() - 1);
             }
         }

@@ -196,7 +196,7 @@ where
     }
 }
 
-unsafe fn merge<T, F>(v: &mut [T], mut mid: usize, buf: *mut T, is_less: &mut F)
+unsafe fn merge<T, F>(v: &mut [T], mid: usize, buf: *mut T, is_less: &mut F)
 where
     F: FnMut(&T, &T) -> bool,
 {
@@ -206,24 +206,33 @@ where
         let (v_mid, v_end) = (v.add(mid), v.add(len));
 
         copy_nonoverlapping(v, buf, mid);
-        let mut start = buf;
-        let end = buf.add(mid);
-        let mut dest = v;
-
-        let left = &mut start;
+        let mut guard = MergeGuard {
+            start: buf,
+            dest: v,
+            len: mid,
+        };
         let mut right = v_mid;
-        while *left < end && right < v_end {
-            let to_copy = if is_less(&*right, &**left) {
+        while guard.len != 0 && right < v_end {
+            let to_copy = if is_less(&*right, &*guard.start) {
                 get_and_increment(&mut right)
             } else {
-                mid -= 1;
-                get_and_increment(left)
+                guard.len -= 1;
+                get_and_increment(&mut guard.start)
             };
-            copy_nonoverlapping(to_copy, get_and_increment(&mut dest), 1);
+            copy_nonoverlapping(to_copy, get_and_increment(&mut guard.dest), 1);
         }
+    }
 
-        // let len = end.sub_ptr(start);
-        copy_nonoverlapping(start, dest, mid);
+    // The buffered values fill the hole on normal return and comparator unwinding.
+    struct MergeGuard<T> {
+        start: *mut T,
+        dest: *mut T,
+        len: usize,
+    }
+    impl<T> Drop for MergeGuard<T> {
+        fn drop(&mut self) {
+            unsafe { copy_nonoverlapping(self.start, self.dest, self.len) };
+        }
     }
 
     unsafe fn get_and_increment<T>(ptr: &mut *mut T) -> *mut T {

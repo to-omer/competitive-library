@@ -21,7 +21,16 @@ where
 {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(f: &mut [G::T]) {
-        bitwise_transform(f, |y, x| *x = G::rinv_operate(x, y));
+        let k = f.len().trailing_zeros() as usize;
+        assert!(f.len() == 1 << k);
+        for i in (0..k).rev() {
+            for chunk in f.chunks_exact_mut(2 << i) {
+                let (left, right) = chunk.split_at_mut(1 << i);
+                for (y, x) in left.iter_mut().zip(right.iter_mut()) {
+                    *x = G::rinv_operate(x, y);
+                }
+            }
+        }
     }
 }
 
@@ -95,7 +104,7 @@ where
             let chunk = &mut self.data[i - (size * 2 - 1)..];
             let (x, y) = chunk.split_at_mut(size);
             for (x, y) in x.iter().zip(y.iter_mut()) {
-                *y = M::operate(x, y);
+                *y = M::operate(y, x);
             }
             k += 1;
         }

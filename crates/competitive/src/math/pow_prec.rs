@@ -51,7 +51,7 @@ where
         if n < self.sqn {
             return self.p0[n];
         }
-        let n = (n + 1 - self.sqn) % self.period;
+        let n = (n - self.sqn + 1) % self.period;
         let (p, q) = (n / self.sqn, n % self.sqn);
         self.p1[p] * self.p0[q] * self.p0[self.sqn - 1]
     }

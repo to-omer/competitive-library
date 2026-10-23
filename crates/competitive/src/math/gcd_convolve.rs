@@ -30,10 +30,12 @@ where
     pub fn mobius_transform(f: &mut [G::T]) {
         let n = f.len().saturating_sub(1) as u32;
         with_prime_list(n, |pl| {
-            for p in pl.primes_lte(n) {
-                for (i, j) in (0..f.len()).step_by(p as _).enumerate() {
+            for p in pl.primes_lte(n).rev() {
+                (1..=(f.len() - 1) / p as usize).for_each(|i| {
+                    let j = i * p as usize;
                     f[i] = G::rinv_operate(&f[i], &f[j]);
-                }
+                });
+                f[0] = G::rinv_operate(&f[0], &f[0]);
             }
         })
     }

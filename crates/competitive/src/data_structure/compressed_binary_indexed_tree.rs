@@ -230,7 +230,7 @@ macro_rules! impl_compressed_binary_indexed_tree {
                 };
                 let mut x = M::unit();
                 while k > 0 {
-                    x = M::operate(&x, &impl_compressed_binary_indexed_tree!(@acc self.bits[k], range $($T)*));
+                    x = M::operate(&impl_compressed_binary_indexed_tree!(@acc self.bits[k], range $($T)*), &x);
                     k -= k & (!k + 1);
                 }
                 x

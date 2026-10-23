@@ -30,11 +30,15 @@ pub fn floor_sum(n: u64, a: u64, b: u64, m: u64) -> u64 {
             ans += n * q;
             b = r;
         }
-        let y_max = (n * a + b).0;
-        if y_max < m {
-            break;
-        }
-        let (q, r) = br.div_rem(y_max);
+        let (q, r) = if let Some(y_max) = n.0.checked_mul(a).and_then(|x| x.checked_add(b)) {
+            if y_max < m {
+                break;
+            }
+            br.div_rem(y_max)
+        } else {
+            let y_max = n.0 as u128 * a as u128 + b as u128;
+            ((y_max / m as u128) as u64, (y_max % m as u128) as u64)
+        };
         n = Wrapping(q);
         b = r;
         swap(&mut m, &mut a);

@@ -519,6 +519,7 @@ impl Iterator for PrimeListIter<'_> {
 }
 
 impl DoubleEndedIterator for PrimeListIter<'_> {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         loop {
             if self.back_word != 0 {

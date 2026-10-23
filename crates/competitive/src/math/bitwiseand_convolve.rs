@@ -43,23 +43,24 @@ where
     pub fn mobius_transform(f: &mut [G::T]) {
         let k = f.len().trailing_zeros() as usize;
         assert!(f.len() == 1 << k);
-        if k & 1 != 0 {
-            for [x, y] in f.as_chunks_mut::<2>().0 {
-                *x = G::rinv_operate(x, y);
-            }
-        }
-        for i in (k & 1..k).step_by(2) {
+        let mut i = k;
+        while i >= 2 {
+            i -= 2;
             for chunk in f.chunks_exact_mut(4 << i) {
                 let (left, right) = chunk.split_at_mut(2 << i);
                 let (a, b) = left.split_at_mut(1 << i);
                 let (c, d) = right.split_at_mut(1 << i);
                 for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
-                    let x = G::rinv_operate(a, b);
-                    let y = G::rinv_operate(c, d);
-                    *a = G::rinv_operate(&x, &y);
+                    let x = G::rinv_operate(a, c);
+                    *c = G::rinv_operate(c, d);
                     *b = G::rinv_operate(b, d);
-                    *c = y;
+                    *a = G::rinv_operate(&x, b);
                 }
+            }
+        }
+        if k & 1 != 0 {
+            for [x, y] in f.as_chunks_mut::<2>().0 {
+                *x = G::rinv_operate(x, y);
             }
         }
     }
@@ -149,7 +150,7 @@ where
             let base = cur ^ (1 << d);
             if (!base & index) >> d == 0 {
                 let mask = (1 << d) - 1;
-                s = M::operate(&s, &self.data[base ^ ((index ^ base) & mask)]);
+                s = M::operate(&self.data[base ^ ((index ^ base) & mask)], &s);
             }
             cur = base;
         }

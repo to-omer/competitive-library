@@ -56,7 +56,9 @@ impl Trie {
         I: IntoIterator<Item = usize>,
     {
         for ch in iter.into_iter() {
-            if let Some(&nnode) = self.child.get(node * self.char_size + ch) {
+            if let Some(&nnode) = self.child.get(node * self.char_size + ch)
+                && nnode != !0
+            {
                 node = nnode;
             } else {
                 return Err(node);

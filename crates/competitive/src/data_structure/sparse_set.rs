@@ -17,7 +17,7 @@ macro_rules! impl_sparse_set {
 
                 pub unsafe fn insert_unchecked(&mut self, x: $ty) {
                     if !FIXED && x as usize >= self.index.len() {
-                        self.index.resize_with(x as usize + 1, Default::default);
+                        self.index.resize(x as usize + 1, !0);
                     }
                     self.index[x as usize] = self.data.len() as _;
                     self.data.push(x);
@@ -58,7 +58,13 @@ macro_rules! impl_sparse_set {
                 }
 
                 pub fn contains(&self, x: $ty) -> bool {
-                    self.index[x as usize] != !0
+                    if !FIXED && x as usize >= self.index.len() {
+                        false
+                    } else {
+                        // The last position of a full key domain shares the absent marker.
+                        self.index[x as usize] != !0
+                            || self.data.get(<$ty>::MAX as usize) == Some(&x)
+                    }
                 }
 
                 pub fn iter(&self) -> std::slice::Iter<'_, $ty> {

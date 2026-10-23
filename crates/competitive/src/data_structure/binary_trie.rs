@@ -290,7 +290,7 @@ where
             }
             Bound::Excluded(&x) => {
                 assert!(x <= self.max_key);
-                (x < self.max_key).then_some(x + 1)
+                (x < self.max_key).then(|| x + 1)
             }
             Bound::Unbounded => Some(0),
         };

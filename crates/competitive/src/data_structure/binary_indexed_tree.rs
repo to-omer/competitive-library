@@ -62,7 +62,7 @@ where
         debug_assert!(k <= self.n);
         let mut res = M::unit();
         while k > 0 {
-            res = M::operate(&res, &self.bit[k]);
+            res = M::operate(&self.bit[k], &res);
             k -= k & (!k + 1);
         }
         res
