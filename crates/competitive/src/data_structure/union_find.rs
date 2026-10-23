@@ -522,6 +522,69 @@ pub type MergingUnionFind<T, M> =
 pub type PotentializedUnionFind<P> = UnionFindBase<UnionBySize, PathCompression, (), P, ()>;
 pub type UndoableUnionFind = UnionFindBase<UnionBySize, (), (), (), Undoable>;
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::LogicalLinearOperation;
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_potential_compression() {
+        let a: (u64, u64) = kani::any();
+        let b: (u64, u64) = kani::any();
+        let c: (u64, u64) = kani::any();
+        let value: u64 = kani::any();
+        let mut uf =
+            UnionFindBase::<(), PathCompression, (), LogicalLinearOperation<u64>, ()>::new(4);
+        uf.unite_noninv(2, 3, c);
+        uf.unite_noninv(1, 2, b);
+        uf.unite_noninv(0, 1, a);
+        let expected = (((value & a.0) ^ a.1) & b.0 ^ b.1) & c.0 ^ c.1;
+        let root = uf.find_root(3);
+        let (found_root, potential) = uf.find(3);
+        kani::assert(
+            root == 0 && found_root == 0 && (value & potential.0) ^ potential.1 == expected,
+            "On a four-node chain with arbitrary u64 mask/XOR potentials and inputs, root-only path compression preserves the ordered action of all three edges",
+        );
+        kani::assert(
+            uf.find(3) == (0, potential) && uf.cells[3].parent() == Some(0),
+            "Repeated potential-aware path compression flattens the four-node mask/XOR chain without changing its root or noncommutative potential",
+        );
+        kani::cover!(((value & a.0) ^ a.1) & b.0 ^ b.1 != ((value & b.0) ^ b.1) & a.0 ^ a.1);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_undo() {
+        let x: usize = kani::any();
+        let y: usize = kani::any();
+        let query: usize = kani::any();
+        kani::assume(x < 4 && y < 4 && query < 4);
+        let mut uf = UndoableUnionFind::new(4);
+        uf.unite(0, 1);
+        uf.unite(2, 3);
+        let changed = uf.unite(x, y);
+        kani::assert(
+            changed == (x / 2 != y / 2) && uf.size(query) == if changed { 4 } else { 2 },
+            "For every union between four nodes initially partitioned into two pairs, the result and component size reflect exactly whether the pairs merge",
+        );
+        if changed {
+            uf.undo();
+        }
+        kani::assert(
+            uf.same(query, 0) == (query < 2) && uf.size(query) == 2,
+            "Undoing a successful bridge restores the original two-pair partition and both component sizes",
+        );
+        uf.undo();
+        kani::assert(
+            uf.same(0, 1) && !uf.same(2, 3) && uf.size(2) == 1 && uf.size(3) == 1,
+            "Redundant unions add no history: the next undo restores the two singleton nodes of the second pair",
+        );
+        kani::cover!(changed);
+        kani::cover!(!changed && x != y);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

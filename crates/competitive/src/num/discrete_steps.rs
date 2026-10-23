@@ -306,6 +306,99 @@ impl_range_bounds_ext!(
     usize => isize usize;
 );
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    macro_rules! proof_steps {
+        ($name:ident, $value:ty, $delta:ty) => {
+            #[kani::proof]
+            fn $name() {
+                let start: $value = kani::any();
+                let end: $value = kani::any();
+                let delta: $delta = kani::any();
+                let forward = <$value as DiscreteSteps<$delta>>::forward_checked(start, delta);
+                let backward = <$value as DiscreteSteps<$delta>>::backward_checked(start, delta);
+                kani::assert(
+                    forward == <$value>::try_from(start as i128 + delta as i128).ok(),
+                    concat!(
+                        "For every ",
+                        stringify!($value),
+                        " value and ",
+                        stringify!($delta),
+                        " distance, forward_checked returns the exact sum iff representable"
+                    ),
+                );
+                kani::assert(
+                    backward == <$value>::try_from(start as i128 - delta as i128).ok(),
+                    concat!(
+                        "For every ",
+                        stringify!($value),
+                        " value and ",
+                        stringify!($delta),
+                        " distance, backward_checked returns the exact difference iff representable"
+                    ),
+                );
+                kani::assert(
+                    <$value as DiscreteSteps<$delta>>::steps_between(&start, &end)
+                        == <$delta>::try_from(end as i128 - start as i128).ok(),
+                    concat!(
+                        "For all ",
+                        stringify!($value),
+                        " endpoints, steps_between returns their nonnegative distance iff it fits ",
+                        stringify!($delta)
+                    ),
+                );
+                kani::cover!(forward.is_none());
+                kani::cover!(backward.is_none());
+                kani::cover!(delta == <$delta>::MAX);
+            }
+        };
+    }
+
+    proof_steps!(proof_i32_u64_steps, i32, u64);
+    proof_steps!(proof_u32_u64_steps, u32, u64);
+    proof_steps!(proof_i64_u64_steps, i64, u64);
+    proof_steps!(proof_u64_u64_steps, u64, u64);
+    proof_steps!(proof_i64_u32_steps, i64, u32);
+    proof_steps!(proof_u64_u32_steps, u64, u32);
+
+    #[kani::proof]
+    fn proof_inclusive_range() {
+        let lower: Option<(i64, bool)> = kani::any();
+        let upper: Option<(i64, bool)> = kani::any();
+        let point: i64 = kani::any();
+        let lower = lower.map_or(Bound::Unbounded, |(x, included)| {
+            if included {
+                Bound::Included(x)
+            } else {
+                Bound::Excluded(x)
+            }
+        });
+        let upper = upper.map_or(Bound::Unbounded, |(x, included)| {
+            if included {
+                Bound::Included(x)
+            } else {
+                Bound::Excluded(x)
+            }
+        });
+        let range = (lower, upper);
+        match range.to_range_inclusive_checked() {
+            Some(normalized) => kani::assert(
+                normalized.contains(&point) == range.contains(&point),
+                "For all included, excluded or unbounded i64 endpoints, checked inclusive normalization preserves membership of every i64 value",
+            ),
+            None => kani::assert(
+                !range.contains(&point),
+                "An i64 range whose inclusive endpoints cannot be represented contains no i64 value",
+            ),
+        }
+        kani::cover!(lower == Bound::Excluded(i64::MAX));
+        kani::cover!(upper == Bound::Excluded(i64::MIN));
+        kani::cover!(lower == Bound::Unbounded && upper == Bound::Unbounded);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

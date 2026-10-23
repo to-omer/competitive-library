@@ -127,6 +127,64 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::{FlattenAct, LogicalLinearOperation};
+
+    macro_rules! proof_updates {
+        ($name:ident, $n:literal) => {
+            #[kani::proof]
+            #[kani::unwind(6)]
+            fn $name() {
+                let values: [(u8, u8); $n] = kani::any();
+                let actions: [(u8, u8); 2] = kani::any();
+                let replacement: (u8, u8) = kani::any();
+                let ranges: [(usize, usize); 2] = kani::any();
+                let index: usize = kani::any();
+                let query: usize = kani::any();
+                let input: u8 = kani::any();
+                kani::assume(index < $n && query < $n);
+                for &(l, r) in &ranges {
+                    kani::assume(l <= r && r <= $n);
+                }
+                let mut tree =
+                    DualSegmentTree::<FlattenAct<LogicalLinearOperation<u8>>>::from_keys(
+                        values.into_iter(),
+                    );
+                tree.update(ranges[0].0..ranges[0].1, actions[0]);
+                tree.set(index, replacement);
+                tree.update(ranges[1].0..ranges[1].1, actions[1]);
+                let mut expected = (input & values[query].0) ^ values[query].1;
+                if ranges[0].0 <= query && query < ranges[0].1 {
+                    expected = (expected & actions[0].0) ^ actions[0].1;
+                }
+                if query == index {
+                    expected = (input & replacement.0) ^ replacement.1;
+                }
+                if ranges[1].0 <= query && query < ranges[1].1 {
+                    expected = (expected & actions[1].0) ^ actions[1].1;
+                }
+                let actual = tree.get(query);
+                kani::assert(
+                    (input & actual.0) ^ actual.1 == expected,
+                    concat!(
+                        "For every array of ",
+                        $n,
+                        " u8 bitwise affine maps, two arbitrary range updates with an intervening point assignment preserve action order at every point and input",
+                    ),
+                );
+                kani::cover!(ranges[0] == (0, $n) && ranges[1] == (1, $n) && query != index);
+                kani::cover!(ranges[0].0 == ranges[0].1);
+                kani::cover!(actions[0] == (0, 0) && actions[1] == (0, 1));
+            }
+        };
+    }
+
+    proof_updates!(proof_updates_three, 3);
+    proof_updates!(proof_updates_four, 4);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

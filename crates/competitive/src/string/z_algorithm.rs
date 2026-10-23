@@ -19,9 +19,7 @@ impl Zarray {
             #![verifier::proof_note("Zarray::new is called with a lawful, stable Eq matching its specification")]
             lawful_eq::<T>(),
         ensures
-            #![verifier::proof_note("The Z-array has the same length as the input")]
             result@.len() == s.len(),
-            #![verifier::proof_note("For any nonempty input s with lawful Eq, z[i] is the longest common prefix length of s and s[i..]")]
             forall|i: int| 0 <= i < s.len() ==> z_value(s@, i, result@[i] as int),
     ))]
     pub fn new<T>(s: &[T]) -> Self
@@ -98,23 +96,117 @@ impl Zarray {
         }
         #[cfg(verus_keep_ghost)]
         proof! {
+            #[verifier::proof_note("The Z-array has the same length as the input")]
+            assert(z.len() == s.len());
+            #[verifier::proof_note("For any nonempty input s with lawful Eq, z[i] is the longest common prefix length of s and s[i..]")]
+            assert(forall|p: int| 0 <= p < s.len() ==> z_value(s@, p, z@[p] as int));
             #[verifier::proof_note("At most 2n - 2 Eq calls for any nonempty input of length n")]
             assert(successes + failures <= 2 * n - 2);
         }
         Self { z }
     }
-    #[cfg_attr(verus_keep_ghost, verus_verify(external))]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires
+            pat.len() > 0,
+            pat.len() + s.len() < usize::MAX,
+            lawful_eq::<T>(),
+        ensures
+            forall|q: int| 0 <= q < result.len() ==> occurs(s@, pat@, result@[q] as int),
+            forall|p: int| 0 <= p < s.len()
+                ==> (occurs(s@, pat@, p) == result@.contains(p as usize)),
+            forall|q: int, r: int| 0 <= q < r < result.len() ==> result@[q] < result@[r],
+    ))]
     pub fn search<T: Eq>(s: &[T], pat: &[T], sep: T) -> Vec<usize> {
-        let mut res = vec![];
-        let mut t = vec![];
-        t.extend(pat);
+        let mut res: Vec<usize> = vec![];
+        let mut t: Vec<&T> = Vec::with_capacity(pat.len() + 1 + s.len());
+        #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
+            invariant
+                t.len() == iter.index(),
+                forall|j: int| 0 <= j < iter.index() ==> *t@[j] == pat@[j],
+        ))]
+        for x in pat {
+            t.push(x);
+        }
         t.push(&sep);
-        t.extend(s);
+        #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
+            invariant
+                t.len() == pat.len() + 1 + iter.index(),
+                forall|j: int| 0 <= j < pat.len() ==> *t@[j] == pat@[j],
+                forall|j: int| 0 <= j < iter.index() ==> *t@[pat.len() + 1 + j] == s@[j],
+        ))]
+        for x in s {
+            t.push(x);
+        }
+        #[cfg(verus_keep_ghost)]
+        proof! { assert(lawful_eq::<&T>()); }
         let zarray = Self::new(&t);
+        #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
+            invariant
+                pat.len() > 0, pat.len() + s.len() < usize::MAX,
+                lawful_eq::<T>(), lawful_eq::<&T>(),
+                t.len() == pat.len() + 1 + s.len(),
+                forall|j: int| 0 <= j < pat.len() ==> *t@[j] == pat@[j],
+                forall|j: int| 0 <= j < s.len() ==> *t@[pat.len() + 1 + j] == s@[j],
+                zarray@.len() == t.len(),
+                forall|j: int| 0 <= j < t.len() ==> z_value(t@, j, zarray@[j] as int),
+                res.len() <= iter.index(),
+                forall|q: int| 0 <= q < res.len()
+                    ==> res@[q] < iter.index() && occurs(s@, pat@, res@[q] as int),
+                forall|p: int| 0 <= p < iter.index()
+                    ==> (occurs(s@, pat@, p) == res@.contains(p as usize)),
+                forall|q: int, r: int| 0 <= q < r < res.len() ==> res@[q] < res@[r],
+        ))]
         for i in pat.len() + 1..t.len() {
-            if zarray[i] >= pat.len() {
+            #[cfg(verus_keep_ghost)]
+            proof_decl! { let ghost before = res@; }
+            #[cfg(verus_keep_ghost)]
+            proof! {
+                let pos = i as int - pat.len() - 1;
+                let z = zarray@[i as int] as int;
+                assert(z_value(t@, i as int, z));
+                if z >= pat.len() {
+                    assert forall|j: int| 0 <= j < pat.len() implies
+                        #[trigger] pat@[j].eq_spec(&s@[pos + j]) by {
+                        assert(<&T as PartialEqSpec>::eq_spec(&t@[j], &t@[i + j]));
+                    }
+                } else if occurs(s@, pat@, pos) {
+                    assert(pat@[z].eq_spec(&s@[pos + z]));
+                    assert(<&T as PartialEqSpec>::eq_spec(&t@[z], &t@[i + z]));
+                }
+                assert((z >= pat.len()) == occurs(s@, pat@, pos));
+            }
+            if zarray.z[i] >= pat.len() {
                 res.push(i - pat.len() - 1);
             }
+            #[cfg(verus_keep_ghost)]
+            proof! {
+                broadcast use vstd::seq_lib::lemma_seq_contains_after_push;
+                let pos = i as int - pat.len() - 1;
+                assert forall|p: int| 0 <= p <= pos implies
+                    (occurs(s@, pat@, p) == res@.contains(p as usize)) by {
+                    if p < pos {
+                        assert(occurs(s@, pat@, p) == before.contains(p as usize));
+                    } else if before.contains(p as usize) {
+                        let q = before.lemma_contains_to_index(p as usize);
+                        assert(before[q] < pos);
+                    }
+                }
+                assert forall|q: int| 0 <= q < res.len() implies
+                    res@[q] <= pos && occurs(s@, pat@, res@[q] as int) by {
+                    if q < before.len() { assert(res@[q] == before[q]); }
+                }
+                assert forall|q: int, r: int| 0 <= q < r < res.len() implies
+                    res@[q] < res@[r] by {
+                    if r < before.len() { assert(before[q] < before[r]); }
+                }
+            }
+        }
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            #[verifier::proof_note("For arbitrary text and nonempty pattern lengths whose combined allocation fits usize, lawful Eq, and any separator, Z search returns exactly all matching positions in increasing order, including overlaps and separator collisions")]
+            assert((forall|q: int| 0 <= q < res.len() ==> occurs(s@, pat@, res@[q] as int))
+                && (forall|p: int| 0 <= p < s.len() ==> (occurs(s@, pat@, p) == res@.contains(p as usize)))
+                && (forall|q: int, r: int| 0 <= q < r < res.len() ==> res@[q] < res@[r]));
         }
         res
     }
@@ -160,6 +252,14 @@ where
     T: Eq,
 {
     matches(s, i, n) && (i + n == s.len() || !s[n].eq_spec(&s[i + n]))
+}
+
+pub open spec fn occurs<T>(s: Seq<T>, pat: Seq<T>, pos: int) -> bool
+where
+    T: Eq,
+{
+    &&& 0 <= pos && pos + pat.len() <= s.len()
+    &&& forall|j: int| 0 <= j < pat.len() ==> #[trigger] pat[j].eq_spec(&s[pos + j])
 }
 
 proof fn copy_match<T>(s: Seq<T>, i: int, n: int, k: int, m: int)
@@ -218,6 +318,15 @@ mod verification {
         requires s.len() > 0,
     {
         Zarray::new(s)
+    }
+
+    pub fn byte_search(text: &[u8], pattern: &[u8], separator: u8)
+        requires pattern.len() > 0, pattern.len() + text.len() < usize::MAX,
+    {
+        let positions = Zarray::search(text, pattern, separator);
+        #[verifier::proof_note("For byte texts and nonempty patterns fitting the combined buffer, Z search's contract is usable for any separator byte")]
+        assert(forall|p: int| 0 <= p < text.len()
+            ==> (occurs(text@, pattern@, p) == positions@.contains(p as usize)));
     }
 
     pub fn classified(s: &[Classified]) -> Zarray

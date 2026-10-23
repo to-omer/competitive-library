@@ -130,6 +130,88 @@ impl<T> Allocator<T> for BoxAllocator<T> {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(5)]
+    fn proof_pool_reuse() {
+        let values: [u8; 3] = kani::any();
+        let removed = usize::from(kani::any::<bool>());
+        let mut pool = MemoryPool::with_capacity(1);
+        let pointers = [
+            pool.allocate(Box::new(values[0])),
+            pool.allocate(Box::new(values[1])),
+        ];
+        let returned = pool.deallocate(pointers[removed]);
+        kani::assert(
+            *returned == values[removed],
+            "Deallocating either of two owned u8 values across a pool growth returns that value",
+        );
+        drop(returned);
+        let reused = pool.allocate(Box::new(values[2]));
+        kani::assert(
+            reused == pointers[removed],
+            "The next allocation reuses the removed slot, whether it belongs to the current or an older chunk",
+        );
+        kani::assert(
+            unsafe { **reused.as_ref() } == values[2]
+                && unsafe { **pointers[1 - removed].as_ref() } == values[1 - removed],
+            "Reusing either slot writes the new owned value and preserves the other live pointer and value",
+        );
+        drop(pool);
+        kani::cover!(removed == 0);
+        kani::cover!(removed == 1);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_pool_zero_sized_drop() {
+        use std::sync::atomic::{AtomicU8, Ordering};
+
+        static DROPS: AtomicU8 = AtomicU8::new(0);
+        #[repr(align(64))]
+        struct Value;
+        impl Drop for Value {
+            fn drop(&mut self) {
+                DROPS.fetch_add(1, Ordering::Relaxed);
+            }
+        }
+
+        let removed: u8 = kani::any();
+        kani::assume(removed < 16);
+        let mut pool = MemoryPool::with_capacity(0);
+        let pointers = [
+            pool.allocate(Value),
+            pool.allocate(Value),
+            pool.allocate(Value),
+            pool.allocate(Value),
+        ];
+        for i in 0..4 {
+            if removed >> i & 1 != 0 {
+                drop(pool.deallocate(pointers[i]));
+            }
+        }
+        kani::assert(
+            DROPS.load(Ordering::Relaxed) == removed.count_ones() as u8,
+            "For four aligned zero-sized pool values, deallocating any subset drops exactly those values",
+        );
+        let extra = pool.allocate(Value);
+        kani::assert(
+            extra.as_ptr().addr() % 64 == 0,
+            "Allocating or reusing an over-aligned zero-sized value preserves its 64-byte alignment",
+        );
+        drop(pool);
+        kani::assert(
+            DROPS.load(Ordering::Relaxed) == 5,
+            "After any removal subset of four zero-sized values and one further allocation, pool destruction drops exactly all five values",
+        );
+        kani::cover!(removed == 0);
+        kani::cover!(removed == 15);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

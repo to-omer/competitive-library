@@ -329,6 +329,33 @@ impl FromIterator<bool> for BitVector {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    // The scalar binary selection uses six halvings; its edge scans use at most three steps.
+    #[kani::unwind(7)]
+    fn proof_scalar_select() {
+        let word: u64 = kani::any();
+        let rank: usize = kani::any();
+        let count = word.count_ones() as usize;
+        kani::assume(rank < count);
+        let selected = select_word_scalar(word, rank);
+        kani::assert(
+            selected < u64::BITS as usize && word >> selected & 1 != 0,
+            "For every nonzero u64 word and valid zero-based rank, scalar select returns the position of a set bit",
+        );
+        kani::assert(
+            (word & ((1u64 << selected) - 1)).count_ones() as usize == rank,
+            "For every nonzero u64 word and valid rank, exactly rank set bits precede the scalar selection",
+        );
+        kani::cover!(rank == 0);
+        kani::cover!(rank >= 4 && count - rank <= 4);
+        kani::cover!(rank >= 4 && count - rank > 4);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

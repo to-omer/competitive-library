@@ -1082,6 +1082,91 @@ mod simd {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(65)]
+    fn proof_parse_binary_scalar() {
+        let bytes: [u8; 64] = kani::any();
+        let mut words = [0u64; 1];
+        let parsed = BitSet::parse_binary_scalar(&bytes, &mut words);
+        kani::assert(
+            parsed == bytes.iter().all(|&byte| byte == b'0' || byte == b'1'),
+            "For every 64-byte input, scalar binary parsing accepts exactly ASCII zeroes and ones",
+        );
+        if parsed {
+            let index: usize = kani::any();
+            kani::assume(index < 64);
+            kani::assert(
+                ((words[0] >> index) & 1 != 0) == (bytes[index] == b'1'),
+                "For every valid 64-byte binary input and every bit index, scalar parsing stores that character at the corresponding bit in a zero-initialized word",
+            );
+        }
+        kani::cover!(parsed && words[0] == u64::MAX);
+        kani::cover!(parsed && words[0] == 1 << 63);
+        kani::cover!(!parsed);
+    }
+
+    macro_rules! proof_shift {
+        ($name:ident, $left:expr, $or:expr, $operation:literal) => {
+            #[kani::proof]
+            // Nine words cross both the 64-bit word and 512-bit allocation-block boundaries.
+            #[kani::unwind(10)]
+            fn $name() {
+                let mut words: [u64; 9] = kani::any();
+                words[8] &= 1;
+                let mut set = BitSet::new(513);
+                for (to, &from) in set.words_mut().iter_mut().zip(&words) {
+                    *to = from;
+                }
+                let shift: usize = kani::any();
+                let index: usize = kani::any();
+                kani::assume(index < 1024);
+                if $left {
+                    set.shift_left::<$or>(shift);
+                } else {
+                    set.shift_right::<$or>(shift);
+                }
+                let shifted = if $left {
+                    index < 513
+                        && index >= shift
+                        && words[(index - shift) / 64] >> ((index - shift) % 64) & 1 != 0
+                } else {
+                    shift < 513
+                        && index < 513 - shift
+                        && words[(index + shift) / 64] >> ((index + shift) % 64) & 1 != 0
+                };
+                let original = index < 513 && words[index / 64] >> (index % 64) & 1 != 0;
+                let actual = set.bits[index / 512].0[index / 64 % 8] >> (index % 64) & 1 != 0;
+                kani::assert(
+                    actual == (shifted || ($or && original)),
+                    concat!(
+                        "For all 513-bit sets and every usize shift, ",
+                        $operation,
+                        " matches per-bit translation, discards out-of-range bits, and keeps all padding bits zero; this covers scalar paths only",
+                    ),
+                );
+                kani::cover!(shift == 0);
+                kani::cover!(shift == 64);
+                kani::cover!(shift == 512);
+                kani::cover!(shift == usize::MAX);
+            }
+        };
+    }
+
+    proof_shift!(proof_shift_left, true, false, "left shift");
+    proof_shift!(proof_shift_left_or, true, true, "left shift OR assignment");
+    proof_shift!(proof_shift_right, false, false, "right shift");
+    proof_shift!(
+        proof_shift_right_or,
+        false,
+        true,
+        "right shift OR assignment"
+    );
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

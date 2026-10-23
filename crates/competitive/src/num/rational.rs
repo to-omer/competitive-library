@@ -213,3 +213,37 @@ where
         *self = *self / rhs;
     }
 }
+
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(17)]
+    fn proof_i8_normalization() {
+        let num: i8 = kani::any();
+        let den: i8 = kani::any();
+        kani::assume(num != 0 || den != 0);
+        let (mut a, mut b) = ((num as i16).abs(), (den as i16).abs());
+        while b != 0 {
+            (a, b) = (b, a % b);
+        }
+        let mut expected_num = num as i16 / a;
+        let mut expected_den = den as i16 / a;
+        if expected_den < 0 {
+            expected_num = -expected_num;
+            expected_den = -expected_den;
+        }
+        kani::assume((i8::MIN as i16..=i8::MAX as i16).contains(&expected_num));
+        kani::assume(expected_den <= i8::MAX as i16);
+        let actual = Rational::new(num, den);
+        kani::assert(
+            actual.num as i16 == expected_num && actual.den as i16 == expected_den,
+            "For every nonzero i8 numerator-denominator pair whose canonical form fits i8, normalization agrees with widened Euclidean reduction, with a nonnegative denominator; includes i8::MIN, zero and signed infinity",
+        );
+        kani::cover!(num == i8::MIN && den == 1);
+        kani::cover!(num == i8::MIN && den == i8::MIN);
+        kani::cover!(num == i8::MIN && den == 0);
+        kani::cover!(num == 0 && den == i8::MIN);
+    }
+}

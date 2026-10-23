@@ -567,6 +567,49 @@ impl Mul for BitMatrix {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(4)]
+    fn proof_next_column() {
+        let words: [[u64; 2]; 3] = kani::any();
+        let row: u8 = kani::any();
+        let start: u8 = kani::any();
+        let end: u8 = kani::any();
+        kani::assume(row <= 3 && start <= end && end <= 128);
+        let mut matrix = BitMatrix::zeros((3, 128));
+        for (target, source) in matrix.data.iter_mut().zip(words) {
+            target.words_mut().copy_from_slice(&source);
+        }
+        let actual = matrix.next_column(row as usize, start as usize, end as usize);
+        let mut columns = 0u128;
+        for source in &words[row as usize..] {
+            columns |= source[0] as u128 | (source[1] as u128) << 64;
+        }
+        let lower = if start == 128 { 0 } else { u128::MAX << start };
+        let upper = if end == 128 {
+            u128::MAX
+        } else {
+            (1u128 << end) - 1
+        };
+        let present = columns & lower & upper;
+        let expected = if present == 0 {
+            end as usize
+        } else {
+            present.trailing_zeros() as usize
+        };
+        kani::assert(
+            actual == expected,
+            "For every three-row 128-column bit matrix and every row suffix and column interval, pivot scanning returns the first column containing a one, or the interval end if none exists",
+        );
+        kani::cover!(start == 63 && end == 65 && actual == 64);
+        kani::cover!(row == 3 && start == 0 && end == 128);
+        kani::cover!(start == end);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

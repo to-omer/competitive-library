@@ -228,6 +228,137 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::{
+        AdditiveOperation, LogicalLinearOperation, MaxOperation, PrefixFoldOperation,
+        ReverseOperation,
+    };
+
+    type PrefixMaximum = PrefixFoldOperation<AdditiveOperation<i16>, MaxOperation<i16>>;
+
+    macro_rules! proof_partition {
+        ($name:ident, $n:literal, $operation:ty, $method:ident, $reverse:literal) => {
+            #[kani::proof]
+            #[kani::unwind(10)]
+            fn $name() {
+                let values: [i8; $n] = kani::any();
+                let boundary: u8 = kani::any();
+                let limit: i16 = kani::any();
+                kani::assume(boundary <= $n && limit >= 0);
+                let tree = SegmentTree::<$operation>::from_vec(
+                    values.into_iter().map(|x| PrefixMaximum::from_value(x as i16)).collect(),
+                );
+                let actual = tree.$method(boundary as usize, |&(_, maximum)| maximum <= limit);
+                let mut expected = boundary as usize;
+                let mut sum = 0i16;
+                if $reverse {
+                    for i in (0..boundary as usize).rev() {
+                        sum += values[i] as i16;
+                        if sum > limit {
+                            break;
+                        }
+                        expected = i;
+                    }
+                } else {
+                    for i in boundary as usize..$n {
+                        sum += values[i] as i16;
+                        if sum > limit {
+                            break;
+                        }
+                        expected = i + 1;
+                    }
+                }
+                kani::assert(
+                    actual == expected,
+                    concat!(
+                        "For every ", $n, "-element i8 array and every nonnegative i16 limit, ",
+                        stringify!($method),
+                        " returns the maximal interval whose running sums from the search endpoint stay within the limit; signed values make the prefix-maximum monoid noncommutative",
+                    ),
+                );
+                kani::cover!(actual == boundary as usize && boundary > 0 && boundary < $n);
+                kani::cover!(actual == if $reverse { 0 } else { $n });
+                kani::cover!(values[0] == -1 && values[1] == 1 && limit == 0);
+            }
+        };
+    }
+
+    proof_partition!(
+        proof_partition_five,
+        5,
+        PrefixMaximum,
+        partition_point_acc,
+        false
+    );
+    proof_partition!(
+        proof_rpartition_five,
+        5,
+        ReverseOperation<PrefixMaximum>,
+        rpartition_point_acc,
+        true
+    );
+
+    macro_rules! proof_fold {
+        ($name:ident, $len:literal) => {
+            #[kani::proof]
+            #[kani::unwind(9)]
+            fn $name() {
+                let values: [(u8, u8); $len] = kani::any();
+                let mut tree = SegmentTree::<LogicalLinearOperation<u8>>::from_vec(values.to_vec());
+                let index: usize = kani::any();
+                let left: usize = kani::any();
+                let right: usize = kani::any();
+                kani::assume(index < $len && left <= right && right <= $len);
+                let change: (u8, u8) = kani::any();
+                let action: u8 = kani::any();
+                kani::assume(action <= 2);
+                match action {
+                    0 => tree.set(index, change),
+                    1 => tree.update(index, change),
+                    _ => tree.clear(index),
+                }
+                let input: u8 = kani::any();
+                let mut expected = input;
+                for i in left..right {
+                    if i != index || action == 1 {
+                        expected = LogicalLinearOperation::eval(&values[i], &expected);
+                    }
+                    if i == index && action != 2 {
+                        expected = LogicalLinearOperation::eval(&change, &expected);
+                    }
+                }
+                kani::assert(
+                    LogicalLinearOperation::eval(&tree.fold(left..right), &input) == expected,
+                    concat!(
+                        "For all ",
+                        stringify!($len),
+                        " u8 bitwise affine maps, every set/update/clear and every valid range, SegmentTree folds in left-to-right composition order, including empty ranges"
+                    ),
+                );
+                kani::cover!(left == right);
+                kani::cover!(left == 0 && right == $len && action == 2);
+                kani::cover!(
+                    action == 1
+                        && left <= index
+                        && index < right
+                        && LogicalLinearOperation::eval(
+                            &change,
+                            &LogicalLinearOperation::eval(&values[index], &input),
+                        ) != LogicalLinearOperation::eval(
+                            &values[index],
+                            &LogicalLinearOperation::eval(&change, &input),
+                        )
+                );
+            }
+        };
+    }
+
+    proof_fold!(proof_fold_three, 3);
+    proof_fold!(proof_fold_four, 4);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

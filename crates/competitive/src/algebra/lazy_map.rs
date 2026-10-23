@@ -695,6 +695,88 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::num::Saturating;
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_clamp_add_composition() {
+        let key: i32 = kani::any();
+        let values: [i16; 3] = kani::any();
+        let kinds: [u8; 3] = kani::any();
+        let mut composed = <RangeChminChmaxAdd<Saturating<i64>> as Unital>::unit();
+        let mut expected = key as i64;
+        for i in 0..3 {
+            kani::assume(kinds[i] < 3);
+            let value = values[i] as i64;
+            let action = match kinds[i] {
+                0 => {
+                    expected = expected.min(value);
+                    RangeChminChmaxAdd::chmin(Saturating(value))
+                }
+                1 => {
+                    expected = expected.max(value);
+                    RangeChminChmaxAdd::chmax(Saturating(value))
+                }
+                _ => {
+                    expected += value;
+                    RangeChminChmaxAdd::add(Saturating(value))
+                }
+            };
+            composed = <RangeChminChmaxAdd<_> as Magma>::operate(&composed, &action);
+            kani::assert(
+                RangeChminChmaxAdd::act(&Saturating(key as i64), &composed).0 == expected,
+                "For every i32 key and three i16 chmin/chmax/add updates widened to Saturating<i64>, composition equals direct commands in order, including all operation mixtures",
+            );
+        }
+        kani::cover!(kinds == [0, 1, 2]);
+        kani::cover!(kinds == [2, 0, 1]);
+        kani::cover!(key == i32::MAX && values == [i16::MAX; 3] && kinds == [2; 3]);
+    }
+
+    macro_rules! proof_extremum_update {
+        ($name:ident, $map:ty) => {
+            #[kani::proof]
+            fn $name() {
+                type M = $map;
+                let x: i64 = kani::any();
+                let y: i64 = kani::any();
+                let a: Option<i64> = kani::any();
+                let b: Option<i64> = kani::any();
+                let mapped_x = M::act_agg(&x, &a).unwrap();
+                let mapped_y = M::act_agg(&y, &a).unwrap();
+                kani::assert(
+                    M::act_agg(&x, &M::act_unit()) == Some(x),
+                    "For every i64 extremum aggregate, the identity update preserves its value",
+                );
+                kani::assert(
+                    M::act_agg(&M::agg_operate(&x, &y), &a)
+                        == Some(M::agg_operate(&mapped_x, &mapped_y)),
+                    "For all nonempty i64 extrema aggregates and optional assignments, updating after merging equals merging after updating",
+                );
+                let expected = Some(b.or(a).unwrap_or(x));
+                kani::assert(
+                    M::act_agg(&mapped_x, &b) == expected
+                        && M::act_agg(&x, &M::act_operate(&a, &b)) == expected,
+                    "For every i64 aggregate and pair of optional assignments, composition applies them in order and the last present assignment wins",
+                );
+                kani::assert(
+                    M::act_agg(&M::single_agg(&x), &a)
+                        == Some(M::single_agg(&M::act_key(&x, &a))),
+                    "For every i64 key and optional assignment, updating its singleton aggregate agrees with updating the key",
+                );
+                kani::cover!(a.is_none());
+                kani::cover!(a.is_some() && b.is_some() && a != b);
+            }
+        };
+    }
+
+    proof_extremum_update!(proof_min_update, RangeMinRangeUpdate<i64>);
+    proof_extremum_update!(proof_max_update, RangeMaxRangeUpdate<i64>);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

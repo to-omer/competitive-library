@@ -182,6 +182,45 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    macro_rules! proof_normalization {
+        ($name:ident, $ty:ty, $unwind:expr) => {
+            #[kani::proof]
+            #[kani::unwind($unwind)]
+            fn $name() {
+                let numerator: $ty = kani::any();
+                let exponent: u32 = kani::any();
+                let actual = Dyadic::new(numerator, exponent);
+                let expected = if numerator == 0 {
+                    (0, 0)
+                } else {
+                    let removed = exponent.min(numerator.trailing_zeros());
+                    (numerator >> removed, exponent - removed)
+                };
+                kani::assert(
+                    (actual.numerator(), actual.exponent()) == expected,
+                    concat!(
+                        "For every ",
+                        stringify!($ty),
+                        " numerator and u32 exponent, dyadic normalization divides out exactly the largest permitted power of two, preserving the value and reducing zero to 0/1",
+                    ),
+                );
+                kani::cover!(numerator == <$ty>::MIN && exponent == u32::MAX);
+                kani::cover!(numerator == <$ty>::MAX && exponent == u32::MAX);
+                kani::cover!(numerator == 0 && exponent == u32::MAX);
+                kani::cover!(numerator == <$ty>::MIN && exponent == 0);
+            }
+        };
+    }
+
+    proof_normalization!(proof_i8_normalization, i8, 9);
+    proof_normalization!(proof_i16_normalization, i16, 17);
+    proof_normalization!(proof_i32_normalization, i32, 33);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

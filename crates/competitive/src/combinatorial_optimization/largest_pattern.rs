@@ -44,3 +44,37 @@ pub fn largest_rectangle_in_grid(h: usize, w: usize, ok: impl Fn(usize, usize) -
     }
     res
 }
+
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(5)]
+    fn proof_square_grid() {
+        let cells: [[bool; 4]; 3] = kani::any();
+        let mut square_area = 0;
+        for top in 0..3 {
+            for left in 0..4 {
+                for size in 1..=(3 - top).min(4 - left) {
+                    if (top..top + size).all(|i| (left..left + size).all(|j| cells[i][j])) {
+                        square_area = square_area.max(size * size);
+                    }
+                }
+            }
+        }
+        kani::assert(
+            largest_square(3, 4, |i, j| cells[i][j]) == square_area,
+            "For every 3-by-4 Boolean grid, square DP returns the maximum area of an all-true square, compared with exhaustive square regions",
+        );
+        for (h, w) in [(0, 4), (3, 0)] {
+            kani::assert(
+                largest_square(h, w, |i, j| cells[i][j]) == 0,
+                "A zero-height or zero-width grid has maximum square area zero",
+            );
+        }
+        kani::cover!(square_area == 0);
+        kani::cover!(square_area == 4);
+        kani::cover!(square_area == 9);
+    }
+}

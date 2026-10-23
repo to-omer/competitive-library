@@ -136,6 +136,123 @@ where
     ok
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    fn proof_unsigned_midpoint() {
+        let a: u128 = kani::any();
+        let b: u128 = kani::any();
+        match a.bisect_middle_point(&b) {
+            Some(middle) => kani::assert(
+                a.min(b) < middle && middle < a.max(b),
+                "For all u128 endpoints in either order, a midpoint strictly reduces the search interval",
+            ),
+            None => kani::assert(
+                a.abs_diff(b) <= 1,
+                "For all u128 endpoints, search stops only at equal or adjacent values",
+            ),
+        }
+        kani::cover!(a == 0 && b == u128::MAX);
+        kani::cover!(a == u128::MAX && b == 0);
+    }
+
+    #[kani::proof]
+    fn proof_signed_midpoint() {
+        let a: i128 = kani::any();
+        let b: i128 = kani::any();
+        match a.bisect_middle_point(&b) {
+            Some(middle) => kani::assert(
+                a.min(b) < middle && middle < a.max(b),
+                "For all i128 endpoints in either order, a midpoint strictly reduces the search interval",
+            ),
+            None => kani::assert(
+                a.abs_diff(b) <= 1,
+                "For all i128 endpoints, search stops only at equal or adjacent values",
+            ),
+        }
+        kani::cover!(a == i128::MIN && b == i128::MAX);
+        kani::cover!(a == i128::MAX && b == i128::MIN);
+    }
+
+    macro_rules! proof_float_midpoint {
+        ($name:ident, $float:ty, $bits:ty) => {
+            #[kani::proof]
+            fn $name() {
+                let a_bits: $bits = kani::any();
+                let b_bits: $bits = kani::any();
+                let a = <$float>::from_bits(a_bits);
+                let b = <$float>::from_bits(b_bits);
+                let sign = 1 << (<$bits>::BITS - 1);
+                match a.bisect_middle_point(&b) {
+                    Some(middle) => {
+                        let (lo, hi) = if a.total_cmp(&b) == Ordering::Less {
+                            (a, b)
+                        } else {
+                            (b, a)
+                        };
+                        kani::assert(
+                            lo.total_cmp(&middle) == Ordering::Less
+                                && middle.total_cmp(&hi) == Ordering::Less,
+                            concat!(
+                                "For every pair of ",
+                                stringify!($float),
+                                " bit patterns, including infinities and NaNs, a midpoint strictly reduces the interval in Rust total_cmp order",
+                            ),
+                        );
+                    }
+                    None => kani::assert(
+                        a_bits == b_bits
+                            || ((a_bits ^ b_bits) & sign == 0 && a_bits.abs_diff(b_bits) == 1)
+                            || (a_bits & !sign == 0 && b_bits & !sign == 0),
+                        concat!(
+                            "For all ",
+                            stringify!($float),
+                            " bit patterns, midpoint search stops only at identical or adjacent total-order representations; negative and positive zero are adjacent",
+                        ),
+                    ),
+                }
+                kani::cover!(a_bits == sign && b_bits == 0);
+                kani::cover!(a_bits == <$float>::NEG_INFINITY.to_bits()
+                    && b_bits == <$float>::INFINITY.to_bits());
+                kani::cover!(a_bits == <$bits>::MAX && b_bits == sign - 1);
+            }
+        };
+    }
+
+    proof_float_midpoint!(proof_f32_midpoint, f32, u32);
+    proof_float_midpoint!(proof_f64_midpoint, f64, u64);
+
+    #[kani::proof]
+    #[kani::unwind(10)]
+    fn proof_slice_search() {
+        let values: [i16; 8] = kani::any();
+        let len: usize = kani::any();
+        let key: i16 = kani::any();
+        kani::assume(len <= values.len());
+        let values = &values[..len];
+        for i in 1..len {
+            kani::assume(values[i - 1] <= values[i]);
+        }
+        let lower = values.iter().filter(|&&x| x < key).count();
+        let upper = values.iter().filter(|&&x| x <= key).count();
+        kani::assert(
+            values.position_bisect(|&x| x >= key) == lower
+                && values.find_bisect(|&x| x >= key) == values.get(lower),
+            "For every sorted i16 slice of length 0 through 8 and every i16 key, forward search returns the lower bound and its element",
+        );
+        kani::assert(
+            values.rposition_bisect(|&x| x <= key) == upper
+                && values.rfind_bisect(|&x| x <= key) == values[..upper].last(),
+            "For every sorted i16 slice of length 0 through 8 and every i16 key, reverse search returns the upper bound and its preceding element",
+        );
+        kani::cover!(len == 0);
+        kani::cover!(len == 8 && lower < upper);
+        kani::cover!(len != 0 && lower == len);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

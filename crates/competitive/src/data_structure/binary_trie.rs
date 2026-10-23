@@ -328,6 +328,62 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::RangeSumRangeAdd;
+
+    #[kani::proof]
+    fn proof_range_bounds() {
+        let bit_len: usize = kani::any();
+        let lo: u64 = kani::any();
+        let hi: u64 = kani::any();
+        let lower_kind: u8 = kani::any();
+        let upper_kind: u8 = kani::any();
+        kani::assume(bit_len <= 64 && lower_kind < 3 && upper_kind < 3);
+        let limit = 1u128 << bit_len;
+        let lower = match lower_kind {
+            0 => {
+                kani::assume(lo as u128 <= limit);
+                Bound::Included(lo)
+            }
+            1 => {
+                kani::assume((lo as u128) < limit);
+                Bound::Excluded(lo)
+            }
+            _ => Bound::Unbounded,
+        };
+        let upper = match upper_kind {
+            0 => {
+                kani::assume((hi as u128) < limit);
+                Bound::Included(hi)
+            }
+            1 => {
+                kani::assume(hi as u128 <= limit);
+                Bound::Excluded(hi)
+            }
+            _ => Bound::Unbounded,
+        };
+        let range = (lower, upper);
+        let trie = BinaryTrie::<RangeSumRangeAdd<i64>>::new(bit_len);
+        let normalized = trie.range_to_bounds(range);
+        if let Some((l, r)) = normalized {
+            kani::assert(
+                l <= r && (r as u128) < limit,
+                "For every binary-trie key width from 0 through 64 and all valid u64 bounds, a normalized nonempty range stays within the key universe",
+            );
+        }
+        let key: u64 = kani::any();
+        kani::assert(
+            normalized.is_some_and(|(l, r)| l <= key && key <= r)
+                == ((key as u128) < limit && range.contains(&key)),
+            "Binary-trie range normalization preserves membership for every u64 key, including included, excluded, unbounded, reversed, and empty ranges",
+        );
+        kani::cover!(bit_len == 64 && lower_kind == 1 && lo == u64::MAX);
+        kani::cover!(bit_len == 0 && normalized == Some((0, 0)));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -53,6 +53,50 @@ macro_rules! syakutori {
     }};
 }
 
+#[cfg(kani)]
+mod verification {
+    #[kani::proof]
+    #[kani::unwind(8)]
+    fn proof_maximal_sum_windows() {
+        let values: [u8; 6] = kani::any();
+        let len: u8 = kani::any();
+        let limit: u16 = kani::any();
+        kani::assume(len <= 6);
+        let mut sum = 0u16;
+        let mut calls = 0;
+        syakutori!(
+            len as usize,
+            (left, right),
+            |i| sum + values[i] as u16 <= limit,
+            |i| sum += values[i] as u16,
+            |i| sum -= values[i] as u16,
+            {
+                let expected: u16 = values[left..right].iter().map(|&x| x as u16).sum();
+                kani::assert(
+                    sum == expected && sum <= limit,
+                    "For every nonnegative u8 array of length zero through six and every u16 limit, the sliding-window callbacks maintain the exact window sum within the limit",
+                );
+                kani::assert(
+                    right == len as usize || sum + values[right] as u16 > limit,
+                    "Each reported right endpoint is maximal, including an empty window when its first element exceeds the limit",
+                );
+                kani::assert(
+                    left == calls,
+                    "The callback visits every left endpoint exactly once in order",
+                );
+                calls += 1;
+            },
+        );
+        kani::assert(
+            calls == len as usize && sum == 0,
+            "All windows are reported and all accepted elements are removed",
+        );
+        kani::cover!(len == 0);
+        kani::cover!(len == 6 && limit == 0 && values == [0; 6]);
+        kani::cover!(len == 6 && limit == 0 && values == [u8::MAX; 6]);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{rand, tools::Xorshift};

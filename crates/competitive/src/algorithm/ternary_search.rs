@@ -183,6 +183,47 @@ where
     if kv2.1 < kv.1 { kv2 } else { kv }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    fn proof_signed_key() {
+        let a: i128 = kani::any();
+        let b: i128 = kani::any();
+        kani::assert(
+            i128::trisect_unkey(a.trisect_key()) == a
+                && a.cmp(&b) == a.trisect_key().cmp(&b.trisect_key()),
+            "For all i128 values, ternary-search keys round-trip exactly and preserve signed order over the full domain",
+        );
+        kani::cover!(a == i128::MIN && b == i128::MAX);
+    }
+
+    macro_rules! proof_float_key {
+        ($name:ident, $ty:ty) => {
+            #[kani::proof]
+            fn $name() {
+                let a = <$ty>::from_bits(kani::any());
+                let b = <$ty>::from_bits(kani::any());
+                kani::assert(
+                    <$ty>::trisect_unkey(a.trisect_key()).to_bits() == a.to_bits()
+                        && a.total_cmp(&b) == a.trisect_key().cmp(&b.trisect_key()),
+                    concat!(
+                        "For every ",
+                        stringify!($ty),
+                        " bit pattern, ternary-search keys round-trip and preserve total_cmp order, including NaN payloads, infinities, and signed zeros",
+                    ),
+                );
+                kani::cover!(a.is_nan() && b.is_nan() && a.to_bits() != b.to_bits());
+                kani::cover!(a == 0.0 && b == 0.0 && a.to_bits() != b.to_bits());
+            }
+        };
+    }
+
+    proof_float_key!(proof_f32_key, f32);
+    proof_float_key!(proof_f64_key, f64);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

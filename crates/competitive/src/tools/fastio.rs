@@ -1128,6 +1128,62 @@ impl<W: Write> fmt::Write for FastOutput<W> {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    macro_rules! proof_integer_input {
+        ($name:ident, $ty:ident, $digits:expr, $negative:expr) => {
+            #[kani::proof]
+            #[kani::unwind(6)]
+            fn $name() {
+                let bytes: [u8; 40] = kani::any();
+                let len = kani::any::<u8>() as usize;
+                let offset = kani::any::<u8>() as usize;
+                let negative: bool = $negative;
+                let start = offset + negative as usize;
+                kani::assume((1..=$digits).contains(&len) && offset < 8);
+                kani::assume(!negative || bytes[offset] == b'-');
+                kani::assume(bytes[start + len].is_ascii_whitespace());
+                let mut expected = 0i64;
+                for i in 0..len {
+                    let digit = bytes[start + i];
+                    kani::assume(digit.is_ascii_digit());
+                    expected = expected * 10 + (digit - b'0') as i64;
+                }
+                if negative {
+                    expected = -expected;
+                }
+                kani::assume(($ty::MIN as i64..=$ty::MAX as i64).contains(&expected));
+                // One valid token, one delimiter, and 16 initialized padding bytes.
+                let mut input =
+                    unsafe { FastInput::from_slice(&bytes[offset..start + len + 17]) };
+                let actual = unsafe { input.$ty() };
+                kani::assert(
+                    actual as i64 == expected,
+                    concat!(
+                        "For every valid ", stringify!($ty), " decimal token of one through ",
+                        stringify!($digits),
+                        " digits, with any ASCII whitespace delimiter and initialized padding, the little-endian SWAR parser returns its value, including leading zeros and every byte alignment"
+                    ),
+                );
+                kani::assert(
+                    input.ptr == unsafe { bytes.as_ptr().add(start + len + 1) },
+                    concat!("Parsing a ", stringify!($ty), " consumes exactly its optional minus sign, digits and one delimiter"),
+                );
+                kani::cover!(len == $digits && expected == $ty::MAX as i64 && offset == 7);
+                kani::cover!(expected == $ty::MIN as i64);
+                kani::cover!(len == 1 && expected == 0);
+            }
+        };
+    }
+
+    proof_integer_input!(proof_u8_input, u8, 3, false);
+    proof_integer_input!(proof_u16_input, u16, 5, false);
+    proof_integer_input!(proof_i8_input, i8, 3, kani::any());
+    proof_integer_input!(proof_i16_input, i16, 5, kani::any());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

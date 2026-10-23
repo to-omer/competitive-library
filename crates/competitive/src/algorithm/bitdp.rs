@@ -113,6 +113,114 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    fn proof_subset_step() {
+        let mask: u64 = kani::any();
+        let current: u64 = kani::any();
+        let candidate: u64 = kani::any();
+        kani::assume(current & mask == current);
+        kani::assert(
+            mask.subsets().next() == Some(mask),
+            "For every u64 mask, subset enumeration starts with the entire mask",
+        );
+        // Every submask is a reachable iterator state; verify a transition without enumerating 2^64 states.
+        let mut iter = Subsets {
+            mask,
+            cur: Some(current),
+        };
+        kani::assert(
+            iter.next() == Some(current),
+            "For every u64 mask and current submask, the iterator yields that submask",
+        );
+        match iter.next() {
+            Some(next) => {
+                kani::assert(
+                    next < current && next & mask == next,
+                    "Each u64 subset step strictly decreases while remaining a submask",
+                );
+                kani::assert(
+                    !(candidate < current && candidate & mask == candidate) || candidate <= next,
+                    "Each u64 subset step chooses the greatest smaller submask, so it skips none",
+                );
+            }
+            None => kani::assert(
+                current == 0 && iter.next().is_none(),
+                "u64 subset enumeration ends exactly after zero and stays exhausted",
+            ),
+        }
+        kani::cover!(mask == u64::MAX && current == 1 << 63);
+        kani::cover!(mask == 0);
+    }
+
+    #[kani::proof]
+    fn proof_combination_start() {
+        let n: usize = kani::any();
+        let k: usize = kani::any();
+        let candidate: u64 = kani::any();
+        kani::assume(k <= n && n < u64::BITS as usize);
+        let first = u64::combinations(n, k).next().unwrap();
+        kani::assert(
+            first < 1u64 << n && first.count_ones() as usize == k,
+            "For every 0 <= k <= n < 64, u64 combination enumeration starts with a valid k-bit selection among n bits",
+        );
+        kani::assert(
+            candidate.count_ones() as usize != k || first <= candidate,
+            "The first u64 combination is the smallest integer with the requested number of selected bits",
+        );
+        kani::cover!(n == 63 && k == 63);
+        kani::cover!(n == 0 && k == 0);
+    }
+
+    #[kani::proof]
+    fn proof_combination_step() {
+        let n: usize = kani::any();
+        let current: u64 = kani::any();
+        let candidate: u64 = kani::any();
+        kani::assume(n < u64::BITS as usize);
+        let mask = 1u64 << n;
+        kani::assume(current < mask);
+        // A valid state of any fixed-popcount enumeration on at most sixty-three bits.
+        let mut iter = Combinations {
+            mask,
+            cur: Some(current),
+        };
+        kani::assert(
+            iter.next() == Some(current),
+            "For every u64 combination state on 0 through 63 bits, the iterator yields the current combination",
+        );
+        match iter.next() {
+            Some(next) => {
+                kani::assert(
+                    current < next && next < mask && next.count_ones() == current.count_ones(),
+                    "Every next u64 combination on at most 63 bits increases and preserves the number of selected bits",
+                );
+                kani::assert(
+                    !(current < candidate
+                        && candidate < mask
+                        && candidate.count_ones() == current.count_ones())
+                        || next <= candidate,
+                    "The next u64 combination is the smallest larger value with the same popcount, so it skips none",
+                );
+            }
+            None => kani::assert(
+                !(current < candidate
+                    && candidate < mask
+                    && candidate.count_ones() == current.count_ones())
+                    && iter.next().is_none(),
+                "u64 combination enumeration ends exactly when no larger combination remains and stays exhausted",
+            ),
+        }
+        kani::cover!(n == 0);
+        kani::cover!(n == 63 && current == 0b0101011);
+        kani::cover!(n == 63 && current == (1u64 << 63) - 1);
+        kani::cover!(n == 63 && current == 1u64 << 62);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

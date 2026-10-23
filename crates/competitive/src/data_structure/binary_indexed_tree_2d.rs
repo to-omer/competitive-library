@@ -112,6 +112,74 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::{AdditiveOperation, BitXorOperation};
+    use std::num::Wrapping;
+
+    #[kani::proof]
+    #[kani::unwind(4)]
+    fn proof_rectangle_update() {
+        let mut values: [[u64; 3]; 2] = kani::any();
+        let row: usize = kani::any();
+        let column: usize = kani::any();
+        let change: u64 = kani::any();
+        let replace: bool = kani::any();
+        let top: usize = kani::any();
+        let bottom: usize = kani::any();
+        let left: usize = kani::any();
+        let right: usize = kani::any();
+        kani::assume(row < 2 && column < 3);
+        kani::assume(top <= bottom && bottom <= 2 && left <= right && right <= 3);
+        let mut bit = BinaryIndexedTree2D::<BitXorOperation<u64>>::new(2, 3);
+        for (i, values) in values.iter().enumerate() {
+            for (j, &value) in values.iter().enumerate() {
+                bit.update(i, j, value);
+            }
+        }
+        if replace {
+            bit.set(row, column, change);
+            values[row][column] = change;
+        } else {
+            bit.update(row, column, change);
+            values[row][column] ^= change;
+        }
+        let mut expected = 0;
+        for values in &values[top..bottom] {
+            for &value in &values[left..right] {
+                expected ^= value;
+            }
+        }
+        kani::assert(
+            bit.get(row, column) == values[row][column]
+                && bit.fold(top, left, bottom, right) == expected,
+            "For all 2-by-3 u64 grids, point XOR updates or assignments and valid rectangles, 2D Fenwick queries equal the logical grid XOR; unchecked accesses stay within the allocated table",
+        );
+        kani::cover!(top == bottom || left == right);
+        kani::cover!(top == 0 && bottom == 2 && left == 0 && right == 3 && column == 2);
+
+        // A single occupied cell distinguishes inverse operations that XOR cannot check.
+        let initial = Wrapping(kani::any());
+        let change = Wrapping(kani::any());
+        let mut bit = BinaryIndexedTree2D::<AdditiveOperation<Wrapping<u8>>>::new(2, 3);
+        bit.update(row, column, initial);
+        let value = if replace {
+            bit.set(row, column, change);
+            change
+        } else {
+            bit.update(row, column, change);
+            initial + change
+        };
+        let contains = top <= row && row < bottom && left <= column && column < right;
+        kani::assert(
+            bit.get(row, column) == value
+                && bit.fold(top, left, bottom, right) == if contains { value } else { Wrapping(0) },
+            "For every single-cell position in a 2-by-3 grid and all u8 initial and replacement or increment values, addition modulo 256 preserves the cell value and returns it exactly for rectangles containing the cell",
+        );
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

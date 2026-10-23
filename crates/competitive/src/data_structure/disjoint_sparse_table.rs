@@ -119,6 +119,44 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::LogicalLinearOperation;
+
+    macro_rules! proof_ranges {
+        ($name:ident, $n:literal) => {
+            #[kani::proof]
+            #[kani::unwind(10)]
+            fn $name() {
+                let values: [(u8, u8); $n] = kani::any();
+                let left: usize = kani::any();
+                let right: usize = kani::any();
+                let input: u8 = kani::any();
+                kani::assume(left < right && right <= $n);
+                let table = DisjointSparseTable::<LogicalLinearOperation<u8>>::new(values.to_vec());
+                let mut expected = input;
+                for &(mask, xor) in &values[left..right] {
+                    expected = (expected & mask) ^ xor;
+                }
+                kani::assert(
+                    LogicalLinearOperation::eval(&table.fold(left, right), &input) == expected,
+                    concat!(
+                        "Every nonempty range of ",
+                        $n,
+                        " arbitrary u8 bitwise affine maps preserves left-to-right composition in the disjoint sparse table",
+                    ),
+                );
+                kani::cover!(left + 1 == right);
+                kani::cover!(left == 1 && right == $n);
+            }
+        };
+    }
+
+    proof_ranges!(proof_ranges_five, 5);
+    proof_ranges!(proof_ranges_eight, 8);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

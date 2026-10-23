@@ -546,6 +546,48 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(5)]
+    fn proof_warshall_floyd_three_vertices() {
+        let weights: [[Option<u8>; 3]; 3] = kani::any();
+        let graph = UsizeGraph::new(3, |u: usize| {
+            (0..3).map(move |v| (v, weights[u][v].map(u16::from)))
+        });
+        let actual = graph
+            .option_sp_additive()
+            .warshall_floyd_ap(|weight| weight);
+        // Every shortest nonnegative path has a simple representative of at most two edges.
+        for source in 0..3 {
+            for target in 0..3 {
+                let mut expected = if source == target {
+                    Some(0)
+                } else {
+                    weights[source][target].map(u16::from)
+                };
+                for via in 0..3 {
+                    if let (Some(a), Some(b)) = (weights[source][via], weights[via][target]) {
+                        let candidate = a as u16 + b as u16;
+                        if expected.is_none_or(|distance| candidate < distance) {
+                            expected = Some(candidate);
+                        }
+                    }
+                }
+                kani::assert(
+                    actual[source][target] == expected,
+                    "For every three-vertex directed graph with optional full-u8 edge weights and u16 distances, Warshall-Floyd returns all shortest path costs, compared with all simple paths; includes unreachable pairs, zero-cost cycles and self-loops",
+                );
+            }
+        }
+        kani::cover!(actual[0][2].is_none());
+        kani::cover!(actual[0][2] == Some(0));
+        kani::cover!(actual[0][2] == Some(510));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

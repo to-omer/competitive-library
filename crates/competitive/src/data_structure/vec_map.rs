@@ -216,6 +216,93 @@ impl<'a, K, V> ContainerEntry<'a> for Entry<'a, K, V> {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_fixed_operations() {
+        let initial: [Option<u64>; 4] = kani::any();
+        let mut map = VecMap::with_len(4, |key: &u8| *key as usize);
+        for (key, value) in initial.iter().enumerate() {
+            if let Some(value) = *value {
+                map.insert(key as u8, value);
+            }
+        }
+        for (key, value) in initial.iter().enumerate() {
+            kani::assert(
+                map.get(&(key as u8)).copied() == *value,
+                "Constructing any map on keys 0 through 3 preserves its occupied and vacant slots",
+            );
+        }
+        let mut expected = initial;
+        let (op, key, value): (u8, u8, u64) = kani::any();
+        kani::assume(op < 4 && key < 4);
+        let slot = &mut expected[key as usize];
+        match op {
+            0 => {
+                kani::assert(
+                    map.insert(key, value) == *slot,
+                    "Insertion returns exactly the previous value",
+                );
+                *slot = Some(value);
+            }
+            1 => {
+                kani::assert(
+                    map.remove(&key) == *slot,
+                    "Removal returns exactly the previous value",
+                );
+                *slot = None;
+            }
+            2 => {
+                *map.entry(key).or_insert(value) ^= value;
+                *slot = Some(slot.unwrap_or(value) ^ value);
+            }
+            _ => {
+                let mut called = false;
+                map.entry(key)
+                    .and_modify(|x| *x ^= value)
+                    .or_insert_with_key(|&k| {
+                        called = true;
+                        value ^ k as u64
+                    });
+                kani::assert(
+                    called == slot.is_none(),
+                    "The entry initializer runs exactly once for a vacant key and never for an occupied key",
+                );
+                *slot = Some(match *slot {
+                    Some(old) => old ^ value,
+                    None => value ^ key as u64,
+                });
+            }
+        }
+        for (key, value) in expected.iter().enumerate() {
+            kani::assert(
+                map.get(&(key as u8)).copied() == *value,
+                "With fixed storage, every insert, remove, entry insertion, or entry modification from any map on keys 0 through 3 preserves all u64 values",
+            );
+        }
+        let mut drained = [None; 4];
+        for (key, value) in map.drain() {
+            kani::assert(
+                drained[key as usize].is_none(),
+                "Drain yields each occupied key once",
+            );
+            drained[key as usize] = Some(value);
+        }
+        for key in 0..4 {
+            kani::assert(
+                drained[key] == expected[key] && map.get(&(key as u8)).is_none(),
+                "Complete draining yields exactly the logical map and leaves every key vacant",
+            );
+        }
+        kani::cover!(op == 3 && initial[key as usize].is_none());
+        kani::cover!(op == 3 && initial[key as usize].is_some());
+        kani::cover!(key == 3 && initial.iter().all(Option::is_none));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -143,6 +143,101 @@ impl<G: Group> BinaryIndexedTree<G> {
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::{AdditiveOperation, FixedPermutationOperation, LogicalLinearOperation};
+    use std::num::Wrapping;
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_prefix_order() {
+        let values: [(u8, u8); 4] = kani::any();
+        let end: usize = kani::any();
+        let input: u8 = kani::any();
+        kani::assume(end <= values.len());
+        let bit = BinaryIndexedTree::<LogicalLinearOperation<u8>>::from_slice(&values);
+        let mut expected = input;
+        for &(mask, xor) in &values[..end] {
+            expected = (expected & mask) ^ xor;
+        }
+        kani::assert(
+            LogicalLinearOperation::eval(&bit.accumulate0(end), &input) == expected,
+            "For all four u8 bitwise affine maps and every valid prefix, Fenwick construction and accumulation preserve left-to-right noncommutative order",
+        );
+        let mut bit = BinaryIndexedTree::<LogicalLinearOperation<u8>>::new(values.len());
+        for (index, &value) in values.iter().enumerate() {
+            bit.update(index, value);
+        }
+        kani::assert(
+            LogicalLinearOperation::eval(&bit.accumulate0(end), &input) == expected,
+            "For all four u8 bitwise affine maps and every valid prefix, updating an empty Fenwick tree in ascending index order preserves noncommutative composition",
+        );
+        kani::cover!(end == 0);
+        kani::cover!(end == 3);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_group_range_order() {
+        let values: [[usize; 3]; 4] = kani::any();
+        for p in &values {
+            kani::assume(p[0] < 3 && p[1] < 3 && p[2] < 3);
+            kani::assume(p[0] != p[1] && p[0] != p[2] && p[1] != p[2]);
+        }
+        let left: usize = kani::any();
+        let right: usize = kani::any();
+        kani::assume(left <= right && right <= values.len());
+        let bit = BinaryIndexedTree::<FixedPermutationOperation<3>>::from_slice(&values);
+        let mut expected = [0, 1, 2];
+        for p in &values[left..right] {
+            expected = [expected[p[0]], expected[p[1]], expected[p[2]]];
+        }
+        let actual = bit.fold(left, right);
+        for i in 0..3 {
+            kani::assert(
+                actual[i] == expected[i],
+                "For any sequence of four permutations of three labels and every valid range, Fenwick range cancellation preserves noncommutative composition order, including empty ranges",
+            );
+        }
+        kani::cover!(left == right);
+        kani::cover!(left == 1 && right == 3 && values[0][values[1][0]] != values[1][values[0][0]]);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_abelian_update() {
+        let values: [u8; 4] = kani::any();
+        let mut values = values.map(Wrapping);
+        let index: usize = kani::any();
+        let change = Wrapping(kani::any());
+        let replace: bool = kani::any();
+        let left: usize = kani::any();
+        let right: usize = kani::any();
+        kani::assume(index < values.len() && left <= right && right <= values.len());
+        let mut bit = BinaryIndexedTree::<AdditiveOperation<Wrapping<u8>>>::from_slice(&values);
+        if replace {
+            bit.set(index, change);
+            values[index] = change;
+        } else {
+            bit.update(index, change);
+            values[index] += change;
+        }
+        let mut expected = Wrapping(0u8);
+        for &value in &values[left..right] {
+            expected += value;
+        }
+        kani::assert(
+            bit.get(index) == values[index]
+                && bit.fold(left, right) == expected
+                && bit.fold_abelian(left, right) == expected,
+            "For all four u8 values, point additions or assignments and valid ranges, both Fenwick range queries equal the sum of the logical values modulo 256",
+        );
+        kani::cover!(left == right);
+        kani::cover!(left == 0 && right == 4 && replace && change == Wrapping(u8::MAX));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

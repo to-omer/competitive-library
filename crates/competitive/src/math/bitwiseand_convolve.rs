@@ -211,6 +211,125 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::{AdditiveOperation, BitXorOperation, FixedPermutationOperation};
+    use std::num::Wrapping;
+
+    macro_rules! proof_transform {
+        ($name:ident, $n:literal) => {
+            #[kani::proof]
+            #[kani::unwind(18)]
+            fn $name() {
+                let values: [u64; $n] = kani::any();
+                let query: u8 = kani::any();
+                kani::assume(query < $n);
+                let mut actual = values;
+                BitwiseandConvolve::<BitXorOperation<u64>>::zeta_transform(&mut actual);
+                let mut expected = 0u64;
+                for (mask, &value) in values.iter().enumerate() {
+                    if mask & query as usize == query as usize {
+                        expected ^= value;
+                    }
+                }
+                kani::assert(
+                    actual[query as usize] == expected,
+                    concat!(
+                        "For every ",
+                        $n,
+                        "-element u64 array, superset zeta transformation XORs exactly the supermasks of each index",
+                    ),
+                );
+                BitwiseandConvolve::<BitXorOperation<u64>>::mobius_transform(&mut actual);
+                kani::assert(
+                    actual[query as usize] == values[query as usize],
+                    "Superset Mobius inversion over XOR restores every original u64 value",
+                );
+                kani::cover!(query == 0);
+                kani::cover!(query == $n - 1 && values[0] == u64::MIN && values[$n - 1] == u64::MAX);
+
+                // XOR is self-inverse; a weighted basis vector distinguishes addition from subtraction.
+                let mut basis = [Wrapping(0u8); $n];
+                basis[query as usize] = Wrapping(kani::any());
+                let expected = basis;
+                BitwiseandConvolve::<AdditiveOperation<Wrapping<u8>>>::zeta_transform(&mut basis);
+                BitwiseandConvolve::<AdditiveOperation<Wrapping<u8>>>::mobius_transform(&mut basis);
+                kani::assert(
+                    basis == expected,
+                    concat!(
+                        "For every position and u8 value in a ",
+                        $n,
+                        "-element array with at most one nonzero entry, superset zeta and Mobius transforms over addition modulo 256 restore the entire array",
+                    ),
+                );
+            }
+        };
+    }
+
+    proof_transform!(proof_transform_eight, 8);
+    proof_transform!(proof_transform_sixteen, 16);
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_noncommutative_transform() {
+        let values: [[u8; 3]; 4] = kani::any();
+        for p in &values {
+            kani::assume(p[0] < 3 && p[1] < 3 && p[2] < 3);
+            kani::assume(p[0] != p[1] && p[0] != p[2] && p[1] != p[2]);
+        }
+        let values = values.map(|p| p.map(usize::from));
+        let (query, len): (u8, u8) = kani::any();
+        kani::assume(query < 4 && len <= 4);
+        let query = query as usize;
+        let len = len as usize;
+        let mut actual = values;
+        BitwiseandConvolve::<FixedPermutationOperation<3>>::zeta_transform(&mut actual);
+        let mut expected = [0, 1, 2];
+        for mask in 0..values.len() {
+            if mask & query == query {
+                let p = values[mask];
+                expected = [expected[p[0]], expected[p[1]], expected[p[2]]];
+            }
+        }
+        for label in 0..3 {
+            kani::assert(
+                actual[query][label] == expected[label],
+                "For any sequence of four permutations of three labels, superset zeta combines the matching masks in ascending order",
+            );
+        }
+        BitwiseandConvolve::<FixedPermutationOperation<3>>::mobius_transform(&mut actual);
+        for index in 0..values.len() {
+            for label in 0..3 {
+                kani::assert(
+                    actual[index][label] == values[index][label],
+                    "Superset Mobius inversion restores all four permutations without assuming commutativity",
+                );
+            }
+        }
+        let mut online =
+            OnlineSupersetZetaTransform::<FixedPermutationOperation<3>>::new(values.len());
+        for &value in &values[..len] {
+            online.push(value);
+        }
+        let mut expected = [0, 1, 2];
+        for mask in 0..len {
+            if mask & query == query {
+                let p = values[mask];
+                expected = [expected[p[0]], expected[p[1]], expected[p[2]]];
+            }
+        }
+        let actual = online.get(query);
+        for label in 0..3 {
+            kani::assert(
+                actual[label] == expected[label],
+                "For every prefix of four arbitrary permutations, online superset zeta preserves the same noncommutative order as the static transform",
+            );
+        }
+        kani::cover!(len == 3 && query == 0 && values[0][values[1][0]] != values[1][values[0][0]]);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

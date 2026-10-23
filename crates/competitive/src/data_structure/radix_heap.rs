@@ -88,6 +88,58 @@ macro_rules! define_radix_heap {
 define_radix_heap!(RadixHeapU32, u32, 33);
 define_radix_heap!(RadixHeapU64, u64, 65);
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    macro_rules! proof_buckets {
+        ($name:ident, $heap:ident, $key:ty) => {
+            #[kani::proof]
+            fn $name() {
+                let last: $key = kani::any();
+                let a: $key = kani::any();
+                let b: $key = kani::any();
+                kani::assume(last <= a && last <= b);
+                let ai = $heap::<()>::bucket_index(a, last);
+                let bi = $heap::<()>::bucket_index(b, last);
+                kani::assert(
+                    ai <= <$key>::BITS as usize && ((ai == 0) == (a == last)),
+                    concat!(
+                        "For all monotone ",
+                        stringify!($key),
+                        " keys, the radix bucket index is in bounds and bucket zero contains exactly the last removed key",
+                    ),
+                );
+                if ai < bi {
+                    kani::assert(
+                        a < b,
+                        concat!(
+                            "For all ",
+                            stringify!($key),
+                            " keys not below last, every key in an earlier radix bucket is smaller than every key in a later bucket",
+                        ),
+                    );
+                }
+                if ai == bi && ai > 0 && a <= b {
+                    kani::assert(
+                        $heap::<()>::bucket_index(b, a) < ai,
+                        concat!(
+                            "For all ",
+                            stringify!($key),
+                            " keys, choosing the minimum of a nonzero bucket as the new last moves every member to a strictly earlier bucket",
+                        ),
+                    );
+                }
+                kani::cover!(last == 0 && a == 1 << (<$key>::BITS - 1) && b == <$key>::MAX);
+                kani::cover!(last == <$key>::MAX && ai == 0 && bi == 0);
+            }
+        };
+    }
+
+    proof_buckets!(proof_buckets_u32, RadixHeapU32, u32);
+    proof_buckets!(proof_buckets_u64, RadixHeapU64, u64);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

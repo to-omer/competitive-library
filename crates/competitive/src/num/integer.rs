@@ -1070,6 +1070,116 @@ macro_rules! impl_binary_repr_for_wrapping {
 }
 impl_binary_repr_for_wrapping!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    macro_rules! proof_mod_add_sub {
+        ($name:ident, $ty:ty) => {
+            #[kani::proof]
+            fn $name() {
+                let a: $ty = kani::any();
+                let b: $ty = kani::any();
+                let modulo: $ty = kani::any();
+                kani::assume(modulo > 0 && a < modulo && b < modulo);
+
+                let sum = a.overflowing_add(b);
+                let added = a.mod_add(b, modulo);
+                kani::assert(
+                    added < modulo
+                        && ((!sum.1 && added == sum.0) || added.overflowing_add(modulo) == sum),
+                    concat!(
+                        "For all reduced ",
+                        stringify!($ty),
+                        " operands and any nonzero modulus, mod_add returns the unique reduced sum, including machine overflow"
+                    ),
+                );
+
+                let subtracted = a.mod_sub(b, modulo);
+                let restored = subtracted.overflowing_add(b);
+                kani::assert(
+                    subtracted < modulo
+                        && (restored == (a, false) || restored == a.overflowing_add(modulo)),
+                    concat!(
+                        "For all reduced ",
+                        stringify!($ty),
+                        " operands and any nonzero modulus, mod_sub returns the unique reduced difference, including machine underflow"
+                    ),
+                );
+
+                let negated = a.mod_neg(modulo);
+                kani::assert(
+                    negated < modulo
+                        && if a == 0 {
+                            negated == 0
+                        } else {
+                            negated.checked_add(a) == Some(modulo)
+                        },
+                    concat!(
+                        "For every reduced ",
+                        stringify!($ty),
+                        " operand and any nonzero modulus, mod_neg returns its reduced additive inverse"
+                    ),
+                );
+                kani::cover!(modulo == 1);
+                kani::cover!(modulo == <$ty>::MAX && sum.1);
+                kani::cover!(!sum.1 && sum.0 == modulo);
+                kani::cover!(a < b);
+            }
+        };
+    }
+
+    proof_mod_add_sub!(proof_u8_mod_add_sub, u8);
+    proof_mod_add_sub!(proof_u16_mod_add_sub, u16);
+    proof_mod_add_sub!(proof_u32_mod_add_sub, u32);
+    proof_mod_add_sub!(proof_u64_mod_add_sub, u64);
+    proof_mod_add_sub!(proof_u128_mod_add_sub, u128);
+    proof_mod_add_sub!(proof_usize_mod_add_sub, usize);
+
+    #[kani::proof]
+    #[kani::unwind(17)]
+    fn proof_u8_lcm() {
+        let x: u8 = kani::any();
+        let y: u8 = kani::any();
+        let (mut a, mut b) = (x as u16, y as u16);
+        while b != 0 {
+            (a, b) = (b, a % b);
+        }
+        let expected = if a == 0 { 0 } else { x as u16 * y as u16 / a };
+        kani::assume(expected <= u8::MAX as u16);
+        kani::assert(
+            x.lcm(y) as u16 == expected,
+            "For all u8 operand pairs whose least common multiple fits u8, lcm equals the widened product divided by an independently computed Euclidean gcd, including either or both zero operands",
+        );
+        kani::cover!(x == 0 && y == 0);
+        kani::cover!(x == u8::MAX && y == u8::MAX);
+        kani::cover!(x > 1 && y > 1 && a == 1);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(14)]
+    fn proof_u8_mod_inverse() {
+        let a: u8 = kani::any();
+        let modulo: u8 = kani::any();
+        kani::assume(modulo > 0);
+        let (mut x, mut y) = (a, modulo);
+        while y != 0 {
+            (x, y) = (y, x % y);
+        }
+        kani::assume(x == 1);
+        let inverse = a.mod_inv(modulo);
+        kani::assert(
+            inverse < modulo && (a as u16 * inverse as u16) % modulo as u16 == 1 % modulo as u16,
+            "For every nonzero u8 modulus and every coprime u8 input, including unreduced inputs and modulus one, mod_inv returns the canonical multiplicative inverse",
+        );
+        kani::cover!(modulo == u8::MAX && a == 1);
+        kani::cover!(modulo == 128 && a == 127);
+        kani::cover!(modulo == 1 && a == 1);
+        kani::cover!(modulo == 1 && a == 0);
+        kani::cover!(a > modulo && modulo > 1);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1155,15 +1265,22 @@ mod tests {
                         #[test]
                         fn test_mod_inv() {
                             let mut rng = Xorshift::default();
+                            for a in integer_boundary_values!($t) {
+                                assert_eq!(a.mod_inv(1), 0);
+                            }
+                            for m in integer_boundary_values!($t).into_iter().filter(|&m| m > 1) {
+                                assert_eq!((1 as $t).mod_inv(m), 1);
+                                assert_eq!((m - 1).mod_inv(m), m - 1);
+                            }
                             for _ in 0..Q {
-                                let m = rng.random(2..=A);
-                                let a = rng.random(1..m);
+                                let m = rng.random(1..=$t::MAX);
+                                let a = rng.random(0..=$t::MAX);
                                 let g = a.gcd(m);
                                 let m = m / g;
                                 let a = a / g;
                                 let x = a.mod_inv(m);
                                 assert!(x < m);
-                                assert_eq!(a as u128 * x as u128 % m as u128, 1);
+                                assert_eq!(a as u128 * x as u128 % m as u128, 1 % m as u128);
                             }
                         }
                         #[test]

@@ -273,6 +273,38 @@ impl_compressed_binary_indexed_tree!(
     CompressedBinaryIndexedTree9d I QI
 );
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::LogicalLinearOperation;
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_ordered_updates() {
+        let values: [(u8, u8); 4] = kani::any();
+        let input: u8 = kani::any();
+        let (end_x, end_y): (usize, usize) = kani::any();
+        kani::assume(end_x <= 4 && end_y <= 4);
+        let points = [(0, (0,)), (1, (1,)), (2, (2,)), (3, (3,))];
+        let mut bit =
+            CompressedBinaryIndexedTree2d::<LogicalLinearOperation<u8>, _, _>::new(&points);
+        let mut expected = input;
+        for (index, &value) in values.iter().enumerate() {
+            bit.update(&points[index], &value);
+            if index < end_x && index < end_y {
+                expected = (expected & value.0) ^ value.1;
+            }
+        }
+        kani::assert(
+            LogicalLinearOperation::eval(&bit.accumulate(&(..end_x, (..end_y,))), &input)
+                == expected,
+            "For all four u8 bitwise affine maps inserted at diagonal coordinates 0 through 3, compressed Fenwick prefix queries preserve noncommutative insertion order in both dimensions",
+        );
+        kani::cover!(end_x == 3 && end_y == 4);
+        kani::cover!(end_x == 0);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

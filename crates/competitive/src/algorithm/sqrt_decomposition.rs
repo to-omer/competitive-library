@@ -139,6 +139,63 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+    use crate::algebra::BitXorOperation;
+
+    #[kani::proof]
+    #[kani::unwind(8)]
+    fn proof_range_and_point_updates() {
+        let values: [u64; 5] = kani::any();
+        let action: u64 = kani::any();
+        let point_action: u64 = kani::any();
+        let (left, right): (u8, u8) = kani::any();
+        let (query_left, query_right): (u8, u8) = kani::any();
+        let index: u8 = kani::any();
+        let query: u8 = kani::any();
+        kani::assume(left <= right && right <= 5);
+        kani::assume(query_left <= query_right && query_right <= 5);
+        kani::assume(index < 5 && query < 5);
+        let mut buckets =
+            RangeUpdateRangeFoldSqrtDecomposition::<BitXorOperation<u64>>::sqrt_decomposition(
+                5,
+                Some(2),
+            );
+        for (i, value) in values.into_iter().enumerate() {
+            buckets.update_cell(i, value);
+        }
+        buckets.update(left as usize..right as usize, action);
+        buckets.update_cell(index as usize, point_action);
+        let mut expected = 0;
+        let mut expected_point = 0;
+        for (i, mut value) in values.into_iter().enumerate() {
+            if left as usize <= i && i < right as usize {
+                value ^= action;
+            }
+            if i == index as usize {
+                value ^= point_action;
+            }
+            if query_left as usize <= i && i < query_right as usize {
+                expected ^= value;
+            }
+            if i == query as usize {
+                expected_point = value;
+            }
+        }
+        kani::assert(
+            buckets.fold(query_left as usize..query_right as usize) == expected,
+            "For all five-element u64 XOR arrays with bucket size two, a range update followed by a point update preserves every range fold, including empty ranges and a partial final bucket",
+        );
+        kani::assert(
+            buckets.get(query as usize) == expected_point,
+            "Every point lookup combines its cell update with the pending bucket update",
+        );
+        kani::cover!(left == 0 && right == 4 && index == 1 && query_left == 1 && query_right == 5);
+        kani::cover!(left == 1 && right == 3 && query_left == query_right);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

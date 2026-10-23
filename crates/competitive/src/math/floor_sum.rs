@@ -475,6 +475,29 @@ where
     .sum
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(4)]
+    fn proof_floor_sum_u64_boundary() {
+        let n: u64 = kani::any();
+        let b: u64 = kani::any();
+        let expected = if b == u64::MAX {
+            n
+        } else {
+            n.saturating_sub(u64::MAX - b)
+        };
+        kani::assert(
+            floor_sum(n, 1, b, u64::MAX) == expected,
+            "For every u64 length n and intercept b, floor_sum(n, 1, b, u64::MAX) counts exactly the terms reaching the modulus, even when n + b exceeds u64::MAX",
+        );
+        kani::cover!(n == u64::MAX && b == u64::MAX - 1);
+        kani::cover!(n == 0);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

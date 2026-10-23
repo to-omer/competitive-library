@@ -2,8 +2,13 @@ use std::{
     iter::{ExactSizeIterator, FusedIterator},
     ops::RangeInclusive,
 };
+#[cfg(verus_keep_ghost)]
+use verification::*;
+#[cfg(verus_keep_ghost)]
+use vstd::prelude::*;
 
 /// sorted({ floor(n/k) | k in \[1, n\] })
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 pub struct FloorQuotientIndex {
     num: usize,
     sqrt: usize,
@@ -44,7 +49,20 @@ impl FloorQuotientIndex {
         (1..=self.num).contains(&key)
     }
 
+    #[cfg_attr(verus_keep_ghost, verus_verify)]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires self@ > 0,
+        ensures result == floor_quotient(self@ as int, value as int),
+    ))]
     pub fn contains_value(&self, value: usize) -> bool {
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            floor_membership(self.num, value);
+            #[verifier::proof_note("For every positive usize numerator and every usize value, contains_value recognizes exactly the values n/k for keys 1 through n, including usize::MAX")]
+            assert(floor_quotient(self.num as int, value as int) ==
+                (value > 0 && value <= self.num && (value == usize::MAX
+                    || (self.num as int) / (value as int) > (self.num as int) / (value + 1))));
+        }
         if value == 0 || value > self.num {
             return false;
         }
@@ -118,12 +136,43 @@ impl FloorQuotientIndex {
 
     /// # Safety
     /// `value` must satisfy `self.contains_value(value)`.
+    #[cfg_attr(verus_keep_ghost, verus_verify)]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires self@ > 0, floor_quotient(self@ as int, value as int),
+        ensures
+            1 <= result@.start <= result@.end <= self@,
+            forall|k: int| 1 <= k <= self@ ==>
+                ((result@.start <= k <= result@.end) == (#[trigger] (self@ as int / k) == value)),
+    ))]
     pub unsafe fn value_to_key_unchecked(&self, value: usize) -> RangeInclusive<usize> {
+        #[cfg(verus_keep_ghost)]
+        proof! { floor_membership(self.num, value); }
         if value == usize::MAX {
+            #[cfg(verus_keep_ghost)]
+            proof! {
+                assert forall|k: int| 1 <= k <= self.num implies
+                    ((k == 1) == (#[trigger] (self.num as int / k) == value)) by {
+                    if k > 1 { vstd::arithmetic::div_mod::lemma_div_decreases(self.num as int, k); }
+                }
+                #[verifier::proof_note("The maximum usize quotient occurs only for numerator usize::MAX and key 1")]
+                assert(self.num == usize::MAX && forall|k: int| 1 <= k <= self.num ==>
+                    ((k == 1) == (#[trigger] (self.num as int / k) == value)));
+            }
             return 1..=1;
         }
         let start = (self.num / (value + 1)) + 1;
         let end = self.num / value;
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            vstd::arithmetic::div_mod::lemma_div_nonincreasing(self.num as int, value as int);
+            assert forall|k: int| 1 <= k <= self.num implies
+                ((start <= k <= end) == (#[trigger] (self.num as int / k) == value)) by {
+                quotient_interval(self.num as int, value as int, k);
+            }
+            #[verifier::proof_note("For every present floor quotient below usize::MAX, value_to_key_unchecked returns a nonempty interval containing exactly all keys producing that quotient")]
+            assert(1 <= start <= end <= self.num && forall|k: int| 1 <= k <= self.num ==>
+                ((start <= k <= end) == (#[trigger] (self.num as int / k) == value)));
+        }
         start..=end
     }
 
@@ -290,6 +339,77 @@ impl CeilQuotientIndex {
     /// `key` must satisfy `1 <= key && key <= self.num`.
     pub unsafe fn key_to_value_unchecked(&self, key: usize) -> usize {
         self.num.div_ceil(key)
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+verus! {
+    impl View for FloorQuotientIndex {
+        type V = usize;
+        closed spec fn view(&self) -> usize { self.num }
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+mod verification {
+    use vstd::{arithmetic::div_mod::*, prelude::*};
+
+    verus! {
+        pub open spec fn floor_quotient(n: int, value: int) -> bool {
+            exists|k: int| 1 <= k <= n && #[trigger] (n / k) == value
+        }
+
+        pub proof fn quotient_interval(n: int, v: int, k: int)
+            requires n > 0, v > 0, k > 0,
+            ensures (n / k == v) == (n / (v + 1) < k <= n / v),
+        {
+            lemma_fundamental_div_mod(n, k);
+            lemma_mod_bound(n, k);
+            lemma_fundamental_div_mod(n, v);
+            lemma_mod_bound(n, v);
+            lemma_fundamental_div_mod(n, v + 1);
+            lemma_mod_bound(n, v + 1);
+            #[verifier::proof_note("For positive integers n, v and k, n/k equals v exactly when n/(v+1) < k <= n/v")]
+            assert((n / k == v) == (n / (v + 1) < k <= n / v)) by(nonlinear_arith)
+                requires n > 0, v > 0, k > 0,
+                    n == k * (n / k) + n % k, 0 <= n % k < k,
+                    n == v * (n / v) + n % v, 0 <= n % v < v,
+                    n == (v + 1) * (n / (v + 1)) + n % (v + 1), 0 <= n % (v + 1) < v + 1;
+        }
+
+        pub proof fn floor_membership(n: usize, value: usize)
+            requires n > 0,
+            ensures floor_quotient(n as int, value as int) ==
+                (value > 0 && value <= n && (value == usize::MAX
+                    || (n as int) / (value as int) > (n as int) / (value + 1))),
+        {
+            let v = value as int;
+            if value == 0 || value > n {
+                assert forall|k: int| 1 <= k <= n implies #[trigger] (n as int / k) != v by {
+                    lemma_div_non_zero(n as int, k);
+                    lemma_div_nonincreasing(n as int, k);
+                }
+            } else if value == usize::MAX {
+                assert(n == usize::MAX);
+                assert(n as int / 1 == v);
+            } else {
+                let k = n as int / v;
+                if (n as int) / v > (n as int) / (v + 1) {
+                    lemma_div_non_zero(n as int, v);
+                    lemma_div_nonincreasing(n as int, v);
+                    quotient_interval(n as int, v, k);
+                    assert(n as int / k == v);
+                } else {
+                    assert forall|k: int| 1 <= k <= n implies #[trigger] (n as int / k) != v by {
+                        quotient_interval(n as int, v, k);
+                    }
+                }
+            }
+            #[verifier::proof_note("A positive floor quotient is present exactly when its key interval contains an integer, with zero, out-of-range values and usize::MAX handled explicitly")]
+            assert(floor_quotient(n as int, value as int) ==
+                (value > 0 && value <= n && (value == usize::MAX
+                    || (n as int) / (value as int) > (n as int) / (value + 1))));
+        }
     }
 }
 

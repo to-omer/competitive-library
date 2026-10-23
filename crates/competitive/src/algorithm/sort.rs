@@ -298,6 +298,80 @@ where
     }
 }
 
+#[cfg(kani)]
+mod verification {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_bubble_sort() {
+        let keys: [u8; 4] = kani::any();
+        let len: usize = kani::any();
+        kani::assume(len <= 4);
+        let mut actual = keys;
+        actual[..len].bubble_sort();
+        for pair in actual[..len].windows(2) {
+            kani::assert(
+                pair[0] <= pair[1],
+                "Bubble sort orders every sequence of zero through four arbitrary u8 values",
+            );
+        }
+        let key: u8 = kani::any();
+        kani::assert(
+            actual[..len].iter().filter(|&&x| x == key).count()
+                == keys[..len].iter().filter(|&&x| x == key).count(),
+            "Bubble sort preserves the multiplicity of every u8 value in the sorted prefix",
+        );
+        kani::assert(
+            actual[len..] == keys[len..],
+            "Bubble sort preserves every element following the sorted prefix",
+        );
+        kani::cover!(len == 0);
+        kani::cover!(len == 4 && keys[0] > keys[1] && keys[1] > keys[2] && keys[2] > keys[3]);
+        kani::cover!(len == 4 && keys[0] == keys[1] && keys[1] == keys[2] && keys[2] == keys[3]);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_merge_sort() {
+        let keys: [u8; 4] = kani::any();
+        let mut values = keys;
+        values.merge_sort();
+        for pair in values.windows(2) {
+            kani::assert(
+                pair[0] <= pair[1],
+                "For four arbitrary u8 values, merge sort returns values in ascending order",
+            );
+        }
+        let value: u8 = kani::any();
+        kani::assert(
+            values.iter().filter(|&&x| x == value).count()
+                == keys.iter().filter(|&&x| x == value).count(),
+            "For four arbitrary u8 values and every possible u8 value, merge sort preserves its multiplicity",
+        );
+        kani::cover!(keys[0] > keys[1] && keys[1] > keys[2] && keys[2] > keys[3]);
+        kani::cover!(keys[0] == keys[1] && keys[1] == keys[2] && keys[2] == keys[3]);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(17)]
+    fn proof_signed_radix_key() {
+        let a: i128 = kani::any();
+        let b: i128 = kani::any();
+        let (mut key_a, mut key_b) = (0u128, 0u128);
+        for byte in 0..i128::BYTES {
+            key_a |= (a.radix_byte(byte) as u128) << (8 * byte);
+            key_b |= (b.radix_byte(byte) as u128) << (8 * byte);
+        }
+        kani::assert(
+            a.cmp(&b) == key_a.cmp(&key_b),
+            "For every pair of i128 values, the sixteen radix bytes preserve signed numeric ordering and equality",
+        );
+        kani::cover!(a == i128::MIN && b == i128::MAX);
+        kani::cover!(a == -1 && b == 0);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
