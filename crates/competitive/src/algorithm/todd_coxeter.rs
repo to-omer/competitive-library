@@ -163,7 +163,10 @@ mod tests {
         data_structure::Accumulate,
         math::Fps998244353,
         num::montgomery::MInt998244353 as M,
-        tools::{AssociatedValue, Xorshift, testutil::exhaustive_sequences},
+        tools::{
+            AssociatedValue, NotEmptySegment, Xorshift,
+            testutil::{exhaustive_sequences, sequence_cases},
+        },
     };
     use std::{collections::HashMap, iter::repeat_n};
 
@@ -356,18 +359,19 @@ mod tests {
                 .into_group()
                 .unwrap()
         });
-        let accumulate = |word: &str| -> Accumulate<TableOperation<Store>> {
-            word.bytes().map(|c| usize::from(c == b'B') + 1).collect()
-        };
-        let s = accumulate("BBBAAAABA");
-        let t = accumulate("BBBBA");
-        for (a, b, c, d, expected) in [
-            (7, 9, 2, 5, true),
-            (7, 9, 1, 4, false),
-            (1, 7, 2, 5, true),
-            (1, 7, 2, 4, false),
-        ] {
-            assert_eq!(s.fold(a - 1..b) == t.fold(c - 1..d), expected);
+        let mut input_rng = Xorshift::default();
+        let mut query_rng = Xorshift::default();
+        for word in sequence_cases(&mut input_rng, b'A'..=b'B', 1..=100_000) {
+            let n = word.len();
+            let sums: Accumulate<TableOperation<Store>> =
+                word.iter().map(|&c| usize::from(c == b'B') + 1).collect();
+            let ranges = [(0, n), (0, 1), (n - 1, n)]
+                .into_iter()
+                .chain(query_rng.random_iter(NotEmptySegment(n)).take(64));
+            for (l, r) in ranges {
+                let expected = (r - l + word[l..r].iter().filter(|&&c| c == b'B').count()) % 3;
+                assert_eq!(sums.fold(l..r), expected);
+            }
         }
     }
 }
