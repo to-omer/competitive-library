@@ -309,7 +309,7 @@
 <span data-nosnippet>265</span>        <span class="kw">for </span>d <span class="kw">in </span><span class="number">0</span>..K {
 <span data-nosnippet>266</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..size {
 <span data-nosnippet>267</span>                <span class="kw">if </span>i / offset[d] % (dim[d] + <span class="number">1</span>) != <span class="number">0 </span>{
-<span data-nosnippet>268</span>                    data[<a href="../algebra/action.rs.html#20">i</a>] = M::operate(<span class="kw-2">&amp;</span>data[i], <span class="kw-2">&amp;</span>data[i - offset[d]]);
+<span data-nosnippet>268</span>                    data[i] = M::operate(<span class="kw-2">&amp;</span>data[i], <span class="kw-2">&amp;</span>data[i - offset[d]]);
 <span data-nosnippet>269</span>                }
 <span data-nosnippet>270</span>            }
 <span data-nosnippet>271</span>        }
@@ -333,7 +333,7 @@
 <span data-nosnippet>289</span><span class="kw">where
 <span data-nosnippet>290</span>    </span>M: AbelianGroup,
 <span data-nosnippet>291</span>{
-<span data-nosnippet>292</span>    <span class="kw">pub fn </span>fold&lt;<a href="../algebra/action.rs.html#54">R</a>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ranges: [R; K]) -&gt; M::T
+<span data-nosnippet>292</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ranges: [R; K]) -&gt; M::T
 <span data-nosnippet>293</span>    <span class="kw">where
 <span data-nosnippet>294</span>        </span>R: RangeBounds&lt;usize&gt;,
 <span data-nosnippet>295</span>    {
@@ -345,7 +345,7 @@
 <span data-nosnippet>301</span>            <span class="macro">assert!</span>(l &lt;= r, <span class="string">"bad range [{}, {})"</span>, l, r);
 <span data-nosnippet>302</span>            [l, r]
 <span data-nosnippet>303</span>        });
-<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span>p: usize = ranges
+<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../algebra/action.rs.html#70">p</a>: usize = ranges
 <span data-nosnippet>305</span>            .iter()
 <span data-nosnippet>306</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.offset)
 <span data-nosnippet>307</span>            .map(|(range, offset)| range[<span class="number">1</span>] * offset)
@@ -356,7 +356,7 @@
 <span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>gray = <span class="number">0usize</span>;
 <span data-nosnippet>313</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv = <span class="bool-val">false</span>;
 <span data-nosnippet>314</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..len {
-<span data-nosnippet>315</span>            <span class="kw">if </span>inv {
+<span data-nosnippet>315</span>            <span class="kw">if </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">inv</a> {
 <span data-nosnippet>316</span>                acc = M::rinv_operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(p) });
 <span data-nosnippet>317</span>            } <span class="kw">else </span>{
 <span data-nosnippet>318</span>                acc = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(p) });

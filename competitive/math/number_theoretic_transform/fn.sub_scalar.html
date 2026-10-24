@@ -244,7 +244,7 @@
 <span data-nosnippet>365</span>        <span class="kw">return</span>;
 <span data-nosnippet>366</span>    }
 <span data-nosnippet>367</span>    <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
-<span data-nosnippet>368</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, a.len());
+<span data-nosnippet>368</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, a.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">len</a>());
 <span data-nosnippet>369</span>    <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
 <span data-nosnippet>370</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
 <span data-nosnippet>371</span>    <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R <span class="kw">as </span>i32);
@@ -322,7 +322,7 @@
 <span data-nosnippet>443</span>                <span class="kw">let </span>a2pa3 = add_scalar::&lt;M&gt;(a2, a3);
 <span data-nosnippet>444</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(<span class="highlight">sub_scalar::&lt;M&gt;</span>(a2, a3), iimag);
 <span data-nosnippet>445</span>                <span class="kw-2">*</span>ll.add(i) = add_scalar::&lt;M&gt;(a0pa1, a2pa3);
-<span data-nosnippet>446</span>                <span class="kw-2">*</span>lr.add(i) = mul_scalar::&lt;M&gt;(add_scalar::&lt;M&gt;(a0na1, a2na3iimag), w1);
+<span data-nosnippet>446</span>                <span class="kw-2">*</span>lr.add(i) = <a href="../../../algebra/lazy_map.rs.html#9">mul_scalar</a>::&lt;M&gt;(add_scalar::&lt;M&gt;(a0na1, a2na3iimag), w1);
 <span data-nosnippet>447</span>                <span class="kw-2">*</span>rl.add(i) = mul_scalar::&lt;M&gt;(<span class="highlight">sub_scalar::&lt;M&gt;</span>(a0pa1, a2pa3), w2);
 <span data-nosnippet>448</span>                <span class="kw-2">*</span>rr.add(i) = mul_scalar::&lt;M&gt;(<span class="highlight">sub_scalar::&lt;M&gt;</span>(a0na1, a2na3iimag), w3);
 <span data-nosnippet>449</span>                i += <span class="number">1</span>;
@@ -362,7 +362,7 @@
 <span data-nosnippet>483</span>        <span class="kw">let </span>x = _mm256_loadu_si256(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
 <span data-nosnippet>484</span>        <span class="kw">let </span>y = montgomery_simd::montgomery_mul_256_canon(x, inv_vec, r_vec, mod_vec);
 <span data-nosnippet>485</span>        _mm256_storeu_si256(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y);
-<span data-nosnippet>486</span>        <a href="../../../algebra/lazy_map.rs.html#115">i</a> += <span class="number">8</span>;
+<span data-nosnippet>486</span>        i += <span class="number">8</span>;
 <span data-nosnippet>487</span>    }
 <span data-nosnippet>488</span>    <span class="kw">while </span>i &lt; a.len() {
 <span data-nosnippet>489</span>        a[i] = M::mod_mul(a[i], inv);
@@ -460,7 +460,7 @@
 <span data-nosnippet>308</span>                i += <span class="number">1</span>;
 <span data-nosnippet>309</span>            }
 <span data-nosnippet>310</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
-<span data-nosnippet>311</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
+<span data-nosnippet>311</span>            w1 = M::<a href="../../../num/bounded.rs.html#2-17">mod_mul</a>(w1, rate[<span class="number">1</span>]);
 <span data-nosnippet>312</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
 <span data-nosnippet>313</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
 <span data-nosnippet>314</span>        }
@@ -487,10 +487,10 @@
 <span data-nosnippet>335</span>        }
 <span data-nosnippet>336</span>    }
 <span data-nosnippet>337</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
-<span data-nosnippet>338</span>    <span class="kw">let </span>inv_vec = _mm512_set1_epi32(inv <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">i32</a>);
+<span data-nosnippet>338</span>    <span class="kw">let </span>inv_vec = _mm512_set1_epi32(inv <span class="kw">as </span>i32);
 <span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>340</span>    <span class="kw">while </span>i + <span class="number">16 </span>&lt;= a.len() {
-<span data-nosnippet>341</span>        <span class="kw">let </span>x = _mm512_loadu_si512(a.<a href="../../../algebra/magma.rs.html#145-176">as_ptr</a>().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>341</span>        <span class="kw">let </span>x = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>342</span>        <span class="kw">let </span>y = montgomery_simd::montgomery_mul_512_canon(x, inv_vec, r_vec, mod_vec);
 <span data-nosnippet>343</span>        _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y);
 <span data-nosnippet>344</span>        i += <span class="number">16</span>;

@@ -222,12 +222,12 @@
 <span data-nosnippet>292</span>                <span class="kw">if </span>x <span class="kw">as </span>usize &gt;= k {
 <span data-nosnippet>293</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>294</span>                }
-<span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span>u32) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span>u32 {
+<span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">u32</a>) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span>u32 {
 <span data-nosnippet>296</span>                    <span class="kw">let </span>q = lpf[x <span class="kw">as </span>usize];
 <span data-nosnippet>297</span>                    x /= q;
 <span data-nosnippet>298</span>                    ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
 <span data-nosnippet>299</span>                }
-<span data-nosnippet>300</span>                <span class="kw">if </span><span class="number">1 </span>&lt; x &amp;&amp; x &lt; i <span class="kw">as </span>u32 {
+<span data-nosnippet>300</span>                <span class="kw">if </span><span class="number">1 </span>&lt; x &amp;&amp; x &lt; <a href="../algebra/action.rs.html#14">i</a> <span class="kw">as </span>u32 {
 <span data-nosnippet>301</span>                    ans = add_mod(ans, log[k + x <span class="kw">as </span>usize], ord);
 <span data-nosnippet>302</span>                    x = <span class="number">1</span>;
 <span data-nosnippet>303</span>                }
@@ -238,7 +238,7 @@
 <span data-nosnippet>308</span>            }
 <span data-nosnippet>309</span>        }
 <span data-nosnippet>310</span>    }
-<span data-nosnippet>311</span>    <span class="kw">for </span><a href="../algebra/action.rs.html#23">i</a> <span class="kw">in </span><span class="number">1</span>..=k {
+<span data-nosnippet>311</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=k {
 <span data-nosnippet>312</span>        log[k - i] = add_mod(log[k + i], ord / <span class="number">2</span>, ord);
 <span data-nosnippet>313</span>    }
 <span data-nosnippet>314</span>    log
@@ -247,7 +247,7 @@
 <span data-nosnippet>317</span><span class="kw">fn </span>build_frac&lt;<span class="kw">const </span>P: u32&gt;() -&gt; Box&lt;[u32]&gt; {
 <span data-nosnippet>318</span>    <span class="kw">let </span><span class="kw-2">mut </span>frac = <span class="macro">vec!</span>[<span class="number">0</span>; FRAC_LEN].into_boxed_slice();
 <span data-nosnippet>319</span>    <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(<span class="number">0u16</span>, <span class="number">1u16</span>, <span class="number">1u16</span>, <span class="number">1u16</span>)];
-<span data-nosnippet>320</span>    <span class="kw">while let </span><span class="prelude-val">Some</span>((a, <a href="../algebra/action.rs.html#39">b</a>, c, d)) = stack.pop() {
+<span data-nosnippet>320</span>    <span class="kw">while let </span><span class="prelude-val">Some</span>((a, b, c, d)) = stack.pop() {
 <span data-nosnippet>321</span>        <span class="kw">let </span>nb = b + d;
 <span data-nosnippet>322</span>        <span class="kw">if </span>nb &lt; FRAC_DEN_LIMIT {
 <span data-nosnippet>323</span>            stack.push((a + c, nb, c, d));
@@ -258,7 +258,7 @@
 <span data-nosnippet>328</span>            frac[s] = pack_frac(a, b);
 <span data-nosnippet>329</span>            frac[t] = pack_frac(c, d);
 <span data-nosnippet>330</span>            <span class="kw">let </span>a = a.min(c);
-<span data-nosnippet>331</span>            <span class="kw">let </span>b = b.min(d);
+<span data-nosnippet>331</span>            <span class="kw">let </span>b = b.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">min</a>(d);
 <span data-nosnippet>332</span>            <span class="kw">if </span>s + <span class="number">1 </span>&lt; t {
 <span data-nosnippet>333</span>                <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>frac[s + <span class="number">1</span>..t] {
 <span data-nosnippet>334</span>                    <span class="kw-2">*</span>x = pack_frac(a, b);

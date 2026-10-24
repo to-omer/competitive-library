@@ -575,7 +575,7 @@
 <span data-nosnippet>256</span>
 <span data-nosnippet>257</span><span class="kw">impl</span>&lt;BorrowType, Spec&gt; BstNodeRef&lt;BorrowType, Spec&gt;
 <span data-nosnippet>258</span><span class="kw">where
-<span data-nosnippet>259</span>    </span><a href="../../math/mod.rs.html#1-327">Spec</a>: BstSpec,
+<span data-nosnippet>259</span>    </span>Spec: BstSpec,
 <span data-nosnippet>260</span>    BorrowType: marker::BorrowType,
 <span data-nosnippet>261</span>{
 <span data-nosnippet>262</span>    <span class="kw">pub unsafe fn </span>new_unchecked(node: NonNull&lt;BstNode&lt;Spec::Data, Spec::Parent&gt;&gt;) -&gt; <span class="self">Self </span>{
@@ -804,7 +804,7 @@
 <span data-nosnippet>485</span>    }
 <span data-nosnippet>486</span>}
 <span data-nosnippet>487</span>
-<span data-nosnippet>488</span><span class="kw">impl</span>&lt;Spec&gt; BstNodeRef&lt;marker::Dying, Spec&gt;
+<span data-nosnippet>488</span><span class="kw">impl</span>&lt;Spec&gt; <a href="../../algebra/lazy_map.rs.html#9">BstNodeRef</a>&lt;marker::Dying, Spec&gt;
 <span data-nosnippet>489</span><span class="kw">where
 <span data-nosnippet>490</span>    </span>Spec: BstSpec,
 <span data-nosnippet>491</span>{
@@ -812,9 +812,9 @@
 <span data-nosnippet>493</span>    <span class="kw">where
 <span data-nosnippet>494</span>        </span>A: Allocator&lt;BstNode&lt;Spec::Data, Spec::Parent&gt;&gt;,
 <span data-nosnippet>495</span>    {
-<span data-nosnippet>496</span>        <span class="macro">debug_assert!</span>(<span class="self">self</span>.reborrow().left().<span class="highlight">descend</span>().is_err());
+<span data-nosnippet>496</span>        <span class="macro">debug_assert!</span>(<span class="self">self</span>.<a href="../../algebra/action.rs.html#28-30">reborrow</a>().left().<span class="highlight">descend</span>().is_err());
 <span data-nosnippet>497</span>        <span class="macro">debug_assert!</span>(<span class="self">self</span>.reborrow().right().<span class="highlight">descend</span>().is_err());
-<span data-nosnippet>498</span>        <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">allocator</a>.deallocate(<span class="self">self</span>.node).data
+<span data-nosnippet>498</span>        allocator.deallocate(<span class="self">self</span>.node).data
 <span data-nosnippet>499</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#117&#34;,&#34;line 117&#34;],[[6,6],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#120&#34;,&#34;line 120&#34;],[[12,12],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#126&#34;,&#34;line 126&#34;],[[15,15],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#129&#34;,&#34;line 129&#34;],[[24,24],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#138&#34;,&#34;line 138&#34;],[[29,29],&#34;../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#143&#34;,&#34;line 143&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../../src/competitive/data_structure/implicit_splay_tree.rs.html#117">line 117</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>114</span>    <span class="kw">fn </span>top_down(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
 <span data-nosnippet>115</span>        <span class="kw">if </span>!T::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().value.act) {
 <span data-nosnippet>116</span>            <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().value.act, T::act_unit());
@@ -1012,7 +1012,7 @@
 <span data-nosnippet>273</span>            root: <span class="prelude-val">None</span>,
 <span data-nosnippet>274</span>            length: <span class="number">0</span>,
 <span data-nosnippet>275</span>            rng: Xorshift::new(),
-<span data-nosnippet>276</span>            allocator: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
+<span data-nosnippet>276</span>            allocator: ManuallyDrop::<a href="../algebra/action.rs.html#12">new</a>(MemoryPool::with_capacity(capacity)),
 <span data-nosnippet>277</span>            _marker: PhantomData,
 <span data-nosnippet>278</span>        }
 <span data-nosnippet>279</span>    }
@@ -1059,7 +1059,7 @@
 <span data-nosnippet>320</span>                    left = stack.pop();
 <span data-nosnippet>321</span>                }
 <span data-nosnippet>322</span>                cur.as_mut().child[<span class="number">0</span>] = left;
-<span data-nosnippet>323</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(parent) = stack.last_mut() {
+<span data-nosnippet>323</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(parent) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">stack</a>.last_mut() {
 <span data-nosnippet>324</span>                    parent.as_mut().child[<span class="number">1</span>] = <span class="prelude-val">Some</span>(cur);
 <span data-nosnippet>325</span>                }
 <span data-nosnippet>326</span>            }
@@ -1528,7 +1528,7 @@
 <span data-nosnippet>327</span>                Spec::top_down(child.borrow_datamut());
 <span data-nosnippet>328</span>                <span class="kw">match </span>seeker.bst_seek(child.reborrow()) {
 <span data-nosnippet>329</span>                    Ordering::Greater =&gt; {
-<span data-nosnippet>330</span>                        <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>grandchild) =
+<span data-nosnippet>330</span>                        <span class="kw">let </span><a class="prelude-val" href="../math/mod.rs.html#1-327">Some</a>(<span class="kw-2">mut </span>grandchild) =
 <span data-nosnippet>331</span>                            (<span class="kw">unsafe </span>{ child.borrow_mut().left_mut().<span class="highlight">take</span>() })
 <span data-nosnippet>332</span>                        <span class="kw">else </span>{
 <span data-nosnippet>333</span>                            <span class="macro">add!</span>(@left root);
@@ -1561,7 +1561,7 @@
 <span data-nosnippet>360</span>                        Spec::bottom_up(root.borrow_datamut());
 <span data-nosnippet>361</span>                        <span class="kw">unsafe </span>{ child.borrow_mut().left_mut().set(root) };
 <span data-nosnippet>362</span>                        <span class="macro">add!</span>(@left child);
-<span data-nosnippet>363</span>                        <a href="../algebra/magma.rs.html#56">root</a> = grandchild;
+<span data-nosnippet>363</span>                        root = grandchild;
 <span data-nosnippet>364</span>                    }
 <span data-nosnippet>365</span>                }
 <span data-nosnippet>366</span>            }
@@ -1604,7 +1604,7 @@
 <span data-nosnippet>403</span>            <span class="prelude-val">Some</span>(right)
 <span data-nosnippet>404</span>        }
 <span data-nosnippet>405</span>        (<span class="prelude-val">Some</span>(left), <span class="prelude-val">Some</span>(right)) =&gt; {
-<span data-nosnippet>406</span>            <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>root) = <a href="../lib.rs.html#23">splay</a>(left, SeekRight::default());
+<span data-nosnippet>406</span>            <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>root) = splay(left, SeekRight::default());
 <span data-nosnippet>407</span>            <span class="kw">unsafe </span>{ root.borrow_mut().right_mut().set(right) };
 <span data-nosnippet>408</span>            Spec::bottom_up(root.borrow_datamut());
 <span data-nosnippet>409</span>            <span class="prelude-val">Some</span>(root)
@@ -2021,7 +2021,7 @@
 <span data-nosnippet>327</span>                Spec::top_down(child.borrow_datamut());
 <span data-nosnippet>328</span>                <span class="kw">match </span>seeker.bst_seek(child.reborrow()) {
 <span data-nosnippet>329</span>                    Ordering::Greater =&gt; {
-<span data-nosnippet>330</span>                        <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>grandchild) =
+<span data-nosnippet>330</span>                        <span class="kw">let </span><a class="prelude-val" href="../math/mod.rs.html#1-327">Some</a>(<span class="kw-2">mut </span>grandchild) =
 <span data-nosnippet>331</span>                            (<span class="kw">unsafe </span>{ child.borrow_mut().left_mut().take() })
 <span data-nosnippet>332</span>                        <span class="kw">else </span>{
 <span data-nosnippet>333</span>                            <span class="macro">add!</span>(@left root);
@@ -2054,7 +2054,7 @@
 <span data-nosnippet>360</span>                        Spec::bottom_up(root.borrow_datamut());
 <span data-nosnippet>361</span>                        <span class="kw">unsafe </span>{ child.borrow_mut().left_mut().<span class="highlight">set</span>(root) };
 <span data-nosnippet>362</span>                        <span class="macro">add!</span>(@left child);
-<span data-nosnippet>363</span>                        <a href="../algebra/magma.rs.html#56">root</a> = grandchild;
+<span data-nosnippet>363</span>                        root = grandchild;
 <span data-nosnippet>364</span>                    }
 <span data-nosnippet>365</span>                }
 <span data-nosnippet>366</span>            }
@@ -2097,7 +2097,7 @@
 <span data-nosnippet>403</span>            <span class="prelude-val">Some</span>(right)
 <span data-nosnippet>404</span>        }
 <span data-nosnippet>405</span>        (<span class="prelude-val">Some</span>(left), <span class="prelude-val">Some</span>(right)) =&gt; {
-<span data-nosnippet>406</span>            <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>root) = <a href="../lib.rs.html#23">splay</a>(left, SeekRight::default());
+<span data-nosnippet>406</span>            <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>root) = splay(left, SeekRight::default());
 <span data-nosnippet>407</span>            <span class="kw">unsafe </span>{ root.borrow_mut().right_mut().<span class="highlight">set</span>(right) };
 <span data-nosnippet>408</span>            Spec::bottom_up(root.borrow_datamut());
 <span data-nosnippet>409</span>            <span class="prelude-val">Some</span>(root)

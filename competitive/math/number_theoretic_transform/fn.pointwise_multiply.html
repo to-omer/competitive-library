@@ -227,7 +227,7 @@
 <span data-nosnippet>825</span>        (
 <span data-nosnippet>826</span>            Convolve::&lt;N1&gt;::transform(f.<span class="number">0</span>, npot),
 <span data-nosnippet>827</span>            Convolve::&lt;N2&gt;::transform(f.<span class="number">1</span>, npot),
-<span data-nosnippet>828</span>            Convolve::&lt;N3&gt;::transform(f.<span class="number">2</span>, npot),
+<span data-nosnippet>828</span>            Convolve::&lt;N3&gt;::<a href="../algebra/action.rs.html#7-26">transform</a>(f.<span class="number">2</span>, npot),
 <span data-nosnippet>829</span>        )
 <span data-nosnippet>830</span>    }
 <span data-nosnippet>831</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
@@ -239,7 +239,7 @@
 <span data-nosnippet>837</span>    }
 <span data-nosnippet>838</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>839</span>        Convolve::&lt;N1&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
-<span data-nosnippet>840</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
+<span data-nosnippet>840</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span><a href="../algebra/action.rs.html#54">g</a>.<span class="number">1</span>);
 <span data-nosnippet>841</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>842</span>    }
 <span data-nosnippet>843</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
@@ -276,8 +276,8 @@
 <span data-nosnippet>874</span>        <span class="kw">let </span>(a, b) = <span class="kw">if </span>a.len() &gt;= b.len() { (a, b) } <span class="kw">else </span>{ (b, a) };
 <span data-nosnippet>875</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
 <span data-nosnippet>876</span>        <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
-<span data-nosnippet>877</span>            <span class="kw">let </span>product = convolve(a.to_vec(), <a href="../algebra/lazy_map.rs.html#33">b</a>.clone());
-<span data-nosnippet>878</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[i * block_len..].iter_mut().zip(product) {
+<span data-nosnippet>877</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.clone());
+<span data-nosnippet>878</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[<a href="../algebra/lazy_map.rs.html#33">i</a> * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>879</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>880</span>            }
 <span data-nosnippet>881</span>        }
@@ -292,7 +292,7 @@
 <span data-nosnippet>890</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>891</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>892</span>{
-<span data-nosnippet>893</span>    <span class="kw">let </span>convolve = |<a href="../algebra/lazy_map.rs.html#45">a</a>: MVec&lt;M&gt;, b: MVec&lt;M&gt;| {
+<span data-nosnippet>893</span>    <span class="kw">let </span>convolve = |a: MVec&lt;M&gt;, b: MVec&lt;M&gt;| {
 <span data-nosnippet>894</span>        <span class="kw">let </span>a_len = a.len();
 <span data-nosnippet>895</span>        <span class="kw">let </span>b_len = b.len();
 <span data-nosnippet>896</span>        <span class="kw">let </span>a = convert_crt_input(a, a_len);
@@ -346,7 +346,7 @@
 <span data-nosnippet>944</span>                &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
 <span data-nosnippet>945</span>        );
 <span data-nosnippet>946</span>        <span class="kw">let </span>bits = <span class="kw">if </span><span class="number">2 </span>* npot <span class="kw">as </span>u128 * (u32::MAX <span class="kw">as </span>u128).pow(<span class="number">2</span>)
-<span data-nosnippet>947</span>            &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
+<span data-nosnippet>947</span>            &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::<a href="../algebra/lazy_map.rs.html#124">MOD</a> <span class="kw">as </span>u128
 <span data-nosnippet>948</span>        {
 <span data-nosnippet>949</span>            <span class="number">32
 <span data-nosnippet>950</span>        </span>} <span class="kw">else </span>{
@@ -369,7 +369,7 @@
 <span data-nosnippet>967</span>                }
 <span data-nosnippet>968</span>                Convolve::&lt;M&gt;::transform(
 <span data-nosnippet>969</span>                    t.iter()
-<span data-nosnippet>970</span>                        .map(|<span class="kw-2">&amp;</span>t| MInt::from((t &gt;&gt; (part * bits)) &amp; ((<span class="number">1u64 </span>&lt;&lt; bits) - <span class="number">1</span>)))
+<span data-nosnippet>970</span>                        .map(|<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#142">t</a>| MInt::from((t &gt;&gt; (part * bits)) &amp; ((<span class="number">1u64 </span>&lt;&lt; bits) - <span class="number">1</span>)))
 <span data-nosnippet>971</span>                        .collect(),
 <span data-nosnippet>972</span>                    len,
 <span data-nosnippet>973</span>                )
@@ -414,7 +414,7 @@
 <span data-nosnippet>1012</span>    }
 <span data-nosnippet>1013</span>
 <span data-nosnippet>1014</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-<span data-nosnippet>1015</span>        <span class="kw">fn </span>multiply&lt;M: Montgomery32NttModulus&gt;(<a href="../algebra/lazy_map.rs.html#205">f</a>: <span class="kw-2">&amp;mut </span>[MVec&lt;M&gt;; <span class="number">3</span>], g: <span class="kw-2">&amp;</span>[MVec&lt;M&gt;; <span class="number">3</span>]) {
+<span data-nosnippet>1015</span>        <span class="kw">fn </span>multiply&lt;M: Montgomery32NttModulus&gt;(f: <span class="kw-2">&amp;mut </span>[MVec&lt;M&gt;; <span class="number">3</span>], g: <span class="kw-2">&amp;</span>[MVec&lt;M&gt;; <span class="number">3</span>]) {
 <span data-nosnippet>1016</span>            <span class="macro">assert_eq!</span>(f[<span class="number">0</span>].len(), g[<span class="number">0</span>].len());
 <span data-nosnippet>1017</span>            <span class="kw">if </span>f[<span class="number">1</span>].is_empty() || g[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1018</span>                <span class="kw">if </span>f[<span class="number">1</span>].is_empty() &amp;&amp; !g[<span class="number">1</span>].is_empty() {
@@ -436,7 +436,7 @@
 <span data-nosnippet>1034</span>                        Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>product, <span class="kw-2">&amp;</span>g[part - left]);
 <span data-nosnippet>1035</span>                        <span class="kw">for </span>(value, product) <span class="kw">in </span>sum.iter_mut().zip(product) {
 <span data-nosnippet>1036</span>                            <span class="comment">// Block products contain lazy Montgomery residues.
-<span data-nosnippet>1037</span>                            </span><span class="kw-2">*</span>value = MInt::new(value.inner() + product.inner());
+<span data-nosnippet>1037</span>                            </span><span class="kw-2">*</span>value = MInt::<a href="../algebra/lazy_map.rs.html#241">new</a>(value.inner() + product.inner());
 <span data-nosnippet>1038</span>                        }
 <span data-nosnippet>1039</span>                    }
 <span data-nosnippet>1040</span>                    f[part] = sum;
@@ -495,7 +495,7 @@
 <span data-nosnippet>1093</span>            <span class="kw">return </span>convolve_u64_fft(a, b);
 <span data-nosnippet>1094</span>        }
 <span data-nosnippet>1095</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0u64</span>; len];
-<span data-nosnippet>1096</span>        <span class="kw">for </span>(i, <a href="../algebra/lazy_map.rs.html#322">a</a>) <span class="kw">in </span>a.chunks(block_len).enumerate() {
+<span data-nosnippet>1096</span>        <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>1097</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
 <span data-nosnippet>1098</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1099</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
@@ -623,7 +623,7 @@
 <span data-nosnippet>1221</span>        n: usize,
 <span data-nosnippet>1222</span>        py: usize,
 <span data-nosnippet>1223</span>        qy: usize,
-<span data-nosnippet>1224</span>    ) -&gt; (<span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#535">T</a>, <span class="self">Self</span>::T) {
+<span data-nosnippet>1224</span>    ) -&gt; (<span class="self">Self</span>::T, <span class="self">Self</span>::T) {
 <span data-nosnippet>1225</span>        <span class="kw">let </span>base = n * <span class="number">2</span>;
 <span data-nosnippet>1226</span>        <span class="kw">let </span>len_p = base * py;
 <span data-nosnippet>1227</span>        <span class="kw">let </span>len_q = base * qy;
@@ -694,7 +694,7 @@
 <span data-nosnippet>1292</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1293</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
 <span data-nosnippet>1294</span>        (<span class="number">0</span>..n)
-<span data-nosnippet>1295</span>            .map(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
+<span data-nosnippet>1295</span>            .map(|<a href="../algebra/lazy_map.rs.html#625">i</a>| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
 <span data-nosnippet>1296</span>            .collect()
 <span data-nosnippet>1297</span>    }
 <span data-nosnippet>1298</span>
@@ -714,7 +714,7 @@
 <span data-nosnippet>1312</span>            }
 <span data-nosnippet>1313</span>            <span class="kw">let </span>k = k - <span class="number">1</span>;
 <span data-nosnippet>1314</span>            <span class="kw">if </span>br[k].is_empty() {
-<span data-nosnippet>1315</span>                <span class="kw">let </span><span class="kw-2">mut </span><a href="../algebra/lazy_map.rs.html#648">v</a> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; k];
+<span data-nosnippet>1315</span>                <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; k];
 <span data-nosnippet>1316</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; k {
 <span data-nosnippet>1317</span>                    v[i] = (v[i &gt;&gt; <span class="number">1</span>] &gt;&gt; <span class="number">1</span>) | ((i &amp; <span class="number">1</span>) &lt;&lt; k.saturating_sub(<span class="number">1</span>));
 <span data-nosnippet>1318</span>                }
@@ -728,6 +728,6 @@
 <span data-nosnippet>1326</span>        h
 <span data-nosnippet>1327</span>    }
 <span data-nosnippet>1328</span>
-<span data-nosnippet>1329</span>    <span class="kw">fn </span>multiply_prefix(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>1329</span>    <span class="kw">fn </span>multiply_prefix(<a href="../algebra/lazy_map.rs.html#648">f</a>: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1330</span>        <span class="highlight">pointwise_multiply</span>(f, g);
 <span data-nosnippet>1331</span>    }</code></pre></div></div></div></section></div></main></body></html>

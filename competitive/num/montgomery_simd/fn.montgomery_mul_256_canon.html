@@ -173,7 +173,7 @@
 <span data-nosnippet>291</span>            <span class="kw">let </span>rr = base.add(v * width + half);
 <span data-nosnippet>292</span>
 <span data-nosnippet>293</span>            <span class="kw">let </span>w1v = _mm256_set1_epi32(w1 <span class="kw">as </span>i32);
-<span data-nosnippet>294</span>            <span class="kw">let </span><a href="../../../num/zero_one.rs.html#15-28">w2v</a> = _mm256_set1_epi32(w2 <span class="kw">as </span>i32);
+<span data-nosnippet>294</span>            <span class="kw">let </span>w2v = _mm256_set1_epi32(w2 <span class="kw">as </span>i32);
 <span data-nosnippet>295</span>            <span class="kw">let </span>w3v = _mm256_set1_epi32(w3 <span class="kw">as </span>i32);
 <span data-nosnippet>296</span>
 <span data-nosnippet>297</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
@@ -216,11 +216,11 @@
 <span data-nosnippet>334</span>                <span class="kw">let </span>a2 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>rl.add(i), w2);
 <span data-nosnippet>335</span>                <span class="kw">let </span>a3 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>rr.add(i), w3);
 <span data-nosnippet>336</span>                <span class="kw">let </span>a0pa2 = add_scalar::&lt;M&gt;(a0, a2);
-<span data-nosnippet>337</span>                <span class="kw">let </span>a0na2 = sub_scalar::&lt;M&gt;(a0, a2);
+<span data-nosnippet>337</span>                <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">a0na2</a> = sub_scalar::&lt;M&gt;(a0, a2);
 <span data-nosnippet>338</span>                <span class="kw">let </span>a1pa3 = add_scalar::&lt;M&gt;(a1, a3);
 <span data-nosnippet>339</span>                <span class="kw">let </span>a1na3 = sub_scalar::&lt;M&gt;(a1, a3);
 <span data-nosnippet>340</span>                <span class="kw">let </span>a1na3imag = mul_scalar::&lt;M&gt;(a1na3, imag);
-<span data-nosnippet>341</span>                <span class="kw-2">*</span>ll.add(<a href="../../../algebra/action.rs.html#54">i</a>) = add_scalar::&lt;M&gt;(a0pa2, a1pa3);
+<span data-nosnippet>341</span>                <span class="kw-2">*</span>ll.add(i) = add_scalar::&lt;M&gt;(a0pa2, a1pa3);
 <span data-nosnippet>342</span>                <span class="kw-2">*</span>lr.add(i) = sub_scalar::&lt;M&gt;(a0pa2, a1pa3);
 <span data-nosnippet>343</span>                <span class="kw-2">*</span>rl.add(i) = add_scalar::&lt;M&gt;(a0na2, a1na3imag);
 <span data-nosnippet>344</span>                <span class="kw-2">*</span>rr.add(i) = sub_scalar::&lt;M&gt;(a0na2, a1na3imag);
@@ -242,7 +242,7 @@
 <span data-nosnippet>360</span><span class="kw">where
 <span data-nosnippet>361</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>362</span>{
-<span data-nosnippet>363</span>    <span class="kw">let </span>n = a.len() / width;
+<span data-nosnippet>363</span>    <span class="kw">let </span>n = <a href="../../../algebra/action.rs.html#86">a</a>.len() / width;
 <span data-nosnippet>364</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
 <span data-nosnippet>365</span>        <span class="kw">return</span>;
 <span data-nosnippet>366</span>    }
@@ -284,7 +284,7 @@
 <span data-nosnippet>402</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>403</span>            <span class="kw">while </span>i + step &lt;= quarter {
 <span data-nosnippet>404</span>                <span class="kw">let </span>x0 = load_ntt_avx2(ll.add(i), step);
-<span data-nosnippet>405</span>                <span class="kw">let </span>x1 = load_ntt_avx2(lr.add(i), step);
+<span data-nosnippet>405</span>                <span class="kw">let </span>x1 = load_ntt_avx2(lr.add(<a href="../../../algebra/lazy_map.rs.html#41">i</a>), step);
 <span data-nosnippet>406</span>                <span class="kw">let </span>x2 = load_ntt_avx2(rl.add(i), step);
 <span data-nosnippet>407</span>                <span class="kw">let </span>x3 = load_ntt_avx2(rr.add(i), step);
 <span data-nosnippet>408</span>
@@ -343,7 +343,7 @@
 <span data-nosnippet>461</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>462</span>        <span class="kw">while </span>i + step &lt;= half {
 <span data-nosnippet>463</span>            <span class="kw">let </span>x0 = load_ntt_avx2(a.as_ptr().add(i), step);
-<span data-nosnippet>464</span>            <span class="kw">let </span>x1 = load_ntt_avx2(a.as_ptr().<a href="../../../num/zero_one.rs.html#15-28">add</a>(half + i), step);
+<span data-nosnippet>464</span>            <span class="kw">let </span>x1 = load_ntt_avx2(a.as_ptr().add(half + i), step);
 <span data-nosnippet>465</span>            <span class="kw">let </span>y0 = add_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>466</span>            <span class="kw">let </span>y1 = sub_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>467</span>            store_ntt_avx2(a.as_mut_ptr().add(i), y0, step);
@@ -358,8 +358,8 @@
 <span data-nosnippet>476</span>            i += <span class="number">1</span>;
 <span data-nosnippet>477</span>        }
 <span data-nosnippet>478</span>    }
-<span data-nosnippet>479</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span><a href="../../../num/zero_one.rs.html#16">u32</a>));
-<span data-nosnippet>480</span>    <span class="kw">let </span>inv_vec = _mm256_set1_epi32(inv <span class="kw">as </span>i32);
+<span data-nosnippet>479</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
+<span data-nosnippet>480</span>    <span class="kw">let </span>inv_vec = _mm256_set1_epi32(inv <span class="kw">as </span><a href="../../../algebra/lazy_map.rs.html#170">i32</a>);
 <span data-nosnippet>481</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>482</span>    <span class="kw">while </span>i + <span class="number">8 </span>&lt;= a.len() {
 <span data-nosnippet>483</span>        <span class="kw">let </span>x = _mm256_loadu_si256(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);

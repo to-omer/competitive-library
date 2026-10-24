@@ -167,7 +167,7 @@
 <span data-nosnippet>245</span>
 <span data-nosnippet>246</span>    <span class="attr">#[inline]
 <span data-nosnippet>247</span>    </span><span class="kw">fn </span>top_down(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
-<span data-nosnippet>248</span>        <span class="kw">if </span><span class="highlight">TopBstSpec::&lt;S, A&gt;::is_unit</span>(<span class="kw-2">&amp;</span>node.reborrow().into_data().action) {
+<span data-nosnippet>248</span>        <span class="kw">if </span><span class="highlight">TopBstSpec::&lt;S, A&gt;::is_unit</span>(<span class="kw-2">&amp;</span><a href="../math/mod.rs.html#1-327">node</a>.reborrow().into_data().action) {
 <span data-nosnippet>249</span>            <span class="kw">return</span>;
 <span data-nosnippet>250</span>        }
 <span data-nosnippet>251</span>        <span class="kw">let </span>pointer = node.node;
@@ -329,7 +329,7 @@
 <span data-nosnippet>407</span>
 <span data-nosnippet>408</span>    <span class="kw">unsafe fn </span>rake_rightmost(<span class="kw-2">mut </span>node: RakePtr&lt;S, A&gt;) -&gt; RakePtr&lt;S, A&gt; {
 <span data-nosnippet>409</span>        <span class="kw">loop </span>{
-<span data-nosnippet>410</span>            <span class="kw">unsafe </span>{ RakeBstSpec::&lt;<a href="../algebra/lazy_map.rs.html#67">S</a>, A&gt;::top_down(BstDataMutRef::new_unchecked(node)) };
+<span data-nosnippet>410</span>            <span class="kw">unsafe </span>{ RakeBstSpec::&lt;S, A&gt;::top_down(BstDataMutRef::new_unchecked(node)) };
 <span data-nosnippet>411</span>            <span class="kw">match unsafe </span>{ node.as_ref().child[<span class="number">1</span>] } {
 <span data-nosnippet>412</span>                <span class="prelude-val">Some</span>(right) =&gt; node = right,
 <span data-nosnippet>413</span>                <span class="prelude-val">None </span>=&gt; <span class="kw">return </span>node,
@@ -461,7 +461,7 @@
 <span data-nosnippet>539</span>            (<span class="kw-2">*</span>child.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(parent);
 <span data-nosnippet>540</span>            <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>child.as_ref().data.sum);
 <span data-nosnippet>541</span>            <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(parent.as_ref().data.light, point);
-<span data-nosnippet>542</span>            parent.as_mut().data.light = <span class="prelude-val">Some</span>(light);
+<span data-nosnippet>542</span>            parent.as_mut().data.light = <a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(light);
 <span data-nosnippet>543</span>            (<span class="kw-2">*</span>child.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
 <span data-nosnippet>544</span>            <span class="self">Self</span>::pull_top(parent);
 <span data-nosnippet>545</span>        }
@@ -778,7 +778,7 @@
 <span data-nosnippet>297</span>    </span>S: TopTreeSpec,
 <span data-nosnippet>298</span>    A: TopTreeAction&lt;S&gt;,
 <span data-nosnippet>299</span>{
-<span data-nosnippet>300</span>    <a href="../algebra/magma.rs.html#1-370">nodes</a>: Vec&lt;TopPtr&lt;S, A&gt;&gt;,
+<span data-nosnippet>300</span>    nodes: Vec&lt;TopPtr&lt;S, A&gt;&gt;,
 <span data-nosnippet>301</span>    node_allocator: MemoryPool&lt;TopNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>302</span>    rake_allocator: MemoryPool&lt;RakeNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>303</span>}
@@ -837,11 +837,11 @@
 <span data-nosnippet>356</span>            light_action: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::unit(),
 <span data-nosnippet>357</span>            index_and_reverse: index &lt;&lt; <span class="number">1</span>,
 <span data-nosnippet>358</span>        }));
-<span data-nosnippet>359</span>        <span class="self">self</span>.<a href="../lib.rs.html#23">nodes</a>.push(node);
+<span data-nosnippet>359</span>        <span class="self">self</span>.nodes.push(node);
 <span data-nosnippet>360</span>        index
 <span data-nosnippet>361</span>    }
 <span data-nosnippet>362</span>
-<span data-nosnippet>363</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; TopPtr&lt;S, A&gt; {
+<span data-nosnippet>363</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;</span><span class="self">self</span>, <a href="../lib.rs.html#26">index</a>: usize) -&gt; TopPtr&lt;S, A&gt; {
 <span data-nosnippet>364</span>        <span class="self">self</span>.nodes[index]
 <span data-nosnippet>365</span>    }
 <span data-nosnippet>366</span>
@@ -952,11 +952,11 @@
 <span data-nosnippet>471</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>472</span>            <span class="kw">let </span><span class="kw-2">mut </span>previous: <span class="prelude-ty">Option</span>&lt;TopPtr&lt;S, A&gt;&gt; = <span class="prelude-val">None</span>;
 <span data-nosnippet>473</span>            <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>474</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cursor) = current {
+<span data-nosnippet>474</span>            <span class="kw">while let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Some</a>(<span class="kw-2">mut </span>cursor) = current {
 <span data-nosnippet>475</span>                <span class="self">Self</span>::splay_top(cursor);
 <span data-nosnippet>476</span>                <span class="kw">let </span>next = cursor.as_ref().parent.parent;
 <span data-nosnippet>477</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = cursor.as_mut().child[<span class="number">1</span>].take() {
-<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.sum);
+<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.<a href="../algebra/lazy_map.rs.html#139">sum</a>);
 <span data-nosnippet>479</span>                    <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(cursor.as_ref().data.light, point);
 <span data-nosnippet>480</span>                    cursor.as_mut().data.light = <span class="prelude-val">Some</span>(light);
 <span data-nosnippet>481</span>                    (<span class="kw-2">*</span>right.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
@@ -1153,7 +1153,7 @@
 <span data-nosnippet>297</span>    </span>S: TopTreeSpec,
 <span data-nosnippet>298</span>    A: TopTreeAction&lt;S&gt;,
 <span data-nosnippet>299</span>{
-<span data-nosnippet>300</span>    <a href="../algebra/magma.rs.html#1-370">nodes</a>: Vec&lt;TopPtr&lt;S, A&gt;&gt;,
+<span data-nosnippet>300</span>    nodes: Vec&lt;TopPtr&lt;S, A&gt;&gt;,
 <span data-nosnippet>301</span>    node_allocator: MemoryPool&lt;TopNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>302</span>    rake_allocator: MemoryPool&lt;RakeNode&lt;S, A&gt;&gt;,
 <span data-nosnippet>303</span>}
@@ -1212,11 +1212,11 @@
 <span data-nosnippet>356</span>            light_action: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::unit(),
 <span data-nosnippet>357</span>            index_and_reverse: index &lt;&lt; <span class="number">1</span>,
 <span data-nosnippet>358</span>        }));
-<span data-nosnippet>359</span>        <span class="self">self</span>.<a href="../lib.rs.html#23">nodes</a>.push(node);
+<span data-nosnippet>359</span>        <span class="self">self</span>.nodes.push(node);
 <span data-nosnippet>360</span>        index
 <span data-nosnippet>361</span>    }
 <span data-nosnippet>362</span>
-<span data-nosnippet>363</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; TopPtr&lt;S, A&gt; {
+<span data-nosnippet>363</span>    <span class="kw">fn </span>node(<span class="kw-2">&amp;</span><span class="self">self</span>, <a href="../lib.rs.html#26">index</a>: usize) -&gt; TopPtr&lt;S, A&gt; {
 <span data-nosnippet>364</span>        <span class="self">self</span>.nodes[index]
 <span data-nosnippet>365</span>    }
 <span data-nosnippet>366</span>
@@ -1327,11 +1327,11 @@
 <span data-nosnippet>471</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>472</span>            <span class="kw">let </span><span class="kw-2">mut </span>previous: <span class="prelude-ty">Option</span>&lt;TopPtr&lt;S, A&gt;&gt; = <span class="prelude-val">None</span>;
 <span data-nosnippet>473</span>            <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>474</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cursor) = current {
+<span data-nosnippet>474</span>            <span class="kw">while let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Some</a>(<span class="kw-2">mut </span>cursor) = current {
 <span data-nosnippet>475</span>                <span class="self">Self</span>::splay_top(cursor);
 <span data-nosnippet>476</span>                <span class="kw">let </span>next = cursor.as_ref().parent.parent;
 <span data-nosnippet>477</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = cursor.as_mut().child[<span class="number">1</span>].take() {
-<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.sum);
+<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.<a href="../algebra/lazy_map.rs.html#139">sum</a>);
 <span data-nosnippet>479</span>                    <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(cursor.as_ref().data.light, point);
 <span data-nosnippet>480</span>                    cursor.as_mut().data.light = <span class="prelude-val">Some</span>(light);
 <span data-nosnippet>481</span>                    (<span class="kw-2">*</span>right.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);

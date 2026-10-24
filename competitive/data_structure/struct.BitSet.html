@@ -320,7 +320,7 @@
 <span data-nosnippet>282</span>                    <span class="kw">if </span>(c - start) / <span class="number">8 </span>!= group {
 <span data-nosnippet>283</span>                        <span class="kw">continue</span>;
 <span data-nosnippet>284</span>                    }
-<span data-nosnippet>285</span>                    <span class="kw">let </span>half = <span class="number">1 </span>&lt;&lt; count;
+<span data-nosnippet>285</span>                    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">half</a> = <span class="number">1 </span>&lt;&lt; count;
 <span data-nosnippet>286</span>                    count += <span class="number">1</span>;
 <span data-nosnippet>287</span>                    <span class="kw">for </span>index <span class="kw">in </span><span class="number">0</span>..half {
 <span data-nosnippet>288</span>                        keys[index + half] = keys[index] | (<span class="number">1 </span>&lt;&lt; ((c - start) % <span class="number">8</span>));
@@ -347,11 +347,11 @@
 <span data-nosnippet>309</span>                    }
 <span data-nosnippet>310</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>311</span>                }
-<span data-nosnippet>312</span>                <span class="kw">let </span><a href="../algebra/lazy_map.rs.html#142">y</a> = indices[<span class="number">1</span>][(key &gt;&gt; <span class="number">8</span>) &amp; masks[<span class="number">1</span>]];
+<span data-nosnippet>312</span>                <span class="kw">let </span>y = indices[<span class="number">1</span>][(key &gt;&gt; <span class="number">8</span>) &amp; masks[<span class="number">1</span>]];
 <span data-nosnippet>313</span>                <span class="kw">let </span>z = indices[<span class="number">2</span>][(key &gt;&gt; <span class="number">16</span>) &amp; masks[<span class="number">2</span>]];
 <span data-nosnippet>314</span>                <span class="kw">let </span>w = indices[<span class="number">3</span>][(key &gt;&gt; <span class="number">24</span>) &amp; masks[<span class="number">3</span>]];
 <span data-nosnippet>315</span>                <span class="kw">if </span>x | y | z | w != <span class="number">0 </span>{
-<span data-nosnippet>316</span>                    <span class="kw">let </span>p = <span class="kw-2">&amp;</span>table[x].words()[word..];
+<span data-nosnippet>316</span>                    <span class="kw">let </span>p = <span class="kw-2">&amp;</span>table[x].words()[<a href="../num/zero_one.rs.html#1-14">word</a>..];
 <span data-nosnippet>317</span>                    <span class="kw">let </span>q = <span class="kw-2">&amp;</span>table[<span class="number">256 </span>+ y].words()[word..];
 <span data-nosnippet>318</span>                    <span class="kw">let </span>r = <span class="kw-2">&amp;</span>table[<span class="number">512 </span>+ z].words()[word..];
 <span data-nosnippet>319</span>                    <span class="kw">let </span>s = <span class="kw-2">&amp;</span>table[<span class="number">768 </span>+ w].words()[word..];
@@ -390,7 +390,7 @@
 <span data-nosnippet>352</span>    }
 <span data-nosnippet>353</span>
 <span data-nosnippet>354</span>    <span class="attr">#[inline(always)]
-<span data-nosnippet>355</span>    </span><span class="kw">fn </span>eliminate_sparse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, <a href="../algebra/operations.rs.html#243-248">require_full_rank</a>: bool) -&gt; Vec&lt;usize&gt; {
+<span data-nosnippet>355</span>    </span><span class="kw">fn </span>eliminate_sparse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, require_full_rank: bool) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>356</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>357</span>        <span class="kw">let </span><span class="kw-2">mut </span>basis = <span class="macro">vec!</span>[n; cols];
 <span data-nosnippet>358</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::new();
@@ -418,7 +418,7 @@
 <span data-nosnippet>380</span>        <span class="self">self</span>.data
 <span data-nosnippet>381</span>            .sort_by_cached_key(|row| row.iter_ones().next().filter(|<span class="kw-2">&amp;</span>c| c &lt; cols).unwrap_or(cols));
 <span data-nosnippet>382</span>        <span class="kw">if </span>full {
-<span data-nosnippet>383</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#222">c</a>) <span class="kw">in </span>pivots.iter().enumerate() {
+<span data-nosnippet>383</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>pivots.iter().enumerate() {
 <span data-nosnippet>384</span>                basis[c] = i;
 <span data-nosnippet>385</span>            }
 <span data-nosnippet>386</span>            <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..pivots.len()).rev() {
@@ -494,7 +494,7 @@
 <span data-nosnippet>456</span>                <span class="kw">let </span>p0 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>457</span>                <span class="kw">let </span>offset = group + (key &gt;&gt; <span class="number">8 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>458</span>                <span class="kw">let </span>p1 = <span class="kw-2">&amp;</span>table[offset..offset + width];
-<span data-nosnippet>459</span>                <span class="kw">let </span>offset = <span class="number">2 </span>* group + (key &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
+<span data-nosnippet>459</span>                <span class="kw">let </span>offset = <span class="number">2 </span>* group + (key &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a> * width;
 <span data-nosnippet>460</span>                <span class="kw">let </span>p2 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>461</span>                <span class="kw">let </span>offset = <span class="number">3 </span>* group + (key &gt;&gt; <span class="number">24 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>462</span>                <span class="kw">let </span>p3 = <span class="kw-2">&amp;</span>table[offset..offset + width];
@@ -672,7 +672,7 @@
 <span data-nosnippet>183</span>            }
 <span data-nosnippet>184</span>            <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
 <span data-nosnippet>185</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
-<span data-nosnippet>186</span>                </span><span class="kw">return unsafe </span>{ simd::none_avx512(<span class="kw-2">&amp;</span><span class="self">self</span>.bits) };
+<span data-nosnippet>186</span>                </span><span class="kw">return unsafe </span>{ simd::none_avx512(<span class="kw-2">&amp;</span><a class="self" href="../algebra/ring.rs.html#1-164">self</a>.bits) };
 <span data-nosnippet>187</span>            }
 <span data-nosnippet>188</span>            <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
 <span data-nosnippet>189</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
@@ -975,7 +975,7 @@
 <span data-nosnippet>486</span>        }
 <span data-nosnippet>487</span>        <span class="kw">if </span>!OR_ASSIGN {
 <span data-nosnippet>488</span>            <span class="kw">let </span>end = bits.len() - word_shift;
-<span data-nosnippet>489</span>            bits[<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">end</a>..].fill(<span class="number">0</span>);
+<span data-nosnippet>489</span>            bits[end..].fill(<span class="number">0</span>);
 <span data-nosnippet>490</span>        }
 <span data-nosnippet>491</span>    }
 <span data-nosnippet>492</span>}
@@ -1797,7 +1797,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>473</span>            <span class="kw">for </span>i <span class="kw">in </span>word_shift..bits.len() - <span class="number">1 </span>{
 <span data-nosnippet>474</span>                <span class="kw">let </span>value = (bits[i] &gt;&gt; bit_shift) | (bits[i + <span class="number">1</span>] &lt;&lt; (<span class="number">64 </span>- bit_shift));
 <span data-nosnippet>475</span>                <span class="kw">if </span>OR_ASSIGN {
-<span data-nosnippet>476</span>                    <a href="../math/mod.rs.html#1-327">bits</a>[i - word_shift] |= value;
+<span data-nosnippet>476</span>                    bits[i - word_shift] |= <a href="../graph/mod.rs.html#1-171">value</a>;
 <span data-nosnippet>477</span>                } <span class="kw">else </span>{
 <span data-nosnippet>478</span>                    bits[i - word_shift] = value;
 <span data-nosnippet>479</span>                }
@@ -1958,7 +1958,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>189</span>                };
 <span data-nosnippet>190</span>                <span class="self">self</span>.data.swap(r, p);
 <span data-nosnippet>191</span>                <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(r);
-<span data-nosnippet>192</span>                <span class="kw">let </span>(pivot, <a href="../lib.rs.html#23">lower</a>) = lower.split_first_mut().unwrap();
+<span data-nosnippet>192</span>                <span class="kw">let </span>(pivot, lower) = lower.split_first_mut().unwrap();
 <span data-nosnippet>193</span>                <span class="kw">for </span>row <span class="kw">in </span>lower
 <span data-nosnippet>194</span>                    .iter_mut()
 <span data-nosnippet>195</span>                    .chain(upper.iter_mut().take(<span class="kw">if </span>full { r } <span class="kw">else </span>{ <span class="number">0 </span>}))
@@ -1997,7 +1997,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + block);
 <span data-nosnippet>229</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = start;
 <span data-nosnippet>230</span>            <span class="kw">while </span>c &lt; end {
-<span data-nosnippet>231</span>                <span class="kw">let </span>r = pivots.len();
+<span data-nosnippet>231</span>                <span class="kw">let </span>r = pivots.<a href="../num/zero_one.rs.html#15-28">len</a>();
 <span data-nosnippet>232</span>                <span class="kw">let </span><span class="kw-2">mut </span>pivot = <span class="prelude-val">None</span>;
 <span data-nosnippet>233</span>                <span class="kw">for </span>(i, reduced) <span class="kw">in </span>reduced.iter_mut().enumerate().skip(r) {
 <span data-nosnippet>234</span>                    <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(i);
@@ -2008,7 +2008,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>239</span>                        }
 <span data-nosnippet>240</span>                    }
 <span data-nosnippet>241</span>                    <span class="kw-2">*</span>reduced = r;
-<span data-nosnippet>242</span>                    <span class="kw">if </span>row.get(c) {
+<span data-nosnippet>242</span>                    <span class="kw">if </span>row.get(<a href="../algebra/action.rs.html#86">c</a>) {
 <span data-nosnippet>243</span>                        pivot = <span class="prelude-val">Some</span>(i);
 <span data-nosnippet>244</span>                        <span class="kw">break</span>;
 <span data-nosnippet>245</span>                    }
@@ -2047,7 +2047,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>278</span>            <span class="kw">for </span>group <span class="kw">in </span><span class="number">0</span>..block.div_ceil(<span class="number">8</span>) {
 <span data-nosnippet>279</span>                <span class="kw">let </span><span class="kw-2">mut </span>keys = [<span class="number">0usize</span>; <span class="number">256</span>];
 <span data-nosnippet>280</span>                <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
-<span data-nosnippet>281</span>                <span class="kw">for </span>(row, <span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#45">c</a>) <span class="kw">in </span>pivots[first..].iter().enumerate() {
+<span data-nosnippet>281</span>                <span class="kw">for </span>(row, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>pivots[first..].iter().enumerate() {
 <span data-nosnippet>282</span>                    <span class="kw">if </span>(c - start) / <span class="number">8 </span>!= group {
 <span data-nosnippet>283</span>                        <span class="kw">continue</span>;
 <span data-nosnippet>284</span>                    }
@@ -2112,7 +2112,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>343</span>                .iter()
 <span data-nosnippet>344</span>                .fold(<span class="number">0</span>, |x, row| x | row.words()[word])
 <span data-nosnippet>345</span>                &amp; (u64::MAX &lt;&lt; (start &amp; <span class="number">63</span>));
-<span data-nosnippet>346</span>            <span class="kw">if </span>bits != <span class="number">0 </span>{
+<span data-nosnippet>346</span>            <span class="kw">if </span><a href="../num/zero_one.rs.html#1-14">bits</a> != <span class="number">0 </span>{
 <span data-nosnippet>347</span>                <span class="kw">return </span>(word * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
 <span data-nosnippet>348</span>            }
 <span data-nosnippet>349</span>            start = (word + <span class="number">1</span>) * <span class="number">64</span>;
@@ -2173,7 +2173,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::zeros((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">1</span>));
 <span data-nosnippet>405</span>        <span class="kw">let </span>ones = <span class="self">self</span>.data.iter().map(BitSet::count_ones).sum::&lt;u64&gt;();
 <span data-nosnippet>406</span>        <span class="kw">let </span>size = <span class="self">self</span>.shape.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64;
-<span data-nosnippet>407</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256 </span>|| <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.shape.<span class="number">1 </span>&lt; <span class="number">32 </span>|| ones &lt;= size / <span class="number">8 </span>{
+<span data-nosnippet>407</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256 </span>|| <span class="self">self</span>.shape.<span class="number">1 </span>&lt; <span class="number">32 </span>|| ones &lt;= size / <span class="number">8 </span>{
 <span data-nosnippet>408</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>409</span>                <span class="kw">for </span>j <span class="kw">in </span>a.<span class="highlight">iter_ones</span>() {
 <span data-nosnippet>410</span>                    xor(c.words_mut(), rhs[j].words());
@@ -2247,7 +2247,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>478</span>                    .zip(p4)
 <span data-nosnippet>479</span>                    .zip(p5)
 <span data-nosnippet>480</span>                    .zip(p6)
-<span data-nosnippet>481</span>                    .<a href="../algebra/action.rs.html#12">zip</a>(p7)
+<span data-nosnippet>481</span>                    .zip(p7)
 <span data-nosnippet>482</span>                {
 <span data-nosnippet>483</span>                    <span class="kw-2">*</span>x ^= p0 ^ p1 ^ p2 ^ p3 ^ p4 ^ p5 ^ p6 ^ p7;
 <span data-nosnippet>484</span>                }
@@ -2498,15 +2498,15 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>227</span>            reduced.fill(first);
 <span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + block);
 <span data-nosnippet>229</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = start;
-<span data-nosnippet>230</span>            <span class="kw">while </span>c &lt; end {
+<span data-nosnippet>230</span>            <span class="kw">while </span><a href="../algebra/action.rs.html#14">c</a> &lt; end {
 <span data-nosnippet>231</span>                <span class="kw">let </span>r = pivots.len();
 <span data-nosnippet>232</span>                <span class="kw">let </span><span class="kw-2">mut </span>pivot = <span class="prelude-val">None</span>;
 <span data-nosnippet>233</span>                <span class="kw">for </span>(i, reduced) <span class="kw">in </span>reduced.iter_mut().enumerate().skip(r) {
 <span data-nosnippet>234</span>                    <span class="kw">let </span>(upper, lower) = <span class="self">self</span>.data.split_at_mut(i);
 <span data-nosnippet>235</span>                    <span class="kw">let </span>row = <span class="kw-2">&amp;mut </span>lower[<span class="number">0</span>];
-<span data-nosnippet>236</span>                    <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">*</span>reduced..r {
+<span data-nosnippet>236</span>                    <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">*</span>reduced..<a href="../algebra/action.rs.html#23">r</a> {
 <span data-nosnippet>237</span>                        <span class="kw">if </span>row.get(pivots[p]) {
-<span data-nosnippet>238</span>                            xor(<span class="kw-2">&amp;mut </span>row.words_mut()[word..], <span class="kw-2">&amp;</span>upper[p].<span class="highlight">words</span>()[word..]);
+<span data-nosnippet>238</span>                            xor(<span class="kw-2">&amp;mut </span>row.words_mut()[word..], <span class="kw-2">&amp;</span>upper[p].<span class="highlight"><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">words</a></span>()[word..]);
 <span data-nosnippet>239</span>                        }
 <span data-nosnippet>240</span>                    }
 <span data-nosnippet>241</span>                    <span class="kw-2">*</span>reduced = r;
@@ -2517,7 +2517,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>246</span>                }
 <span data-nosnippet>247</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = pivot {
 <span data-nosnippet>248</span>                    <span class="self">self</span>.data.swap(r, p);
-<span data-nosnippet>249</span>                    reduced.swap(<a href="../algebra/action.rs.html#54">r</a>, <a href="../algebra/action.rs.html#54">p</a>);
+<span data-nosnippet>249</span>                    reduced.swap(r, p);
 <span data-nosnippet>250</span>                    pivots.push(c);
 <span data-nosnippet>251</span>                    c += <span class="number">1</span>;
 <span data-nosnippet>252</span>                } <span class="kw">else if </span>require_full_rank {
@@ -2624,7 +2624,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>353</span>
 <span data-nosnippet>354</span>    <span class="attr">#[inline(always)]
 <span data-nosnippet>355</span>    </span><span class="kw">fn </span>eliminate_sparse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cols: usize, full: bool, require_full_rank: bool) -&gt; Vec&lt;usize&gt; {
-<span data-nosnippet>356</span>        <span class="kw">let </span>n = <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.shape.<span class="number">0</span>;
+<span data-nosnippet>356</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>357</span>        <span class="kw">let </span><span class="kw-2">mut </span>basis = <span class="macro">vec!</span>[n; cols];
 <span data-nosnippet>358</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::new();
 <span data-nosnippet>359</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
@@ -2721,13 +2721,13 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>450</span>                    }
 <span data-nosnippet>451</span>                }
 <span data-nosnippet>452</span>            }
-<span data-nosnippet>453</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
+<span data-nosnippet>453</span>            <span class="kw">for </span>(<a href="../algebra/lazy_map.rs.html#245">a</a>, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>454</span>                <span class="kw">let </span>key = a.<span class="highlight">words</span>()[start / <span class="number">64</span>];
 <span data-nosnippet>455</span>                <span class="kw">let </span>offset = (key &amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>456</span>                <span class="kw">let </span>p0 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>457</span>                <span class="kw">let </span>offset = group + (key &gt;&gt; <span class="number">8 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>458</span>                <span class="kw">let </span>p1 = <span class="kw-2">&amp;</span>table[offset..offset + width];
-<span data-nosnippet>459</span>                <span class="kw">let </span>offset = <span class="number">2 </span>* group + (<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">key</a> &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
+<span data-nosnippet>459</span>                <span class="kw">let </span>offset = <span class="number">2 </span>* group + (key &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>460</span>                <span class="kw">let </span>p2 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>461</span>                <span class="kw">let </span>offset = <span class="number">3 </span>* group + (key &gt;&gt; <span class="number">24 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>462</span>                <span class="kw">let </span>p3 = <span class="kw-2">&amp;</span>table[offset..offset + width];
@@ -2743,7 +2743,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>472</span>                    .words_mut()
 <span data-nosnippet>473</span>                    .iter_mut()
 <span data-nosnippet>474</span>                    .zip(p0)
-<span data-nosnippet>475</span>                    .zip(p1)
+<span data-nosnippet>475</span>                    .<a href="../algebra/lazy_map.rs.html#293">zip</a>(p1)
 <span data-nosnippet>476</span>                    .zip(p2)
 <span data-nosnippet>477</span>                    .zip(p3)
 <span data-nosnippet>478</span>                    .zip(p4)
@@ -2970,7 +2970,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>303</span>
 <span data-nosnippet>304</span>    <span class="doccomment">/// Assigns `self | (self &gt;&gt; rhs)` to `self`.
 <span data-nosnippet>305</span>    </span><span class="attr">#[inline]
-<span data-nosnippet>306</span>    </span><span class="kw">pub fn </span>shr_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
+<span data-nosnippet>306</span>    </span><span class="kw">pub fn </span>shr_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../algebra/lazy_map.rs.html#18">rhs</a>: usize) {
 <span data-nosnippet>307</span>        <span class="self">self</span>.shift_right::&lt;<span class="bool-val">true</span>&gt;(rhs);
 <span data-nosnippet>308</span>    }
 <span data-nosnippet>309</span>
@@ -3023,7 +3023,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>356</span>            <span class="kw-2">*</span>lhs = <span class="kw">match </span>OP {
 <span data-nosnippet>357</span>                BIT_AND =&gt; <span class="kw-2">*</span>lhs &amp; rhs,
 <span data-nosnippet>358</span>                BIT_OR =&gt; <span class="kw-2">*</span>lhs | rhs,
-<span data-nosnippet>359</span>                BIT_XOR =&gt; <span class="kw-2">*</span><a href="../algebra/lazy_map.rs.html#96">lhs</a> ^ rhs,
+<span data-nosnippet>359</span>                BIT_XOR =&gt; <span class="kw-2">*</span>lhs ^ rhs,
 <span data-nosnippet>360</span>                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
 <span data-nosnippet>361</span>            };
 <span data-nosnippet>362</span>        }
@@ -3136,7 +3136,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>137</span>    }
 <span data-nosnippet>138</span>
 <span data-nosnippet>139</span>    <span class="kw">pub fn </span>pow(<span class="self">self</span>, <span class="kw-2">mut </span>n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>140</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
+<span data-nosnippet>140</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.<a href="../graph/mod.rs.html#1-171">shape</a>.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
 <span data-nosnippet>141</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::eye(<span class="self">self</span>.shape);
 <span data-nosnippet>142</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">self</span>;
 <span data-nosnippet>143</span>        <span class="kw">while </span>n != <span class="number">0 </span>{
@@ -3224,7 +3224,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>225</span>            <span class="kw">let </span>first = pivots.len();
 <span data-nosnippet>226</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
 <span data-nosnippet>227</span>            reduced.fill(first);
-<span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + block);
+<span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">block</a>);
 <span data-nosnippet>229</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = start;
 <span data-nosnippet>230</span>            <span class="kw">while </span>c &lt; end {
 <span data-nosnippet>231</span>                <span class="kw">let </span>r = pivots.len();
@@ -3343,7 +3343,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>344</span>                .fold(<span class="number">0</span>, |x, row| x | row.words()[word])
 <span data-nosnippet>345</span>                &amp; (u64::MAX &lt;&lt; (start &amp; <span class="number">63</span>));
 <span data-nosnippet>346</span>            <span class="kw">if </span>bits != <span class="number">0 </span>{
-<span data-nosnippet>347</span>                <span class="kw">return </span>(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">word</a> * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
+<span data-nosnippet>347</span>                <span class="kw">return </span>(word * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
 <span data-nosnippet>348</span>            }
 <span data-nosnippet>349</span>            start = (word + <span class="number">1</span>) * <span class="number">64</span>;
 <span data-nosnippet>350</span>        }
@@ -3431,7 +3431,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>432</span>
 <span data-nosnippet>433</span>        <span class="comment">// Separate the table groups by a cache line to avoid mapping them to the same sets.
 <span data-nosnippet>434</span>        </span><span class="kw">let </span>group = <span class="number">256 </span>* width + <span class="number">8</span>;
-<span data-nosnippet>435</span>        <span class="kw">let </span><span class="kw-2">mut </span>storage = BitSet::new(<span class="number">8 </span>* group * <span class="number">64</span>);
+<span data-nosnippet>435</span>        <span class="kw">let </span><span class="kw-2">mut </span>storage = <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_ref">BitSet</a>::new(<span class="number">8 </span>* group * <span class="number">64</span>);
 <span data-nosnippet>436</span>        <span class="kw">let </span>table = storage.<span class="highlight">words_mut</span>();
 <span data-nosnippet>437</span>        <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>).step_by(<span class="number">64</span>) {
 <span data-nosnippet>438</span>            <span class="kw">for </span>(t, table) <span class="kw">in </span>table.chunks_exact_mut(group).enumerate() {
@@ -3461,7 +3461,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>462</span>                <span class="kw">let </span>p3 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>463</span>                <span class="kw">let </span>offset = <span class="number">4 </span>* group + (key &gt;&gt; <span class="number">32 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>464</span>                <span class="kw">let </span>p4 = <span class="kw-2">&amp;</span>table[offset..offset + width];
-<span data-nosnippet>465</span>                <span class="kw">let </span>offset = <span class="number">5 </span>* group + (key &gt;&gt; <span class="number">40 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
+<span data-nosnippet>465</span>                <span class="kw">let </span>offset = <span class="number">5 </span>* group + (<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">key</a> &gt;&gt; <span class="number">40 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>466</span>                <span class="kw">let </span>p5 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>467</span>                <span class="kw">let </span>offset = <span class="number">6 </span>* group + (key &gt;&gt; <span class="number">48 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>468</span>                <span class="kw">let </span>p6 = <span class="kw-2">&amp;</span>table[offset..offset + width];
@@ -3625,7 +3625,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>183</span>            }
 <span data-nosnippet>184</span>            <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512f"</span>) {
 <span data-nosnippet>185</span>                <span class="comment">// SAFETY: blocks are 64-byte aligned and feature detection checked AVX-512F.
-<span data-nosnippet>186</span>                </span><span class="kw">return unsafe </span>{ simd::none_avx512(<span class="kw-2">&amp;</span><span class="self">self</span>.bits) };
+<span data-nosnippet>186</span>                </span><span class="kw">return unsafe </span>{ simd::none_avx512(<span class="kw-2">&amp;</span><a class="self" href="../algebra/ring.rs.html#1-164">self</a>.bits) };
 <span data-nosnippet>187</span>            }
 <span data-nosnippet>188</span>            <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
 <span data-nosnippet>189</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
@@ -3928,7 +3928,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>486</span>        }
 <span data-nosnippet>487</span>        <span class="kw">if </span>!OR_ASSIGN {
 <span data-nosnippet>488</span>            <span class="kw">let </span>end = bits.len() - word_shift;
-<span data-nosnippet>489</span>            bits[<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">end</a>..].fill(<span class="number">0</span>);
+<span data-nosnippet>489</span>            bits[end..].fill(<span class="number">0</span>);
 <span data-nosnippet>490</span>        }
 <span data-nosnippet>491</span>    }
 <span data-nosnippet>492</span>}
@@ -4047,7 +4047,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>605</span>    <span class="kw">fn </span>bitxor(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>BitSet) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>606</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
 <span data-nosnippet>607</span>        res ^= rhs;
-<span data-nosnippet>608</span>        res
+<span data-nosnippet>608</span>        <a href="../algebra/lazy_map.rs.html#394">res</a>
 <span data-nosnippet>609</span>    }
 <span data-nosnippet>610</span>}
 <span data-nosnippet>611</span>
@@ -4396,7 +4396,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>431</span>    }
 <span data-nosnippet>432</span>
 <span data-nosnippet>433</span>    <span class="attr">#[inline]
-<span data-nosnippet>434</span>    </span><span class="kw">fn </span>shift_right&lt;<span class="kw">const </span>OR_ASSIGN: bool&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <a href="../algebra/lazy_map.rs.html#124">rhs</a>: usize) {
+<span data-nosnippet>434</span>    </span><span class="kw">fn </span>shift_right&lt;<span class="kw">const </span>OR_ASSIGN: bool&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
 <span data-nosnippet>435</span>        <span class="kw">if </span>rhs == <span class="number">0 </span>{
 <span data-nosnippet>436</span>            <span class="kw">return</span>;
 <span data-nosnippet>437</span>        }
@@ -4522,7 +4522,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>557</span>    <span class="kw">fn </span>bitor(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>BitSet) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>558</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
 <span data-nosnippet>559</span>        res |= rhs;
-<span data-nosnippet>560</span>        <a href="../num/zero_one.rs.html#15-28">res</a>
+<span data-nosnippet>560</span>        res
 <span data-nosnippet>561</span>    }
 <span data-nosnippet>562</span>}
 <span data-nosnippet>563</span>

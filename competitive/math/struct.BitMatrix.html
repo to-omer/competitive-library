@@ -163,7 +163,7 @@
 <span data-nosnippet>137</span>    }
 <span data-nosnippet>138</span>
 <span data-nosnippet>139</span>    <span class="kw">pub fn </span>pow(<span class="self">self</span>, <span class="kw-2">mut </span>n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>140</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
+<span data-nosnippet>140</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.<a href="../graph/mod.rs.html#1-171">shape</a>.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
 <span data-nosnippet>141</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::eye(<span class="self">self</span>.shape);
 <span data-nosnippet>142</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">self</span>;
 <span data-nosnippet>143</span>        <span class="kw">while </span>n != <span class="number">0 </span>{
@@ -251,7 +251,7 @@
 <span data-nosnippet>225</span>            <span class="kw">let </span>first = pivots.len();
 <span data-nosnippet>226</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
 <span data-nosnippet>227</span>            reduced.fill(first);
-<span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + block);
+<span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">block</a>);
 <span data-nosnippet>229</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = start;
 <span data-nosnippet>230</span>            <span class="kw">while </span>c &lt; end {
 <span data-nosnippet>231</span>                <span class="kw">let </span>r = pivots.len();
@@ -370,7 +370,7 @@
 <span data-nosnippet>344</span>                .fold(<span class="number">0</span>, |x, row| x | row.words()[word])
 <span data-nosnippet>345</span>                &amp; (u64::MAX &lt;&lt; (start &amp; <span class="number">63</span>));
 <span data-nosnippet>346</span>            <span class="kw">if </span>bits != <span class="number">0 </span>{
-<span data-nosnippet>347</span>                <span class="kw">return </span>(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">word</a> * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
+<span data-nosnippet>347</span>                <span class="kw">return </span>(word * <span class="number">64 </span>+ bits.trailing_zeros() <span class="kw">as </span>usize).min(cols);
 <span data-nosnippet>348</span>            }
 <span data-nosnippet>349</span>            start = (word + <span class="number">1</span>) * <span class="number">64</span>;
 <span data-nosnippet>350</span>        }
@@ -458,7 +458,7 @@
 <span data-nosnippet>432</span>
 <span data-nosnippet>433</span>        <span class="comment">// Separate the table groups by a cache line to avoid mapping them to the same sets.
 <span data-nosnippet>434</span>        </span><span class="kw">let </span>group = <span class="number">256 </span>* width + <span class="number">8</span>;
-<span data-nosnippet>435</span>        <span class="kw">let </span><span class="kw-2">mut </span>storage = BitSet::new(<span class="number">8 </span>* group * <span class="number">64</span>);
+<span data-nosnippet>435</span>        <span class="kw">let </span><span class="kw-2">mut </span>storage = <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_ref">BitSet</a>::new(<span class="number">8 </span>* group * <span class="number">64</span>);
 <span data-nosnippet>436</span>        <span class="kw">let </span>table = storage.words_mut();
 <span data-nosnippet>437</span>        <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>).step_by(<span class="number">64</span>) {
 <span data-nosnippet>438</span>            <span class="kw">for </span>(t, table) <span class="kw">in </span>table.chunks_exact_mut(group).enumerate() {
@@ -488,7 +488,7 @@
 <span data-nosnippet>462</span>                <span class="kw">let </span>p3 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>463</span>                <span class="kw">let </span>offset = <span class="number">4 </span>* group + (key &gt;&gt; <span class="number">32 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>464</span>                <span class="kw">let </span>p4 = <span class="kw-2">&amp;</span>table[offset..offset + width];
-<span data-nosnippet>465</span>                <span class="kw">let </span>offset = <span class="number">5 </span>* group + (key &gt;&gt; <span class="number">40 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
+<span data-nosnippet>465</span>                <span class="kw">let </span>offset = <span class="number">5 </span>* group + (<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">key</a> &gt;&gt; <span class="number">40 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>466</span>                <span class="kw">let </span>p5 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>467</span>                <span class="kw">let </span>offset = <span class="number">6 </span>* group + (key &gt;&gt; <span class="number">48 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>468</span>                <span class="kw">let </span>p6 = <span class="kw-2">&amp;</span>table[offset..offset + width];
@@ -974,7 +974,7 @@
 <span data-nosnippet>321</span>                        .iter_mut()
 <span data-nosnippet>322</span>                        .zip(p)
 <span data-nosnippet>323</span>                        .zip(q)
-<span data-nosnippet>324</span>                        .zip(<a href="../algebra/magma.rs.html#6">r</a>)
+<span data-nosnippet>324</span>                        .zip(r)
 <span data-nosnippet>325</span>                        .zip(s)
 <span data-nosnippet>326</span>                    {
 <span data-nosnippet>327</span>                        <span class="kw-2">*</span>x ^= y ^ z ^ r ^ s;
@@ -1078,20 +1078,20 @@
 <span data-nosnippet>425</span>            }
 <span data-nosnippet>426</span>            <span class="kw">return </span>result;
 <span data-nosnippet>427</span>        }
-<span data-nosnippet>428</span>        <span class="kw">let </span>width = rhs.shape.<span class="number">1</span>.div_ceil(<span class="number">64</span>);
+<span data-nosnippet>428</span>        <span class="kw">let </span>width = <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">rhs</a>.shape.<span class="number">1</span>.div_ceil(<span class="number">64</span>);
 <span data-nosnippet>429</span>        <span class="kw">if </span>width == <span class="number">0 </span>{
 <span data-nosnippet>430</span>            <span class="kw">return </span>result;
 <span data-nosnippet>431</span>        }
 <span data-nosnippet>432</span>
 <span data-nosnippet>433</span>        <span class="comment">// Separate the table groups by a cache line to avoid mapping them to the same sets.
 <span data-nosnippet>434</span>        </span><span class="kw">let </span>group = <span class="number">256 </span>* width + <span class="number">8</span>;
-<span data-nosnippet>435</span>        <span class="kw">let </span><span class="kw-2">mut </span>storage = BitSet::new(<span class="number">8 </span>* group * <span class="number">64</span>);
+<span data-nosnippet>435</span>        <span class="kw">let </span><span class="kw-2">mut </span>storage = BitSet::<a href="../num/zero_one.rs.html#16">new</a>(<span class="number">8 </span>* group * <span class="number">64</span>);
 <span data-nosnippet>436</span>        <span class="kw">let </span>table = storage.words_mut();
 <span data-nosnippet>437</span>        <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>).step_by(<span class="number">64</span>) {
 <span data-nosnippet>438</span>            <span class="kw">for </span>(t, table) <span class="kw">in </span>table.chunks_exact_mut(group).enumerate() {
 <span data-nosnippet>439</span>                <span class="kw">let </span>col = start + t * <span class="number">8</span>;
 <span data-nosnippet>440</span>                <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>.saturating_sub(col).min(<span class="number">8</span>) {
-<span data-nosnippet>441</span>                    <span class="kw">let </span>row = rhs[col + bit].words();
+<span data-nosnippet>441</span>                    <span class="kw">let </span>row = rhs[<a href="../num/zero_one.rs.html#15-28">col</a> + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">bit</a>].words();
 <span data-nosnippet>442</span>                    <span class="kw">let </span>half = (<span class="number">1 </span>&lt;&lt; bit) * width;
 <span data-nosnippet>443</span>                    <span class="kw">let </span>(lower, upper) = table.split_at_mut(half);
 <span data-nosnippet>444</span>                    <span class="kw">for </span>(source, dest) <span class="kw">in

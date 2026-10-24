@@ -872,7 +872,7 @@
 <span data-nosnippet>235</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(pos) = <span class="self">Self</span>::rpartition_point_dfs(r, mid, end, right, acc, pred) {
 <span data-nosnippet>236</span>            <span class="prelude-val">Some</span>(pos)
 <span data-nosnippet>237</span>        } <span class="kw">else </span>{
-<span data-nosnippet>238</span>            <span class="self">Self</span>::rpartition_point_dfs(l, start, mid, right, acc, pred)
+<span data-nosnippet>238</span>            <span class="self">Self</span>::rpartition_point_dfs(l, start, <a href="../num/mod.rs.html#1-81">mid</a>, right, acc, pred)
 <span data-nosnippet>239</span>        }
 <span data-nosnippet>240</span>    }
 <span data-nosnippet>241</span>
@@ -883,7 +883,7 @@
 <span data-nosnippet>246</span>        end: usize,
 <span data-nosnippet>247</span>        index: usize,
 <span data-nosnippet>248</span>        value: <span class="kw-2">&amp;</span>M::T,
-<span data-nosnippet>249</span>    ) -&gt; NodePtr&lt;M::T&gt; {
+<span data-nosnippet>249</span>    ) -&gt; NodePtr&lt;<a href="../num/zero_one.rs.html#1-14">M::T</a>&gt; {
 <span data-nosnippet>250</span>        <span class="kw">if </span>end - start == <span class="number">1 </span>{
 <span data-nosnippet>251</span>            <span class="kw">return </span><span class="self">self</span>.leaf_node(value.clone());
 <span data-nosnippet>252</span>        }
@@ -932,7 +932,7 @@
 <span data-nosnippet>295</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
 <span data-nosnippet>296</span>        version: PersistentSegmentTreeVersion,
 <span data-nosnippet>297</span>        index: usize,
-<span data-nosnippet>298</span>        value: <a href="../algebra/action.rs.html#20">M</a>::T,
+<span data-nosnippet>298</span>        value: M::T,
 <span data-nosnippet>299</span>    ) -&gt; PersistentSegmentTreeVersion {
 <span data-nosnippet>300</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.len);
 <span data-nosnippet>301</span>        <span class="kw">let </span>root = <span class="self">self</span>.set_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index, <span class="kw-2">&amp;</span>value);
@@ -1265,7 +1265,7 @@
 <span data-nosnippet>274</span>        <span class="kw">let </span>mid = (start + end) / <span class="number">2</span>;
 <span data-nosnippet>275</span>        <span class="kw">let </span><span class="kw-2">mut </span>children = <span class="self">Self</span>::children(node);
 <span data-nosnippet>276</span>        <span class="kw">if </span>index &lt; mid {
-<span data-nosnippet>277</span>            children[<span class="number">0</span>] = <span class="self">self</span>.<a href="../algebra/mod.rs.html#50">update_dfs</a>(children[<span class="number">0</span>], start, mid, index, value);
+<span data-nosnippet>277</span>            children[<span class="number">0</span>] = <span class="self">self</span>.update_dfs(children[<span class="number">0</span>], start, mid, index, value);
 <span data-nosnippet>278</span>        } <span class="kw">else </span>{
 <span data-nosnippet>279</span>            children[<span class="number">1</span>] = <span class="self">self</span>.update_dfs(children[<span class="number">1</span>], mid, end, index, value);
 <span data-nosnippet>280</span>        }
@@ -1289,7 +1289,7 @@
 <span data-nosnippet>298</span>        value: M::T,
 <span data-nosnippet>299</span>    ) -&gt; PersistentSegmentTreeVersion {
 <span data-nosnippet>300</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.len);
-<span data-nosnippet>301</span>        <span class="kw">let </span>root = <span class="self">self</span>.set_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index, <span class="kw-2">&amp;</span><a href="../lib.rs.html#23">value</a>);
+<span data-nosnippet>301</span>        <span class="kw">let </span>root = <span class="self">self</span>.set_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index, <span class="kw-2">&amp;</span>value);
 <span data-nosnippet>302</span>        <span class="self">self</span>.push_version_root(root)
 <span data-nosnippet>303</span>    }
 <span data-nosnippet>304</span>
@@ -1446,7 +1446,7 @@
 <span data-nosnippet>282</span>    }
 <span data-nosnippet>283</span>
 <span data-nosnippet>284</span>    <span class="kw">pub fn </span>from_vec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: Vec&lt;M::T&gt;) -&gt; PersistentSegmentTreeVersion {
-<span data-nosnippet>285</span>        <span class="macro">assert_eq!</span>(v.len(), <span class="self">self</span>.len);
+<span data-nosnippet>285</span>        <span class="macro">assert_eq!</span>(v.len(), <span class="self">self</span>.<a href="../num/zero_one.rs.html#15-28">len</a>);
 <span data-nosnippet>286</span>        <span class="kw">let </span>root = <span class="kw">if </span><span class="self">self</span>.len == <span class="number">0 </span>{
 <span data-nosnippet>287</span>            <span class="prelude-val">None
 <span data-nosnippet>288</span>        </span>} <span class="kw">else </span>{
@@ -1637,7 +1637,7 @@
 <span data-nosnippet>308</span>        index: usize,
 <span data-nosnippet>309</span>        value: M::T,
 <span data-nosnippet>310</span>    ) -&gt; PersistentSegmentTreeVersion {
-<span data-nosnippet>311</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.len);
+<span data-nosnippet>311</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.<a href="../num/mod.rs.html#1-81">len</a>);
 <span data-nosnippet>312</span>        <span class="kw">let </span>root = <span class="self">self</span>.update_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index, <span class="kw-2">&amp;</span>value);
 <span data-nosnippet>313</span>        <span class="self">self</span>.push_version_root(root)
 <span data-nosnippet>314</span>    }

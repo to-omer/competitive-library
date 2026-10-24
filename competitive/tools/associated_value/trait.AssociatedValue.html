@@ -365,7 +365,7 @@
 <span data-nosnippet>281</span>                        (br, bi) = mul4(br, bi, wr, wi);
 <span data-nosnippet>282</span>                    }
 <span data-nosnippet>283</span>                }
-<span data-nosnippet>284</span>                store4(<span class="kw-2">&amp;mut </span>a[<a href="../algebra/lazy_map.rs.html#45">i</a>], rr, ri);
+<span data-nosnippet>284</span>                store4(<span class="kw-2">&amp;mut </span>a[i], rr, ri);
 <span data-nosnippet>285</span>            }
 <span data-nosnippet>286</span>        });
 <span data-nosnippet>287</span>    }
@@ -390,7 +390,7 @@
 <span data-nosnippet>306</span>        a: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
 <span data-nosnippet>307</span>        b: <span class="kw">impl </span>ExactSizeIterator&lt;Item = f64&gt;,
 <span data-nosnippet>308</span>        range: std::ops::Range&lt;usize&gt;,
-<span data-nosnippet>309</span>    ) -&gt; Vec&lt;<a href="../algebra/action.rs.html#12">f64</a>&gt; {
+<span data-nosnippet>309</span>    ) -&gt; Vec&lt;f64&gt; {
 <span data-nosnippet>310</span>        <span class="kw">let </span>n = (range.end.next_power_of_two() / <span class="number">2</span>).max(<span class="number">4</span>);
 <span data-nosnippet>311</span>        <span class="kw">let </span><span class="kw-2">mut </span>fa = pack_f64(a, n);
 <span data-nosnippet>312</span>        <span class="kw">let </span><span class="kw-2">mut </span>fb = pack_f64(b, n);
@@ -421,10 +421,10 @@
 <span data-nosnippet>337</span>
 <span data-nosnippet>338</span><span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
 <span data-nosnippet>339</span>    <span class="kw">let </span><span class="kw-2">mut </span>ip = <span class="macro">vec!</span>[<span class="number">0u32</span>];
-<span data-nosnippet>340</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="../algebra/lazy_map.rs.html#115">f</a>.len();
+<span data-nosnippet>340</span>    <span class="kw">let </span><span class="kw-2">mut </span>k = f.len();
 <span data-nosnippet>341</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
 <span data-nosnippet>342</span>    <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
-<span data-nosnippet>343</span>        k /= <span class="number">2</span>;
+<span data-nosnippet>343</span>        <a href="../algebra/lazy_map.rs.html#115">k</a> /= <span class="number">2</span>;
 <span data-nosnippet>344</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..m {
 <span data-nosnippet>345</span>            ip.push(ip[j] + k <span class="kw">as </span>u32);
 <span data-nosnippet>346</span>        }
@@ -453,10 +453,10 @@
 <span data-nosnippet>369</span><span class="kw">fn </span>real_twiddles(n: usize, inverse: bool, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(usize, Complex&lt;f64&gt;)) {
 <span data-nosnippet>370</span>    <span class="kw">const </span>BLOCK: usize = <span class="number">256</span>;
 <span data-nosnippet>371</span>    <span class="kw">let </span>sign = <span class="kw">if </span>inverse { <span class="number">1.0 </span>} <span class="kw">else </span>{ -<span class="number">1.0 </span>};
-<span data-nosnippet>372</span>    <span class="kw">let </span>step = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
+<span data-nosnippet>372</span>    <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">step</a> = Complex::primitive_nth_root_of_unity(sign * n <span class="kw">as </span>f64);
 <span data-nosnippet>373</span>    <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">1</span>..n / <span class="number">4</span>).step_by(BLOCK) {
 <span data-nosnippet>374</span>        <span class="kw">let </span><span class="kw-2">mut </span>w = Complex::polar(<span class="number">1.0</span>, sign * std::f64::consts::TAU * start <span class="kw">as </span>f64 / n <span class="kw">as </span>f64);
-<span data-nosnippet>375</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).min(n / <span class="number">4</span>) {
+<span data-nosnippet>375</span>        <span class="kw">for </span>k <span class="kw">in </span>start..(start + BLOCK).<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">min</a>(n / <span class="number">4</span>) {
 <span data-nosnippet>376</span>            f(k, w);
 <span data-nosnippet>377</span>            w <span class="kw-2">*</span>= step;
 <span data-nosnippet>378</span>        }
@@ -489,7 +489,7 @@
 <span data-nosnippet>405</span><span class="kw">pub fn </span>inverse_transform_real(<span class="kw-2">mut </span>f: Vec&lt;Complex&lt;f64&gt;&gt;, len: usize) -&gt; Vec&lt;f64&gt; {
 <span data-nosnippet>406</span>    <span class="kw">let </span>n = len.max(<span class="number">4</span>).next_power_of_two();
 <span data-nosnippet>407</span>    <span class="macro">assert_eq!</span>(f.len(), n / <span class="number">2</span>);
-<span data-nosnippet>408</span>    f[<span class="number">0</span>] = Complex::new((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
+<span data-nosnippet>408</span>    f[<span class="number">0</span>] = Complex::<a href="../algebra/lazy_map.rs.html#181">new</a>((f[<span class="number">0</span>].re + f[<span class="number">0</span>].im) * <span class="number">0.5</span>, (f[<span class="number">0</span>].re - f[<span class="number">0</span>].im) * <span class="number">0.5</span>);
 <span data-nosnippet>409</span>    f[n / <span class="number">4</span>] = f[n / <span class="number">4</span>].conjugate();
 <span data-nosnippet>410</span>    real_twiddles(n, <span class="bool-val">true</span>, |k, wk| {
 <span data-nosnippet>411</span>        <span class="kw">let </span>c = wk.transpose().conjugate() + <span class="number">1.</span>;
@@ -501,7 +501,7 @@
 <span data-nosnippet>417</span>    ifft(<span class="kw-2">&amp;mut </span>f);
 <span data-nosnippet>418</span>    <span class="kw">let </span>inv = <span class="number">1. </span>/ (n / <span class="number">2</span>) <span class="kw">as </span>f64;
 <span data-nosnippet>419</span>    (<span class="number">0</span>..len)
-<span data-nosnippet>420</span>        .map(|i| <a href="../num/zero_one.rs.html#16">inv</a> * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
+<span data-nosnippet>420</span>        .map(|i| inv * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ f[i / <span class="number">2</span>].re } <span class="kw">else </span>{ f[i / <span class="number">2</span>].im })
 <span data-nosnippet>421</span>        .collect()
 <span data-nosnippet>422</span>}
 <span data-nosnippet>423</span>
@@ -511,7 +511,7 @@
 <span data-nosnippet>427</span>    <span class="kw">if </span>b.len() == <span class="number">1 </span>{
 <span data-nosnippet>428</span>        <span class="kw">return </span>a.into_iter().map(|a| a * b[<span class="number">0</span>]).collect();
 <span data-nosnippet>429</span>    }
-<span data-nosnippet>430</span>    <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[<span class="number">0</span>; len];
+<span data-nosnippet>430</span>    <span class="kw">let </span><span class="kw-2">mut </span>c = <a href="../num/zero_one.rs.html#16">vec!</a>[<span class="number">0</span>; len];
 <span data-nosnippet>431</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(<span class="number">1024</span>).enumerate() {
 <span data-nosnippet>432</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.iter().enumerate() {
 <span data-nosnippet>433</span>            <span class="kw">let </span>start = i * <span class="number">1024 </span>+ j;
@@ -530,7 +530,7 @@
 <span data-nosnippet>446</span>        t.len()
 <span data-nosnippet>447</span>    }
 <span data-nosnippet>448</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>449</span>        transform_real(t.into_iter().map(|t| t <span class="kw">as </span><a href="../num/zero_one.rs.html#15-28">f64</a>), <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">len</a>)
+<span data-nosnippet>449</span>        transform_real(t.into_iter().map(|t| t <span class="kw">as </span>f64), len)
 <span data-nosnippet>450</span>    }
 <span data-nosnippet>451</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>452</span>        inverse_transform_real(f, len)
@@ -628,14 +628,14 @@
 <span data-nosnippet>544</span>        <span class="kw">if </span><span class="macro-nonterminal">$inverse </span>{
 <span data-nosnippet>545</span>            <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
 <span data-nosnippet>546</span>            <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>547</span>                <span class="kw">for </span>(a, w) <span class="kw">in </span>a.as_chunks_mut::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter_mut().<a href="../algebra/lazy_map.rs.html#349">zip</a>(<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">cache</a>) {
+<span data-nosnippet>547</span>                <span class="kw">for </span>(a, w) <span class="kw">in </span>a.as_chunks_mut::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter_mut().zip(cache) {
 <span data-nosnippet>548</span>                    <span class="kw">let </span>y = (a[<span class="number">0</span>] - a[<span class="number">1</span>]) * w.conjugate();
 <span data-nosnippet>549</span>                    a[<span class="number">0</span>] += a[<span class="number">1</span>];
 <span data-nosnippet>550</span>                    a[<span class="number">1</span>] = y;
 <span data-nosnippet>551</span>                }
 <span data-nosnippet>552</span>                v = <span class="number">2</span>;
 <span data-nosnippet>553</span>            }
-<span data-nosnippet>554</span>            <span class="kw">while </span><a href="../algebra/lazy_map.rs.html#352">v</a> &lt; n {
+<span data-nosnippet>554</span>            <span class="kw">while </span>v &lt; n {
 <span data-nosnippet>555</span>                <span class="kw">for </span>(q, block) <span class="kw">in </span>a.chunks_exact_mut(v * <span class="number">4</span>).enumerate() {
 <span data-nosnippet>556</span>                    <span class="kw">let </span>(a, rest) = block.split_at_mut(v);
 <span data-nosnippet>557</span>                    <span class="kw">let </span>(b, rest) = rest.split_at_mut(v);
@@ -685,8 +685,8 @@
 <span data-nosnippet>601</span>                }
 <span data-nosnippet>602</span>                v &gt;&gt;= <span class="number">2</span>;
 <span data-nosnippet>603</span>            }
-<span data-nosnippet>604</span>            <span class="kw">if </span><a href="../algebra/lazy_map.rs.html#444">v</a> == <span class="number">1 </span>{
-<span data-nosnippet>605</span>                <span class="kw">for </span>(a, w) <span class="kw">in </span>a.as_chunks_mut::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter_mut().zip(cache) {
+<span data-nosnippet>604</span>            <span class="kw">if </span>v == <span class="number">1 </span>{
+<span data-nosnippet>605</span>                <span class="kw">for </span>(a, <a href="../algebra/lazy_map.rs.html#444">w</a>) <span class="kw">in </span>a.as_chunks_mut::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter_mut().zip(cache) {
 <span data-nosnippet>606</span>                    <span class="kw">let </span>y = a[<span class="number">1</span>] * <span class="kw-2">*</span>w;
 <span data-nosnippet>607</span>                    a[<span class="number">1</span>] = a[<span class="number">0</span>] - y;
 <span data-nosnippet>608</span>                    a[<span class="number">0</span>] += y;

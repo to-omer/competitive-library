@@ -162,7 +162,7 @@
 <span data-nosnippet>591</span>        }
 <span data-nosnippet>592</span>        <span class="kw">let </span><span class="kw-2">mut </span>values: Vec&lt;<span class="prelude-ty">Option</span>&lt;(u64, usize)&gt;&gt; = <span class="macro">vec!</span>[<span class="prelude-val">None</span>; n];
 <span data-nosnippet>593</span>        <span class="comment">// Visit acyclic followers first, so DAGs need only one pass.
-<span data-nosnippet>594</span>        </span><span class="kw">let </span>reverse = UsizeGraph::new(n, |v: usize| index.reverse[v].iter().map(|<span class="kw-2">&amp;</span>u| (u, ())));
+<span data-nosnippet>594</span>        </span><span class="kw">let </span>reverse = UsizeGraph::new(n, |v: usize| <a href="../../graph/mod.rs.html#1-171">index</a>.reverse[v].iter().map(|<span class="kw-2">&amp;</span>u| (u, ())));
 <span data-nosnippet>595</span>        <span class="kw">let </span>order = reverse.topological_sort();
 <span data-nosnippet>596</span>        <span class="kw">if </span>order.len() == n {
 <span data-nosnippet>597</span>            <span class="kw">for </span>(counter, v) <span class="kw">in </span>order.into_iter().enumerate() {
@@ -204,7 +204,7 @@
 <span data-nosnippet>633</span>            }
 <span data-nosnippet>634</span>            values[v] = <span class="prelude-val">Some</span>((mex, counter));
 <span data-nosnippet>635</span>            counter += <span class="number">1</span>;
-<span data-nosnippet>636</span>            <span class="kw">for </span><span class="kw-2">&amp;</span><a href="../../algebra/action.rs.html#14">u</a> <span class="kw">in </span><span class="kw-2">&amp;</span>index.reverse[v] {
+<span data-nosnippet>636</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>u <span class="kw">in </span><span class="kw-2">&amp;</span>index.reverse[v] {
 <span data-nosnippet>637</span>                <span class="kw">if </span>values[u].is_some() {
 <span data-nosnippet>638</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>639</span>                }
@@ -224,7 +224,7 @@
 <span data-nosnippet>653</span>                        <span class="kw">if </span>queue.len() == n - counter {
 <span data-nosnippet>654</span>                            <span class="kw">break</span>; <span class="comment">// All unresolved vertices are already queued.
 <span data-nosnippet>655</span>                        </span>}
-<span data-nosnippet>656</span>                        <span class="kw">if </span>values[w].is_none() &amp;&amp; !queued[<a href="../../algebra/action.rs.html#54">w</a>] &amp;&amp; mexes[w] == mex {
+<span data-nosnippet>656</span>                        <span class="kw">if </span>values[w].is_none() &amp;&amp; !queued[w] &amp;&amp; mexes[w] == mex {
 <span data-nosnippet>657</span>                            queued[w] = <span class="bool-val">true</span>;
 <span data-nosnippet>658</span>                            queue.push_back(w);
 <span data-nosnippet>659</span>                        }
@@ -238,7 +238,7 @@
 <span data-nosnippet>667</span>
 <span data-nosnippet>668</span><span class="kw">impl </span>GraphSums {
 <span data-nosnippet>669</span>    <span class="kw">fn </span>prepare(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: Vec&lt;usize&gt;, components: <span class="kw-2">&amp;</span>[Vec&lt;usize&gt;]) -&gt; usize {
-<span data-nosnippet>670</span>        <span class="kw">let </span>state = <span class="self">Self</span>::canonical(state, components);
+<span data-nosnippet>670</span>        <span class="kw">let </span>state = <span class="self">Self</span>::canonical(<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">state</a>, components);
 <span data-nosnippet>671</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>root) = <span class="self">self</span>.indices.get(<span class="kw-2">&amp;</span>state) {
 <span data-nosnippet>672</span>            <span class="kw">return </span>root;
 <span data-nosnippet>673</span>        }
