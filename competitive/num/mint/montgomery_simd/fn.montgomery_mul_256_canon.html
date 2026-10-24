@@ -205,7 +205,7 @@
 <span data-nosnippet>323</span>                <span class="kw">let </span>y3 = sub_vec_avx2::&lt;M&gt;(a0na2, a1na3imag, mod_vec, mod2_vec);
 <span data-nosnippet>324</span>
 <span data-nosnippet>325</span>                store_ntt_avx2(ll.add(i), y0, step);
-<span data-nosnippet>326</span>                store_ntt_avx2(lr.add(i), y1, step);
+<span data-nosnippet>326</span>                store_ntt_avx2(lr.add(i), y1, <a href="../../../algebra/magma.rs.html#56">step</a>);
 <span data-nosnippet>327</span>                store_ntt_avx2(rl.add(i), y2, step);
 <span data-nosnippet>328</span>                store_ntt_avx2(rr.add(i), y3, step);
 <span data-nosnippet>329</span>                i += step;
@@ -216,7 +216,7 @@
 <span data-nosnippet>334</span>                <span class="kw">let </span>a2 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>rl.add(i), w2);
 <span data-nosnippet>335</span>                <span class="kw">let </span>a3 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>rr.add(i), w3);
 <span data-nosnippet>336</span>                <span class="kw">let </span>a0pa2 = add_scalar::&lt;M&gt;(a0, a2);
-<span data-nosnippet>337</span>                <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">a0na2</a> = sub_scalar::&lt;M&gt;(a0, a2);
+<span data-nosnippet>337</span>                <span class="kw">let </span>a0na2 = sub_scalar::&lt;M&gt;(a0, a2);
 <span data-nosnippet>338</span>                <span class="kw">let </span>a1pa3 = add_scalar::&lt;M&gt;(a1, a3);
 <span data-nosnippet>339</span>                <span class="kw">let </span>a1na3 = sub_scalar::&lt;M&gt;(a1, a3);
 <span data-nosnippet>340</span>                <span class="kw">let </span>a1na3imag = mul_scalar::&lt;M&gt;(a1na3, imag);
@@ -242,14 +242,14 @@
 <span data-nosnippet>360</span><span class="kw">where
 <span data-nosnippet>361</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>362</span>{
-<span data-nosnippet>363</span>    <span class="kw">let </span>n = <a href="../../../algebra/action.rs.html#86">a</a>.len() / width;
+<span data-nosnippet>363</span>    <span class="kw">let </span>n = a.len() / width;
 <span data-nosnippet>364</span>    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
 <span data-nosnippet>365</span>        <span class="kw">return</span>;
 <span data-nosnippet>366</span>    }
 <span data-nosnippet>367</span>    <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
 <span data-nosnippet>368</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, a.len());
 <span data-nosnippet>369</span>    <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
-<span data-nosnippet>370</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
+<span data-nosnippet>370</span>    <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(<a href="../../../algebra/magma.rs.html#6">M</a>::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
 <span data-nosnippet>371</span>    <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R <span class="kw">as </span>i32);
 <span data-nosnippet>372</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
 <span data-nosnippet>373</span>    <span class="kw">let </span>iimag_vec = _mm256_set1_epi32(iimag <span class="kw">as </span>i32);
@@ -284,7 +284,7 @@
 <span data-nosnippet>402</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>403</span>            <span class="kw">while </span>i + step &lt;= quarter {
 <span data-nosnippet>404</span>                <span class="kw">let </span>x0 = load_ntt_avx2(ll.add(i), step);
-<span data-nosnippet>405</span>                <span class="kw">let </span>x1 = load_ntt_avx2(lr.add(<a href="../../../algebra/lazy_map.rs.html#41">i</a>), step);
+<span data-nosnippet>405</span>                <span class="kw">let </span>x1 = load_ntt_avx2(lr.add(i), step);
 <span data-nosnippet>406</span>                <span class="kw">let </span>x2 = load_ntt_avx2(rl.add(i), step);
 <span data-nosnippet>407</span>                <span class="kw">let </span>x3 = load_ntt_avx2(rr.add(i), step);
 <span data-nosnippet>408</span>
@@ -323,14 +323,14 @@
 <span data-nosnippet>441</span>                <span class="kw">let </span>a0pa1 = add_scalar::&lt;M&gt;(a0, a1);
 <span data-nosnippet>442</span>                <span class="kw">let </span>a0na1 = sub_scalar::&lt;M&gt;(a0, a1);
 <span data-nosnippet>443</span>                <span class="kw">let </span>a2pa3 = add_scalar::&lt;M&gt;(a2, a3);
-<span data-nosnippet>444</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a2, a3), iimag);
+<span data-nosnippet>444</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(<a href="../../../algebra/lazy_map.rs.html#8">sub_scalar</a>::&lt;M&gt;(a2, a3), iimag);
 <span data-nosnippet>445</span>                <span class="kw-2">*</span>ll.add(i) = add_scalar::&lt;M&gt;(a0pa1, a2pa3);
 <span data-nosnippet>446</span>                <span class="kw-2">*</span>lr.add(i) = mul_scalar::&lt;M&gt;(add_scalar::&lt;M&gt;(a0na1, a2na3iimag), w1);
 <span data-nosnippet>447</span>                <span class="kw-2">*</span>rl.add(i) = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
 <span data-nosnippet>448</span>                <span class="kw-2">*</span>rr.add(i) = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
 <span data-nosnippet>449</span>                i += <span class="number">1</span>;
 <span data-nosnippet>450</span>            }
-<span data-nosnippet>451</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
+<span data-nosnippet>451</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::<a href="../../../num/zero_one.rs.html#1-14">INFO</a>.inv_rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
 <span data-nosnippet>452</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
 <span data-nosnippet>453</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
 <span data-nosnippet>454</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
@@ -359,7 +359,7 @@
 <span data-nosnippet>477</span>        }
 <span data-nosnippet>478</span>    }
 <span data-nosnippet>479</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
-<span data-nosnippet>480</span>    <span class="kw">let </span>inv_vec = _mm256_set1_epi32(inv <span class="kw">as </span><a href="../../../algebra/lazy_map.rs.html#170">i32</a>);
+<span data-nosnippet>480</span>    <span class="kw">let </span>inv_vec = _mm256_set1_epi32(inv <span class="kw">as </span>i32);
 <span data-nosnippet>481</span>    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>482</span>    <span class="kw">while </span>i + <span class="number">8 </span>&lt;= a.len() {
 <span data-nosnippet>483</span>        <span class="kw">let </span>x = _mm256_loadu_si256(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);

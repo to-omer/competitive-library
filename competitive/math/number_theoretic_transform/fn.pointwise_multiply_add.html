@@ -300,7 +300,7 @@
 <span data-nosnippet>825</span>        (
 <span data-nosnippet>826</span>            Convolve::&lt;N1&gt;::transform(f.<span class="number">0</span>, npot),
 <span data-nosnippet>827</span>            Convolve::&lt;N2&gt;::transform(f.<span class="number">1</span>, npot),
-<span data-nosnippet>828</span>            Convolve::&lt;N3&gt;::transform(<a href="../algebra/lazy_map.rs.html#37">f</a>.<span class="number">2</span>, npot),
+<span data-nosnippet>828</span>            Convolve::&lt;N3&gt;::transform(f.<span class="number">2</span>, npot),
 <span data-nosnippet>829</span>        )
 <span data-nosnippet>830</span>    }
 <span data-nosnippet>831</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
@@ -372,7 +372,7 @@
 <span data-nosnippet>897</span>        <span class="kw">let </span>b = convert_crt_input(b, b_len);
 <span data-nosnippet>898</span>        reconstruct_mint_crt((
 <span data-nosnippet>899</span>            Convolve::&lt;N1&gt;::convolve(a.<span class="number">0</span>, b.<span class="number">0</span>),
-<span data-nosnippet>900</span>            Convolve::&lt;N2&gt;::convolve(a.<span class="number">1</span>, b.<span class="number">1</span>),
+<span data-nosnippet>900</span>            Convolve::&lt;N2&gt;::convolve(<a href="../algebra/lazy_map.rs.html#146">a</a>.<span class="number">1</span>, b.<span class="number">1</span>),
 <span data-nosnippet>901</span>            Convolve::&lt;N3&gt;::convolve(a.<span class="number">2</span>, b.<span class="number">2</span>),
 <span data-nosnippet>902</span>        ))
 <span data-nosnippet>903</span>    };
@@ -397,7 +397,7 @@
 <span data-nosnippet>922</span>    result
 <span data-nosnippet>923</span>}
 <span data-nosnippet>924</span>
-<span data-nosnippet>925</span><span class="kw">impl</span>&lt;N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(<a href="../num/zero_one.rs.html#15-28">u64</a>, (N1, N2, N3))&gt;
+<span data-nosnippet>925</span><span class="kw">impl</span>&lt;N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(u64, (N1, N2, N3))&gt;
 <span data-nosnippet>926</span><span class="kw">where
 <span data-nosnippet>927</span>    </span>N1: Montgomery32NttModulus,
 <span data-nosnippet>928</span>    N2: Montgomery32NttModulus,
@@ -463,7 +463,7 @@
 <span data-nosnippet>988</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>989</span>        <span class="kw">let </span>m2 = m1 * N2::get_mod() <span class="kw">as </span>u64;
 <span data-nosnippet>990</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0u64</span>; len.min(f.<span class="number">0</span>[<span class="number">0</span>].len())];
-<span data-nosnippet>991</span>        <span class="kw">for </span>(part, ((f1, f2), f3)) <span class="kw">in </span>f.<span class="number">0</span>.into_iter().zip(f.<span class="number">1</span>).zip(f.<span class="number">2</span>).enumerate() {
+<span data-nosnippet>991</span>        <span class="kw">for </span>(part, ((f1, f2), f3)) <span class="kw">in </span>f.<span class="number">0</span>.into_iter().zip(<a href="../algebra/lazy_map.rs.html#244">f</a>.<span class="number">1</span>).zip(f.<span class="number">2</span>).enumerate() {
 <span data-nosnippet>992</span>            <span class="kw">if </span>f1.is_empty() {
 <span data-nosnippet>993</span>                <span class="kw">continue</span>;
 <span data-nosnippet>994</span>            }
@@ -509,7 +509,7 @@
 <span data-nosnippet>1034</span>                        Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>product, <span class="kw-2">&amp;</span>g[part - left]);
 <span data-nosnippet>1035</span>                        <span class="kw">for </span>(value, product) <span class="kw">in </span>sum.iter_mut().zip(product) {
 <span data-nosnippet>1036</span>                            <span class="comment">// Block products contain lazy Montgomery residues.
-<span data-nosnippet>1037</span>                            </span><span class="kw-2">*</span>value = MInt::new(<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">value</a>.inner() + product.inner());
+<span data-nosnippet>1037</span>                            </span><span class="kw-2">*</span>value = MInt::new(value.inner() + product.inner());
 <span data-nosnippet>1038</span>                        }
 <span data-nosnippet>1039</span>                    }
 <span data-nosnippet>1040</span>                    f[part] = sum;
@@ -546,7 +546,7 @@
 <span data-nosnippet>1071</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1072</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1073</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">300</span>, <span class="number">64</span>), (<span class="number">1536</span>, <span class="number">512</span>));
-<span data-nosnippet>1074</span>        <span class="kw">if </span>max_len &lt;= balanced || min_len &lt;= short {
+<span data-nosnippet>1074</span>        <span class="kw">if </span><a href="../num/bounded.rs.html#2-17">max_len</a> &lt;= balanced || min_len &lt;= short {
 <span data-nosnippet>1075</span>            <span class="kw">let </span>a_wrapping: <span class="kw-2">&amp;</span>[Wrapping&lt;u64&gt;] =
 <span data-nosnippet>1076</span>                <span class="kw">unsafe </span>{ std::slice::from_raw_parts(a.as_ptr().cast(), a.len()) };
 <span data-nosnippet>1077</span>            <span class="kw">let </span>b_wrapping: <span class="kw-2">&amp;</span>[Wrapping&lt;u64&gt;] =
@@ -572,15 +572,15 @@
 <span data-nosnippet>1097</span>            <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
 <span data-nosnippet>1098</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1099</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
-<span data-nosnippet>1100</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.<a href="../num/zero_one.rs.html#2">iter</a>().enumerate() {
+<span data-nosnippet>1100</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
 <span data-nosnippet>1101</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
-<span data-nosnippet>1102</span>                            <span class="kw-2">*</span>value = value.wrapping_add(a.wrapping_mul(b));
+<span data-nosnippet>1102</span>                            <span class="kw-2">*</span>value = <a href="../algebra/magma.rs.html#4-18">value</a>.wrapping_add(a.wrapping_mul(b));
 <span data-nosnippet>1103</span>                        }
 <span data-nosnippet>1104</span>                    }
 <span data-nosnippet>1105</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>1106</span>                }
 <span data-nosnippet>1107</span>                <span class="kw">let </span>product = convolve_u64_fft(a.to_vec(), b.to_vec());
-<span data-nosnippet>1108</span>                <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
+<span data-nosnippet>1108</span>                <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + <a href="../algebra/lazy_map.rs.html#439">j</a>) * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>1109</span>                    <span class="kw-2">*</span>value = value.wrapping_add(product);
 <span data-nosnippet>1110</span>                }
 <span data-nosnippet>1111</span>            }
@@ -600,7 +600,7 @@
 <span data-nosnippet>1125</span><span class="kw">fn </span>convolve_u64_fft_scalar(a: Vec&lt;u64&gt;, b: Vec&lt;u64&gt;) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>1126</span>    <span class="kw">fn </span>split(values: <span class="kw-2">&amp;</span>[u64]) -&gt; [Vec&lt;i64&gt;; <span class="number">5</span>] {
 <span data-nosnippet>1127</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = std::array::from_fn(|<span class="kw">_</span>| Vec::with_capacity(values.len()));
-<span data-nosnippet>1128</span>        <span class="kw">for </span><span class="kw-2">mut </span>value <span class="kw">in </span>values.<a href="../num/zero_one.rs.html#1-14">iter</a>().copied() {
+<span data-nosnippet>1128</span>        <span class="kw">for </span><span class="kw-2">mut </span>value <span class="kw">in </span>values.iter().copied() {
 <span data-nosnippet>1129</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>result {
 <span data-nosnippet>1130</span>                <span class="kw">let </span>digit = ((value &lt;&lt; <span class="number">51</span>) <span class="kw">as </span>i64) &gt;&gt; <span class="number">51</span>;
 <span data-nosnippet>1131</span>                part.push(digit);
@@ -613,7 +613,7 @@
 <span data-nosnippet>1138</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
 <span data-nosnippet>1139</span>    <span class="kw">let </span>transform = |values: <span class="kw-2">&amp;</span>[u64]| {
 <span data-nosnippet>1140</span>        <span class="kw">if </span>values.iter().any(|<span class="kw-2">&amp;</span>value| value &gt; u32::MAX <span class="kw">as </span>u64) {
-<span data-nosnippet>1141</span>            <span class="kw">return </span>split(values).map(|part| <a href="../algebra/lazy_map.rs.html#462-471">ConvolveRealFft::transform</a>(part, len));
+<span data-nosnippet>1141</span>            <span class="kw">return </span>split(values).map(|part| ConvolveRealFft::transform(part, len));
 <span data-nosnippet>1142</span>        }
 <span data-nosnippet>1143</span>        <span class="kw">let </span>[a, b, c, <span class="kw">_</span>, <span class="kw">_</span>] = split(values);
 <span data-nosnippet>1144</span>        <span class="kw">let </span>a = ConvolveRealFft::transform(a, len);
@@ -669,7 +669,7 @@
 <span data-nosnippet>1194</span>    <span class="doccomment">/// Extends a value produced by `transform_ntt` to twice its length.
 <span data-nosnippet>1195</span>    /// If `monic`, the input represents a monic degree-`n` polynomial modulo
 <span data-nosnippet>1196</span>    /// `x^n - 1`, where `n` is the transform length.
-<span data-nosnippet>1197</span>    </span><span class="kw">fn </span>ntt_doubling(f: <a href="../num/bounded.rs.html#3"><span class="self">Self</span>::F</a>, monic: bool) -&gt; <span class="self">Self</span>::F;
+<span data-nosnippet>1197</span>    </span><span class="kw">fn </span>ntt_doubling(f: <span class="self">Self</span>::F, monic: bool) -&gt; <span class="self">Self</span>::F;
 <span data-nosnippet>1198</span>
 <span data-nosnippet>1199</span>    <span class="doccomment">/// Extracts the even coefficients of `a(x) * b(-x)` in the usual NTT frequency order.
 <span data-nosnippet>1200</span>    </span><span class="kw">fn </span>even_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F;
@@ -715,16 +715,16 @@
 <span data-nosnippet>1240</span>}
 <span data-nosnippet>1241</span>
 <span data-nosnippet>1242</span><span class="macro">thread_local!</span>(
-<span data-nosnippet>1243</span>    <span class="kw">static </span>BIT_REVERSE: UnsafeCell&lt;Vec&lt;Vec&lt;usize&gt;&gt;&gt; = <span class="kw">const </span>{ UnsafeCell::new(<span class="macro">vec!</span>[]) };
+<span data-nosnippet>1243</span>    <span class="kw">static </span>BIT_REVERSE: UnsafeCell&lt;<a href="../algebra/lazy_map.rs.html#632">Vec</a>&lt;Vec&lt;usize&gt;&gt;&gt; = <span class="kw">const </span>{ UnsafeCell::new(<span class="macro">vec!</span>[]) };
 <span data-nosnippet>1244</span>);
 <span data-nosnippet>1245</span>
-<span data-nosnippet>1246</span><span class="kw">impl</span>&lt;M&gt; NttReuse <span class="kw">for </span>Convolve&lt;<a href="../algebra/lazy_map.rs.html#640">M</a>&gt;
+<span data-nosnippet>1246</span><span class="kw">impl</span>&lt;M&gt; NttReuse <span class="kw">for </span>Convolve&lt;M&gt;
 <span data-nosnippet>1247</span><span class="kw">where
 <span data-nosnippet>1248</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>1249</span>{
 <span data-nosnippet>1250</span>    <span class="kw">const </span>MULTIPLE: bool = <span class="bool-val">false</span>;
 <span data-nosnippet>1251</span>
-<span data-nosnippet>1252</span>    <span class="kw">fn </span>transform_ntt(<span class="kw-2">mut </span>t: <span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#616">T</a>, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>1252</span>    <span class="kw">fn </span>transform_ntt(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>1253</span>        t.resize_with(len.max(<span class="number">1</span>).next_power_of_two(), Zero::zero);
 <span data-nosnippet>1254</span>        ntt(<span class="kw-2">&amp;mut </span>t);
 <span data-nosnippet>1255</span>        t

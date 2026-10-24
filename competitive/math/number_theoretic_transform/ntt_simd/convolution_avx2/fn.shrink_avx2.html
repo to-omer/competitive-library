@@ -215,7 +215,7 @@
 <span data-nosnippet>183</span>                y2 = normalize_avx2(y2, modulus, modulus2);
 <span data-nosnippet>184</span>                y3 = normalize_avx2(y3, modulus, modulus2);
 <span data-nosnippet>185</span>            }
-<span data-nosnippet>186</span>            store_block_avx2(<a href="../../../algebra/action.rs.html#23">a</a>, <a href="../../../algebra/action.rs.html#23">i</a>, y0);
+<span data-nosnippet>186</span>            store_block_avx2(a, i, y0);
 <span data-nosnippet>187</span>            store_block_avx2(a, size + i, y1);
 <span data-nosnippet>188</span>            store_block_avx2(a, size * <span class="number">2 </span>+ i, y2);
 <span data-nosnippet>189</span>            store_block_avx2(a, size * <span class="number">3 </span>+ i, y3);
@@ -340,7 +340,7 @@
 <span data-nosnippet>308</span>                i + <span class="number">3</span>,
 <span data-nosnippet>309</span>                normalize_avx2(lazy_sub_avx2(h2, h3, modulus2), modulus, modulus2),
 <span data-nosnippet>310</span>            );
-<span data-nosnippet>311</span>            i += <span class="number">4</span>;
+<span data-nosnippet>311</span>            <a href="../../../algebra/lazy_map.rs.html#142">i</a> += <span class="number">4</span>;
 <span data-nosnippet>312</span>        }
 <span data-nosnippet>313</span>        roots[<span class="number">0</span>] = root;
 <span data-nosnippet>314</span>
@@ -364,7 +364,7 @@
 <span data-nosnippet>332</span>    <span class="kw">let </span>imag = _mm256_set1_epi32(M::INFO.root[<span class="number">2</span>] <span class="kw">as </span>i32);
 <span data-nosnippet>333</span>    <span class="kw">let </span>imag_r = _mm256_set1_epi32(M::INFO.root[<span class="number">2</span>].wrapping_mul(M::R) <span class="kw">as </span>i32);
 <span data-nosnippet>334</span>    <span class="kw">let </span>root_indices = _mm256_setr_epi32(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">4</span>);
-<span data-nosnippet>335</span>    <span class="kw">let </span>root3 = <a href="../../../algebra/lazy_map.rs.html#173">M</a>::INFO.inv_root[<span class="number">3</span>];
+<span data-nosnippet>335</span>    <span class="kw">let </span>root3 = M::INFO.inv_root[<span class="number">3</span>];
 <span data-nosnippet>336</span>    <span class="kw">let </span>root2 = M::INFO.inv_root[<span class="number">2</span>];
 <span data-nosnippet>337</span>    <span class="kw">let </span>initial_root = _mm256_setr_epi32(
 <span data-nosnippet>338</span>        root3 <span class="kw">as </span>i32,
@@ -434,11 +434,11 @@
 <span data-nosnippet>402</span>        }
 <span data-nosnippet>403</span>        roots[<span class="number">0</span>] = root;
 <span data-nosnippet>404</span>
-<span data-nosnippet>405</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../../algebra/action.rs.html#75-77">group_len</a> = <span class="number">16usize</span>;
+<span data-nosnippet>405</span>        <span class="kw">let </span><span class="kw-2">mut </span>group_len = <span class="number">16usize</span>;
 <span data-nosnippet>406</span>        <span class="kw">let </span><span class="kw-2">mut </span>quarter = <span class="number">4usize</span>;
 <span data-nosnippet>407</span>        <span class="kw">while </span>stage_log &lt;= max_stage_log {
 <span data-nosnippet>408</span>            <span class="kw">let </span>offset = tile + tile_len - group_len.max(tile_len);
-<span data-nosnippet>409</span>            <span class="kw">let </span>base = a.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">add</a>(offset &lt;&lt; <span class="number">3</span>);
+<span data-nosnippet>409</span>            <span class="kw">let </span>base = a.add(offset &lt;&lt; <span class="number">3</span>);
 <span data-nosnippet>410</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>411</span>            <span class="kw">let </span><span class="kw-2">mut </span>root = roots[root_slot];
 <span data-nosnippet>412</span>            <span class="kw">if </span>offset == <span class="number">0 </span>{
@@ -473,7 +473,7 @@
 <span data-nosnippet>441</span>                    store_block_avx2(a, i, y0);
 <span data-nosnippet>442</span>                    store_block_avx2(a, quarter + i, y1);
 <span data-nosnippet>443</span>                    store_block_avx2(a, quarter * <span class="number">2 </span>+ i, y2);
-<span data-nosnippet>444</span>                    store_block_avx2(<a href="../../../algebra/lazy_map.rs.html#322">a</a>, quarter * <span class="number">3 </span>+ i, y3);
+<span data-nosnippet>444</span>                    store_block_avx2(a, quarter * <span class="number">3 </span>+ i, y3);
 <span data-nosnippet>445</span>                    i += <span class="number">1</span>;
 <span data-nosnippet>446</span>                }
 <span data-nosnippet>447</span>                i = group_len;
@@ -539,7 +539,7 @@
 <span data-nosnippet>507</span>        tile += tile_len;
 <span data-nosnippet>508</span>    }
 <span data-nosnippet>509</span>
-<span data-nosnippet>510</span>    <span class="kw">if </span>nn != n {
+<span data-nosnippet>510</span>    <span class="kw">if </span>nn != <a href="../../../algebra/lazy_map.rs.html#439">n</a> {
 <span data-nosnippet>511</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>512</span>        <span class="kw">while </span>i &lt; nn {
 <span data-nosnippet>513</span>            <span class="kw">let </span>x0 = load_block_avx2(a, i);
@@ -596,7 +596,7 @@
 <span data-nosnippet>564</span>        .into_iter()
 <span data-nosnippet>565</span>        .enumerate()
 <span data-nosnippet>566</span>        {
-<span data-nosnippet>567</span>            <span class="kw">let </span>k = i + j;
+<span data-nosnippet>567</span>            <span class="kw">let </span><a href="../../../algebra/lazy_map.rs.html#511">k</a> = i + j;
 <span data-nosnippet>568</span>            <span class="kw">let </span>ff = load_block_avx2(f, k);
 <span data-nosnippet>569</span>            <span class="comment">// fw &lt; 5 * MOD / 4, so the eight-product sum still reduces below 7 * MOD / 2.
 <span data-nosnippet>570</span>            </span><span class="kw">let </span>fw = <span class="highlight">shrink_avx2</span>(
@@ -613,7 +613,7 @@
 <span data-nosnippet>581</span>        }
 <span data-nosnippet>582</span>        <span class="kw">let </span><span class="kw-2">mut </span>even = [_mm256_setzero_si256(); <span class="number">4</span>];
 <span data-nosnippet>583</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd = [_mm256_setzero_si256(); <span class="number">4</span>];
-<span data-nosnippet>584</span>        <span class="kw">let </span><span class="kw-2">mut </span>l = <span class="number">0</span>;
+<span data-nosnippet>584</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../../algebra/lazy_map.rs.html#511">l</a> = <span class="number">0</span>;
 <span data-nosnippet>585</span>        <span class="kw">while </span>l &lt; <span class="number">8 </span>{
 <span data-nosnippet>586</span>            <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
 <span data-nosnippet>587</span>            <span class="kw">while </span>j &lt; <span class="number">4 </span>{

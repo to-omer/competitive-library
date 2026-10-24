@@ -278,7 +278,7 @@
 <span data-nosnippet>264</span>                    <span class="kw">return</span>;
 <span data-nosnippet>265</span>                }
 <span data-nosnippet>266</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(pivot) = (r..n).find(|<span class="kw-2">&amp;</span>p| !R::is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>[p][c])) {
-<span data-nosnippet>267</span>                    f(r, pivot, c);
+<span data-nosnippet>267</span>                    f(r, pivot, <a href="../algebra/action.rs.html#20">c</a>);
 <span data-nosnippet>268</span>                    <span class="self">self</span>.data.swap(r, pivot);
 <span data-nosnippet>269</span>                    <span class="kw">break</span>;
 <span data-nosnippet>270</span>                };
@@ -364,7 +364,7 @@
 <span data-nosnippet>350</span>            <span class="kw">for </span>x <span class="kw">in </span>pivot_coefficients.iter_mut() {
 <span data-nosnippet>351</span>                R::mul_assign(x, <span class="kw-2">&amp;</span>inv);
 <span data-nosnippet>352</span>            }
-<span data-nosnippet>353</span>            <span class="kw">for </span>((row, value), coefficients) <span class="kw">in </span><a href="../algebra/lazy_map.rs.html#41">a</a>.data[..k].iter_mut().zip(<span class="kw-2">&amp;mut </span>b[..k]).zip(upper) {
+<span data-nosnippet>353</span>            <span class="kw">for </span>((row, value), coefficients) <span class="kw">in </span>a.data[..k].iter_mut().zip(<span class="kw-2">&amp;mut </span><a href="../algebra/lazy_map.rs.html#41">b</a>[..k]).zip(upper) {
 <span data-nosnippet>354</span>                <span class="kw">if </span>R::is_zero(<span class="kw-2">&amp;</span>row[c]) {
 <span data-nosnippet>355</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>356</span>                }
@@ -382,7 +382,7 @@
 <span data-nosnippet>368</span>        <span class="kw">let </span><span class="kw-2">mut </span>basis = Vec::with_capacity(free.len());
 <span data-nosnippet>369</span>        <span class="kw">for </span>(j, <span class="kw-2">&amp;</span>c) <span class="kw">in </span>free.iter().enumerate() {
 <span data-nosnippet>370</span>            <span class="kw">let </span><span class="kw-2">mut </span>vector = <span class="macro">vec!</span>[R::zero(); m];
-<span data-nosnippet>371</span>            vector[c] = R::one();
+<span data-nosnippet>371</span>            vector[<a href="../algebra/lazy_map.rs.html#67">c</a>] = R::one();
 <span data-nosnippet>372</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..rank {
 <span data-nosnippet>373</span>                vector[pivots[i]] = R::neg(<span class="kw-2">&amp;</span>coefficients[i][j]);
 <span data-nosnippet>374</span>            }
@@ -431,9 +431,9 @@
 <span data-nosnippet>417</span>            <span class="kw">let </span>pivot = (r..n).find(|<span class="kw-2">&amp;</span>i| !R::is_zero(<span class="kw-2">&amp;</span>a[i][r]))<span class="question-mark">?</span>;
 <span data-nosnippet>418</span>            a.data.swap(r, pivot);
 <span data-nosnippet>419</span>            inverse.data.swap(r, pivot);
-<span data-nosnippet>420</span>            ranges.swap(<a href="../algebra/lazy_map.rs.html#146">r</a>, pivot);
+<span data-nosnippet>420</span>            ranges.swap(r, pivot);
 <span data-nosnippet>421</span>
-<span data-nosnippet>422</span>            <span class="kw">let </span>d = R::inv(<span class="kw-2">&amp;</span>a[r][r]);
+<span data-nosnippet>422</span>            <span class="kw">let </span>d = R::inv(<span class="kw-2">&amp;</span>a[<a href="../algebra/lazy_map.rs.html#142">r</a>][r]);
 <span data-nosnippet>423</span>            <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>a[r][r..] {
 <span data-nosnippet>424</span>                R::mul_assign(x, <span class="kw-2">&amp;</span>d);
 <span data-nosnippet>425</span>            }
@@ -454,7 +454,7 @@
 <span data-nosnippet>440</span>                }
 <span data-nosnippet>441</span>                <span class="kw">let </span>e = a[r].clone();
 <span data-nosnippet>442</span>                a[r] = R::zero();
-<span data-nosnippet>443</span>                R::add_scaled_assign(<span class="kw-2">&amp;mut </span>a[(r + <span class="number">1</span>)..], <span class="kw-2">&amp;</span>pivot_a[(r + <span class="number">1</span>)..], <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>e));
+<span data-nosnippet>443</span>                R::add_scaled_assign(<span class="kw-2">&amp;mut </span>a[(r + <span class="number">1</span>)..], <span class="kw-2">&amp;</span>pivot_a[(r + <span class="number">1</span>)..], <span class="kw-2">&amp;</span>R::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">neg</a>(<span class="kw-2">&amp;</span>e));
 <span data-nosnippet>444</span>                R::add_scaled_assign(
 <span data-nosnippet>445</span>                    <span class="kw-2">&amp;mut </span>inverse[left..right],
 <span data-nosnippet>446</span>                    <span class="kw-2">&amp;</span>pivot_inverse[left..right],
@@ -495,7 +495,7 @@
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data.iter().all(|a| a.len() == n));
 <span data-nosnippet>483</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..(n - <span class="number">1</span>) {
-<span data-nosnippet>484</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = ((j + <span class="number">1</span>)..n).find(|<span class="kw-2">&amp;</span>x| !R::is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>[x][j])) {
+<span data-nosnippet>484</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = ((j + <span class="number">1</span>)..n).find(|<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#222">x</a>| !R::is_zero(<span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>[x][j])) {
 <span data-nosnippet>485</span>                <span class="self">self</span>.data.swap(j + <span class="number">1</span>, x);
 <span data-nosnippet>486</span>                <span class="self">self</span>.data.iter_mut().for_each(|a| a.swap(j + <span class="number">1</span>, x));
 <span data-nosnippet>487</span>                <span class="kw">let </span>inv = R::inv(<span class="kw-2">&amp;</span><span class="self">self</span>[j + <span class="number">1</span>][j]);
@@ -514,7 +514,7 @@
 <span data-nosnippet>500</span>            }
 <span data-nosnippet>501</span>        }
 <span data-nosnippet>502</span>        <span class="comment">// dp[k][j - k] stores [x^k] det(xI - A[..j, ..j]).
-<span data-nosnippet>503</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>dp: Vec&lt;Vec&lt;R::T&gt;&gt; = (<span class="number">0</span>..=n).map(|i| Vec::with_capacity(n + <span class="number">1 </span>- i)).collect();
+<span data-nosnippet>503</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>dp: Vec&lt;Vec&lt;R::T&gt;&gt; = (<span class="number">0</span>..=n).<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">map</a>(|i| Vec::with_capacity(n + <span class="number">1 </span>- i)).collect();
 <span data-nosnippet>504</span>        dp[<span class="number">0</span>].push(R::one());
 <span data-nosnippet>505</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
 <span data-nosnippet>506</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[R::zero(); i + <span class="number">1</span>];
@@ -533,7 +533,7 @@
 <span data-nosnippet>519</span>            }
 <span data-nosnippet>520</span>            dp[i + <span class="number">1</span>].push(R::one());
 <span data-nosnippet>521</span>        }
-<span data-nosnippet>522</span>        dp.into_iter().map(|<span class="kw-2">mut </span>c| c.pop().unwrap()).collect()
+<span data-nosnippet>522</span>        dp.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">map</a>(|<span class="kw-2">mut </span>c| c.pop().unwrap()).collect()
 <span data-nosnippet>523</span>    }
 <span data-nosnippet>524</span>}
 <span data-nosnippet>525</span>
@@ -612,7 +612,7 @@
 <span data-nosnippet>598</span>            $($(<span class="macro-nonterminal">$clauses</span>)<span class="kw-2">*</span>)<span class="question-mark">?
 <span data-nosnippet>599</span>        </span>{
 <span data-nosnippet>600</span>            <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>601</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, <a href="../algebra/lazy_map.rs.html#349">rhs</a>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>601</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>602</span>                <span class="self">self</span>.<span class="macro-nonterminal">$method_assign</span>(rhs);
 <span data-nosnippet>603</span>                <span class="self">self
 <span data-nosnippet>604</span>            </span>}
@@ -643,7 +643,7 @@
 <span data-nosnippet>629</span>    };
 <span data-nosnippet>630</span>}
 <span data-nosnippet>631</span>
-<span data-nosnippet>632</span><span class="macro">impl_matrix_pairwise_binop!</span>(Add, <a href="../algebra/lazy_map.rs.html#379">add</a>, AddAssign, add_assign);
+<span data-nosnippet>632</span><span class="macro">impl_matrix_pairwise_binop!</span>(Add, add, AddAssign, add_assign);
 <span data-nosnippet>633</span><span class="macro">impl_matrix_pairwise_binop!</span>(Sub, sub, SubAssign, sub_assign <span class="kw">where </span>[R: SemiRing&lt;Additive: Invertible&gt;]);
 <span data-nosnippet>634</span>
 <span data-nosnippet>635</span><span class="kw">impl</span>&lt;R&gt; Mul <span class="kw">for </span>Matrix&lt;R&gt;
@@ -678,7 +678,7 @@
 <span data-nosnippet>664</span>    </span>R: SemiRing,
 <span data-nosnippet>665</span>{
 <span data-nosnippet>666</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>667</span>    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;<a href="../algebra/lazy_map.rs.html#409">R</a>&gt;) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>667</span>    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>668</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, rhs.shape.<span class="number">0</span>);
 <span data-nosnippet>669</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = R::try_matrix_product(<span class="kw-2">&amp;</span><span class="self">self</span>.data, <span class="kw-2">&amp;</span>rhs.data) {
 <span data-nosnippet>670</span>            <span class="kw">return </span>Matrix::from_vec(data);
@@ -823,7 +823,7 @@
 <span data-nosnippet>656</span>        <span class="kw">if </span>!<span class="self">self</span>.prefixes.is_empty() &amp;&amp; !<span class="self">self</span>.suffixes.is_empty() &amp;&amp; F::is_zero(<span class="kw-2">&amp;</span>h[<span class="number">0</span>][<span class="number">0</span>]) {
 <span data-nosnippet>657</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">1</span>..<span class="self">self</span>.suffixes.len() {
 <span data-nosnippet>658</span>                <span class="kw">if </span>!F::is_zero(<span class="kw-2">&amp;</span>h[<span class="number">0</span>][j]) {
-<span data-nosnippet>659</span>                    <a class="self" href="../algebra/ring.rs.html#1-164">self</a>.suffixes.swap(<span class="number">0</span>, j);
+<span data-nosnippet>659</span>                    <span class="self">self</span>.suffixes.swap(<span class="number">0</span>, j);
 <span data-nosnippet>660</span>                    <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>h.data {
 <span data-nosnippet>661</span>                        row.swap(<span class="number">0</span>, j);
 <span data-nosnippet>662</span>                    }
@@ -844,7 +844,7 @@
 <span data-nosnippet>677</span>            new_suffixes.push(<span class="self">self</span>.suffixes[j].clone());
 <span data-nosnippet>678</span>        }
 <span data-nosnippet>679</span>        <span class="self">self</span>.prefixes = new_prefixes;
-<span data-nosnippet>680</span>        <span class="self">self</span>.suffixes = new_suffixes;
+<span data-nosnippet>680</span>        <span class="self">self</span>.<a href="../../../../../algebra/struct.EmptyAct.html">suffixes</a> = new_suffixes;
 <span data-nosnippet>681</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.prefixes.len(), <span class="self">self</span>.suffixes.len());
 <span data-nosnippet>682</span>        <span class="kw">let </span>n = <span class="self">self</span>.prefixes.len();
 <span data-nosnippet>683</span>        <span class="kw">let </span>h = <span class="highlight">Matrix::&lt;F&gt;::new_with</span>((n, n), |i, j| {
@@ -1224,7 +1224,7 @@
 <span data-nosnippet>609</span>            $($(<span class="macro-nonterminal">$clauses</span>)<span class="kw-2">*</span>)<span class="question-mark">?
 <span data-nosnippet>610</span>        </span>{
 <span data-nosnippet>611</span>            <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>612</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, <span class="kw-2">mut </span>rhs: Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>612</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, <span class="kw-2">mut </span>rhs: Matrix&lt;<a href="../algebra/lazy_map.rs.html#33">R</a>&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>613</span>                rhs.pairwise_assign(<span class="self">self</span>, |a, b| <span class="kw-2">*</span>a = R::<span class="macro-nonterminal">$method</span>(b, a));
 <span data-nosnippet>614</span>                rhs
 <span data-nosnippet>615</span>            }
@@ -1372,11 +1372,11 @@
 <span data-nosnippet>757</span>
 <span data-nosnippet>758</span>    <span class="comment">// (A11 + A22)(B11 + B22)
 <span data-nosnippet>759</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a22..], s1, k, stride_a, stride_a);
-<span data-nosnippet>760</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b11..], <span class="kw-2">&amp;</span>b[b22..], s2, w, stride_b, stride_b);
+<span data-nosnippet>760</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[<a href="../num/zero_one.rs.html#15-28">b11</a>..], <span class="kw-2">&amp;</span>b[b22..], s2, w, stride_b, stride_b);
 <span data-nosnippet>761</span>    strassen_rec::&lt;R&gt;(s1, s2, m1, (h, k, w), k, w);
 <span data-nosnippet>762</span>
 <span data-nosnippet>763</span>    <span class="comment">// (A21 + A22) B11
-<span data-nosnippet>764</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a21..], <span class="kw-2">&amp;</span>a[a22..], s1, k, stride_a, stride_a);
+<span data-nosnippet>764</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[<a href="../algebra/action.rs.html#12">a21</a>..], <span class="kw-2">&amp;</span>a[a22..], s1, k, stride_a, stride_a);
 <span data-nosnippet>765</span>    strassen_rec::&lt;R&gt;(s1, <span class="kw-2">&amp;</span>b[b11..], m2, (h, k, w), k, stride_b);
 <span data-nosnippet>766</span>
 <span data-nosnippet>767</span>    <span class="comment">// A11 (B12 - B22)
@@ -1388,7 +1388,7 @@
 <span data-nosnippet>773</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a22..], s2, m4, (h, k, w), stride_a, w);
 <span data-nosnippet>774</span>
 <span data-nosnippet>775</span>    <span class="comment">// (A11 + A12) B22
-<span data-nosnippet>776</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a12..], s1, <a href="../algebra/lazy_map.rs.html#198">k</a>, stride_a, stride_a);
+<span data-nosnippet>776</span>    </span>add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], <span class="kw-2">&amp;</span>a[a12..], s1, k, stride_a, stride_a);
 <span data-nosnippet>777</span>    strassen_rec::&lt;R&gt;(s1, <span class="kw-2">&amp;</span>b[b22..], m5, (h, k, w), k, stride_b);
 <span data-nosnippet>778</span>
 <span data-nosnippet>779</span>    <span class="comment">// (A21 - A11)(B11 + B12)
@@ -1448,7 +1448,7 @@
 <span data-nosnippet>833</span>    </span>R: Ring,
 <span data-nosnippet>834</span>{
 <span data-nosnippet>835</span>    <span class="kw">pub fn </span>mul_strassen(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; Matrix&lt;R&gt; {
-<span data-nosnippet>836</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, rhs.shape.<span class="number">0</span>);
+<span data-nosnippet>836</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">rhs</a>.shape.<span class="number">0</span>);
 <span data-nosnippet>837</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = R::try_matrix_product(<span class="kw-2">&amp;</span><span class="self">self</span>.data, <span class="kw-2">&amp;</span>rhs.data) {
 <span data-nosnippet>838</span>            <span class="kw">return </span>Matrix::from_vec(data);
 <span data-nosnippet>839</span>        }
@@ -1525,7 +1525,7 @@
 <span data-nosnippet>910</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
 <span data-nosnippet>911</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="highlight">Matrix::eye</span>(<span class="self">self</span>.shape);
 <span data-nosnippet>912</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>;
-<span data-nosnippet>913</span>        <span class="kw">while </span>n &gt; <span class="number">0 </span>{
+<span data-nosnippet>913</span>        <span class="kw">while </span><a href="../algebra/lazy_map.rs.html#322">n</a> &gt; <span class="number">0 </span>{
 <span data-nosnippet>914</span>            <span class="kw">if </span>n &amp; <span class="number">1 </span>== <span class="number">1 </span>{
 <span data-nosnippet>915</span>                res = <span class="kw-2">&amp;</span>res * <span class="kw-2">&amp;</span>x;
 <span data-nosnippet>916</span>            }

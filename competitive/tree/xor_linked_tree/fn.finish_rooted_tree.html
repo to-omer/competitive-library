@@ -284,7 +284,7 @@
 <span data-nosnippet>566</span>    O: XorBottomUpOrderComponent,
 <span data-nosnippet>567</span>{
 <span data-nosnippet>568</span>    <span class="kw">pub fn </span>edge_child(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: usize) -&gt; usize {
-<span data-nosnippet>569</span>        <span class="self">self</span>.edge_child[eid]
+<span data-nosnippet>569</span>        <span class="self">self</span>.<a href="../../../../../algebra/struct.FlattenAct.html">edge_child</a>[eid]
 <span data-nosnippet>570</span>    }
 <span data-nosnippet>571</span>    <span class="kw">pub fn </span>edge_children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
 <span data-nosnippet>572</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.edge_child
@@ -317,7 +317,7 @@
 <span data-nosnippet>599</span>    D = NoDfsPreorder,
 <span data-nosnippet>600</span>    H = NoDepth,
 <span data-nosnippet>601</span>    PE = NoParentEdge,
-<span data-nosnippet>602</span>    EC = <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">NoEdgeChild</a>,
+<span data-nosnippet>602</span>    EC = NoEdgeChild,
 <span data-nosnippet>603</span>    X = NoXorBottomUpOrder,
 <span data-nosnippet>604</span>    B = NoXorBottomUpOrder,
 <span data-nosnippet>605</span>    E = NoEIndexed,
@@ -344,7 +344,7 @@
 <span data-nosnippet>626</span>    }
 <span data-nosnippet>627</span>}
 <span data-nosnippet>628</span>
-<span data-nosnippet>629</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B, <a href="../algebra/magma.rs.html#6">E</a>&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, E&gt;
+<span data-nosnippet>629</span><span class="kw">impl</span>&lt;U, T, P, D, H, PE, EC, X, B, E&gt; XorLinkedRootedTreeScanner&lt;U, T, P, D, H, PE, EC, X, B, E&gt;
 <span data-nosnippet>630</span><span class="kw">where
 <span data-nosnippet>631</span>    </span>U: Scan&lt;Output = usize&gt;,
 <span data-nosnippet>632</span>    T: Scan,
@@ -354,7 +354,7 @@
 <span data-nosnippet>636</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, RecordParent, D, H, PE, EC, X, B, E&gt; {
 <span data-nosnippet>637</span>        XorLinkedRootedTreeScanner {
 <span data-nosnippet>638</span>            n: <span class="self">self</span>.n,
-<span data-nosnippet>639</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>639</span>            root: <a class="self" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">self</a>.root,
 <span data-nosnippet>640</span>            _marker: PhantomData,
 <span data-nosnippet>641</span>        }
 <span data-nosnippet>642</span>    }
@@ -468,14 +468,14 @@
 <span data-nosnippet>750</span>        Vec&lt;&lt;T <span class="kw">as </span>Scan&gt;::Output&gt;,
 <span data-nosnippet>751</span>    );
 <span data-nosnippet>752</span>
-<span data-nosnippet>753</span>    <span class="kw">fn </span>mscan&lt;I: ScanSource&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+<span data-nosnippet>753</span>    <span class="kw">fn </span>mscan&lt;I: ScanSource&gt;(<a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
 <span data-nosnippet>754</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
 <span data-nosnippet>755</span>        <span class="kw">let </span><span class="kw-2">mut </span>weights = Vec::with_capacity(<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>));
 <span data-nosnippet>756</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
 <span data-nosnippet>757</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
 <span data-nosnippet>758</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
 <span data-nosnippet>759</span>            acc.add_edge(u, v);
-<span data-nosnippet>760</span>            weights.push(T::<a href="../num/zero_one.rs.html#1-14">scan</a>(iter)<span class="question-mark">?</span>);
+<span data-nosnippet>760</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
 <span data-nosnippet>761</span>        }
 <span data-nosnippet>762</span>        <span class="prelude-val">Some</span>((
 <span data-nosnippet>763</span>            finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.n, <span class="self">self</span>.root, acc),
@@ -508,7 +508,7 @@
 <span data-nosnippet>790</span>        <span class="kw">for </span>eid <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
 <span data-nosnippet>791</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
 <span data-nosnippet>792</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
-<span data-nosnippet>793</span>            acc.add_edge(eid, u, v);
+<span data-nosnippet>793</span>            acc.add_edge(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">eid</a>, u, v);
 <span data-nosnippet>794</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
 <span data-nosnippet>795</span>        }
 <span data-nosnippet>796</span>        <span class="prelude-val">Some</span>((
@@ -524,7 +524,7 @@
 <span data-nosnippet>806</span>    acc: XorAccumulator,
 <span data-nosnippet>807</span>) -&gt; XorLinkedRootedTree&lt;P, D, H, NoParentEdge, NoEdgeChild, X&gt;
 <span data-nosnippet>808</span><span class="kw">where
-<span data-nosnippet>809</span>    </span>P: ParentComponent,
+<span data-nosnippet>809</span>    </span><a href="../algebra/lazy_map.rs.html#173">P</a>: ParentComponent,
 <span data-nosnippet>810</span>    D: DfsPreorderComponent,
 <span data-nosnippet>811</span>    H: DepthComponent,
 <span data-nosnippet>812</span>    X: BuildXorBottomUpOrder&lt;B&gt;,

@@ -269,7 +269,7 @@
 <span data-nosnippet>266</span>                <span class="kw">let </span>nimber = |g: <span class="kw-2">&amp;</span><span class="self">Self</span>| {
 <span data-nosnippet>267</span>                    g.as_number_nimber()
 <span data-nosnippet>268</span>                        .filter(|<span class="kw-2">&amp;</span>(q, <span class="kw">_</span>)| q == number)
-<span data-nosnippet>269</span>                        .map(|(<span class="kw">_</span>, n)| <a href="../../algebra/lazy_map.rs.html#33">n</a>)
+<span data-nosnippet>269</span>                        .map(|(<span class="kw">_</span>, n)| n)
 <span data-nosnippet>270</span>                };
 <span data-nosnippet>271</span>                <span class="kw">let </span>l: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = left.iter().map(nimber).collect();
 <span data-nosnippet>272</span>                <span class="kw">let </span>r: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = right.iter().map(nimber).collect();
@@ -331,7 +331,7 @@
 <span data-nosnippet>328</span>            <span class="kw">if </span>count != left.len() + right.len() {
 <span data-nosnippet>329</span>                <span class="kw">continue</span>;
 <span data-nosnippet>330</span>            }
-<span data-nosnippet>331</span>            <span class="kw">let </span>options = Rc::<a href="../../num/zero_one.rs.html#16">new</a>((left, right));
+<span data-nosnippet>331</span>            <span class="kw">let </span>options = Rc::new((left, right));
 <span data-nosnippet>332</span>            <span class="kw">let </span>game = <span class="self">Self</span>(GameValueNode::Options(<span class="number">0</span>.into(), options.clone()));
 <span data-nosnippet>333</span>            <span class="comment">// Bypasses preserve the game, so all checks use the same candidate.
 <span data-nosnippet>334</span>            </span><span class="kw">let </span><span class="kw-2">mut </span>reversible = Vec::new();
@@ -344,7 +344,7 @@
 <span data-nosnippet>341</span>                    <span class="kw">if let </span><span class="prelude-val">Some</span>((q, n)) = g.as_number_nimber()
 <span data-nosnippet>342</span>                        &amp;&amp; n &gt; <span class="number">1
 <span data-nosnippet>343</span>                    </span>{
-<span data-nosnippet>344</span>                        <span class="kw">let </span>number = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">from</a>(q);
+<span data-nosnippet>344</span>                        <span class="kw">let </span>number = <span class="self">Self</span>::from(q);
 <span data-nosnippet>345</span>                        <span class="kw">let </span>(lower, upper) = <span class="kw">match </span>player {
 <span data-nosnippet>346</span>                            Player::Left =&gt; (<span class="kw-2">&amp;</span>game, <span class="kw-2">&amp;</span>number),
 <span data-nosnippet>347</span>                            Player::Right =&gt; (<span class="kw-2">&amp;</span>number, <span class="kw-2">&amp;</span>game),
@@ -414,7 +414,7 @@
 <span data-nosnippet>411</span>                }
 <span data-nosnippet>412</span>            };
 <span data-nosnippet>413</span>        }
-<span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><a class="self" href="../../num/zero_one.rs.html#1-14">self</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
+<span data-nosnippet>414</span>        <span class="kw">if let </span>(GameValueNode::Options(a, g), GameValueNode::Options(b, h)) = (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>)
 <span data-nosnippet>415</span>            &amp;&amp; Rc::ptr_eq(g, h)
 <span data-nosnippet>416</span>        {
 <span data-nosnippet>417</span>            <span class="kw">return </span>a &lt;= b;
@@ -423,7 +423,7 @@
 <span data-nosnippet>420</span>        </span><span class="kw">let </span>offset = -<span class="self">self</span>.number_offset();
 <span data-nosnippet>421</span>        <span class="kw">let </span>left = <span class="self">self</span>.translated(offset).<span class="number">0</span>;
 <span data-nosnippet>422</span>        <span class="kw">let </span>right = rhs.translated(offset).<span class="number">0</span>;
-<span data-nosnippet>423</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>value) = cache.get(<span class="kw-2">&amp;</span>left).and_then(|row| row.get(<span class="kw-2">&amp;</span>right)) {
+<span data-nosnippet>423</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>value) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">cache</a>.get(<span class="kw-2">&amp;</span>left).and_then(|row| row.get(<span class="kw-2">&amp;</span>right)) {
 <span data-nosnippet>424</span>            <span class="kw">return </span>value;
 <span data-nosnippet>425</span>        }
 <span data-nosnippet>426</span>        <span class="comment">// Try explicit options before expanding a compact value.
@@ -494,7 +494,7 @@
 <span data-nosnippet>491</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q) = <span class="self">self</span>.as_number() {
 <span data-nosnippet>492</span>            <span class="kw">return </span>rhs.translated(q);
 <span data-nosnippet>493</span>        }
-<span data-nosnippet>494</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q) = rhs.as_number() {
+<span data-nosnippet>494</span>        <span class="kw">if let </span><a class="prelude-val" href="../../num/zero_one.rs.html#1-14">Some</a>(q) = rhs.as_number() {
 <span data-nosnippet>495</span>            <span class="kw">return </span><span class="self">self</span>.translated(q);
 <span data-nosnippet>496</span>        }
 <span data-nosnippet>497</span>        <span class="kw">if let </span>(<span class="prelude-val">Some</span>((a, k, n, ts)), <span class="prelude-val">Some</span>((b, l, m, us))) =
@@ -549,7 +549,7 @@
 <span data-nosnippet>546</span>    <span class="kw">fn </span>number_offset(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Dyadic&lt;i64&gt; {
 <span data-nosnippet>547</span>        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
 <span data-nosnippet>548</span>            GameValueNode::NumberUpNimber(q, ..) | GameValueNode::Options(q, <span class="kw">_</span>) =&gt; <span class="kw-2">*</span>q,
-<span data-nosnippet>549</span>            GameValueNode::Switches(v) =&gt; v.number,
+<span data-nosnippet>549</span>            GameValueNode::Switches(v) =&gt; <a href="../../algebra/lazy_map.rs.html#439">v</a>.number,
 <span data-nosnippet>550</span>        }
 <span data-nosnippet>551</span>    }
 <span data-nosnippet>552</span>
@@ -611,7 +611,7 @@
 <span data-nosnippet>608</span>        <span class="kw-2">mut </span>right: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[Dyadic&lt;i64&gt;],
 <span data-nosnippet>609</span>    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Dyadic&lt;i64&gt;&gt; + <span class="lifetime">'a </span>{
 <span data-nosnippet>610</span>        std::iter::from_fn(<span class="kw">move </span>|| {
-<span data-nosnippet>611</span>            <span class="kw">while let </span>(<span class="prelude-val">Some</span>(a), <span class="prelude-val">Some</span>(b)) = (left.first(), right.first()) {
+<span data-nosnippet>611</span>            <span class="kw">while let </span>(<span class="prelude-val">Some</span>(<a href="../../algebra/lazy_map.rs.html#511">a</a>), <span class="prelude-val">Some</span>(b)) = (left.first(), right.first()) {
 <span data-nosnippet>612</span>                <span class="kw">if </span>a != b {
 <span data-nosnippet>613</span>                    <span class="kw">break</span>;
 <span data-nosnippet>614</span>                }
@@ -694,7 +694,7 @@
 <span data-nosnippet>691</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>((q, k, n, ts)) = value.as_switch_sum() {
 <span data-nosnippet>692</span>                number = number + q;
 <span data-nosnippet>693</span>                up += k;
-<span data-nosnippet>694</span>                nimber ^= <a href="../../algebra/lazy_map.rs.html#616">n</a>;
+<span data-nosnippet>694</span>                nimber ^= n;
 <span data-nosnippet>695</span>                temperatures.extend_from_slice(ts);
 <span data-nosnippet>696</span>                fingerprint ^= value.switch_hash();
 <span data-nosnippet>697</span>            } <span class="kw">else </span>{
@@ -721,7 +721,7 @@
 <span data-nosnippet>718</span>    }
 <span data-nosnippet>719</span>}
 <span data-nosnippet>720</span><span class="kw">impl </span>PartialEq <span class="kw">for </span>GameValue {
-<span data-nosnippet>721</span>    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">self</a>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+<span data-nosnippet>721</span>    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
 <span data-nosnippet>722</span>        <span class="kw">match </span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span>rhs.<span class="number">0</span>) {
 <span data-nosnippet>723</span>            (GameValueNode::NumberUpNimber(a, k, n), GameValueNode::NumberUpNimber(b, l, m)) =&gt; {
 <span data-nosnippet>724</span>                <span class="kw">return </span>a == b &amp;&amp; k == l &amp;&amp; n == m;
@@ -1408,7 +1408,7 @@ Returns <code>None</code> for an empty interval.</p>
 <span data-nosnippet>347</span>                            Player::Right =&gt; (<span class="kw-2">&amp;</span>number, <span class="kw-2">&amp;</span>game),
 <span data-nosnippet>348</span>                        };
 <span data-nosnippet>349</span>                        <span class="comment">// A strict inequality against q excludes every reply q + *m.
-<span data-nosnippet>350</span>                        </span><span class="kw">if </span>lower.leq_memoized(upper, cache) &amp;&amp; !upper.leq_memoized(lower, cache) {
+<span data-nosnippet>350</span>                        </span><span class="kw">if </span>lower.leq_memoized(upper, cache) &amp;&amp; !upper.leq_memoized(lower, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">cache</a>) {
 <span data-nosnippet>351</span>                            <span class="kw">continue</span>;
 <span data-nosnippet>352</span>                        }
 <span data-nosnippet>353</span>                    }

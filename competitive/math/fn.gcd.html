@@ -264,7 +264,7 @@
 <span data-nosnippet>226</span>                <span class="kw">if </span>row[j] != <span class="number">0 </span>{
 <span data-nosnippet>227</span>                    <span class="kw">let </span>b = mul(modinv(mat[j][j], ord), row[j]);
 <span data-nosnippet>228</span>                    <span class="kw">for </span>(r, a) <span class="kw">in </span>row[j..].iter_mut().zip(<span class="kw-2">&amp;</span>mat[j][j..]) {
-<span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span><a href="../algebra/action.rs.html#70">r</a>, mul(<span class="kw-2">*</span>a, b));
+<span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span>r, mul(<span class="kw-2">*</span>a, b));
 <span data-nosnippet>230</span>                    }
 <span data-nosnippet>231</span>                }
 <span data-nosnippet>232</span>                <span class="macro">assert_eq!</span>(row[j], <span class="number">0</span>);
@@ -277,9 +277,9 @@
 <span data-nosnippet>239</span>            }
 <span data-nosnippet>240</span>        }
 <span data-nosnippet>241</span>    }
-<span data-nosnippet>242</span>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..pc).rev() {
+<span data-nosnippet>242</span>    <span class="kw">for </span><a href="../algebra/action.rs.html#86">i</a> <span class="kw">in </span>(<span class="number">0</span>..pc).rev() {
 <span data-nosnippet>243</span>        <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..pc {
-<span data-nosnippet>244</span>            mat[i][pc] = sub(mat[i][pc], mul(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">mat</a>[i][j], mat[j][pc]));
+<span data-nosnippet>244</span>            mat[i][pc] = sub(mat[i][pc], mul(mat[i][j], mat[j][pc]));
 <span data-nosnippet>245</span>        }
 <span data-nosnippet>246</span>        mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
 <span data-nosnippet>247</span>    }
@@ -388,8 +388,8 @@
 <span data-nosnippet>350</span>    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as </span>u128);
 <span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
-<span data-nosnippet>353</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;<a href="../algebra/lazy_map.rs.html#124">u64</a>, u64&gt;::new();
-<span data-nosnippet>354</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
+<span data-nosnippet>353</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;u64, u64&gt;::new();
+<span data-nosnippet>354</span>    <span class="kw">let </span>g = <a href="../algebra/lazy_map.rs.html#124">pow</a>(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
 <span data-nosnippet>356</span>    <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block_size {
 <span data-nosnippet>357</span>        baby.entry(xj).or_insert(j);
@@ -416,13 +416,13 @@
 <span data-nosnippet>378</span>}
 <span data-nosnippet>379</span>
 <span data-nosnippet>380</span><span class="doccomment">/// a^x ≡ b (mod p^e)
-<span data-nosnippet>381</span></span><span class="kw">fn </span>discrete_logarithm_prime_power(a: <a href="../num/zero_one.rs.html#15-28">u64</a>, b: u64, p: u64, e: <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">u32</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>381</span></span><span class="kw">fn </span>discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
 <span data-nosnippet>382</span>    <span class="macro">assert_ne!</span>(p, <span class="number">0</span>);
 <span data-nosnippet>383</span>    <span class="macro">assert_ne!</span>(e, <span class="number">0</span>);
 <span data-nosnippet>384</span>    <span class="kw">let </span>n = p.pow(e);
 <span data-nosnippet>385</span>    <span class="macro">assert!</span>(a &lt; n);
 <span data-nosnippet>386</span>    <span class="macro">assert!</span>(b &lt; n);
-<span data-nosnippet>387</span>    <span class="macro">assert_eq!</span>(<span class="highlight"><a href="../algebra/lazy_map.rs.html#155">gcd</a></span>(a, p), <span class="number">1</span>);
+<span data-nosnippet>387</span>    <span class="macro">assert_eq!</span>(<span class="highlight">gcd</span>(a, p), <span class="number">1</span>);
 <span data-nosnippet>388</span>    <span class="kw">if </span>p == <span class="number">1 </span>{
 <span data-nosnippet>389</span>        <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">1</span>));
 <span data-nosnippet>390</span>    }
@@ -442,7 +442,7 @@
 <span data-nosnippet>404</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>405</span>            }
 <span data-nosnippet>406</span>            <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ a } <span class="kw">else </span>{ n - a };
-<span data-nosnippet>407</span>            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="../algebra/lazy_map.rs.html#173">b</a> } <span class="kw">else </span>{ n - b };
+<span data-nosnippet>407</span>            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ b } <span class="kw">else </span>{ n - b };
 <span data-nosnippet>408</span>            <span class="kw">let </span>g = <span class="number">5</span>;
 <span data-nosnippet>409</span>            <span class="kw">let </span>ord = n / <span class="number">4</span>;
 <span data-nosnippet>410</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(g, aa, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
@@ -512,7 +512,7 @@
 <span data-nosnippet>474</span>    <span class="kw">let </span><span class="kw-2">mut </span>abm = <span class="macro">vec!</span>[];
 <span data-nosnippet>475</span>    <span class="kw">for </span>(p, e) <span class="kw">in </span>pf {
 <span data-nosnippet>476</span>        <span class="kw">let </span>q = p.pow(e);
-<span data-nosnippet>477</span>        <span class="kw">let </span>x = discrete_logarithm_prime_power(a % q, <a href="../algebra/lazy_map.rs.html#244">b</a> % q, p, e)<span class="question-mark">?</span>;
+<span data-nosnippet>477</span>        <span class="kw">let </span>x = discrete_logarithm_prime_power(a % q, b % <a href="../algebra/lazy_map.rs.html#244">q</a>, p, e)<span class="question-mark">?</span>;
 <span data-nosnippet>478</span>        abm.push((<span class="number">1</span>, x.<span class="number">0</span>, x.<span class="number">1</span>));
 <span data-nosnippet>479</span>    }
 <span data-nosnippet>480</span>    solve_linear_congruences(abm).map(|x| x.<span class="number">0 </span>+ d)

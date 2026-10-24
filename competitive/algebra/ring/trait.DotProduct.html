@@ -299,7 +299,7 @@
 <span data-nosnippet>265</span>    <span class="kw">let </span><span class="kw-2">mut </span>blocks: Vec&lt;Polynomial&lt;M&gt;&gt; = Vec::new();
 <span data-nosnippet>266</span>    <span class="kw">while </span>rows.len() &lt; n {
 <span data-nosnippet>267</span>        <span class="kw">let </span>s = rows.len();
-<span data-nosnippet>268</span>        <span class="kw">let </span>v = (<span class="number">0</span>..n).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
+<span data-nosnippet>268</span>        <span class="kw">let </span>v = (<span class="number">0</span>..<a href="../algebra/action.rs.html#54">n</a>).map(|<span class="kw">_</span>| MInt::from(rng.rand64())).collect();
 <span data-nosnippet>269</span>        <span class="kw">let </span>c = generate_frobenius_block(a, v, <span class="kw-2">&amp;mut </span>rows, <span class="kw-2">&amp;mut </span>t);
 <span data-nosnippet>270</span>        <span class="kw">if </span>rows.len() == s {
 <span data-nosnippet>271</span>            <span class="kw">continue</span>;
@@ -311,10 +311,10 @@
 <span data-nosnippet>277</span>            <span class="kw">let </span><span class="kw-2">mut </span>coefficients = q.<span class="number">0</span>[..s].to_vec();
 <span data-nosnippet>278</span>            <span class="kw">let </span><span class="kw-2">mut </span>shifts = Vec::with_capacity(d);
 <span data-nosnippet>279</span>            <span class="kw">for _ in </span><span class="number">0</span>..d {
-<span data-nosnippet>280</span>                <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">shifts</a>.push(coefficients.clone());
+<span data-nosnippet>280</span>                shifts.push(coefficients.clone());
 <span data-nosnippet>281</span>                <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="number">0</span>;
 <span data-nosnippet>282</span>                <span class="kw">for </span>block <span class="kw">in </span><span class="kw-2">&amp;</span>blocks {
-<span data-nosnippet>283</span>                    <span class="kw">let </span>len = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">block</a>.<span class="number">0</span>.len() - <span class="number">1</span>;
+<span data-nosnippet>283</span>                    <span class="kw">let </span>len = block.<span class="number">0</span>.len() - <span class="number">1</span>;
 <span data-nosnippet>284</span>                    <span class="kw">let </span>c = <span class="kw-2">&amp;mut </span>coefficients[first..first + len];
 <span data-nosnippet>285</span>                    <span class="kw">let </span>last = c[len - <span class="number">1</span>];
 <span data-nosnippet>286</span>                    <span class="kw">for </span>j <span class="kw">in </span>(<span class="number">1</span>..len).rev() {
@@ -363,7 +363,7 @@
 <span data-nosnippet>329</span>            <span class="kw-2">*</span>x <span class="kw-2">*</span>= row.inv;
 <span data-nosnippet>330</span>        }
 <span data-nosnippet>331</span>        <span class="kw">for </span>next <span class="kw">in </span><span class="kw-2">&amp;</span>rows[i + <span class="number">1</span>..] {
-<span data-nosnippet>332</span>            <span class="kw">let </span>factor = -row.<a href="../algebra/lazy_map.rs.html#64">row</a>[next.pivot] * row.inv;
+<span data-nosnippet>332</span>            <span class="kw">let </span>factor = -row.row[next.pivot] * row.inv;
 <span data-nosnippet>333</span>            <span class="kw">if </span>!factor.is_zero() {
 <span data-nosnippet>334</span>                <span class="highlight">MInt::add_scaled_assign</span>(<span class="kw-2">&amp;mut </span>c, <span class="kw-2">&amp;</span>t_inv[next.pivot], <span class="kw-2">&amp;</span>factor);
 <span data-nosnippet>335</span>            }

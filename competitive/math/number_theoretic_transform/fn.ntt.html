@@ -241,7 +241,7 @@
 <span data-nosnippet>619</span>
 <span data-nosnippet>620</span><span class="kw">impl</span>&lt;M&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;M&gt;
 <span data-nosnippet>621</span><span class="kw">where
-<span data-nosnippet>622</span>    </span><a href="../algebra/action.rs.html#14">M</a>: Montgomery32NttModulus,
+<span data-nosnippet>622</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>623</span>{
 <span data-nosnippet>624</span>    <span class="kw">const </span>CYCLIC: bool = <span class="bool-val">true</span>;
 <span data-nosnippet>625</span>
@@ -400,7 +400,7 @@
 <span data-nosnippet>778</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>779</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>780</span>{
-<span data-nosnippet>781</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
+<span data-nosnippet>781</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).<a href="../algebra/action.rs.html#12">inv</a>();
 <span data-nosnippet>782</span>    <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>783</span>    <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>784</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64;
@@ -409,7 +409,7 @@
 <span data-nosnippet>787</span>    <span class="kw">let </span>fits_u64 = (N1::get_mod() - <span class="number">1</span>) <span class="kw">as </span>u128
 <span data-nosnippet>788</span>        + (N2::get_mod() - <span class="number">1</span>) <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128
 <span data-nosnippet>789</span>        + (N3::get_mod() - <span class="number">1</span>) <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128
-<span data-nosnippet>790</span>        &lt;= u64::MAX <span class="kw">as </span>u128;
+<span data-nosnippet>790</span>        &lt;= u64::<a href="../num/zero_one.rs.html#16">MAX</a> <span class="kw">as </span>u128;
 <span data-nosnippet>791</span>    f.<span class="number">0</span>.into_iter()
 <span data-nosnippet>792</span>        .zip(f.<span class="number">1</span>)
 <span data-nosnippet>793</span>        .zip(f.<span class="number">2</span>)
@@ -550,7 +550,7 @@
 <span data-nosnippet>928</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>929</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>930</span>{
-<span data-nosnippet>931</span>    <span class="kw">type </span>T = Vec&lt;u64&gt;;
+<span data-nosnippet>931</span>    <span class="kw">type </span>T = Vec&lt;<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">u64</a>&gt;;
 <span data-nosnippet>932</span>    <span class="kw">type </span>F = ([MVec&lt;N1&gt;; <span class="number">3</span>], [MVec&lt;N2&gt;; <span class="number">3</span>], [MVec&lt;N3&gt;; <span class="number">3</span>]);
 <span data-nosnippet>933</span>
 <span data-nosnippet>934</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
@@ -563,7 +563,7 @@
 <span data-nosnippet>941</span>        <span class="comment">// The 22-bit fallback needs room for three limb products per coefficient.
 <span data-nosnippet>942</span>        </span><span class="macro">assert!</span>(
 <span data-nosnippet>943</span>            <span class="number">3 </span>* npot <span class="kw">as </span>u128 * ((<span class="number">1u128 </span>&lt;&lt; <span class="number">22</span>) - <span class="number">1</span>).pow(<span class="number">2</span>)
-<span data-nosnippet>944</span>                &lt; N1::<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">MOD</a> <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
+<span data-nosnippet>944</span>                &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
 <span data-nosnippet>945</span>        );
 <span data-nosnippet>946</span>        <span class="kw">let </span>bits = <span class="kw">if </span><span class="number">2 </span>* npot <span class="kw">as </span>u128 * (u32::MAX <span class="kw">as </span>u128).pow(<span class="number">2</span>)
 <span data-nosnippet>947</span>            &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
@@ -589,7 +589,7 @@
 <span data-nosnippet>967</span>                }
 <span data-nosnippet>968</span>                Convolve::&lt;M&gt;::transform(
 <span data-nosnippet>969</span>                    t.iter()
-<span data-nosnippet>970</span>                        .map(|<span class="kw-2">&amp;</span>t| MInt::from((t &gt;&gt; (<a href="../num/zero_one.rs.html#1-14">part</a> * bits)) &amp; ((<span class="number">1u64 </span>&lt;&lt; bits) - <span class="number">1</span>)))
+<span data-nosnippet>970</span>                        .map(|<span class="kw-2">&amp;</span>t| MInt::from((t &gt;&gt; (part * bits)) &amp; ((<span class="number">1u64 </span>&lt;&lt; bits) - <span class="number">1</span>)))
 <span data-nosnippet>971</span>                        .collect(),
 <span data-nosnippet>972</span>                    len,
 <span data-nosnippet>973</span>                )
@@ -617,7 +617,7 @@
 <span data-nosnippet>995</span>            <span class="kw">for </span>(value, ((c1, c2), c3)) <span class="kw">in </span>result.iter_mut().zip(
 <span data-nosnippet>996</span>                Convolve::&lt;N1&gt;::inverse_transform(f1, len)
 <span data-nosnippet>997</span>                    .into_iter()
-<span data-nosnippet>998</span>                    .zip(Convolve::&lt;N2&gt;::inverse_transform(f2, len))
+<span data-nosnippet>998</span>                    .zip(Convolve::&lt;N2&gt;::inverse_transform(<a href="https://doc.rust-lang.org/nightly/core/cmp/derive.Eq.html">f2</a>, len))
 <span data-nosnippet>999</span>                    .zip(Convolve::&lt;N3&gt;::inverse_transform(f3, len)),
 <span data-nosnippet>1000</span>            ) {
 <span data-nosnippet>1001</span>                <span class="kw">let </span>d1 = c1.inner();
@@ -639,7 +639,7 @@
 <span data-nosnippet>1017</span>            <span class="kw">if </span>f[<span class="number">1</span>].is_empty() || g[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1018</span>                <span class="kw">if </span>f[<span class="number">1</span>].is_empty() &amp;&amp; !g[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1019</span>                    f[<span class="number">1</span>] = f[<span class="number">0</span>].clone();
-<span data-nosnippet>1020</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">1</span>], <span class="kw-2">&amp;</span>g[<span class="number">1</span>]);
+<span data-nosnippet>1020</span>                    Convolve::&lt;<a href="../algebra/lazy_map.rs.html#439">M</a>&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">1</span>], <span class="kw-2">&amp;</span>g[<span class="number">1</span>]);
 <span data-nosnippet>1021</span>                } <span class="kw">else if </span>!f[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1022</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">1</span>], <span class="kw-2">&amp;</span>g[<span class="number">0</span>]);
 <span data-nosnippet>1023</span>                }
@@ -672,25 +672,25 @@
 <span data-nosnippet>1050</span>                <span class="kw">return</span>;
 <span data-nosnippet>1051</span>            }
 <span data-nosnippet>1052</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<a href="../algebra/lazy_map.rs.html#511">f</a>[<span class="number">0</span>].len() {
-<span data-nosnippet>1053</span>                f[<span class="number">2</span>][i] = <a href="../algebra/lazy_map.rs.html#511">f</a>[<span class="number">0</span>][i] * g[<span class="number">2</span>][i] + f[<span class="number">1</span>][i] * g[<span class="number">1</span>][i] + f[<span class="number">2</span>][i] * g[<span class="number">0</span>][i];
+<span data-nosnippet>1053</span>                f[<span class="number">2</span>][i] = f[<span class="number">0</span>][i] * g[<span class="number">2</span>][i] + f[<span class="number">1</span>][i] * g[<span class="number">1</span>][<a href="../algebra/lazy_map.rs.html#511">i</a>] + f[<span class="number">2</span>][i] * g[<span class="number">0</span>][i];
 <span data-nosnippet>1054</span>                f[<span class="number">1</span>][i] = f[<span class="number">0</span>][i] * g[<span class="number">1</span>][i] + f[<span class="number">1</span>][i] * g[<span class="number">0</span>][i];
 <span data-nosnippet>1055</span>                f[<span class="number">0</span>][i] <span class="kw-2">*</span>= g[<span class="number">0</span>][i];
 <span data-nosnippet>1056</span>            }
 <span data-nosnippet>1057</span>        }
-<span data-nosnippet>1058</span>        multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
+<span data-nosnippet>1058</span>        multiply(<span class="kw-2">&amp;mut </span><a href="../algebra/lazy_map.rs.html#511">f</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
 <span data-nosnippet>1059</span>        multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
 <span data-nosnippet>1060</span>        multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>1061</span>    }
 <span data-nosnippet>1062</span>
 <span data-nosnippet>1063</span>    <span class="kw">fn </span>square(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1064</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::transform(t, len);
-<span data-nosnippet>1065</span>        <span class="kw">let </span>g = <a href="../algebra/lazy_map.rs.html#511">f</a>.clone();
+<span data-nosnippet>1065</span>        <span class="kw">let </span>g = f.clone();
 <span data-nosnippet>1066</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>f, <span class="kw-2">&amp;</span>g);
 <span data-nosnippet>1067</span>        <span class="self">Self</span>::inverse_transform(f, len)
 <span data-nosnippet>1068</span>    }
 <span data-nosnippet>1069</span>
 <span data-nosnippet>1070</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>1071</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
+<span data-nosnippet>1071</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#511">b</a>));
 <span data-nosnippet>1072</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>1073</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">300</span>, <span class="number">64</span>), (<span class="number">1536</span>, <span class="number">512</span>));
 <span data-nosnippet>1074</span>        <span class="kw">if </span>max_len &lt;= balanced || min_len &lt;= short {
@@ -706,7 +706,7 @@
 <span data-nosnippet>1084</span>            <span class="kw">return unsafe </span>{ Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
 <span data-nosnippet>1085</span>        }
 <span data-nosnippet>1086</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
-<span data-nosnippet>1087</span>        <span class="kw">let </span>block_len = <span class="kw">if </span><a href="../num/bounded.rs.html#3">min_len</a> &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
+<span data-nosnippet>1087</span>        <span class="kw">let </span>block_len = <span class="kw">if </span>min_len &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
 <span data-nosnippet>1088</span>            <span class="number">1 </span>&lt;&lt; <span class="number">20
 <span data-nosnippet>1089</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>1090</span>            (min_len.next_power_of_two() * <span class="number">8</span>).min(<span class="number">1 </span>&lt;&lt; <span class="number">21</span>) - min_len + <span class="number">1
@@ -739,7 +739,7 @@
 <span data-nosnippet>1117</span><span class="kw">fn </span>convolve_u64_fft(a: Vec&lt;u64&gt;, b: Vec&lt;u64&gt;) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>1118</span>    <span class="comment">// Keep limb convolutions below 2^47 at the 2^21 FFT limit.
 <span data-nosnippet>1119</span>    </span><span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">return unsafe </span>{
-<span data-nosnippet>1120</span>        convolve_u64_avx2(a, b)
+<span data-nosnippet>1120</span>        convolve_u64_avx2(a, <a href="../algebra/lazy_map.rs.html#616">b</a>)
 <span data-nosnippet>1121</span>    }, ());
 <span data-nosnippet>1122</span>    convolve_u64_fft_scalar(a, b)
 <span data-nosnippet>1123</span>}

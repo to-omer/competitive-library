@@ -158,7 +158,7 @@
 <span data-nosnippet>322</span>            signed_coefficient_step(a <span class="kw">as </span>int, b <span class="kw">as </span>int, v <span class="kw">as </span>int, y <span class="kw">as </span>int, abs(original_a <span class="kw">as </span>int) <span class="kw">as </span>int);
 <span data-nosnippet>323</span>            <span class="kw">let </span>aa = abs(a <span class="kw">as </span>int) <span class="kw">as </span>int;
 <span data-nosnippet>324</span>            <span class="kw">let </span>bb = abs(b <span class="kw">as </span>int) <span class="kw">as </span>int;
-<span data-nosnippet>325</span>            <span class="kw">let </span>r = rust_rem(b <span class="kw">as </span>int, <a href="../algebra/action.rs.html#20">a</a> <span class="kw">as </span>int);
+<span data-nosnippet>325</span>            <span class="kw">let </span>r = rust_rem(b <span class="kw">as </span>int, a <span class="kw">as </span>int);
 <span data-nosnippet>326</span>            lemma_fundamental_div_mod(bb, aa);
 <span data-nosnippet>327</span>            assert((bb / aa) * aa &lt;= bb) by(nonlinear_arith)
 <span data-nosnippet>328</span>                requires bb == aa * (bb / aa) + bb % aa, bb % aa &gt;= <span class="number">0</span>;
@@ -173,7 +173,7 @@
 <span data-nosnippet>337</span>                ((original_a <span class="kw">as </span>int % d == <span class="number">0 </span>&amp;&amp; original_b <span class="kw">as </span>int % d == <span class="number">0</span>)
 <span data-nosnippet>338</span>                    == (a <span class="kw">as </span>int % d == <span class="number">0 </span>&amp;&amp; r % d == <span class="number">0</span>)) by {
 <span data-nosnippet>339</span>                assert((original_a <span class="kw">as </span>int % d == <span class="number">0 </span>&amp;&amp; original_b <span class="kw">as </span>int % d == <span class="number">0</span>)
-<span data-nosnippet>340</span>                    == (a <span class="kw">as </span>int % d == <span class="number">0 </span>&amp;&amp; b <span class="kw">as </span>int % d == <span class="number">0</span>));
+<span data-nosnippet>340</span>                    == (a <span class="kw">as </span>int % <a href="../algebra/action.rs.html#70">d</a> == <span class="number">0 </span>&amp;&amp; b <span class="kw">as </span>int % d == <span class="number">0</span>));
 <span data-nosnippet>341</span>                <span class="kw">if </span>a <span class="kw">as </span>int % d == <span class="number">0 </span>{
 <span data-nosnippet>342</span>                    vstd::arithmetic::mul::lemma_mul_basics(k <span class="kw">as </span>int);
 <span data-nosnippet>343</span>                    lemma_small_mod(<span class="number">0</span>, d <span class="kw">as </span>nat);
@@ -185,7 +185,7 @@
 <span data-nosnippet>349</span>        }
 <span data-nosnippet>350</span>        x -= k * u;
 <span data-nosnippet>351</span>        y -= k * v;
-<span data-nosnippet>352</span>        b -= k * <a href="../algebra/magma.rs.html#6">a</a>;
+<span data-nosnippet>352</span>        b -= k * a;
 <span data-nosnippet>353</span>        std::mem::swap(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;mut </span>u);
 <span data-nosnippet>354</span>        std::mem::swap(<span class="kw-2">&amp;mut </span>y, <span class="kw-2">&amp;mut </span>v);
 <span data-nosnippet>355</span>        std::mem::swap(<span class="kw-2">&amp;mut </span>b, <span class="kw-2">&amp;mut </span>a);
@@ -209,7 +209,7 @@
 <span data-nosnippet>373</span>        </span>assert((b == <span class="number">0</span>) == (original_a == <span class="number">0 </span>&amp;&amp; original_b == <span class="number">0</span>)
 <span data-nosnippet>374</span>            &amp;&amp; (original_a <span class="kw">as </span>int) * x + (original_b <span class="kw">as </span>int) * y == b
 <span data-nosnippet>375</span>            &amp;&amp; (b != <span class="number">0 </span>==&gt; (original_a <span class="kw">as </span>int) % (abs(b <span class="kw">as </span>int) <span class="kw">as </span>int) == <span class="number">0
-<span data-nosnippet>376</span>                </span>&amp;&amp; (original_b <span class="kw">as </span>int) % (abs(<a href="../algebra/lazy_map.rs.html#41">b</a> <span class="kw">as </span>int) <span class="kw">as </span>int) == <span class="number">0</span>));
+<span data-nosnippet>376</span>                </span>&amp;&amp; (original_b <span class="kw">as </span>int) % (abs(b <span class="kw">as </span>int) <span class="kw">as </span>int) == <span class="number">0</span>));
 <span data-nosnippet>377</span>    }
 <span data-nosnippet>378</span>    (b, x, y)
 <span data-nosnippet>379</span>}
@@ -224,7 +224,7 @@
 <span data-nosnippet>388</span>        (original_a <span class="kw">as </span>int) * result.<span class="number">1 </span>+ (original_b <span class="kw">as </span>int) * result.<span class="number">2 </span>== result.<span class="number">0</span>,
 <span data-nosnippet>389</span>        result.<span class="number">0 </span>&gt; <span class="number">0 </span>==&gt; original_a % result.<span class="number">0 </span>== <span class="number">0 </span>&amp;&amp; original_b % result.<span class="number">0 </span>== <span class="number">0</span>,
 <span data-nosnippet>390</span>))]
-<span data-nosnippet>391</span></span><span class="kw">pub fn </span>extgcd_binary(original_a: i64, <a href="../algebra/lazy_map.rs.html#8">original_b</a>: i64) -&gt; (i64, i64, i64) {
+<span data-nosnippet>391</span></span><span class="kw">pub fn </span>extgcd_binary(original_a: i64, original_b: i64) -&gt; (i64, i64, i64) {
 <span data-nosnippet>392</span>    <span class="kw">if </span>original_b == <span class="number">0 </span>{
 <span data-nosnippet>393</span>        <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>394</span>        </span><span class="macro">proof!</span> {
@@ -248,7 +248,7 @@
 <span data-nosnippet>412</span>    <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>413</span>    </span><span class="macro">proof!</span> {
 <span data-nosnippet>414</span>        assert((original_a | original_b) &gt;= <span class="number">0</span>) by(bit_vector)
-<span data-nosnippet>415</span>            requires original_a &gt;= <span class="number">0</span>, <a href="../algebra/lazy_map.rs.html#9">original_b</a> &gt;= <span class="number">0</span>;
+<span data-nosnippet>415</span>            requires original_a &gt;= <span class="number">0</span>, original_b &gt;= <span class="number">0</span>;
 <span data-nosnippet>416</span>    }
 <span data-nosnippet>417</span>    <span class="kw">let </span>k = ((original_a | original_b) <span class="kw">as </span>u64).trailing_zeros();
 <span data-nosnippet>418</span>    <span class="attr">#[cfg(verus_keep_ghost)]
@@ -260,7 +260,7 @@
 <span data-nosnippet>424</span>        axiom_u64_trailing_zeros(aa);
 <span data-nosnippet>425</span>        axiom_u64_trailing_zeros(bb);
 <span data-nosnippet>426</span>        assert(joined &gt; <span class="number">0</span>) by(bit_vector)
-<span data-nosnippet>427</span>            requires joined == (original_a | original_b) <span class="kw">as </span>u64, original_a &gt; <span class="number">0</span>, original_b &gt; <span class="number">0</span>;
+<span data-nosnippet>427</span>            requires joined == (original_a | original_b) <span class="kw">as </span>u64, <a href="../algebra/lazy_map.rs.html#8">original_a</a> &gt; <span class="number">0</span>, original_b &gt; <span class="number">0</span>;
 <span data-nosnippet>428</span>        <span class="kw">let </span>ta = u64_trailing_zeros(aa);
 <span data-nosnippet>429</span>        <span class="kw">let </span>tb = u64_trailing_zeros(bb);
 <span data-nosnippet>430</span>        <span class="kw">if </span>k &gt; ta {
@@ -276,7 +276,7 @@
 <span data-nosnippet>440</span>        factor_twos(aa, k);
 <span data-nosnippet>441</span>        factor_twos(bb, k);
 <span data-nosnippet>442</span>        assert(((original_a &gt;&gt; k) <span class="kw">as </span>u64) == aa &gt;&gt; k &amp;&amp; ((original_b &gt;&gt; k) <span class="kw">as </span>u64) == bb &gt;&gt; k)
-<span data-nosnippet>443</span>            by(bit_vector) requires original_a &gt;= <span class="number">0</span>, original_b &gt;= <span class="number">0</span>, <a href="../algebra/lazy_map.rs.html#142">k</a> &lt; <span class="number">64</span>,
+<span data-nosnippet>443</span>            by(bit_vector) requires original_a &gt;= <span class="number">0</span>, original_b &gt;= <span class="number">0</span>, k &lt; <span class="number">64</span>,
 <span data-nosnippet>444</span>                aa == original_a <span class="kw">as </span>u64, bb == original_b <span class="kw">as </span>u64;
 <span data-nosnippet>445</span>        assert(((aa &gt;&gt; k) | (bb &gt;&gt; k)) &amp; <span class="number">1 </span>== <span class="number">1</span>) by(bit_vector)
 <span data-nosnippet>446</span>            requires (joined &gt;&gt; k) &amp; <span class="number">1 </span>== <span class="number">1</span>, joined == aa | bb, k &lt; <span class="number">64</span>;
@@ -333,11 +333,11 @@
 <span data-nosnippet>497</span>            c &gt; <span class="number">0</span>, <span class="number">0 </span>&lt; d &lt;= i64::MAX, d % <span class="number">2 </span>== <span class="number">1</span>,
 <span data-nosnippet>498</span>            shift == u64_trailing_zeros(c), shift &lt; <span class="number">64</span>, a == c &gt;&gt; shift,
 <span data-nosnippet>499</span>            u &lt;= d,
-<span data-nosnippet>500</span>            (c <span class="kw">as </span>int) * u % (d <span class="kw">as </span>int) == ((c &gt;&gt; (iter.index() <span class="kw">as </span>u32)) <span class="kw">as </span><a href="../num/zero_one.rs.html#15-28">int</a>) % (d <span class="kw">as </span>int),
+<span data-nosnippet>500</span>            (c <span class="kw">as </span>int) * u % (d <span class="kw">as </span>int) == ((c &gt;&gt; (iter.index() <span class="kw">as </span>u32)) <span class="kw">as </span>int) % (d <span class="kw">as </span>int),
 <span data-nosnippet>501</span>    ))]
 <span data-nosnippet>502</span>    </span><span class="kw">for </span>_i <span class="kw">in </span><span class="number">0</span>..shift {
 <span data-nosnippet>503</span>        <span class="attr">#[cfg(verus_keep_ghost)]
-<span data-nosnippet>504</span>        </span><a href="../algebra/lazy_map.rs.html#9">proof_decl!</a> { <span class="kw">let </span>ghost before = u; }
+<span data-nosnippet>504</span>        </span><span class="macro">proof_decl!</span> { <span class="kw">let </span>ghost before = u; }
 <span data-nosnippet>505</span>        <span class="kw">if </span>u &amp; <span class="number">1 </span>== <span class="number">1 </span>{
 <span data-nosnippet>506</span>            u += d;
 <span data-nosnippet>507</span>        }
@@ -355,18 +355,18 @@
 <span data-nosnippet>519</span>    }
 <span data-nosnippet>520</span>    <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>521</span>    </span><span class="macro">proof!</span> {
-<span data-nosnippet>522</span>        assert((a <span class="kw">as </span>int) * scale &lt;= (c <span class="kw">as </span>int) * scale) by(nonlinear_arith)
+<span data-nosnippet>522</span>        assert((<a href="../algebra/lazy_map.rs.html#245">a</a> <span class="kw">as </span>int) * scale &lt;= (c <span class="kw">as </span>int) * scale) by(nonlinear_arith)
 <span data-nosnippet>523</span>            requires a &lt;= c, scale &gt; <span class="number">0</span>;
 <span data-nosnippet>524</span>    }
 <span data-nosnippet>525</span>    <span class="attr">#[cfg_attr(verus_keep_ghost, verus_spec(
 <span data-nosnippet>526</span>        invariant
 <span data-nosnippet>527</span>            original_a &gt; <span class="number">0</span>, original_b &gt; <span class="number">0</span>, k &lt; <span class="number">64</span>, scale == pow2(k <span class="kw">as </span>nat), scale &gt; <span class="number">0</span>,
 <span data-nosnippet>528</span>            (c <span class="kw">as </span>int) * scale == (<span class="kw">if </span>swapped { original_b <span class="kw">as </span>int } <span class="kw">else </span>{ original_a <span class="kw">as </span>int }),
-<span data-nosnippet>529</span>            (d <span class="kw">as </span>int) * scale == (<span class="kw">if </span>swapped { original_a <span class="kw">as </span>int } <span class="kw">else </span>{ original_b <span class="kw">as </span>int }),
+<span data-nosnippet>529</span>            (d <span class="kw">as </span>int) * scale == (<span class="kw">if </span>swapped { original_a <span class="kw">as </span>int } <span class="kw">else </span>{ original_b <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">int</a> }),
 <span data-nosnippet>530</span>            <span class="number">0 </span>&lt; c &lt;= i64::MAX, <span class="number">0 </span>&lt; d &lt;= i64::MAX, d % <span class="number">2 </span>== <span class="number">1</span>,
 <span data-nosnippet>531</span>            <span class="number">0 </span>&lt; a &lt;= i64::MAX, <span class="number">0 </span>&lt; b &lt;= i64::MAX, a &amp; <span class="number">1 </span>== <span class="number">1</span>, b &amp; <span class="number">1 </span>== <span class="number">1</span>, u &lt;= d, s &lt;= d,
-<span data-nosnippet>532</span>            (a <span class="kw">as </span>int) * scale &lt;= vstd::math::max(original_a <span class="kw">as </span>int, <a href="../algebra/lazy_map.rs.html#8">original_b</a> <span class="kw">as </span>int),
-<span data-nosnippet>533</span>            (<a href="../algebra/lazy_map.rs.html#270">b</a> <span class="kw">as </span>int) * scale &lt;= vstd::math::max(original_a <span class="kw">as </span>int, original_b <span class="kw">as </span>int),
+<span data-nosnippet>532</span>            (a <span class="kw">as </span>int) * scale &lt;= vstd::math::max(original_a <span class="kw">as </span>int, original_b <span class="kw">as </span>int),
+<span data-nosnippet>533</span>            (b <span class="kw">as </span>int) * scale &lt;= vstd::math::max(original_a <span class="kw">as </span>int, original_b <span class="kw">as </span>int),
 <span data-nosnippet>534</span>            (c <span class="kw">as </span>int) * u % (d <span class="kw">as </span>int) == (a <span class="kw">as </span>int) % (d <span class="kw">as </span>int),
 <span data-nosnippet>535</span>            (c <span class="kw">as </span>int) * s % (d <span class="kw">as </span>int) == (b <span class="kw">as </span>int) % (d <span class="kw">as </span>int),
 <span data-nosnippet>536</span>            forall|h: int| #![trigger (original_a <span class="kw">as </span>int) % h] </span>h &gt; <span class="number">0 </span>==&gt;
@@ -381,8 +381,8 @@
 <span data-nosnippet>545</span>        }
 <span data-nosnippet>546</span>        <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>547</span>        </span><span class="macro">proof_decl!</span> { <span class="kw">let </span>ghost before_b = b; <span class="kw">let </span>ghost before_s = s; }
-<span data-nosnippet>548</span>        b -= <a href="../algebra/lazy_map.rs.html#296">a</a>;
-<span data-nosnippet>549</span>        <span class="kw">if </span>s &lt; u {
+<span data-nosnippet>548</span>        b -= a;
+<span data-nosnippet>549</span>        <span class="kw">if </span><a href="../algebra/lazy_map.rs.html#296">s</a> &lt; u {
 <span data-nosnippet>550</span>            s += d;
 <span data-nosnippet>551</span>        }
 <span data-nosnippet>552</span>        s -= u;
@@ -396,7 +396,7 @@
 <span data-nosnippet>560</span>                requires b == before_b - a, a &amp; <span class="number">1 </span>== <span class="number">1</span>, before_b &amp; <span class="number">1 </span>== <span class="number">1</span>, a &lt; before_b;
 <span data-nosnippet>561</span>            assert((b <span class="kw">as </span>int) * scale == (before_b <span class="kw">as </span>int) * scale - (a <span class="kw">as </span>int) * scale)
 <span data-nosnippet>562</span>                by(nonlinear_arith) requires b == before_b - a;
-<span data-nosnippet>563</span>            <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">assert</a>((b <span class="kw">as </span>int) * scale &lt;= (before_b <span class="kw">as </span>int) * scale) by(nonlinear_arith)
+<span data-nosnippet>563</span>            assert((b <span class="kw">as </span>int) * scale &lt;= (before_b <span class="kw">as </span>int) * scale) by(nonlinear_arith)
 <span data-nosnippet>564</span>                requires b &lt;= before_b, scale &gt; <span class="number">0</span>;
 <span data-nosnippet>565</span>        }
 <span data-nosnippet>566</span>        <span class="attr">#[cfg(verus_keep_ghost)]
@@ -408,7 +408,7 @@
 <span data-nosnippet>572</span>            assert((b &gt;&gt; shift) &amp; <span class="number">1 </span>== <span class="number">1</span>);
 <span data-nosnippet>573</span>            assert(b &gt;&gt; shift &lt;= b) by(bit_vector);
 <span data-nosnippet>574</span>            assert(((b &gt;&gt; shift) <span class="kw">as </span>int) * scale &lt;= (b <span class="kw">as </span>int) * scale) by(nonlinear_arith)
-<span data-nosnippet>575</span>                requires b &gt;&gt; shift &lt;= b, scale &gt; <span class="number">0</span>;
+<span data-nosnippet>575</span>                requires b &gt;&gt; shift &lt;= b, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">scale</a> &gt; <span class="number">0</span>;
 <span data-nosnippet>576</span>            assert forall|h: int| <span class="attr">#![trigger (original_a <span class="kw">as </span>int) % h] </span>h &gt; <span class="number">0 </span>implies
 <span data-nosnippet>577</span>                (((original_a <span class="kw">as </span>int) % h == <span class="number">0 </span>&amp;&amp; (original_b <span class="kw">as </span>int) % h == <span class="number">0</span>)
 <span data-nosnippet>578</span>                    == ((a <span class="kw">as </span>int) * scale % h == <span class="number">0 </span>&amp;&amp; ((b &gt;&gt; shift) <span class="kw">as </span>int) * scale % h == <span class="number">0</span>)) by {
@@ -448,7 +448,7 @@
 <span data-nosnippet>612</span>                assert((before_shift &gt;&gt; _i) &amp; <span class="number">1 </span>== <span class="number">0</span>);
 <span data-nosnippet>613</span>                assert(value % <span class="number">2 </span>== <span class="number">0</span>) by(bit_vector) requires value &amp; <span class="number">1 </span>== <span class="number">0</span>;
 <span data-nosnippet>614</span>                assert((before &amp; <span class="number">1 </span>== <span class="number">1</span>) == (before % <span class="number">2 </span>== <span class="number">1</span>)) by(bit_vector);
-<span data-nosnippet>615</span>                modular_halving(c <span class="kw">as </span>int, value <span class="kw">as </span>int, before <span class="kw">as </span>int, d <span class="kw">as </span>int);
+<span data-nosnippet>615</span>                modular_halving(c <span class="kw">as </span>int, value <span class="kw">as </span>int, before <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">int</a>, d <span class="kw">as </span>int);
 <span data-nosnippet>616</span>                assert(value / <span class="number">2 </span>== before_shift &gt;&gt; (_i + <span class="number">1</span>)) by(bit_vector)
 <span data-nosnippet>617</span>                    requires value == before_shift &gt;&gt; _i, _i &lt; <span class="number">63</span>;
 <span data-nosnippet>618</span>            }
@@ -470,11 +470,11 @@
 <span data-nosnippet>634</span>            requires <span class="number">0 </span>&lt; c &lt;= i64::MAX, <span class="number">0 </span>&lt;= s &lt;= d &lt;= i64::MAX, product == (c <span class="kw">as </span>int) * s;
 <span data-nosnippet>635</span>        lemma_sub_mod_noop(a <span class="kw">as </span>int, product, d <span class="kw">as </span>int);
 <span data-nosnippet>636</span>        lemma_small_mod(<span class="number">0</span>, d <span class="kw">as </span>nat);
-<span data-nosnippet>637</span>        assert((a <span class="kw">as </span><a href="../num/zero_one.rs.html#15-28">int</a> - product) % (d <span class="kw">as </span>int) == <span class="number">0</span>);
+<span data-nosnippet>637</span>        assert((a <span class="kw">as </span>int - product) % (d <span class="kw">as </span>int) == <span class="number">0</span>);
 <span data-nosnippet>638</span>        lemma_fundamental_div_mod(a <span class="kw">as </span>int - product, d <span class="kw">as </span>int);
 <span data-nosnippet>639</span>        <span class="kw">let </span>difference = a <span class="kw">as </span>int - product;
 <span data-nosnippet>640</span>        <span class="kw">let </span>quotient = difference / (d <span class="kw">as </span>int);
-<span data-nosnippet>641</span>        assert(-i64::<a href="../algebra/lazy_map.rs.html#485">MAX</a> <span class="kw">as </span>int &lt;= quotient &lt;= i64::MAX <span class="kw">as </span>int) by(nonlinear_arith)
+<span data-nosnippet>641</span>        assert(-i64::MAX <span class="kw">as </span>int &lt;= quotient &lt;= i64::MAX <span class="kw">as </span>int) by(nonlinear_arith)
 <span data-nosnippet>642</span>            requires difference == (d <span class="kw">as </span>int) * quotient, difference == a <span class="kw">as </span>int - product,
 <span data-nosnippet>643</span>                <span class="number">0 </span>&lt; a &lt;= i64::MAX, <span class="number">0 </span>&lt; c &lt;= i64::MAX, <span class="number">0 </span>&lt; d &lt;= i64::MAX, <span class="number">0 </span>&lt;= s &lt;= d,
 <span data-nosnippet>644</span>                product == (c <span class="kw">as </span>int) * s;
@@ -485,13 +485,13 @@
 <span data-nosnippet>649</span>    }
 <span data-nosnippet>650</span>    <span class="kw">let </span>x = s <span class="kw">as </span>i64;
 <span data-nosnippet>651</span>    <span class="kw">let </span>y = ((<a href="../algebra/lazy_map.rs.html#511">a</a> <span class="kw">as </span>i128 - c <span class="kw">as </span>i128 * s <span class="kw">as </span>i128) / d <span class="kw">as </span>i128) <span class="kw">as </span>i64;
-<span data-nosnippet>652</span>    <span class="kw">let </span>g = (a &lt;&lt; k) <span class="kw">as </span>i64;
+<span data-nosnippet>652</span>    <span class="kw">let </span>g = (a &lt;&lt; <a href="../algebra/lazy_map.rs.html#511">k</a>) <span class="kw">as </span>i64;
 <span data-nosnippet>653</span>    <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>654</span>    </span><span class="macro">proof!</span> {
 <span data-nosnippet>655</span>        assert((c <span class="kw">as </span>int) * x + (d <span class="kw">as </span>int) * y == a) by(nonlinear_arith)
 <span data-nosnippet>656</span>            requires (a <span class="kw">as </span>int - (c <span class="kw">as </span>int) * s) == (d <span class="kw">as </span>int) * ((a <span class="kw">as </span>int - (c <span class="kw">as </span>int) * s) / (d <span class="kw">as </span>int)),
 <span data-nosnippet>657</span>                x == s, y == (a <span class="kw">as </span>int - (<a href="../algebra/lazy_map.rs.html#511">c</a> <span class="kw">as </span>int) * s) / (d <span class="kw">as </span>int);
-<span data-nosnippet>658</span>        assert((c <span class="kw">as </span>int) * scale * x + (d <span class="kw">as </span>int) * scale * y == g) by(nonlinear_arith)
+<span data-nosnippet>658</span>        assert((c <span class="kw">as </span>int) * scale * <a href="../algebra/lazy_map.rs.html#511">x</a> + (d <span class="kw">as </span>int) * scale * y == g) by(nonlinear_arith)
 <span data-nosnippet>659</span>            requires (c <span class="kw">as </span>int) * x + (d <span class="kw">as </span>int) * y == a, g == (a <span class="kw">as </span>int) * scale;
 <span data-nosnippet>660</span>        lemma_mod_self_0(g <span class="kw">as </span>int);
 <span data-nosnippet>661</span>        assert((b <span class="kw">as </span>int) * scale == g);

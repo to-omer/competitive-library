@@ -875,7 +875,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>307</span>                indices[i] = game.index_of(next.to);
 <span data-nosnippet>308</span>                <span class="kw">let </span>wins = <span class="kw">if </span>MISERE {
 <span data-nosnippet>309</span>                    <span class="kw">let </span>key =
-<span data-nosnippet>310</span>                        GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
+<span data-nosnippet>310</span>                        GraphSums::<a href="../../../../../algebra/struct.LinearAct.html">canonical</a>(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>311</span>                    game.sums.outcomes.values[game.sums.indices[<span class="kw-2">&amp;</span>key]] == GameOutcome::Lose
 <span data-nosnippet>312</span>                } <span class="kw">else if let </span><span class="prelude-val">Some</span>((value, <span class="kw">_</span>)) = game.generalized_grundy[indices[i]] {
 <span data-nosnippet>313</span>                    <span class="kw">match </span>game.generalized_grundy[source] {
@@ -918,7 +918,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>indices = <span class="self">self</span>.game.sum_indices(state);
 <span data-nosnippet>351</span>        <span class="kw">let </span>game = <span class="kw-2">&amp;</span><span class="self">self</span>.game;
 <span data-nosnippet>352</span>        <span class="kw">if </span>MISERE {
-<span data-nosnippet>353</span>            <span class="kw">let </span>key = GraphSums::canonical(indices.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
+<span data-nosnippet>353</span>            <span class="kw">let </span>key = GraphSums::canonical(<a href="../../algebra/magma.rs.html#9">indices</a>.clone(), <span class="kw-2">&amp;</span>game.index.as_ref().unwrap().edges);
 <span data-nosnippet>354</span>            <span class="kw">let </span>winner = game.sums.outcomes.winning[game.sums.indices[<span class="kw-2">&amp;</span>key]];
 <span data-nosnippet>355</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
 <span data-nosnippet>356</span>                <span class="kw">let </span>original = indices[i];
@@ -984,7 +984,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>416</span>                    .unwrap();
 <span data-nosnippet>417</span>                <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
 <span data-nosnippet>418</span>                to[i] = next.to;
-<span data-nosnippet>419</span>                <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(Neighbor::new(to, (i, next.label)));
+<span data-nosnippet>419</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(Neighbor::new(to, (i, next.label)));
 <span data-nosnippet>420</span>            }
 <span data-nosnippet>421</span>            <span class="comment">// The current finite XOR exceeds this mex, so a finite component
 <span data-nosnippet>422</span>            // can decrease it to the mex without moving the infinite component.
@@ -998,7 +998,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>430</span>        } <span class="kw">else </span>{
 <span data-nosnippet>431</span>            <span class="kw">let </span>(i, (g, <span class="kw">_</span>)) = indices
 <span data-nosnippet>432</span>                .iter()
-<span data-nosnippet>433</span>                .<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">enumerate</a>()
+<span data-nosnippet>433</span>                .enumerate()
 <span data-nosnippet>434</span>                .filter_map(|(i, <span class="kw-2">&amp;</span>v)| game.generalized_grundy[v].map(|g| (i, g)))
 <span data-nosnippet>435</span>                .filter(|(<span class="kw">_</span>, (g, <span class="kw">_</span>))| g ^ xor &lt; <span class="kw-2">*</span>g)
 <span data-nosnippet>436</span>                .max_by_key(|<span class="kw-2">&amp;</span>(i, g)| (g, Reverse(i)))<span class="question-mark">?</span>;
@@ -1430,7 +1430,7 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>265</span><span class="attr">#[allow(clippy::type_complexity)] </span><span class="comment">// Sum states and labels both carry component information.
 <span data-nosnippet>266</span></span><span class="kw">impl</span>&lt;S, L, G, <span class="kw">const </span>MISERE: bool&gt; GameAnalysis&lt;<span class="lifetime">'_</span>, ImpartialGraph&lt;<span class="lifetime">'_</span>, G&gt;, [S], GameOutcome, MISERE&gt;
 <span data-nosnippet>267</span><span class="kw">where
-<span data-nosnippet>268</span>    </span><a href="../../algebra/magma.rs.html#6">S</a>: Copy,
+<span data-nosnippet>268</span>    </span>S: Copy,
 <span data-nosnippet>269</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
 <span data-nosnippet>270</span>{
 <span data-nosnippet>271</span>    <span class="doccomment">/// Moves to losing positions; use `best_move` to avoid cycling.
@@ -1605,10 +1605,10 @@ Returns <code>None</code> at terminal or losing positions.</p>
 <span data-nosnippet>440</span>            .graph
 <span data-nosnippet>441</span>            .neighbors(state[i])
 <span data-nosnippet>442</span>            .filter_map(|next| {
-<span data-nosnippet>443</span>                <span class="kw">let </span>(g, counter) = <a href="../../num/zero_one.rs.html#1-14">game</a>.generalized_grundy[game.index_of(next.to)]<span class="question-mark">?</span>;
+<span data-nosnippet>443</span>                <span class="kw">let </span>(g, counter) = game.generalized_grundy[game.index_of(next.to)]<span class="question-mark">?</span>;
 <span data-nosnippet>444</span>                (g == target).then_some((next, counter))
 <span data-nosnippet>445</span>            })
-<span data-nosnippet>446</span>            .min_by_key(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, counter)| counter)<span class="question-mark">?
+<span data-nosnippet>446</span>            .<a href="../../algebra/lazy_map.rs.html#9">min_by_key</a>(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, counter)| counter)<span class="question-mark">?
 <span data-nosnippet>447</span>            </span>.<span class="number">0</span>;
 <span data-nosnippet>448</span>        <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
 <span data-nosnippet>449</span>        to[i] = next.to;

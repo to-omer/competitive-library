@@ -347,7 +347,7 @@
 <span data-nosnippet>391</span><span class="kw">where
 <span data-nosnippet>392</span>    </span>T: Clone + Ord + Bounded + Zero + Add&lt;Output = T&gt;,
 <span data-nosnippet>393</span>{
-<span data-nosnippet>394</span>    <span class="kw">fn </span>act_key(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, act: <span class="kw-2">&amp;</span>LazyMapAct&lt;<span class="self">Self</span>&gt;) -&gt; <span class="self">Self</span>::<a href="lazy_map.rs.html#18">Key</a> {
+<span data-nosnippet>394</span>    <span class="kw">fn </span>act_key(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, act: <span class="kw-2">&amp;</span>LazyMapAct&lt;<span class="self">Self</span>&gt;) -&gt; <span class="self">Self</span>::Key {
 <span data-nosnippet>395</span>        FlattenAct::&lt;<span class="self">Self</span>::ActMonoid&gt;::act(key, act)
 <span data-nosnippet>396</span>    }
 <span data-nosnippet>397</span>}
@@ -495,7 +495,7 @@
 <span data-nosnippet>539</span>            },
 <span data-nosnippet>540</span>            n_max: <span class="kw">match </span>x.max.cmp(<span class="kw-2">&amp;</span>y.max) {
 <span data-nosnippet>541</span>                Ordering::Less =&gt; y.n_max,
-<span data-nosnippet>542</span>                Ordering::Equal =&gt; x.n_max + <a href="lazy_map.rs.html#142">y</a>.n_max,
+<span data-nosnippet>542</span>                Ordering::Equal =&gt; x.n_max + y.n_max,
 <span data-nosnippet>543</span>                Ordering::Greater =&gt; x.n_max,
 <span data-nosnippet>544</span>            },
 <span data-nosnippet>545</span>        }
@@ -563,7 +563,7 @@
 <span data-nosnippet>607</span>        + Mul&lt;Output = T&gt;
 <span data-nosnippet>608</span>        + PartialEq,
 <span data-nosnippet>609</span>{
-<span data-nosnippet>610</span>    <span class="kw">type </span>Key = T;
+<span data-nosnippet>610</span>    <span class="kw">type </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Key</a> = T;
 <span data-nosnippet>611</span>    <span class="kw">type </span>AggMonoid = <span class="self">Self</span>;
 <span data-nosnippet>612</span>    <span class="kw">type </span>ActMonoid = RangeChminChmaxAdd&lt;T&gt;;
 <span data-nosnippet>613</span>    <span class="kw">fn </span>single_agg(<span class="kw-2">&amp;</span>key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; LazyMapAgg&lt;<span class="self">Self</span>&gt; {
@@ -579,7 +579,7 @@
 <span data-nosnippet>623</span>        <span class="kw">let </span>lb = a.lb - a.bias;
 <span data-nosnippet>624</span>        <span class="kw">let </span>ub = a.ub - a.bias;
 <span data-nosnippet>625</span>        <span class="kw">let </span>min = x.min.max(lb);
-<span data-nosnippet>626</span>        <span class="kw">let </span>max = x.max.min(ub);
+<span data-nosnippet>626</span>        <span class="kw">let </span>max = <a href="lazy_map.rs.html#189">x</a>.max.min(ub);
 <span data-nosnippet>627</span>        <span class="prelude-val">Some</span>(<span class="kw">if </span>min &gt;= max {
 <span data-nosnippet>628</span>            <span class="self">Self</span>::single(RangeChminChmaxAdd::act(<span class="kw-2">&amp;</span>x.min, a), x.size)
 <span data-nosnippet>629</span>        } <span class="kw">else if </span>x.min2 == x.max {
@@ -594,7 +594,7 @@
 <span data-nosnippet>638</span>            x
 <span data-nosnippet>639</span>        } <span class="kw">else if </span>lb &lt; x.min2 &amp;&amp; x.max2 &lt; ub {
 <span data-nosnippet>640</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = x.clone();
-<span data-nosnippet>641</span>            x.sum = x.sum + (min - x.min) * x.n_min + (max - x.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">max</a>) * x.n_max + a.bias * x.size;
+<span data-nosnippet>641</span>            x.sum = x.sum + (min - x.min) * x.n_min + (max - x.max) * x.n_max + a.bias * x.size;
 <span data-nosnippet>642</span>            x.min = min + a.bias;
 <span data-nosnippet>643</span>            x.max = max + a.bias;
 <span data-nosnippet>644</span>            x.min2 = x.min2 + a.bias;
@@ -1123,7 +1123,7 @@
 <span data-nosnippet>188</span>            .map(|(x, <span class="kw">_</span>)| x.clone())
 <span data-nosnippet>189</span>            .unwrap_or_else(M::agg_unit)
 <span data-nosnippet>190</span>    }
-<span data-nosnippet>191</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; LazyMapAgg&lt;M&gt; {
+<span data-nosnippet>191</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="../algebra/mod.rs.html#51">LazyMapAgg</a>&lt;M&gt; {
 <span data-nosnippet>192</span>        <span class="self">self</span>.fold(<span class="number">0</span>..<span class="self">self</span>.n)
 <span data-nosnippet>193</span>    }
 <span data-nosnippet>194</span>    <span class="kw">fn </span>partition_point_perfect&lt;P&gt;(
@@ -1452,7 +1452,7 @@
 <span data-nosnippet>205</span>        <span class="kw">loop </span>{
 <span data-nosnippet>206</span>            <span class="kw">let </span>depth = (l.trailing_zeros() <span class="kw">as </span>usize)
 <span data-nosnippet>207</span>                .min(<span class="self">self</span>.bit_len)
-<span data-nosnippet>208</span>                .min(<span class="number">63 </span>- (qr - l + <span class="number">1</span>).leading_zeros() <span class="kw">as </span><a href="../algebra/magma.rs.html#1-370">usize</a>);
+<span data-nosnippet>208</span>                .min(<span class="number">63 </span>- (qr - l + <span class="number">1</span>).leading_zeros() <span class="kw">as </span>usize);
 <span data-nosnippet>209</span>            <span class="kw">let </span>r = l | ((<span class="number">1u64 </span>&lt;&lt; depth) - <span class="number">1</span>);
 <span data-nosnippet>210</span>
 <span data-nosnippet>211</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="number">0</span>;
@@ -1690,7 +1690,7 @@
 <span data-nosnippet>216</span>        <span class="kw">let </span><span class="kw-2">mut </span>vl = <span class="highlight">M::agg_unit</span>();
 <span data-nosnippet>217</span>        <span class="kw">let </span><span class="kw-2">mut </span>vr = <span class="highlight">M::agg_unit</span>();
 <span data-nosnippet>218</span>        <span class="kw">while </span>l &lt; r {
-<span data-nosnippet>219</span>            <span class="kw">if </span>l &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+<span data-nosnippet>219</span>            <span class="kw">if </span><a href="../algebra/action.rs.html#14">l</a> &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>220</span>                vl = M::agg_operate(<span class="kw-2">&amp;</span>vl, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[l]);
 <span data-nosnippet>221</span>                l += <span class="number">1</span>;
 <span data-nosnippet>222</span>            }
@@ -1746,13 +1746,13 @@
 <span data-nosnippet>272</span>            acc = nacc;
 <span data-nosnippet>273</span>            k += <span class="number">1</span>;
 <span data-nosnippet>274</span>            <span class="kw">if </span>k.is_power_of_two() {
-<span data-nosnippet>275</span>                <span class="kw">return </span><span class="self">self</span>.len;
+<span data-nosnippet>275</span>                <span class="kw">return </span><span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">len</a>;
 <span data-nosnippet>276</span>            }
 <span data-nosnippet>277</span>        }
 <span data-nosnippet>278</span>    }
 <span data-nosnippet>279</span>    <span class="kw">pub fn </span>rpartition_point_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, right: usize, <span class="kw-2">mut </span>pred: P) -&gt; usize
 <span data-nosnippet>280</span>    <span class="kw">where
-<span data-nosnippet>281</span>        </span>P: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;M&gt;) -&gt; bool,
+<span data-nosnippet>281</span>        </span>P: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;<a href="../algebra/magma.rs.html#6">M</a>&gt;) -&gt; bool,
 <span data-nosnippet>282</span>    {
 <span data-nosnippet>283</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="highlight">M::agg_unit</span>();
 <span data-nosnippet>284</span>        <span class="kw">if </span>right == <span class="number">0 </span>{
@@ -2141,7 +2141,7 @@
 <span data-nosnippet>205</span>        <span class="kw">loop </span>{
 <span data-nosnippet>206</span>            <span class="kw">let </span>depth = (l.trailing_zeros() <span class="kw">as </span>usize)
 <span data-nosnippet>207</span>                .min(<span class="self">self</span>.bit_len)
-<span data-nosnippet>208</span>                .min(<span class="number">63 </span>- (qr - l + <span class="number">1</span>).leading_zeros() <span class="kw">as </span><a href="../algebra/magma.rs.html#1-370">usize</a>);
+<span data-nosnippet>208</span>                .min(<span class="number">63 </span>- (qr - l + <span class="number">1</span>).leading_zeros() <span class="kw">as </span>usize);
 <span data-nosnippet>209</span>            <span class="kw">let </span>r = l | ((<span class="number">1u64 </span>&lt;&lt; depth) - <span class="number">1</span>);
 <span data-nosnippet>210</span>
 <span data-nosnippet>211</span>            <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="number">0</span>;
@@ -2451,7 +2451,7 @@
 <span data-nosnippet>239</span>    }
 <span data-nosnippet>240</span>    <span class="kw">pub fn </span>partition_point_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: P) -&gt; usize
 <span data-nosnippet>241</span>    <span class="kw">where
-<span data-nosnippet>242</span>        </span>P: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;M&gt;) -&gt; <a href="../algebra/ring.rs.html#1-164">bool</a>,
+<span data-nosnippet>242</span>        </span>P: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;M&gt;) -&gt; bool,
 <span data-nosnippet>243</span>    {
 <span data-nosnippet>244</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
 <span data-nosnippet>245</span>        <span class="kw">if </span>left == <span class="self">self</span>.n {
@@ -2496,7 +2496,7 @@
 <span data-nosnippet>284</span>    <span class="kw">where
 <span data-nosnippet>285</span>        </span>P: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;M&gt;) -&gt; bool,
 <span data-nosnippet>286</span>    {
-<span data-nosnippet>287</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
+<span data-nosnippet>287</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../num/zero_one.rs.html#15-28">acc</a> = M::agg_unit();
 <span data-nosnippet>288</span>        <span class="kw">if </span>right == <span class="number">0 </span>{
 <span data-nosnippet>289</span>            <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>290</span>        }
@@ -2530,7 +2530,7 @@
 <span data-nosnippet>318</span>            <span class="kw">if </span>c &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>319</span>                l -= <span class="number">1 </span>&lt;&lt; k;
 <span data-nosnippet>320</span>                <span class="kw">let </span>l = l &gt;&gt; k;
-<span data-nosnippet>321</span>                <span class="kw">let </span>nacc = <span class="kw">match </span><a class="self" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">self</a>.seg.get(<span class="kw-2">&amp;</span>l) {
+<span data-nosnippet>321</span>                <span class="kw">let </span>nacc = <span class="kw">match </span><span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>l) {
 <span data-nosnippet>322</span>                    <span class="prelude-val">Some</span>((x, <span class="kw">_</span>)) =&gt; <span class="highlight">M::agg_operate</span>(x, <span class="kw-2">&amp;</span>acc),
 <span data-nosnippet>323</span>                    <span class="prelude-val">None </span>=&gt; acc.clone(),
 <span data-nosnippet>324</span>                };
@@ -2738,7 +2738,7 @@
 <span data-nosnippet>242</span>    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LazyMapAgg&lt;M&gt; {
 <span data-nosnippet>243</span>        <span class="self">self</span>.seg[<span class="number">1</span>].clone()
 <span data-nosnippet>244</span>    }
-<span data-nosnippet>245</span>    <span class="kw">pub fn </span>partition_point_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: <a href="../algebra/action.rs.html#39">P</a>) -&gt; usize
+<span data-nosnippet>245</span>    <span class="kw">pub fn </span>partition_point_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left: usize, <span class="kw-2">mut </span>pred: P) -&gt; usize
 <span data-nosnippet>246</span>    <span class="kw">where
 <span data-nosnippet>247</span>        </span>P: FnMut(<span class="kw-2">&amp;</span>LazyMapAgg&lt;M&gt;) -&gt; bool,
 <span data-nosnippet>248</span>    {
@@ -2760,7 +2760,7 @@
 <span data-nosnippet>264</span>                    <span class="kw">let </span>nacc = <span class="highlight">M::agg_operate</span>(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[k]);
 <span data-nosnippet>265</span>                    <span class="kw">if </span>pred(<span class="kw-2">&amp;</span>nacc) {
 <span data-nosnippet>266</span>                        acc = nacc;
-<span data-nosnippet>267</span>                        k += <span class="number">1</span>;
+<span data-nosnippet>267</span>                        <a href="../algebra/action.rs.html#70">k</a> += <span class="number">1</span>;
 <span data-nosnippet>268</span>                    }
 <span data-nosnippet>269</span>                }
 <span data-nosnippet>270</span>                <span class="kw">return </span>k - <span class="self">self</span>.n;

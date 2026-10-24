@@ -224,7 +224,7 @@
 <span data-nosnippet>686</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= threshold {
 <span data-nosnippet>687</span>            <span class="kw">return </span><span class="highlight">convolve_karatsuba</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>688</span>        }
-<span data-nosnippet>689</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../algebra/action.rs.html#14">a</a>).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= naive_threshold {
+<span data-nosnippet>689</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../algebra/action.rs.html#14">b</a>)) &lt;= naive_threshold {
 <span data-nosnippet>690</span>            <span class="kw">return </span>convolve_naive(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>691</span>        }
 <span data-nosnippet>692</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
@@ -236,7 +236,7 @@
 <span data-nosnippet>698</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>699</span>            max_size
 <span data-nosnippet>700</span>        };
-<span data-nosnippet>701</span>        <span class="kw">if </span>size &gt; max_size {
+<span data-nosnippet>701</span>        <span class="kw">if </span>size &gt; <a href="../algebra/action.rs.html#28-30">max_size</a> {
 <span data-nosnippet>702</span>            <span class="kw">return </span>convolve_large_ntt(a, b);
 <span data-nosnippet>703</span>        }
 <span data-nosnippet>704</span>        <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
@@ -358,7 +358,7 @@
 <span data-nosnippet>820</span>        t.len()
 <span data-nosnippet>821</span>    }
 <span data-nosnippet>822</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>823</span>        <span class="kw">let </span>npot = <a href="../algebra/lazy_map.rs.html#96">len</a>.max(<span class="number">1</span>).next_power_of_two();
+<span data-nosnippet>823</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
 <span data-nosnippet>824</span>        <span class="kw">let </span>f = convert_crt_input(t, npot);
 <span data-nosnippet>825</span>        (
 <span data-nosnippet>826</span>            Convolve::&lt;N1&gt;::transform(f.<span class="number">0</span>, npot),
@@ -379,9 +379,9 @@
 <span data-nosnippet>841</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>842</span>    }
 <span data-nosnippet>843</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>844</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">max</a>(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
+<span data-nosnippet>844</span>        <span class="kw">let </span>max_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
 <span data-nosnippet>845</span>        <span class="kw">let </span>min_len = <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b));
-<span data-nosnippet>846</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@<a href="../algebra/operations.rs.html#243-248">dispatch_avx2_fma</a> (<span class="number">30</span>, <span class="number">10</span>), (<span class="number">384</span>, <span class="number">128</span>));
+<span data-nosnippet>846</span>        <span class="kw">let </span>(balanced, short) = <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma (<span class="number">30</span>, <span class="number">10</span>), (<span class="number">384</span>, <span class="number">128</span>));
 <span data-nosnippet>847</span>        <span class="kw">if </span>max_len &lt;= balanced || min_len &lt;= short {
 <span data-nosnippet>848</span>            <span class="kw">return </span><span class="highlight">convolve_karatsuba</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
 <span data-nosnippet>849</span>        }
@@ -452,7 +452,7 @@
 <span data-nosnippet>914</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>915</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
 <span data-nosnippet>916</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.to_vec());
-<span data-nosnippet>917</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().<a href="../algebra/lazy_map.rs.html#226">zip</a>(product) {
+<span data-nosnippet>917</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>918</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>919</span>            }
 <span data-nosnippet>920</span>        }
@@ -538,10 +538,10 @@
 <span data-nosnippet>1000</span>            ) {
 <span data-nosnippet>1001</span>                <span class="kw">let </span>d1 = c1.inner();
 <span data-nosnippet>1002</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>1003</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">new</a>(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>1003</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
 <span data-nosnippet>1004</span>                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>1005</span>                <span class="kw">let </span>limb = (d1 <span class="kw">as </span>u64)
-<span data-nosnippet>1006</span>                    .wrapping_add((d2 <span class="kw">as </span>u64).wrapping_mul(m1))
+<span data-nosnippet>1006</span>                    .wrapping_add((d2 <span class="kw">as </span><a href="../algebra/lazy_map.rs.html#334">u64</a>).wrapping_mul(m1))
 <span data-nosnippet>1007</span>                    .wrapping_add((d3 <span class="kw">as </span>u64).wrapping_mul(m2));
 <span data-nosnippet>1008</span>                <span class="kw-2">*</span>value = value.wrapping_add(limb &lt;&lt; (part * bits));
 <span data-nosnippet>1009</span>            }
@@ -554,7 +554,7 @@
 <span data-nosnippet>1016</span>            <span class="macro">assert_eq!</span>(f[<span class="number">0</span>].len(), g[<span class="number">0</span>].len());
 <span data-nosnippet>1017</span>            <span class="kw">if </span>f[<span class="number">1</span>].is_empty() || g[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1018</span>                <span class="kw">if </span>f[<span class="number">1</span>].is_empty() &amp;&amp; !g[<span class="number">1</span>].is_empty() {
-<span data-nosnippet>1019</span>                    f[<span class="number">1</span>] = f[<span class="number">0</span>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<span data-nosnippet>1019</span>                    f[<span class="number">1</span>] = f[<span class="number">0</span>].clone();
 <span data-nosnippet>1020</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">1</span>], <span class="kw-2">&amp;</span>g[<span class="number">1</span>]);
 <span data-nosnippet>1021</span>                } <span class="kw">else if </span>!f[<span class="number">1</span>].is_empty() {
 <span data-nosnippet>1022</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">1</span>], <span class="kw-2">&amp;</span>g[<span class="number">0</span>]);
@@ -621,7 +621,7 @@
 <span data-nosnippet>1083</span>            });
 <span data-nosnippet>1084</span>            <span class="kw">return unsafe </span>{ Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
 <span data-nosnippet>1085</span>        }
-<span data-nosnippet>1086</span>        <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">len</a> = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>1086</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>1087</span>        <span class="kw">let </span>block_len = <span class="kw">if </span>min_len &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
 <span data-nosnippet>1088</span>            <span class="number">1 </span>&lt;&lt; <span class="number">20
 <span data-nosnippet>1089</span>        </span>} <span class="kw">else </span>{

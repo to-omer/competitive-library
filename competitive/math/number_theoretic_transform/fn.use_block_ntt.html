@@ -260,8 +260,8 @@
 <span data-nosnippet>835</span>            Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len),
 <span data-nosnippet>836</span>        ))
 <span data-nosnippet>837</span>    }
-<span data-nosnippet>838</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::<a href="../algebra/action.rs.html#86">F</a>, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-<span data-nosnippet>839</span>        Convolve::&lt;N1&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
+<span data-nosnippet>838</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>839</span>        Convolve::&lt;N1&gt;::multiply(<span class="kw-2">&amp;mut </span><a href="../algebra/action.rs.html#86">f</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
 <span data-nosnippet>840</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
 <span data-nosnippet>841</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>842</span>    }
@@ -296,11 +296,11 @@
 <span data-nosnippet>871</span>        <span class="kw">if </span>max_len &lt;= block_len {
 <span data-nosnippet>872</span>            <span class="kw">return </span>convolve(a, b);
 <span data-nosnippet>873</span>        }
-<span data-nosnippet>874</span>        <span class="kw">let </span>(a, b) = <span class="kw">if </span>a.len() &gt;= b.len() { (a, b) } <span class="kw">else </span>{ (b, a) };
+<span data-nosnippet>874</span>        <span class="kw">let </span>(a, b) = <span class="kw">if </span>a.len() &gt;= <a href="../algebra/lazy_map.rs.html#45">b</a>.len() { (a, b) } <span class="kw">else </span>{ (b, a) };
 <span data-nosnippet>875</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
 <span data-nosnippet>876</span>        <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>877</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.clone());
-<span data-nosnippet>878</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[i * block_len..].iter_mut().zip(product) {
+<span data-nosnippet>878</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span><a href="../algebra/magma.rs.html#145-176">result</a>[i * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>879</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>880</span>            }
 <span data-nosnippet>881</span>        }
@@ -375,7 +375,7 @@
 <span data-nosnippet>950</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>951</span>            <span class="number">22
 <span data-nosnippet>952</span>        </span>};
-<span data-nosnippet>953</span>        <span class="kw">let </span>parts = <span class="kw">if </span>bits == <span class="number">32 </span>&amp;&amp; t.iter().all(|<span class="kw-2">&amp;</span>value| value &lt;= u32::MAX <span class="kw">as </span><a href="../algebra/action.rs.html#12">u64</a>) {
+<span data-nosnippet>953</span>        <span class="kw">let </span>parts = <span class="kw">if </span>bits == <span class="number">32 </span>&amp;&amp; t.iter().all(|<span class="kw-2">&amp;</span>value| value &lt;= u32::MAX <span class="kw">as </span>u64) {
 <span data-nosnippet>954</span>            <span class="number">1
 <span data-nosnippet>955</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>956</span>            <span class="number">64usize</span>.div_ceil(bits)
@@ -399,7 +399,7 @@
 <span data-nosnippet>974</span>            })
 <span data-nosnippet>975</span>        }
 <span data-nosnippet>976</span>        (
-<span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
+<span data-nosnippet>977</span>            split(<span class="kw-2">&amp;</span>t, npot, <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">bits</a>, parts),
 <span data-nosnippet>978</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>979</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>980</span>        )
@@ -451,7 +451,7 @@
 <span data-nosnippet>1026</span>            }
 <span data-nosnippet>1027</span>            <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>1028</span>            </span><span class="kw">if </span><span class="highlight">use_block_ntt::&lt;M&gt;</span>(f[<span class="number">0</span>].len()) {
-<span data-nosnippet>1029</span>                <span class="kw">for </span>part <span class="kw">in </span>(<span class="number">1</span>..<span class="kw">if </span>f[<span class="number">2</span>].is_empty() { <span class="number">2 </span>} <span class="kw">else </span>{ <span class="number">3 </span>}).<a href="../num/zero_one.rs.html#15-28">rev</a>() {
+<span data-nosnippet>1029</span>                <span class="kw">for </span>part <span class="kw">in </span>(<span class="number">1</span>..<span class="kw">if </span>f[<span class="number">2</span>].is_empty() { <span class="number">2 </span>} <span class="kw">else </span>{ <span class="number">3 </span>}).rev() {
 <span data-nosnippet>1030</span>                    <span class="kw">let </span><span class="kw-2">mut </span>sum = f[<span class="number">0</span>].clone();
 <span data-nosnippet>1031</span>                    Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>g[part]);
 <span data-nosnippet>1032</span>                    <span class="kw">for </span>left <span class="kw">in </span><span class="number">1</span>..=part {

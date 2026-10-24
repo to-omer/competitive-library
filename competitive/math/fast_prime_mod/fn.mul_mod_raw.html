@@ -222,13 +222,13 @@
 <span data-nosnippet>292</span>                <span class="kw">if </span>x <span class="kw">as </span>usize &gt;= k {
 <span data-nosnippet>293</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>294</span>                }
-<span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">u32</a>) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span>u32 {
+<span data-nosnippet>295</span>                <span class="kw">while </span>(i <span class="kw">as </span>u32) &lt; x &amp;&amp; lpf[x <span class="kw">as </span>usize] &lt; i <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">u32</a> {
 <span data-nosnippet>296</span>                    <span class="kw">let </span>q = lpf[x <span class="kw">as </span>usize];
 <span data-nosnippet>297</span>                    x /= q;
 <span data-nosnippet>298</span>                    ans = add_mod(ans, log[k + q <span class="kw">as </span>usize], ord);
 <span data-nosnippet>299</span>                }
-<span data-nosnippet>300</span>                <span class="kw">if </span><span class="number">1 </span>&lt; x &amp;&amp; x &lt; <a href="../algebra/action.rs.html#14">i</a> <span class="kw">as </span>u32 {
-<span data-nosnippet>301</span>                    ans = add_mod(ans, log[k + x <span class="kw">as </span>usize], ord);
+<span data-nosnippet>300</span>                <span class="kw">if </span><span class="number">1 </span>&lt; x &amp;&amp; x &lt; i <span class="kw">as </span>u32 {
+<span data-nosnippet>301</span>                    ans = add_mod(<a href="../algebra/action.rs.html#12">ans</a>, log[k + x <span class="kw">as </span>usize], ord);
 <span data-nosnippet>302</span>                    x = <span class="number">1</span>;
 <span data-nosnippet>303</span>                }
 <span data-nosnippet>304</span>                <span class="kw">if </span>x == <span class="number">1 </span>{
@@ -250,7 +250,7 @@
 <span data-nosnippet>320</span>    <span class="kw">while let </span><span class="prelude-val">Some</span>((a, b, c, d)) = stack.pop() {
 <span data-nosnippet>321</span>        <span class="kw">let </span>nb = b + d;
 <span data-nosnippet>322</span>        <span class="kw">if </span>nb &lt; FRAC_DEN_LIMIT {
-<span data-nosnippet>323</span>            stack.push((a + c, nb, c, d));
+<span data-nosnippet>323</span>            <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">stack</a>.push((a + c, nb, c, d));
 <span data-nosnippet>324</span>            stack.push((a, b, a + c, nb));
 <span data-nosnippet>325</span>        } <span class="kw">else </span>{
 <span data-nosnippet>326</span>            <span class="kw">let </span>s = (a <span class="kw">as </span>u64 * P <span class="kw">as </span>u64 / ((<span class="number">1u64 </span>&lt;&lt; FRAC_SHIFT) * b <span class="kw">as </span>u64)) <span class="kw">as </span>usize;
@@ -258,7 +258,7 @@
 <span data-nosnippet>328</span>            frac[s] = pack_frac(a, b);
 <span data-nosnippet>329</span>            frac[t] = pack_frac(c, d);
 <span data-nosnippet>330</span>            <span class="kw">let </span>a = a.min(c);
-<span data-nosnippet>331</span>            <span class="kw">let </span>b = b.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">min</a>(d);
+<span data-nosnippet>331</span>            <span class="kw">let </span>b = b.min(d);
 <span data-nosnippet>332</span>            <span class="kw">if </span>s + <span class="number">1 </span>&lt; t {
 <span data-nosnippet>333</span>                <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>frac[s + <span class="number">1</span>..t] {
 <span data-nosnippet>334</span>                    <span class="kw-2">*</span>x = pack_frac(a, b);
@@ -270,7 +270,7 @@
 <span data-nosnippet>340</span>}
 <span data-nosnippet>341</span>
 <span data-nosnippet>342</span><span class="attr">#[inline(always)]
-<span data-nosnippet>343</span></span><span class="kw">fn </span>pow_root_raw&lt;<span class="kw">const </span>P: u32&gt;(exp: u32, pow_lo: <span class="kw-2">&amp;</span>[u32], pow_hi: <span class="kw-2">&amp;</span>[u32]) -&gt; u32 {
+<span data-nosnippet>343</span></span><span class="kw">fn </span>pow_root_raw&lt;<span class="kw">const </span><a href="../algebra/action.rs.html#70">P</a>: u32&gt;(exp: u32, pow_lo: <span class="kw-2">&amp;</span>[u32], pow_hi: <span class="kw-2">&amp;</span>[u32]) -&gt; u32 {
 <span data-nosnippet>344</span>    <span class="kw">let </span>lo = exp <span class="kw">as </span>usize &amp; (POW_BLOCK - <span class="number">1</span>);
 <span data-nosnippet>345</span>    <span class="kw">let </span>hi = exp <span class="kw">as </span>usize &gt;&gt; POW_BLOCK_BITS;
 <span data-nosnippet>346</span>    <span class="highlight">mul_mod_raw::&lt;P&gt;</span>(pow_lo[lo], pow_hi[hi])

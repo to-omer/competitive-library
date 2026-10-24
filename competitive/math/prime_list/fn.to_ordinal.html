@@ -267,18 +267,18 @@
 <span data-nosnippet>304</span>            front_word_phase: <span class="number">0</span>,
 <span data-nosnippet>305</span>            front_word,
 <span data-nosnippet>306</span>            back_word_base: back_word_ordinal / COPRIME <span class="kw">as </span>u32 * PERIOD,
-<span data-nosnippet>307</span>            back_word_phase: (back_word_ordinal % COPRIME <span class="kw">as </span>u32) <span class="kw">as </span>u8,
+<span data-nosnippet>307</span>            back_word_phase: (back_word_ordinal % COPRIME <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">u32</a>) <span class="kw">as </span>u8,
 <span data-nosnippet>308</span>            back_word,
 <span data-nosnippet>309</span>        }
 <span data-nosnippet>310</span>    }
 <span data-nosnippet>311</span>    <span class="kw">pub fn </span>is_prime(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u32) -&gt; bool {
-<span data-nosnippet>312</span>        <span class="macro">assert!</span>(n &lt;= <span class="self">self</span>.max_n, <span class="string">"expected `n={} &lt;= {}`"</span>, <a href="../algebra/action.rs.html#70">n</a>, <span class="self">self</span>.max_n);
+<span data-nosnippet>312</span>        <span class="macro">assert!</span>(n &lt;= <span class="self">self</span>.max_n, <span class="string">"expected `n={} &lt;= {}`"</span>, n, <span class="self">self</span>.max_n);
 <span data-nosnippet>313</span>        <span class="kw">if </span>WHEEL_PRIMES.contains(<span class="kw-2">&amp;</span>n) {
 <span data-nosnippet>314</span>            <span class="bool-val">true
 <span data-nosnippet>315</span>        </span>} <span class="kw">else if </span>!coprime_to_wheel(n) {
 <span data-nosnippet>316</span>            <span class="bool-val">false
 <span data-nosnippet>317</span>        </span>} <span class="kw">else </span>{
-<span data-nosnippet>318</span>            <span class="kw">let </span>ordinal = <span class="highlight">to_ordinal</span>(n) <span class="kw">as </span>usize;
+<span data-nosnippet>318</span>            <span class="kw">let </span>ordinal = <span class="highlight">to_ordinal</span>(n) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a>;
 <span data-nosnippet>319</span>            ordinal &lt; <span class="self">self</span>.bit_len &amp;&amp; <span class="self">self</span>.bits[ordinal / <span class="number">64</span>] &gt;&gt; (ordinal % <span class="number">64</span>) &amp; <span class="number">1 </span>!= <span class="number">0
 <span data-nosnippet>320</span>        </span>}
 <span data-nosnippet>321</span>    }
@@ -340,7 +340,7 @@
 <span data-nosnippet>377</span>            <span class="kw">let </span><span class="kw-2">mut </span>positions: Vec&lt;<span class="kw">_</span>&gt; = SQRT_PRIMES.iter().map(|<span class="kw-2">&amp;</span>p| <span class="highlight">to_ordinal</span>(p * p)).collect();
 <span data-nosnippet>378</span>            <span class="kw">let </span><span class="kw-2">mut </span>states: Vec&lt;<span class="kw">_</span>&gt; = SQRT_PRIMES
 <span data-nosnippet>379</span>                .iter()
-<span data-nosnippet>380</span>                .map(|<span class="kw-2">&amp;</span>p| STATES[(p % PERIOD) <span class="kw">as </span>usize])
+<span data-nosnippet>380</span>                .map(|<span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#67">p</a>| STATES[(p % PERIOD) <span class="kw">as </span>usize])
 <span data-nosnippet>381</span>                .collect();
 <span data-nosnippet>382</span>            <span class="kw">const </span>SPARSE_BLOCK: u32 = <span class="number">1 </span>&lt;&lt; <span class="number">22</span>;
 <span data-nosnippet>383</span>            <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..limit).step_by(SPARSE_BLOCK <span class="kw">as </span>usize) {
