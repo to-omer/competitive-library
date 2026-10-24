@@ -610,7 +610,7 @@
 <span data-nosnippet>1286</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>1287</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
 <span data-nosnippet>1288</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
-<span data-nosnippet>1289</span>        <span class="kw">if </span>std::ptr::eq(f, g) {
+<span data-nosnippet>1289</span>        <span class="kw">if </span>std::ptr::eq(f, <a href="../algebra/lazy_map.rs.html#439">g</a>) {
 <span data-nosnippet>1290</span>            <span class="kw">return </span>f.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter().map(|a| a[<span class="number">0</span>] * a[<span class="number">1</span>]).collect();
 <span data-nosnippet>1291</span>        }
 <span data-nosnippet>1292</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
@@ -656,7 +656,7 @@
 <span data-nosnippet>1332</span>
 <span data-nosnippet>1333</span>    <span class="kw">fn </span>multiply_add(sum: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1334</span>        <span class="macro">assert!</span>(sum.len() == f.len() &amp;&amp; sum.len() == g.len());
-<span data-nosnippet>1335</span>        pointwise_multiply_add(sum, f, g);
+<span data-nosnippet>1335</span>        pointwise_multiply_add(sum, <a href="../algebra/lazy_map.rs.html#511">f</a>, g);
 <span data-nosnippet>1336</span>    }
 <span data-nosnippet>1337</span>
 <span data-nosnippet>1338</span>    <span class="kw">fn </span>power_projection_step(
@@ -678,11 +678,11 @@
 <span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>q = q_flat;
 <span data-nosnippet>1355</span>        q.resize_with(size, MInt::&lt;M&gt;::zero);
 <span data-nosnippet>1356</span>        ntt_rows(<span class="kw-2">&amp;mut </span>q, cols);
-<span data-nosnippet>1357</span>        <span class="kw">let </span>q_high = (rows == high_degree).then(|| <a href="../algebra/lazy_map.rs.html#535">q</a>[(qy - <span class="number">1</span>) * cols..qy * cols].to_vec());
+<span data-nosnippet>1357</span>        <span class="kw">let </span>q_high = (rows == high_degree).then(|| q[(qy - <span class="number">1</span>) * cols..qy * cols].to_vec());
 <span data-nosnippet>1358</span>        ntt_batch(<span class="kw-2">&amp;mut </span>q, cols);
 <span data-nosnippet>1359</span>
 <span data-nosnippet>1360</span>        <span class="kw">let </span>half = cols / <span class="number">2</span>;
-<span data-nosnippet>1361</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd_factor = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
+<span data-nosnippet>1361</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd_factor = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Less">half</a>];
 <span data-nosnippet>1362</span>        <span class="kw">let </span><span class="kw-2">mut </span>factor = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1363</span>        <span class="kw">let </span>k = cols.trailing_zeros() <span class="kw">as </span>usize;
 <span data-nosnippet>1364</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
@@ -713,12 +713,12 @@
 <span data-nosnippet>1389</span>            qr[i] = q[i &lt;&lt; <span class="number">1</span>] * q[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>];
 <span data-nosnippet>1390</span>        }
 <span data-nosnippet>1391</span>        intt_batch(<span class="kw-2">&amp;mut </span>pr, half);
-<span data-nosnippet>1392</span>        intt_rows(<span class="kw-2">&amp;mut </span>pr, <a href="../num/zero_one.rs.html#2">half</a>);
+<span data-nosnippet>1392</span>        intt_rows(<span class="kw-2">&amp;mut </span>pr, half);
 <span data-nosnippet>1393</span>        intt_batch(<span class="kw-2">&amp;mut </span>qr, half);
 <span data-nosnippet>1394</span>        intt_rows(<span class="kw-2">&amp;mut </span>qr, half);
 <span data-nosnippet>1395</span>
 <span data-nosnippet>1396</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q_high) = q_high {
-<span data-nosnippet>1397</span>            <span class="kw">let </span><span class="kw-2">mut </span>q_high_even = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
+<span data-nosnippet>1397</span>            <span class="kw">let </span><span class="kw-2">mut </span>q_high_even = <span class="macro">vec!</span>[<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">MInt</a>::&lt;M&gt;::zero(); half];
 <span data-nosnippet>1398</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..half {
 <span data-nosnippet>1399</span>                q_high_even[i] = q_high[i &lt;&lt; <span class="number">1</span>] * q_high[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>];
 <span data-nosnippet>1400</span>            }
@@ -751,15 +751,15 @@
 <span data-nosnippet>1427</span>
 <span data-nosnippet>1428</span>    <span class="kw">fn </span>transform_ntt(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>1429</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
-<span data-nosnippet>1430</span>        <span class="kw">let </span><a href="../algebra/lazy_map.rs.html#648">f</a> = convert_crt_input(t, npot);
+<span data-nosnippet>1430</span>        <span class="kw">let </span>f = convert_crt_input(t, npot);
 <span data-nosnippet>1431</span>        (
-<span data-nosnippet>1432</span>            Convolve::&lt;N1&gt;::transform_ntt(<a href="../algebra/lazy_map.rs.html#648">f</a>.<span class="number">0</span>, npot),
+<span data-nosnippet>1432</span>            Convolve::&lt;N1&gt;::transform_ntt(f.<span class="number">0</span>, npot),
 <span data-nosnippet>1433</span>            Convolve::&lt;N2&gt;::transform_ntt(f.<span class="number">1</span>, npot),
 <span data-nosnippet>1434</span>            Convolve::&lt;N3&gt;::transform_ntt(f.<span class="number">2</span>, npot),
 <span data-nosnippet>1435</span>        )
 <span data-nosnippet>1436</span>    }
 <span data-nosnippet>1437</span>
-<span data-nosnippet>1438</span>    <span class="kw">fn </span>inverse_transform_ntt(f: <span class="self">Self</span>::F, <a href="../algebra/lazy_map.rs.html#658">len</a>: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>1438</span>    <span class="kw">fn </span>inverse_transform_ntt(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1439</span>        reconstruct_mint_crt((
 <span data-nosnippet>1440</span>            Convolve::&lt;N1&gt;::inverse_transform_ntt(f.<span class="number">0</span>, len),
 <span data-nosnippet>1441</span>            Convolve::&lt;N2&gt;::inverse_transform_ntt(f.<span class="number">1</span>, len),
@@ -1837,7 +1837,7 @@
 <span data-nosnippet>1286</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>1287</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
 <span data-nosnippet>1288</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
-<span data-nosnippet>1289</span>        <span class="kw">if </span>std::ptr::eq(f, g) {
+<span data-nosnippet>1289</span>        <span class="kw">if </span>std::ptr::eq(f, <a href="../algebra/lazy_map.rs.html#439">g</a>) {
 <span data-nosnippet>1290</span>            <span class="kw">return </span>f.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter().map(|a| a[<span class="number">0</span>] * a[<span class="number">1</span>]).collect();
 <span data-nosnippet>1291</span>        }
 <span data-nosnippet>1292</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).<span class="highlight">inv</span>();
@@ -1883,7 +1883,7 @@
 <span data-nosnippet>1332</span>
 <span data-nosnippet>1333</span>    <span class="kw">fn </span>multiply_add(sum: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1334</span>        <span class="macro">assert!</span>(sum.len() == f.len() &amp;&amp; sum.len() == g.len());
-<span data-nosnippet>1335</span>        pointwise_multiply_add(sum, f, g);
+<span data-nosnippet>1335</span>        pointwise_multiply_add(sum, <a href="../algebra/lazy_map.rs.html#511">f</a>, g);
 <span data-nosnippet>1336</span>    }
 <span data-nosnippet>1337</span>
 <span data-nosnippet>1338</span>    <span class="kw">fn </span>power_projection_step(
@@ -1905,11 +1905,11 @@
 <span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>q = q_flat;
 <span data-nosnippet>1355</span>        q.resize_with(size, MInt::&lt;M&gt;::zero);
 <span data-nosnippet>1356</span>        ntt_rows(<span class="kw-2">&amp;mut </span>q, cols);
-<span data-nosnippet>1357</span>        <span class="kw">let </span>q_high = (rows == high_degree).then(|| <a href="../algebra/lazy_map.rs.html#535">q</a>[(qy - <span class="number">1</span>) * cols..qy * cols].to_vec());
+<span data-nosnippet>1357</span>        <span class="kw">let </span>q_high = (rows == high_degree).then(|| q[(qy - <span class="number">1</span>) * cols..qy * cols].to_vec());
 <span data-nosnippet>1358</span>        ntt_batch(<span class="kw-2">&amp;mut </span>q, cols);
 <span data-nosnippet>1359</span>
 <span data-nosnippet>1360</span>        <span class="kw">let </span>half = cols / <span class="number">2</span>;
-<span data-nosnippet>1361</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd_factor = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
+<span data-nosnippet>1361</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd_factor = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Less">half</a>];
 <span data-nosnippet>1362</span>        <span class="kw">let </span><span class="kw-2">mut </span>factor = MInt::&lt;M&gt;::from(<span class="number">2</span>).<span class="highlight">inv</span>();
 <span data-nosnippet>1363</span>        <span class="kw">let </span>k = cols.trailing_zeros() <span class="kw">as </span>usize;
 <span data-nosnippet>1364</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
@@ -1940,12 +1940,12 @@
 <span data-nosnippet>1389</span>            qr[i] = q[i &lt;&lt; <span class="number">1</span>] * q[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>];
 <span data-nosnippet>1390</span>        }
 <span data-nosnippet>1391</span>        intt_batch(<span class="kw-2">&amp;mut </span>pr, half);
-<span data-nosnippet>1392</span>        intt_rows(<span class="kw-2">&amp;mut </span>pr, <a href="../num/zero_one.rs.html#2">half</a>);
+<span data-nosnippet>1392</span>        intt_rows(<span class="kw-2">&amp;mut </span>pr, half);
 <span data-nosnippet>1393</span>        intt_batch(<span class="kw-2">&amp;mut </span>qr, half);
 <span data-nosnippet>1394</span>        intt_rows(<span class="kw-2">&amp;mut </span>qr, half);
 <span data-nosnippet>1395</span>
 <span data-nosnippet>1396</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(q_high) = q_high {
-<span data-nosnippet>1397</span>            <span class="kw">let </span><span class="kw-2">mut </span>q_high_even = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
+<span data-nosnippet>1397</span>            <span class="kw">let </span><span class="kw-2">mut </span>q_high_even = <span class="macro">vec!</span>[<a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">MInt</a>::&lt;M&gt;::zero(); half];
 <span data-nosnippet>1398</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..half {
 <span data-nosnippet>1399</span>                q_high_even[i] = q_high[i &lt;&lt; <span class="number">1</span>] * q_high[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>];
 <span data-nosnippet>1400</span>            }
@@ -1978,15 +1978,15 @@
 <span data-nosnippet>1427</span>
 <span data-nosnippet>1428</span>    <span class="kw">fn </span>transform_ntt(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>1429</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
-<span data-nosnippet>1430</span>        <span class="kw">let </span><a href="../algebra/lazy_map.rs.html#648">f</a> = convert_crt_input(t, npot);
+<span data-nosnippet>1430</span>        <span class="kw">let </span>f = convert_crt_input(t, npot);
 <span data-nosnippet>1431</span>        (
-<span data-nosnippet>1432</span>            Convolve::&lt;N1&gt;::transform_ntt(<a href="../algebra/lazy_map.rs.html#648">f</a>.<span class="number">0</span>, npot),
+<span data-nosnippet>1432</span>            Convolve::&lt;N1&gt;::transform_ntt(f.<span class="number">0</span>, npot),
 <span data-nosnippet>1433</span>            Convolve::&lt;N2&gt;::transform_ntt(f.<span class="number">1</span>, npot),
 <span data-nosnippet>1434</span>            Convolve::&lt;N3&gt;::transform_ntt(f.<span class="number">2</span>, npot),
 <span data-nosnippet>1435</span>        )
 <span data-nosnippet>1436</span>    }
 <span data-nosnippet>1437</span>
-<span data-nosnippet>1438</span>    <span class="kw">fn </span>inverse_transform_ntt(f: <span class="self">Self</span>::F, <a href="../algebra/lazy_map.rs.html#658">len</a>: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>1438</span>    <span class="kw">fn </span>inverse_transform_ntt(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1439</span>        reconstruct_mint_crt((
 <span data-nosnippet>1440</span>            Convolve::&lt;N1&gt;::inverse_transform_ntt(f.<span class="number">0</span>, len),
 <span data-nosnippet>1441</span>            Convolve::&lt;N2&gt;::inverse_transform_ntt(f.<span class="number">1</span>, len),

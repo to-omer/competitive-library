@@ -755,7 +755,7 @@
 <span data-nosnippet>727</span>        <span class="kw">let </span>transposed: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..p)
 <span data-nosnippet>728</span>            .flat_map(|j| (<span class="number">0</span>..m).map(<span class="kw">move </span>|i| b[i * stride_b + j].clone()))
 <span data-nosnippet>729</span>            .collect();
-<span data-nosnippet>730</span>        <span class="kw">for </span>(a, c) <span class="kw">in </span>a.chunks(stride_a).zip(c.chunks_exact_mut(p)) {
+<span data-nosnippet>730</span>        <span class="kw">for </span>(a, c) <span class="kw">in </span>a.chunks(stride_a).zip(<a href="../algebra/lazy_map.rs.html#423">c</a>.chunks_exact_mut(p)) {
 <span data-nosnippet>731</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>transposed.chunks_exact(m).zip(c) {
 <span data-nosnippet>732</span>                <span class="kw-2">*</span>c = R::dot_product(<span class="kw-2">&amp;</span>a[..m], b);
 <span data-nosnippet>733</span>            }
@@ -780,7 +780,7 @@
 <span data-nosnippet>752</span>    <span class="kw">let </span>(m2, rest) = rest.split_at_mut(block);
 <span data-nosnippet>753</span>    <span class="kw">let </span>(m3, rest) = rest.split_at_mut(block);
 <span data-nosnippet>754</span>    <span class="kw">let </span>(m4, rest) = rest.split_at_mut(block);
-<span data-nosnippet>755</span>    <span class="kw">let </span>(m5, rest) = rest.split_at_mut(block);
+<span data-nosnippet>755</span>    <span class="kw">let </span>(m5, rest) = <a href="../num/zero_one.rs.html#2">rest</a>.split_at_mut(block);
 <span data-nosnippet>756</span>    <span class="kw">let </span>(m6, m7) = rest.split_at_mut(block);
 <span data-nosnippet>757</span>
 <span data-nosnippet>758</span>    <span class="comment">// (A11 + A22)(B11 + B22)
@@ -797,7 +797,7 @@
 <span data-nosnippet>769</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], s2, m3, (h, k, w), stride_a, w);
 <span data-nosnippet>770</span>
 <span data-nosnippet>771</span>    <span class="comment">// A22 (B21 - B11)
-<span data-nosnippet>772</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">b21</a>..], <span class="kw-2">&amp;</span>b[b11..], s2, w, stride_b, stride_b);
+<span data-nosnippet>772</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b11..], s2, w, stride_b, stride_b);
 <span data-nosnippet>773</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a22..], s2, m4, (h, k, w), stride_a, w);
 <span data-nosnippet>774</span>
 <span data-nosnippet>775</span>    <span class="comment">// (A11 + A12) B22
@@ -810,9 +810,9 @@
 <span data-nosnippet>782</span>    strassen_rec::&lt;R&gt;(s1, s2, m6, (h, k, w), k, w);
 <span data-nosnippet>783</span>
 <span data-nosnippet>784</span>    <span class="comment">// (A12 - A22)(B21 + B22)
-<span data-nosnippet>785</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span>a[a22..], s1, k, stride_a, stride_a);
+<span data-nosnippet>785</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#511">a</a>[a22..], s1, k, stride_a, stride_a);
 <span data-nosnippet>786</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b22..], s2, w, stride_b, stride_b);
-<span data-nosnippet>787</span>    strassen_rec::&lt;<a href="../algebra/lazy_map.rs.html#535">R</a>&gt;(s1, s2, m7, (h, k, w), k, w);
+<span data-nosnippet>787</span>    strassen_rec::&lt;R&gt;(s1, s2, m7, (h, k, w), k, w);
 <span data-nosnippet>788</span>
 <span data-nosnippet>789</span>    <span class="kw">let </span>c11 = <span class="number">0</span>;
 <span data-nosnippet>790</span>    <span class="kw">let </span>c12 = w;
@@ -823,10 +823,10 @@
 <span data-nosnippet>795</span>        .zip(m4.iter())
 <span data-nosnippet>796</span>        .zip(m5.iter())
 <span data-nosnippet>797</span>        .zip(m7.iter())
-<span data-nosnippet>798</span>        .zip(c[c11..].chunks_mut(p).flat_map(|c| <a href="../algebra/lazy_map.rs.html#535">c</a>.iter_mut().take(w)))
+<span data-nosnippet>798</span>        .zip(c[c11..].chunks_mut(<a href="../algebra/lazy_map.rs.html#511">p</a>).flat_map(|c| c.iter_mut().take(w)))
 <span data-nosnippet>799</span>    {
 <span data-nosnippet>800</span>        <span class="kw-2">*</span>c = R::add(m1, m4);
-<span data-nosnippet>801</span>        R::sub_assign(c, m5);
+<span data-nosnippet>801</span>        <a href="../algebra/lazy_map.rs.html#511">R</a>::sub_assign(c, m5);
 <span data-nosnippet>802</span>        R::add_assign(c, m7);
 <span data-nosnippet>803</span>    }
 <span data-nosnippet>804</span>    <span class="kw">for </span>((m3, m5), c) <span class="kw">in </span>m3
@@ -839,7 +839,7 @@
 <span data-nosnippet>811</span>    <span class="kw">for </span>((m2, m4), c) <span class="kw">in </span>m2
 <span data-nosnippet>812</span>        .iter()
 <span data-nosnippet>813</span>        .zip(m4.iter())
-<span data-nosnippet>814</span>        .zip(c[c21..].chunks_mut(p).flat_map(|c| c.iter_mut().take(w)))
+<span data-nosnippet>814</span>        .zip(c[c21..].chunks_mut(p).flat_map(|<a href="../algebra/lazy_map.rs.html#511">c</a>| c.iter_mut().take(w)))
 <span data-nosnippet>815</span>    {
 <span data-nosnippet>816</span>        <span class="kw-2">*</span>c = R::add(m2, m4);
 <span data-nosnippet>817</span>    }
@@ -865,7 +865,7 @@
 <span data-nosnippet>837</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = R::try_matrix_product(<span class="kw-2">&amp;</span><span class="self">self</span>.data, <span class="kw-2">&amp;</span>rhs.data) {
 <span data-nosnippet>838</span>            <span class="kw">return </span>Matrix::from_vec(data);
 <span data-nosnippet>839</span>        }
-<span data-nosnippet>840</span>        <span class="kw">let </span>(n, m) = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.shape;
+<span data-nosnippet>840</span>        <span class="kw">let </span>(n, m) = <span class="self">self</span>.shape;
 <span data-nosnippet>841</span>        <span class="kw">let </span>p = rhs.shape.<span class="number">1</span>;
 <span data-nosnippet>842</span>        <span class="kw">if </span>n == <span class="number">0 </span>|| m == <span class="number">0 </span>|| p == <span class="number">0 </span>{
 <span data-nosnippet>843</span>            <span class="kw">return </span>Matrix::zeros((n, p));
@@ -877,7 +877,7 @@
 <span data-nosnippet>849</span>        <span class="kw">let </span>rows = n.div_ceil(split) * split;
 <span data-nosnippet>850</span>        <span class="kw">let </span>inner = m.div_ceil(split) * split;
 <span data-nosnippet>851</span>        <span class="kw">let </span>cols = p.div_ceil(split) * split;
-<span data-nosnippet>852</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[R::zero(); <a href="../num/zero_one.rs.html#2">rows</a> * inner];
+<span data-nosnippet>852</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[R::zero(); rows * inner];
 <span data-nosnippet>853</span>        <span class="kw">for </span>(a, data) <span class="kw">in </span>a.chunks_exact_mut(inner).zip(<span class="kw-2">&amp;</span><span class="self">self</span>.data) {
 <span data-nosnippet>854</span>            a[..m].clone_from_slice(data);
 <span data-nosnippet>855</span>        }
@@ -915,7 +915,7 @@
 <span data-nosnippet>887</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
 <span data-nosnippet>888</span>
 <span data-nosnippet>889</span>    <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>890</span>        <span class="self">self</span>.map(|x| <span class="highlight"><a href="../algebra/lazy_map.rs.html#648">R</a>::neg</span>(x))
+<span data-nosnippet>890</span>        <span class="self">self</span>.map(|x| <span class="highlight">R::neg</span>(x))
 <span data-nosnippet>891</span>    }
 <span data-nosnippet>892</span>}
 <span data-nosnippet>893</span>
@@ -926,7 +926,7 @@
 <span data-nosnippet>898</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
 <span data-nosnippet>899</span>
 <span data-nosnippet>900</span>    <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>901</span>        <span class="self">self</span>.map(|x| <span class="highlight">R::neg</span>(x))
+<span data-nosnippet>901</span>        <span class="self">self</span>.map(|<a href="../algebra/lazy_map.rs.html#630">x</a>| <span class="highlight">R::neg</span>(x))
 <span data-nosnippet>902</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[69,69],&#34;../../src/competitive/math/black_box_matrix.rs.html#166&#34;,&#34;line 166&#34;],[[94,94],&#34;../../src/competitive/math/black_box_matrix.rs.html#191&#34;,&#34;line 191&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/black_box_matrix.rs (<a href="../../src/competitive/math/black_box_matrix.rs.html#166">line 166</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>97</span>    <span class="kw">pub fn </span>determinant(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; R::T {
 <span data-nosnippet>98</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
 <span data-nosnippet>99</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
@@ -2160,7 +2160,7 @@
 <span data-nosnippet>727</span>        <span class="kw">let </span>transposed: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..p)
 <span data-nosnippet>728</span>            .flat_map(|j| (<span class="number">0</span>..m).map(<span class="kw">move </span>|i| b[i * stride_b + j].clone()))
 <span data-nosnippet>729</span>            .collect();
-<span data-nosnippet>730</span>        <span class="kw">for </span>(a, c) <span class="kw">in </span>a.chunks(stride_a).zip(c.chunks_exact_mut(p)) {
+<span data-nosnippet>730</span>        <span class="kw">for </span>(a, c) <span class="kw">in </span>a.chunks(stride_a).zip(<a href="../algebra/lazy_map.rs.html#423">c</a>.chunks_exact_mut(p)) {
 <span data-nosnippet>731</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>transposed.chunks_exact(m).zip(c) {
 <span data-nosnippet>732</span>                <span class="kw-2">*</span>c = R::dot_product(<span class="kw-2">&amp;</span>a[..m], b);
 <span data-nosnippet>733</span>            }
@@ -2185,7 +2185,7 @@
 <span data-nosnippet>752</span>    <span class="kw">let </span>(m2, rest) = rest.split_at_mut(block);
 <span data-nosnippet>753</span>    <span class="kw">let </span>(m3, rest) = rest.split_at_mut(block);
 <span data-nosnippet>754</span>    <span class="kw">let </span>(m4, rest) = rest.split_at_mut(block);
-<span data-nosnippet>755</span>    <span class="kw">let </span>(m5, rest) = rest.split_at_mut(block);
+<span data-nosnippet>755</span>    <span class="kw">let </span>(m5, rest) = <a href="../num/zero_one.rs.html#2">rest</a>.split_at_mut(block);
 <span data-nosnippet>756</span>    <span class="kw">let </span>(m6, m7) = rest.split_at_mut(block);
 <span data-nosnippet>757</span>
 <span data-nosnippet>758</span>    <span class="comment">// (A11 + A22)(B11 + B22)
@@ -2202,7 +2202,7 @@
 <span data-nosnippet>769</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a11..], s2, m3, (h, k, w), stride_a, w);
 <span data-nosnippet>770</span>
 <span data-nosnippet>771</span>    <span class="comment">// A22 (B21 - B11)
-<span data-nosnippet>772</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">b21</a>..], <span class="kw-2">&amp;</span>b[b11..], s2, w, stride_b, stride_b);
+<span data-nosnippet>772</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b11..], s2, w, stride_b, stride_b);
 <span data-nosnippet>773</span>    strassen_rec::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a22..], s2, m4, (h, k, w), stride_a, w);
 <span data-nosnippet>774</span>
 <span data-nosnippet>775</span>    <span class="comment">// (A11 + A12) B22
@@ -2215,9 +2215,9 @@
 <span data-nosnippet>782</span>    strassen_rec::&lt;R&gt;(s1, s2, m6, (h, k, w), k, w);
 <span data-nosnippet>783</span>
 <span data-nosnippet>784</span>    <span class="comment">// (A12 - A22)(B21 + B22)
-<span data-nosnippet>785</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span>a[a22..], s1, k, stride_a, stride_a);
+<span data-nosnippet>785</span>    </span>sub_block::&lt;R&gt;(<span class="kw-2">&amp;</span>a[a12..], <span class="kw-2">&amp;</span><a href="../algebra/lazy_map.rs.html#511">a</a>[a22..], s1, k, stride_a, stride_a);
 <span data-nosnippet>786</span>    add_block::&lt;R&gt;(<span class="kw-2">&amp;</span>b[b21..], <span class="kw-2">&amp;</span>b[b22..], s2, w, stride_b, stride_b);
-<span data-nosnippet>787</span>    strassen_rec::&lt;<a href="../algebra/lazy_map.rs.html#535">R</a>&gt;(s1, s2, m7, (h, k, w), k, w);
+<span data-nosnippet>787</span>    strassen_rec::&lt;R&gt;(s1, s2, m7, (h, k, w), k, w);
 <span data-nosnippet>788</span>
 <span data-nosnippet>789</span>    <span class="kw">let </span>c11 = <span class="number">0</span>;
 <span data-nosnippet>790</span>    <span class="kw">let </span>c12 = w;
@@ -2228,10 +2228,10 @@
 <span data-nosnippet>795</span>        .zip(m4.iter())
 <span data-nosnippet>796</span>        .zip(m5.iter())
 <span data-nosnippet>797</span>        .zip(m7.iter())
-<span data-nosnippet>798</span>        .zip(c[c11..].chunks_mut(p).flat_map(|c| <a href="../algebra/lazy_map.rs.html#535">c</a>.iter_mut().take(w)))
+<span data-nosnippet>798</span>        .zip(c[c11..].chunks_mut(<a href="../algebra/lazy_map.rs.html#511">p</a>).flat_map(|c| c.iter_mut().take(w)))
 <span data-nosnippet>799</span>    {
 <span data-nosnippet>800</span>        <span class="kw-2">*</span>c = R::add(m1, m4);
-<span data-nosnippet>801</span>        <span class="highlight">R::sub_assign</span>(c, m5);
+<span data-nosnippet>801</span>        <span class="highlight"><a href="../algebra/lazy_map.rs.html#511">R</a>::sub_assign</span>(c, m5);
 <span data-nosnippet>802</span>        R::add_assign(c, m7);
 <span data-nosnippet>803</span>    }
 <span data-nosnippet>804</span>    <span class="kw">for </span>((m3, m5), c) <span class="kw">in </span>m3
@@ -2244,7 +2244,7 @@
 <span data-nosnippet>811</span>    <span class="kw">for </span>((m2, m4), c) <span class="kw">in </span>m2
 <span data-nosnippet>812</span>        .iter()
 <span data-nosnippet>813</span>        .zip(m4.iter())
-<span data-nosnippet>814</span>        .zip(c[c21..].chunks_mut(p).flat_map(|c| c.iter_mut().take(w)))
+<span data-nosnippet>814</span>        .zip(c[c21..].chunks_mut(p).flat_map(|<a href="../algebra/lazy_map.rs.html#511">c</a>| c.iter_mut().take(w)))
 <span data-nosnippet>815</span>    {
 <span data-nosnippet>816</span>        <span class="kw-2">*</span>c = R::add(m2, m4);
 <span data-nosnippet>817</span>    }

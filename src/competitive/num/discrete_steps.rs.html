@@ -103,7 +103,7 @@
 <a href=#49 id=49 data-nosnippet>49</a>                <span class="macro">impl_discrete_steps_integer!</span>(@common <span class="macro-nonterminal">$u_source</span>);
 <a href=#50 id=50 data-nosnippet>50</a>                <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$u_source</span>&gt; {
 <a href=#51 id=51 data-nosnippet>51</a>                    <span class="kw">if </span><span class="kw-2">*</span>start &lt;= <span class="kw-2">*</span>end {
-<a href=#52 id=52 data-nosnippet>52</a>                        <span class="prelude-val">Some</span>((<span class="kw-2">*</span>end - <span class="kw-2">*</span>start) <span class="kw">as </span><span class="macro-nonterminal">$u_source</span>)
+<a href=#52 id=52 data-nosnippet>52</a>                        <span class="macro-nonterminal">$u_source::try_from</span>(<span class="kw-2">*</span>end - <span class="kw-2">*</span>start).ok()
 <a href=#53 id=53 data-nosnippet>53</a>                    } <span class="kw">else </span>{
 <a href=#54 id=54 data-nosnippet>54</a>                        <span class="prelude-val">None
 <a href=#55 id=55 data-nosnippet>55</a>                    </span>}
@@ -119,7 +119,7 @@
 <a href=#65 id=65 data-nosnippet>65</a>                <span class="macro">impl_discrete_steps_integer!</span>(@common <span class="macro-nonterminal">$u_source</span>);
 <a href=#66 id=66 data-nosnippet>66</a>                <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$u_source</span>&gt; {
 <a href=#67 id=67 data-nosnippet>67</a>                    <span class="kw">if </span><span class="kw-2">*</span>start &lt;= <span class="kw-2">*</span>end {
-<a href=#68 id=68 data-nosnippet>68</a>                        <span class="prelude-val">Some</span>((<span class="kw-2">*</span>end <span class="kw">as </span><span class="macro-nonterminal">$i_source</span>).wrapping_sub(<span class="kw-2">*</span>start <span class="kw">as </span><span class="macro-nonterminal">$i_source</span>) <span class="kw">as </span><span class="macro-nonterminal">$u_source</span>)
+<a href=#68 id=68 data-nosnippet>68</a>                        <span class="macro-nonterminal">$u_source::try_from</span>(end.abs_diff(<span class="kw-2">*</span>start)).ok()
 <a href=#69 id=69 data-nosnippet>69</a>                    } <span class="kw">else </span>{
 <a href=#70 id=70 data-nosnippet>70</a>                        <span class="prelude-val">None
 <a href=#71 id=71 data-nosnippet>71</a>                    </span>}
@@ -416,121 +416,125 @@
 <a href=#362 id=362 data-nosnippet>362</a>    <span class="macro">proof_steps!</span>(proof_u64_u64_steps, u64, u64);
 <a href=#363 id=363 data-nosnippet>363</a>    <span class="macro">proof_steps!</span>(proof_i64_u32_steps, i64, u32);
 <a href=#364 id=364 data-nosnippet>364</a>    <span class="macro">proof_steps!</span>(proof_u64_u32_steps, u64, u32);
-<a href=#365 id=365 data-nosnippet>365</a>
-<a href=#366 id=366 data-nosnippet>366</a>    <span class="attr">#[kani::proof]
-<a href=#367 id=367 data-nosnippet>367</a>    </span><span class="kw">fn </span>proof_inclusive_range() {
-<a href=#368 id=368 data-nosnippet>368</a>        <span class="kw">let </span>lower: <span class="prelude-ty">Option</span>&lt;(i64, bool)&gt; = kani::any();
-<a href=#369 id=369 data-nosnippet>369</a>        <span class="kw">let </span>upper: <span class="prelude-ty">Option</span>&lt;(i64, bool)&gt; = kani::any();
-<a href=#370 id=370 data-nosnippet>370</a>        <span class="kw">let </span>point: i64 = kani::any();
-<a href=#371 id=371 data-nosnippet>371</a>        <span class="kw">let </span>lower = lower.map_or(Bound::Unbounded, |(x, included)| {
-<a href=#372 id=372 data-nosnippet>372</a>            <span class="kw">if </span>included {
-<a href=#373 id=373 data-nosnippet>373</a>                Bound::Included(x)
-<a href=#374 id=374 data-nosnippet>374</a>            } <span class="kw">else </span>{
-<a href=#375 id=375 data-nosnippet>375</a>                Bound::Excluded(x)
-<a href=#376 id=376 data-nosnippet>376</a>            }
-<a href=#377 id=377 data-nosnippet>377</a>        });
-<a href=#378 id=378 data-nosnippet>378</a>        <span class="kw">let </span>upper = upper.map_or(Bound::Unbounded, |(x, included)| {
-<a href=#379 id=379 data-nosnippet>379</a>            <span class="kw">if </span>included {
-<a href=#380 id=380 data-nosnippet>380</a>                Bound::Included(x)
-<a href=#381 id=381 data-nosnippet>381</a>            } <span class="kw">else </span>{
-<a href=#382 id=382 data-nosnippet>382</a>                Bound::Excluded(x)
-<a href=#383 id=383 data-nosnippet>383</a>            }
-<a href=#384 id=384 data-nosnippet>384</a>        });
-<a href=#385 id=385 data-nosnippet>385</a>        <span class="kw">let </span>range = (lower, upper);
-<a href=#386 id=386 data-nosnippet>386</a>        <span class="kw">match </span>range.to_range_inclusive_checked() {
-<a href=#387 id=387 data-nosnippet>387</a>            <span class="prelude-val">Some</span>(normalized) =&gt; kani::assert(
-<a href=#388 id=388 data-nosnippet>388</a>                normalized.contains(<span class="kw-2">&amp;</span>point) == range.contains(<span class="kw-2">&amp;</span>point),
-<a href=#389 id=389 data-nosnippet>389</a>                <span class="string">"For all included, excluded or unbounded i64 endpoints, checked inclusive normalization preserves membership of every i64 value"</span>,
-<a href=#390 id=390 data-nosnippet>390</a>            ),
-<a href=#391 id=391 data-nosnippet>391</a>            <span class="prelude-val">None </span>=&gt; kani::assert(
-<a href=#392 id=392 data-nosnippet>392</a>                !range.contains(<span class="kw-2">&amp;</span>point),
-<a href=#393 id=393 data-nosnippet>393</a>                <span class="string">"An i64 range whose inclusive endpoints cannot be represented contains no i64 value"</span>,
+<a href=#365 id=365 data-nosnippet>365</a>    <span class="macro">proof_steps!</span>(proof_isize_u16_steps, isize, u16);
+<a href=#366 id=366 data-nosnippet>366</a>    <span class="macro">proof_steps!</span>(proof_usize_u16_steps, usize, u16);
+<a href=#367 id=367 data-nosnippet>367</a>    <span class="macro">proof_steps!</span>(proof_isize_u32_steps, isize, u32);
+<a href=#368 id=368 data-nosnippet>368</a>    <span class="macro">proof_steps!</span>(proof_usize_u32_steps, usize, u32);
+<a href=#369 id=369 data-nosnippet>369</a>
+<a href=#370 id=370 data-nosnippet>370</a>    <span class="attr">#[kani::proof]
+<a href=#371 id=371 data-nosnippet>371</a>    </span><span class="kw">fn </span>proof_inclusive_range() {
+<a href=#372 id=372 data-nosnippet>372</a>        <span class="kw">let </span>lower: <span class="prelude-ty">Option</span>&lt;(i64, bool)&gt; = kani::any();
+<a href=#373 id=373 data-nosnippet>373</a>        <span class="kw">let </span>upper: <span class="prelude-ty">Option</span>&lt;(i64, bool)&gt; = kani::any();
+<a href=#374 id=374 data-nosnippet>374</a>        <span class="kw">let </span>point: i64 = kani::any();
+<a href=#375 id=375 data-nosnippet>375</a>        <span class="kw">let </span>lower = lower.map_or(Bound::Unbounded, |(x, included)| {
+<a href=#376 id=376 data-nosnippet>376</a>            <span class="kw">if </span>included {
+<a href=#377 id=377 data-nosnippet>377</a>                Bound::Included(x)
+<a href=#378 id=378 data-nosnippet>378</a>            } <span class="kw">else </span>{
+<a href=#379 id=379 data-nosnippet>379</a>                Bound::Excluded(x)
+<a href=#380 id=380 data-nosnippet>380</a>            }
+<a href=#381 id=381 data-nosnippet>381</a>        });
+<a href=#382 id=382 data-nosnippet>382</a>        <span class="kw">let </span>upper = upper.map_or(Bound::Unbounded, |(x, included)| {
+<a href=#383 id=383 data-nosnippet>383</a>            <span class="kw">if </span>included {
+<a href=#384 id=384 data-nosnippet>384</a>                Bound::Included(x)
+<a href=#385 id=385 data-nosnippet>385</a>            } <span class="kw">else </span>{
+<a href=#386 id=386 data-nosnippet>386</a>                Bound::Excluded(x)
+<a href=#387 id=387 data-nosnippet>387</a>            }
+<a href=#388 id=388 data-nosnippet>388</a>        });
+<a href=#389 id=389 data-nosnippet>389</a>        <span class="kw">let </span>range = (lower, upper);
+<a href=#390 id=390 data-nosnippet>390</a>        <span class="kw">match </span>range.to_range_inclusive_checked() {
+<a href=#391 id=391 data-nosnippet>391</a>            <span class="prelude-val">Some</span>(normalized) =&gt; kani::assert(
+<a href=#392 id=392 data-nosnippet>392</a>                normalized.contains(<span class="kw-2">&amp;</span>point) == range.contains(<span class="kw-2">&amp;</span>point),
+<a href=#393 id=393 data-nosnippet>393</a>                <span class="string">"For all included, excluded or unbounded i64 endpoints, checked inclusive normalization preserves membership of every i64 value"</span>,
 <a href=#394 id=394 data-nosnippet>394</a>            ),
-<a href=#395 id=395 data-nosnippet>395</a>        }
-<a href=#396 id=396 data-nosnippet>396</a>        <span class="macro">kani::cover!</span>(lower == Bound::Excluded(i64::MAX));
-<a href=#397 id=397 data-nosnippet>397</a>        <span class="macro">kani::cover!</span>(upper == Bound::Excluded(i64::MIN));
-<a href=#398 id=398 data-nosnippet>398</a>        <span class="macro">kani::cover!</span>(lower == Bound::Unbounded &amp;&amp; upper == Bound::Unbounded);
-<a href=#399 id=399 data-nosnippet>399</a>    }
-<a href=#400 id=400 data-nosnippet>400</a>}
-<a href=#401 id=401 data-nosnippet>401</a>
-<a href=#402 id=402 data-nosnippet>402</a><span class="attr">#[cfg(test)]
-<a href=#403 id=403 data-nosnippet>403</a></span><span class="kw">mod </span>tests {
-<a href=#404 id=404 data-nosnippet>404</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#405 id=405 data-nosnippet>405</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
-<a href=#406 id=406 data-nosnippet>406</a>
-<a href=#407 id=407 data-nosnippet>407</a>    <span class="attr">#[test]
-<a href=#408 id=408 data-nosnippet>408</a>    </span><span class="kw">fn </span>test_range_bounds() {
-<a href=#409 id=409 data-nosnippet>409</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#410 id=410 data-nosnippet>410</a>        <span class="kw">let </span>bounds: Vec&lt;<span class="kw">_</span>&gt; = std::iter::once(Bound::Unbounded)
-<a href=#411 id=411 data-nosnippet>411</a>            .chain((<span class="number">0</span>..=u8::MAX).flat_map(|x| [Bound::Included(x), Bound::Excluded(x)]))
-<a href=#412 id=412 data-nosnippet>412</a>            .collect();
-<a href=#413 id=413 data-nosnippet>413</a>        <span class="kw">for </span>(lower, upper) <span class="kw">in </span>bounds
-<a href=#414 id=414 data-nosnippet>414</a>            .iter()
-<a href=#415 id=415 data-nosnippet>415</a>            .flat_map(|<span class="kw-2">&amp;</span>lower| bounds.iter().map(<span class="kw">move </span>|<span class="kw-2">&amp;</span>upper| (lower, upper)))
-<a href=#416 id=416 data-nosnippet>416</a>        {
-<a href=#417 id=417 data-nosnippet>417</a>            <span class="kw">let </span>range = (lower, upper);
-<a href=#418 id=418 data-nosnippet>418</a>            <span class="kw">let </span>start = (<span class="number">0</span>..=u8::MAX).find(|x| <span class="kw">match </span>lower {
-<a href=#419 id=419 data-nosnippet>419</a>                Bound::Included(a) =&gt; <span class="kw-2">*</span>x &gt;= a,
-<a href=#420 id=420 data-nosnippet>420</a>                Bound::Excluded(a) =&gt; <span class="kw-2">*</span>x &gt; a,
-<a href=#421 id=421 data-nosnippet>421</a>                Bound::Unbounded =&gt; <span class="bool-val">true</span>,
-<a href=#422 id=422 data-nosnippet>422</a>            });
-<a href=#423 id=423 data-nosnippet>423</a>            <span class="kw">let </span>end = (<span class="number">0</span>..=u8::MAX).rev().find(|x| <span class="kw">match </span>upper {
-<a href=#424 id=424 data-nosnippet>424</a>                Bound::Included(b) =&gt; <span class="kw-2">*</span>x &lt;= b,
-<a href=#425 id=425 data-nosnippet>425</a>                Bound::Excluded(b) =&gt; <span class="kw-2">*</span>x &lt; b,
-<a href=#426 id=426 data-nosnippet>426</a>                Bound::Unbounded =&gt; <span class="bool-val">true</span>,
-<a href=#427 id=427 data-nosnippet>427</a>            });
-<a href=#428 id=428 data-nosnippet>428</a>            <span class="kw">let </span>before = <span class="kw">match </span>lower {
-<a href=#429 id=429 data-nosnippet>429</a>                Bound::Excluded(a) =&gt; <span class="prelude-val">Some</span>(a),
-<a href=#430 id=430 data-nosnippet>430</a>                <span class="kw">_ </span>=&gt; start.and_then(|x| x.checked_sub(<span class="number">1</span>)),
-<a href=#431 id=431 data-nosnippet>431</a>            };
-<a href=#432 id=432 data-nosnippet>432</a>            <span class="kw">let </span>after = <span class="kw">match </span>upper {
-<a href=#433 id=433 data-nosnippet>433</a>                Bound::Excluded(b) =&gt; <span class="prelude-val">Some</span>(b),
-<a href=#434 id=434 data-nosnippet>434</a>                <span class="kw">_ </span>=&gt; end.and_then(|x| x.checked_add(<span class="number">1</span>)),
+<a href=#395 id=395 data-nosnippet>395</a>            <span class="prelude-val">None </span>=&gt; kani::assert(
+<a href=#396 id=396 data-nosnippet>396</a>                !range.contains(<span class="kw-2">&amp;</span>point),
+<a href=#397 id=397 data-nosnippet>397</a>                <span class="string">"An i64 range whose inclusive endpoints cannot be represented contains no i64 value"</span>,
+<a href=#398 id=398 data-nosnippet>398</a>            ),
+<a href=#399 id=399 data-nosnippet>399</a>        }
+<a href=#400 id=400 data-nosnippet>400</a>        <span class="macro">kani::cover!</span>(lower == Bound::Excluded(i64::MAX));
+<a href=#401 id=401 data-nosnippet>401</a>        <span class="macro">kani::cover!</span>(upper == Bound::Excluded(i64::MIN));
+<a href=#402 id=402 data-nosnippet>402</a>        <span class="macro">kani::cover!</span>(lower == Bound::Unbounded &amp;&amp; upper == Bound::Unbounded);
+<a href=#403 id=403 data-nosnippet>403</a>    }
+<a href=#404 id=404 data-nosnippet>404</a>}
+<a href=#405 id=405 data-nosnippet>405</a>
+<a href=#406 id=406 data-nosnippet>406</a><span class="attr">#[cfg(test)]
+<a href=#407 id=407 data-nosnippet>407</a></span><span class="kw">mod </span>tests {
+<a href=#408 id=408 data-nosnippet>408</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#409 id=409 data-nosnippet>409</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#410 id=410 data-nosnippet>410</a>
+<a href=#411 id=411 data-nosnippet>411</a>    <span class="attr">#[test]
+<a href=#412 id=412 data-nosnippet>412</a>    </span><span class="kw">fn </span>test_range_bounds() {
+<a href=#413 id=413 data-nosnippet>413</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#414 id=414 data-nosnippet>414</a>        <span class="kw">let </span>bounds: Vec&lt;<span class="kw">_</span>&gt; = std::iter::once(Bound::Unbounded)
+<a href=#415 id=415 data-nosnippet>415</a>            .chain((<span class="number">0</span>..=u8::MAX).flat_map(|x| [Bound::Included(x), Bound::Excluded(x)]))
+<a href=#416 id=416 data-nosnippet>416</a>            .collect();
+<a href=#417 id=417 data-nosnippet>417</a>        <span class="kw">for </span>(lower, upper) <span class="kw">in </span>bounds
+<a href=#418 id=418 data-nosnippet>418</a>            .iter()
+<a href=#419 id=419 data-nosnippet>419</a>            .flat_map(|<span class="kw-2">&amp;</span>lower| bounds.iter().map(<span class="kw">move </span>|<span class="kw-2">&amp;</span>upper| (lower, upper)))
+<a href=#420 id=420 data-nosnippet>420</a>        {
+<a href=#421 id=421 data-nosnippet>421</a>            <span class="kw">let </span>range = (lower, upper);
+<a href=#422 id=422 data-nosnippet>422</a>            <span class="kw">let </span>start = (<span class="number">0</span>..=u8::MAX).find(|x| <span class="kw">match </span>lower {
+<a href=#423 id=423 data-nosnippet>423</a>                Bound::Included(a) =&gt; <span class="kw-2">*</span>x &gt;= a,
+<a href=#424 id=424 data-nosnippet>424</a>                Bound::Excluded(a) =&gt; <span class="kw-2">*</span>x &gt; a,
+<a href=#425 id=425 data-nosnippet>425</a>                Bound::Unbounded =&gt; <span class="bool-val">true</span>,
+<a href=#426 id=426 data-nosnippet>426</a>            });
+<a href=#427 id=427 data-nosnippet>427</a>            <span class="kw">let </span>end = (<span class="number">0</span>..=u8::MAX).rev().find(|x| <span class="kw">match </span>upper {
+<a href=#428 id=428 data-nosnippet>428</a>                Bound::Included(b) =&gt; <span class="kw-2">*</span>x &lt;= b,
+<a href=#429 id=429 data-nosnippet>429</a>                Bound::Excluded(b) =&gt; <span class="kw-2">*</span>x &lt; b,
+<a href=#430 id=430 data-nosnippet>430</a>                Bound::Unbounded =&gt; <span class="bool-val">true</span>,
+<a href=#431 id=431 data-nosnippet>431</a>            });
+<a href=#432 id=432 data-nosnippet>432</a>            <span class="kw">let </span>before = <span class="kw">match </span>lower {
+<a href=#433 id=433 data-nosnippet>433</a>                Bound::Excluded(a) =&gt; <span class="prelude-val">Some</span>(a),
+<a href=#434 id=434 data-nosnippet>434</a>                <span class="kw">_ </span>=&gt; start.and_then(|x| x.checked_sub(<span class="number">1</span>)),
 <a href=#435 id=435 data-nosnippet>435</a>            };
-<a href=#436 id=436 data-nosnippet>436</a>            <span class="macro">assert_eq!</span>(range.start_bound_included_checked(), start);
-<a href=#437 id=437 data-nosnippet>437</a>            <span class="macro">assert_eq!</span>(range.start_bound_excluded_checked(), before);
-<a href=#438 id=438 data-nosnippet>438</a>            <span class="macro">assert_eq!</span>(range.end_bound_included_checked(), end);
-<a href=#439 id=439 data-nosnippet>439</a>            <span class="macro">assert_eq!</span>(range.end_bound_excluded_checked(), after);
-<a href=#440 id=440 data-nosnippet>440</a>            <span class="macro">assert_eq!</span>(
-<a href=#441 id=441 data-nosnippet>441</a>                range.to_range_checked(),
-<a href=#442 id=442 data-nosnippet>442</a>                start.zip(after).map(|(a, b)| a..b)
-<a href=#443 id=443 data-nosnippet>443</a>            );
+<a href=#436 id=436 data-nosnippet>436</a>            <span class="kw">let </span>after = <span class="kw">match </span>upper {
+<a href=#437 id=437 data-nosnippet>437</a>                Bound::Excluded(b) =&gt; <span class="prelude-val">Some</span>(b),
+<a href=#438 id=438 data-nosnippet>438</a>                <span class="kw">_ </span>=&gt; end.and_then(|x| x.checked_add(<span class="number">1</span>)),
+<a href=#439 id=439 data-nosnippet>439</a>            };
+<a href=#440 id=440 data-nosnippet>440</a>            <span class="macro">assert_eq!</span>(range.start_bound_included_checked(), start);
+<a href=#441 id=441 data-nosnippet>441</a>            <span class="macro">assert_eq!</span>(range.start_bound_excluded_checked(), before);
+<a href=#442 id=442 data-nosnippet>442</a>            <span class="macro">assert_eq!</span>(range.end_bound_included_checked(), end);
+<a href=#443 id=443 data-nosnippet>443</a>            <span class="macro">assert_eq!</span>(range.end_bound_excluded_checked(), after);
 <a href=#444 id=444 data-nosnippet>444</a>            <span class="macro">assert_eq!</span>(
-<a href=#445 id=445 data-nosnippet>445</a>                range.to_range_inclusive_checked(),
-<a href=#446 id=446 data-nosnippet>446</a>                start.zip(end).map(|(a, b)| a..=b)
+<a href=#445 id=445 data-nosnippet>445</a>                range.to_range_checked(),
+<a href=#446 id=446 data-nosnippet>446</a>                start.zip(after).map(|(a, b)| a..b)
 <a href=#447 id=447 data-nosnippet>447</a>            );
-<a href=#448 id=448 data-nosnippet>448</a>            <span class="kw">if let </span><span class="prelude-val">Some</span>(expected) = range.to_range_checked() {
-<a href=#449 id=449 data-nosnippet>449</a>                <span class="macro">assert_eq!</span>(range.to_range(), expected);
-<a href=#450 id=450 data-nosnippet>450</a>            }
-<a href=#451 id=451 data-nosnippet>451</a>            <span class="kw">if let </span><span class="prelude-val">Some</span>(expected) = range.to_range_inclusive_checked() {
-<a href=#452 id=452 data-nosnippet>452</a>                <span class="macro">assert_eq!</span>(range.to_range_inclusive(), expected);
-<a href=#453 id=453 data-nosnippet>453</a>            }
-<a href=#454 id=454 data-nosnippet>454</a>            <span class="kw">let </span>lb: u8 = rng.random(..);
-<a href=#455 id=455 data-nosnippet>455</a>            <span class="kw">let </span>ub: u8 = rng.random(..);
-<a href=#456 id=456 data-nosnippet>456</a>            <span class="kw">let </span>start = <span class="kw">if </span>lower == Bound::Unbounded {
-<a href=#457 id=457 data-nosnippet>457</a>                <span class="prelude-val">Some</span>(lb)
-<a href=#458 id=458 data-nosnippet>458</a>            } <span class="kw">else </span>{
-<a href=#459 id=459 data-nosnippet>459</a>                start.filter(|<span class="kw-2">&amp;</span>x| x &gt;= lb)
-<a href=#460 id=460 data-nosnippet>460</a>            };
-<a href=#461 id=461 data-nosnippet>461</a>            <span class="kw">let </span>end = <span class="kw">if </span>upper == Bound::Unbounded {
-<a href=#462 id=462 data-nosnippet>462</a>                <span class="prelude-val">Some</span>(ub)
-<a href=#463 id=463 data-nosnippet>463</a>            } <span class="kw">else </span>{
-<a href=#464 id=464 data-nosnippet>464</a>                end.filter(|<span class="kw-2">&amp;</span>x| x &lt;= ub)
-<a href=#465 id=465 data-nosnippet>465</a>            };
-<a href=#466 id=466 data-nosnippet>466</a>            <span class="kw">let </span>after = <span class="kw">if </span>upper == Bound::Unbounded {
-<a href=#467 id=467 data-nosnippet>467</a>                <span class="prelude-val">Some</span>(ub)
-<a href=#468 id=468 data-nosnippet>468</a>            } <span class="kw">else </span>{
-<a href=#469 id=469 data-nosnippet>469</a>                after.filter(|<span class="kw-2">&amp;</span>x| x &lt;= ub)
-<a href=#470 id=470 data-nosnippet>470</a>            };
-<a href=#471 id=471 data-nosnippet>471</a>            <span class="macro">assert_eq!</span>(
-<a href=#472 id=472 data-nosnippet>472</a>                range.to_range_bounded(lb, ub),
-<a href=#473 id=473 data-nosnippet>473</a>                start.zip(after).map(|(a, b)| a..b)
-<a href=#474 id=474 data-nosnippet>474</a>            );
+<a href=#448 id=448 data-nosnippet>448</a>            <span class="macro">assert_eq!</span>(
+<a href=#449 id=449 data-nosnippet>449</a>                range.to_range_inclusive_checked(),
+<a href=#450 id=450 data-nosnippet>450</a>                start.zip(end).map(|(a, b)| a..=b)
+<a href=#451 id=451 data-nosnippet>451</a>            );
+<a href=#452 id=452 data-nosnippet>452</a>            <span class="kw">if let </span><span class="prelude-val">Some</span>(expected) = range.to_range_checked() {
+<a href=#453 id=453 data-nosnippet>453</a>                <span class="macro">assert_eq!</span>(range.to_range(), expected);
+<a href=#454 id=454 data-nosnippet>454</a>            }
+<a href=#455 id=455 data-nosnippet>455</a>            <span class="kw">if let </span><span class="prelude-val">Some</span>(expected) = range.to_range_inclusive_checked() {
+<a href=#456 id=456 data-nosnippet>456</a>                <span class="macro">assert_eq!</span>(range.to_range_inclusive(), expected);
+<a href=#457 id=457 data-nosnippet>457</a>            }
+<a href=#458 id=458 data-nosnippet>458</a>            <span class="kw">let </span>lb: u8 = rng.random(..);
+<a href=#459 id=459 data-nosnippet>459</a>            <span class="kw">let </span>ub: u8 = rng.random(..);
+<a href=#460 id=460 data-nosnippet>460</a>            <span class="kw">let </span>start = <span class="kw">if </span>lower == Bound::Unbounded {
+<a href=#461 id=461 data-nosnippet>461</a>                <span class="prelude-val">Some</span>(lb)
+<a href=#462 id=462 data-nosnippet>462</a>            } <span class="kw">else </span>{
+<a href=#463 id=463 data-nosnippet>463</a>                start.filter(|<span class="kw-2">&amp;</span>x| x &gt;= lb)
+<a href=#464 id=464 data-nosnippet>464</a>            };
+<a href=#465 id=465 data-nosnippet>465</a>            <span class="kw">let </span>end = <span class="kw">if </span>upper == Bound::Unbounded {
+<a href=#466 id=466 data-nosnippet>466</a>                <span class="prelude-val">Some</span>(ub)
+<a href=#467 id=467 data-nosnippet>467</a>            } <span class="kw">else </span>{
+<a href=#468 id=468 data-nosnippet>468</a>                end.filter(|<span class="kw-2">&amp;</span>x| x &lt;= ub)
+<a href=#469 id=469 data-nosnippet>469</a>            };
+<a href=#470 id=470 data-nosnippet>470</a>            <span class="kw">let </span>after = <span class="kw">if </span>upper == Bound::Unbounded {
+<a href=#471 id=471 data-nosnippet>471</a>                <span class="prelude-val">Some</span>(ub)
+<a href=#472 id=472 data-nosnippet>472</a>            } <span class="kw">else </span>{
+<a href=#473 id=473 data-nosnippet>473</a>                after.filter(|<span class="kw-2">&amp;</span>x| x &lt;= ub)
+<a href=#474 id=474 data-nosnippet>474</a>            };
 <a href=#475 id=475 data-nosnippet>475</a>            <span class="macro">assert_eq!</span>(
-<a href=#476 id=476 data-nosnippet>476</a>                range.to_range_inclusive_bounded(lb, ub),
-<a href=#477 id=477 data-nosnippet>477</a>                start.zip(end).map(|(a, b)| a..=b)
+<a href=#476 id=476 data-nosnippet>476</a>                range.to_range_bounded(lb, ub),
+<a href=#477 id=477 data-nosnippet>477</a>                start.zip(after).map(|(a, b)| a..b)
 <a href=#478 id=478 data-nosnippet>478</a>            );
-<a href=#479 id=479 data-nosnippet>479</a>        }
-<a href=#480 id=480 data-nosnippet>480</a>    }
-<a href=#481 id=481 data-nosnippet>481</a>}
+<a href=#479 id=479 data-nosnippet>479</a>            <span class="macro">assert_eq!</span>(
+<a href=#480 id=480 data-nosnippet>480</a>                range.to_range_inclusive_bounded(lb, ub),
+<a href=#481 id=481 data-nosnippet>481</a>                start.zip(end).map(|(a, b)| a..=b)
+<a href=#482 id=482 data-nosnippet>482</a>            );
+<a href=#483 id=483 data-nosnippet>483</a>        }
+<a href=#484 id=484 data-nosnippet>484</a>    }
+<a href=#485 id=485 data-nosnippet>485</a>}
 </code></pre></div></section></main></body></html>

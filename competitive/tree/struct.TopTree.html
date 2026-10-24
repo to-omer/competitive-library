@@ -299,7 +299,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }
 <span data-nosnippet>469</span>
@@ -384,7 +384,7 @@
 <span data-nosnippet>548</span>    <span class="doccomment">/// `(u, v)` must be an edge.
 <span data-nosnippet>549</span>    </span><span class="kw">pub fn </span>cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) {
 <span data-nosnippet>550</span>        <span class="macro">assert_ne!</span>(u, v);
-<span data-nosnippet>551</span>        <span class="self">self</span>.reroot(u);
+<span data-nosnippet>551</span>        <span class="self">self</span>.reroot(<a href="../algebra/lazy_map.rs.html#33">u</a>);
 <span data-nosnippet>552</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="self">self</span>.<span class="highlight">node</span>(v);
 <span data-nosnippet>553</span>        <span class="self">self</span>.access_node(v);
 <span data-nosnippet>554</span>        <span class="kw">unsafe </span>{
@@ -452,7 +452,7 @@
 <span data-nosnippet>616</span>    }
 <span data-nosnippet>617</span>
 <span data-nosnippet>618</span>    <span class="doccomment">/// `(node, parent)` must be an edge.
-<span data-nosnippet>619</span>    </span><span class="kw">pub fn </span>fold_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize) -&gt; <a href="../algebra/lazy_map.rs.html#115">S</a>::Path {
+<span data-nosnippet>619</span>    </span><span class="kw">pub fn </span>fold_subtree(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: usize, parent: usize) -&gt; S::Path {
 <span data-nosnippet>620</span>        <span class="self">self</span>.reroot(parent);
 <span data-nosnippet>621</span>        <span class="kw">let </span>node = <span class="self">self</span>.<span class="highlight">node</span>(node);
 <span data-nosnippet>622</span>        <span class="self">self</span>.access_node(node);
@@ -617,7 +617,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }
 <span data-nosnippet>469</span>
@@ -702,7 +702,7 @@
 <span data-nosnippet>548</span>    <span class="doccomment">/// `(u, v)` must be an edge.
 <span data-nosnippet>549</span>    </span><span class="kw">pub fn </span>cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, v: usize) {
 <span data-nosnippet>550</span>        <span class="macro">assert_ne!</span>(u, v);
-<span data-nosnippet>551</span>        <span class="self">self</span>.reroot(u);
+<span data-nosnippet>551</span>        <span class="self">self</span>.reroot(<a href="../algebra/lazy_map.rs.html#33">u</a>);
 <span data-nosnippet>552</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="self">self</span>.node(v);
 <span data-nosnippet>553</span>        <span class="self">self</span>.access_node(v);
 <span data-nosnippet>554</span>        <span class="kw">unsafe </span>{
@@ -817,7 +817,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.splay_top" class="method"><a class="src rightside" href="../../src/competitive/tree/top_tree.rs.html#378-396">Source</a><h4 class="code-header">unsafe fn <a href="#method.splay_top" class="fn">splay_top</a>(
     node: <a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="../data_structure/binary_search_tree/node/struct.BstNode.html" title="struct competitive::data_structure::binary_search_tree::node::BstNode">BstNode</a>&lt;<a class="struct" href="top_tree/struct.TopTreeData.html" title="struct competitive::tree::top_tree::TopTreeData">TopTreeData</a>&lt;S, A&gt;, <a class="struct" href="../data_structure/binary_search_tree/node/struct.WithParent.html" title="struct competitive::data_structure::binary_search_tree::node::WithParent">WithParent</a>&lt;<a class="struct" href="top_tree/struct.TopTreeData.html" title="struct competitive::tree::top_tree::TopTreeData">TopTreeData</a>&lt;S, A&gt;&gt;&gt;&gt;,
@@ -957,7 +957,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.rake_rightmost" class="method"><a class="src rightside" href="../../src/competitive/tree/top_tree.rs.html#408-416">Source</a><h4 class="code-header">unsafe fn <a href="#method.rake_rightmost" class="fn">rake_rightmost</a>(
     node: <a class="struct" href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html" title="struct core::ptr::non_null::NonNull">NonNull</a>&lt;<a class="struct" href="../data_structure/binary_search_tree/node/struct.BstNode.html" title="struct competitive::data_structure::binary_search_tree::node::BstNode">BstNode</a>&lt;<a class="struct" href="top_tree/struct.RakeData.html" title="struct competitive::tree::top_tree::RakeData">RakeData</a>&lt;S, A&gt;, <a class="struct" href="../data_structure/binary_search_tree/node/struct.WithParent.html" title="struct competitive::data_structure::binary_search_tree::node::WithParent">WithParent</a>&lt;<a class="struct" href="top_tree/struct.RakeData.html" title="struct competitive::tree::top_tree::RakeData">RakeData</a>&lt;S, A&gt;&gt;&gt;&gt;,
@@ -988,7 +988,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.rake_insert" class="method"><a class="src rightside" href="../../src/competitive/tree/top_tree.rs.html#418-437">Source</a><h4 class="code-header">unsafe fn <a href="#method.rake_insert" class="fn">rake_insert</a>(
     &amp;mut self,
@@ -1141,7 +1141,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }
 <span data-nosnippet>469</span>

@@ -273,13 +273,13 @@
 <span data-nosnippet>379</span>            key: MonoidActElement::from_key(key),
 <span data-nosnippet>380</span>            value: LazyMapElement::from_key(value),
 <span data-nosnippet>381</span>        };
-<span data-nosnippet>382</span>        <span class="kw">let </span>node = BstRoot::from_data(data, <span class="self">self</span>.allocator.deref_mut());
+<span data-nosnippet>382</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ BstRoot::from_data(data, <span class="self">self</span>.allocator.deref_mut()) };
 <span data-nosnippet>383</span>        <span class="kw">let </span>node_id = <span class="self">self</span>.node_id_manager.register(<span class="kw-2">&amp;</span>node);
 <span data-nosnippet>384</span>        <span class="self">self</span>.root = TreapSpec::merge(TreapSpec::merge(left, <span class="prelude-val">Some</span>(node)), right);
 <span data-nosnippet>385</span>        node_id
 <span data-nosnippet>386</span>    }
 <span data-nosnippet>387</span>
-<span data-nosnippet>388</span>    <span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node_id: BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="../algebra/action.rs.html#70">M</a>::Key, L::Key)&gt; {
+<span data-nosnippet>388</span>    <span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node_id: BstNodeId&lt;TreapSpec&lt;M, L&gt;&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(M::Key, L::Key)&gt; {
 <span data-nosnippet>389</span>        <span class="kw">if </span>!<span class="self">self</span>.node_id_manager.contains(<span class="kw-2">&amp;</span>node_id) {
 <span data-nosnippet>390</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>391</span>        }
@@ -322,7 +322,7 @@
 <span data-nosnippet>428</span>            EqualSide::Right,
 <span data-nosnippet>429</span>        );
 <span data-nosnippet>430</span>        <span class="kw">let </span>node = split.right()<span class="question-mark">?</span>.leftmost();
-<span data-nosnippet>431</span>        <a href="../algebra/magma.rs.html#9">matches!</a>(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
+<span data-nosnippet>431</span>        <span class="macro">matches!</span>(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
 <span data-nosnippet>432</span>            .then(|| <span class="self">self</span>.node_id_manager.registered_node_id(node))
 <span data-nosnippet>433</span>            .flatten()
 <span data-nosnippet>434</span>    }</code></pre></div></div></div></details></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-BstSeeker-for-SeekByKey%3C'_,+Spec,+K,+Q%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#85-100">Source</a><a href="#impl-BstSeeker-for-SeekByKey%3C'_,+Spec,+K,+Q%3E" class="anchor">§</a><h3 class="code-header">impl&lt;Spec, K, Q&gt; <a class="trait" href="trait.BstSeeker.html" title="trait competitive::data_structure::binary_search_tree::seeker::BstSeeker">BstSeeker</a> for <a class="struct" href="struct.SeekByKey.html" title="struct competitive::data_structure::binary_search_tree::seeker::SeekByKey">SeekByKey</a>&lt;'_, Spec, K, Q&gt;<div class="where">where

@@ -53,7 +53,7 @@
 </script>
 
 </head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/tree/</div>top_tree.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{
-<a href=#2 id=2 data-nosnippet>2</a>    <a href="../data_structure/allocator.rs.html#8-11">Allocator</a>, <a href="../algebra/magma.rs.html#4-18">Magma</a>, <a href="../data_structure/allocator.rs.html#13-17">MemoryPool</a>, <a href="../algebra/magma.rs.html#145-176">Monoid</a>, <a href="../algebra/magma.rs.html#54-81">Unital</a>,
+<a href=#2 id=2 data-nosnippet>2</a>    <a href="../data_structure/allocator.rs.html#11-17">Allocator</a>, <a href="../algebra/magma.rs.html#4-18">Magma</a>, <a href="../data_structure/allocator.rs.html#19-23">MemoryPool</a>, <a href="../algebra/magma.rs.html#145-176">Monoid</a>, <a href="../algebra/magma.rs.html#54-81">Unital</a>,
 <a href=#3 id=3 data-nosnippet>3</a>    binary_search_tree::{
 <a href=#4 id=4 data-nosnippet>4</a>        <a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>, <a href="../data_structure/binary_search_tree/node.rs.html#39-43">BstNode</a>, <a href="../data_structure/binary_search_tree/node.rs.html#575">BstRoot</a>, <a href="../data_structure/binary_search_tree/seeker.rs.html#6-10">BstSeeker</a>, <a href="../data_structure/binary_search_tree/node.rs.html#20-37">BstSpec</a>, <a href="../data_structure/binary_search_tree/node.rs.html#5-8">EqualSide</a>, <a href="../data_structure/binary_search_tree/node.rs.html#106-108">node::WithParent</a>,
 <a href=#5 id=5 data-nosnippet>5</a>    },
@@ -210,14 +210,14 @@
 <a href=#156 id=156 data-nosnippet>156</a>    <span class="attr">#[inline]
 <a href=#157 id=157 data-nosnippet>157</a>    </span><span class="kw">fn </span>top_down(<span class="kw-2">mut </span>node: <a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
 <a href=#158 id=158 data-nosnippet>158</a>        <span class="kw">let </span>pointer = <a href="#157">node</a>.node;
-<a href=#159 id=159 data-nosnippet>159</a>        <span class="kw">if </span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#268-273">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().index_and_reverse &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+<a href=#159 id=159 data-nosnippet>159</a>        <span class="kw">if </span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#271-276">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().index_and_reverse &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <a href=#160 id=160 data-nosnippet>160</a>            <a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#414-416">data_mut</a>().index_and_reverse &amp;= !<span class="number">1</span>;
 <a href=#161 id=161 data-nosnippet>161</a>            <span class="kw">for </span>child <span class="kw">in unsafe </span>{ pointer.as_ref().child }.into_iter().flatten() {
 <a href=#162 id=162 data-nosnippet>162</a>                <span class="kw">unsafe </span>{ <span class="self">Self</span>::toggle(child) };
 <a href=#163 id=163 data-nosnippet>163</a>            }
 <a href=#164 id=164 data-nosnippet>164</a>        }
 <a href=#165 id=165 data-nosnippet>165</a>
-<a href=#166 id=166 data-nosnippet>166</a>        <span class="kw">if </span>!<span class="self">Self</span>::<a href="#102-104">is_unit</a>(<span class="kw-2">&amp;</span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#268-273">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().heavy_action) {
+<a href=#166 id=166 data-nosnippet>166</a>        <span class="kw">if </span>!<span class="self">Self</span>::<a href="#102-104">is_unit</a>(<span class="kw-2">&amp;</span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#271-276">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().heavy_action) {
 <a href=#167 id=167 data-nosnippet>167</a>            <span class="kw">let </span>action = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(
 <a href=#168 id=168 data-nosnippet>168</a>                <span class="kw-2">&amp;mut </span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#414-416">data_mut</a>().heavy_action,
 <a href=#169 id=169 data-nosnippet>169</a>                &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::<a href="../algebra/magma.rs.html#56">unit</a>(),
@@ -226,7 +226,7 @@
 <a href=#172 id=172 data-nosnippet>172</a>                <span class="kw">unsafe </span>{ <span class="self">Self</span>::apply_heavy(child, <span class="kw-2">&amp;</span>action) };
 <a href=#173 id=173 data-nosnippet>173</a>            }
 <a href=#174 id=174 data-nosnippet>174</a>        }
-<a href=#175 id=175 data-nosnippet>175</a>        <span class="kw">if </span>!<span class="self">Self</span>::<a href="#102-104">is_unit</a>(<span class="kw-2">&amp;</span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#268-273">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().light_action) {
+<a href=#175 id=175 data-nosnippet>175</a>        <span class="kw">if </span>!<span class="self">Self</span>::<a href="#102-104">is_unit</a>(<span class="kw-2">&amp;</span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#271-276">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().light_action) {
 <a href=#176 id=176 data-nosnippet>176</a>            <span class="kw">let </span>action = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(
 <a href=#177 id=177 data-nosnippet>177</a>                <span class="kw-2">&amp;mut </span><a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#414-416">data_mut</a>().light_action,
 <a href=#178 id=178 data-nosnippet>178</a>                &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::<a href="../algebra/magma.rs.html#56">unit</a>(),
@@ -234,7 +234,7 @@
 <a href=#180 id=180 data-nosnippet>180</a>            <span class="kw">for </span>child <span class="kw">in unsafe </span>{ pointer.as_ref().child }.into_iter().flatten() {
 <a href=#181 id=181 data-nosnippet>181</a>                <span class="kw">unsafe </span>{ <span class="self">Self</span>::apply_light(child, <span class="kw-2">&amp;</span>action) };
 <a href=#182 id=182 data-nosnippet>182</a>            }
-<a href=#183 id=183 data-nosnippet>183</a>            <span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(light) = <a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#268-273">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().light {
+<a href=#183 id=183 data-nosnippet>183</a>            <span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(light) = <a href="#157">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#271-276">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().light {
 <a href=#184 id=184 data-nosnippet>184</a>                <span class="kw">unsafe </span>{ <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="#229-235">apply</a>(<a href="#183">light</a>, <span class="kw-2">&amp;</span><a href="#176">action</a>) };
 <a href=#185 id=185 data-nosnippet>185</a>            }
 <a href=#186 id=186 data-nosnippet>186</a>        }
@@ -299,7 +299,7 @@
 <a href=#245 id=245 data-nosnippet>245</a>
 <a href=#246 id=246 data-nosnippet>246</a>    <span class="attr">#[inline]
 <a href=#247 id=247 data-nosnippet>247</a>    </span><span class="kw">fn </span>top_down(<span class="kw-2">mut </span>node: <a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
-<a href=#248 id=248 data-nosnippet>248</a>        <span class="kw">if </span><a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="#102-104">is_unit</a>(<span class="kw-2">&amp;</span><a href="#247">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#268-273">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().action) {
+<a href=#248 id=248 data-nosnippet>248</a>        <span class="kw">if </span><a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="#102-104">is_unit</a>(<span class="kw-2">&amp;</span><a href="#247">node</a>.<a href="../data_structure/binary_search_tree/node.rs.html#271-276">reborrow</a>().<a href="../data_structure/binary_search_tree/node.rs.html#370-372">into_data</a>().action) {
 <a href=#249 id=249 data-nosnippet>249</a>            <span class="kw">return</span>;
 <a href=#250 id=250 data-nosnippet>250</a>        }
 <a href=#251 id=251 data-nosnippet>251</a>        <span class="kw">let </span>pointer = <a href="#247">node</a>.node;
@@ -352,8 +352,8 @@
 <a href=#298 id=298 data-nosnippet>298</a>    A: <a href="#28-44">TopTreeAction</a>&lt;S&gt;,
 <a href=#299 id=299 data-nosnippet>299</a>{
 <a href=#300 id=300 data-nosnippet>300</a>    nodes: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#93">TopPtr</a>&lt;S, A&gt;&gt;,
-<a href=#301 id=301 data-nosnippet>301</a>    node_allocator: <a href="../data_structure/allocator.rs.html#13-17">MemoryPool</a>&lt;<a href="#91">TopNode</a>&lt;S, A&gt;&gt;,
-<a href=#302 id=302 data-nosnippet>302</a>    rake_allocator: <a href="../data_structure/allocator.rs.html#13-17">MemoryPool</a>&lt;<a href="#92">RakeNode</a>&lt;S, A&gt;&gt;,
+<a href=#301 id=301 data-nosnippet>301</a>    node_allocator: <a href="../data_structure/allocator.rs.html#19-23">MemoryPool</a>&lt;<a href="#91">TopNode</a>&lt;S, A&gt;&gt;,
+<a href=#302 id=302 data-nosnippet>302</a>    rake_allocator: <a href="../data_structure/allocator.rs.html#19-23">MemoryPool</a>&lt;<a href="#92">RakeNode</a>&lt;S, A&gt;&gt;,
 <a href=#303 id=303 data-nosnippet>303</a>}
 <a href=#304 id=304 data-nosnippet>304</a>
 <a href=#305 id=305 data-nosnippet>305</a><span class="kw">impl</span>&lt;S, A&gt; <a href="#295-303">TopTree</a>&lt;S, A&gt;
@@ -364,8 +364,8 @@
 <a href=#310 id=310 data-nosnippet>310</a>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
 <a href=#311 id=311 data-nosnippet>311</a>        <span class="self">Self </span>{
 <a href=#312 id=312 data-nosnippet>312</a>            nodes: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#310">capacity</a>),
-<a href=#313 id=313 data-nosnippet>313</a>            node_allocator: <a href="../data_structure/allocator.rs.html#13-17">MemoryPool</a>::<a href="../data_structure/allocator.rs.html#42-49">with_capacity</a>(<a href="#310">capacity</a>),
-<a href=#314 id=314 data-nosnippet>314</a>            rake_allocator: <a href="../data_structure/allocator.rs.html#13-17">MemoryPool</a>::<a href="../data_structure/allocator.rs.html#42-49">with_capacity</a>(<a href="#310">capacity</a>),
+<a href=#313 id=313 data-nosnippet>313</a>            node_allocator: <a href="../data_structure/allocator.rs.html#19-23">MemoryPool</a>::<a href="../data_structure/allocator.rs.html#48-55">with_capacity</a>(<a href="#310">capacity</a>),
+<a href=#314 id=314 data-nosnippet>314</a>            rake_allocator: <a href="../data_structure/allocator.rs.html#19-23">MemoryPool</a>::<a href="../data_structure/allocator.rs.html#48-55">with_capacity</a>(<a href="#310">capacity</a>),
 <a href=#315 id=315 data-nosnippet>315</a>        }
 <a href=#316 id=316 data-nosnippet>316</a>    }
 <a href=#317 id=317 data-nosnippet>317</a>
@@ -401,7 +401,7 @@
 <a href=#347 id=347 data-nosnippet>347</a>    <span class="kw">pub fn </span>add_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: S::Info) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
 <a href=#348 id=348 data-nosnippet>348</a>        <span class="kw">let </span>index = <a class="self" href="#347">self</a>.nodes.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
 <a href=#349 id=349 data-nosnippet>349</a>        <span class="kw">let </span>sum = S::<a href="#18">vertex</a>(<span class="kw-2">&amp;</span><a href="#347">info</a>);
-<a href=#350 id=350 data-nosnippet>350</a>        <span class="kw">let </span>node = <a class="self" href="#347">self</a>.node_allocator.<a href="../data_structure/allocator.rs.html#9">allocate</a>(<a href="../data_structure/binary_search_tree/node.rs.html#39-43">BstNode</a>::<a href="../data_structure/binary_search_tree/node.rs.html#49-55">new</a>(<a href="#63-75">TopTreeData</a> {
+<a href=#350 id=350 data-nosnippet>350</a>        <span class="kw">let </span>node = <a class="self" href="#347">self</a>.node_allocator.<a href="../data_structure/allocator.rs.html#12">allocate</a>(<a href="../data_structure/binary_search_tree/node.rs.html#39-43">BstNode</a>::<a href="../data_structure/binary_search_tree/node.rs.html#49-55">new</a>(<a href="#63-75">TopTreeData</a> {
 <a href=#351 id=351 data-nosnippet>351</a>            <a href="#347">info</a>,
 <a href=#352 id=352 data-nosnippet>352</a>            <a href="#349">sum</a>,
 <a href=#353 id=353 data-nosnippet>353</a>            light: <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>,
@@ -420,12 +420,12 @@
 <a href=#366 id=366 data-nosnippet>366</a>
 <a href=#367 id=367 data-nosnippet>367</a>    <span class="attr">#[inline]
 <a href=#368 id=368 data-nosnippet>368</a>    </span><span class="kw">unsafe fn </span>pull_top(node: <a href="#93">TopPtr</a>&lt;S, A&gt;) {
-<a href=#369 id=369 data-nosnippet>369</a>        <span class="kw">unsafe </span>{ <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#26">bottom_up</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#262-267">new_unchecked</a>(<a href="#368">node</a>)) };
+<a href=#369 id=369 data-nosnippet>369</a>        <span class="kw">unsafe </span>{ <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#26">bottom_up</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#265-270">new_unchecked</a>(<a href="#368">node</a>)) };
 <a href=#370 id=370 data-nosnippet>370</a>    }
 <a href=#371 id=371 data-nosnippet>371</a>
 <a href=#372 id=372 data-nosnippet>372</a>    <span class="attr">#[inline]
 <a href=#373 id=373 data-nosnippet>373</a>    </span><span class="kw">unsafe fn </span>pull_rake(node: <a href="#94">RakePtr</a>&lt;S, A&gt;) {
-<a href=#374 id=374 data-nosnippet>374</a>        <span class="kw">unsafe </span>{ <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#26">bottom_up</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#262-267">new_unchecked</a>(<a href="#373">node</a>)) };
+<a href=#374 id=374 data-nosnippet>374</a>        <span class="kw">unsafe </span>{ <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#26">bottom_up</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#265-270">new_unchecked</a>(<a href="#373">node</a>)) };
 <a href=#375 id=375 data-nosnippet>375</a>    }
 <a href=#376 id=376 data-nosnippet>376</a>
 <a href=#377 id=377 data-nosnippet>377</a>    <span class="attr">#[inline]
@@ -461,7 +461,7 @@
 <a href=#407 id=407 data-nosnippet>407</a>
 <a href=#408 id=408 data-nosnippet>408</a>    <span class="kw">unsafe fn </span>rake_rightmost(<span class="kw-2">mut </span>node: <a href="#94">RakePtr</a>&lt;S, A&gt;) -&gt; <a href="#94">RakePtr</a>&lt;S, A&gt; {
 <a href=#409 id=409 data-nosnippet>409</a>        <span class="kw">loop </span>{
-<a href=#410 id=410 data-nosnippet>410</a>            <span class="kw">unsafe </span>{ <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#262-267">new_unchecked</a>(<a href="#408">node</a>)) };
+<a href=#410 id=410 data-nosnippet>410</a>            <span class="kw">unsafe </span>{ <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#265-270">new_unchecked</a>(<a href="#408">node</a>)) };
 <a href=#411 id=411 data-nosnippet>411</a>            <span class="kw">match unsafe </span>{ <a href="#408">node</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ref">as_ref</a>().child[<span class="number">1</span>] } {
 <a href=#412 id=412 data-nosnippet>412</a>                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(right) =&gt; <a href="#408">node</a> = <a href="#412">right</a>,
 <a href=#413 id=413 data-nosnippet>413</a>                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> =&gt; <span class="kw">return </span><a href="#408">node</a>,
@@ -474,7 +474,7 @@
 <a href=#420 id=420 data-nosnippet>420</a>        root: <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<a href="#94">RakePtr</a>&lt;S, A&gt;&gt;,
 <a href=#421 id=421 data-nosnippet>421</a>        key: S::Point,
 <a href=#422 id=422 data-nosnippet>422</a>    ) -&gt; (<a href="#94">RakePtr</a>&lt;S, A&gt;, <a href="#94">RakePtr</a>&lt;S, A&gt;) {
-<a href=#423 id=423 data-nosnippet>423</a>        <span class="kw">let </span><span class="kw-2">mut </span>node = <a class="self" href="#419">self</a>.rake_allocator.<a href="../data_structure/allocator.rs.html#9">allocate</a>(<a href="../data_structure/binary_search_tree/node.rs.html#39-43">BstNode</a>::<a href="../data_structure/binary_search_tree/node.rs.html#49-55">new</a>(<a href="#77-86">RakeData</a> {
+<a href=#423 id=423 data-nosnippet>423</a>        <span class="kw">let </span><span class="kw-2">mut </span>node = <a class="self" href="#419">self</a>.rake_allocator.<a href="../data_structure/allocator.rs.html#12">allocate</a>(<a href="../data_structure/binary_search_tree/node.rs.html#39-43">BstNode</a>::<a href="../data_structure/binary_search_tree/node.rs.html#49-55">new</a>(<a href="#77-86">RakeData</a> {
 <a href=#424 id=424 data-nosnippet>424</a>            sum: <a href="#421">key</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
 <a href=#425 id=425 data-nosnippet>425</a>            <a href="#421">key</a>,
 <a href=#426 id=426 data-nosnippet>426</a>            action: &lt;A::ActionMonoid <span class="kw">as </span>Unital&gt;::<a href="../algebra/magma.rs.html#56">unit</a>(),
@@ -496,7 +496,7 @@
 <a href=#442 id=442 data-nosnippet>442</a>    ) -&gt; (<a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<a href="#94">RakePtr</a>&lt;S, A&gt;&gt;, A::Action) {
 <a href=#443 id=443 data-nosnippet>443</a>        <span class="kw">unsafe </span>{
 <a href=#444 id=444 data-nosnippet>444</a>            <span class="self">Self</span>::<a href="#399-406">splay_rake</a>(<a href="#441">node</a>);
-<a href=#445 id=445 data-nosnippet>445</a>            <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#262-267">new_unchecked</a>(<a href="#441">node</a>));
+<a href=#445 id=445 data-nosnippet>445</a>            <a href="#89">RakeBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#265-270">new_unchecked</a>(<a href="#441">node</a>));
 <a href=#446 id=446 data-nosnippet>446</a>        }
 <a href=#447 id=447 data-nosnippet>447</a>        <span class="kw">let </span>left = <span class="kw">unsafe </span>{ <a href="#441">node</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_mut">as_mut</a>().child[<span class="number">0</span>].<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>() };
 <a href=#448 id=448 data-nosnippet>448</a>        <span class="kw">let </span>right = <span class="kw">unsafe </span>{ <a href="#441">node</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_mut">as_mut</a>().child[<span class="number">1</span>].<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>() };
@@ -517,7 +517,7 @@
 <a href=#463 id=463 data-nosnippet>463</a>                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#456">root</a>)
 <a href=#464 id=464 data-nosnippet>464</a>            }
 <a href=#465 id=465 data-nosnippet>465</a>        };
-<a href=#466 id=466 data-nosnippet>466</a>        <span class="kw">let </span>node = <a class="self" href="#440">self</a>.rake_allocator.<a href="../data_structure/allocator.rs.html#10">deallocate</a>(<a href="#441">node</a>);
+<a href=#466 id=466 data-nosnippet>466</a>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <a class="self" href="#440">self</a>.rake_allocator.<a href="../data_structure/allocator.rs.html#16">deallocate</a>(<a href="#441">node</a>) };
 <a href=#467 id=467 data-nosnippet>467</a>        (<a href="#452">root</a>, <a href="#466">node</a>.data.buffer)
 <a href=#468 id=468 data-nosnippet>468</a>    }
 <a href=#469 id=469 data-nosnippet>469</a>
@@ -619,7 +619,7 @@
 <a href=#565 id=565 data-nosnippet>565</a>        <a class="self" href="#563">self</a>.<a href="#470-501">access_node</a>(<a href="#564">root</a>);
 <a href=#566 id=566 data-nosnippet>566</a>        <span class="kw">unsafe </span>{
 <a href=#567 id=567 data-nosnippet>567</a>            <span class="kw">loop </span>{
-<a href=#568 id=568 data-nosnippet>568</a>                <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#262-267">new_unchecked</a>(<a href="#564">root</a>));
+<a href=#568 id=568 data-nosnippet>568</a>                <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#265-270">new_unchecked</a>(<a href="#564">root</a>));
 <a href=#569 id=569 data-nosnippet>569</a>                <span class="kw">match </span><a href="#564">root</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ref">as_ref</a>().child[<span class="number">0</span>] {
 <a href=#570 id=570 data-nosnippet>570</a>                    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(left) =&gt; <a href="#564">root</a> = <a href="#570">left</a>,
 <a href=#571 id=571 data-nosnippet>571</a>                    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> =&gt; <span class="kw">break</span>,
@@ -684,7 +684,7 @@
 <a href=#630 id=630 data-nosnippet>630</a>        <a class="self" href="#627">self</a>.<a href="#470-501">access_node</a>(<a href="#629">node</a>);
 <a href=#631 id=631 data-nosnippet>631</a>        <span class="self">Self</span>::<a href="#601-616">detach_left</a>(<a href="#629">node</a>, |node| <span class="kw">unsafe </span>{
 <a href=#632 id=632 data-nosnippet>632</a>            <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="#135-145">apply_all</a>(<a href="#631">node</a>, <a href="#627">action</a>);
-<a href=#633 id=633 data-nosnippet>633</a>            <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#262-267">new_unchecked</a>(<a href="#631">node</a>));
+<a href=#633 id=633 data-nosnippet>633</a>            <a href="#88">TopBstSpec</a>::&lt;S, A&gt;::<a href="../data_structure/binary_search_tree/node.rs.html#24">top_down</a>(<a href="../data_structure/binary_search_tree/node.rs.html#576">BstDataMutRef</a>::<a href="../data_structure/binary_search_tree/node.rs.html#265-270">new_unchecked</a>(<a href="#631">node</a>));
 <a href=#634 id=634 data-nosnippet>634</a>        });
 <a href=#635 id=635 data-nosnippet>635</a>    }
 <a href=#636 id=636 data-nosnippet>636</a>}

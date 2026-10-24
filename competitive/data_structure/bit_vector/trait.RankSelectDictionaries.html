@@ -563,7 +563,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1084</span>                <span class="kw">let </span>start = vector.ranks(range.start);
 <span data-nosnippet>1085</span>                <span class="kw">let </span>end = vector.ranks(range.end);
 <span data-nosnippet>1086</span>                <span class="kw">let </span><span class="kw-2">mut </span>split = base + range.len();
-<span data-nosnippet>1087</span>                <span class="kw">let </span><span class="kw-2">mut </span><a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">requested</a> = ranks.len();
+<span data-nosnippet>1087</span>                <span class="kw">let </span><span class="kw-2">mut </span>requested = ranks.len();
 <span data-nosnippet>1088</span>                <span class="kw">for </span>digit <span class="kw">in </span>(<span class="number">0</span>..<span class="number">4</span>).rev() {
 <span data-nosnippet>1089</span>                    split -= end[digit] - start[digit];
 <span data-nosnippet>1090</span>                    <span class="kw">let </span>boundary = ranks[..requested].partition_point(|<span class="kw-2">&amp;</span>k| k &lt; split);
@@ -600,7 +600,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1121</span>            <span class="kw">let </span>boundary = ranks.partition_point(|<span class="kw-2">&amp;</span>k| k &lt; split);
 <span data-nosnippet>1122</span>            <span class="kw">if </span>boundary &lt; ranks.len() {
 <span data-nosnippet>1123</span>                stack.push((
-<span data-nosnippet>1124</span>                    <span class="self">self</span>.zeros[level] + start1..<span class="self">self</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Equal">zeros</a>[level] + end1,
+<span data-nosnippet>1124</span>                    <span class="self">self</span>.zeros[level] + start1..<span class="self">self</span>.zeros[level] + end1,
 <span data-nosnippet>1125</span>                    split,
 <span data-nosnippet>1126</span>                    index | (<span class="number">1 </span>&lt;&lt; d),
 <span data-nosnippet>1127</span>                    d,
@@ -634,7 +634,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1155</span>                    digit += <span class="number">1</span>;
 <span data-nosnippet>1156</span>                }
 <span data-nosnippet>1157</span>                index = index * <span class="number">4 </span>+ digit;
-<span data-nosnippet>1158</span>                range = vector.starts[digit] + start[digit]..vector.starts[digit] + end[digit];
+<span data-nosnippet>1158</span>                range = vector.starts[digit] + start[digit]..vector.<a href="../algebra/lazy_map.rs.html#485-496">starts</a>[digit] + end[digit];
 <span data-nosnippet>1159</span>                outer = vector.starts[digit] + outer_start[digit]
 <span data-nosnippet>1160</span>                    ..vector.starts[digit] + outer_end[digit];
 <span data-nosnippet>1161</span>            }
@@ -897,7 +897,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1418</span>            <span class="kw">let </span>start0 = range.start - start1;
 <span data-nosnippet>1419</span>            <span class="kw">let </span>end0 = range.end - end1;
 <span data-nosnippet>1420</span>            <span class="kw">if </span>((idx &gt;&gt; d) &amp; <span class="number">1</span>) != <span class="number">0 </span>{
-<span data-nosnippet>1421</span>                <a href="../algebra/magma.rs.html#11">f</a>(d, start0..end0);
+<span data-nosnippet>1421</span>                f(d, start0..end0);
 <span data-nosnippet>1422</span>                range.start = <span class="self">self</span>.zeros[level] + start1;
 <span data-nosnippet>1423</span>                range.end = <span class="self">self</span>.zeros[level] + end1;
 <span data-nosnippet>1424</span>            } <span class="kw">else </span>{
@@ -940,7 +940,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1461</span>        <span class="kw">let </span><span class="kw-2">mut </span>current = weights.to_vec();
 <span data-nosnippet>1462</span>        <span class="kw">let </span><span class="kw-2">mut </span>bits = Vec::with_capacity(<span class="self">self</span>.bit_length);
 <span data-nosnippet>1463</span>        <span class="kw">for </span>level <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.bit_length {
-<span data-nosnippet>1464</span>            current = <a class="self" href="../algebra/magma.rs.html#56">self</a>.reorder(level, current);
+<span data-nosnippet>1464</span>            current = <span class="self">self</span>.reorder(level, current);
 <span data-nosnippet>1465</span>            bits.push(BinaryIndexedTree::from_slice(<span class="kw-2">&amp;</span>current[..<span class="self">self</span>.zeros[level]]));
 <span data-nosnippet>1466</span>        }
 <span data-nosnippet>1467</span>        WaveletMatrixPointAdd {
@@ -1504,7 +1504,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1142</span>            <span class="kw">let </span><span class="kw-2">mut </span>index = <span class="number">0</span>;
 <span data-nosnippet>1143</span>            <span class="kw">for </span>vector <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.quad_vectors {
 <span data-nosnippet>1144</span>                <span class="kw">let </span>start = vector.ranks(range.start);
-<span data-nosnippet>1145</span>                <span class="kw">let </span>end = vector.ranks(<a href="../algebra/magma.rs.html#4-18">range</a>.end);
+<span data-nosnippet>1145</span>                <span class="kw">let </span>end = vector.ranks(range.end);
 <span data-nosnippet>1146</span>                <span class="kw">let </span>outer_start = vector.ranks(outer.start);
 <span data-nosnippet>1147</span>                <span class="kw">let </span>outer_end = vector.ranks(outer.end);
 <span data-nosnippet>1148</span>                <span class="kw">let </span><span class="kw-2">mut </span>digit = <span class="number">0</span>;
@@ -1513,7 +1513,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1151</span>                    <span class="kw">if </span>k &lt; count {
 <span data-nosnippet>1152</span>                        <span class="kw">break</span>;
 <span data-nosnippet>1153</span>                    }
-<span data-nosnippet>1154</span>                    <a href="../algebra/lazy_map.rs.html#535">k</a> -= count;
+<span data-nosnippet>1154</span>                    k -= count;
 <span data-nosnippet>1155</span>                    digit += <span class="number">1</span>;
 <span data-nosnippet>1156</span>                }
 <span data-nosnippet>1157</span>                index = index * <span class="number">4 </span>+ digit;
@@ -1610,7 +1610,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1248</span>                <span class="kw">let </span>mask = !(u64::MAX &lt;&lt; (position % <span class="number">64</span>));
 <span data-nosnippet>1249</span>                <span class="kw">let </span>low = <span class="kw">if </span>digit &amp; <span class="number">1 </span>== <span class="number">0 </span>{ !block.lo } <span class="kw">else </span>{ block.lo };
 <span data-nosnippet>1250</span>                <span class="kw">let </span>high = <span class="kw">if </span>digit &amp; <span class="number">2 </span>== <span class="number">0 </span>{ !block.hi } <span class="kw">else </span>{ block.hi };
-<span data-nosnippet>1251</span>                <span class="kw">let </span>exact = block.rank[digit] <span class="kw">as </span>usize + (<a href="../algebra/lazy_map.rs.html#693">low</a> &amp; high &amp; mask).count_ones() <span class="kw">as </span>usize;
+<span data-nosnippet>1251</span>                <span class="kw">let </span>exact = block.rank[digit] <span class="kw">as </span>usize + (low &amp; high &amp; mask).count_ones() <span class="kw">as </span>usize;
 <span data-nosnippet>1252</span>                <span class="kw">let </span>less = <span class="kw">match </span>digit {
 <span data-nosnippet>1253</span>                    <span class="number">0 </span>=&gt; <span class="number">0</span>,
 <span data-nosnippet>1254</span>                    <span class="number">1 </span>=&gt; {
@@ -1856,7 +1856,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1494</span>                index = <span class="self">self</span>.wavelet_matrix.zeros[level] + rank1;
 <span data-nosnippet>1495</span>            } <span class="kw">else </span>{
 <span data-nosnippet>1496</span>                index -= rank1;
-<span data-nosnippet>1497</span>                <span class="self">self</span>.bits[level].update(index, value.clone());
+<span data-nosnippet>1497</span>                <span class="self">self</span>.bits[level].update(<a href="../../../../../algebra/trait.Magma.html">index</a>, value.clone());
 <span data-nosnippet>1498</span>            }
 <span data-nosnippet>1499</span>        }
 <span data-nosnippet>1500</span>    }
@@ -1912,7 +1912,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1550</span>    }
 <span data-nosnippet>1551</span>
 <span data-nosnippet>1552</span>    <span class="kw">fn </span>fold_lessthan_index(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, bits: usize) -&gt; M::T {
-<span data-nosnippet>1553</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = M::unit();
+<span data-nosnippet>1553</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = M::<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">unit</a>();
 <span data-nosnippet>1554</span>        <span class="kw">for </span>d <span class="kw">in </span>(idx.trailing_zeros() <span class="kw">as </span>usize..bits).rev() {
 <span data-nosnippet>1555</span>            <span class="kw">let </span>level = <span class="self">self</span>.wavelet_matrix.level(d);
 <span data-nosnippet>1556</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.wavelet_matrix.bit_vectors[level].<span class="highlight">rank1</span>(range.start);
@@ -1928,7 +1928,7 @@ rank_i(select_i(k) + 1) = k + 1</p>
 <span data-nosnippet>1566</span>                range.end = end0;
 <span data-nosnippet>1567</span>            }
 <span data-nosnippet>1568</span>        }
-<span data-nosnippet>1569</span>        <a href="../../../../../algebra/trait.Monoid.html">result</a>
+<span data-nosnippet>1569</span>        result
 <span data-nosnippet>1570</span>    }
 <span data-nosnippet>1571</span>}
 <span data-nosnippet>1572</span>

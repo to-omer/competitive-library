@@ -563,7 +563,7 @@
 <span data-nosnippet>1161</span>        <span class="kw">for </span>left <span class="kw">in </span><span class="number">1</span>..=part {
 <span data-nosnippet>1162</span>            <span class="kw">let </span><span class="kw-2">mut </span>product = fa[left].clone();
 <span data-nosnippet>1163</span>            ConvolveRealFft::multiply(<span class="kw-2">&amp;mut </span>product, <span class="kw-2">&amp;</span>fb[part - left]);
-<span data-nosnippet>1164</span>            <span class="kw">for </span>(sum, product) <span class="kw">in </span>sum.iter_mut().zip(product) {
+<span data-nosnippet>1164</span>            <span class="kw">for </span>(sum, product) <span class="kw">in </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">sum</a>.iter_mut().zip(product) {
 <span data-nosnippet>1165</span>                <span class="kw-2">*</span>sum += product;
 <span data-nosnippet>1166</span>            }
 <span data-nosnippet>1167</span>        }
@@ -623,7 +623,7 @@
 <span data-nosnippet>1221</span>        n: usize,
 <span data-nosnippet>1222</span>        py: usize,
 <span data-nosnippet>1223</span>        qy: usize,
-<span data-nosnippet>1224</span>    ) -&gt; (<span class="self">Self</span>::T, <span class="self">Self</span>::T) {
+<span data-nosnippet>1224</span>    ) -&gt; (<span class="self">Self</span>::T, <span class="self">Self</span>::<a href="../algebra/lazy_map.rs.html#511">T</a>) {
 <span data-nosnippet>1225</span>        <span class="kw">let </span>base = n * <span class="number">2</span>;
 <span data-nosnippet>1226</span>        <span class="kw">let </span>len_p = base * py;
 <span data-nosnippet>1227</span>        <span class="kw">let </span>len_q = base * qy;
@@ -687,14 +687,14 @@
 <span data-nosnippet>1285</span>    <span class="kw">fn </span>even_mul_normal_neg(f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>1286</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>1287</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
-<span data-nosnippet>1288</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
+<span data-nosnippet>1288</span>        <span class="macro">assert!</span>(f.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">len</a>() &gt;= <span class="number">2</span>);
 <span data-nosnippet>1289</span>        <span class="kw">if </span>std::ptr::eq(f, g) {
 <span data-nosnippet>1290</span>            <span class="kw">return </span>f.as_chunks::&lt;<span class="number">2</span>&gt;().<span class="number">0</span>.iter().map(|a| a[<span class="number">0</span>] * a[<span class="number">1</span>]).collect();
 <span data-nosnippet>1291</span>        }
 <span data-nosnippet>1292</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1293</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
 <span data-nosnippet>1294</span>        (<span class="number">0</span>..n)
-<span data-nosnippet>1295</span>            .map(|<a href="../algebra/lazy_map.rs.html#625">i</a>| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
+<span data-nosnippet>1295</span>            .map(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
 <span data-nosnippet>1296</span>            .collect()
 <span data-nosnippet>1297</span>    }
 <span data-nosnippet>1298</span>
@@ -703,8 +703,8 @@
 <span data-nosnippet>1301</span>        <span class="macro">assert!</span>(f.len().is_power_of_two());
 <span data-nosnippet>1302</span>        <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
 <span data-nosnippet>1303</span>        <span class="kw">let </span><span class="kw-2">mut </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
-<span data-nosnippet>1304</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
-<span data-nosnippet>1305</span>        <span class="kw">let </span>k = f.len().trailing_zeros() <span class="kw">as </span>usize;
+<span data-nosnippet>1304</span>        <span class="kw">let </span><a href="../algebra/lazy_map.rs.html#616">n</a> = f.len() / <span class="number">2</span>;
+<span data-nosnippet>1305</span>        <span class="kw">let </span>k = <a href="../algebra/lazy_map.rs.html#616">f</a>.len().trailing_zeros() <span class="kw">as </span>usize;
 <span data-nosnippet>1306</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); n];
 <span data-nosnippet>1307</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
 <span data-nosnippet>1308</span>        BIT_REVERSE.with(|br| {
@@ -728,6 +728,6 @@
 <span data-nosnippet>1326</span>        h
 <span data-nosnippet>1327</span>    }
 <span data-nosnippet>1328</span>
-<span data-nosnippet>1329</span>    <span class="kw">fn </span>multiply_prefix(<a href="../algebra/lazy_map.rs.html#648">f</a>: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>1329</span>    <span class="kw">fn </span>multiply_prefix(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1330</span>        <span class="highlight">pointwise_multiply</span>(f, g);
 <span data-nosnippet>1331</span>    }</code></pre></div></div></div></section></div></main></body></html>

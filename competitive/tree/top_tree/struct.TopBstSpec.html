@@ -385,7 +385,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }
 <span data-nosnippet>469</span>
@@ -461,7 +461,7 @@
 <span data-nosnippet>539</span>            (<span class="kw-2">*</span>child.as_ptr()).parent.parent = <span class="prelude-val">Some</span>(parent);
 <span data-nosnippet>540</span>            <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>child.as_ref().data.sum);
 <span data-nosnippet>541</span>            <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(parent.as_ref().data.light, point);
-<span data-nosnippet>542</span>            parent.as_mut().data.light = <a class="prelude-val" href="../num/zero_one.rs.html#1-14">Some</a>(light);
+<span data-nosnippet>542</span>            parent.as_mut().data.light = <span class="prelude-val">Some</span>(light);
 <span data-nosnippet>543</span>            (<span class="kw-2">*</span>child.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
 <span data-nosnippet>544</span>            <span class="self">Self</span>::pull_top(parent);
 <span data-nosnippet>545</span>        }
@@ -944,7 +944,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }
 <span data-nosnippet>469</span>
@@ -952,11 +952,11 @@
 <span data-nosnippet>471</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>472</span>            <span class="kw">let </span><span class="kw-2">mut </span>previous: <span class="prelude-ty">Option</span>&lt;TopPtr&lt;S, A&gt;&gt; = <span class="prelude-val">None</span>;
 <span data-nosnippet>473</span>            <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>474</span>            <span class="kw">while let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Some</a>(<span class="kw-2">mut </span>cursor) = current {
+<span data-nosnippet>474</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cursor) = current {
 <span data-nosnippet>475</span>                <span class="self">Self</span>::splay_top(cursor);
 <span data-nosnippet>476</span>                <span class="kw">let </span>next = cursor.as_ref().parent.parent;
 <span data-nosnippet>477</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = cursor.as_mut().child[<span class="number">1</span>].take() {
-<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.<a href="../algebra/lazy_map.rs.html#139">sum</a>);
+<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.sum);
 <span data-nosnippet>479</span>                    <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(cursor.as_ref().data.light, point);
 <span data-nosnippet>480</span>                    cursor.as_mut().data.light = <span class="prelude-val">Some</span>(light);
 <span data-nosnippet>481</span>                    (<span class="kw-2">*</span>right.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
@@ -998,7 +998,7 @@
 <span data-nosnippet>517</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>.node(node);
 <span data-nosnippet>518</span>        <span class="self">self</span>.access_node(node);
 <span data-nosnippet>519</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>520</span>            node.as_mut().data.info = f(<span class="kw-2">&amp;</span>node.as_ref().data.info);
+<span data-nosnippet>520</span>            <a href="../num/zero_one.rs.html#1-14">node</a>.as_mut().data.info = f(<span class="kw-2">&amp;</span>node.as_ref().data.info);
 <span data-nosnippet>521</span>            <span class="self">Self</span>::pull_top(node);
 <span data-nosnippet>522</span>        }
 <span data-nosnippet>523</span>    }
@@ -1319,7 +1319,7 @@
 <span data-nosnippet>463</span>                <span class="prelude-val">Some</span>(root)
 <span data-nosnippet>464</span>            }
 <span data-nosnippet>465</span>        };
-<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="self">self</span>.rake_allocator.deallocate(node);
+<span data-nosnippet>466</span>        <span class="kw">let </span>node = <span class="kw">unsafe </span>{ <span class="self">self</span>.rake_allocator.deallocate(node) };
 <span data-nosnippet>467</span>        (root, node.data.buffer)
 <span data-nosnippet>468</span>    }
 <span data-nosnippet>469</span>
@@ -1327,11 +1327,11 @@
 <span data-nosnippet>471</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>472</span>            <span class="kw">let </span><span class="kw-2">mut </span>previous: <span class="prelude-ty">Option</span>&lt;TopPtr&lt;S, A&gt;&gt; = <span class="prelude-val">None</span>;
 <span data-nosnippet>473</span>            <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="prelude-val">Some</span>(node);
-<span data-nosnippet>474</span>            <span class="kw">while let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Some</a>(<span class="kw-2">mut </span>cursor) = current {
+<span data-nosnippet>474</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>cursor) = current {
 <span data-nosnippet>475</span>                <span class="self">Self</span>::splay_top(cursor);
 <span data-nosnippet>476</span>                <span class="kw">let </span>next = cursor.as_ref().parent.parent;
 <span data-nosnippet>477</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = cursor.as_mut().child[<span class="number">1</span>].take() {
-<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.<a href="../algebra/lazy_map.rs.html#139">sum</a>);
+<span data-nosnippet>478</span>                    <span class="kw">let </span>point = S::add_edge(<span class="kw-2">&amp;</span>right.as_ref().data.sum);
 <span data-nosnippet>479</span>                    <span class="kw">let </span>(light, entry) = <span class="self">self</span>.rake_insert(cursor.as_ref().data.light, point);
 <span data-nosnippet>480</span>                    cursor.as_mut().data.light = <span class="prelude-val">Some</span>(light);
 <span data-nosnippet>481</span>                    (<span class="kw-2">*</span>right.as_ptr()).data.belong = <span class="prelude-val">Some</span>(entry);
@@ -1373,7 +1373,7 @@
 <span data-nosnippet>517</span>        <span class="kw">let </span><span class="kw-2">mut </span>node = <span class="self">self</span>.node(node);
 <span data-nosnippet>518</span>        <span class="self">self</span>.access_node(node);
 <span data-nosnippet>519</span>        <span class="kw">unsafe </span>{
-<span data-nosnippet>520</span>            node.as_mut().data.info = f(<span class="kw-2">&amp;</span>node.as_ref().data.info);
+<span data-nosnippet>520</span>            <a href="../num/zero_one.rs.html#1-14">node</a>.as_mut().data.info = f(<span class="kw-2">&amp;</span>node.as_ref().data.info);
 <span data-nosnippet>521</span>            <span class="self">Self</span>::pull_top(node);
 <span data-nosnippet>522</span>        }
 <span data-nosnippet>523</span>    }
