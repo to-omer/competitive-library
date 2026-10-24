@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["ROOTS","ROTATE_CACHE"],"fn":["eval_twiddle","with_roots"],"macro":[["partial_fft",1]],"mod":["avx2","avx512","scalar"]};
