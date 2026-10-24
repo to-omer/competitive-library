@@ -1,7 +1,9 @@
 //! algorithm
 
 use crate::algebra::{Field, Group, Invertible, Magma, Monoid, Unital};
-use crate::data_structure::{BitSet, DaryPrefixSumTreeU32, FibHashMap, UnionFindBase, union_find};
+use crate::data_structure::{
+    BitSet, DaryPrefixSumTreeU32, FibHashMap, UnionFind, UnionFindBase, union_find,
+};
 use crate::graph::{
     Graph, Neighbor, TopologicalSortExt, UndirectedSparseGraph, UsizeGraph, VertexMap,
 };
@@ -61,6 +63,8 @@ pub use self::static_range_count_distinct::static_range_count_distinct;
 pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree, rational_binary_search};
 #[codesnip::entry("ternary_search")]
 pub use self::ternary_search::{golden_ternary_search, piecewise_ternary_search, ternary_search};
+#[codesnip::entry("ToddCoxeter")]
+pub use self::todd_coxeter::ToddCoxeter;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
 
@@ -143,5 +147,7 @@ mod stern_brocot_tree;
 mod syakutori;
 #[cfg_attr(nightly, codesnip::entry)]
 pub mod ternary_search;
+#[cfg_attr(nightly, codesnip::entry("ToddCoxeter", include("UnionFind")))]
+mod todd_coxeter;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 mod xorbasis;
