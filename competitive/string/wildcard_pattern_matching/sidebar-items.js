@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["wildcard_pattern_matching","wildcard_pattern_matching_with_rng"]};
+window.SIDEBAR_ITEMS = {"constant":["FFT_LIMIT"],"fn":["bounded","capacity","matching_with_limit","square","transform_length","wildcard_pattern_matching"],"macro":[["matching_kernel",1]],"mod":["avx2","avx512","scalar"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add","complex_mul","fft_soa","first","ifft_soa","load","mul","multiply_accumulate","rotate","splat","store","sub"],"struct":["Complex4"]};
