@@ -32,4 +32,4 @@ $ cp -r util/gh-pages/* target/doc
 ```
 
 ## Snippet
-See [codesnip](https://github.com/to-omer/codesnip)
+See [codesnip](https://github.com/to-omer/codesnip) and [generated snippets](https://to-omer.github.io/competitive-library/snippets/index.html).

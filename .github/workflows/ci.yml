@@ -332,7 +332,7 @@ jobs:
           path: coverage/**/*
 
   generate-doc:
-    needs: [verify, benchmark, coverage, formal-verus, formal-kani]
+    needs: [verify, benchmark, coverage, formal-verus, formal-kani, snippet]
     if: github.ref_name == 'master'
 
     name: Generate Doc
@@ -346,6 +346,12 @@ jobs:
 
       - name: Setup `nightly`
         uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install codesnip
+        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: cargo:codesnip
+          cache: false # Resolve latest releases on each run.
 
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
@@ -394,6 +400,9 @@ jobs:
 
       - name: Arrange doc resources
         run: cp -r util/gh-pages/* target/doc
+
+      - name: Generate snippets
+        run: python3 util/snippets.py
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0

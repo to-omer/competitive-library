@@ -8,6 +8,8 @@
 
 //! [github]
 //!
+//! [snippets]
+//!
 //! [verification summary]
 //!
 //! [benchmarks]
@@ -15,6 +17,7 @@
 //! [coverage]
 //!
 //! [github]: https://github.com/to-omer/competitive-library
+//! [snippets]: ../snippets/index.html
 //! [verification summary]: ?search=verify
 //! [benchmarks]: ../benchmarks/report/index.html
 //! [coverage]: ../coverage/index.html
