@@ -463,7 +463,7 @@ where
                 Some(root)
             }
         };
-        let node = self.rake_allocator.deallocate(node);
+        let node = unsafe { self.rake_allocator.deallocate(node) };
         (root, node.data.buffer)
     }
 

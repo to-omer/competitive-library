@@ -12,7 +12,11 @@ pub struct Trie {
     node_size: usize,
     char_size: usize,
 }
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl Trie {
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures result@ == (Seq::new(char_size as nat, |_: int| !0usize), 1usize, char_size),
+    ))]
     pub fn new(char_size: usize) -> Self {
         Self {
             child: vec![!0; char_size],
@@ -20,6 +24,10 @@ impl Trie {
             char_size,
         }
     }
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires capacity as int * char_size as int <= usize::MAX,
+        ensures result@ == (Seq::new(char_size as nat, |_: int| !0usize), 1usize, char_size),
+    ))]
     pub fn with_capacity(char_size: usize, capacity: usize) -> Self {
         let mut child = Vec::with_capacity(capacity * char_size);
         child.resize(char_size, !0);
@@ -29,6 +37,8 @@ impl Trie {
             char_size,
         }
     }
+}
+impl Trie {
     #[cfg_attr(verus_keep_ghost, verus_verify)]
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
         requires
@@ -200,6 +210,26 @@ impl Trie {
                 }
             }
         }
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+mod verification {
+    use super::*;
+
+    verus! {
+    pub fn first_edge(char_size: usize, ch: usize) -> (result: Trie)
+        requires 0 < char_size, ch < char_size, 2 * char_size as int <= usize::MAX,
+        ensures result@.1 == 2, result@.2 == char_size, result@.0[ch as int] == 1,
+    {
+        let mut trie = Trie::new(char_size);
+        let node = trie.insert_once_at(0, ch);
+        let next = trie.next_node(0, ch);
+        assert(1usize != !0usize) by(bit_vector);
+        #[verifier::proof_note("Constructing a trie with any nonempty alphabet and inserting its first edge creates node 1, preserves the alphabet, and makes that edge reachable from the root")]
+        assert(node == 1 && next == Some(1));
+        trie
+    }
     }
 }
 

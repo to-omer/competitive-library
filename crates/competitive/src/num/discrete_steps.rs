@@ -49,7 +49,7 @@ macro_rules! impl_discrete_steps_integer {
                 impl_discrete_steps_integer!(@common $u_source);
                 fn steps_between(start: &Self, end: &Self) -> Option<$u_source> {
                     if *start <= *end {
-                        Some((*end - *start) as $u_source)
+                        $u_source::try_from(*end - *start).ok()
                     } else {
                         None
                     }
@@ -65,7 +65,7 @@ macro_rules! impl_discrete_steps_integer {
                 impl_discrete_steps_integer!(@common $u_source);
                 fn steps_between(start: &Self, end: &Self) -> Option<$u_source> {
                     if *start <= *end {
-                        Some((*end as $i_source).wrapping_sub(*start as $i_source) as $u_source)
+                        $u_source::try_from(end.abs_diff(*start)).ok()
                     } else {
                         None
                     }
@@ -362,6 +362,10 @@ mod verification {
     proof_steps!(proof_u64_u64_steps, u64, u64);
     proof_steps!(proof_i64_u32_steps, i64, u32);
     proof_steps!(proof_u64_u32_steps, u64, u32);
+    proof_steps!(proof_isize_u16_steps, isize, u16);
+    proof_steps!(proof_usize_u16_steps, usize, u16);
+    proof_steps!(proof_isize_u32_steps, isize, u32);
+    proof_steps!(proof_usize_u32_steps, usize, u32);
 
     #[kani::proof]
     fn proof_inclusive_range() {

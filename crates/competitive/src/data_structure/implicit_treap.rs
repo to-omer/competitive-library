@@ -290,15 +290,17 @@ where
     }
 
     fn node(&mut self, key: T::Key) -> ImplicitTreapRoot<T> {
-        BstRoot::from_data(
-            ImplicitTreapData {
-                priority: self.rng.rand64(),
-                value: LazyMapElement::from_key(key),
-                size: 1,
-                rev: false,
-            },
-            self.allocator.deref_mut(),
-        )
+        unsafe {
+            BstRoot::from_data(
+                ImplicitTreapData {
+                    priority: self.rng.rand64(),
+                    value: LazyMapElement::from_key(key),
+                    size: 1,
+                    rev: false,
+                },
+                self.allocator.deref_mut(),
+            )
+        }
     }
 
     fn build<I>(&mut self, iter: I) -> (Option<ImplicitTreapRoot<T>>, usize)
@@ -327,7 +329,10 @@ where
             stack.push(cur);
             len += 1;
         }
-        let root = stack.first().copied().map(BstRoot::new);
+        let root = stack
+            .first()
+            .copied()
+            .map(|node| unsafe { BstRoot::new_unchecked(node) });
         if let Some(mut root) = root {
             Self::build_bottom_up(root.borrow_datamut());
             (Some(root), len)

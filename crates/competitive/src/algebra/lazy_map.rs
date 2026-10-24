@@ -420,58 +420,34 @@ where
             bias: T::zero(),
         }
     }
-    pub fn add(x: T) -> Self {
+    pub fn add(x: T) -> Self
+    where
+        T: Copy + Ord + Add<Output = T>,
+    {
         Self {
-            lb: T::minimum(),
-            ub: T::maximum(),
+            lb: T::minimum() + x.max(T::zero()),
+            ub: T::maximum() + x.min(T::zero()),
             bias: x,
         }
     }
 }
 impl<T> Magma for RangeChminChmaxAdd<T>
 where
-    T: Copy
-        + Zero
-        + One
-        + Ord
-        + Bounded
-        + Add<Output = T>
-        + Sub<Output = T>
-        + Mul<Output = T>
-        + PartialEq,
+    T: Copy + Zero + Ord + Bounded + Add<Output = T>,
 {
     type T = Self;
     fn operate(x: &Self::T, y: &Self::T) -> Self::T {
         Self {
-            lb: (x.lb + x.bias).min(y.ub).max(y.lb) - x.bias,
-            ub: (x.ub + x.bias).max(y.lb).min(y.ub) - x.bias,
+            lb: (x.lb + y.bias).max(y.lb).min(y.ub),
+            ub: (x.ub + y.bias).max(y.lb).min(y.ub),
             bias: x.bias + y.bias,
         }
     }
 }
-impl<T> Associative for RangeChminChmaxAdd<T> where
-    T: Copy
-        + Zero
-        + One
-        + Ord
-        + Bounded
-        + Add<Output = T>
-        + Sub<Output = T>
-        + Mul<Output = T>
-        + PartialEq
-{
-}
+impl<T> Associative for RangeChminChmaxAdd<T> where T: Copy + Zero + Ord + Bounded + Add<Output = T> {}
 impl<T> Unital for RangeChminChmaxAdd<T>
 where
-    T: Copy
-        + Zero
-        + One
-        + Ord
-        + Bounded
-        + Add<Output = T>
-        + Sub<Output = T>
-        + Mul<Output = T>
-        + PartialEq,
+    T: Copy + Zero + Ord + Bounded + Add<Output = T>,
 {
     fn unit() -> Self::T {
         Self {
@@ -609,21 +585,13 @@ where
 
 impl<T> MonoidAct for RangeChminChmaxAdd<T>
 where
-    T: Copy
-        + Zero
-        + One
-        + Ord
-        + Bounded
-        + Add<Output = T>
-        + Sub<Output = T>
-        + Mul<Output = T>
-        + PartialEq,
+    T: Copy + Zero + Ord + Bounded + Add<Output = T>,
 {
     type Key = T;
     type Act = RangeChminChmaxAdd<T>;
     type ActMonoid = RangeChminChmaxAdd<T>;
     fn act(x: &Self::Key, a: &Self::Act) -> Self::Key {
-        (*x).max(a.lb).min(a.ub) + a.bias
+        (*x + a.bias).max(a.lb).min(a.ub)
     }
 }
 
@@ -646,26 +614,30 @@ where
         Self::single(key, T::one())
     }
     fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
-        Some(if Self::is_act_unit(a) {
-            x.clone()
-        } else if x.size.is_zero() {
-            Self::unit()
-        } else if x.min == x.max || a.lb == a.ub || a.lb >= x.max || a.ub <= x.min {
-            Self::single(x.min.max(a.lb).min(a.ub) + a.bias, x.size)
+        if Self::is_act_unit(a) {
+            return Some(x.clone());
+        }
+        if x.size.is_zero() {
+            return Some(Self::unit());
+        }
+        let lb = a.lb - a.bias;
+        let ub = a.ub - a.bias;
+        let min = x.min.max(lb);
+        let max = x.max.min(ub);
+        Some(if min >= max {
+            Self::single(RangeChminChmaxAdd::act(&x.min, a), x.size)
         } else if x.min2 == x.max {
             let mut x = x.clone();
-            let min = x.min.max(a.lb) + a.bias;
-            let max = x.max.min(a.ub) + a.bias;
+            let min = min + a.bias;
+            let max = max + a.bias;
             x.min = min;
             x.max2 = min;
             x.max = max;
             x.min2 = max;
             x.sum = min * x.n_min + max * x.n_max;
             x
-        } else if a.lb < x.min2 && x.max2 < a.ub {
+        } else if lb < x.min2 && x.max2 < ub {
             let mut x = x.clone();
-            let min = x.min.max(a.lb);
-            let max = x.max.min(a.ub);
             x.sum = x.sum + (min - x.min) * x.n_min + (max - x.max) * x.n_max + a.bias * x.size;
             x.min = min + a.bias;
             x.max = max + a.bias;
@@ -701,39 +673,63 @@ mod verification {
     use crate::num::Saturating;
 
     #[kani::proof]
-    #[kani::unwind(7)]
+    fn proof_clamp_add_constructors() {
+        let key: i64 = kani::any();
+        let value: i64 = kani::any();
+        type M = RangeChminChmaxAdd<Saturating<i64>>;
+        kani::assert(
+            M::act(&Saturating(key), &M::chmin(Saturating(value))).0 == key.min(value)
+                && M::act(&Saturating(key), &M::chmax(Saturating(value))).0 == key.max(value)
+                && M::act(&Saturating(key), &M::add(Saturating(value))).0
+                    == key.saturating_add(value),
+            "For all i64 keys and update values, chmin, chmax and add construct the corresponding clamp or saturating addition",
+        );
+        kani::assert(
+            M::act(&Saturating(key), &<M as Unital>::unit()).0 == key,
+            "The identity clamp/add action preserves every i64 key",
+        );
+        kani::cover!(key == i64::MAX && value == 1);
+        kani::cover!(key == i64::MIN && value == -1);
+    }
+
+    #[kani::proof]
     fn proof_clamp_add_composition() {
-        let key: i32 = kani::any();
-        let values: [i16; 3] = kani::any();
-        let kinds: [u8; 3] = kani::any();
-        let mut composed = <RangeChminChmaxAdd<Saturating<i64>> as Unital>::unit();
-        let mut expected = key as i64;
-        for i in 0..3 {
-            kani::assume(kinds[i] < 3);
-            let value = values[i] as i64;
-            let action = match kinds[i] {
-                0 => {
-                    expected = expected.min(value);
-                    RangeChminChmaxAdd::chmin(Saturating(value))
-                }
-                1 => {
-                    expected = expected.max(value);
-                    RangeChminChmaxAdd::chmax(Saturating(value))
-                }
-                _ => {
-                    expected += value;
-                    RangeChminChmaxAdd::add(Saturating(value))
-                }
-            };
-            composed = <RangeChminChmaxAdd<_> as Magma>::operate(&composed, &action);
-            kani::assert(
-                RangeChminChmaxAdd::act(&Saturating(key as i64), &composed).0 == expected,
-                "For every i32 key and three i16 chmin/chmax/add updates widened to Saturating<i64>, composition equals direct commands in order, including all operation mixtures",
-            );
-        }
-        kani::cover!(kinds == [0, 1, 2]);
-        kani::cover!(kinds == [2, 0, 1]);
-        kani::cover!(key == i32::MAX && values == [i16::MAX; 3] && kinds == [2; 3]);
+        let key: i64 = kani::any();
+        let bounds: [i64; 4] = kani::any();
+        let biases: [i64; 2] = kani::any();
+        kani::assume(i64::try_from(biases[0] as i128 + biases[1] as i128).is_ok());
+        let a = RangeChminChmaxAdd {
+            lb: Saturating(bounds[0].min(bounds[1])),
+            ub: Saturating(bounds[0].max(bounds[1])),
+            bias: Saturating(biases[0]),
+        };
+        let b = RangeChminChmaxAdd {
+            lb: Saturating(bounds[2].min(bounds[3])),
+            ub: Saturating(bounds[2].max(bounds[3])),
+            bias: Saturating(biases[1]),
+        };
+        let sequential = key
+            .saturating_add(biases[0])
+            .clamp(a.lb.0, a.ub.0)
+            .saturating_add(biases[1])
+            .clamp(b.lb.0, b.ub.0);
+        let composed = <RangeChminChmaxAdd<_> as Magma>::operate(&a, &b);
+        kani::assert(
+            RangeChminChmaxAdd::act(&Saturating(key), &composed).0 == sequential,
+            "For every i64 key and two ordered clamp intervals with arbitrary i64 biases whose sum fits i64, composition agrees with sequential saturating actions",
+        );
+        kani::cover!(key == i64::MIN && biases[0] < 0 && biases[1] > 0);
+        kani::cover!(bounds[0] == bounds[1]);
+        kani::cover!(
+            key == 0
+                && biases == [-(1 << 62), 0]
+                && bounds == [i64::MIN, i64::MAX - (1 << 62), 1 << 62, i64::MAX]
+        );
+        kani::cover!(
+            key == i64::MAX
+                && biases == [1, -1]
+                && bounds == [i64::MIN + 1, i64::MAX, i64::MIN, i64::MAX - 1]
+        );
     }
 
     macro_rules! proof_extremum_update {

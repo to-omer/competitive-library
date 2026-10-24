@@ -237,14 +237,16 @@ where
     A: Allocator<ImplicitSplayTreeNode<T>>,
 {
     fn node(&mut self, key: T::Key) -> ImplicitSplayTreeRoot<T> {
-        BstRoot::from_data(
-            ImplicitSplayTreeData {
-                value: LazyMapElement::from_key(key),
-                size: 1,
-                rev: false,
-            },
-            self.allocator.deref_mut(),
-        )
+        unsafe {
+            BstRoot::from_data(
+                ImplicitSplayTreeData {
+                    value: LazyMapElement::from_key(key),
+                    size: 1,
+                    rev: false,
+                },
+                self.allocator.deref_mut(),
+            )
+        }
     }
 
     #[inline]
@@ -430,7 +432,7 @@ where
                 let mid = start + (end - start) / 2;
                 if visited {
                     ImplicitSplayTreeSpec::bottom_up(
-                        BstRoot::new(nodes[mid].node).borrow_datamut(),
+                        unsafe { BstRoot::new_unchecked(nodes[mid].node) }.borrow_datamut(),
                     );
                     continue;
                 }
@@ -442,7 +444,7 @@ where
                 stack.push((mid + 1, end, Some((mid, 1)), false));
                 stack.push((start, mid, Some((mid, 0)), false));
             }
-            Some(BstRoot::new(nodes[len / 2].node))
+            Some(unsafe { BstRoot::new_unchecked(nodes[len / 2].node) })
         };
         self.root = ImplicitSplayTreeSpec::merge(self.root.take(), root);
         self.length += len;

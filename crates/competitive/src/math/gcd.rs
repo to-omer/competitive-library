@@ -555,20 +555,7 @@ pub fn extgcd_binary(original_a: i64, original_b: i64) -> (i64, i64, i64) {
             assert(s <= d);
             let adjust = if before_s < u { d as int } else { 0 };
             assert(s == before_s + adjust - u);
-            lemma_mod_self_0(d as int);
-            lemma_small_mod(0, d as nat);
-            lemma_mul_mod_noop_right(c as int, adjust, d as int);
-            vstd::arithmetic::mul::lemma_mul_basics(c as int);
-            assert((c as int) * adjust % (d as int) == 0);
-            lemma_add_mod_noop((c as int) * before_s, (c as int) * adjust, d as int);
-            lemma_mod_twice((c as int) * before_s, d as int);
-            lemma_sub_mod_noop((c as int) * (before_s + adjust), (c as int) * u, d as int);
-            lemma_sub_mod_noop(before_b as int, a as int, d as int);
-            assert((c as int) * s == (c as int) * (before_s + adjust) - (c as int) * u)
-                by(nonlinear_arith) requires s == before_s + adjust - u;
-            assert((c as int) * (before_s + adjust) == (c as int) * before_s + (c as int) * adjust)
-                by(nonlinear_arith);
-            assert((c as int) * s % (d as int) == (b as int) % (d as int));
+            modular_subtraction(c as int, before_b as int, a as int, before_s as int, u as int, d as int);
             assert(b % 2 == 0) by(bit_vector)
                 requires b == before_b - a, a & 1 == 1, before_b & 1 == 1, a < before_b;
             assert((b as int) * scale == (before_b as int) * scale - (a as int) * scale)
@@ -865,20 +852,7 @@ pub fn modinv_extgcd_binary(original_a: u64, p: u64) -> u64 {
             assert(s < p);
             let adjust = if before_s < u { p as int } else { 0 };
             assert(s == before_s + adjust - u);
-            lemma_mod_self_0(p as int);
-            lemma_small_mod(0, p as nat);
-            lemma_mul_mod_noop_right(original_a as int, adjust, p as int);
-            vstd::arithmetic::mul::lemma_mul_basics(original_a as int);
-            assert((original_a as int) * adjust % (p as int) == 0);
-            lemma_add_mod_noop((original_a as int) * before_s, (original_a as int) * adjust, p as int);
-            lemma_mod_twice((original_a as int) * before_s, p as int);
-            lemma_sub_mod_noop((original_a as int) * (before_s + adjust), (original_a as int) * u, p as int);
-            lemma_sub_mod_noop(before_b as int, a as int, p as int);
-            assert((original_a as int) * s == (original_a as int) * (before_s + adjust) - (original_a as int) * u)
-                by(nonlinear_arith) requires s == before_s + adjust - u;
-            assert((original_a as int) * (before_s + adjust)
-                == (original_a as int) * before_s + (original_a as int) * adjust) by(nonlinear_arith);
-            assert((original_a as int) * s % (p as int) == (b as int) % (p as int));
+            modular_subtraction(original_a as int, before_b as int, a as int, before_s as int, u as int, p as int);
             assert(b % 2 == 0) by(bit_vector)
                 requires b == before_b - a, a & 1 == 1, before_b & 1 == 1, a < before_b;
         }
@@ -972,6 +946,29 @@ proof fn signed_division(a: int, b: int)
             a > 0 ==> rust_div(a, b) == (if b > 0 { aa / bb } else { -(aa / bb) }),
             a < 0 ==> rust_div(a, b) == (if b > 0 { -(aa / bb) } else { aa / bb }),
             rust_rem(a, b) == (if a < 0 { -(aa % bb) } else { aa % bb });
+}
+
+proof fn modular_subtraction(original: int, left: int, right: int, s: int, u: int, modulus: int)
+    requires
+        modulus > 0,
+        original * s % modulus == left % modulus,
+        original * u % modulus == right % modulus,
+    ensures
+        original * (s + if s < u { modulus } else { 0 } - u) % modulus == (left - right) % modulus,
+{
+    let adjust = if s < u { modulus } else { 0 };
+    lemma_mod_self_0(modulus);
+    lemma_small_mod(0, modulus as nat);
+    lemma_mul_mod_noop_right(original, adjust, modulus);
+    vstd::arithmetic::mul::lemma_mul_basics(original);
+    assert(original * adjust % modulus == 0);
+    lemma_add_mod_noop(original * s, original * adjust, modulus);
+    lemma_mod_twice(original * s, modulus);
+    lemma_sub_mod_noop(original * (s + adjust), original * u, modulus);
+    lemma_sub_mod_noop(left, right, modulus);
+    assert(original * (s + adjust - u) == original * (s + adjust) - original * u)
+        by(nonlinear_arith);
+    assert(original * (s + adjust) == original * s + original * adjust) by(nonlinear_arith);
 }
 
 proof fn modular_halving(original: int, value: int, coefficient: int, modulus: int)

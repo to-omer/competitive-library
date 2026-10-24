@@ -379,7 +379,7 @@ where
             key: MonoidActElement::from_key(key),
             value: LazyMapElement::from_key(value),
         };
-        let node = BstRoot::from_data(data, self.allocator.deref_mut());
+        let node = unsafe { BstRoot::from_data(data, self.allocator.deref_mut()) };
         let node_id = self.node_id_manager.register(&node);
         self.root = TreapSpec::merge(TreapSpec::merge(left, Some(node)), right);
         node_id

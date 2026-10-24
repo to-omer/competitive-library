@@ -246,14 +246,16 @@ where
                 value,
             ));
         }
-        let mut node = BstRoot::from_data(
-            SplayTreeData {
-                key,
-                value,
-                size: 1,
-            },
-            self.allocator.deref_mut(),
-        );
+        let mut node = unsafe {
+            BstRoot::from_data(
+                SplayTreeData {
+                    key,
+                    value,
+                    size: 1,
+                },
+                self.allocator.deref_mut(),
+            )
+        };
         if let Some(mut root) = self.root.take() {
             match ordering.unwrap() {
                 Ordering::Greater => {

@@ -259,6 +259,9 @@ where
     Spec: BstSpec,
     BorrowType: marker::BorrowType,
 {
+    /// # Safety
+    /// The reachable nodes must form a valid tree and remain allocated while this
+    /// handle or derived references are used. Ownership and aliases must match `BorrowType`.
     pub unsafe fn new_unchecked(node: NonNull<BstNode<Spec::Data, Spec::Parent>>) -> Self {
         Self {
             node,
@@ -331,17 +334,14 @@ impl<Spec> BstNodeRef<marker::Owned, Spec>
 where
     Spec: BstSpec,
 {
-    pub fn new(node: NonNull<BstNode<Spec::Data, Spec::Parent>>) -> Self {
-        Self {
-            node,
-            _marker: PhantomData,
-        }
-    }
-    pub fn from_data<A>(data: Spec::Data, allocator: &mut A) -> Self
+    /// # Safety
+    /// The allocator must keep this node alive until all handles and references
+    /// to it have been discarded.
+    pub unsafe fn from_data<A>(data: Spec::Data, allocator: &mut A) -> Self
     where
         A: Allocator<BstNode<Spec::Data, Spec::Parent>>,
     {
-        Self::new(allocator.allocate(BstNode::new(data)))
+        unsafe { Self::new_unchecked(allocator.allocate(BstNode::new(data))) }
     }
     pub fn borrow_mut(&mut self) -> BstNodeRef<marker::Mut<'_>, Spec> {
         BstNodeRef {
@@ -495,7 +495,7 @@ where
     {
         debug_assert!(self.reborrow().left().descend().is_err());
         debug_assert!(self.reborrow().right().descend().is_err());
-        allocator.deallocate(self.node).data
+        unsafe { allocator.deallocate(self.node).data }
     }
 
     pub unsafe fn drop_all<A>(self, allocator: &mut A)
@@ -504,7 +504,7 @@ where
     {
         let mut stack = vec![self.node];
         while let Some(node) = stack.pop() {
-            stack.extend(allocator.deallocate(node).child.into_iter().flatten());
+            stack.extend(unsafe { allocator.deallocate(node).child.into_iter().flatten() });
         }
     }
 }

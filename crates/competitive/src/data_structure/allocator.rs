@@ -5,9 +5,15 @@ use std::{
     ptr::{self, NonNull, read, write},
 };
 
-pub trait Allocator<T> {
+/// # Safety
+/// Allocations must contain the supplied value and remain valid until deallocation
+/// or allocator destruction. Live nonzero-sized allocations must not overlap.
+pub unsafe trait Allocator<T> {
     fn allocate(&mut self, value: T) -> NonNull<T>;
-    fn deallocate(&mut self, ptr: NonNull<T>) -> T;
+    /// # Safety
+    /// `ptr` must hold a live value allocated by this allocator, with no remaining
+    /// references. The allocation must not be accessed after this call.
+    unsafe fn deallocate(&mut self, ptr: NonNull<T>) -> T;
 }
 
 pub struct MemoryPool<T> {
@@ -87,7 +93,7 @@ impl<T> Drop for MemoryPool<T> {
     }
 }
 
-impl<T> Allocator<T> for MemoryPool<T> {
+unsafe impl<T> Allocator<T> for MemoryPool<T> {
     fn allocate(&mut self, value: T) -> NonNull<T> {
         if let Some(ptr) = self.unused.pop() {
             unsafe { write(ptr.as_ptr(), value) };
@@ -106,7 +112,7 @@ impl<T> Allocator<T> for MemoryPool<T> {
         }
     }
 
-    fn deallocate(&mut self, ptr: NonNull<T>) -> T {
+    unsafe fn deallocate(&mut self, ptr: NonNull<T>) -> T {
         self.unused.push(ptr);
         unsafe { read(ptr.as_ptr()) }
     }
@@ -121,11 +127,11 @@ impl<T> Default for BoxAllocator<T> {
     }
 }
 
-impl<T> Allocator<T> for BoxAllocator<T> {
+unsafe impl<T> Allocator<T> for BoxAllocator<T> {
     fn allocate(&mut self, value: T) -> NonNull<T> {
         unsafe { NonNull::new_unchecked(Box::leak(Box::new(value))) }
     }
-    fn deallocate(&mut self, ptr: NonNull<T>) -> T {
+    unsafe fn deallocate(&mut self, ptr: NonNull<T>) -> T {
         unsafe { *Box::from_raw(ptr.as_ptr()) }
     }
 }
@@ -144,7 +150,7 @@ mod verification {
             pool.allocate(Box::new(values[0])),
             pool.allocate(Box::new(values[1])),
         ];
-        let returned = pool.deallocate(pointers[removed]);
+        let returned = unsafe { pool.deallocate(pointers[removed]) };
         kani::assert(
             *returned == values[removed],
             "Deallocating either of two owned u8 values across a pool growth returns that value",
@@ -190,7 +196,7 @@ mod verification {
         ];
         for i in 0..4 {
             if removed >> i & 1 != 0 {
-                drop(pool.deallocate(pointers[i]));
+                drop(unsafe { pool.deallocate(pointers[i]) });
             }
         }
         kani::assert(
@@ -228,7 +234,7 @@ mod tests {
                 if !live.is_empty() && rng.random(0..3) == 0 {
                     let i = rng.random(0..live.len());
                     let (ptr, value) = live.swap_remove(i);
-                    assert_eq!(pool.deallocate(ptr), value);
+                    assert_eq!(unsafe { pool.deallocate(ptr) }, value);
                 } else {
                     let value = rng.rand64();
                     live.push((pool.allocate(value), value));
@@ -267,7 +273,7 @@ mod tests {
                         .collect();
                     for (id, &ptr) in pointers.iter().enumerate() {
                         if mask >> id & 1 != 0 {
-                            drop(pool.deallocate(ptr));
+                            drop(unsafe { pool.deallocate(ptr) });
                         }
                         assert_eq!(counts[id].get(), mask >> id & 1);
                     }
@@ -284,7 +290,7 @@ mod tests {
         let mut live: Vec<_> = (0..12).map(|i| pool.allocate(Box::new(i))).collect();
         for i in [11, 9, 8, 5, 2, 0] {
             let ptr = live.remove(i);
-            drop(pool.deallocate(ptr));
+            drop(unsafe { pool.deallocate(ptr) });
         }
         drop(format!("{pool:?}"));
         for i in 12..24 {
@@ -295,7 +301,7 @@ mod tests {
             assert_eq!(unsafe { **ptr.as_ref() }, value);
         }
         for i in [17, 15, 12, 9, 5, 2, 0] {
-            drop(pool.deallocate(live.remove(i)));
+            drop(unsafe { pool.deallocate(live.remove(i)) });
         }
         drop(format!("{pool:?}"));
     }
@@ -316,7 +322,7 @@ mod tests {
         let mut pool = MemoryPool::with_capacity(0);
         let pointers: Vec<_> = (0..4).map(|_| pool.allocate(CheckDrop)).collect();
         for &ptr in &pointers[..3] {
-            drop(pool.deallocate(ptr));
+            drop(unsafe { pool.deallocate(ptr) });
         }
         pool.allocate(CheckDrop);
         drop(pool);

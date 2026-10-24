@@ -25,9 +25,9 @@ $ makers formal
 ```
 
 ## Doc
-generate documentation with verify results
+generate documentation
 ```sh
-$ cargo doc --no-deps --all-features --document-private-items
+$ cargo doc --no-deps --document-private-items
 $ cp -r util/gh-pages/* target/doc
 ```
 

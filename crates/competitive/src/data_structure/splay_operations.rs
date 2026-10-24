@@ -373,12 +373,12 @@ where
         root.node.as_mut().child[0] = left_subtree;
         root.node.as_mut().child[1] = right_subtree;
         while let Some(node) = overflow_stack.pop() {
-            Spec::bottom_up(BstRoot::new(node).borrow_datamut());
+            Spec::bottom_up(BstRoot::new_unchecked(node).borrow_datamut());
         }
         while inline_len > 0 {
             inline_len -= 1;
             let node = inline_stack[inline_len].unwrap_unchecked();
-            Spec::bottom_up(BstRoot::new(node).borrow_datamut());
+            Spec::bottom_up(BstRoot::new_unchecked(node).borrow_datamut());
         }
     }
     Spec::bottom_up(root.borrow_datamut());
