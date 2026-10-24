@@ -2394,26 +2394,27 @@ mod fixed_permutation_operation_impl {
     }
 }
 
-#[codesnip::entry("TableMonoid")]
-pub use self::monoid_table_impl::MonoidTable;
-#[codesnip::entry("TableMonoid", include("AssociatedValue", "algebra"))]
-mod monoid_table_impl {
-    /// A finite monoid on `0..len()`, with identity 0.
+#[codesnip::entry("TableOperation")]
+pub use self::table_operation_impl::{OperationTable, TableOperation};
+#[codesnip::entry("TableOperation", include("AssociatedValue", "algebra"))]
+mod table_operation_impl {
+    use super::{AssociatedValue, Associative, Invertible, Magma, Unital};
+    use std::marker::PhantomData;
+
+    /// Multiplication table of a finite monoid; GROUP indicates validated inverses.
     #[derive(Debug, Clone)]
-    pub struct MonoidTable {
+    pub struct OperationTable<const GROUP: bool = false> {
         table: Vec<Vec<usize>>,
-        generators: Vec<usize>,
+        unit: usize,
+        inverse: Vec<usize>,
     }
 
-    impl MonoidTable {
-        /// Builds a multiplication table from right generator transitions `transitions[a][g]`.
-        /// The input must describe a finite monoid with identity 0 and every element reachable
-        /// from 0, such as the output of `ToddCoxeter::solve`. Element IDs are preserved.
-        ///
-        /// With N elements and K generators, time is O(N^2 + NK) and space is O(N^2 + K).
+    impl OperationTable {
+        /// Builds from right generator transitions in O(N^2 + NK) time.
+        /// The input must be a monoid with identity 0, from which all elements are reachable.
+        /// Element IDs are preserved.
         pub fn from_transitions(transitions: &[Vec<usize>]) -> Self {
             let n = transitions.len();
-            let generators = transitions[0].clone();
             let mut parent = vec![(usize::MAX, usize::MAX); n];
             parent[0] = (0, 0);
             let mut order = vec![0];
@@ -2444,37 +2445,101 @@ mod monoid_table_impl {
                     row
                 })
                 .collect();
-            Self { table, generators }
+            Self {
+                table,
+                unit: 0,
+                inverse: Vec::new(),
+            }
         }
 
-        // A monoid always contains its identity.
-        #[allow(clippy::len_without_is_empty)]
-        pub fn len(&self) -> usize {
-            self.table.len()
+        /// Builds from an associative operation on `0..n` and finds its two-sided identity.
+        /// An identity must exist. Calls f N^2 times and takes O(N^2) space and time.
+        pub fn from_fn<F>(n: usize, mut f: F) -> Self
+        where
+            F: FnMut(usize, usize) -> usize,
+        {
+            let table: Vec<Vec<_>> = (0..n).map(|a| (0..n).map(|b| f(a, b)).collect()).collect();
+            let unit = (0..n)
+                .find(|&e| (0..n).all(|a| table[e][a] == a && table[a][e] == a))
+                .expect("a two-sided identity must exist");
+            Self {
+                table,
+                unit,
+                inverse: Vec::new(),
+            }
         }
 
-        /// Element IDs of the input generators, in their original order.
-        pub fn generators(&self) -> &[usize] {
-            &self.generators
+        /// Checks all two-sided inverses in O(N^2) time.
+        /// Returns the original table if any element is not invertible.
+        pub fn into_group(self) -> Result<OperationTable<true>, Self> {
+            let n = self.table.len();
+            let mut inverse = Vec::with_capacity(n);
+            for a in 0..n {
+                let b = (0..n)
+                    .find(|&b| self.table[a][b] == self.unit && self.table[b][a] == self.unit);
+                let Some(b) = b else {
+                    return Err(self);
+                };
+                inverse.push(b);
+            }
+            Ok(OperationTable {
+                table: self.table,
+                unit: self.unit,
+                inverse,
+            })
         }
+    }
 
-        pub fn operate(&self, a: usize, b: usize) -> usize {
-            self.table[a][b]
+    /// Uses the thread-local OperationTable supplied by S.
+    /// Keep that table unchanged while its elements or data structures are in use.
+    pub struct TableOperation<S> {
+        _marker: PhantomData<fn() -> S>,
+    }
+
+    impl<S, const GROUP: bool> Magma for TableOperation<S>
+    where
+        S: AssociatedValue<T = OperationTable<GROUP>>,
+    {
+        type T = usize;
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            S::with(|table| table.table[*x][*y])
+        }
+    }
+    impl<S, const GROUP: bool> Associative for TableOperation<S> where
+        S: AssociatedValue<T = OperationTable<GROUP>>
+    {
+    }
+    impl<S, const GROUP: bool> Unital for TableOperation<S>
+    where
+        S: AssociatedValue<T = OperationTable<GROUP>>,
+    {
+        fn unit() -> Self::T {
+            S::with(|table| table.unit)
+        }
+    }
+    impl<S> Invertible for TableOperation<S>
+    where
+        S: AssociatedValue<T = OperationTable<true>>,
+    {
+        fn inverse(x: &Self::T) -> Self::T {
+            S::with(|table| table.inverse[*x])
         }
     }
 
     #[cfg(test)]
     mod tests {
         use super::*;
-        use crate::tools::{Xorshift, testutil::exhaustive_sequences};
+        use crate::{
+            data_structure::{Accumulate, SegmentTree},
+            tools::{Xorshift, testutil::exhaustive_sequences},
+        };
         use std::collections::HashMap;
 
         #[test]
-        fn test_monoid_table_transformation() {
-            let trivial = MonoidTable::from_transitions(&[vec![]]);
-            assert_eq!(trivial.len(), 1);
-            assert!(trivial.generators().is_empty());
-            assert_eq!(trivial.operate(0, 0), 0);
+        fn test_operation_table_transitions() {
+            let trivial = OperationTable::from_transitions(&[vec![]]);
+            assert_eq!(trivial.table, [vec![0]]);
+            assert_eq!(trivial.unit, 0);
 
             let mut rng = Xorshift::default();
             for degree in 0..=4 {
@@ -2504,105 +2569,43 @@ mod monoid_table_impl {
                             .collect()
                     })
                     .collect();
-                let table = MonoidTable::from_transitions(&transitions);
-                assert_eq!(table.len(), maps.len());
-                let expected_generators: Vec<_> = generators.iter().map(|g| index[g]).collect();
-                assert_eq!(table.generators(), expected_generators);
+                let table = OperationTable::from_transitions(&transitions);
+                assert_eq!(table.table.len(), maps.len());
+                assert_eq!(table.unit, 0);
                 for (a, left) in maps.iter().enumerate() {
                     for (b, right) in maps.iter().enumerate() {
                         let expected: Vec<_> = left.iter().map(|&x| right[x]).collect();
-                        assert_eq!(table.operate(a, b), index[&expected]);
+                        assert_eq!(table.table[a][b], index[&expected]);
                     }
                 }
             }
         }
-    }
-}
-
-#[codesnip::entry("TableMonoid")]
-pub use self::group_table_impl::GroupTable;
-#[codesnip::entry("TableMonoid")]
-mod group_table_impl {
-    use super::MonoidTable;
-
-    /// A finite group obtained from a monoid table, preserving its element IDs.
-    #[derive(Debug, Clone)]
-    pub struct GroupTable {
-        monoid: MonoidTable,
-        inverse: Vec<usize>,
-    }
-
-    impl GroupTable {
-        pub fn monoid(&self) -> &MonoidTable {
-            &self.monoid
-        }
-
-        pub fn inverse(&self, a: usize) -> usize {
-            self.inverse[a]
-        }
-    }
-
-    impl TryFrom<MonoidTable> for GroupTable {
-        type Error = MonoidTable;
-
-        /// Finds all two-sided inverses in O(N^2) time and O(N) additional space.
-        /// Returns the original table if any element is not invertible.
-        fn try_from(monoid: MonoidTable) -> Result<Self, Self::Error> {
-            let n = monoid.len();
-            let mut inverse = Vec::with_capacity(n);
-            for a in 0..n {
-                let b = (0..n).find(|&b| monoid.operate(a, b) == 0 && monoid.operate(b, a) == 0);
-                let Some(b) = b else {
-                    return Err(monoid);
-                };
-                inverse.push(b);
-            }
-            Ok(Self { monoid, inverse })
-        }
-    }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-        use crate::tools::{Xorshift, testutil::exhaustive_sequences};
-        use std::collections::HashMap;
 
         #[test]
-        fn test_group_table_cyclic_monoid() {
-            let trivial = GroupTable::try_from(MonoidTable::from_transitions(&[vec![]])).unwrap();
-            assert_eq!(trivial.monoid().len(), 1);
-            assert!(trivial.monoid().generators().is_empty());
-            assert_eq!(trivial.inverse(0), 0);
+        fn test_operation_table_into_group() {
             for n in 1..=64 {
                 for cycle_start in 0..n {
-                    let transitions: Vec<_> = (0..n)
-                        .map(|a| vec![if a + 1 == n { cycle_start } else { a + 1 }])
-                        .collect();
-                    let converted =
-                        GroupTable::try_from(MonoidTable::from_transitions(&transitions));
-                    let monoid = match &converted {
+                    let monoid = OperationTable::from_fn(n, |a, b| {
+                        if a + b < n {
+                            a + b
+                        } else {
+                            cycle_start + (a + b - cycle_start) % (n - cycle_start)
+                        }
+                    });
+                    let expected = monoid.table.clone();
+                    match monoid.into_group() {
                         Ok(group) => {
                             assert_eq!(cycle_start, 0);
+                            assert_eq!(group.table, expected);
+                            assert_eq!(group.unit, 0);
                             for a in 0..n {
-                                assert_eq!(group.inverse(a), (n - a) % n);
+                                assert_eq!(group.inverse[a], (n - a) % n);
                             }
-                            group.monoid()
                         }
                         Err(monoid) => {
                             assert_ne!(cycle_start, 0);
-                            monoid
-                        }
-                    };
-                    assert_eq!(monoid.len(), n);
-                    assert_eq!(monoid.generators(), transitions[0]);
-                    for a in 0..n {
-                        for b in 0..n {
-                            let expected = if a + b < n {
-                                a + b
-                            } else {
-                                cycle_start + (a + b - cycle_start) % (n - cycle_start)
-                            };
-                            assert_eq!(monoid.operate(a, b), expected);
+                            assert_eq!(monoid.table, expected);
+                            assert_eq!(monoid.unit, 0);
                         }
                     }
                 }
@@ -2610,263 +2613,63 @@ mod group_table_impl {
         }
 
         #[test]
-        fn test_group_table_permutation() {
-            let mut rng = Xorshift::default();
-            for degree in 0..=6 {
-                let mut maps: Vec<_> = exhaustive_sequences(0..degree, degree..=degree)
-                    .filter(|map| (0..degree).all(|x| map.contains(&x)))
-                    .collect();
-                let identity: Vec<_> = (0..degree).collect();
-                let identity_id = maps.iter().position(|map| map == &identity).unwrap();
-                maps.swap(0, identity_id);
-                rng.shuffle(&mut maps[1..]);
-                let index: HashMap<_, _> = maps.iter().cloned().zip(0..).collect();
-                let cycle: Vec<_> = (0..degree).map(|i| (i + 1) % degree).collect();
-                let mut transposition = identity;
-                if degree >= 2 {
-                    transposition.swap(0, 1);
-                }
-                let generators = [cycle, transposition];
-                let transitions: Vec<_> = maps
-                    .iter()
-                    .map(|map| {
-                        generators
-                            .iter()
-                            .map(|generator| {
-                                let next: Vec<_> = map.iter().map(|&x| generator[x]).collect();
-                                index[&next]
-                            })
-                            .collect()
-                    })
-                    .collect();
-                let group =
-                    GroupTable::try_from(MonoidTable::from_transitions(&transitions)).unwrap();
-                assert_eq!(group.monoid().len(), maps.len());
-                assert_eq!(group.monoid().generators(), transitions[0]);
-                for (a, left) in maps.iter().enumerate() {
-                    let mut inverse = vec![0; degree];
-                    for (x, &y) in left.iter().enumerate() {
-                        inverse[y] = x;
-                    }
-                    assert_eq!(group.inverse(a), index[&inverse]);
-                    for (b, right) in maps.iter().enumerate() {
-                        let expected: Vec<_> = left.iter().map(|&x| right[x]).collect();
-                        assert_eq!(group.monoid().operate(a, b), index[&expected]);
-                    }
-                }
-            }
-        }
-    }
-}
-
-#[codesnip::entry("TableMonoid")]
-pub use self::table_monoid_impl::TableMonoid;
-#[codesnip::entry("TableMonoid")]
-mod table_monoid_impl {
-    use super::{AssociatedValue, Associative, Magma, MonoidTable, Unital};
-    use std::marker::PhantomData;
-
-    /// Monoid operation on element IDs using the thread-local `MonoidTable` supplied by S.
-    /// Keep that table unchanged while its elements or data structures are in use.
-    pub struct TableMonoid<S> {
-        _marker: PhantomData<fn() -> S>,
-    }
-
-    impl<S> Magma for TableMonoid<S>
-    where
-        S: AssociatedValue<T = MonoidTable>,
-    {
-        type T = usize;
-        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            S::with(|table| table.operate(*x, *y))
-        }
-    }
-    impl<S> Associative for TableMonoid<S> where S: AssociatedValue<T = MonoidTable> {}
-    impl<S> Unital for TableMonoid<S>
-    where
-        S: AssociatedValue<T = MonoidTable>,
-    {
-        fn unit() -> Self::T {
-            0
-        }
-    }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-        use crate::{data_structure::SegmentTree, tools::testutil::exhaustive_sequences};
-
-        #[test]
-        fn test_table_monoid_segment_tree() {
+        fn test_table_operation_monoid() {
             enum Store {}
             crate::impl_assoc_value!(
                 Store,
-                MonoidTable,
-                MonoidTable::from_transitions(&[vec![1, 2], vec![0, 2], vec![3, 2], vec![2, 2]])
+                OperationTable,
+                OperationTable::from_transitions(&[vec![1, 2], vec![0, 2], vec![3, 2], vec![2, 2]])
             );
-            type M = TableMonoid<Store>;
+            type M = TableOperation<Store>;
             let maps = [[0, 1], [1, 0], [0, 0], [1, 1]];
             assert_ne!(M::operate(&1, &2), M::operate(&2, &1));
-            for a in 0..maps.len() {
-                assert!(M::check_unital(&a));
-                for b in 0..maps.len() {
-                    for c in 0..maps.len() {
-                        assert!(M::check_associative(&a, &b, &c));
-                    }
-                }
-            }
-            for values in exhaustive_sequences(0..maps.len(), 0..=6) {
-                let n = values.len();
-                let mut tree = SegmentTree::<M>::from_vec(values.clone());
-                let mut expected: Vec<_> = values.iter().map(|&a| maps[a]).collect();
-                for step in 0..=3 * n {
-                    if step > 0 {
-                        let i = (step - 1) / 3;
-                        let value = (values[i] + 1) % maps.len();
-                        match (step - 1) % 3 {
-                            0 => {
-                                tree.update(i, value);
-                                expected[i] = expected[i].map(|x| maps[value][x]);
-                            }
-                            1 => {
-                                tree.set(i, value);
-                                expected[i] = maps[value];
-                            }
-                            _ => {
-                                tree.clear(i);
-                                expected[i] = maps[0];
-                            }
-                        }
-                    }
-                    for l in 0..=n {
-                        let mut product = maps[0];
-                        assert_eq!(tree.fold(l..l), M::unit());
-                        for (r, map) in expected.iter().enumerate().skip(l) {
-                            product = product.map(|x| map[x]);
-                            assert_eq!(maps[tree.fold(l..r + 1)], product);
-                        }
+            for values in exhaustive_sequences(0..maps.len(), 0..=3) {
+                let tree = SegmentTree::<M>::from_vec(values.clone());
+                for l in 0..=values.len() {
+                    let mut product = maps[0];
+                    assert_eq!(maps[tree.fold(l..l)], product);
+                    for (r, &a) in values.iter().enumerate().skip(l) {
+                        product = product.map(|x| maps[a][x]);
+                        assert_eq!(maps[tree.fold(l..r + 1)], product);
                     }
                 }
             }
         }
-    }
-}
-
-#[codesnip::entry("TableMonoid")]
-pub use self::table_group_impl::TableGroup;
-#[codesnip::entry("TableMonoid")]
-mod table_group_impl {
-    use super::{AssociatedValue, Associative, GroupTable, Invertible, Magma, Unital};
-    use std::marker::PhantomData;
-
-    /// Group operation on element IDs using the thread-local `GroupTable` supplied by S.
-    /// Keep that table unchanged while its elements or data structures are in use.
-    ///
-    /// ```
-    /// use competitive::{
-    ///     algebra::{GroupTable, MonoidTable, TableGroup},
-    ///     algorithm::ToddCoxeter,
-    ///     data_structure::Accumulate,
-    ///     tools::AssociatedValue,
-    /// };
-    /// enum Store {}
-    /// competitive::impl_assoc_value!(Store, GroupTable, {
-    ///     let mut tc = ToddCoxeter::new(2);
-    ///     tc.add_relation([0], [1, 1]);
-    ///     tc.add_relation([1], [0, 0]);
-    ///     tc.add_relation([0, 0, 0], []);
-    ///     tc.add_relation([1, 1, 1], []);
-    ///     GroupTable::try_from(MonoidTable::from_transitions(&tc.solve())).unwrap()
-    /// });
-    /// let generators = Store::with(|table| table.monoid().generators().to_vec());
-    /// let sums: Accumulate<TableGroup<Store>> = b"ABA"
-    ///     .iter()
-    ///     .map(|&c| generators[usize::from(c == b'B')])
-    ///     .collect();
-    /// assert_eq!(sums.fold(0..2), 0);
-    /// assert_eq!(sums.fold(1..3), 0);
-    /// assert_eq!(sums.fold(..), generators[0]);
-    /// ```
-    pub struct TableGroup<S> {
-        _marker: PhantomData<fn() -> S>,
-    }
-
-    impl<S> Magma for TableGroup<S>
-    where
-        S: AssociatedValue<T = GroupTable>,
-    {
-        type T = usize;
-        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            S::with(|table| table.monoid().operate(*x, *y))
-        }
-    }
-    impl<S> Associative for TableGroup<S> where S: AssociatedValue<T = GroupTable> {}
-    impl<S> Unital for TableGroup<S>
-    where
-        S: AssociatedValue<T = GroupTable>,
-    {
-        fn unit() -> Self::T {
-            0
-        }
-    }
-    impl<S> Invertible for TableGroup<S>
-    where
-        S: AssociatedValue<T = GroupTable>,
-    {
-        fn inverse(x: &Self::T) -> Self::T {
-            S::with(|table| table.inverse(*x))
-        }
-    }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-        use crate::{
-            algebra::MonoidTable, data_structure::Accumulate, tools::testutil::exhaustive_sequences,
-        };
 
         #[test]
-        fn test_table_group_accumulate() {
+        fn test_table_operation_group() {
             const MAPS: [[usize; 3]; 6] = [
-                [0, 1, 2],
                 [0, 2, 1],
                 [1, 0, 2],
                 [1, 2, 0],
                 [2, 0, 1],
                 [2, 1, 0],
+                [0, 1, 2],
             ];
             enum Store {}
-            crate::impl_assoc_value!(Store, GroupTable, {
-                let transitions: Vec<_> = MAPS
-                    .iter()
-                    .map(|map| {
-                        [1, 3]
-                            .iter()
-                            .map(|&g| {
-                                let next = map.map(|x| MAPS[g][x]);
-                                MAPS.iter().position(|p| p == &next).unwrap()
-                            })
-                            .collect()
-                    })
-                    .collect();
-                GroupTable::try_from(MonoidTable::from_transitions(&transitions)).unwrap()
+            crate::impl_assoc_value!(Store, OperationTable<true>, {
+                OperationTable::from_fn(MAPS.len(), |a, b| {
+                    let next = MAPS[a].map(|x| MAPS[b][x]);
+                    MAPS.iter().position(|p| p == &next).unwrap()
+                })
+                .into_group()
+                .unwrap()
             });
-            type M = TableGroup<Store>;
-            assert_ne!(M::operate(&1, &3), M::operate(&3, &1));
-            for a in 0..MAPS.len() {
-                assert!(M::check_unital(&a));
-                assert!(M::check_invertible(&a));
-                for b in 0..MAPS.len() {
-                    for c in 0..MAPS.len() {
-                        assert!(M::check_associative(&a, &b, &c));
-                    }
+            type M = TableOperation<Store>;
+            assert_eq!(M::unit(), 5);
+            assert_ne!(M::operate(&0, &1), M::operate(&1, &0));
+            for (a, map) in MAPS.iter().enumerate() {
+                let mut inverse = [0; 3];
+                for (x, &y) in map.iter().enumerate() {
+                    inverse[y] = x;
                 }
+                assert_eq!(MAPS[M::inverse(&a)], inverse);
             }
-            for values in exhaustive_sequences(0..MAPS.len(), 0..=6) {
+            for values in exhaustive_sequences(0..MAPS.len(), 0..=3) {
                 let sums: Accumulate<M> = values.iter().copied().collect();
                 for l in 0..=values.len() {
-                    let mut product = MAPS[0];
-                    assert_eq!(sums.fold(l..l), M::unit());
+                    let mut product = [0, 1, 2];
+                    assert_eq!(MAPS[sums.fold(l..l)], product);
                     for (r, &a) in values.iter().enumerate().skip(l) {
                         product = product.map(|x| MAPS[a][x]);
                         assert_eq!(MAPS[sums.fold(l..r + 1)], product);

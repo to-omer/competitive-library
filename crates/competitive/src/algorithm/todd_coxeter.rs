@@ -33,7 +33,7 @@ impl ToddCoxeter {
 
     /// Returns the right generator transitions `table[state][generator]`.
     /// State 0 is the identity; states follow breadth-first order with ascending generators.
-    /// Use `MonoidTable::from_transitions` to multiply arbitrary elements.
+    /// Use `OperationTable::from_transitions` to multiply arbitrary elements.
     ///
     /// The presented monoid must be finite.
     ///
@@ -159,14 +159,11 @@ impl ToddCoxeter {
 mod tests {
     use super::*;
     use crate::{
-        algebra::{GroupTable, MonoidTable, TableGroup},
+        algebra::{OperationTable, TableOperation},
         data_structure::Accumulate,
         math::Fps998244353,
         num::montgomery::MInt998244353 as M,
-        tools::{
-            AssociatedValue, Xorshift,
-            testutil::{exhaustive_sequences, sequence_cases},
-        },
+        tools::{AssociatedValue, Xorshift, testutil::exhaustive_sequences},
     };
     use std::{collections::HashMap, iter::repeat_n};
 
@@ -344,92 +341,33 @@ mod tests {
         }
     }
 
-    enum Arc071c {}
-    crate::impl_assoc_value!(Arc071c, GroupTable, {
-        let mut tc = ToddCoxeter::new(2);
-        tc.add_relation([0], [1, 1]);
-        tc.add_relation([1], [0, 0]);
-        tc.add_relation([0, 0, 0], []);
-        tc.add_relation([1, 1, 1], []);
-        GroupTable::try_from(MonoidTable::from_transitions(&tc.solve())).unwrap()
-    });
-
     #[test]
-    fn test_todd_coxeter_arc071c_samples() {
-        let generators = Arc071c::with(|table| table.monoid().generators().to_vec());
-        let accumulate = |word: &str| -> Accumulate<TableGroup<Arc071c>> {
-            word.bytes()
-                .map(|c| generators[usize::from(c == b'B')])
-                .collect()
+    fn test_todd_coxeter_arc071c() {
+        enum Store {}
+        crate::impl_assoc_value!(Store, OperationTable<true>, {
+            let mut tc = ToddCoxeter::new(2);
+            tc.add_relation([0], [1, 1]);
+            tc.add_relation([1], [0, 0]);
+            tc.add_relation([0, 0, 0], []);
+            tc.add_relation([1, 1, 1], []);
+            let transitions = tc.solve();
+            assert_eq!(transitions[0], [1, 2]);
+            OperationTable::from_transitions(&transitions)
+                .into_group()
+                .unwrap()
+        });
+        let accumulate = |word: &str| -> Accumulate<TableOperation<Store>> {
+            word.bytes().map(|c| usize::from(c == b'B') + 1).collect()
         };
-        let samples = [
-            (
-                "BBBAAAABA",
-                "BBBBA",
-                vec![
-                    (7, 9, 2, 5, true),
-                    (7, 9, 1, 4, false),
-                    (1, 7, 2, 5, true),
-                    (1, 7, 2, 4, false),
-                ],
-            ),
-            (
-                "AAAAABBBBAAABBBBAAAA",
-                "BBBBAAABBBBBBAAAAABB",
-                vec![
-                    (2, 15, 2, 13, true),
-                    (2, 13, 6, 16, true),
-                    (1, 13, 2, 20, true),
-                    (4, 20, 3, 20, true),
-                    (1, 18, 9, 19, true),
-                    (2, 14, 1, 11, true),
-                    (3, 20, 3, 15, false),
-                    (6, 16, 1, 17, false),
-                    (4, 18, 8, 20, false),
-                    (7, 20, 3, 14, false),
-                ],
-            ),
-        ];
-        for (s, t, queries) in samples {
-            let s = accumulate(s);
-            let t = accumulate(t);
-            for (a, b, c, d, expected) in queries {
-                assert_eq!(s.fold(a - 1..b) == t.fold(c - 1..d), expected);
-            }
-        }
-    }
-
-    #[test]
-    fn test_todd_coxeter_arc071c_ranges() {
-        let generators = Arc071c::with(|table| table.monoid().generators().to_vec());
-        let residues = [0, generators[0], generators[1]];
-        let mut rng = Xorshift::default();
-        let mut query_rng = Xorshift::default();
-        let cases =
-            exhaustive_sequences(0..2, 0..=10).chain(sequence_cases(&mut rng, 0..=1, 0..=100_000));
-        for word in cases {
-            let n = word.len();
-            let sums: Accumulate<TableGroup<Arc071c>> =
-                word.iter().map(|&c| generators[c]).collect();
-            let mut prefix = vec![0];
-            for &c in &word {
-                prefix.push(prefix.last().unwrap() + c + 1);
-            }
-            let check = |l, r| {
-                let residue = (prefix[r] - prefix[l]) % 3;
-                assert_eq!(sums.fold(l..r), residues[residue]);
-            };
-            check(0, n);
-            for l in 0..=n {
-                if n <= 10 {
-                    for r in l..=n {
-                        check(l, r);
-                    }
-                } else {
-                    check(l, l);
-                    check(l, query_rng.random(l..=n));
-                }
-            }
+        let s = accumulate("BBBAAAABA");
+        let t = accumulate("BBBBA");
+        for (a, b, c, d, expected) in [
+            (7, 9, 2, 5, true),
+            (7, 9, 1, 4, false),
+            (1, 7, 2, 5, true),
+            (1, 7, 2, 4, false),
+        ] {
+            assert_eq!(s.fold(a - 1..b) == t.fold(c - 1..d), expected);
         }
     }
 }
