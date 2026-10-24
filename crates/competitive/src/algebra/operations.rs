@@ -2405,6 +2405,7 @@ mod table_operation_impl {
     #[derive(Debug, Clone)]
     pub struct OperationTable<const GROUP: bool = false> {
         table: Vec<Vec<usize>>,
+        generators: Vec<usize>,
         unit: usize,
         inverse: Vec<usize>,
     }
@@ -2447,12 +2448,14 @@ mod table_operation_impl {
                 .collect();
             Self {
                 table,
+                generators: transitions[0].clone(),
                 unit: 0,
                 inverse: Vec::new(),
             }
         }
 
         /// Builds from an associative operation on `0..n` and finds its two-sided identity.
+        /// Each element ID also serves as its generator ID.
         /// An identity must exist. Calls f N^2 times and takes O(N^2) space and time.
         pub fn from_fn<F>(n: usize, mut f: F) -> Self
         where
@@ -2464,6 +2467,7 @@ mod table_operation_impl {
                 .expect("a two-sided identity must exist");
             Self {
                 table,
+                generators: (0..n).collect(),
                 unit,
                 inverse: Vec::new(),
             }
@@ -2484,6 +2488,7 @@ mod table_operation_impl {
             }
             Ok(OperationTable {
                 table: self.table,
+                generators: self.generators,
                 unit: self.unit,
                 inverse,
             })
@@ -2494,6 +2499,28 @@ mod table_operation_impl {
     /// Keep that table unchanged while its elements or data structures are in use.
     pub struct TableOperation<S> {
         _marker: PhantomData<fn() -> S>,
+    }
+
+    impl<S, const GROUP: bool> TableOperation<S>
+    where
+        S: AssociatedValue<T = OperationTable<GROUP>>,
+    {
+        /// Converts a generator ID to its monoid element ID.
+        pub fn from_generator(generator: usize) -> usize {
+            S::with(|table| table.generators[generator])
+        }
+
+        /// Evaluates generator IDs in order; an empty sequence gives the identity.
+        pub fn from_generators<I>(generators: I) -> usize
+        where
+            I: IntoIterator<Item = usize>,
+        {
+            S::with(|table| {
+                generators
+                    .into_iter()
+                    .fold(table.unit, |a, g| table.table[a][table.generators[g]])
+            })
+        }
     }
 
     impl<S, const GROUP: bool> Magma for TableOperation<S>
@@ -2537,9 +2564,17 @@ mod table_operation_impl {
 
         #[test]
         fn test_operation_table_transitions() {
-            let trivial = OperationTable::from_transitions(&[vec![]]);
-            assert_eq!(trivial.table, [vec![0]]);
-            assert_eq!(trivial.unit, 0);
+            enum Store {}
+            crate::impl_assoc_value!(
+                Store,
+                OperationTable,
+                OperationTable::from_transitions(&[vec![]])
+            );
+            assert_eq!(TableOperation::<Store>::from_generators([]), 0);
+            Store::with(|trivial| {
+                assert_eq!(trivial.table, [vec![0]]);
+                assert_eq!(trivial.unit, 0);
+            });
 
             let mut rng = Xorshift::default();
             for degree in 0..=4 {
@@ -2618,19 +2653,31 @@ mod table_operation_impl {
             crate::impl_assoc_value!(
                 Store,
                 OperationTable,
-                OperationTable::from_transitions(&[vec![1, 2], vec![0, 2], vec![3, 2], vec![2, 2]])
+                OperationTable::from_transitions(&[
+                    vec![1, 2, 3, 0, 1],
+                    vec![0, 2, 3, 1, 0],
+                    vec![3, 2, 3, 2, 3],
+                    vec![2, 2, 3, 3, 2],
+                ])
             );
             type M = TableOperation<Store>;
             let maps = [[0, 1], [1, 0], [0, 0], [1, 1]];
+            let generators = [1, 2, 3, 0, 1];
             assert_ne!(M::operate(&1, &2), M::operate(&2, &1));
-            for values in exhaustive_sequences(0..maps.len(), 0..=3) {
-                let tree = SegmentTree::<M>::from_vec(values.clone());
-                for l in 0..=values.len() {
+            for sequence in exhaustive_sequences(0..generators.len(), 0..=3) {
+                let values = sequence.iter().copied().map(M::from_generator).collect();
+                let tree = SegmentTree::<M>::from_vec(values);
+                for l in 0..=sequence.len() {
                     let mut product = maps[0];
                     assert_eq!(maps[tree.fold(l..l)], product);
-                    for (r, &a) in values.iter().enumerate().skip(l) {
-                        product = product.map(|x| maps[a][x]);
+                    assert_eq!(maps[M::from_generators([])], product);
+                    for (r, &g) in sequence.iter().enumerate().skip(l) {
+                        product = product.map(|x| maps[generators[g]][x]);
                         assert_eq!(maps[tree.fold(l..r + 1)], product);
+                        assert_eq!(
+                            maps[M::from_generators(sequence[l..=r].iter().copied())],
+                            product
+                        );
                     }
                 }
             }
@@ -2666,13 +2713,18 @@ mod table_operation_impl {
                 assert_eq!(MAPS[M::inverse(&a)], inverse);
             }
             for values in exhaustive_sequences(0..MAPS.len(), 0..=3) {
-                let sums: Accumulate<M> = values.iter().copied().collect();
+                let sums: Accumulate<M> = values.iter().copied().map(M::from_generator).collect();
                 for l in 0..=values.len() {
                     let mut product = [0, 1, 2];
                     assert_eq!(MAPS[sums.fold(l..l)], product);
+                    assert_eq!(MAPS[M::from_generators([])], product);
                     for (r, &a) in values.iter().enumerate().skip(l) {
                         product = product.map(|x| MAPS[a][x]);
                         assert_eq!(MAPS[sums.fold(l..r + 1)], product);
+                        assert_eq!(
+                            MAPS[M::from_generators(values[l..=r].iter().copied())],
+                            product
+                        );
                     }
                 }
             }

@@ -353,24 +353,29 @@ mod tests {
             tc.add_relation([1], [0, 0]);
             tc.add_relation([0, 0, 0], []);
             tc.add_relation([1, 1, 1], []);
-            let transitions = tc.solve();
-            assert_eq!(transitions[0], [1, 2]);
-            OperationTable::from_transitions(&transitions)
+            OperationTable::from_transitions(&tc.solve())
                 .into_group()
                 .unwrap()
         });
+        type M = TableOperation<Store>;
         let mut input_rng = Xorshift::default();
         let mut query_rng = Xorshift::default();
         for word in sequence_cases(&mut input_rng, b'A'..=b'B', 1..=100_000) {
             let n = word.len();
-            let sums: Accumulate<TableOperation<Store>> =
-                word.iter().map(|&c| usize::from(c == b'B') + 1).collect();
+            let sums: Accumulate<M> = word
+                .iter()
+                .map(|&c| M::from_generator(usize::from(c == b'B')))
+                .collect();
             let ranges = [(0, n), (0, 1), (n - 1, n)]
                 .into_iter()
                 .chain(query_rng.random_iter(NotEmptySegment(n)).take(64));
             for (l, r) in ranges {
                 let expected = (r - l + word[l..r].iter().filter(|&&c| c == b'B').count()) % 3;
                 assert_eq!(sums.fold(l..r), expected);
+                assert_eq!(
+                    M::from_generators(word[l..r].iter().map(|&c| usize::from(c == b'B'))),
+                    expected
+                );
             }
         }
     }
