@@ -1,6 +1,7 @@
 //! algebra
 
 use crate::num::{Bounded, One, Zero};
+use crate::tools::AssociatedValue;
 
 #[cfg_attr(nightly, codesnip::entry("MonoidAct"))]
 pub use self::action::*;

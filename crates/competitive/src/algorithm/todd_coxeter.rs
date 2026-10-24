@@ -33,6 +33,7 @@ impl ToddCoxeter {
 
     /// Returns the right generator transitions `table[state][generator]`.
     /// State 0 is the identity; states follow breadth-first order with ascending generators.
+    /// Use `MonoidTable::from_transitions` to multiply arbitrary elements.
     ///
     /// The presented monoid must be finite.
     ///
@@ -158,9 +159,14 @@ impl ToddCoxeter {
 mod tests {
     use super::*;
     use crate::{
+        algebra::{GroupTable, MonoidTable, TableGroup},
+        data_structure::Accumulate,
         math::Fps998244353,
         num::montgomery::MInt998244353 as M,
-        tools::{Xorshift, testutil::exhaustive_sequences},
+        tools::{
+            AssociatedValue, Xorshift,
+            testutil::{exhaustive_sequences, sequence_cases},
+        },
     };
     use std::{collections::HashMap, iter::repeat_n};
 
@@ -334,6 +340,95 @@ mod tests {
             assert_eq!(Fps998244353::kth_term(terms, 1000), dp[target]);
             if table.len() == 1 {
                 assert_eq!(dp[0], M::new(2).pow(1000));
+            }
+        }
+    }
+
+    enum Arc071c {}
+    crate::impl_assoc_value!(Arc071c, GroupTable, {
+        let mut tc = ToddCoxeter::new(2);
+        tc.add_relation([0], [1, 1]);
+        tc.add_relation([1], [0, 0]);
+        tc.add_relation([0, 0, 0], []);
+        tc.add_relation([1, 1, 1], []);
+        GroupTable::try_from(MonoidTable::from_transitions(&tc.solve())).unwrap()
+    });
+
+    #[test]
+    fn test_todd_coxeter_arc071c_samples() {
+        let generators = Arc071c::with(|table| table.monoid().generators().to_vec());
+        let accumulate = |word: &str| -> Accumulate<TableGroup<Arc071c>> {
+            word.bytes()
+                .map(|c| generators[usize::from(c == b'B')])
+                .collect()
+        };
+        let samples = [
+            (
+                "BBBAAAABA",
+                "BBBBA",
+                vec![
+                    (7, 9, 2, 5, true),
+                    (7, 9, 1, 4, false),
+                    (1, 7, 2, 5, true),
+                    (1, 7, 2, 4, false),
+                ],
+            ),
+            (
+                "AAAAABBBBAAABBBBAAAA",
+                "BBBBAAABBBBBBAAAAABB",
+                vec![
+                    (2, 15, 2, 13, true),
+                    (2, 13, 6, 16, true),
+                    (1, 13, 2, 20, true),
+                    (4, 20, 3, 20, true),
+                    (1, 18, 9, 19, true),
+                    (2, 14, 1, 11, true),
+                    (3, 20, 3, 15, false),
+                    (6, 16, 1, 17, false),
+                    (4, 18, 8, 20, false),
+                    (7, 20, 3, 14, false),
+                ],
+            ),
+        ];
+        for (s, t, queries) in samples {
+            let s = accumulate(s);
+            let t = accumulate(t);
+            for (a, b, c, d, expected) in queries {
+                assert_eq!(s.fold(a - 1..b) == t.fold(c - 1..d), expected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_todd_coxeter_arc071c_ranges() {
+        let generators = Arc071c::with(|table| table.monoid().generators().to_vec());
+        let residues = [0, generators[0], generators[1]];
+        let mut rng = Xorshift::default();
+        let mut query_rng = Xorshift::default();
+        let cases =
+            exhaustive_sequences(0..2, 0..=10).chain(sequence_cases(&mut rng, 0..=1, 0..=100_000));
+        for word in cases {
+            let n = word.len();
+            let sums: Accumulate<TableGroup<Arc071c>> =
+                word.iter().map(|&c| generators[c]).collect();
+            let mut prefix = vec![0];
+            for &c in &word {
+                prefix.push(prefix.last().unwrap() + c + 1);
+            }
+            let check = |l, r| {
+                let residue = (prefix[r] - prefix[l]) % 3;
+                assert_eq!(sums.fold(l..r), residues[residue]);
+            };
+            check(0, n);
+            for l in 0..=n {
+                if n <= 10 {
+                    for r in l..=n {
+                        check(l, r);
+                    }
+                } else {
+                    check(l, l);
+                    check(l, query_rng.random(l..=n));
+                }
             }
         }
     }
