@@ -4,6 +4,8 @@ from html import escape
 from json import JSONDecoder, loads
 from pathlib import Path
 
+from kani_matrix import harness_names
+
 
 def cell(text):
     return (
@@ -71,20 +73,34 @@ def verus_summary(data, links):
     return lines
 
 
-def kani_summary(data, links):
-    summary = data["verification_results"]["summary"]
-    results = data["verification_results"]["results"]
-    if (
-        summary["status"] != "completed"
-        or not summary["total_harnesses"]
-        or summary["executed"] != summary["total_harnesses"]
-        or len(results) != summary["executed"]
-    ):
-        raise ValueError("Kani verification is incomplete or contains no harnesses")
+def kani_summary(data, links, expected):
+    results = []
+    successful = failed = 0
+    for part in data:
+        summary = part["verification_results"]["summary"]
+        items = part["verification_results"]["results"]
+        if (
+            summary["status"] != "completed"
+            or not summary["total_harnesses"]
+            or summary["executed"] != summary["total_harnesses"]
+            or len(items) != summary["executed"]
+        ):
+            raise ValueError("Kani verification is incomplete or contains no harnesses")
+        results.extend(items)
+        successful += summary["successful"]
+        failed += summary["failed"]
+    actual = {harness["harness_id"] for harness in results}
+    if len(actual) != len(results):
+        raise ValueError("Kani results contain duplicate harnesses")
+    if expected is not None and actual != expected:
+        raise ValueError(
+            f"Kani harness mismatch: missing {sorted(expected - actual)}, "
+            f"unexpected {sorted(actual - expected)}"
+        )
     lines = [
         "## Kani",
         "",
-        f"{summary['successful']} passed, {summary['failed']} failed.",
+        f"{successful} passed, {failed} failed.",
     ]
     groups = defaultdict(list)
     for harness in results:
@@ -126,20 +142,31 @@ def kani_summary(data, links):
 def main():
     parser = ArgumentParser()
     parser.add_argument("tool", choices=["verus", "kani"])
-    parser.add_argument("result", type=Path)
+    parser.add_argument("result", type=Path, nargs="+")
+    parser.add_argument("--harnesses", type=Path, nargs="+", default=[])
     parser.add_argument(
         "--doc", type=Path, help="write Markdown with local rustdoc links"
     )
     args = parser.parse_args()
     links = {}
     try:
-        text = args.result.read_text()
         if args.tool == "verus":
+            if len(args.result) != 1 or args.harnesses:
+                raise ValueError("Verus requires one result and no harness list")
+            text = args.result[0].read_text()
             # cargo-make and dependency verification surround the root crate's JSON with logs.
             data, _ = JSONDecoder().raw_decode(text[text.index("{") :])
             lines = verus_summary(data, links)
         else:
-            lines = kani_summary(loads(text), links)
+            expected = None
+            for path in args.harnesses:
+                names = harness_names(loads(path.read_text()))
+                if expected is not None and names != expected:
+                    raise ValueError("Kani harness lists differ between jobs")
+                expected = names
+            lines = kani_summary(
+                [loads(path.read_text()) for path in args.result], links, expected
+            )
     except (OSError, ValueError, KeyError) as error:
         print(
             f"## Formal verification ({args.tool})\n\n"

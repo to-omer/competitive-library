@@ -95,17 +95,8 @@ jobs:
       - name: Snippet Verification
         run: bash .github/workflows/snippet.sh
 
-  formal:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - tool: verus
-            install: cargo-make jq github:verus-lang/verus
-          - tool: kani
-            install: cargo-make cargo:kani-verifier
-
-    name: Formal verification (${{ matrix.tool }})
+  formal-verus:
+    name: Formal verification (verus)
     runs-on: ubuntu-latest
 
     steps:
@@ -118,45 +109,82 @@ jobs:
       - name: Install verification tools
         uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
         with:
-          install_args: ${{ matrix.install }}
+          install_args: cargo-make jq github:verus-lang/verus
           cache: false # Resolve latest releases on each run.
 
       - name: Update Verus standard library
-        if: matrix.tool == 'verus'
         run: cargo update -p vstd
 
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
         with:
-          key: formal-${{ matrix.tool }}
+          key: formal-verus
 
       - name: Verify
         id: formal-verify
         shell: bash
-        run: |
-          if [ "${{ matrix.tool }}" = verus ]; then
-            makers formal-verus --output-json | tee "$RUNNER_TEMP/formal.json"
-          else
-            makers formal-kani -Z unstable-options --export-json "$RUNNER_TEMP/formal.json"
-          fi
+        run: makers formal-verus --output-json | tee "$RUNNER_TEMP/formal.json"
 
       - name: Formal verification summary
         if: ${{ always() && steps.formal-verify.outcome != 'skipped' }}
         shell: bash
-        run: python3 .github/workflows/formal_summary.py "${{ matrix.tool }}" "$RUNNER_TEMP/formal.json" --doc "$RUNNER_TEMP/formal.md" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: python3 .github/workflows/formal_summary.py verus "$RUNNER_TEMP/formal.json" --doc "$RUNNER_TEMP/formal.md" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Upload formal verification report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: formal-${{ matrix.tool }}
+          name: formal-verus
           path: ${{ runner.temp }}/formal.md
+          if-no-files-found: error
+
+  formal-kani:
+    strategy:
+      fail-fast: false
+      matrix:
+        job-id: [0, 1]
+
+    name: Formal verification (kani ${{ matrix.job-id }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup `stable`
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install verification tools
+        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: cargo-make cargo:kani-verifier
+          cache: false # Resolve latest releases on each run.
+
+      - name: Cache
+        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          key: formal-kani
+
+      - name: Verify
+        id: formal-verify
+        run: python3 .github/workflows/kani_matrix.py ${{ matrix.job-id }} ${{ strategy.job-total }} "$RUNNER_TEMP/kani"
+
+      - name: Formal verification summary
+        if: ${{ always() && steps.formal-verify.outcome != 'skipped' }}
+        shell: bash
+        run: python3 .github/workflows/formal_summary.py kani "$RUNNER_TEMP/kani/formal.json" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload formal verification results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: formal-kani-${{ matrix.job-id }}
+          path: ${{ runner.temp }}/kani/*.json
           if-no-files-found: error
 
   verify:
     strategy:
       fail-fast: false
       matrix:
-        job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
     name: Verify
     runs-on: ubuntu-latest
@@ -226,17 +254,12 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
-      - name: Install Gnuplot
-        continue-on-error: true
-        run: |
-          sudo apt-get install gnuplot
-
       - name: Benchmark
         env:
           CRITERION_HOME: ./../../target/doc/benchmarks
         run: |
           ulimit -s unlimited
-          cargo bench -p competitive_bench --bench criterion
+          cargo bench -p competitive_bench --bench criterion -- --plotting-backend plotters
 
       - name: upload artifacts
         if: ${{ always() }}
@@ -309,7 +332,7 @@ jobs:
           path: coverage/**/*
 
   generate-doc:
-    needs: [verify, benchmark, coverage, formal]
+    needs: [verify, benchmark, coverage, formal-verus, formal-kani]
     if: github.ref_name == 'master'
 
     name: Generate Doc
@@ -340,7 +363,8 @@ jobs:
       - name: Arrange artifacts
         run: |
           cp -r artifact/* .
-          cat formal-*/*.md > crates/competitive/src/formal.md
+          python3 .github/workflows/formal_summary.py kani formal-kani-*/formal.json --harnesses formal-kani-*/kani-list.json --doc "$RUNNER_TEMP/kani.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/kani.md" formal-verus/formal.md > crates/competitive/src/formal.md
 
       - name: cargo-build
         run: cargo build --workspace --lib --features verify_doc
