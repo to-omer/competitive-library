@@ -2598,8 +2598,8 @@ mod table_operation_impl {
                             assert_eq!(cycle_start, 0);
                             assert_eq!(group.table, expected);
                             assert_eq!(group.unit, 0);
-                            for a in 0..n {
-                                assert_eq!(group.inverse[a], (n - a) % n);
+                            for (a, &inverse) in group.inverse.iter().enumerate() {
+                                assert_eq!(inverse, (n - a) % n);
                             }
                         }
                         Err(monoid) => {
