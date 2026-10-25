@@ -102,11 +102,11 @@
 <span data-nosnippet>391</span>        }
 <span data-nosnippet>392</span>    }
 <span data-nosnippet>393</span>    res
-<span data-nosnippet>394</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/competitive/math/binomial_prefix_sum.rs.html#74&#34;,&#34;line 74&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/binomial_prefix_sum.rs (<a href="../../../src/competitive/math/binomial_prefix_sum.rs.html#74">line 74</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>60</span>    <span class="kw">pub fn </span>for_each&lt;F&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: F)
+<span data-nosnippet>394</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[39,39],&#34;../../../src/competitive/math/binomial_prefix_sum.rs.html#99&#34;,&#34;line 99&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/binomial_prefix_sum.rs (<a href="../../../src/competitive/math/binomial_prefix_sum.rs.html#99">line 99</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>60</span>    <span class="kw">pub fn </span>for_each&lt;F&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: F)
 <span data-nosnippet>61</span>    <span class="kw">where
 <span data-nosnippet>62</span>        </span>F: FnMut(usize, MInt&lt;M&gt;),
 <span data-nosnippet>63</span>    {
-<span data-nosnippet>64</span>        <span class="kw">let </span>query = <span class="kw-2">&amp;</span><span class="self">self</span>.query;
+<span data-nosnippet>64</span>        <span class="kw">let </span>query = <span class="self">self</span>.query;
 <span data-nosnippet>65</span>        <span class="kw">if </span>query.is_empty() {
 <span data-nosnippet>66</span>            <span class="kw">return</span>;
 <span data-nosnippet>67</span>        }
@@ -116,19 +116,44 @@
 <span data-nosnippet>71</span>        <span class="macro">debug_assert!</span>(max_n &lt; modulus);
 <span data-nosnippet>72</span>        <span class="macro">debug_assert!</span>(query.iter().all(|<span class="kw-2">&amp;</span>(m, n)| m &lt;= n));
 <span data-nosnippet>73</span>
-<span data-nosnippet>74</span>        <span class="kw">let </span>fact = <span class="highlight focus">MemorizedFactorial::&lt;M&gt;::new</span>(max_n);
-<span data-nosnippet>75</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2usize</span>).inv();
-<span data-nosnippet>76</span>        <span class="kw">let </span><span class="kw-2">mut </span>cur = MInt::&lt;M&gt;::one();
-<span data-nosnippet>77</span>        <span class="macro">crate::mo_algorithm!</span>(
-<span data-nosnippet>78</span>            query,
-<span data-nosnippet>79</span>            (m, n),
-<span data-nosnippet>80</span>            |old_m| cur += fact.combination(n, old_m + <span class="number">1</span>),
-<span data-nosnippet>81</span>            |new_m| cur -= fact.combination(n, new_m + <span class="number">1</span>),
-<span data-nosnippet>82</span>            |old_n| cur = cur + cur - fact.combination(old_n, m),
-<span data-nosnippet>83</span>            |new_n| cur = (cur + fact.combination(new_n, m)) * inv2,
-<span data-nosnippet>84</span>            |i| f(i, cur),
-<span data-nosnippet>85</span>        );
-<span data-nosnippet>86</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.combination" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#29-36">Source</a><h4 class="code-header">pub fn <a href="#method.combination" class="fn">combination</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../../src/competitive/math/factorial.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/factorial.rs (<a href="../../../src/competitive/math/factorial.rs.html#52">line 52</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>47</span>    <span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
+<span data-nosnippet>74</span>        <span class="kw">let </span><span class="kw-2">mut </span>power2 = <span class="macro">vec!</span>[MInt::&lt;M&gt;::one(); max_n + <span class="number">1</span>];
+<span data-nosnippet>75</span>        <span class="kw">for </span>n <span class="kw">in </span><span class="number">1</span>..=max_n {
+<span data-nosnippet>76</span>            power2[n] = power2[n - <span class="number">1</span>] + power2[n - <span class="number">1</span>];
+<span data-nosnippet>77</span>        }
+<span data-nosnippet>78</span>        <span class="kw">let </span><span class="kw-2">mut </span>points = Vec::with_capacity(query.len());
+<span data-nosnippet>79</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>(m, n)) <span class="kw">in </span>query.iter().enumerate() {
+<span data-nosnippet>80</span>            <span class="kw">if </span>m == n {
+<span data-nosnippet>81</span>                f(i, power2[n]);
+<span data-nosnippet>82</span>                <span class="kw">continue</span>;
+<span data-nosnippet>83</span>            }
+<span data-nosnippet>84</span>            <span class="kw">let </span>k = m.min(n - m - <span class="number">1</span>);
+<span data-nosnippet>85</span>            <span class="kw">let </span>value = <span class="kw">if </span>k == <span class="number">0 </span>{
+<span data-nosnippet>86</span>                MInt::one()
+<span data-nosnippet>87</span>            } <span class="kw">else if </span>k * <span class="number">2 </span>+ <span class="number">1 </span>== n {
+<span data-nosnippet>88</span>                power2[n - <span class="number">1</span>]
+<span data-nosnippet>89</span>            } <span class="kw">else </span>{
+<span data-nosnippet>90</span>                points.push((k, n, i));
+<span data-nosnippet>91</span>                <span class="kw">continue</span>;
+<span data-nosnippet>92</span>            };
+<span data-nosnippet>93</span>            f(i, <span class="kw">if </span>m == k { value } <span class="kw">else </span>{ power2[n] - value });
+<span data-nosnippet>94</span>        }
+<span data-nosnippet>95</span>        <span class="kw">if </span>points.is_empty() {
+<span data-nosnippet>96</span>            <span class="kw">return</span>;
+<span data-nosnippet>97</span>        }
+<span data-nosnippet>98</span>        <span class="kw">let </span>max_n = points.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, n, <span class="kw">_</span>)| n).max().unwrap();
+<span data-nosnippet>99</span>        <span class="kw">let </span>fact = <span class="highlight focus">MemorizedFactorial::&lt;M&gt;::new</span>(max_n);
+<span data-nosnippet>100</span>        <span class="self">Self</span>::divide(
+<span data-nosnippet>101</span>            <span class="kw-2">&amp;mut </span>points,
+<span data-nosnippet>102</span>            (<span class="number">0</span>, <span class="number">0</span>),
+<span data-nosnippet>103</span>            MInt::one(),
+<span data-nosnippet>104</span>            <span class="kw-2">&amp;</span>fact,
+<span data-nosnippet>105</span>            <span class="kw-2">&amp;</span>power2,
+<span data-nosnippet>106</span>            <span class="kw-2">&amp;mut </span>|i, value| {
+<span data-nosnippet>107</span>                <span class="kw">let </span>(m, n) = query[i];
+<span data-nosnippet>108</span>                f(i, <span class="kw">if </span>m &lt; n - m { value } <span class="kw">else </span>{ power2[n] - value });
+<span data-nosnippet>109</span>            },
+<span data-nosnippet>110</span>        );
+<span data-nosnippet>111</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.combination" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#29-36">Source</a><h4 class="code-header">pub fn <a href="#method.combination" class="fn">combination</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../../src/competitive/math/factorial.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/factorial.rs (<a href="../../../src/competitive/math/factorial.rs.html#52">line 52</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>47</span>    <span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
 <span data-nosnippet>48</span>        <span class="macro">debug_assert!</span>(n + r &lt; <span class="self">self</span>.fact.len() + <span class="number">1</span>);
 <span data-nosnippet>49</span>        <span class="kw">if </span>n == <span class="number">0 </span>&amp;&amp; r == <span class="number">0 </span>{
 <span data-nosnippet>50</span>            MInt::one()
@@ -168,33 +193,7 @@
 <span data-nosnippet>391</span>        }
 <span data-nosnippet>392</span>    }
 <span data-nosnippet>393</span>    res
-<span data-nosnippet>394</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[20,20],&#34;../../../src/competitive/math/binomial_prefix_sum.rs.html#80&#34;,&#34;line 80&#34;],[[21,21],&#34;../../../src/competitive/math/binomial_prefix_sum.rs.html#81&#34;,&#34;line 81&#34;],[[22,22],&#34;../../../src/competitive/math/binomial_prefix_sum.rs.html#82&#34;,&#34;line 82&#34;],[[23,23],&#34;../../../src/competitive/math/binomial_prefix_sum.rs.html#83&#34;,&#34;line 83&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/binomial_prefix_sum.rs (<a href="../../../src/competitive/math/binomial_prefix_sum.rs.html#80">line 80</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>60</span>    <span class="kw">pub fn </span>for_each&lt;F&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: F)
-<span data-nosnippet>61</span>    <span class="kw">where
-<span data-nosnippet>62</span>        </span>F: FnMut(usize, MInt&lt;M&gt;),
-<span data-nosnippet>63</span>    {
-<span data-nosnippet>64</span>        <span class="kw">let </span>query = <span class="kw-2">&amp;</span><span class="self">self</span>.query;
-<span data-nosnippet>65</span>        <span class="kw">if </span>query.is_empty() {
-<span data-nosnippet>66</span>            <span class="kw">return</span>;
-<span data-nosnippet>67</span>        }
-<span data-nosnippet>68</span>        <span class="kw">let </span>max_n = query.iter().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, n)| n).max().unwrap_or(<span class="number">0</span>);
-<span data-nosnippet>69</span>        <span class="kw">let </span>modulus = M::mod_into();
-<span data-nosnippet>70</span>        <span class="macro">debug_assert!</span>(modulus &gt; <span class="number">2 </span>&amp;&amp; modulus % <span class="number">2 </span>== <span class="number">1</span>);
-<span data-nosnippet>71</span>        <span class="macro">debug_assert!</span>(max_n &lt; modulus);
-<span data-nosnippet>72</span>        <span class="macro">debug_assert!</span>(query.iter().all(|<span class="kw-2">&amp;</span>(m, n)| m &lt;= n));
-<span data-nosnippet>73</span>
-<span data-nosnippet>74</span>        <span class="kw">let </span>fact = MemorizedFactorial::&lt;M&gt;::new(max_n);
-<span data-nosnippet>75</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2usize</span>).inv();
-<span data-nosnippet>76</span>        <span class="kw">let </span><span class="kw-2">mut </span>cur = MInt::&lt;M&gt;::one();
-<span data-nosnippet>77</span>        <span class="macro">crate::mo_algorithm!</span>(
-<span data-nosnippet>78</span>            query,
-<span data-nosnippet>79</span>            (m, n),
-<span data-nosnippet>80</span>            |old_m| cur += fact.<span class="highlight focus">combination</span>(n, old_m + <span class="number">1</span>),
-<span data-nosnippet>81</span>            |new_m| cur -= fact.<span class="highlight">combination</span>(n, new_m + <span class="number">1</span>),
-<span data-nosnippet>82</span>            |old_n| cur = cur + cur - fact.<span class="highlight">combination</span>(old_n, m),
-<span data-nosnippet>83</span>            |new_n| cur = (cur + fact.<span class="highlight">combination</span>(new_n, m)) * inv2,
-<span data-nosnippet>84</span>            |i| f(i, cur),
-<span data-nosnippet>85</span>        );
-<span data-nosnippet>86</span>    }</code></pre></div></div></div></details></div></details><section id="method.permutation" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#38-45">Source</a><h4 class="code-header">pub fn <a href="#method.permutation" class="fn">permutation</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section><section id="method.homogeneous_product" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#47-54">Source</a><h4 class="code-header">pub fn <a href="#method.homogeneous_product" class="fn">homogeneous_product</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.inv" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#56-60">Source</a><h4 class="code-header">pub fn <a href="#method.inv" class="fn">inv</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/math/formal_power_series/mod.rs.html#87&#34;,&#34;line 87&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/mod.rs (<a href="../../../src/competitive/math/formal_power_series/mod.rs.html#87">line 87</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>86</span>    <span class="kw">fn </span>memorized_inv(mf: <span class="kw-2">&amp;</span>MemorizedFactorial&lt;<span class="self">Self</span>::Base&gt;, n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>394</span>}</code></pre></div></div></div></details></div></details><section id="method.permutation" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#38-45">Source</a><h4 class="code-header">pub fn <a href="#method.permutation" class="fn">permutation</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section><section id="method.homogeneous_product" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#47-54">Source</a><h4 class="code-header">pub fn <a href="#method.homogeneous_product" class="fn">homogeneous_product</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.inv" class="method"><a class="src rightside" href="../../../src/competitive/math/factorial.rs.html#56-60">Source</a><h4 class="code-header">pub fn <a href="#method.inv" class="fn">inv</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/math/formal_power_series/mod.rs.html#87&#34;,&#34;line 87&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/mod.rs (<a href="../../../src/competitive/math/formal_power_series/mod.rs.html#87">line 87</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>86</span>    <span class="kw">fn </span>memorized_inv(mf: <span class="kw-2">&amp;</span>MemorizedFactorial&lt;<span class="self">Self</span>::Base&gt;, n: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>87</span>        mf.<span class="highlight focus">inv</span>(n)
 <span data-nosnippet>88</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[8,8],&#34;../../../src/library_checker/enumerative_combinatorics/sharp_p_subset_sum.rs.html#16&#34;,&#34;line 16&#34;]]"><div class="scraped-example-title">crates/library_checker/src/enumerative_combinatorics/sharp_p_subset_sum.rs (<a href="../../../src/library_checker/enumerative_combinatorics/sharp_p_subset_sum.rs.html#16">line 16</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>sharp_p_subset_sum(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(reader, writer);
