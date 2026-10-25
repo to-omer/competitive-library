@@ -1,8 +1,11 @@
 #![allow(unsafe_op_in_unsafe_fn)]
 
 use super::{
-    AssociatedValue, MInt, MIntConvert, advise_huge_pages,
-    fast_fourier_transform::{RotateCache, simd::*},
+    MInt, MIntConvert, advise_huge_pages,
+    partial_fft::{
+        avx2::{Complex4, complex_mul, fft_soa, ifft_soa, load, multiply_accumulate, store},
+        eval_twiddle, with_roots,
+    },
 };
 use std::arch::x86_64::*;
 
@@ -78,11 +81,10 @@ where
 #[target_feature(enable = "avx2,fma")]
 unsafe fn dot_soa(a0: &mut [Complex4], a1: &mut [Complex4], b0: &mut [Complex4], b1: &[Complex4]) {
     let n = a0.len() * 4;
-    RotateCache::ensure(n / 2);
-    RotateCache::with(|cache| {
+    with_roots(n / 2, |cache| {
         for i in 0..a0.len() {
-            let (mut cr, mut ci) = load4(&b0[i]);
-            let (mut dr, mut di) = load4(&b1[i]);
+            let (mut cr, mut ci) = load(&b0[i]);
+            let (mut dr, mut di) = load(&b1[i]);
             let mut c0r = _mm256_setzero_pd();
             let mut c0i = _mm256_setzero_pd();
             let mut c1r = _mm256_setzero_pd();
@@ -97,22 +99,22 @@ unsafe fn dot_soa(a0: &mut [Complex4], a1: &mut [Complex4], b0: &mut [Complex4],
                 let ai = _mm256_set1_pd(a0[i].im[lane]);
                 let br = _mm256_set1_pd(a1[i].re[lane]);
                 let bi = _mm256_set1_pd(a1[i].im[lane]);
-                multiply_accumulate4(&mut c0r, &mut c0i, ar, ai, cr, ci);
-                multiply_accumulate4(&mut c1r, &mut c1i, ar, ai, dr, di);
-                multiply_accumulate4(&mut c1r, &mut c1i, br, bi, cr, ci);
-                multiply_accumulate4(&mut c2r, &mut c2i, br, bi, dr, di);
+                multiply_accumulate(&mut c0r, &mut c0i, ar, ai, cr, ci);
+                multiply_accumulate(&mut c1r, &mut c1i, ar, ai, dr, di);
+                multiply_accumulate(&mut c1r, &mut c1i, br, bi, cr, ci);
+                multiply_accumulate(&mut c2r, &mut c2i, br, bi, dr, di);
                 if lane != 3 {
                     cr = _mm256_permute4x64_pd::<0x93>(cr);
                     ci = _mm256_permute4x64_pd::<0x93>(ci);
                     dr = _mm256_permute4x64_pd::<0x93>(dr);
                     di = _mm256_permute4x64_pd::<0x93>(di);
-                    (cr, ci) = mul4(cr, ci, wr, wi);
-                    (dr, di) = mul4(dr, di, wr, wi);
+                    (cr, ci) = complex_mul(cr, ci, wr, wi);
+                    (dr, di) = complex_mul(dr, di, wr, wi);
                 }
             }
-            store4(&mut a0[i], c0r, c0i);
-            store4(&mut a1[i], c1r, c1i);
-            store4(&mut b0[i], c2r, c2i);
+            store(&mut a0[i], c0r, c0i);
+            store(&mut a1[i], c1r, c1i);
+            store(&mut b0[i], c2r, c2i);
         }
     });
 }
@@ -150,48 +152,49 @@ unsafe fn split_u64_coefficients(values: &[u64], n: usize) -> [Vec<Complex4>; 5]
 #[target_feature(enable = "avx2,fma")]
 unsafe fn dot_u64_soa<const PARTS: usize>(a: &mut [Vec<Complex4>; 5], b: &[Vec<Complex4>; 5]) {
     let n = a[0].len() * 4;
-    RotateCache::ensure(n / 2);
-    RotateCache::with(|cache| {
+    with_roots(n / 2, |cache| {
         for block in 0..a[0].len() {
             let mut br = [_mm256_setzero_pd(); PARTS];
             let mut bi = br;
             let mut rr = [_mm256_setzero_pd(); 5];
             let mut ri = rr;
             for part in 0..PARTS {
-                (br[part], bi[part]) = load4(&b[part][block]);
+                (br[part], bi[part]) = load(&b[part][block]);
             }
             let w = eval_twiddle(cache, 1, a[0].len(), block);
             let wr = _mm256_setr_pd(w.re, 1.0, 1.0, 1.0);
             let wi = _mm256_setr_pd(w.im, 0.0, 0.0, 0.0);
-            for lane in 0..4 {
-                let ar: [__m256d; PARTS] =
-                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].re[lane]));
-                let ai: [__m256d; PARTS] =
-                    std::array::from_fn(|part| _mm256_set1_pd(a[part][block].im[lane]));
-                for part in 0..5.min(2 * PARTS - 1) {
-                    for left in 0..=part {
-                        if PARTS == 5 || (left < PARTS && part - left < PARTS) {
-                            multiply_accumulate4(
-                                &mut rr[part],
-                                &mut ri[part],
-                                ar[left],
-                                ai[left],
-                                br[part - left],
-                                bi[part - left],
+            // Keep lane indices constant to avoid loop-carried SIMD spills.
+            macro_rules! accumulate_lane {
+                ($lane:expr) => {{
+                    // Descending right preserves ascending left for each output.
+                    for right in (0..PARTS).rev() {
+                        for left in 0..PARTS.min(5 - right) {
+                            let ar = _mm256_set1_pd(a[left][block].re[$lane]);
+                            let ai = _mm256_set1_pd(a[left][block].im[$lane]);
+                            multiply_accumulate(
+                                &mut rr[left + right],
+                                &mut ri[left + right],
+                                ar,
+                                ai,
+                                br[right],
+                                bi[right],
                             );
                         }
+                        if $lane != 3 {
+                            br[right] = _mm256_permute4x64_pd::<0x93>(br[right]);
+                            bi[right] = _mm256_permute4x64_pd::<0x93>(bi[right]);
+                            (br[right], bi[right]) = complex_mul(br[right], bi[right], wr, wi);
+                        }
                     }
-                }
-                if lane != 3 {
-                    for part in 0..PARTS {
-                        br[part] = _mm256_permute4x64_pd::<0x93>(br[part]);
-                        bi[part] = _mm256_permute4x64_pd::<0x93>(bi[part]);
-                        (br[part], bi[part]) = mul4(br[part], bi[part], wr, wi);
-                    }
-                }
+                }};
             }
+            accumulate_lane!(0);
+            accumulate_lane!(1);
+            accumulate_lane!(2);
+            accumulate_lane!(3);
             for part in 0..5 {
-                store4(&mut a[part][block], rr[part], ri[part]);
+                store(&mut a[part][block], rr[part], ri[part]);
             }
         }
     });

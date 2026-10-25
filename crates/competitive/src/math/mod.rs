@@ -12,7 +12,7 @@ use crate::num::{
     BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, MIntDotProduct, One,
     RangeBoundsExt, Signed, Unsigned, Wrapping, Zero, montgomery,
 };
-use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift, advise_huge_pages};
+use crate::tools::{PartialIgnoredOrd, SerdeByteStr, Xorshift, advise_huge_pages};
 #[cfg(target_arch = "x86_64")]
 use crate::tools::{SimdBackend, simd_backend};
 
@@ -173,7 +173,7 @@ mod factorial;
         "fast_fourier_transform",
         include(
             "Complex",
-            "AssociatedValue",
+            "_partial_fft",
             "ConvolveSteps",
             "avx_helper",
             "_huge_pages"
@@ -269,6 +269,8 @@ mod mod_sqrt;
     )
 )]
 mod number_theoretic_transform;
+#[cfg_attr(nightly, codesnip::entry("_partial_fft", include("Complex")))]
+pub mod partial_fft;
 mod polynomial;
 #[cfg_attr(
     nightly,

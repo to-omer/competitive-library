@@ -2,8 +2,10 @@
 
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing};
 use crate::data_structure::RangeMinimumQuery;
-use crate::math::ConvolveRealFft;
-use crate::tools::Xorshift;
+use crate::math::partial_fft;
+#[cfg(target_arch = "x86_64")]
+use crate::tools::{SimdBackend, simd_backend};
+use crate::tools::{Xorshift, advise_huge_pages};
 
 #[codesnip::entry("KnuthMorrisPratt")]
 pub use self::knuth_morris_pratt::KnuthMorrisPratt;
@@ -48,7 +50,7 @@ mod suffix_automaton;
 mod suffix_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry(include("fast_fourier_transform", "Xorshift"))
+    codesnip::entry(include("_partial_fft", "_huge_pages", "avx_helper"))
 )]
 mod wildcard_pattern_matching;
 #[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]

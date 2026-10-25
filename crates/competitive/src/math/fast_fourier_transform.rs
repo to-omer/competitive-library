@@ -1,271 +1,29 @@
-use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
+use super::partial_fft::with_roots;
+use super::{Complex, ConvolveSteps, Zero};
 #[cfg(target_arch = "x86_64")]
 use super::{SimdBackend, advise_huge_pages, simd_backend};
 
 pub enum ConvolveRealFft {}
-
-pub enum RotateCache {}
-impl RotateCache {
-    pub fn ensure(n: usize) {
-        assert_eq!(n.count_ones(), 1, "call with power of two but {}", n);
-        Self::modify(|cache| {
-            let mut m = cache.len();
-            assert!(
-                m.count_ones() <= 1,
-                "length might be power of two but {}",
-                m
-            );
-            if m >= n {
-                return;
-            }
-            cache.reserve_exact(n - m);
-            if cache.is_empty() {
-                cache.push(Complex::one());
-                m += 1;
-            }
-            while m < n {
-                let p = Complex::primitive_nth_root_of_unity(-((m * 4) as f64));
-                for i in 0..m {
-                    cache.push(cache[i] * p);
-                }
-                m <<= 1;
-            }
-            assert_eq!(cache.len(), n);
-        });
-    }
-}
-crate::impl_assoc_value!(RotateCache, Vec<Complex<f64>>, vec![Complex::one()]);
 
 #[cfg(target_arch = "x86_64")]
 pub mod simd {
     // These primitives are called only after AVX2 and FMA have been detected.
     #![allow(clippy::missing_safety_doc, unsafe_op_in_unsafe_fn)]
 
-    use super::{AssociatedValue, Complex, RotateCache, advise_huge_pages};
+    use super::{advise_huge_pages, with_roots};
     use std::arch::x86_64::*;
 
-    #[derive(Clone, Copy, Default)]
-    #[repr(C, align(32))]
-    pub struct Complex4 {
-        pub re: [f64; 4],
-        pub im: [f64; 4],
-    }
-
-    #[target_feature(enable = "avx2,fma")]
-    #[inline]
-    pub unsafe fn load4(value: &Complex4) -> (__m256d, __m256d) {
-        (
-            _mm256_load_pd(value.re.as_ptr()),
-            _mm256_load_pd(value.im.as_ptr()),
-        )
-    }
-
-    #[target_feature(enable = "avx2,fma")]
-    #[inline]
-    pub unsafe fn store4(value: &mut Complex4, re: __m256d, im: __m256d) {
-        _mm256_store_pd(value.re.as_mut_ptr(), re);
-        _mm256_store_pd(value.im.as_mut_ptr(), im);
-    }
-
-    #[target_feature(enable = "avx2,fma")]
-    #[inline]
-    pub unsafe fn mul4(ar: __m256d, ai: __m256d, br: __m256d, bi: __m256d) -> (__m256d, __m256d) {
-        (
-            _mm256_fmsub_pd(ar, br, _mm256_mul_pd(ai, bi)),
-            _mm256_fmadd_pd(ai, br, _mm256_mul_pd(ar, bi)),
-        )
-    }
-
-    #[target_feature(enable = "avx2,fma")]
-    #[inline]
-    pub unsafe fn multiply_accumulate4(
-        rr: &mut __m256d,
-        ri: &mut __m256d,
-        ar: __m256d,
-        ai: __m256d,
-        br: __m256d,
-        bi: __m256d,
-    ) {
-        *rr = _mm256_fmadd_pd(ar, br, *rr);
-        *rr = _mm256_fnmadd_pd(ai, bi, *rr);
-        *ri = _mm256_fmadd_pd(ai, br, *ri);
-        *ri = _mm256_fmadd_pd(ar, bi, *ri);
-    }
-
-    #[inline]
-    pub fn eval_twiddle(cache: &[Complex<f64>], step: usize, n: usize, k: usize) -> Complex<f64> {
-        let k = step * k;
-        let w = cache[(k >> 2) << 1].conjugate();
-        let w = match k & 3 {
-            0 => w,
-            1 => Complex::new(-w.re, -w.im),
-            2 => Complex::new(-w.im, w.re),
-            _ => Complex::new(w.im, -w.re),
-        };
-        cache[step * n].conjugate() * w
-    }
-
-    #[target_feature(enable = "avx2,fma")]
-    pub unsafe fn fft_soa(a: &mut [Complex4]) {
-        let n = a.len() * 4;
-        RotateCache::ensure(n / 2);
-        RotateCache::with(|cache| {
-            let parity = n.trailing_zeros() & 1;
-            for leaf in (0..n).step_by(16) {
-                let mut level = (n + leaf).trailing_zeros();
-                level -= u32::from(level & 1 != parity);
-                while level >= 4 {
-                    let len = 1usize << level;
-                    let q = leaf >> level;
-                    let width = len / 16;
-                    let start = q * width * 4;
-                    let (a, rest) = a[start..start + width * 4].split_at_mut(width);
-                    let (b, rest) = rest.split_at_mut(width);
-                    let (c, d) = rest.split_at_mut(width);
-                    let w1 = eval_twiddle(cache, 4, n >> level, q);
-                    let w2 = w1 * w1;
-                    let w3 = w1 * w2;
-                    let (w1r, w1i) = (_mm256_set1_pd(w1.re), _mm256_set1_pd(w1.im));
-                    let (w2r, w2i) = (_mm256_set1_pd(w2.re), _mm256_set1_pd(w2.im));
-                    let (w3r, w3i) = (_mm256_set1_pd(w3.re), _mm256_set1_pd(w3.im));
-                    for i in 0..width {
-                        let (ar, ai) = load4(&a[i]);
-                        let (br, bi) = load4(&b[i]);
-                        let (cr, ci) = load4(&c[i]);
-                        let (dr, di) = load4(&d[i]);
-                        let (br, bi) = mul4(br, bi, w1r, w1i);
-                        let (cr, ci) = mul4(cr, ci, w2r, w2i);
-                        let (dr, di) = mul4(dr, di, w3r, w3i);
-                        let acr = _mm256_add_pd(ar, cr);
-                        let aci = _mm256_add_pd(ai, ci);
-                        let bdr = _mm256_add_pd(br, dr);
-                        let bdi = _mm256_add_pd(bi, di);
-                        let acd_r = _mm256_sub_pd(ar, cr);
-                        let acd_i = _mm256_sub_pd(ai, ci);
-                        let bdd_r = _mm256_sub_pd(br, dr);
-                        let bdd_i = _mm256_sub_pd(bi, di);
-                        store4(&mut a[i], _mm256_add_pd(acr, bdr), _mm256_add_pd(aci, bdi));
-                        store4(&mut b[i], _mm256_sub_pd(acr, bdr), _mm256_sub_pd(aci, bdi));
-                        store4(
-                            &mut c[i],
-                            _mm256_sub_pd(acd_r, bdd_i),
-                            _mm256_add_pd(acd_i, bdd_r),
-                        );
-                        store4(
-                            &mut d[i],
-                            _mm256_add_pd(acd_r, bdd_i),
-                            _mm256_sub_pd(acd_i, bdd_r),
-                        );
-                    }
-                    level -= 2;
-                }
-            }
-            if parity != 0 {
-                let blocks = n / 8;
-                for k in 0..blocks {
-                    let w = eval_twiddle(cache, 2, blocks, k);
-                    let wr = _mm256_set1_pd(w.re);
-                    let wi = _mm256_set1_pd(w.im);
-                    let (ar, ai) = load4(&a[k * 2]);
-                    let (br, bi) = load4(&a[k * 2 + 1]);
-                    let (br, bi) = mul4(br, bi, wr, wi);
-                    store4(&mut a[k * 2], _mm256_add_pd(ar, br), _mm256_add_pd(ai, bi));
-                    store4(
-                        &mut a[k * 2 + 1],
-                        _mm256_sub_pd(ar, br),
-                        _mm256_sub_pd(ai, bi),
-                    );
-                }
-            }
-        });
-    }
-
-    #[target_feature(enable = "avx2,fma")]
-    pub unsafe fn ifft_soa(a: &mut [Complex4]) {
-        let n = a.len() * 4;
-        RotateCache::ensure(n / 2);
-        RotateCache::with(|cache| {
-            let parity = n.trailing_zeros() & 1;
-            if parity != 0 {
-                let blocks = n / 8;
-                for k in 0..blocks {
-                    let w = eval_twiddle(cache, 2, blocks, k).conjugate();
-                    let wr = _mm256_set1_pd(w.re);
-                    let wi = _mm256_set1_pd(w.im);
-                    let (ar, ai) = load4(&a[k * 2]);
-                    let (br, bi) = load4(&a[k * 2 + 1]);
-                    store4(&mut a[k * 2], _mm256_add_pd(ar, br), _mm256_add_pd(ai, bi));
-                    let (br, bi) = mul4(_mm256_sub_pd(ar, br), _mm256_sub_pd(ai, bi), wr, wi);
-                    store4(&mut a[k * 2 + 1], br, bi);
-                }
-            }
-            for leaf in (12..n).step_by(16) {
-                let max_level = (leaf + 3).trailing_ones();
-                let mut level = 4 + parity;
-                while level <= max_level {
-                    let len = 1usize << level;
-                    let q = leaf >> level;
-                    let width = len / 16;
-                    let start = q * width * 4;
-                    let (a, rest) = a[start..start + width * 4].split_at_mut(width);
-                    let (b, rest) = rest.split_at_mut(width);
-                    let (c, d) = rest.split_at_mut(width);
-                    let w1 = eval_twiddle(cache, 4, n >> level, q).conjugate();
-                    let w2 = w1 * w1;
-                    let w3 = w1 * w2;
-                    let (w1r, w1i) = (_mm256_set1_pd(w1.re), _mm256_set1_pd(w1.im));
-                    let (w2r, w2i) = (_mm256_set1_pd(w2.re), _mm256_set1_pd(w2.im));
-                    let (w3r, w3i) = (_mm256_set1_pd(w3.re), _mm256_set1_pd(w3.im));
-                    for i in 0..width {
-                        let (ar, ai) = load4(&a[i]);
-                        let (br, bi) = load4(&b[i]);
-                        let (cr, ci) = load4(&c[i]);
-                        let (dr, di) = load4(&d[i]);
-                        let abr = _mm256_add_pd(ar, br);
-                        let abi = _mm256_add_pd(ai, bi);
-                        let cdr = _mm256_add_pd(cr, dr);
-                        let cdi = _mm256_add_pd(ci, di);
-                        let abd_r = _mm256_sub_pd(ar, br);
-                        let abd_i = _mm256_sub_pd(ai, bi);
-                        let cdd_r = _mm256_sub_pd(cr, dr);
-                        let cdd_i = _mm256_sub_pd(ci, di);
-                        store4(&mut a[i], _mm256_add_pd(abr, cdr), _mm256_add_pd(abi, cdi));
-                        let (br, bi) = mul4(
-                            _mm256_add_pd(abd_r, cdd_i),
-                            _mm256_sub_pd(abd_i, cdd_r),
-                            w1r,
-                            w1i,
-                        );
-                        store4(&mut b[i], br, bi);
-                        let (cr, ci) =
-                            mul4(_mm256_sub_pd(abr, cdr), _mm256_sub_pd(abi, cdi), w2r, w2i);
-                        store4(&mut c[i], cr, ci);
-                        let (dr, di) = mul4(
-                            _mm256_sub_pd(abd_r, cdd_i),
-                            _mm256_add_pd(abd_i, cdd_r),
-                            w3r,
-                            w3i,
-                        );
-                        store4(&mut d[i], dr, di);
-                    }
-                    level += 2;
-                }
-            }
-            let scale = _mm256_set1_pd(4.0 / n as f64);
-            for value in a {
-                let (re, im) = load4(value);
-                store4(value, _mm256_mul_pd(re, scale), _mm256_mul_pd(im, scale));
-            }
-        });
-    }
+    use super::super::partial_fft::{
+        avx2::{Complex4, complex_mul, fft_soa, ifft_soa, load, multiply_accumulate, store},
+        eval_twiddle,
+    };
 
     #[target_feature(enable = "avx2,fma")]
     unsafe fn dot_one_soa(a: &mut [Complex4], b: &[Complex4]) {
         let n = a.len() * 4;
-        RotateCache::ensure(n / 2);
-        RotateCache::with(|cache| {
+        with_roots(n / 2, |cache| {
             for i in 0..a.len() {
-                let (mut br, mut bi) = load4(&b[i]);
+                let (mut br, mut bi) = load(&b[i]);
                 let mut rr = _mm256_setzero_pd();
                 let mut ri = _mm256_setzero_pd();
                 let w = eval_twiddle(cache, 1, a.len(), i);
@@ -274,14 +32,14 @@ pub mod simd {
                 for lane in 0..4 {
                     let ar = _mm256_set1_pd(a[i].re[lane]);
                     let ai = _mm256_set1_pd(a[i].im[lane]);
-                    multiply_accumulate4(&mut rr, &mut ri, ar, ai, br, bi);
+                    multiply_accumulate(&mut rr, &mut ri, ar, ai, br, bi);
                     if lane != 3 {
                         br = _mm256_permute4x64_pd::<0x93>(br);
                         bi = _mm256_permute4x64_pd::<0x93>(bi);
-                        (br, bi) = mul4(br, bi, wr, wi);
+                        (br, bi) = complex_mul(br, bi, wr, wi);
                     }
                 }
-                store4(&mut a[i], rr, ri);
+                store(&mut a[i], rr, ri);
             }
         });
     }
@@ -621,8 +379,7 @@ pub fn ifft(a: &mut [Complex<f64>]) {
 }
 
 fn fft_dispatch<const INVERSE: bool>(a: &mut [Complex<f64>]) {
-    RotateCache::ensure(a.len() / 2);
-    RotateCache::with(|cache| {
+    with_roots(a.len() / 2, |cache| {
         #[cfg(target_arch = "x86_64")]
         if a.len() >= 16 {
             match simd_backend() {
