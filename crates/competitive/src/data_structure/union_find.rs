@@ -109,10 +109,11 @@ where
     P: Monoid,
 {
     fn root(info: u32, data: D) -> Self {
+        let potential = P::unit();
         Self {
             parent_or_info: !(info as i32),
             data: MaybeUninit::new(data),
-            potential: P::unit(),
+            potential,
         }
     }
 
@@ -129,10 +130,12 @@ where
     }
 
     fn set_child(&mut self, parent: usize, potential: P::T) {
-        if needs_drop::<D>() && self.is_root() {
+        let was_root = self.is_root();
+        // Mark the data as unowned before its destructor can unwind.
+        self.parent_or_info = parent as i32;
+        if needs_drop::<D>() && was_root {
             unsafe { self.data.assume_init_drop() };
         }
-        self.parent_or_info = parent as i32;
         self.potential = potential;
     }
 
@@ -593,7 +596,7 @@ mod tests {
         graph::{Graph, UndirectedSparseGraph},
         num::mint_basic::MInt998244353 as M,
         rand,
-        tools::Xorshift,
+        tools::{Xorshift, from_fn},
         tree::MixedTree,
     };
     use std::collections::HashSet;
@@ -689,8 +692,9 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         type G = LinearOperation<M>;
+        let nonzero = from_fn(|rng| M::new(rng.random(1..M::get_mod())));
         for _ in 0..1000 {
-            rand!(rng, n: 1..=N, g: MixedTree(n), p: [(.., ..); n - 1], k: 0..n);
+            rand!(rng, n: 1..=N, g: MixedTree(n), p: [(&nonzero, ..); n - 1], k: 0..n);
 
             macro_rules! test_uf {
                 ($union:ty, $find:ty) => {{

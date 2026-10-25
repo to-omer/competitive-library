@@ -50,7 +50,7 @@ pub trait SemiGroup: Magma + Associative {}
 
 impl<S> SemiGroup for S where S: Magma + Associative {}
 
-/// $\exists e \in T, \forall a \in T, e \circ a = a \circ e = e$
+/// $\exists e \in T, \forall a \in T, e \circ a = a \circ e = a$
 pub trait Unital: Magma {
     /// identity element: $e$
     fn unit() -> Self::T;
