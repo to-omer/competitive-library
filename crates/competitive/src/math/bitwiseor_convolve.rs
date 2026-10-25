@@ -131,6 +131,7 @@ where
     M: Group,
 {
     data: Vec<M::T>,
+    len: usize,
 }
 
 impl<M> OnlineSubsetMobiusTransform<M>
@@ -138,44 +139,54 @@ where
     M: Group,
 {
     pub fn new(size: usize) -> Self {
-        Self {
-            data: Vec::with_capacity(size),
-        }
+        let mut data = Vec::with_capacity(size);
+        data.push(M::unit());
+        Self { data, len: 0 }
     }
 
-    pub fn push(&mut self, x: M::T) {
-        let i = self.data.len();
-        self.data.push(x);
-        let mut k = 0;
-        while i >> k & 1 == 1 {
-            let size = 1 << k;
-            let chunk = &mut self.data[i - (size * 2 - 1)..];
-            let (x, y) = chunk.split_at_mut(size);
-            for (x, y) in x.iter().zip(y.iter_mut()) {
-                *y = M::rinv_operate(y, x);
+    /// Returns each recovered value from subset-zeta coefficients in ascending order.
+    pub fn push(&mut self, x: M::T) -> M::T {
+        let i = self.len;
+        let size = i & i.wrapping_neg();
+        let mut half = 1;
+        while half < size / 2 {
+            let chunk = &mut self.data[i - half * 4..i];
+            let (left, right) = chunk.split_at_mut(half * 2);
+            let (a, b) = left.split_at_mut(half);
+            let (c, d) = right.split_at_mut(half);
+            for (((a, b), c), d) in a.iter().zip(b).zip(c).zip(d) {
+                let x = M::operate(d, c);
+                *c = M::operate(c, a);
+                *d = M::operate(&x, b);
             }
-            k += 1;
+            half <<= 2;
         }
-    }
-
-    pub fn get(&self, index: usize) -> M::T {
-        let mut cur = self.data.len();
-        let mut s = M::unit();
-        while cur != 0 {
-            let d = cur.trailing_zeros() as usize;
-            let base = cur ^ (1 << d);
-            if (base & !index) >> d == 0 {
-                let mask = (1 << d) - 1;
-                let j = base ^ ((index ^ base) & mask);
-                if ((index ^ base) >> d).count_ones() & 1 == 1 {
-                    s = M::rinv_operate(&s, &self.data[j]);
-                } else {
-                    s = M::operate(&s, &self.data[j]);
-                }
+        if half < size {
+            let chunk = &mut self.data[i - half * 2..i];
+            let (left, right) = chunk.split_at_mut(half);
+            for (x, y) in left.iter().zip(right) {
+                *y = M::operate(y, x);
             }
-            cur = base;
         }
-        s
+        let size = size.min(i - size);
+        if i == self.data.len() {
+            let offset = i ^ (1 << i.ilog2());
+            let count = size.max(1);
+            if self.data.capacity() < i + count {
+                let additional = ((i + 1) / 3 + 1).min(i - offset * 2);
+                self.data.reserve_exact(additional);
+            }
+            self.data.extend_from_within(offset..offset + count);
+        }
+        let chunk = &mut self.data[i - size..i + size];
+        let (left, right) = chunk.split_at_mut(size);
+        for (x, y) in left.iter().zip(right) {
+            *y = M::operate(x, y);
+        }
+        let x = M::rinv_operate(&x, &self.data[i]);
+        self.data[i] = x.clone();
+        self.len += 1;
+        x
     }
 }
 
@@ -296,15 +307,47 @@ mod verification {
         }
         kani::cover!(len == 3 && query == 3 && values[0][values[1][0]] != values[1][values[0][0]]);
     }
+
+    #[kani::proof]
+    #[kani::unwind(10)]
+    fn proof_online_mobius() {
+        let values: [[u8; 3]; 8] = kani::any();
+        for p in &values {
+            kani::assume(p[0] < 3 && p[1] < 3 && p[2] < 3);
+            kani::assume(p[0] != p[1] && p[0] != p[2] && p[1] != p[2]);
+        }
+        let values = values.map(|p| p.map(usize::from));
+        let mut inverse = OnlineSubsetMobiusTransform::<FixedPermutationOperation<3>>::new(0);
+        for index in 0..values.len() {
+            let mut coefficient = [0, 1, 2];
+            for mask in (0..=index).rev() {
+                if mask & index == mask {
+                    let p = values[mask];
+                    coefficient = [coefficient[p[0]], coefficient[p[1]], coefficient[p[2]]];
+                }
+            }
+            let restored = inverse.push(coefficient);
+            for label in 0..3 {
+                kani::assert(
+                    restored[label] == values[index][label],
+                    "For any sequence of eight permutations of three labels, online subset Mobius inversion restores every value from the descending-submask product as each coefficient arrives in ascending index order",
+                );
+            }
+        }
+        kani::cover!(values[1][values[2][0]] != values[2][values[1][0]]);
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
-        algebra::{AddMulOperation, AdditiveOperation},
+        algebra::{AddMulOperation, AdditiveOperation, FixedPermutationOperation},
         rand,
-        tools::Xorshift,
+        tools::{
+            Xorshift,
+            testutil::{exhaustive_sequences, sequence_cases},
+        },
     };
 
     const A: i64 = 100_000;
@@ -367,21 +410,38 @@ mod tests {
     #[test]
     fn test_online_subset_mobius_transform() {
         let mut rng = Xorshift::default();
-        for k in 0..12 {
-            let n = 1 << k;
-            rand!(rng, f: [-A..A; n]);
-            let mut ost = OnlineSubsetMobiusTransform::<AdditiveOperation<i64>>::new(0);
-            for i in 0..n {
-                ost.push(f[i]);
-                let mut g: Vec<_> = f[..=i]
-                    .iter()
-                    .cloned()
-                    .chain(std::iter::repeat_n(0, n - i - 1))
-                    .collect();
-                BitwiseorConvolve::<AdditiveOperation<i64>>::mobius_transform(&mut g);
-                for (j, &g) in g.iter().enumerate() {
-                    assert_eq!(ost.get(j), g);
+        let permutations = [
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
+        ];
+        let cases =
+            exhaustive_sequences(0..6i64, 0..=4).chain(sequence_cases(&mut rng, -A..=A, 0..=2048));
+        for values in cases {
+            let mut sums = OnlineSubsetMobiusTransform::<AdditiveOperation<i64>>::new(0);
+            let mut compositions =
+                OnlineSubsetMobiusTransform::<FixedPermutationOperation<3>>::new(0);
+            for (index, &value) in values.iter().enumerate() {
+                let mut sum = 0;
+                let mut composition = [0, 1, 2];
+                let mut mask = index;
+                loop {
+                    sum += values[mask];
+                    let p = permutations[values[mask].rem_euclid(6) as usize];
+                    composition = [composition[p[0]], composition[p[1]], composition[p[2]]];
+                    if mask == 0 {
+                        break;
+                    }
+                    mask = (mask - 1) & index;
                 }
+                assert_eq!(sums.push(sum), value);
+                assert_eq!(
+                    compositions.push(composition),
+                    permutations[value.rem_euclid(6) as usize]
+                );
             }
         }
     }
