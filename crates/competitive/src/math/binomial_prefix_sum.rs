@@ -96,12 +96,21 @@ where
             return;
         }
         let max_n = points.iter().map(|&(_, n, _)| n).max().unwrap();
-        let fact = MemorizedFactorial::<M>::new(max_n);
+        let MemorizedFactorial {
+            fact: mut weighted_fact,
+            inv_fact,
+        } = MemorizedFactorial::<M>::new(max_n);
+        let mut scale = (power2[max_n] + power2[max_n]).inv();
+        for value in weighted_fact.iter_mut().rev() {
+            *value *= scale;
+            scale += scale;
+        }
         Self::divide(
             &mut points,
             (0, 0),
             MInt::one(),
-            &fact,
+            &weighted_fact,
+            &inv_fact,
             &power2,
             &mut |i, value| {
                 let (m, n) = query[i];
@@ -120,7 +129,8 @@ where
         points: &mut [(usize, usize, usize)],
         (m, n): (usize, usize),
         mut sum: MInt<M>,
-        fact: &MemorizedFactorial<M>,
+        weighted_fact: &[MInt<M>],
+        inv_fact: &[MInt<M>],
         power2: &[MInt<M>],
         f: &mut F,
     ) where
@@ -133,21 +143,50 @@ where
             min_n = min_n.min(n);
             max_n = max_n.max(n);
         }
-        // S(n + 1, m) = 2 S(n, m) - C(n, m), with 1 / m! factored out.
-        let mut tail = MInt::zero();
-        for i in n..min_n {
-            tail = tail + tail + fact.fact[i] * fact.inv_fact[i - m];
+        const CHUNK_SIZE: usize = if cfg!(all(
+            target_feature = "avx2",
+            not(target_feature = "avx512f")
+        )) {
+            16
+        } else {
+            8
+        };
+        // Keep S(n, m) / 2^n; weighted_fact[i] is i! / 2^(i + 1).
+        if n < min_n {
+            let (a, a_rem) = weighted_fact[n..min_n].as_chunks::<CHUNK_SIZE>();
+            let (b, b_rem) = inv_fact[n - m..min_n - m].as_chunks::<CHUNK_SIZE>();
+            let mut accum = [MInt::zero(); CHUNK_SIZE];
+            for (a, b) in a.iter().zip(b) {
+                for j in 0..CHUNK_SIZE {
+                    accum[j] += a[j] * b[j];
+                }
+            }
+            let mut tail: MInt<M> = accum.into_iter().sum();
+            for (&a, &b) in a_rem.iter().zip(b_rem) {
+                tail += a * b;
+            }
+            sum -= tail * inv_fact[m];
         }
-        sum = sum * power2[min_n - n] - tail * fact.inv_fact[m];
-        // S(n, m + 1) = S(n, m) + C(n, m + 1), with n! factored out.
-        let mut tail = MInt::zero();
-        for i in m + 1..=min_m {
-            tail += fact.inv_fact[i] * fact.inv_fact[min_n - i];
+        if m < min_m {
+            // Increase m with n! / 2^n factored out.
+            let (a, a_rem) = inv_fact[m + 1..=min_m].as_chunks::<CHUNK_SIZE>();
+            let (b_rem, b) = inv_fact[min_n - min_m..min_n - m].as_rchunks::<CHUNK_SIZE>();
+            let mut accum = [MInt::zero(); CHUNK_SIZE];
+            for (a, b) in a.iter().zip(b.iter().rev()) {
+                for j in 0..CHUNK_SIZE {
+                    accum[j] += a[j] * b[CHUNK_SIZE - 1 - j];
+                }
+            }
+            let mut tail: MInt<M> = accum.into_iter().sum();
+            for (&a, &b) in a_rem.iter().zip(b_rem.iter().rev()) {
+                tail += a * b;
+            }
+            sum += (tail + tail) * weighted_fact[min_n];
         }
-        sum += tail * fact.fact[min_n];
         if min_m == max_m && min_n == max_n {
+            let value = sum * power2[min_n];
             for &(_, _, i) in points.iter() {
-                f(i, sum);
+                f(i, value);
             }
             return;
         }
@@ -160,17 +199,45 @@ where
         let mut left = 0;
         let mut right = points.len();
         while left < right {
-            let (m, n, _) = points[left];
-            if (if split_n { n } else { m }) <= middle {
+            while left < right {
+                let (m, n, _) = points[left];
+                if (if split_n { n } else { m }) > middle {
+                    break;
+                }
                 left += 1;
-            } else {
+            }
+            while left < right {
+                let (m, n, _) = points[right - 1];
+                if (if split_n { n } else { m }) <= middle {
+                    break;
+                }
+                right -= 1;
+            }
+            if left < right {
                 right -= 1;
                 points.swap(left, right);
+                left += 1;
             }
         }
         let (left, right) = points.split_at_mut(left);
-        Self::divide(left, (min_m, min_n), sum, fact, power2, f);
-        Self::divide(right, (min_m, min_n), sum, fact, power2, f);
+        Self::divide(
+            left,
+            (min_m, min_n),
+            sum,
+            weighted_fact,
+            inv_fact,
+            power2,
+            f,
+        );
+        Self::divide(
+            right,
+            (min_m, min_n),
+            sum,
+            weighted_fact,
+            inv_fact,
+            power2,
+            f,
+        );
     }
 }
 
