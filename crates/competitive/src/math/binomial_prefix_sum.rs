@@ -61,7 +61,7 @@ where
     where
         F: FnMut(usize, MInt<M>),
     {
-        let query = &self.query;
+        let query = self.query;
         if query.is_empty() {
             return;
         }
@@ -71,17 +71,42 @@ where
         debug_assert!(max_n < modulus);
         debug_assert!(query.iter().all(|&(m, n)| m <= n));
 
+        let mut power2 = vec![MInt::<M>::one(); max_n + 1];
+        for n in 1..=max_n {
+            power2[n] = power2[n - 1] + power2[n - 1];
+        }
+        let mut points = Vec::with_capacity(query.len());
+        for (i, &(m, n)) in query.iter().enumerate() {
+            if m == n {
+                f(i, power2[n]);
+                continue;
+            }
+            let k = m.min(n - m - 1);
+            let value = if k == 0 {
+                MInt::one()
+            } else if k * 2 + 1 == n {
+                power2[n - 1]
+            } else {
+                points.push((k, n, i));
+                continue;
+            };
+            f(i, if m == k { value } else { power2[n] - value });
+        }
+        if points.is_empty() {
+            return;
+        }
+        let max_n = points.iter().map(|&(_, n, _)| n).max().unwrap();
         let fact = MemorizedFactorial::<M>::new(max_n);
-        let inv2 = MInt::<M>::from(2usize).inv();
-        let mut cur = MInt::<M>::one();
-        crate::mo_algorithm!(
-            query,
-            (m, n),
-            |old_m| cur += fact.combination(n, old_m + 1),
-            |new_m| cur -= fact.combination(n, new_m + 1),
-            |old_n| cur = cur + cur - fact.combination(old_n, m),
-            |new_n| cur = (cur + fact.combination(new_n, m)) * inv2,
-            |i| f(i, cur),
+        Self::divide(
+            &mut points,
+            (0, 0),
+            MInt::one(),
+            &fact,
+            &power2,
+            &mut |i, value| {
+                let (m, n) = query[i];
+                f(i, if m < n - m { value } else { power2[n] - value });
+            },
         );
     }
 
@@ -89,6 +114,63 @@ where
         let mut ans = vec![MInt::zero(); self.query.len()];
         self.for_each(|i, x| ans[i] = x);
         ans
+    }
+
+    fn divide<F>(
+        points: &mut [(usize, usize, usize)],
+        (m, n): (usize, usize),
+        mut sum: MInt<M>,
+        fact: &MemorizedFactorial<M>,
+        power2: &[MInt<M>],
+        f: &mut F,
+    ) where
+        F: FnMut(usize, MInt<M>),
+    {
+        let (mut min_m, mut max_m, mut min_n, mut max_n) = (usize::MAX, 0, usize::MAX, 0);
+        for &(m, n, _) in points.iter() {
+            min_m = min_m.min(m);
+            max_m = max_m.max(m);
+            min_n = min_n.min(n);
+            max_n = max_n.max(n);
+        }
+        // S(n + 1, m) = 2 S(n, m) - C(n, m), with 1 / m! factored out.
+        let mut tail = MInt::zero();
+        for i in n..min_n {
+            tail = tail + tail + fact.fact[i] * fact.inv_fact[i - m];
+        }
+        sum = sum * power2[min_n - n] - tail * fact.inv_fact[m];
+        // S(n, m + 1) = S(n, m) + C(n, m + 1), with n! factored out.
+        let mut tail = MInt::zero();
+        for i in m + 1..=min_m {
+            tail += fact.inv_fact[i] * fact.inv_fact[min_n - i];
+        }
+        sum += tail * fact.fact[min_n];
+        if min_m == max_m && min_n == max_n {
+            for &(_, _, i) in points.iter() {
+                f(i, sum);
+            }
+            return;
+        }
+        let split_n = max_m - min_m < max_n - min_n;
+        let middle = if split_n {
+            min_n + (max_n - min_n) / 2
+        } else {
+            min_m + (max_m - min_m) / 2
+        };
+        let mut left = 0;
+        let mut right = points.len();
+        while left < right {
+            let (m, n, _) = points[left];
+            if (if split_n { n } else { m }) <= middle {
+                left += 1;
+            } else {
+                right -= 1;
+                points.swap(left, right);
+            }
+        }
+        let (left, right) = points.split_at_mut(left);
+        Self::divide(left, (min_m, min_n), sum, fact, power2, f);
+        Self::divide(right, (min_m, min_n), sum, fact, power2, f);
     }
 }
 
@@ -208,37 +290,80 @@ mod tests {
 
     #[test]
     fn test_binomial_prefix_sum() {
-        const N: usize = 30;
-        const Q: usize = 300;
-        let mut rng = Xorshift::default();
-        let mut c = vec![vec![MInt998244353::zero(); N + 1]; N + 1];
-        c[0][0] = MInt998244353::one();
-        for i in 1..=N {
-            c[i][0] = MInt998244353::one();
-            c[i][i] = MInt998244353::one();
-            for j in 1..i {
-                c[i][j] = c[i - 1][j - 1] + c[i - 1][j];
-            }
-        }
-        let mut query = vec![];
-        let mut solver = BinomialPrefixSum::<Modulo998244353>::with_capacity(Q);
-        let mut callback_solver = BinomialPrefixSum::<Modulo998244353>::with_capacity(Q);
-        for _ in 0..Q {
-            let (n, m) = rng.random((0..=N, 0..=N * 2));
-            solver.push(n, m);
-            callback_solver.push(n, m);
-            query.push((n, m));
-        }
-        let expected: Vec<MInt998244353> = query
-            .iter()
-            .map(|&(n, m)| (0..=m.min(n)).map(|i| c[n][i]).sum())
-            .collect();
-        let result = solver.solve();
-        assert_eq!(expected, result);
+        use crate::num::mint_basic::{DynModuloU32, Modulo1000000007};
 
-        let mut result = vec![MInt998244353::zero(); query.len()];
-        callback_solver.for_each(|i, x| result[i] = x);
-        assert_eq!(expected, result);
+        fn check<M>(max_n: usize)
+        where
+            M: MIntConvert<usize>,
+        {
+            let mut rng = Xorshift::default();
+            let mut row = vec![MInt::<M>::zero(); max_n + 1];
+            row[0] = MInt::one();
+            let mut query = vec![];
+            for n in 0..=max_n {
+                if n > 0 {
+                    for m in (1..=n).rev() {
+                        row[m] = row[m] + row[m - 1];
+                    }
+                }
+                let mut prefix = row[..=n].to_vec();
+                for m in 1..=n {
+                    prefix[m] = prefix[m] + prefix[m - 1];
+                }
+                let ms = if n <= 32 || n == max_n {
+                    (0..=n + 1).collect()
+                } else {
+                    vec![
+                        0,
+                        1,
+                        n / 2 - 1,
+                        n / 2,
+                        n / 2 + 1,
+                        n - 1,
+                        n,
+                        n + 1,
+                        usize::MAX,
+                        rng.random(0..=n),
+                    ]
+                };
+                for m in ms {
+                    query.push((n, m, prefix[m.min(n)]));
+                }
+            }
+            rng.shuffle(&mut query);
+            query.extend_from_within(..query.len().min(128));
+            let mut solver = BinomialPrefixSum::<M>::with_capacity(query.len());
+            let mut callback_solver = BinomialPrefixSum::<M>::with_capacity(query.len());
+            for (i, &(n, m, _)) in query.iter().enumerate() {
+                assert_eq!(solver.push(n, m), i);
+                assert_eq!(callback_solver.push(n, m), i);
+            }
+            let expected: Vec<_> = query.iter().map(|&(_, _, x)| x).collect();
+            assert_eq!(solver.solve(), expected);
+            let mut visits = vec![0; query.len()];
+            callback_solver.for_each(|i, x| {
+                assert_eq!(x, expected[i]);
+                visits[i] += 1;
+            });
+            assert!(visits.iter().all(|&count| count == 1));
+
+            for &(n, m, expected) in query.iter().step_by(128) {
+                let mut solver = BinomialPrefixSum::<M>::new();
+                solver.push(n, m);
+                assert_eq!(solver.solve(), vec![expected]);
+            }
+            assert!(BinomialPrefixSum::<M>::new().solve().is_empty());
+            let mut visits = 0;
+            BinomialPrefixSum::<M>::new().for_each(|_, _| visits += 1);
+            assert_eq!(visits, 0);
+        }
+        check::<Modulo998244353>(4096);
+        check::<Modulo1000000007>(4096);
+        for modulus in [3, 17, 97] {
+            DynModuloU32::set_mod(modulus);
+            check::<DynModuloU32>(modulus as usize - 1);
+        }
+        DynModuloU32::set_mod(1_000_000_007);
     }
 
     #[test]
@@ -264,12 +389,15 @@ mod tests {
                     BinomialPolynomialPrefixSum::<Modulo998244353, K>::with_capacity(Q);
                 let mut callback_solver =
                     BinomialPolynomialPrefixSum::<Modulo998244353, K>::with_capacity(Q);
-                for _ in 0..Q {
-                    let (n, m) = rng.random((0..=N, 0..=N * 2));
-                    let coef = if rng.gen_bool(0.1) {
-                        [MInt998244353::zero(); K]
-                    } else {
-                        std::array::from_fn(|_| rng.random(..))
+                let inputs: Vec<_> = (0..=N)
+                    .flat_map(|n| (0..=N * 2).map(move |m| (n, m)))
+                    .chain((0..Q).map(|_| rng.random((0..=N, 0..=N * 2))))
+                    .collect();
+                for (i, (n, m)) in inputs.into_iter().enumerate() {
+                    let coef = match i % 3 {
+                        0 => [MInt998244353::zero(); K],
+                        1 => [MInt998244353::one(); K],
+                        _ => std::array::from_fn(|_| rng.random(..)),
                     };
                     solver.push(n, m, coef);
                     callback_solver.push(n, m, coef);
@@ -294,6 +422,11 @@ mod tests {
                 let mut result = vec![MInt998244353::zero(); query.len()];
                 callback_solver.for_each_contribution(|i, x| result[i] += x);
                 assert_eq!(expected, result);
+                assert!(
+                    BinomialPolynomialPrefixSum::<Modulo998244353, K>::new()
+                        .solve()
+                        .is_empty()
+                );
             }};
         }
         check!(0);

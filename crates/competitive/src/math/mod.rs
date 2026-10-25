@@ -116,7 +116,7 @@ mod arbitrary_mod_binomial;
 mod array_vec;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BinomialPrefixSum", include("factorial", "MIntBase", "mo_algorithm"))
+    codesnip::entry("BinomialPrefixSum", include("factorial", "MIntBase"))
 )]
 mod binomial_prefix_sum;
 #[cfg_attr(nightly, codesnip::entry("BitMatrix", include("BitSet", "avx_helper")))]
