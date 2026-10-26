@@ -1,5 +1,5 @@
 use competitive::prelude::*;
-use competitive::{math::BinomialPrefixSum, num::montgomery::MInt998244353 as M};
+use competitive::{math::BinomialPrefixSum, num::mint_basic::MInt998244353 as M};
 
 #[verify::library_checker("prefix_sum_of_binomial_coefficient")]
 pub fn prefix_sum_of_binomial_coefficient(reader: impl Read, writer: impl Write) {

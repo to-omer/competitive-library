@@ -439,6 +439,8 @@ mod tests {
                 let expected: Vec<_> = x.iter().zip(&y).map(|(&x, &y)| x + a * y).collect();
                 let dot = x.iter().zip(&y).map(|(&x, &y)| x * y).sum();
                 assert_eq!(<$mint>::dot_product(&x, &y), dot);
+                let dot_rev = x.iter().zip(y.iter().rev()).map(|(&x, &y)| x * y).sum();
+                assert_eq!(MIntDotProduct::dot_product_rev(&x, &y), dot_rev);
                 <$mint>::add_scaled_assign(&mut x, &y, &a);
                 assert_eq!(x, expected);
             }};

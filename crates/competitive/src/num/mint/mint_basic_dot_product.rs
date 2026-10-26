@@ -17,7 +17,11 @@ macro_rules! impl_basic_mint_dot_product {
             }
             #[$inline]
             fn dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
-                $crate::impl_basic_mint_dot_product!(@dot_product $kind, $name, x, y, $basety, $upperty)
+                $crate::impl_basic_mint_dot_product!(@dot_product $kind, $name, x, y, $basety, $upperty, false)
+            }
+            #[$inline]
+            fn dot_product_rev(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
+                $crate::impl_basic_mint_dot_product!(@dot_product $kind, $name, x, y, $basety, $upperty, true)
             }
             #[inline]
             fn add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: &MInt<Self>) {
@@ -28,18 +32,25 @@ macro_rules! impl_basic_mint_dot_product {
         }
         $crate::impl_basic_mint_dot_product!(@simd_functions $kind, $name);
     };
-    (@dot_product scalar, $name:ident, $x:ident, $y:ident, $basety:ty, $upperty:ty) => {{
+    (@dot_product scalar, $name:ident, $x:ident, $y:ident, $basety:ty, $upperty:ty, $reverse:literal) => {{
         assert_eq!($x.len(), $y.len());
         let modulus = Self::get_mod() as $upperty;
         let max_value = modulus - 1;
         let block = ((<$upperty>::MAX - max_value) / (max_value * max_value).max(1)).min(64) as usize;
         let mut result = 0 as $upperty;
-        for (x, y) in $x.chunks(block).zip($y.chunks(block)) {
-            let sum: $upperty = x
-                .iter()
-                .zip(y)
-                .map(|(&x, &y)| x.inner() as $upperty * y.inner() as $upperty)
-                .sum();
+        for (i, (x, y)) in $x.chunks(block).zip($y.chunks(block)).enumerate() {
+            let start = i * block;
+            let sum: $upperty = if $reverse {
+                x.iter()
+                    .zip($y[$y.len() - start - x.len()..$y.len() - start].iter().rev())
+                    .map(|(&x, &y)| x.inner() as $upperty * y.inner() as $upperty)
+                    .sum()
+            } else {
+                x.iter()
+                    .zip(y)
+                    .map(|(&x, &y)| x.inner() as $upperty * y.inner() as $upperty)
+                    .sum()
+            };
             result += sum % modulus;
             if result >= modulus {
                 result -= modulus;
@@ -47,7 +58,7 @@ macro_rules! impl_basic_mint_dot_product {
         }
         MInt::new_unchecked(result as $basety)
     }};
-    (@dot_product simd32, $name:ident, $x:ident, $y:ident, $basety:ty, $upperty:ty) => {{
+    (@dot_product simd32, $name:ident, $x:ident, $y:ident, $basety:ty, $upperty:ty, $reverse:literal) => {{
         #[cfg(target_arch = "x86_64")]
         {
             if $x.len() >= 32 {
@@ -55,14 +66,14 @@ macro_rules! impl_basic_mint_dot_product {
                     && avx512_enabled()
                     && is_x86_feature_detected!("avx512f")
                 {
-                    return MInt::new_unchecked(unsafe { $name::dot_product_avx512($x, $y) });
+                    return MInt::new_unchecked(unsafe { $name::dot_product_avx512::<$reverse>($x, $y) });
                 }
                 if is_x86_feature_detected!("avx2") {
-                    return MInt::new_unchecked(unsafe { $name::dot_product_avx2($x, $y) });
+                    return MInt::new_unchecked(unsafe { $name::dot_product_avx2::<$reverse>($x, $y) });
                 }
             }
         }
-        $crate::impl_basic_mint_dot_product!(@dot_product scalar, $name, $x, $y, $basety, $upperty)
+        $crate::impl_basic_mint_dot_product!(@dot_product scalar, $name, $x, $y, $basety, $upperty, $reverse)
     }};
     (@matrix_product scalar, $a:ident, $b:ident) => { None };
     (@matrix_product simd32, $a:ident, $b:ident) => {{
@@ -152,7 +163,7 @@ macro_rules! impl_basic_mint_dot_product {
 
             #[allow(unsafe_op_in_unsafe_fn)]
             #[target_feature(enable = "avx2")]
-            unsafe fn dot_product_avx2(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {
+            unsafe fn dot_product_avx2<const REVERSE: bool>(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {
                 use std::arch::x86_64::*;
                 assert_eq!(x.len(), y.len());
                 let modulus = Self::get_mod() as u64;
@@ -171,6 +182,7 @@ macro_rules! impl_basic_mint_dot_product {
                 let len = x.len();
                 let x = x.as_ptr().cast::<u32>();
                 let y = y.as_ptr().cast::<u32>();
+                let order = _mm256_setr_epi32(7, 6, 5, 4, 3, 2, 1, 0);
                 let mut even = _mm256_setzero_si256();
                 let mut odd = even;
                 let mut offset = 0;
@@ -180,7 +192,11 @@ macro_rules! impl_basic_mint_dot_product {
                         let end = (offset + 8 * products).min(len / 8 * 8);
                         while offset < end {
                             let xv = _mm256_loadu_si256(x.add(offset).cast());
-                            let yv = _mm256_loadu_si256(y.add(offset).cast());
+                            let j = if REVERSE { len - offset - 8 } else { offset };
+                            let mut yv = _mm256_loadu_si256(y.add(j).cast());
+                            if REVERSE {
+                                yv = _mm256_permutevar8x32_epi32(yv, order);
+                            }
                             even = _mm256_add_epi64(even, _mm256_mul_epu32(xv, yv));
                             odd = _mm256_add_epi64(
                                 odd,
@@ -212,7 +228,8 @@ macro_rules! impl_basic_mint_dot_product {
                 }
                 for first in (offset..len).step_by(products) {
                     for i in first..(first + products).min(len) {
-                        result += *x.add(i) as u64 * *y.add(i) as u64;
+                        let j = if REVERSE { len - 1 - i } else { i };
+                        result += *x.add(i) as u64 * *y.add(j) as u64;
                     }
                     result %= modulus;
                 }
@@ -221,7 +238,7 @@ macro_rules! impl_basic_mint_dot_product {
 
             #[allow(unsafe_op_in_unsafe_fn)]
             #[target_feature(enable = "avx512f")]
-            unsafe fn dot_product_avx512(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {
+            unsafe fn dot_product_avx512<const REVERSE: bool>(x: &[MInt<Self>], y: &[MInt<Self>]) -> u32 {
                 use std::arch::x86_64::*;
                 assert_eq!(x.len(), y.len());
                 let modulus = Self::get_mod() as u64;
@@ -240,6 +257,7 @@ macro_rules! impl_basic_mint_dot_product {
                 let len = x.len();
                 let x = x.as_ptr().cast::<u32>();
                 let y = y.as_ptr().cast::<u32>();
+                let order = _mm512_setr_epi32(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
                 let mut even = _mm512_setzero_si512();
                 let mut odd = even;
                 let mut offset = 0;
@@ -249,7 +267,11 @@ macro_rules! impl_basic_mint_dot_product {
                         let end = (offset + 16 * products).min(len / 16 * 16);
                         while offset < end {
                             let xv = _mm512_loadu_si512(x.add(offset).cast());
-                            let yv = _mm512_loadu_si512(y.add(offset).cast());
+                            let j = if REVERSE { len - offset - 16 } else { offset };
+                            let mut yv = _mm512_loadu_si512(y.add(j).cast());
+                            if REVERSE {
+                                yv = _mm512_permutexvar_epi32(order, yv);
+                            }
                             even = _mm512_add_epi64(even, _mm512_mul_epu32(xv, yv));
                             odd = _mm512_add_epi64(
                                 odd,
@@ -281,7 +303,8 @@ macro_rules! impl_basic_mint_dot_product {
                 }
                 for first in (offset..len).step_by(products) {
                     for i in first..(first + products).min(len) {
-                        result += *x.add(i) as u64 * *y.add(i) as u64;
+                        let j = if REVERSE { len - 1 - i } else { i };
+                        result += *x.add(i) as u64 * *y.add(j) as u64;
                     }
                     result %= modulus;
                 }
@@ -294,3 +317,154 @@ macro_rules! impl_basic_mint_dot_product {
 impl_basic_mint_dot_product!(u32, u64; Modulo998244353, Modulo1000000007, Modulo1000000009, DynModuloU32);
 impl_basic_mint_dot_product!(u64, u128; DynModuloU64);
 impl MIntDotProduct for Modulo2 {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+
+    #[test]
+    fn test_dot_product_u32() {
+        let mut rng = Xorshift::default();
+        let lengths: Vec<_> = (0..=65)
+            .chain([
+                95, 96, 97, 127, 128, 129, 255, 256, 257, 511, 512, 513, 4095, 4096, 4097,
+            ])
+            .chain((0..16).map(|_| rng.random(66..4095)))
+            .collect();
+        for modulus in [
+            1,
+            2,
+            17,
+            998_244_353,
+            (1 << 30) - 1,
+            1 << 30,
+            (1 << 30) + 1,
+            (1 << 31) - 1,
+            1 << 31,
+            (1 << 31) + 1,
+            u32::MAX,
+        ] {
+            DynMIntU32::set_mod(modulus);
+            for &n in &lengths {
+                for maximum in [false, true] {
+                    let x: Vec<_> = (0..=n)
+                        .map(|_| {
+                            DynMIntU32::new_unchecked(if maximum {
+                                modulus - 1
+                            } else {
+                                rng.random(..modulus)
+                            })
+                        })
+                        .collect();
+                    let y: Vec<_> = (0..=n)
+                        .map(|_| {
+                            DynMIntU32::new_unchecked(if maximum {
+                                modulus - 1
+                            } else {
+                                rng.random(..modulus)
+                            })
+                        })
+                        .collect();
+                    let (x, y) = (&x[1..], &y[1..]);
+                    for reverse in [false, true] {
+                        let expected: u128 = x
+                            .iter()
+                            .enumerate()
+                            .map(|(i, x)| {
+                                x.inner() as u128
+                                    * y[if reverse { n - 1 - i } else { i }].inner() as u128
+                            })
+                            .sum();
+                        let expected = (expected % modulus as u128) as u32;
+                        let actual = if reverse {
+                            DynModuloU32::dot_product_rev(x, y)
+                        } else {
+                            DynModuloU32::dot_product(x, y)
+                        };
+                        assert_eq!(actual.inner(), expected);
+                        #[cfg(target_arch = "x86_64")]
+                        unsafe {
+                            if is_x86_feature_detected!("avx2") {
+                                let actual = if reverse {
+                                    DynModuloU32::dot_product_avx2::<true>(x, y)
+                                } else {
+                                    DynModuloU32::dot_product_avx2::<false>(x, y)
+                                };
+                                assert_eq!(actual, expected);
+                            }
+                            if is_x86_feature_detected!("avx512f") {
+                                let actual = if reverse {
+                                    DynModuloU32::dot_product_avx512::<true>(x, y)
+                                } else {
+                                    DynModuloU32::dot_product_avx512::<false>(x, y)
+                                };
+                                assert_eq!(actual, expected);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        DynMIntU32::set_mod(1_000_000_007);
+    }
+
+    #[test]
+    fn test_dot_product_u64() {
+        let mut rng = Xorshift::default();
+        let lengths: Vec<_> = (0..=65)
+            .chain([127, 128, 129, 255, 256, 257, 4095, 4096, 4097])
+            .chain((0..16).map(|_| rng.random(66..4095)))
+            .collect();
+        for modulus in [
+            1,
+            2,
+            17,
+            998_244_353,
+            u32::MAX as u64 + 1,
+            (1 << 63) - 1,
+            1 << 63,
+            u64::MAX,
+        ] {
+            DynMIntU64::set_mod(modulus);
+            for &n in &lengths {
+                for maximum in [false, true] {
+                    let x: Vec<_> = (0..=n)
+                        .map(|_| {
+                            DynMIntU64::new_unchecked(if maximum {
+                                modulus - 1
+                            } else {
+                                rng.random(..modulus)
+                            })
+                        })
+                        .collect();
+                    let y: Vec<_> = (0..=n)
+                        .map(|_| {
+                            DynMIntU64::new_unchecked(if maximum {
+                                modulus - 1
+                            } else {
+                                rng.random(..modulus)
+                            })
+                        })
+                        .collect();
+                    let (x, y) = (&x[1..], &y[1..]);
+                    for reverse in [false, true] {
+                        let modulus = modulus as u128;
+                        let expected = x.iter().enumerate().fold(0u128, |sum, (i, x)| {
+                            let product = x.inner() as u128
+                                * y[if reverse { n - 1 - i } else { i }].inner() as u128;
+                            (sum + product % modulus) % modulus
+                        });
+                        let actual = if reverse {
+                            DynModuloU64::dot_product_rev(x, y)
+                        } else {
+                            DynModuloU64::dot_product(x, y)
+                        };
+                        assert_eq!(actual.inner() as u128, expected);
+                    }
+                }
+            }
+        }
+        DynMIntU64::set_mod(1_000_000_007);
+    }
+}
