@@ -17,6 +17,32 @@ pub trait MIntDotProduct: MIntBase + Sized {
             })
     }
 
+    /// Computes the inner product of `x` and the reversed `y`.
+    fn dot_product_rev(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
+        assert_eq!(x.len(), y.len());
+        const CHUNK_SIZE: usize = if cfg!(all(
+            target_feature = "avx2",
+            not(target_feature = "avx512f")
+        )) {
+            16
+        } else {
+            8
+        };
+        let (x, x_rem) = x.as_chunks::<CHUNK_SIZE>();
+        let (y_rem, y) = y.as_rchunks::<CHUNK_SIZE>();
+        let mut accum = [MInt::new_unchecked(Self::mod_zero()); CHUNK_SIZE];
+        for (x, y) in x.iter().zip(y.iter().rev()) {
+            for i in 0..CHUNK_SIZE {
+                accum[i] += x[i] * y[CHUNK_SIZE - 1 - i];
+            }
+        }
+        let mut sum = accum.into_iter().sum();
+        for (&x, &y) in x_rem.iter().zip(y_rem.iter().rev()) {
+            sum += x * y;
+        }
+        sum
+    }
+
     fn add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: &MInt<Self>) {
         assert_eq!(x.len(), y.len());
         for (x, y) in x.iter_mut().zip(y) {

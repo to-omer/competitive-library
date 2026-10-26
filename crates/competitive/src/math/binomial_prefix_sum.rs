@@ -1,4 +1,4 @@
-use super::{MInt, MIntConvert, MemorizedFactorial, One, Zero};
+use super::{MInt, MIntConvert, MIntDotProduct, MemorizedFactorial, One, Zero};
 use std::{
     collections::HashMap,
     fmt::{self, Debug},
@@ -59,6 +59,7 @@ where
 
     pub fn for_each<F>(self, mut f: F)
     where
+        M: MIntDotProduct,
         F: FnMut(usize, MInt<M>),
     {
         let query = self.query;
@@ -105,10 +106,8 @@ where
             *value *= scale;
             scale += scale;
         }
-        Self::divide(
-            &mut points,
-            (0, 0),
-            MInt::one(),
+        Self::evaluate(
+            &points,
             &weighted_fact,
             &inv_fact,
             &power2,
@@ -119,125 +118,119 @@ where
         );
     }
 
-    pub fn solve(self) -> Vec<MInt<M>> {
+    pub fn solve(self) -> Vec<MInt<M>>
+    where
+        M: MIntDotProduct,
+    {
         let mut ans = vec![MInt::zero(); self.query.len()];
         self.for_each(|i, x| ans[i] = x);
         ans
     }
 
-    fn divide<F>(
-        points: &mut [(usize, usize, usize)],
-        (m, n): (usize, usize),
-        mut sum: MInt<M>,
+    fn evaluate<F>(
+        points: &[(usize, usize, usize)],
         weighted_fact: &[MInt<M>],
         inv_fact: &[MInt<M>],
         power2: &[MInt<M>],
         f: &mut F,
     ) where
+        M: MIntDotProduct,
         F: FnMut(usize, MInt<M>),
     {
-        let (mut min_m, mut max_m, mut min_n, mut max_n) = (usize::MAX, 0, usize::MAX, 0);
-        for &(m, n, _) in points.iter() {
-            min_m = min_m.min(m);
-            max_m = max_m.max(m);
-            min_n = min_n.min(n);
-            max_n = max_n.max(n);
-        }
-        const CHUNK_SIZE: usize = if cfg!(all(
-            target_feature = "avx2",
-            not(target_feature = "avx512f")
-        )) {
-            16
-        } else {
-            8
-        };
-        // Keep S(n, m) / 2^n; weighted_fact[i] is i! / 2^(i + 1).
-        if n < min_n {
-            let (a, a_rem) = weighted_fact[n..min_n].as_chunks::<CHUNK_SIZE>();
-            let (b, b_rem) = inv_fact[n - m..min_n - m].as_chunks::<CHUNK_SIZE>();
-            let mut accum = [MInt::zero(); CHUNK_SIZE];
-            for (a, b) in a.iter().zip(b) {
-                for j in 0..CHUNK_SIZE {
-                    accum[j] += a[j] * b[j];
-                }
+        let (_, n, _) = points[0];
+        if points.iter().all(|&(_, l, _)| l == n) {
+            let min_m = points.iter().map(|&(m, _, _)| m).min().unwrap();
+            let max_m = points.iter().map(|&(m, _, _)| m).max().unwrap();
+            let factor = (weighted_fact[n] + weighted_fact[n]) * power2[n];
+            let mut sum = M::dot_product_rev(&inv_fact[..=min_m], &inv_fact[n - min_m..=n]);
+            let mut prefix = Vec::with_capacity(max_m - min_m + 1);
+            prefix.push(sum * factor);
+            for m in min_m + 1..=max_m {
+                sum += inv_fact[m] * inv_fact[n - m];
+                prefix.push(sum * factor);
             }
-            let mut tail: MInt<M> = accum.into_iter().sum();
-            for (&a, &b) in a_rem.iter().zip(b_rem) {
-                tail += a * b;
-            }
-            sum -= tail * inv_fact[m];
-        }
-        if m < min_m {
-            // Increase m with n! / 2^n factored out.
-            let (a, a_rem) = inv_fact[m + 1..=min_m].as_chunks::<CHUNK_SIZE>();
-            let (b_rem, b) = inv_fact[min_n - min_m..min_n - m].as_rchunks::<CHUNK_SIZE>();
-            let mut accum = [MInt::zero(); CHUNK_SIZE];
-            for (a, b) in a.iter().zip(b.iter().rev()) {
-                for j in 0..CHUNK_SIZE {
-                    accum[j] += a[j] * b[CHUNK_SIZE - 1 - j];
-                }
-            }
-            let mut tail: MInt<M> = accum.into_iter().sum();
-            for (&a, &b) in a_rem.iter().zip(b_rem.iter().rev()) {
-                tail += a * b;
-            }
-            sum += (tail + tail) * weighted_fact[min_n];
-        }
-        if min_m == max_m && min_n == max_n {
-            let value = sum * power2[min_n];
-            for &(_, _, i) in points.iter() {
-                f(i, value);
+            for &(m, _, i) in points.iter() {
+                f(i, prefix[m - min_m]);
             }
             return;
         }
-        let split_n = max_m - min_m < max_n - min_n;
-        let middle = if split_n {
-            min_n + (max_n - min_n) / 2
-        } else {
-            min_m + (max_m - min_m) / 2
-        };
-        let mut left = 0;
-        let mut right = points.len();
-        while left < right {
-            while left < right {
-                let (m, n, _) = points[left];
-                if (if split_n { n } else { m }) > middle {
-                    break;
+        let max_n = weighted_fact.len() - 1;
+        let block = ((max_n as f64 / (points.len() as f64).sqrt()).round() as usize).max(1);
+        let rows = max_n / block;
+        // Store S(row * block, column * block) / 2^(row * block).
+        let mut grid = vec![MInt::<M>::zero(); (rows + 1) * (rows + 2) / 2];
+        for row in 0..=rows {
+            let n = row * block;
+            let factor = weighted_fact[n] + weighted_fact[n];
+            let base = row * (row + 1) / 2;
+            let mut sum = MInt::<M>::zero();
+            for column in 0..=row / 2 {
+                let k = column * block;
+                if column > 0 {
+                    sum += M::dot_product_rev(
+                        &inv_fact[k - block..k],
+                        &inv_fact[n - k + 1..=n - k + block],
+                    );
                 }
-                left += 1;
-            }
-            while left < right {
-                let (m, n, _) = points[right - 1];
-                if (if split_n { n } else { m }) <= middle {
-                    break;
-                }
-                right -= 1;
-            }
-            if left < right {
-                right -= 1;
-                points.swap(left, right);
-                left += 1;
+                let value = sum * factor;
+                grid[base + row - column] = MInt::one() - value;
+                grid[base + column] = value + inv_fact[k] * inv_fact[n - k] * factor;
             }
         }
-        let (left, right) = points.split_at_mut(left);
-        Self::divide(
-            left,
-            (min_m, min_n),
-            sum,
-            weighted_fact,
-            inv_fact,
-            power2,
-            f,
-        );
-        Self::divide(
-            right,
-            (min_m, min_n),
-            sum,
-            weighted_fact,
-            inv_fact,
-            power2,
-            f,
-        );
+        for &(m, n, i) in points.iter() {
+            let row = ((n + block / 2) / block).min(rows);
+            let column = (m + block / 2) / block;
+            let start = row * block;
+            let anchor = column * block;
+            let distance = n.abs_diff(start) + m.abs_diff(anchor);
+            let center = (n - 1) / 2;
+            if m.min(center - m) <= distance {
+                let factor = weighted_fact[n] + weighted_fact[n];
+                let sum = if m <= center - m {
+                    factor
+                        * (inv_fact[n] + M::dot_product_rev(&inv_fact[1..=m], &inv_fact[n - m..n]))
+                } else {
+                    let half = weighted_fact[0];
+                    let mid = n / 2;
+                    let center_value = if n % 2 == 0 {
+                        half - weighted_fact[n] * inv_fact[mid] * inv_fact[mid]
+                    } else {
+                        half
+                    };
+                    center_value
+                        - factor
+                            * M::dot_product_rev(
+                                &inv_fact[m + 1..=center],
+                                &inv_fact[n - center..n - m],
+                            )
+                };
+                f(i, sum * power2[n]);
+                continue;
+            }
+            let mut sum = grid[row * (row + 1) / 2 + column];
+            if start < n {
+                sum -= inv_fact[anchor]
+                    * M::dot_product(
+                        &weighted_fact[start..n],
+                        &inv_fact[start - anchor..n - anchor],
+                    );
+            } else if n < start {
+                sum += inv_fact[anchor]
+                    * M::dot_product(
+                        &weighted_fact[n..start],
+                        &inv_fact[n - anchor..start - anchor],
+                    );
+            }
+            let factor = weighted_fact[n] + weighted_fact[n];
+            if anchor < m {
+                sum += factor
+                    * M::dot_product_rev(&inv_fact[anchor + 1..=m], &inv_fact[n - m..n - anchor]);
+            } else if m < anchor {
+                sum -= factor
+                    * M::dot_product_rev(&inv_fact[m + 1..=anchor], &inv_fact[n - anchor..n - m]);
+            }
+            f(i, sum * power2[n]);
+        }
     }
 }
 
@@ -292,6 +285,7 @@ where
 
     pub fn for_each_contribution<F>(self, mut f: F)
     where
+        M: MIntDotProduct,
         F: FnMut(usize, MInt<M>),
     {
         let mut binom = BinomialPrefixSum::<M>::with_capacity(self.query.len() * K);
@@ -340,7 +334,10 @@ where
         });
     }
 
-    pub fn solve(self) -> Vec<MInt<M>> {
+    pub fn solve(self) -> Vec<MInt<M>>
+    where
+        M: MIntDotProduct,
+    {
         let mut ans = vec![MInt::zero(); self.query.len()];
         self.for_each_contribution(|i, x| ans[i] += x);
         ans
@@ -361,7 +358,7 @@ mod tests {
 
         fn check<M>(max_n: usize)
         where
-            M: MIntConvert<usize>,
+            M: MIntConvert<usize> + MIntDotProduct,
         {
             let mut rng = Xorshift::default();
             let mut row = vec![MInt::<M>::zero(); max_n + 1];
@@ -376,6 +373,17 @@ mod tests {
                 let mut prefix = row[..=n].to_vec();
                 for m in 1..=n {
                     prefix[m] = prefix[m] + prefix[m - 1];
+                }
+                if n <= 32 || n.is_power_of_two() || n == max_n {
+                    for first in [0, n / 4] {
+                        let mut solver = BinomialPrefixSum::<M>::new();
+                        for m in (first..=n - first).rev() {
+                            solver.push(n, m);
+                        }
+                        let expected: Vec<_> =
+                            prefix[first..=n - first].iter().rev().copied().collect();
+                        assert_eq!(solver.solve(), expected);
+                    }
                 }
                 let ms = if n <= 32 || n == max_n {
                     (0..=n + 1).collect()
@@ -415,9 +423,13 @@ mod tests {
             assert!(visits.iter().all(|&count| count == 1));
 
             for &(n, m, expected) in query.iter().step_by(128) {
-                let mut solver = BinomialPrefixSum::<M>::new();
-                solver.push(n, m);
-                assert_eq!(solver.solve(), vec![expected]);
+                for count in [1, 3] {
+                    let mut solver = BinomialPrefixSum::<M>::new();
+                    for _ in 0..count {
+                        solver.push(n, m);
+                    }
+                    assert_eq!(solver.solve(), vec![expected; count]);
+                }
             }
             assert!(BinomialPrefixSum::<M>::new().solve().is_empty());
             let mut visits = 0;
