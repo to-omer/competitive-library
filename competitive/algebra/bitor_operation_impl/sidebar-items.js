@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["impl_bitor_identity",1]],"struct":["BitOrOperation"],"trait":["BitOrIdentity"]};

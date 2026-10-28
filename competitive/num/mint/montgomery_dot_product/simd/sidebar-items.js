@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["add_scaled_avx2","add_scaled_avx512"]};
+window.SIDEBAR_ITEMS = {"fn":["add_scaled_avx2","add_scaled_avx512","dot_product_avx2","dot_product_avx512"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["convex_convolution_witnesses","min_plus_convolution_near_convex_scan","validate_witness"]};

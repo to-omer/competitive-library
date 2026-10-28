@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_CACHED_RUNS","SMALL_PAIR_COUNT"],"enum":["Algorithm"],"fn":["analyze","analyze_with_infinity","min_plus_convolution","scaled_work","select_algorithm"],"struct":["InputCharacteristics"]};

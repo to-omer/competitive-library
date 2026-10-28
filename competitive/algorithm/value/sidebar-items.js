@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["GameValueNode"],"struct":["GameValue","GameValueSwitches"]};

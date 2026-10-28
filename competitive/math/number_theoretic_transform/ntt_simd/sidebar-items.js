@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["normalize_scalar"],"mod":["convolution_avx2","ntt_avx2","ntt_avx512"]};
+window.SIDEBAR_ITEMS = {"fn":["convolve_blocks_avx2","intt_batch_avx2","intt_batch_avx512","inverse_transform_blocks_avx2","multiply_blocks_avx2","normalize_scalar","ntt_batch_avx2","ntt_batch_avx512","pointwise_multiply_add_avx2","pointwise_multiply_add_avx512","pointwise_multiply_avx2","pointwise_multiply_avx512","transform_blocks_avx2"],"mod":["convolution_avx2","ntt_avx2","ntt_avx512"]};

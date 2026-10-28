@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["impl_basic_mint_dot_product",1]]};

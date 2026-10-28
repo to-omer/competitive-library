@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["dot_product","dot_product_scalar"],"mod":["simd"]};

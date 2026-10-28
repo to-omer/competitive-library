@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algorithm/horn_satisfiability.rs`."><title>horn_satisfiability.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-009149e2.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (12433c307 2026-10-24)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algorithm/horn_satisfiability.rs`."><title>horn_satisfiability.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-009149e2.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (41089d07a 2026-10-27)" data-channel="nightly" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-1814ead3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -124,44 +124,80 @@
 <a href=#70 id=70 data-nosnippet>70</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <a href=#71 id=71 data-nosnippet>71</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
 <a href=#72 id=72 data-nosnippet>72</a>
-<a href=#73 id=73 data-nosnippet>73</a>    <span class="attr">#[test]
-<a href=#74 id=74 data-nosnippet>74</a>    </span><span class="kw">fn </span>test_horn_satisfiability() {
-<a href=#75 id=75 data-nosnippet>75</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#76 id=76 data-nosnippet>76</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#77 id=77 data-nosnippet>77</a>            <span class="kw">let </span>n = rng.random(<span class="number">1</span>..=<span class="number">10</span>);
-<a href=#78 id=78 data-nosnippet>78</a>            <span class="kw">let </span><span class="kw-2">mut </span>clauses = <span class="macro">vec!</span>[];
-<a href=#79 id=79 data-nosnippet>79</a>            <span class="kw">let </span><span class="kw-2">mut </span>hs = HornSatisfiability::new(n);
-<a href=#80 id=80 data-nosnippet>80</a>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#81 id=81 data-nosnippet>81</a>                <span class="kw">let </span>prob = rng.randf();
-<a href=#82 id=82 data-nosnippet>82</a>                <span class="kw">let </span><span class="kw-2">mut </span>clause: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).filter(|<span class="kw">_</span>| rng.randf() &lt; prob).collect();
-<a href=#83 id=83 data-nosnippet>83</a>                <span class="kw">let </span>cand_q: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).filter(|x| !clause.contains(x)).collect();
-<a href=#84 id=84 data-nosnippet>84</a>                <span class="kw">let </span>q = <span class="kw">if </span>clause.len() == n {
-<a href=#85 id=85 data-nosnippet>85</a>                    clause.remove(rng.random(<span class="number">0</span>..n))
-<a href=#86 id=86 data-nosnippet>86</a>                } <span class="kw">else </span>{
-<a href=#87 id=87 data-nosnippet>87</a>                    cand_q[rng.random(<span class="number">0</span>..cand_q.len())]
-<a href=#88 id=88 data-nosnippet>88</a>                };
-<a href=#89 id=89 data-nosnippet>89</a>                <span class="kw">let </span>f = rng.gen_bool(<span class="number">0.5</span>);
-<a href=#90 id=90 data-nosnippet>90</a>                hs.add_clause(clause.iter().cloned(), q, f);
-<a href=#91 id=91 data-nosnippet>91</a>                clauses.push((clause, q, f));
-<a href=#92 id=92 data-nosnippet>92</a>
-<a href=#93 id=93 data-nosnippet>93</a>                <span class="kw">let </span>check = |lits: <span class="kw-2">&amp;</span>Vec&lt;bool&gt;| -&gt; bool {
-<a href=#94 id=94 data-nosnippet>94</a>                    <span class="kw">for </span>(p, q, f) <span class="kw">in </span><span class="kw-2">&amp;</span>clauses {
-<a href=#95 id=95 data-nosnippet>95</a>                        <span class="kw">if </span>p.iter().all(|<span class="kw-2">&amp;</span>p| lits[p]) &amp;&amp; lits[<span class="kw-2">*</span>q] != <span class="kw-2">*</span>f {
-<a href=#96 id=96 data-nosnippet>96</a>                            <span class="kw">return </span><span class="bool-val">false</span>;
-<a href=#97 id=97 data-nosnippet>97</a>                        }
-<a href=#98 id=98 data-nosnippet>98</a>                    }
-<a href=#99 id=99 data-nosnippet>99</a>                    <span class="bool-val">true
-<a href=#100 id=100 data-nosnippet>100</a>                </span>};
-<a href=#101 id=101 data-nosnippet>101</a>                <span class="kw">let </span>res = hs.solve();
-<a href=#102 id=102 data-nosnippet>102</a>                <span class="kw">let </span>satisfiable = (<span class="number">0</span>..<span class="number">1 </span>&lt;&lt; n)
-<a href=#103 id=103 data-nosnippet>103</a>                    .map(|bits| (<span class="number">0</span>..n).map(|i| (bits &amp; (<span class="number">1 </span>&lt;&lt; i)) != <span class="number">0</span>).collect())
-<a href=#104 id=104 data-nosnippet>104</a>                    .any(|lits| check(<span class="kw-2">&amp;</span>lits));
-<a href=#105 id=105 data-nosnippet>105</a>                <span class="macro">assert_eq!</span>(res.is_some(), satisfiable);
-<a href=#106 id=106 data-nosnippet>106</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>(lits) = res {
-<a href=#107 id=107 data-nosnippet>107</a>                    <span class="macro">assert!</span>(check(<span class="kw-2">&amp;</span>lits));
-<a href=#108 id=108 data-nosnippet>108</a>                }
-<a href=#109 id=109 data-nosnippet>109</a>            }
-<a href=#110 id=110 data-nosnippet>110</a>        }
-<a href=#111 id=111 data-nosnippet>111</a>    }
-<a href=#112 id=112 data-nosnippet>112</a>}
+<a href=#73 id=73 data-nosnippet>73</a>    <span class="kw">fn </span>check(solver: <span class="kw-2">&amp;</span>HornSatisfiability, n: usize, clauses: <span class="kw-2">&amp;</span>[(Vec&lt;usize&gt;, usize, bool)]) {
+<a href=#74 id=74 data-nosnippet>74</a>        <span class="kw">let </span><span class="kw-2">mut </span>least = <span class="prelude-val">None</span>;
+<a href=#75 id=75 data-nosnippet>75</a>        <span class="kw">for </span>bits <span class="kw">in </span><span class="number">0</span>..<span class="number">1usize </span>&lt;&lt; n {
+<a href=#76 id=76 data-nosnippet>76</a>            <span class="kw">if </span>clauses.iter().all(|(p, q, f)| {
+<a href=#77 id=77 data-nosnippet>77</a>                !p.iter().all(|<span class="kw-2">&amp;</span>v| bits &amp; (<span class="number">1 </span>&lt;&lt; v) != <span class="number">0</span>) || (bits &amp; (<span class="number">1 </span>&lt;&lt; q) != <span class="number">0</span>) == <span class="kw-2">*</span>f
+<a href=#78 id=78 data-nosnippet>78</a>            }) {
+<a href=#79 id=79 data-nosnippet>79</a>                least = <span class="prelude-val">Some</span>(least.unwrap_or(bits) &amp; bits);
+<a href=#80 id=80 data-nosnippet>80</a>            }
+<a href=#81 id=81 data-nosnippet>81</a>        }
+<a href=#82 id=82 data-nosnippet>82</a>        <span class="macro">assert_eq!</span>(solver.is_satisfiable(), least.is_some());
+<a href=#83 id=83 data-nosnippet>83</a>        <span class="kw">let </span>expected = least.map(|bits| (<span class="number">0</span>..n).map(|v| bits &amp; (<span class="number">1 </span>&lt;&lt; v) != <span class="number">0</span>).collect());
+<a href=#84 id=84 data-nosnippet>84</a>        <span class="macro">assert_eq!</span>(solver.solve(), expected);
+<a href=#85 id=85 data-nosnippet>85</a>    }
+<a href=#86 id=86 data-nosnippet>86</a>
+<a href=#87 id=87 data-nosnippet>87</a>    <span class="attr">#[test]
+<a href=#88 id=88 data-nosnippet>88</a>    </span><span class="kw">fn </span>test_horn_satisfiability() {
+<a href=#89 id=89 data-nosnippet>89</a>        <span class="kw">for </span>n <span class="kw">in </span><span class="number">0</span>..=<span class="number">4 </span>{
+<a href=#90 id=90 data-nosnippet>90</a>            <span class="kw">let </span><span class="kw-2">mut </span>candidates = Vec::new();
+<a href=#91 id=91 data-nosnippet>91</a>            <span class="kw">for </span>q <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#92 id=92 data-nosnippet>92</a>                <span class="kw">for </span>f <span class="kw">in </span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>] {
+<a href=#93 id=93 data-nosnippet>93</a>                    candidates.push((<span class="macro">vec!</span>[], q, f));
+<a href=#94 id=94 data-nosnippet>94</a>                    <span class="kw">for </span>a <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#95 id=95 data-nosnippet>95</a>                        candidates.push((<span class="macro">vec!</span>[a], q, f));
+<a href=#96 id=96 data-nosnippet>96</a>                        <span class="kw">for </span>b <span class="kw">in </span><span class="number">0</span>..n {
+<a href=#97 id=97 data-nosnippet>97</a>                            candidates.push((<span class="macro">vec!</span>[a, b], q, f));
+<a href=#98 id=98 data-nosnippet>98</a>                        }
+<a href=#99 id=99 data-nosnippet>99</a>                    }
+<a href=#100 id=100 data-nosnippet>100</a>                }
+<a href=#101 id=101 data-nosnippet>101</a>            }
+<a href=#102 id=102 data-nosnippet>102</a>            check(<span class="kw-2">&amp;</span>HornSatisfiability::new(n), n, <span class="kw-2">&amp;</span>[]);
+<a href=#103 id=103 data-nosnippet>103</a>            <span class="kw">for </span>first <span class="kw">in </span><span class="kw-2">&amp;</span>candidates {
+<a href=#104 id=104 data-nosnippet>104</a>                <span class="kw">for </span>second <span class="kw">in </span><span class="kw-2">&amp;</span>candidates {
+<a href=#105 id=105 data-nosnippet>105</a>                    <span class="kw">let </span>clauses = [first.clone(), second.clone()];
+<a href=#106 id=106 data-nosnippet>106</a>                    <span class="kw">let </span><span class="kw-2">mut </span>solver = HornSatisfiability::new(n);
+<a href=#107 id=107 data-nosnippet>107</a>                    <span class="kw">for </span>(i, (p, q, f)) <span class="kw">in </span>clauses.iter().enumerate() {
+<a href=#108 id=108 data-nosnippet>108</a>                        solver.add_clause(p.iter().copied(), <span class="kw-2">*</span>q, <span class="kw-2">*</span>f);
+<a href=#109 id=109 data-nosnippet>109</a>                        check(<span class="kw-2">&amp;</span>solver, n, <span class="kw-2">&amp;</span>clauses[..=i]);
+<a href=#110 id=110 data-nosnippet>110</a>                    }
+<a href=#111 id=111 data-nosnippet>111</a>                }
+<a href=#112 id=112 data-nosnippet>112</a>            }
+<a href=#113 id=113 data-nosnippet>113</a>        }
+<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">let </span>cycle = [
+<a href=#115 id=115 data-nosnippet>115</a>            (<span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">0</span>], <span class="number">1</span>, <span class="bool-val">true</span>),
+<a href=#116 id=116 data-nosnippet>116</a>            (<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>], <span class="number">2</span>, <span class="bool-val">true</span>),
+<a href=#117 id=117 data-nosnippet>117</a>            (<span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">2</span>], <span class="number">0</span>, <span class="bool-val">true</span>),
+<a href=#118 id=118 data-nosnippet>118</a>            (<span class="macro">vec!</span>[], <span class="number">0</span>, <span class="bool-val">true</span>),
+<a href=#119 id=119 data-nosnippet>119</a>            (<span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>], <span class="number">2</span>, <span class="bool-val">false</span>),
+<a href=#120 id=120 data-nosnippet>120</a>        ];
+<a href=#121 id=121 data-nosnippet>121</a>        <span class="kw">let </span><span class="kw-2">mut </span>solver = HornSatisfiability::new(<span class="number">3</span>);
+<a href=#122 id=122 data-nosnippet>122</a>        <span class="kw">for </span>(i, (p, q, f)) <span class="kw">in </span>cycle.iter().enumerate() {
+<a href=#123 id=123 data-nosnippet>123</a>            solver.add_clause(p.iter().copied(), <span class="kw-2">*</span>q, <span class="kw-2">*</span>f);
+<a href=#124 id=124 data-nosnippet>124</a>            check(<span class="kw-2">&amp;</span>solver, <span class="number">3</span>, <span class="kw-2">&amp;</span>cycle[..=i]);
+<a href=#125 id=125 data-nosnippet>125</a>        }
+<a href=#126 id=126 data-nosnippet>126</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#127 id=127 data-nosnippet>127</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#128 id=128 data-nosnippet>128</a>            <span class="kw">let </span>n = rng.random(<span class="number">1</span>..=<span class="number">10</span>);
+<a href=#129 id=129 data-nosnippet>129</a>            <span class="kw">let </span><span class="kw-2">mut </span>clauses = <span class="macro">vec!</span>[];
+<a href=#130 id=130 data-nosnippet>130</a>            <span class="kw">let </span><span class="kw-2">mut </span>hs = HornSatisfiability::new(n);
+<a href=#131 id=131 data-nosnippet>131</a>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#132 id=132 data-nosnippet>132</a>                <span class="kw">let </span>prob = rng.randf();
+<a href=#133 id=133 data-nosnippet>133</a>                <span class="kw">let </span><span class="kw-2">mut </span>clause: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).filter(|<span class="kw">_</span>| rng.randf() &lt; prob).collect();
+<a href=#134 id=134 data-nosnippet>134</a>                <span class="kw">let </span>cand_q: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..n).filter(|x| !clause.contains(x)).collect();
+<a href=#135 id=135 data-nosnippet>135</a>                <span class="kw">let </span>q = <span class="kw">if </span>clause.len() == n {
+<a href=#136 id=136 data-nosnippet>136</a>                    clause.remove(rng.random(<span class="number">0</span>..n))
+<a href=#137 id=137 data-nosnippet>137</a>                } <span class="kw">else </span>{
+<a href=#138 id=138 data-nosnippet>138</a>                    cand_q[rng.random(<span class="number">0</span>..cand_q.len())]
+<a href=#139 id=139 data-nosnippet>139</a>                };
+<a href=#140 id=140 data-nosnippet>140</a>                <span class="kw">let </span>f = rng.gen_bool(<span class="number">0.5</span>);
+<a href=#141 id=141 data-nosnippet>141</a>                hs.add_clause(clause.iter().cloned(), q, f);
+<a href=#142 id=142 data-nosnippet>142</a>                clauses.push((clause, q, f));
+<a href=#143 id=143 data-nosnippet>143</a>
+<a href=#144 id=144 data-nosnippet>144</a>                check(<span class="kw-2">&amp;</span>hs, n, <span class="kw-2">&amp;</span>clauses);
+<a href=#145 id=145 data-nosnippet>145</a>            }
+<a href=#146 id=146 data-nosnippet>146</a>        }
+<a href=#147 id=147 data-nosnippet>147</a>    }
+<a href=#148 id=148 data-nosnippet>148</a>}
 </code></pre></div></section></main></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["gf2_63","mersenne61"]};
+window.SIDEBAR_ITEMS = {"enum":["Gf2_63","Mersenne61"],"mod":["gf2_63","mersenne61"]};
