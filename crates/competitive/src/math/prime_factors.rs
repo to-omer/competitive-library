@@ -51,14 +51,13 @@ impl MontgomeryReduction64 {
         }
         Self { modulus, inverse }
     }
-}
-
-impl MontgomeryReduction64 {
+    #[cfg_attr(verus_keep_ghost, verifier::external)]
     fn sub(&self, lhs: u64, rhs: u64) -> u64 {
         let (value, borrow) = lhs.overflowing_sub(rhs);
         value.wrapping_add((borrow as u64).wrapping_neg() & self.modulus)
     }
 
+    #[cfg_attr(verus_keep_ghost, verifier::external)]
     fn mul(&self, lhs: u64, rhs: u64) -> u64 {
         let product = lhs as u128 * rhs as u128;
         let (value, borrow) = ((product >> 64) as u64).overflowing_sub(

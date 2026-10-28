@@ -164,30 +164,34 @@ mod verification {
         kani::cover!(a == 3 && b == 0);
         kani::cover!(a == b);
     }
+}
 
-    #[kani::proof]
-    #[kani::unwind(258)]
-    fn proof_full_key_domain() {
-        let key: u8 = kani::any();
-        let query: u8 = kani::any();
-        // The valid full state reached by inserting keys in ascending order.
-        let mut set = SparseSet::<u8> {
-            data: (0..=u8::MAX).collect(),
-            index: (0..=u8::MAX).collect(),
-        };
-        kani::assert(
-            set.contains(key) && !set.insert(key) && set.len() == 256,
-            "In the full u8 set with ascending dense order, every key is present and reinsertion is rejected, including the index that equals the absent marker",
-        );
-        kani::assert(
-            set.remove(key) && set.len() == 255 && set.contains(query) == (query != key),
-            "Removing any key from the full u8 domain preserves every other key and removes exactly one element",
-        );
-        kani::assert(
-            set.insert(key) && set.len() == 256 && set.contains(query),
-            "Reinserting the removed key restores membership of every u8 key even when the last dense position uses the absent marker",
-        );
-        kani::cover!(key == u8::MAX);
-        kani::cover!(key == 0 && query == u8::MAX);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_full_key_domain() {
+        for removed in 0..=u8::MAX {
+            let mut set = SparseSet::<u8>::new(256);
+            for key in 0..=u8::MAX {
+                assert!(set.insert(key));
+            }
+            assert_eq!(set.len(), 256);
+            for key in 0..=u8::MAX {
+                assert!(set.contains(key));
+                assert!(!set.insert(key));
+            }
+            assert!(set.remove(removed));
+            assert_eq!(set.len(), 255);
+            for key in 0..=u8::MAX {
+                assert_eq!(set.contains(key), key != removed);
+            }
+            assert!(set.insert(removed));
+            assert_eq!(set.len(), 256);
+            for key in 0..=u8::MAX {
+                assert!(set.contains(key));
+            }
+        }
     }
 }

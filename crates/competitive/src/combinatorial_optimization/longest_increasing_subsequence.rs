@@ -43,45 +43,30 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
+#[cfg(test)]
+mod tests {
     use super::*;
+    use crate::tools::testutil::exhaustive_sequences;
 
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_strictly_increasing_subsequence() {
-        let values: [u8; 5] = kani::any();
-        let len: usize = kani::any();
-        kani::assume(len <= values.len());
-        let mut sequence = LongestIncreasingSubsequence::new();
-        let mut ending = [0; 5];
-        let mut longest = 0;
-        kani::assert(
-            sequence.longest_length() == 0,
-            "The empty input has longest strictly increasing subsequence length zero",
-        );
-        for i in 0..len {
-            ending[i] = 1;
-            for j in 0..i {
-                if values[j] < values[i] {
-                    ending[i] = ending[i].max(ending[j] + 1);
+    #[test]
+    fn test_longest_increasing_subsequence() {
+        for values in exhaustive_sequences(0..=4, 0..=5) {
+            let mut sequence = LongestIncreasingSubsequence::new();
+            let mut ending = vec![0; values.len()];
+            let mut longest = 0;
+            assert_eq!(sequence.longest_length(), 0);
+            for (i, &value) in values.iter().enumerate() {
+                ending[i] = 1;
+                for j in 0..i {
+                    if values[j] < value {
+                        ending[i] = ending[i].max(ending[j] + 1);
+                    }
                 }
+                longest = longest.max(ending[i]);
+                sequence.insert(value);
+                assert_eq!(sequence.longest_length(), longest);
+                assert!(sequence.dp.windows(2).all(|pair| pair[0] < pair[1]));
             }
-            longest = longest.max(ending[i]);
-            sequence.insert(values[i]);
         }
-        kani::assert(
-            sequence.longest_length() == longest,
-            "For any sequence of zero to five arbitrary u8 values, the reported length equals independent quadratic subsequence DP; equal values cannot extend a subsequence",
-        );
-        for j in 1..sequence.dp.len() {
-            kani::assert(
-                sequence.dp[j - 1] < sequence.dp[j],
-                "The stored minimum tails are strictly increasing for every input of up to five u8 values",
-            );
-        }
-        kani::cover!(len == 0);
-        kani::cover!(len == 5 && longest == 5);
-        kani::cover!(len == 5 && values[0] == u8::MAX && longest == 1);
     }
 }

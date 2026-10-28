@@ -1108,63 +1108,6 @@ mod verification {
         kani::cover!(parsed && words[0] == 1 << 63);
         kani::cover!(!parsed);
     }
-
-    macro_rules! proof_shift {
-        ($name:ident, $left:expr, $or:expr, $operation:literal) => {
-            #[kani::proof]
-            // Nine words cross both the 64-bit word and 512-bit allocation-block boundaries.
-            #[kani::unwind(10)]
-            fn $name() {
-                let mut words: [u64; 9] = kani::any();
-                words[8] &= 1;
-                let mut set = BitSet::new(513);
-                for (to, &from) in set.words_mut().iter_mut().zip(&words) {
-                    *to = from;
-                }
-                let shift: usize = kani::any();
-                let index: usize = kani::any();
-                kani::assume(index < 1024);
-                if $left {
-                    set.shift_left::<$or>(shift);
-                } else {
-                    set.shift_right::<$or>(shift);
-                }
-                let shifted = if $left {
-                    index < 513
-                        && index >= shift
-                        && words[(index - shift) / 64] >> ((index - shift) % 64) & 1 != 0
-                } else {
-                    shift < 513
-                        && index < 513 - shift
-                        && words[(index + shift) / 64] >> ((index + shift) % 64) & 1 != 0
-                };
-                let original = index < 513 && words[index / 64] >> (index % 64) & 1 != 0;
-                let actual = set.bits[index / 512].0[index / 64 % 8] >> (index % 64) & 1 != 0;
-                kani::assert(
-                    actual == (shifted || ($or && original)),
-                    concat!(
-                        "For all 513-bit sets and every usize shift, ",
-                        $operation,
-                        " matches per-bit translation, discards out-of-range bits, and keeps all padding bits zero; this covers scalar paths only",
-                    ),
-                );
-                kani::cover!(shift == 0);
-                kani::cover!(shift == 64);
-                kani::cover!(shift == 512);
-                kani::cover!(shift == usize::MAX);
-            }
-        };
-    }
-
-    proof_shift!(proof_shift_left, true, false, "left shift");
-    proof_shift!(proof_shift_left_or, true, true, "left shift OR assignment");
-    proof_shift!(proof_shift_right, false, false, "right shift");
-    proof_shift!(
-        proof_shift_right_or,
-        false,
-        true,
-        "right shift OR assignment"
-    );
 }
 
 #[cfg(test)]
@@ -1431,7 +1374,7 @@ mod tests {
             let model = random_model(&mut rng, size);
             for shift in sample_usize(&mut rng, 16, 0..=size + 512, 10)
                 .into_iter()
-                .chain([size, size + 1])
+                .chain([size, size + 1, usize::MAX])
             {
                 let mut expected_left = vec![false; size];
                 let mut expected_right = vec![false; size];

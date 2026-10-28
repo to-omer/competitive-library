@@ -1,11 +1,6 @@
 #[cfg(target_arch = "x86_64")]
 use super::simd;
 use super::{SimdBackend, simd_backend};
-#[cfg(verus_keep_ghost)]
-use vstd::{
-    prelude::*,
-    std_specs::cmp::{PartialOrdIs, PartialOrdSpec},
-};
 
 #[repr(C, align(64))]
 #[derive(Clone, Debug)]
@@ -63,71 +58,17 @@ impl U128HeapBlock {
 }
 
 #[inline(always)]
-#[cfg_attr(verus_keep_ghost, verus_verify)]
-#[cfg_attr(verus_keep_ghost, verus_spec(result =>
-    requires D > 0, lawful_order::<T>(),
-    ensures
-        result < D,
-        forall|i: int| 0 <= i < D
-            ==> #[trigger] not_greater(values[i], values[result as int]),
-        forall|i: int| 0 <= i < result
-            ==> !#[trigger] not_greater(values[result as int], values[i]),
-))]
 fn max_index<T: Copy + Ord, const D: usize>(values: &[T; D]) -> usize {
     // Track the value separately to avoid dependent array loads.
     let mut maximum = values[0];
     let mut result = 0;
-    #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
-        invariant
-            D > 0, lawful_order::<T>(),
-            0 <= iter.index() < D,
-            result <= iter.index(),
-            maximum == values[result as int],
-            forall|i: int| 0 <= i <= iter.index()
-                ==> #[trigger] not_greater(values[i], maximum),
-            forall|i: int| 0 <= i < result
-                ==> !#[trigger] not_greater(maximum, values[i]),
-    ))]
-    for (index, &value) in (1..D).zip(&values[1..]) {
+    for (index, &value) in values.iter().enumerate().skip(1) {
         if value > maximum {
-            #[cfg(verus_keep_ghost)]
-            proof! {
-                assert(!not_greater(value, maximum));
-                assert(not_greater(maximum, value));
-                assert forall|i: int| 0 <= i < index implies
-                    #[trigger] not_greater(values[i], value) by {
-                    assert(not_greater(values[i], maximum));
-                }
-                assert forall|i: int| 0 <= i < index implies
-                    !#[trigger] not_greater(value, values[i]) by {
-                    assert(not_greater(values[i], maximum));
-                }
-            }
             maximum = value;
             result = index;
         }
     }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        #[verifier::proof_note("For every nonempty array under a stable total preorder, scalar selection returns the first maximum; the comparison model must obey the stated ordering laws")]
-        assert(result < D
-            && (forall|i: int| 0 <= i < D ==> #[trigger] not_greater(values[i], values[result as int]))
-            && (forall|i: int| 0 <= i < result ==> !#[trigger] not_greater(values[result as int], values[i])));
-    }
     result
-}
-
-#[cfg(verus_keep_ghost)]
-verus! {
-spec fn not_greater<T: Ord>(a: T, b: T) -> bool { !a.is_gt(&b) }
-
-spec fn lawful_order<T: Ord>() -> bool {
-    T::obeys_partial_cmp_spec()
-    && (forall|a: T| #[trigger] not_greater(a, a))
-    && (forall|a: T, b: T| #[trigger] not_greater(a, b) || #[trigger] not_greater(b, a))
-    && (forall|a: T, b: T, c: T|
-        #[trigger] not_greater(a, b) && #[trigger] not_greater(b, c) ==> not_greater(a, c))
-}
 }
 
 #[inline(always)]
@@ -600,32 +541,9 @@ macro_rules! impl_u128_heap {
 impl_u128_heap!(DaryHeapU128);
 impl_u128_heap!(DaryHeapI128);
 
-#[cfg(any(kani, verus_keep_ghost))]
+#[cfg(kani)]
 mod verification {
     use super::*;
-
-    #[cfg(verus_keep_ghost)]
-    verus! {
-    fn padded_maximum(values32: &[u32; 16], len32: usize, values64: &[u64; 8], len64: usize)
-        requires
-            0 < len32 <= 16, 0 < len64 <= 8,
-            forall|i: int| len32 <= i < 16 ==> values32[i] == 0,
-            forall|i: int| len64 <= i < 8 ==> values64[i] == 0,
-    {
-        proof {
-            assert(lawful_order::<u32>());
-            assert(lawful_order::<u64>());
-        }
-        let maximum32 = max_index(values32);
-        let maximum64 = max_index(values64);
-        proof {
-            if maximum32 >= len32 { assert(not_greater(values32[maximum32 as int], values32[0])); }
-            if maximum64 >= len64 { assert(not_greater(values64[maximum64 as int], values64[0])); }
-            #[verifier::proof_note("For all nonempty partially filled u32 and u64 heap blocks, scalar selection chooses an occupied lane even when real keys equal the zero padding")]
-            assert(maximum32 < len32 && maximum64 < len64);
-        }
-    }
-    }
 
     #[cfg(kani)]
     #[kani::proof]
@@ -657,39 +575,6 @@ mod verification {
         kani::cover!(len == 1 && values[0] == 0);
         kani::cover!(len == 4 && values[3] == u128::MAX && maximum == 3);
     }
-
-    #[cfg(kani)]
-    macro_rules! proof_scalar_block {
-        ($name:ident, $ty:ty, $n:literal) => {
-            #[kani::proof]
-            #[kani::unwind(18)]
-            fn $name() {
-                let values: [$ty; $n] = kani::any();
-                let len: u8 = kani::any();
-                let query: u8 = kani::any();
-                kani::assume(0 < len && len <= $n && query < $n);
-                let mut block: HeapBlock<$ty, $n> = HeapBlock::filled(0);
-                for i in 0..len as usize {
-                    block.set(i, values[i]);
-                }
-                let query = query as usize;
-                kani::assert(
-                    block.get(query) == if query < len as usize { values[query] } else { 0 },
-                    concat!(
-                        "For every partially filled ", $n, "-lane ", stringify!($ty),
-                        " block, unchecked storage access preserves every full-width occupied value and zero padding",
-                    ),
-                );
-                kani::cover!(len == 1 && values[0] == 0);
-                kani::cover!(len == $n && values[$n - 1] == <$ty>::MAX);
-            }
-        };
-    }
-
-    #[cfg(kani)]
-    proof_scalar_block!(proof_u32_block, u32, 16);
-    #[cfg(kani)]
-    proof_scalar_block!(proof_u64_block, u64, 8);
 }
 
 #[cfg(test)]

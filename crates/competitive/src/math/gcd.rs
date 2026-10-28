@@ -10,11 +10,12 @@ use vstd::{
 #[cfg_attr(verus_keep_ghost, verus_verify)]
 #[cfg_attr(verus_keep_ghost, verus_spec(result =>
     ensures
-        (result == 0) == (original_a == 0 && original_b == 0),
-        forall|d: int| #![trigger original_a as int % d] d > 0 ==> ((original_a as int % d == 0 && original_b as int % d == 0) == (result as int % d == 0)),
+        (result == 0) == (a == 0 && b == 0),
+        forall|d: int| #![trigger a as int % d] d > 0 ==> ((a as int % d == 0 && b as int % d == 0) == (result as int % d == 0)),
 ))]
-pub fn gcd_loop(original_a: u64, original_b: u64) -> u64 {
-    let (mut a, mut b) = (original_a, original_b);
+pub fn gcd_loop(mut a: u64, mut b: u64) -> u64 {
+    #[cfg(verus_keep_ghost)]
+    proof_decl! { let ghost original_a = a; let ghost original_b = b; }
     #[cfg_attr(verus_keep_ghost, verus_spec(
         invariant
             (a == 0 && b == 0) == (original_a == 0 && original_b == 0),
@@ -56,146 +57,33 @@ pub fn gcd_loop(original_a: u64, original_b: u64) -> u64 {
 
 #[codesnip::entry]
 /// binary gcd
-#[cfg_attr(verus_keep_ghost, verus_verify)]
-#[cfg_attr(verus_keep_ghost, verus_spec(result =>
-    ensures
-        (result == 0) == (original_a == 0 && original_b == 0),
-        forall|d: int| #![trigger original_a as int % d] d > 0 ==>
-            ((original_a as int % d == 0 && original_b as int % d == 0) == (result as int % d == 0)),
-))]
-pub fn gcd(original_a: u64, original_b: u64) -> u64 {
-    let (mut a, mut b) = (original_a, original_b);
+pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     if a == 0 {
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            assert forall|d: int| d > 0 implies #[trigger] (0int % d) == 0 by { lemma_small_mod(0, d as nat); }
-        }
         return b;
     }
     if b == 0 {
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            assert forall|d: int| d > 0 implies #[trigger] (0int % d) == 0 by { lemma_small_mod(0, d as nat); }
-        }
         return a;
     }
     let u = a.trailing_zeros();
     let v = b.trailing_zeros();
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        axiom_u64_trailing_zeros(a);
-        axiom_u64_trailing_zeros(b);
-    }
     a >>= u;
     b >>= v;
-    let k = u.min(v);
-    #[cfg(verus_keep_ghost)]
-    proof_decl! { let ghost scale = pow2(k as nat) as int; }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        factor_twos(original_a, k);
-        factor_twos(original_b, k);
-        lemma_pow2_pos(k as nat);
-        let a0 = original_a >> k;
-        let b0 = original_b >> k;
-        assert(a & 1 == 1 && b & 1 == 1);
-        assert(a > 0 && b > 0) by(bit_vector) requires a & 1 == 1, b & 1 == 1;
-        assert(a <= a0 && b <= b0) by(bit_vector)
-            requires a == original_a >> u, b == original_b >> v, k <= u < 64, k <= v < 64,
-                a0 == original_a >> k, b0 == original_b >> k;
-        assert((a as int) * scale <= original_a && (b as int) * scale <= original_b) by(nonlinear_arith)
-            requires a <= a0, b <= b0, scale > 0,
-                original_a == (a0 as int) * scale, original_b == (b0 as int) * scale;
-        assert forall|d: int| #![trigger original_a as int % d] d > 0 implies
-            ((original_a as int % d == 0 && original_b as int % d == 0)
-                == ((a as int) * scale % d == 0 && (b as int) * scale % d == 0)) by {
-            if u >= v {
-                assert(k == v && b0 == b);
-                let shift = (u - k) as u32;
-                assert forall|j: u32| j < shift implies #[trigger] ((a0 >> j) & 1) == 0 by {
-                    assert((original_a >> (k as u64 + j as u64)) & 1 == 0);
-                    assert(((a0 >> j) & 1) == ((original_a >> (k as u64 + j as u64)) & 1)) by(bit_vector)
-                        requires a0 == original_a >> k, j < shift, shift == u - k, k <= u < 64;
-                }
-                strip_twos_common(b, a0, shift, scale, d);
-                compose_shifts(original_a, k, u);
-            } else {
-                assert(k == u && a0 == a);
-                let shift = (v - k) as u32;
-                assert forall|j: u32| j < shift implies #[trigger] ((b0 >> j) & 1) == 0 by {
-                    assert((original_b >> (k as u64 + j as u64)) & 1 == 0);
-                    assert(((b0 >> j) & 1) == ((original_b >> (k as u64 + j as u64)) & 1)) by(bit_vector)
-                        requires b0 == original_b >> k, j < shift, shift == v - k, k <= v < 64;
-                }
-                strip_twos_common(a, b0, shift, scale, d);
-                compose_shifts(original_b, k, v);
-            }
-        }
-    }
-    #[cfg_attr(verus_keep_ghost, verus_spec(
-        invariant
-            original_a > 0, original_b > 0,
-            a > 0, b > 0, a & 1 == 1, b & 1 == 1,
-            k < 64, scale == pow2(k as nat), scale > 0,
-            (a as int) * scale <= u64::MAX, (b as int) * scale <= u64::MAX,
-            forall|d: int| #![trigger original_a as int % d] d > 0 ==>
-                ((original_a as int % d == 0 && original_b as int % d == 0)
-                    == ((a as int) * scale % d == 0 && (b as int) * scale % d == 0)),
-        decreases a + b,
-    ))]
+    let k = std::cmp::min(u, v);
     while a != b {
         if a < b {
             std::mem::swap(&mut a, &mut b);
         }
-        #[cfg(verus_keep_ghost)]
-        proof_decl! { let ghost before_a = a; }
         a -= b;
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            axiom_u64_trailing_zeros(a);
-            let shift = u64_trailing_zeros(a);
-            assert forall|d: int| #![trigger original_a as int % d] d > 0 implies
-                ((original_a as int % d == 0 && original_b as int % d == 0)
-                    == (((a >> shift) as int) * scale % d == 0 && (b as int) * scale % d == 0)) by {
-                assert((original_a as int % d == 0 && original_b as int % d == 0)
-                    == ((before_a as int) * scale % d == 0 && (b as int) * scale % d == 0));
-                assert((before_a as int) * scale == (a as int) * scale + (b as int) * scale)
-                    by(nonlinear_arith) requires before_a == a + b;
-                lemma_sub_mod_noop((before_a as int) * scale, (b as int) * scale, d);
-                lemma_add_mod_noop((a as int) * scale, (b as int) * scale, d);
-                lemma_small_mod(0, d as nat);
-                lemma_mod_twice((a as int) * scale, d);
-                assert(((before_a as int) * scale % d == 0 && (b as int) * scale % d == 0)
-                    == ((a as int) * scale % d == 0 && (b as int) * scale % d == 0));
-                assert forall|j: u32| j < shift implies #[trigger] ((a >> j) & 1) == 0 by {
-                    assert((a >> j as u64) & 1 == 0);
-                }
-                strip_twos_common(b, a, shift, scale, d);
-            }
-            assert((a >> shift) & 1 == 1);
-            assert(a >> shift > 0) by(bit_vector) requires (a >> shift) & 1 == 1;
-            assert(a >> shift <= a) by(bit_vector);
-            assert((a >> shift) as int * scale <= u64::MAX) by(nonlinear_arith)
-                requires (before_a as int) * scale <= u64::MAX,
-                    a < before_a, a >> shift <= a, scale > 0;
-        }
         a >>= a.trailing_zeros();
-    }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        lemma_u64_shl_is_mul(a, k as u64);
-        assert((a as int) * scale > 0) by(nonlinear_arith) requires a > 0, scale > 0;
-        #[verifier::proof_note("For all u64 inputs, binary GCD returns zero exactly for (0, 0), and every positive integer divides its result exactly when it divides both inputs")]
-        assert(((a as int) * scale == 0) == (original_a == 0 && original_b == 0)
-            && (forall|d: int| #![trigger original_a as int % d] d > 0 ==>
-                ((original_a as int % d == 0 && original_b as int % d == 0)
-                    == ((a as int) * scale % d == 0))));
     }
     a << k
 }
 
 #[codesnip::entry(include("gcd"))]
 pub fn lcm(a: u64, b: u64) -> u64 {
+    if a == 0 && b == 0 {
+        return 0;
+    }
     a / gcd(a, b) * b
 }
 
@@ -276,19 +164,20 @@ pub fn extgcd_recurse(a: i64, b: i64) -> (i64, i64, i64) {
 #[codesnip::entry]
 #[cfg_attr(verus_keep_ghost, verus_verify)]
 #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-    requires i64::MIN < original_a, i64::MIN < original_b,
+    requires i64::MIN < a, i64::MIN < b,
     ensures
         i64::MIN < result.0,
-        original_a >= 0 && original_b >= 0 ==> result.0 >= 0,
-        (result.0 == 0) == (original_a == 0 && original_b == 0),
-        (original_a as int) * (result.1 as int) + (original_b as int) * (result.2 as int) == result.0,
-        result.0 != 0 ==> (original_a as int) % (abs(result.0 as int) as int) == 0
-            && (original_b as int) % (abs(result.0 as int) as int) == 0,
-        abs(result.1 as int) <= vstd::math::max(abs(original_b as int) as int, 1),
-        abs(result.2 as int) <= vstd::math::max(abs(original_a as int) as int, 1),
+        a >= 0 && b >= 0 ==> result.0 >= 0,
+        (result.0 == 0) == (a == 0 && b == 0),
+        (a as int) * (result.1 as int) + (b as int) * (result.2 as int) == result.0,
+        result.0 != 0 ==> (a as int) % (abs(result.0 as int) as int) == 0
+            && (b as int) % (abs(result.0 as int) as int) == 0,
+        abs(result.1 as int) <= vstd::math::max(abs(b as int) as int, 1),
+        abs(result.2 as int) <= vstd::math::max(abs(a as int) as int, 1),
 ))]
-pub fn extgcd(original_a: i64, original_b: i64) -> (i64, i64, i64) {
-    let (mut a, mut b) = (original_a, original_b);
+pub fn extgcd(mut a: i64, mut b: i64) -> (i64, i64, i64) {
+    #[cfg(verus_keep_ghost)]
+    proof_decl! { let ghost original_a = a; let ghost original_b = b; }
     let (mut u, mut v, mut x, mut y) = (1, 0, 0, 1);
     #[cfg(verus_keep_ghost)]
     proof! { assert(abs(0) == 0 && abs(1) == 1) by(compute_only); }
@@ -340,6 +229,7 @@ pub fn extgcd(original_a: i64, original_b: i64) -> (i64, i64, i64) {
                     == (a as int % d == 0 && b as int % d == 0));
                 if a as int % d == 0 {
                     vstd::arithmetic::mul::lemma_mul_basics(k as int);
+                    vstd::arithmetic::mul::lemma_mul_is_commutative(a as int, k as int);
                     lemma_small_mod(0, d as nat);
                     lemma_mul_mod_noop_left(a as int, k as int, d);
                     lemma_add_mod_noop((a as int) * k, r, d);
@@ -379,293 +269,52 @@ pub fn extgcd(original_a: i64, original_b: i64) -> (i64, i64, i64) {
 }
 
 /// Requires nonnegative inputs.
-#[cfg_attr(verus_keep_ghost, verus_verify)]
-#[cfg_attr(verus_keep_ghost, verus_spec(result =>
-    requires original_a >= 0, original_b >= 0,
-    ensures
-        result.0 >= 0,
-        (result.0 == 0) == (original_a == 0 && original_b == 0),
-        (original_a as int) * result.1 + (original_b as int) * result.2 == result.0,
-        result.0 > 0 ==> original_a % result.0 == 0 && original_b % result.0 == 0,
-))]
-pub fn extgcd_binary(original_a: i64, original_b: i64) -> (i64, i64, i64) {
-    if original_b == 0 {
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            vstd::arithmetic::mul::lemma_mul_basics(original_a as int);
-            if original_a > 0 {
-                lemma_mod_self_0(original_a as int);
-                lemma_small_mod(0, original_a as nat);
-            }
-        }
-        return (original_a, 1, 0);
+pub fn extgcd_binary(a: i64, b: i64) -> (i64, i64, i64) {
+    if b == 0 {
+        return (a, 1, 0);
     }
-    if original_a == 0 {
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            vstd::arithmetic::mul::lemma_mul_basics(original_b as int);
-            lemma_mod_self_0(original_b as int);
-            lemma_small_mod(0, original_b as nat);
-        }
-        return (original_b, 0, 1);
+    if a == 0 {
+        return (b, 0, 1);
     }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        assert((original_a | original_b) >= 0) by(bit_vector)
-            requires original_a >= 0, original_b >= 0;
-    }
-    let k = ((original_a | original_b) as u64).trailing_zeros();
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        let joined = (original_a | original_b) as u64;
-        let aa = original_a as u64;
-        let bb = original_b as u64;
-        axiom_u64_trailing_zeros(joined);
-        axiom_u64_trailing_zeros(aa);
-        axiom_u64_trailing_zeros(bb);
-        assert(joined > 0) by(bit_vector)
-            requires joined == (original_a | original_b) as u64, original_a > 0, original_b > 0;
-        let ta = u64_trailing_zeros(aa);
-        let tb = u64_trailing_zeros(bb);
-        if k > ta {
-            assert((joined >> (ta as u64)) & 1 == 0);
-            assert(false) by(bit_vector)
-                requires joined == aa | bb, (joined >> (ta as u64)) & 1 == 0, (aa >> ta) & 1 == 1, ta < 64;
-        }
-        if k > tb {
-            assert((joined >> (tb as u64)) & 1 == 0);
-            assert(false) by(bit_vector)
-                requires joined == aa | bb, (joined >> (tb as u64)) & 1 == 0, (bb >> tb) & 1 == 1, tb < 64;
-        }
-        factor_twos(aa, k);
-        factor_twos(bb, k);
-        assert(((original_a >> k) as u64) == aa >> k && ((original_b >> k) as u64) == bb >> k)
-            by(bit_vector) requires original_a >= 0, original_b >= 0, k < 64,
-                aa == original_a as u64, bb == original_b as u64;
-        assert(((aa >> k) | (bb >> k)) & 1 == 1) by(bit_vector)
-            requires (joined >> k) & 1 == 1, joined == aa | bb, k < 64;
-    }
-    #[cfg(verus_keep_ghost)]
-    proof_decl! { let ghost scale = pow2(k as nat) as int; }
-    let (mut c, mut d) = ((original_a >> k) as u64, (original_b >> k) as u64);
-    #[cfg(verus_keep_ghost)]
-    proof! { assert(((c | d) & 1) == 1); }
+    let k = (a | b).trailing_zeros();
+    let (mut c, mut d) = ((a >> k) as u64, (b >> k) as u64);
     let swapped = d & 1 == 0;
     if swapped {
-        #[cfg(verus_keep_ghost)]
-        proof_decl! { let ghost cc = c; let ghost dd = d; }
         std::mem::swap(&mut c, &mut d);
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            assert(((c | d) & 1) == 1) by(bit_vector)
-                requires ((cc | dd) & 1) == 1, c == dd, d == cc;
-        }
-    }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        lemma_pow2_pos(k as nat);
-        assert(d & 1 == 1) by(bit_vector)
-            requires ((c | d) & 1) == 1, !swapped ==> d & 1 != 0, swapped ==> c & 1 == 0;
-        assert(d % 2 == 1) by(bit_vector) requires d & 1 == 1;
-        assert(c <= i64::MAX && d <= i64::MAX) by(nonlinear_arith)
-            requires (c as int) * scale <= i64::MAX, (d as int) * scale <= i64::MAX, scale >= 1;
-        lemma_mod_self_0(d as int);
-        lemma_small_mod(0, d as nat);
-        vstd::arithmetic::mul::lemma_mul_basics(c as int);
     }
     let (mut a, mut b) = (c, d);
     // c*u == a and c*s == b modulo the odd d, with 0 <= u,s <= d.
     let (mut u, mut s) = (1u64, 0u64);
     let shift = a.trailing_zeros();
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        factor_twos(c, shift);
-        assert(c >> shift <= c) by(bit_vector);
-        assert forall|h: int| #![trigger (original_a as int) % h] h > 0 implies
-            (((original_a as int) % h == 0 && (original_b as int) % h == 0)
-                == (((c >> shift) as int) * scale % h == 0 && (d as int) * scale % h == 0)) by {
-            assert forall|j: u32| j < shift implies #[trigger] ((c >> j) & 1) == 0 by {
-                assert((c >> (j as u64)) & 1 == 0);
-            }
-            strip_twos_common(d, c, shift, scale, h);
-        }
-        assert(c >> 0u32 == c) by(bit_vector);
-    }
     a >>= shift;
-    #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
-        invariant
-            c > 0, 0 < d <= i64::MAX, d % 2 == 1,
-            shift == u64_trailing_zeros(c), shift < 64, a == c >> shift,
-            u <= d,
-            (c as int) * u % (d as int) == ((c >> (iter.index() as u32)) as int) % (d as int),
-    ))]
-    for _i in 0..shift {
-        #[cfg(verus_keep_ghost)]
-        proof_decl! { let ghost before = u; }
+    for _ in 0..shift {
         if u & 1 == 1 {
             u += d;
         }
         u /= 2;
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            let value = c >> _i;
-            assert((c >> _i) & 1 == 0);
-            assert(value % 2 == 0) by(bit_vector) requires value & 1 == 0;
-            assert((before & 1 == 1) == (before % 2 == 1)) by(bit_vector);
-            modular_halving(c as int, value as int, before as int, d as int);
-            assert(value / 2 == c >> (_i + 1)) by(bit_vector)
-                requires value == c >> _i, _i < 63;
-        }
     }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        assert((a as int) * scale <= (c as int) * scale) by(nonlinear_arith)
-            requires a <= c, scale > 0;
-    }
-    #[cfg_attr(verus_keep_ghost, verus_spec(
-        invariant
-            original_a > 0, original_b > 0, k < 64, scale == pow2(k as nat), scale > 0,
-            (c as int) * scale == (if swapped { original_b as int } else { original_a as int }),
-            (d as int) * scale == (if swapped { original_a as int } else { original_b as int }),
-            0 < c <= i64::MAX, 0 < d <= i64::MAX, d % 2 == 1,
-            0 < a <= i64::MAX, 0 < b <= i64::MAX, a & 1 == 1, b & 1 == 1, u <= d, s <= d,
-            (a as int) * scale <= vstd::math::max(original_a as int, original_b as int),
-            (b as int) * scale <= vstd::math::max(original_a as int, original_b as int),
-            (c as int) * u % (d as int) == (a as int) % (d as int),
-            (c as int) * s % (d as int) == (b as int) % (d as int),
-            forall|h: int| #![trigger (original_a as int) % h] h > 0 ==>
-                (((original_a as int) % h == 0 && (original_b as int) % h == 0)
-                    == ((a as int) * scale % h == 0 && (b as int) * scale % h == 0)),
-        decreases a + b,
-    ))]
     while a != b {
         if b < a {
             std::mem::swap(&mut a, &mut b);
             std::mem::swap(&mut u, &mut s);
         }
-        #[cfg(verus_keep_ghost)]
-        proof_decl! { let ghost before_b = b; let ghost before_s = s; }
         b -= a;
         if s < u {
             s += d;
         }
         s -= u;
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            assert(s <= d);
-            let adjust = if before_s < u { d as int } else { 0 };
-            assert(s == before_s + adjust - u);
-            modular_subtraction(c as int, before_b as int, a as int, before_s as int, u as int, d as int);
-            assert(b % 2 == 0) by(bit_vector)
-                requires b == before_b - a, a & 1 == 1, before_b & 1 == 1, a < before_b;
-            assert((b as int) * scale == (before_b as int) * scale - (a as int) * scale)
-                by(nonlinear_arith) requires b == before_b - a;
-            assert((b as int) * scale <= (before_b as int) * scale) by(nonlinear_arith)
-                requires b <= before_b, scale > 0;
-        }
-        #[cfg(verus_keep_ghost)]
-        proof_decl! { let ghost before_shift = b; }
         let shift = b.trailing_zeros();
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            factor_twos(b, shift);
-            assert((b >> shift) & 1 == 1);
-            assert(b >> shift <= b) by(bit_vector);
-            assert(((b >> shift) as int) * scale <= (b as int) * scale) by(nonlinear_arith)
-                requires b >> shift <= b, scale > 0;
-            assert forall|h: int| #![trigger (original_a as int) % h] h > 0 implies
-                (((original_a as int) % h == 0 && (original_b as int) % h == 0)
-                    == ((a as int) * scale % h == 0 && ((b >> shift) as int) * scale % h == 0)) by {
-                assert forall|j: u32| j < shift implies #[trigger] ((b >> j) & 1) == 0 by {
-                    assert((b >> (j as u64)) & 1 == 0);
-                }
-                strip_twos_common(a, b, shift, scale, h);
-                lemma_sub_mod_noop((before_b as int) * scale, (a as int) * scale, h);
-                lemma_add_mod_noop((b as int) * scale, (a as int) * scale, h);
-                lemma_small_mod(0, h as nat);
-                assert((b as int) * scale + (a as int) * scale == (before_b as int) * scale)
-                    by(nonlinear_arith) requires b == before_b - a;
-            }
-        }
         b >>= shift;
-        #[cfg(verus_keep_ghost)]
-        proof! { assert(before_shift >> 0u32 == before_shift) by(bit_vector); }
-        #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
-            invariant
-                0 < c <= i64::MAX, 0 < d <= i64::MAX, d % 2 == 1,
-                before_shift > 0, shift == u64_trailing_zeros(before_shift), shift < 64,
-                b == before_shift >> shift, s <= d,
-                (c as int) * s % (d as int)
-                    == ((before_shift >> (iter.index() as u32)) as int) % (d as int),
-        ))]
-        for _i in 0..shift {
-            #[cfg(verus_keep_ghost)]
-            proof_decl! { let ghost before = s; }
+        for _ in 0..shift {
             if s & 1 == 1 {
                 s += d;
             }
             s /= 2;
-            #[cfg(verus_keep_ghost)]
-            proof! {
-                axiom_u64_trailing_zeros(before_shift);
-                let value = before_shift >> _i;
-                assert((before_shift >> _i) & 1 == 0);
-                assert(value % 2 == 0) by(bit_vector) requires value & 1 == 0;
-                assert((before & 1 == 1) == (before % 2 == 1)) by(bit_vector);
-                modular_halving(c as int, value as int, before as int, d as int);
-                assert(value / 2 == before_shift >> (_i + 1)) by(bit_vector)
-                    requires value == before_shift >> _i, _i < 63;
-            }
         }
-    }
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        assert(0 < (a as int) * scale <= i64::MAX) by(nonlinear_arith)
-            requires a > 0, scale > 0,
-                (a as int) * scale <= vstd::math::max(original_a as int, original_b as int),
-                0 < original_a <= i64::MAX, 0 < original_b <= i64::MAX;
-        lemma_mod_self_0((a as int) * scale);
-        assert((original_a as int) % ((a as int) * scale) == 0
-            && (original_b as int) % ((a as int) * scale) == 0);
-        lemma_u64_mul_pow2_le_max_iff_max_shr(a, k as u64, u64::MAX);
-        lemma_u64_shl_is_mul(a, k as u64);
-        let product = (c as int) * s;
-        assert(0 <= product <= i64::MAX as int * i64::MAX) by(nonlinear_arith)
-            requires 0 < c <= i64::MAX, 0 <= s <= d <= i64::MAX, product == (c as int) * s;
-        lemma_sub_mod_noop(a as int, product, d as int);
-        lemma_small_mod(0, d as nat);
-        assert((a as int - product) % (d as int) == 0);
-        lemma_fundamental_div_mod(a as int - product, d as int);
-        let difference = a as int - product;
-        let quotient = difference / (d as int);
-        assert(-i64::MAX as int <= quotient <= i64::MAX as int) by(nonlinear_arith)
-            requires difference == (d as int) * quotient, difference == a as int - product,
-                0 < a <= i64::MAX, 0 < c <= i64::MAX, 0 < d <= i64::MAX, 0 <= s <= d,
-                product == (c as int) * s;
-        assert(-difference == (d as int) * (-quotient)) by(nonlinear_arith)
-            requires difference == (d as int) * quotient;
-        lemma_div_multiples_vanish(-quotient, d as int);
-        assert((-difference) / (d as int) == -quotient);
     }
     let x = s as i64;
     let y = ((a as i128 - c as i128 * s as i128) / d as i128) as i64;
     let g = (a << k) as i64;
-    #[cfg(verus_keep_ghost)]
-    proof! {
-        assert((c as int) * x + (d as int) * y == a) by(nonlinear_arith)
-            requires (a as int - (c as int) * s) == (d as int) * ((a as int - (c as int) * s) / (d as int)),
-                x == s, y == (a as int - (c as int) * s) / (d as int);
-        assert((c as int) * scale * x + (d as int) * scale * y == g) by(nonlinear_arith)
-            requires (c as int) * x + (d as int) * y == a, g == (a as int) * scale;
-        lemma_mod_self_0(g as int);
-        assert((b as int) * scale == g);
-        assert(((original_a as int) % (g as int) == 0 && (original_b as int) % (g as int) == 0)
-            == ((a as int) * scale % (g as int) == 0 && (b as int) * scale % (g as int) == 0));
-        #[verifier::proof_note("For all nonnegative i64 inputs, binary extended GCD terminates without overflow and returns a nonnegative common divisor with exact Bezout coefficients; the result is zero exactly for (0, 0)")]
-        assert(g > 0 && original_a % g == 0 && original_b % g == 0
-            && (if swapped { (original_a as int) * y + (original_b as int) * x == g }
-                else { (original_a as int) * x + (original_b as int) * y == g }));
-    }
     if swapped { (g, y, x) } else { (g, x, y) }
 }
 
@@ -768,13 +417,15 @@ pub fn modinv(a: u64, m: u64) -> u64 {
 #[cfg_attr(verus_keep_ghost, verus_verify)]
 #[cfg_attr(verus_keep_ghost, verus_spec(result =>
     requires
-        0 < original_a < p <= i64::MAX, p % 2 == 1,
-        forall|d: int| #![trigger (original_a as int) % d]
-            d > 0 && (original_a as int) % d == 0 && (p as int) % d == 0 ==> d == 1,
-    ensures result < p, (original_a as int) * result % (p as int) == 1,
+        0 < a < p <= i64::MAX, p % 2 == 1,
+        forall|d: int| #![trigger (a as int) % d]
+            d > 0 && (a as int) % d == 0 && (p as int) % d == 0 ==> d == 1,
+    ensures result < p, (a as int) * result % (p as int) == 1,
 ))]
-pub fn modinv_extgcd_binary(original_a: u64, p: u64) -> u64 {
-    let (mut a, mut b, mut u, mut s) = (original_a, p, 1, 0);
+pub fn modinv_extgcd_binary(mut a: u64, p: u64) -> u64 {
+    #[cfg(verus_keep_ghost)]
+    proof_decl! { let ghost original_a = a; }
+    let (mut b, mut u, mut s) = (p, 1, 0);
     let k = a.trailing_zeros();
     #[cfg(verus_keep_ghost)]
     proof! {
@@ -807,7 +458,9 @@ pub fn modinv_extgcd_binary(original_a: u64, p: u64) -> u64 {
             (original_a as int) * u % (p as int)
                 == ((original_a >> (iter.index() as u32)) as int) % (p as int),
     ))]
-    for _i in 0..k {
+    for _ in 0..k {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! { let ghost _i = iter.index() as u32; }
         #[cfg(verus_keep_ghost)]
         proof_decl! { let ghost before = u; }
         if u & 1 == 1 {
@@ -886,7 +539,9 @@ pub fn modinv_extgcd_binary(original_a: u64, p: u64) -> u64 {
                 (original_a as int) * s % (p as int)
                     == ((before_shift >> (iter.index() as u32)) as int) % (p as int),
         ))]
-        for _i in 0..k {
+        for _ in 0..k {
+            #[cfg(verus_keep_ghost)]
+            proof_decl! { let ghost _i = iter.index() as u32; }
             #[cfg(verus_keep_ghost)]
             proof_decl! { let ghost before = s; }
             if s & 1 == 1 {
@@ -1180,47 +835,15 @@ proof fn strip_twos_common(a: u64, b: u64, shift: u32, scale: int, d: int)
     assert(((a as int) * scale % d == 0 && (b as int) * scale % d == 0)
         == ((a as int) * scale % d == 0 && ((b >> shift) as int) * scale % d == 0));
 }
-proof fn compose_shifts(value: u64, first: u32, last: u32)
-    requires first <= last < 64,
-    ensures (value >> first) >> (last - first) as u32 == value >> last,
-{
-    let delta = (last - first) as u32;
-    lemma_u64_shr_is_div(value, first as u64);
-    lemma_u64_shr_is_div(value, last as u64);
-    lemma_u64_shr_is_div(value >> first, delta as u64);
-    lemma_pow2_pos(first as nat);
-    lemma_pow2_pos(delta as nat);
-    lemma_pow2_adds(first as nat, delta as nat);
-    lemma_div_denominator(value as int, pow2(first as nat) as int, pow2(delta as nat) as int);
-    #[verifier::proof_note("Two u64 right shifts compose exactly when their total is below 64")]
-    assert((value >> first) >> (last - first) as u32 == value >> last);
-}
 }
 
 #[cfg(verus_keep_ghost)]
 mod verification {
     use super::*;
+    #[cfg(verus_keep_ghost)]
+    use vstd::arithmetic::mul::*;
 
     verus! {
-    pub fn binary_gcd_matches_euclidean(a: u64, b: u64) {
-        let actual = gcd(a, b);
-        let expected = gcd_loop(a, b);
-        proof {
-            if actual > 0 {
-                lemma_mod_self_0(actual as int);
-                lemma_mod_self_0(expected as int);
-                assert((a as int) % (actual as int) == 0 && (b as int) % (actual as int) == 0);
-                assert((a as int) % (expected as int) == 0 && (b as int) % (expected as int) == 0);
-                assert((actual as int) % (expected as int) == 0);
-                assert((expected as int) % (actual as int) == 0);
-                if actual < expected { lemma_small_mod(actual as nat, expected as nat); }
-                if expected < actual { lemma_small_mod(expected as nat, actual as nat); }
-            }
-            #[verifier::proof_note("Binary GCD and Euclidean GCD return the same result for all u64 input pairs, including zeros and u64::MAX")]
-            assert(actual == expected);
-        }
-    }
-
     pub fn inverse_boundaries(m: u64)
         requires 2 <= m <= i64::MAX,
     {
@@ -1303,6 +926,40 @@ mod tests {
             .chain(pairs)
         {
             assert_eq!(gcd_loop(a, b), gcd(a, b));
+        }
+    }
+
+    #[test]
+    fn test_lcm() {
+        let mut rng = Xorshift::default();
+        let small = (0..=255).flat_map(|a| (0..=255).map(move |b| (a, b)));
+        let scaled = [
+            (u64::MAX, u64::MAX),
+            (u64::MAX, 1),
+            (u64::MAX - 1, (u64::MAX - 1) / 2),
+            (1 << 63, 1 << 62),
+        ];
+        // Both u32 pairs and u16 pairs scaled by a u32 have a representable LCM.
+        let general = rng
+            .random_iter((0..=u32::MAX, 0..=u32::MAX, 0..=u32::MAX))
+            .take(2_500_000)
+            .flat_map(|(a, b, scale)| {
+                let (a, b, scale) = (u64::from(a), u64::from(b), u64::from(scale));
+                [(a, b), ((a & 0xffff) * scale, (b & 0xffff) * scale)]
+            });
+        for (a, b) in small
+            .chain(integer_pairs(0..=u64::MAX))
+            .chain(scaled)
+            .chain(general)
+        {
+            let (mut x, mut y) = (u128::from(a), u128::from(b));
+            while y != 0 {
+                (x, y) = (y, x % y);
+            }
+            let expected = u128::from(a).checked_div(x).unwrap_or(0) * u128::from(b);
+            if expected <= u128::from(u64::MAX) {
+                assert_eq!(u128::from(lcm(a, b)), expected, "a={a}, b={b}");
+            }
         }
     }
 

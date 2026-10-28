@@ -1,5 +1,7 @@
 use super::{Graph, Neighbor, VertexMap};
 use std::{iter::Map, marker::PhantomData, ops::Range};
+#[cfg(verus_keep_ghost)]
+use vstd::{arithmetic::div_mod::*, prelude::*, std_specs::iter::IteratorSpec};
 
 #[derive(Debug, Clone, Copy)]
 pub struct GridGraph<A> {
@@ -106,28 +108,57 @@ where
     }
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
+#[cfg_attr(verus_keep_ghost, verifier::allow(autoderive_clone_without_spec))]
 #[derive(Debug, Clone)]
 pub struct GridVertices {
     xrange: Range<usize>,
     yrange: Range<usize>,
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl Iterator for GridVertices {
     type Item = (usize, usize);
     fn next(&mut self) -> Option<Self::Item> {
+        #[cfg_attr(verus_keep_ghost, verus_spec(
+            invariant self@ == old(self)@,
+            decreases self.xrange.end - self.xrange.start,
+        ))]
         loop {
             if self.xrange.start >= self.xrange.end {
                 return None;
             }
+            #[cfg(verus_keep_ghost)]
+            proof_decl! { let ghost before = *self; }
             if let Some(ny) = self.yrange.next() {
+                #[cfg(verus_keep_ghost)]
+                proof! {
+                    let x = self.xrange.start as int;
+                    let end = self.xrange.end as int;
+                    let width = self.yrange.end as int;
+                    assert(x * width + ny < end * width) by(nonlinear_arith)
+                        requires x < end, 0 <= ny < width;
+                    lemma_fundamental_div_mod_converse(before.cursor_index(), width, x, ny as int);
+                    assert(before@[0] == (self.xrange.start, ny));
+                    assert(self@ =~= before@.drop_first());
+                }
                 return Some((self.xrange.start, ny));
             }
             self.yrange.start = 0;
             self.xrange.start += 1;
+            #[cfg(verus_keep_ghost)]
+            proof! {
+                let x = before.xrange.start as int;
+                let width = self.yrange.end as int;
+                assert((x + 1) * width == x * width + width) by(nonlinear_arith);
+                assert(self.cursor_index() == before.cursor_index());
+                assert(self@ =~= before@);
+            }
         }
     }
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum GridDirection {
     U = 0isize,
@@ -140,7 +171,11 @@ pub enum GridDirection {
     DR = 7isize,
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl GridDirection {
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures (result.0 as int, result.1 as int) == self.offset(1),
+    ))]
     pub fn dxdy(self) -> (isize, isize) {
         match self {
             GridDirection::U => (-1, 0),
@@ -153,6 +188,10 @@ impl GridDirection {
             GridDirection::DR => (1, 1),
         }
     }
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires d <= isize::MAX,
+        ensures (result.0 as int, result.1 as int) == self.offset(d as int),
+    ))]
     pub fn ndxdy(self, d: usize) -> (isize, isize) {
         let d = d as isize;
         match self {
@@ -278,6 +317,118 @@ where
         assert!(x < self.height, "expected 0..{}, but {}", self.height, x);
         assert!(y < self.width, "expected 0..{}, but {}", self.width, y);
         &mut map[x * self.width + y]
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+verus! {
+    impl GridVertices {
+        spec fn cursor_index(&self) -> int {
+            self.xrange.start as int * self.yrange.end
+                + if self.yrange.start < self.yrange.end { self.yrange.start as int } else { self.yrange.end as int }
+        }
+    }
+
+    impl View for GridVertices {
+        type V = Seq<(usize, usize)>;
+
+        closed spec fn view(&self) -> Self::V {
+            let position = self.cursor_index();
+            let width = self.yrange.end as int;
+            let length = if self.xrange.start < self.xrange.end {
+                (self.xrange.end as int * width - position) as nat
+            } else { 0 };
+            Seq::new(length, |i: int| (((position + i) / width) as usize, ((position + i) % width) as usize))
+        }
+    }
+
+    impl vstd::std_specs::iter::IteratorSpecImpl for GridVertices {
+        open spec fn obeys_prophetic_iter_laws(&self) -> bool { true }
+        open spec fn remaining(&self) -> Seq<(usize, usize)> { self@ }
+        open spec fn will_return_none(&self) -> bool { true }
+        open spec fn decrease(&self) -> Option<nat> { Some(self@.len()) }
+        open spec fn peek(&self, index: int) -> Option<(usize, usize)> {
+            if 0 <= index < self@.len() { Some(self@[index]) } else { None }
+        }
+    }
+
+    impl GridDirection {
+        pub open spec fn offset(self, distance: int) -> (int, int) {
+            match self {
+                GridDirection::U => (-distance, 0), GridDirection::L => (0, -distance),
+                GridDirection::R => (0, distance), GridDirection::D => (distance, 0),
+                GridDirection::UL => (-distance, -distance), GridDirection::UR => (-distance, distance),
+                GridDirection::DL => (distance, -distance), GridDirection::DR => (distance, distance),
+            }
+        }
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+mod verification {
+    use super::*;
+
+    verus! {
+        proof fn row_major_coordinates(height: usize, width: usize, x: usize, y: usize)
+            requires x < height, y < width,
+        {
+            let vertices = GridVertices { xrange: 0..height, yrange: 0..width };
+            let index = x as int * width + y;
+            assert(0 <= x as int * width + y < height as int * width) by(nonlinear_arith)
+                requires 0 <= x < height, 0 <= y < width;
+            lemma_fundamental_div_mod_converse(index, width as int, x as int, y as int);
+            #[verifier::proof_note("For arbitrary grid dimensions, the vertex iterator has exactly height times width elements in row-major order, and every valid coordinate occurs at its flattened index; the model does not require the cell count to fit usize")]
+            assert(vertices@.len() == height as int * width && vertices@[index] == (x, y));
+        }
+
+        proof fn row_major_index(height: usize, width: usize, index: int)
+            requires 0 <= index < height as int * width,
+        {
+            let vertices = GridVertices { xrange: 0..height, yrange: 0..width };
+            assert(width > 0 && height > 0) by(nonlinear_arith)
+                requires 0 <= height, 0 <= width, 0 <= index < height as int * width;
+            lemma_div_pos_is_pos(index, width as int);
+            lemma_mod_bound(index, width as int);
+            lemma_fundamental_div_mod(index, width as int);
+            assert(index / (width as int) < height) by(nonlinear_arith)
+                requires width > 0, index < height as int * width,
+                    index == width as int * (index / (width as int)) + index % (width as int),
+                    index % (width as int) >= 0;
+            let xy = vertices@[index];
+            assert(xy.0 as int == index / (width as int));
+            assert(xy.1 as int == index % (width as int));
+            assert(xy.0 as int * width + xy.1 == index) by(nonlinear_arith)
+                requires xy.0 as int == index / (width as int),
+                    xy.1 as int == index % (width as int),
+                    index == width as int * (index / (width as int)) + index % (width as int);
+            #[verifier::proof_note("Every position in the arbitrary-length row-major vertex sequence yields an in-range coordinate whose flattened index is that position, so the enumeration contains no extra or duplicate vertices")]
+            assert(xy.0 < height && xy.1 < width && xy.0 as int * width + xy.1 == index);
+        }
+
+        fn first_vertex(height: usize, width: usize) {
+            let mut vertices = GridVertices { xrange: 0..height, yrange: 0..width };
+            let first = vertices.next();
+            proof {
+                if height > 0 && width > 0 {
+                    assert(height as int * width > 0) by(nonlinear_arith)
+                        requires height > 0, width > 0;
+                    lemma_fundamental_div_mod_converse(0, width as int, 0, 0);
+                }
+                #[verifier::proof_note("A grid with either dimension zero yields no vertices; every nonempty grid starts at coordinate (0, 0)")]
+                assert(first == if height == 0 || width == 0 { None } else { Some((0usize, 0usize)) });
+            }
+        }
+
+        fn direction_components(direction: GridDirection, distance: usize)
+            requires distance <= isize::MAX,
+        {
+            let unit = direction.dxdy();
+            let scaled = direction.ndxdy(distance);
+            proof {
+                #[verifier::proof_note("All eight grid directions have the stated unit offsets, and ndxdy scales both components by every nonnegative distance representable as isize, including zero")]
+                assert(scaled.0 as int == unit.0 as int * distance && scaled.1 as int == unit.1 as int * distance);
+            }
+        }
     }
 }
 

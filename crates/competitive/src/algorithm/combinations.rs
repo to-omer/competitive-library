@@ -359,92 +359,6 @@ where
     true
 }
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-
-    #[kani::proof]
-    #[kani::unwind(5)]
-    fn proof_apply_permutation() {
-        let mut values: [u64; 5] = kani::any();
-        let before = values;
-        let permutation: [usize; 4] = kani::any();
-        for i in 0..4 {
-            kani::assume(permutation[i] < 4);
-            for j in 0..i {
-                kani::assume(permutation[i] != permutation[j]);
-            }
-        }
-        values[..4].apply_permutation(&permutation);
-        for i in 0..4 {
-            kani::assert(
-                values[i] == before[permutation[i]],
-                "For every four-element u64 sequence and every valid index permutation, apply_permutation places each original value at the requested position",
-            );
-        }
-        kani::assert(
-            values[4] == before[4],
-            "Applying a permutation to four elements does not change the following element",
-        );
-        kani::cover!(permutation[0] == 1 && permutation[1] == 2 && permutation[2] == 3);
-        kani::cover!(permutation[0] == 1 && permutation[1] == 0 && permutation[2] == 3);
-        kani::cover!(permutation[0] == 1 && permutation[1] == 2 && permutation[2] == 0);
-    }
-
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_next_prev_permutation() {
-        let values: [u8; 4] = kani::any();
-        let len: usize = kani::any();
-        kani::assume(len <= values.len());
-        let indices: [u8; 4] = kani::any();
-        let mut candidate = [0; 4];
-        for i in 0..len {
-            kani::assume((indices[i] as usize) < len);
-            for j in 0..i {
-                kani::assume(indices[i] != indices[j]);
-            }
-            candidate[i] = values[indices[i] as usize];
-        }
-        let probe: u8 = kani::any();
-        let count = values[..len].iter().filter(|&&x| x == probe).count();
-        let mut next = values;
-        let has_next = next[..len].next_permutation();
-        kani::assert(
-            next[..len].iter().filter(|&&x| x == probe).count() == count,
-            "For every u8 sequence of length at most 4, next_permutation preserves the multiplicity of every value",
-        );
-        kani::assert(
-            if has_next {
-                next[..len] > values[..len]
-                    && (candidate[..len] <= values[..len] || next[..len] <= candidate[..len])
-            } else {
-                next == values && candidate[..len] <= values[..len]
-            },
-            "For every u8 sequence of length at most 4, including duplicates, next_permutation returns the smallest larger rearrangement or leaves the maximum unchanged and returns false",
-        );
-
-        let mut prev = values;
-        let has_prev = prev[..len].prev_permutation();
-        kani::assert(
-            prev[..len].iter().filter(|&&x| x == probe).count() == count,
-            "For every u8 sequence of length at most 4, prev_permutation preserves the multiplicity of every value",
-        );
-        kani::assert(
-            if has_prev {
-                prev[..len] < values[..len]
-                    && (candidate[..len] >= values[..len] || prev[..len] >= candidate[..len])
-            } else {
-                prev == values && candidate[..len] >= values[..len]
-            },
-            "For every u8 sequence of length at most 4, including duplicates, prev_permutation returns the largest smaller rearrangement or leaves the minimum unchanged and returns false",
-        );
-        kani::cover!(len == 0);
-        kani::cover!(len == 4 && has_next && has_prev && values[0] == values[1]);
-        kani::cover!(len == 4 && values.iter().all(|&x| x == values[0]));
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -545,6 +459,17 @@ mod tests {
     #[test]
     fn test_apply_permutation() {
         let mut rng = Xorshift::default();
+        for n in 0..=4 {
+            for permutation in
+                exhaustive_sequences(0..n, n..=n).filter(|p| (0..n).all(|i| p.contains(&i)))
+            {
+                let mut actual: Vec<_> = (0..=n).collect();
+                let mut expected = permutation.clone();
+                expected.push(n);
+                actual[..n].apply_permutation(&permutation);
+                assert_eq!(actual, expected);
+            }
+        }
         for _ in 0..100 {
             let n = rng.random(1..100);
             let a: Vec<_> = rng.random_iter(0..1_000).take(n).collect();

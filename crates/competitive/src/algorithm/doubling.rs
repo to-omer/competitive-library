@@ -358,95 +358,63 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-    use crate::algebra::LogicalLinearOperation;
-
-    #[kani::proof]
-    // Seven individual transitions exercise three doubling levels and mixed set bits.
-    #[kani::unwind(9)]
-    fn proof_kth() {
-        let next: [u8; 4] = kani::any();
-        let values: [(u8, u8); 4] = kani::any();
-        for &to in &next {
-            kani::assume(to <= 4);
-        }
-        let start: usize = kani::any();
-        let steps = 7;
-        let input: u8 = kani::any();
-        kani::assume(start < 4);
-        let mut doubling = Doubling::<LogicalLinearOperation<u8>>::new(4, |i| {
-            (if next[i] == 4 { !0 } else { next[i] as usize }, values[i])
-        });
-        let mut position = start;
-        let mut expected = input;
-        for _ in 0..steps {
-            let (mask, xor) = values[position];
-            expected = (expected & mask) ^ xor;
-            if next[position] == 4 {
-                position = !0;
-                break;
-            }
-            position = next[position] as usize;
-        }
-        let actual = doubling.kth(start, steps);
-        kani::assert(
-            actual.0 == position,
-            "For every four-node partial functional graph and start node, a seven-step doubling query returns the same endpoint or missing-edge sentinel as a direct walk",
-        );
-        kani::assert(
-            if position == !0 {
-                actual.1 == (!0, 0)
-            } else {
-                (input & actual.1.0) ^ actual.1.1 == expected
-            },
-            "For arbitrary u8 bitwise-affine edge maps, doubling composes in walk order and returns the identity when a requested walk is incomplete",
-        );
-        kani::cover!(position != !0);
-        kani::cover!(position == !0);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
         algebra::{AdditiveOperation, LinearOperation, Magma as _, Unital as _},
-        num::{Zero as _, mint_basic::MInt998244353},
+        num::mint_basic::MInt998244353,
         tools::Xorshift,
     };
 
     #[test]
     fn test_kth() {
         let mut rng = Xorshift::default();
-        for _ in 0..200 {
-            let n = rng.random(1usize..100);
-            let to: Vec<_> = rng
-                .random_iter(0..=n)
-                .take(n)
-                .map(|x| x.wrapping_sub(1))
-                .collect();
-            let w: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
-            let mut doubling = Doubling::<AdditiveOperation<_>>::new(n, |i| (to[i], w[i]));
+        type M = LinearOperation<MInt998244353>;
+        for case in 0..203 {
+            let to = match case {
+                0 => vec![!0],
+                1 => vec![1, 0],
+                2 => vec![1, 2, !0],
+                _ => {
+                    let n = rng.random(1usize..100);
+                    rng.random_iter(0..=n)
+                        .take(n)
+                        .map(|x| x.wrapping_sub(1))
+                        .collect()
+                }
+            };
+            let n = to.len();
+            let w: Vec<(MInt998244353, MInt998244353)> = if case < 3 {
+                (0..n)
+                    .map(|i| {
+                        (
+                            MInt998244353::new(i as u32 + 2),
+                            MInt998244353::new(i as u32 + 3),
+                        )
+                    })
+                    .collect()
+            } else {
+                rng.random_iter((.., ..)).take(n).collect()
+            };
+            let mut doubling = Doubling::<M>::new(n, |i| (to[i], w[i]));
             let mut queries = vec![];
             let mut results = vec![];
             for s in 0..n {
                 let mut pos = s;
-                let mut x = MInt998244353::zero();
+                let mut x = M::unit();
                 for k in 0..100 {
-                    if pos == !0 {
-                        assert_eq!(doubling.kth(s, k), (pos, MInt998244353::zero()));
-                        queries.push((s, k));
-                        results.push((pos, MInt998244353::zero()));
-                    } else {
-                        assert_eq!(doubling.kth(s, k), (pos, x));
-                        x += w[pos];
+                    let expected = (pos, if pos == !0 { M::unit() } else { x });
+                    assert_eq!(doubling.kth(s, k), expected);
+                    queries.push((s, k));
+                    results.push(expected);
+                    if pos != !0 {
+                        x = (w[pos].0 * x.0, w[pos].0 * x.1 + w[pos].1);
                         pos = to[pos];
                     }
                 }
             }
-            let doubling = Doubling::<AdditiveOperation<_>>::new(n, |i| (to[i], w[i]));
+            let doubling = Doubling::<M>::new(n, |i| (to[i], w[i]));
             assert_eq!(doubling.kth_multiple(queries), results);
         }
     }

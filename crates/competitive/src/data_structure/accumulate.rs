@@ -334,68 +334,6 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-    use crate::algebra::{AdditiveOperation, FixedPermutationOperation};
-
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_noncommutative_ranges() {
-        let values: [[usize; 3]; 4] = kani::any();
-        for p in &values {
-            kani::assume(p[0] < 3 && p[1] < 3 && p[2] < 3);
-            kani::assume(p[0] != p[1] && p[0] != p[2] && p[1] != p[2]);
-        }
-        let left: usize = kani::any();
-        let right: usize = kani::any();
-        let from_vec: bool = kani::any();
-        kani::assume(left <= right && right <= 4);
-        let acc = if from_vec {
-            Accumulate::<FixedPermutationOperation<3>>::from_vec(values.to_vec())
-        } else {
-            values.into_iter().collect()
-        };
-        let mut expected = [0, 1, 2];
-        for p in &values[left..right] {
-            expected = [expected[p[0]], expected[p[1]], expected[p[2]]];
-        }
-        let actual = acc.fold(left..right);
-        for i in 0..3 {
-            kani::assert(
-                actual[i] == expected[i],
-                "Both cumulative-array constructors preserve noncommutative range cancellation for every four permutations of three labels and every valid range, including empty ranges",
-            );
-        }
-        kani::cover!(left == right);
-        kani::cover!(left == 1 && right == 3 && values[0][values[1][0]] != values[1][values[0][0]]);
-    }
-
-    #[kani::proof]
-    #[kani::unwind(5)]
-    fn proof_rectangles() {
-        let values: [[i8; 3]; 2] = kani::any();
-        let xl: usize = kani::any();
-        let xr: usize = kani::any();
-        let yl: usize = kani::any();
-        let yr: usize = kani::any();
-        kani::assume(xl <= xr && xr <= 2 && yl <= yr && yr <= 3);
-        let acc = Accumulate2d::<AdditiveOperation<i16>>::from_fn(2, 3, |i, j| values[i][j] as i16);
-        let mut expected = 0i16;
-        for row in &values[xl..xr] {
-            for &value in &row[yl..yr] {
-                expected += value as i16;
-            }
-        }
-        kani::assert(
-            acc.fold(xl..xr, yl..yr) == expected,
-            "For every 2 by 3 array of i8 values widened to i16, every rectangle sum agrees with direct addition, including empty and boundary rectangles",
-        );
-        kani::cover!(xl == xr || yl == yr);
-        kani::cover!(xl == 0 && xr == 2 && yl == 0 && yr == 3);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

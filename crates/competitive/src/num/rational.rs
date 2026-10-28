@@ -214,36 +214,35 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
+#[cfg(test)]
+mod tests {
     use super::*;
 
-    #[kani::proof]
-    #[kani::unwind(17)]
-    fn proof_i8_normalization() {
-        let num: i8 = kani::any();
-        let den: i8 = kani::any();
-        kani::assume(num != 0 || den != 0);
-        let (mut a, mut b) = ((num as i16).abs(), (den as i16).abs());
-        while b != 0 {
-            (a, b) = (b, a % b);
+    #[test]
+    fn test_normalization() {
+        for num in i8::MIN..=i8::MAX {
+            for den in i8::MIN..=i8::MAX {
+                if num == 0 && den == 0 {
+                    continue;
+                }
+                let (mut a, mut b) = (i16::from(num).abs(), i16::from(den).abs());
+                while b != 0 {
+                    (a, b) = (b, a % b);
+                }
+                let mut expected_num = i16::from(num) / a;
+                let mut expected_den = i16::from(den) / a;
+                if expected_den < 0 {
+                    expected_num = -expected_num;
+                    expected_den = -expected_den;
+                }
+                if i8::try_from(expected_num).is_ok() && i8::try_from(expected_den).is_ok() {
+                    let actual = Rational::new(num, den);
+                    assert_eq!(
+                        (i16::from(actual.num), i16::from(actual.den)),
+                        (expected_num, expected_den)
+                    );
+                }
+            }
         }
-        let mut expected_num = num as i16 / a;
-        let mut expected_den = den as i16 / a;
-        if expected_den < 0 {
-            expected_num = -expected_num;
-            expected_den = -expected_den;
-        }
-        kani::assume((i8::MIN as i16..=i8::MAX as i16).contains(&expected_num));
-        kani::assume(expected_den <= i8::MAX as i16);
-        let actual = Rational::new(num, den);
-        kani::assert(
-            actual.num as i16 == expected_num && actual.den as i16 == expected_den,
-            "For every nonzero i8 numerator-denominator pair whose canonical form fits i8, normalization agrees with widened Euclidean reduction, with a nonnegative denominator; includes i8::MIN, zero and signed infinity",
-        );
-        kani::cover!(num == i8::MIN && den == 1);
-        kani::cover!(num == i8::MIN && den == i8::MIN);
-        kani::cover!(num == i8::MIN && den == 0);
-        kani::cover!(num == 0 && den == i8::MIN);
     }
 }

@@ -1,16 +1,29 @@
 use std::{
-    char::from_u32_unchecked,
     cmp::Reverse,
     collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque},
     hash::Hash,
     iter::repeat_with,
     mem::size_of,
 };
+#[cfg(verus_keep_ghost)]
+use vstd::prelude::*;
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
+#[cfg_attr(verus_keep_ghost, verus_spec(result =>
+    ensures result@ == unescaped(bytes@), result@.len() <= bytes@.len(),
+))]
 pub fn unescape(bytes: &[u8]) -> Vec<u8> {
     let mut buf = Vec::with_capacity(bytes.len());
     let mut escape = false;
+    #[cfg(verus_keep_ghost)]
+    proof! { assert(bytes@.skip(0) =~= bytes@); }
+    #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
+        invariant buf@.len() <= iter.index(),
+            unescaped(bytes@) == buf@ + decode_rest(bytes@.skip(iter.index()), escape),
+    ))]
     for b in bytes {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! { let ghost pending = escape; }
         match (escape, *b) {
             (true, b'n') => {
                 buf.push(b'\n');
@@ -44,6 +57,19 @@ pub fn unescape(bytes: &[u8]) -> Vec<u8> {
                 escape = false;
             }
         }
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            let rest = bytes@.skip(iter.index());
+            let tail = bytes@.skip(iter.index() + 1);
+            assert(rest.skip(1) =~= tail);
+            decode_head(rest, pending);
+            assert(unescaped(bytes@) =~= buf@ + decode_rest(tail, escape));
+        }
+    }
+    #[cfg(verus_keep_ghost)]
+    proof! {
+        #[verifier::proof_note("For arbitrary byte strings, unescape decodes backslash n/r/t/backslash/0/quote, removes the backslash before any other byte, drops a final unmatched backslash, and never lengthens the input")]
+        assert(buf@ == unescaped(bytes@) && buf@.len() <= bytes@.len());
     }
     buf
 }
@@ -151,6 +177,7 @@ enum HuffmanTree {
     Node(Box<HuffmanTree>, Box<HuffmanTree>),
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 #[derive(Debug)]
 struct BitWriter {
     bytes: Vec<u8>,
@@ -158,8 +185,14 @@ struct BitWriter {
     w: u32,
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl Default for BitWriter {
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures result.well_formed(), result@ == Seq::<bool>::empty(),
+    ))]
     fn default() -> Self {
+        #[cfg(verus_keep_ghost)]
+        proof! { zero_byte(); }
         Self {
             bytes: Default::default(),
             last: Default::default(),
@@ -169,58 +202,184 @@ impl Default for BitWriter {
 }
 
 impl BitWriter {
+    #[cfg_attr(verus_keep_ghost, verus_verify)]
+    #[cfg_attr(verus_keep_ghost, verus_spec(
+        requires old(self).well_formed(), old(self).bytes@.len() < usize::MAX,
+        ensures final(self).well_formed(), final(self)@ == old(self)@.push(b),
+    ))]
     fn push_bit(&mut self, b: bool) {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! { let ghost before = *self; }
         self.w -= 1;
         self.last |= (b as u8) << self.w;
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            assert forall|i: int| 0 <= i < 8 implies
+                #[trigger] byte_bit(self.last, i) == if i == 8 - before.w { b } else { byte_bit(before.last, i) } by {
+                byte_set(before.last, b, (8 - before.w) as u8, i as u8);
+            }
+        }
         if self.w == 0 {
             self.bytes.push(self.last);
             self.w = 8;
             self.last = 0;
         }
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            zero_byte();
+            assert(self@ =~= before@.push(b));
+        }
     }
+    #[cfg_attr(verus_keep_ghost, verus_verify)]
+    #[cfg_attr(verus_keep_ghost, verus_spec(
+        requires old(self).well_formed(), old(self).bytes@.len() < usize::MAX,
+        ensures final(self).well_formed(), final(self)@ == old(self)@ + byte_bits(seq![b]),
+    ))]
     fn push_u8(&mut self, b: u8) {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! { let ghost before = *self; }
         self.bytes.push(self.last | (b >> (8 - self.w)));
         if self.w < 8 {
             self.last = b << self.w;
         }
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            assert forall|i: int| 0 <= i < 8 implies
+                #[trigger] byte_bit(self.bytes@[before.bytes@.len() as int], i)
+                    == if i < 8 - before.w { byte_bit(before.last, i) } else { byte_bit(b, i - (8 - before.w)) } by {
+                byte_append(before.last, b, before.w as u8, i as u8);
+            }
+            assert forall|i: int| 0 <= i < 8 implies #[trigger] byte_bit(self.last, i)
+                    == if i < 8 - before.w { byte_bit(b, i + before.w) } else { false } by {
+                byte_append(before.last, b, before.w as u8, i as u8);
+            }
+            assert(self@ =~= before@ + byte_bits(seq![b]));
+        }
     }
+    #[cfg_attr(verus_keep_ghost, verus_verify)]
+    #[cfg_attr(verus_keep_ghost, verus_spec(
+        requires old(self).well_formed(), old(self).bytes@.len() + 8 <= usize::MAX,
+            c <= 64, c == 64 || b >> c == 0,
+        ensures final(self).well_formed(), final(self)@ == old(self)@ + word_bits(b, c as nat),
+    ))]
     fn push_u64(&mut self, b: u64, mut c: u32) {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! {
+            let ghost before = *self;
+            let ghost count = c;
+            let ghost expected = before@ + word_bits(b, count as nat);
+        }
         let k = self.w.min(c);
         self.w -= k;
         c -= k;
         self.last |= (b >> c << self.w) as u8;
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            assert forall|i: int| 0 <= i < 8 implies #[trigger] byte_bit(self.last, i)
+                == if i < 8 - before.w { byte_bit(before.last, i) }
+                    else if i < 8 - self.w { word_bit(b, count - 1 - (i - (8 - before.w))) }
+                    else { false } by {
+                word_prefix(before.last, b, before.w, count, i as u32);
+            }
+        }
         if self.w == 0 {
             self.bytes.push(self.last);
             let (s, t) = (c / 8, c % 8);
+            #[cfg(verus_keep_ghost)]
+            proof! {
+                assert(byte_bits(self.bytes@) =~= expected.take(self.bytes@.len() as int * 8));
+            }
+            #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
+                invariant before.well_formed(), count <= 64, before.w <= count,
+                    count == 64 || b >> count == 0,
+                    expected == before@ + word_bits(b, count as nat),
+                    s == (count - before.w) / 8, t == (count - before.w) % 8,
+                    c == count - before.w - 8 * iter.index(),
+                    self.w == 0,
+                    self.bytes@.len() == before.bytes@.len() + 1 + iter.index(),
+                    byte_bits(self.bytes@) == expected.take(self.bytes@.len() as int * 8),
+            ))]
             for _ in 0..s {
                 c -= 8;
                 self.bytes.push((b >> c) as u8);
+                #[cfg(verus_keep_ghost)]
+                proof! {
+                    assert forall|i: int| 0 <= i < 8 implies #[trigger] byte_bit((b >> c) as u8, i)
+                        == word_bit(b, c + 7 - i) by {
+                        word_byte(b, c, i as u32);
+                    }
+                    assert(byte_bits(self.bytes@) =~= expected.take(self.bytes@.len() as int * 8));
+                }
             }
             self.last = 0;
             self.w = 8 - t;
             if t > 0 {
                 self.last = (b as u8) << self.w;
             }
+            #[cfg(verus_keep_ghost)]
+            proof! {
+                zero_byte();
+                assert(b >> 0u32 == b) by(bit_vector);
+                assert forall|i: int| 0 <= i < 8 implies #[trigger] byte_bit(self.last, i)
+                    == if i < t { word_bit(b, t - 1 - i) } else { false } by {
+                    byte_append(0, b as u8, self.w as u8, i as u8);
+                    if i < t { word_byte(b, 0, (i + self.w) as u32); }
+                }
+            }
+        }
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            assert(self@.len() == expected.len());
+            assert forall|i: int| 0 <= i < self@.len() implies #[trigger] self@[i] == expected[i] by {
+                if i < self.bytes@.len() * 8 {
+                    assert(byte_bits(self.bytes@)[i] == expected[i]);
+                }
+            }
+            assert(self@ =~= expected);
         }
     }
+    #[cfg_attr(verus_keep_ghost, verus_verify)]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires self.well_formed(), self.bytes@.len() < usize::MAX,
+        ensures result@.len() == (self@.len() + 7) / 8,
+            byte_bits(result@).take(self@.len() as int) == self@,
+            forall|i: int| self@.len() <= i < result@.len() * 8
+                ==> !#[trigger] byte_bits(result@)[i],
+    ))]
     fn into_inner(mut self) -> Vec<u8> {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! { let ghost before = self; }
         if self.w < 8 {
             self.bytes.push(self.last);
+        }
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            assert(byte_bits(self.bytes@).take(before@.len() as int) =~= before@);
         }
         self.bytes
     }
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 #[derive(Debug)]
 struct BitReader<'a> {
     bytes: &'a [u8],
     pos: u32,
 }
 
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl<'a> BitReader<'a> {
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures result.well_formed(), result@ == byte_bits(bytes@),
+    ))]
     fn new(bytes: &'a [u8]) -> Self {
         Self { bytes, pos: 0 }
     }
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires old(self).well_formed(), old(self)@.len() > 0,
+        ensures final(self).well_formed(),
+            result == old(self)@[0], final(self)@ == old(self)@.drop_first(),
+    ))]
     fn read_bit(&mut self) -> bool {
         let b = (self.bytes[0] >> (7 - self.pos)) & 1 == 1;
         self.pos += 1;
@@ -230,13 +389,252 @@ impl<'a> BitReader<'a> {
         }
         b
     }
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        requires old(self).well_formed(), old(self)@.len() >= 8,
+        ensures final(self).well_formed(), final(self)@ == old(self)@.skip(8),
+            forall|i: int| 0 <= i < 8 ==> #[trigger] byte_bit(result, i) == old(self)@[i],
+    ))]
     fn read_u8(&mut self) -> u8 {
+        #[cfg(verus_keep_ghost)]
+        proof_decl! { let ghost before = *self; }
         let b = self.bytes[0] << self.pos;
         self.bytes = &self.bytes[1..];
+        #[cfg(verus_keep_ghost)]
+        proof! {
+            let result = if self.pos == 0 { b } else { b | (self.bytes@[0] >> (8 - self.pos)) };
+            let first = before.bytes@[0];
+            let second = if before.pos == 0 { 0u8 } else { before.bytes@[1] };
+            assert(first << 0u32 == first) by(bit_vector);
+            assert(result == if before.pos == 0 { first } else {
+                (first << before.pos) | (second >> ((8 - before.pos) as u32))
+            });
+            assert forall|i: int| 0 <= i < 8 implies
+                #[trigger] byte_bit(result, i) == before@[i] by {
+                byte_join(first, second, before.pos, i as u32);
+            }
+        }
         if self.pos == 0 {
             b
         } else {
             b | (self.bytes[0] >> (8 - self.pos))
+        }
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+verus! {
+    spec fn escaped_byte(byte: u8) -> u8 {
+        match byte {
+            b'n' => b'\n', b'r' => b'\r', b't' => b'\t',
+            b'0' => b'\0', other => other,
+        }
+    }
+
+    pub closed spec fn unescaped(bytes: Seq<u8>) -> Seq<u8>
+        decreases bytes.len(),
+    {
+        if bytes.len() == 0 { seq![] }
+        else if bytes[0] == b'\\' {
+            if bytes.len() == 1 { seq![] }
+            else { seq![escaped_byte(bytes[1])] + unescaped(bytes.skip(2)) }
+        } else { seq![bytes[0]] + unescaped(bytes.skip(1)) }
+    }
+
+    spec fn decode_rest(bytes: Seq<u8>, pending: bool) -> Seq<u8> {
+        if pending {
+            if bytes.len() == 0 { seq![] }
+            else { seq![escaped_byte(bytes[0])] + unescaped(bytes.skip(1)) }
+        } else { unescaped(bytes) }
+    }
+
+    proof fn decode_head(bytes: Seq<u8>, pending: bool)
+        requires bytes.len() > 0,
+        ensures decode_rest(bytes, pending) == if !pending && bytes[0] == b'\\' {
+            decode_rest(bytes.skip(1), true)
+        } else {
+            seq![if pending { escaped_byte(bytes[0]) } else { bytes[0] }] + decode_rest(bytes.skip(1), false)
+        },
+    {
+        if !pending && bytes[0] == b'\\' && bytes.len() > 1 {
+            assert(bytes.skip(1).skip(1) =~= bytes.skip(2));
+        }
+    }
+
+    spec fn byte_bit(byte: u8, index: int) -> bool {
+        (byte >> ((7 - index) as u8)) & 1u8 == 1u8
+    }
+
+    spec fn byte_bits(bytes: Seq<u8>) -> Seq<bool> {
+        Seq::new(bytes.len() * 8, |i: int| byte_bit(bytes[i / 8], i % 8))
+    }
+
+    spec fn word_bit(word: u64, index: int) -> bool {
+        (word >> (index as u32)) & 1u64 == 1u64
+    }
+
+    spec fn word_bits(word: u64, count: nat) -> Seq<bool> {
+        Seq::new(count, |i: int| word_bit(word, count - 1 - i))
+    }
+
+    proof fn word_prefix(prefix: u8, word: u64, free: u32, count: u32, index: u32)
+        requires 1 <= free <= 8, count <= 64, index < 8,
+            count == 64 || word >> count == 0,
+            index >= 8 - free ==> !byte_bit(prefix, index as int),
+        ensures ({
+            let taken = if free < count { free } else { count };
+            let remaining = (count - taken) as u32;
+            let space = (free - taken) as u32;
+            byte_bit(prefix | ((word >> remaining << space) as u8), index as int)
+                == if index < 8 - free { byte_bit(prefix, index as int) }
+                    else if index < 8 - space { word_bit(word, count - 1 - (index - (8 - free))) }
+                    else { false }
+        }),
+    {
+        let taken = if free < count { free } else { count };
+        let remaining = (count - taken) as u32;
+        let space = (free - taken) as u32;
+        let shift = (count - 1 - (index - (8 - free))) as u32;
+        assert((word >> shift) & 1u64 <= 1u64) by(bit_vector);
+        assert((prefix >> ((7u32 - index) as u32)) & 1u8 <= 1u8) by(bit_vector);
+        assert(((prefix | ((word >> remaining << space) as u8)) >> ((7u32 - index) as u32)) & 1u8
+            == if index < 8u32 - free { (prefix >> ((7u32 - index) as u32)) & 1u8 }
+                else if index < 8u32 - space {
+                    ((word >> ((count - 1u32 - (index - (8u32 - free))) as u32)) & 1u64) as u8
+                } else { 0u8 }) by(bit_vector)
+            requires 1 <= free <= 8, count <= 64, index < 8,
+                count == 64 || word >> count == 0,
+                index >= 8u32 - free ==> (prefix >> ((7u32 - index) as u32)) & 1u8 == 0,
+                taken == if free < count { free } else { count },
+                remaining == (count - taken) as u32,
+                space == (free - taken) as u32;
+    }
+
+    proof fn word_byte(word: u64, shift: u32, index: u32)
+        requires shift < 64, index < 8,
+        ensures byte_bit((word >> shift) as u8, index as int)
+            == word_bit(word, shift + 7 - index),
+    {
+        let bit_index = (shift + 7 - index) as u32;
+        assert((word >> bit_index) & 1u64 <= 1u64) by(bit_vector);
+        assert((((word >> shift) as u8) >> ((7u32 - index) as u32)) & 1u8
+            == ((word >> ((shift + 7u32 - index) as u32)) & 1u64) as u8) by(bit_vector)
+            requires shift < 64, index < 8;
+    }
+
+    proof fn zero_byte()
+        ensures forall|i: int| 0 <= i < 8 ==> !#[trigger] byte_bit(0u8, i),
+    {
+        assert forall|i: int| 0 <= i < 8 implies !#[trigger] byte_bit(0u8, i) by {
+            let shift = (7 - i) as u8;
+            assert((0u8 >> shift) & 1u8 == 0u8) by(bit_vector);
+        }
+    }
+
+    proof fn equal_bytes(first: u8, second: u8)
+        requires forall|i: int| 0 <= i < 8 ==> #[trigger] byte_bit(first, i) == byte_bit(second, i),
+        ensures first == second,
+    {
+        assert(byte_bit(first, 0) == byte_bit(second, 0));
+        assert(byte_bit(first, 1) == byte_bit(second, 1));
+        assert(byte_bit(first, 2) == byte_bit(second, 2));
+        assert(byte_bit(first, 3) == byte_bit(second, 3));
+        assert(byte_bit(first, 4) == byte_bit(second, 4));
+        assert(byte_bit(first, 5) == byte_bit(second, 5));
+        assert(byte_bit(first, 6) == byte_bit(second, 6));
+        assert(byte_bit(first, 7) == byte_bit(second, 7));
+        assert(first == second) by(bit_vector)
+            requires
+                ((first >> 7u8) & 1u8 == 1) == ((second >> 7u8) & 1u8 == 1),
+                ((first >> 6u8) & 1u8 == 1) == ((second >> 6u8) & 1u8 == 1),
+                ((first >> 5u8) & 1u8 == 1) == ((second >> 5u8) & 1u8 == 1),
+                ((first >> 4u8) & 1u8 == 1) == ((second >> 4u8) & 1u8 == 1),
+                ((first >> 3u8) & 1u8 == 1) == ((second >> 3u8) & 1u8 == 1),
+                ((first >> 2u8) & 1u8 == 1) == ((second >> 2u8) & 1u8 == 1),
+                ((first >> 1u8) & 1u8 == 1) == ((second >> 1u8) & 1u8 == 1),
+                ((first >> 0u8) & 1u8 == 1) == ((second >> 0u8) & 1u8 == 1);
+    }
+
+    proof fn byte_set(byte: u8, bit: bool, position: u8, index: u8)
+        requires position < 8, index < 8, !byte_bit(byte, position as int),
+        ensures byte_bit(byte | ((bit as u8) << ((7 - position) as u8)), index as int)
+            == if index == position { bit } else { byte_bit(byte, index as int) },
+    {
+        assert((byte >> ((7u8 - position) as u8)) & 1u8 <= 1u8) by(bit_vector);
+        assert(((byte | ((bit as u8) << ((7u8 - position) as u8))) >> ((7u8 - index) as u8)) & 1u8
+            == if index == position { bit as u8 } else { (byte >> ((7u8 - index) as u8)) & 1u8 }) by(bit_vector)
+            requires position < 8, index < 8, (byte >> ((7u8 - position) as u8)) & 1u8 == 0;
+    }
+
+    proof fn byte_append(prefix: u8, byte: u8, free: u8, index: u8)
+        requires 1 <= free <= 8, index < 8,
+            index >= 8 - free ==> !byte_bit(prefix, index as int),
+        ensures byte_bit(prefix | (byte >> ((8 - free) as u8)), index as int)
+                == if index < 8 - free { byte_bit(prefix, index as int) }
+                    else { byte_bit(byte, index - (8 - free)) },
+            byte_bit(byte << free, index as int)
+                == if index < 8 - free { byte_bit(byte, index + free) } else { false },
+    {
+        assert((prefix >> ((7u8 - index) as u8)) & 1u8 <= 1u8) by(bit_vector);
+        assert(((prefix | (byte >> ((8u8 - free) as u8))) >> ((7u8 - index) as u8)) & 1u8
+            == if index < 8u8 - free { (prefix >> ((7u8 - index) as u8)) & 1u8 }
+                else { (byte >> ((15u8 - index - free) as u8)) & 1u8 }) by(bit_vector)
+            requires 1 <= free <= 8, index < 8,
+                index >= 8u8 - free ==> (prefix >> ((7u8 - index) as u8)) & 1u8 == 0;
+        assert(((byte << free) >> ((7u8 - index) as u8)) & 1u8
+            == if index < 8u8 - free { (byte >> ((7u8 - index - free) as u8)) & 1u8 } else { 0u8 }) by(bit_vector)
+            requires 1 <= free <= 8, index < 8;
+    }
+
+    impl BitWriter {
+        pub closed spec fn well_formed(&self) -> bool {
+            1 <= self.w <= 8 && forall|i: int| 8 - self.w <= i < 8 ==> !#[trigger] byte_bit(self.last, i)
+        }
+    }
+
+    impl View for BitWriter {
+        type V = Seq<bool>;
+
+        closed spec fn view(&self) -> Self::V {
+            Seq::new((self.bytes@.len() * 8 + 8 - self.w) as nat, |i: int|
+                if i < self.bytes@.len() * 8 { byte_bit(self.bytes@[i / 8], i % 8) }
+                else { byte_bit(self.last, i - self.bytes@.len() * 8) })
+        }
+    }
+
+    proof fn byte_join(first: u8, second: u8, offset: u32, index: u32)
+        requires offset < 8, index < 8,
+        ensures byte_bit(if offset == 0 { first } else {
+                (first << offset) | (second >> ((8 - offset) as u32))
+            }, index as int)
+            == if index + offset < 8 {
+                byte_bit(first, index + offset)
+            } else {
+                byte_bit(second, index + offset - 8)
+            },
+    {
+        assert((if offset == 0 { first } else {
+                (first << offset) | (second >> ((8u32 - offset) as u32))
+            } >> ((7u32 - index) as u32)) & 1u8
+            == if index + offset < 8 {
+                (first >> ((7u32 - (index + offset)) as u32)) & 1u8
+            } else {
+                (second >> ((15u32 - (index + offset)) as u32)) & 1u8
+            }) by(bit_vector)
+            requires offset < 8, index < 8;
+    }
+
+    impl BitReader<'_> {
+        spec fn well_formed(&self) -> bool {
+            self.pos < 8 && (self.bytes@.len() == 0 ==> self.pos == 0)
+        }
+    }
+
+    impl View for BitReader<'_> {
+        type V = Seq<bool>;
+
+        closed spec fn view(&self) -> Self::V {
+            Seq::new((self.bytes@.len() * 8 - self.pos) as nat,
+                |i: int| byte_bit(self.bytes@[(i + self.pos) / 8], (i + self.pos) % 8))
         }
     }
 }
@@ -417,7 +815,7 @@ impl SerdeByteStr for char {
     where
         I: Iterator<Item = u8>,
     {
-        unsafe { from_u32_unchecked(u32::deserialize(iter)) }
+        char::from_u32(u32::deserialize(iter)).expect("invalid Unicode scalar value")
     }
 }
 
@@ -499,13 +897,11 @@ impl SerdeByteStr for String {
         I: Iterator<Item = u8>,
     {
         let n = usize::deserialize(iter);
-        unsafe {
-            String::from_utf8_unchecked(
-                repeat_with(|| u8::deserialize(iter))
-                    .take(n)
-                    .collect::<Vec<u8>>(),
-            )
-        }
+        let bytes = match iter.size_hint() {
+            (lower, Some(upper)) if lower == upper && lower >= n => iter.by_ref().take(n).collect(),
+            _ => repeat_with(|| u8::deserialize(iter)).take(n).collect(),
+        };
+        String::from_utf8(bytes).expect("invalid UTF-8")
     }
 }
 
@@ -572,6 +968,123 @@ impl_serdebytestr_seq!(
     [K V] HashMap<K, V> where [K: Eq + Hash],
 );
 
+#[cfg(verus_keep_ghost)]
+mod verification {
+    use super::*;
+
+    verus! {
+        fn bit_roundtrip(bits: &[bool]) {
+            proof {
+                reveal(BitWriter::well_formed);
+                reveal(<BitWriter as View>::view);
+            }
+            let mut writer = BitWriter::default();
+            let mut index = 0;
+            while index < bits.len()
+                invariant index <= bits.len(), writer.well_formed(),
+                    writer@ == bits@.take(index as int),
+                decreases bits.len() - index,
+            {
+                assert(writer.bytes@.len() * 8 <= writer@.len());
+                writer.push_bit(bits[index]);
+                index += 1;
+                assert(writer@ =~= bits@.take(index as int));
+            }
+            assert(bits@.take(bits@.len() as int) =~= bits@);
+            let encoded = writer.into_inner();
+            let ghost packed = byte_bits(encoded@);
+            let mut reader = BitReader::new(&encoded);
+            let mut index = 0;
+            while index < bits.len()
+                invariant index <= bits.len(), reader.well_formed(),
+                    reader@ == packed.skip(index as int),
+                    packed.len() >= bits.len(), packed.take(bits.len() as int) == bits@,
+                decreases bits.len() - index,
+            {
+                let bit = reader.read_bit();
+                #[verifier::proof_note("For every finite bit slice, writing its bits and reading them back returns each original bit in order, including byte boundaries and empty input")]
+                assert(bit == bits@[index as int]);
+                index += 1;
+                assert(reader@ =~= packed.skip(index as int));
+            }
+            #[verifier::proof_note("Finishing a bit stream uses the minimum whole-byte length and pads only the final byte with fewer than eight zero bits")]
+            assert(encoded@.len() == (bits@.len() + 7) / 8
+                && reader@.len() < 8
+                && forall|i: int| 0 <= i < reader@.len() ==> !#[trigger] reader@[i]);
+        }
+
+        fn mixed_roundtrip(prefix: &[bool], byte: u8, word: u64, count: u32)
+            requires count <= 64, count == 64 || word >> count == 0,
+        {
+            proof {
+                reveal(BitWriter::well_formed);
+                reveal(<BitWriter as View>::view);
+            }
+            let mut writer = BitWriter::default();
+            let mut index = 0;
+            while index < prefix.len()
+                invariant index <= prefix.len(), writer.well_formed(),
+                    writer@ == prefix@.take(index as int),
+                decreases prefix.len() - index,
+            {
+                assert(writer.bytes@.len() * 8 <= writer@.len());
+                writer.push_bit(prefix[index]);
+                index += 1;
+                assert(writer@ =~= prefix@.take(index as int));
+            }
+            assert(writer@ == prefix@);
+            writer.push_u8(byte);
+            assert(writer@.len() == prefix@.len() + 8);
+            assert(writer.bytes@.len() * 8 <= writer@.len());
+            writer.push_u64(word, count);
+            assert(writer@.len() == prefix@.len() + 8 + count);
+            assert(writer.bytes@.len() * 8 <= writer@.len());
+            let encoded = writer.into_inner();
+            let ghost packed = byte_bits(encoded@);
+            let mut reader = BitReader::new(&encoded);
+            let mut index = 0;
+            while index < prefix.len()
+                invariant index <= prefix.len(), reader.well_formed(),
+                    reader@ == packed.skip(index as int),
+                    packed.len() >= prefix.len() + 8 + count,
+                    packed.take(prefix.len() + 8 + count) == prefix@ + byte_bits(seq![byte]) + word_bits(word, count as nat),
+                decreases prefix.len() - index,
+            {
+                let bit = reader.read_bit();
+                assert(packed.take(prefix.len() + 8 + count)[index as int] == packed[index as int]);
+                assert(bit == prefix@[index as int]);
+                index += 1;
+                assert(reader@ =~= packed.skip(index as int));
+            }
+            let decoded = reader.read_u8();
+            proof {
+                assert forall|i: int| 0 <= i < 8 implies #[trigger] byte_bit(decoded, i) == byte_bit(byte, i) by {
+                    assert(packed.take(prefix.len() + 8 + count)[prefix.len() + i] == packed[prefix.len() + i]);
+                }
+                equal_bytes(decoded, byte);
+                #[verifier::proof_note("After every arbitrary-length bit prefix, an appended byte is recovered exactly by the unaligned byte reader without changing the preceding bits")]
+                assert(decoded == byte);
+            }
+            let mut index = 0;
+            while index < count
+                invariant index <= count, reader.well_formed(),
+                    reader@ == packed.skip(prefix.len() + 8 + index),
+                    packed.len() >= prefix.len() + 8 + count,
+                    packed.take(prefix.len() + 8 + count) == prefix@ + byte_bits(seq![byte]) + word_bits(word, count as nat),
+                decreases count - index,
+            {
+                let bit = reader.read_bit();
+                assert(packed.take(prefix.len() + 8 + count)[prefix.len() + 8 + index]
+                    == packed[prefix.len() + 8 + index]);
+                #[verifier::proof_note("For every u64 value fitting a requested width from zero through 64 bits, push_u64 appends exactly that most-significant-first bit sequence after arbitrary preceding bits and a byte")]
+                assert(bit == word_bit(word, count - 1 - index));
+                index += 1;
+                assert(reader@ =~= packed.skip(prefix.len() + 8 + index));
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -612,6 +1125,55 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn test_serde_unicode() {
+        let mut bytes = Vec::new();
+        let mut text = String::new();
+        for value in (0..=0x10ffff).filter_map(char::from_u32) {
+            bytes.clear();
+            value.serialize(&mut bytes);
+            assert_eq!(bytes, (value as u32).to_le_bytes());
+            assert_eq!(char::deserialize(&mut bytes.iter().copied()), value);
+            text.push(value);
+        }
+        for value in [String::new(), text] {
+            bytes.clear();
+            value.serialize(&mut bytes);
+            assert_eq!(&bytes[..size_of::<usize>()], value.len().to_le_bytes());
+            assert_eq!(&bytes[size_of::<usize>()..], value.as_bytes());
+            assert_eq!(String::deserialize(&mut bytes.iter().copied()), value);
+        }
+    }
+
+    #[test]
+    fn test_serde_string_iterator() {
+        for n in 0usize..=8 {
+            for mask in 0..1 << n {
+                let mut input = n
+                    .to_le_bytes()
+                    .into_iter()
+                    .map(Some)
+                    .chain((0..n).map(|i| (mask >> i & 1 != 0).then_some(b'a' + i as u8)))
+                    .chain([Some(b'!')]);
+                let mut iter = std::iter::from_fn(|| input.next().flatten());
+                let expected: String = (0..n)
+                    .map(|i| {
+                        if mask >> i & 1 != 0 {
+                            (b'a' + i as u8) as char
+                        } else {
+                            '\0'
+                        }
+                    })
+                    .collect();
+                assert_eq!(String::deserialize(&mut iter), expected);
+                assert_eq!(iter.next(), Some(b'!'));
+            }
+        }
+        let mut iter = 3usize.to_le_bytes().into_iter().chain(*b"a");
+        assert_eq!(String::deserialize(&mut iter), "a\0\0");
+        assert_eq!(iter.next(), None);
     }
 
     #[test]

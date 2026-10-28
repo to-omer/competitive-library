@@ -61,6 +61,7 @@ impl DoublyLinkedList {
         next
     }
 
+    /// Panics when removing an index from a two-node cycle.
     pub fn detach(&mut self, index: usize) -> (usize, usize) {
         let prev = self.cut_before(index);
         let next = self.cut_after(index);

@@ -70,8 +70,59 @@ mod tests {
     use super::*;
     use crate::tools::Xorshift;
 
+    fn check(solver: &HornSatisfiability, n: usize, clauses: &[(Vec<usize>, usize, bool)]) {
+        let mut least = None;
+        for bits in 0..1usize << n {
+            if clauses.iter().all(|(p, q, f)| {
+                !p.iter().all(|&v| bits & (1 << v) != 0) || (bits & (1 << q) != 0) == *f
+            }) {
+                least = Some(least.unwrap_or(bits) & bits);
+            }
+        }
+        assert_eq!(solver.is_satisfiable(), least.is_some());
+        let expected = least.map(|bits| (0..n).map(|v| bits & (1 << v) != 0).collect());
+        assert_eq!(solver.solve(), expected);
+    }
+
     #[test]
     fn test_horn_satisfiability() {
+        for n in 0..=4 {
+            let mut candidates = Vec::new();
+            for q in 0..n {
+                for f in [false, true] {
+                    candidates.push((vec![], q, f));
+                    for a in 0..n {
+                        candidates.push((vec![a], q, f));
+                        for b in 0..n {
+                            candidates.push((vec![a, b], q, f));
+                        }
+                    }
+                }
+            }
+            check(&HornSatisfiability::new(n), n, &[]);
+            for first in &candidates {
+                for second in &candidates {
+                    let clauses = [first.clone(), second.clone()];
+                    let mut solver = HornSatisfiability::new(n);
+                    for (i, (p, q, f)) in clauses.iter().enumerate() {
+                        solver.add_clause(p.iter().copied(), *q, *f);
+                        check(&solver, n, &clauses[..=i]);
+                    }
+                }
+            }
+        }
+        let cycle = [
+            (vec![0, 0], 1, true),
+            (vec![1, 1], 2, true),
+            (vec![2, 2], 0, true),
+            (vec![], 0, true),
+            (vec![0, 1, 2], 2, false),
+        ];
+        let mut solver = HornSatisfiability::new(3);
+        for (i, (p, q, f)) in cycle.iter().enumerate() {
+            solver.add_clause(p.iter().copied(), *q, *f);
+            check(&solver, 3, &cycle[..=i]);
+        }
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             let n = rng.random(1..=10);
@@ -90,22 +141,7 @@ mod tests {
                 hs.add_clause(clause.iter().cloned(), q, f);
                 clauses.push((clause, q, f));
 
-                let check = |lits: &Vec<bool>| -> bool {
-                    for (p, q, f) in &clauses {
-                        if p.iter().all(|&p| lits[p]) && lits[*q] != *f {
-                            return false;
-                        }
-                    }
-                    true
-                };
-                let res = hs.solve();
-                let satisfiable = (0..1 << n)
-                    .map(|bits| (0..n).map(|i| (bits & (1 << i)) != 0).collect())
-                    .any(|lits| check(&lits));
-                assert_eq!(res.is_some(), satisfiable);
-                if let Some(lits) = res {
-                    assert!(check(&lits));
-                }
+                check(&hs, n, &clauses);
             }
         }
     }

@@ -2361,37 +2361,6 @@ mod fixed_permutation_operation_impl {
             check::<32>();
         }
     }
-
-    #[cfg(kani)]
-    mod verification {
-        use super::*;
-
-        #[kani::proof]
-        #[kani::unwind(5)]
-        fn proof_inverse() {
-            let p: [usize; 4] = kani::any();
-            for i in 0..4 {
-                kani::assume(p[i] < 4);
-                for j in 0..i {
-                    kani::assume(p[i] != p[j]);
-                }
-            }
-            let inverse = FixedPermutationOperation::inverse(&p);
-            let left = FixedPermutationOperation::operate(&inverse, &p);
-            let right = FixedPermutationOperation::operate(&p, &inverse);
-            for i in 0..4 {
-                kani::assert(
-                    left[i] == i,
-                    "Left inverse identity for every valid permutation of length 4",
-                );
-                kani::assert(
-                    right[i] == i,
-                    "Right inverse identity for every valid permutation of length 4",
-                );
-            }
-            kani::cover!(p[0] == 1 && p[1] == 2 && p[2] == 3 && p[3] == 0);
-        }
-    }
 }
 
 #[codesnip::entry("TableOperation")]

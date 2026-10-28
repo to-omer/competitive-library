@@ -525,78 +525,15 @@ pub type MergingUnionFind<T, M> =
 pub type PotentializedUnionFind<P> = UnionFindBase<UnionBySize, PathCompression, (), P, ()>;
 pub type UndoableUnionFind = UnionFindBase<UnionBySize, (), (), (), Undoable>;
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-    use crate::algebra::LogicalLinearOperation;
-
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_potential_compression() {
-        let a: (u64, u64) = kani::any();
-        let b: (u64, u64) = kani::any();
-        let c: (u64, u64) = kani::any();
-        let value: u64 = kani::any();
-        let mut uf =
-            UnionFindBase::<(), PathCompression, (), LogicalLinearOperation<u64>, ()>::new(4);
-        uf.unite_noninv(2, 3, c);
-        uf.unite_noninv(1, 2, b);
-        uf.unite_noninv(0, 1, a);
-        let expected = (((value & a.0) ^ a.1) & b.0 ^ b.1) & c.0 ^ c.1;
-        let root = uf.find_root(3);
-        let (found_root, potential) = uf.find(3);
-        kani::assert(
-            root == 0 && found_root == 0 && (value & potential.0) ^ potential.1 == expected,
-            "On a four-node chain with arbitrary u64 mask/XOR potentials and inputs, root-only path compression preserves the ordered action of all three edges",
-        );
-        kani::assert(
-            uf.find(3) == (0, potential) && uf.cells[3].parent() == Some(0),
-            "Repeated potential-aware path compression flattens the four-node mask/XOR chain without changing its root or noncommutative potential",
-        );
-        kani::cover!(((value & a.0) ^ a.1) & b.0 ^ b.1 != ((value & b.0) ^ b.1) & a.0 ^ a.1);
-    }
-
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_undo() {
-        let x: usize = kani::any();
-        let y: usize = kani::any();
-        let query: usize = kani::any();
-        kani::assume(x < 4 && y < 4 && query < 4);
-        let mut uf = UndoableUnionFind::new(4);
-        uf.unite(0, 1);
-        uf.unite(2, 3);
-        let changed = uf.unite(x, y);
-        kani::assert(
-            changed == (x / 2 != y / 2) && uf.size(query) == if changed { 4 } else { 2 },
-            "For every union between four nodes initially partitioned into two pairs, the result and component size reflect exactly whether the pairs merge",
-        );
-        if changed {
-            uf.undo();
-        }
-        kani::assert(
-            uf.same(query, 0) == (query < 2) && uf.size(query) == 2,
-            "Undoing a successful bridge restores the original two-pair partition and both component sizes",
-        );
-        uf.undo();
-        kani::assert(
-            uf.same(0, 1) && !uf.same(2, 3) && uf.size(2) == 1 && uf.size(3) == 1,
-            "Redundant unions add no history: the next undo restores the two singleton nodes of the second pair",
-        );
-        kani::cover!(changed);
-        kani::cover!(!changed && x != y);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
-        algebra::{Invertible, LinearOperation, Magma, Unital},
+        algebra::{Invertible, LinearOperation, LogicalLinearOperation, Magma, Unital},
         graph::{Graph, UndirectedSparseGraph},
         num::mint_basic::MInt998244353 as M,
         rand,
-        tools::{Xorshift, from_fn},
+        tools::{Xorshift, from_fn, testutil::exhaustive_sequences},
         tree::MixedTree,
     };
     use std::collections::HashSet;
@@ -688,6 +625,40 @@ mod tests {
     }
 
     #[test]
+    fn test_potential_path_compression() {
+        let mut rng = Xorshift::default();
+        let maps = [
+            (0u64, 0u64),
+            (0, u64::MAX),
+            (u64::MAX, 0),
+            (u64::MAX, u64::MAX),
+        ];
+        let cases = exhaustive_sequences(maps, 0..=4)
+            .chain((0..100).map(|_| rng.random_iter((.., ..)).take(32).collect()));
+        for edges in cases {
+            let mut uf =
+                UnionFindBase::<(), PathCompression, (), LogicalLinearOperation<u64>, ()>::new(
+                    edges.len() + 1,
+                );
+            for (node, &edge) in edges.iter().enumerate().rev() {
+                uf.unite_noninv(node, node + 1, edge);
+            }
+            for node in (0..=edges.len()).rev() {
+                assert_eq!(uf.find_root(node), 0);
+                let (root, potential) = uf.find(node);
+                assert_eq!(root, 0);
+                for input in [0, u64::MAX] {
+                    let expected = edges[..node]
+                        .iter()
+                        .fold(input, |value, &(mask, xor)| (value & mask) ^ xor);
+                    assert_eq!((input & potential.0) ^ potential.1, expected);
+                }
+                assert_eq!(uf.find(node), (root, potential));
+            }
+        }
+    }
+
+    #[test]
     fn test_potential_union_find() {
         const N: usize = 20;
         let mut rng = Xorshift::default();
@@ -737,6 +708,30 @@ mod tests {
     fn test_undoable_union_find() {
         const N: usize = 10;
         const M: usize = 200;
+        for x in 0..4 {
+            for y in 0..4 {
+                let mut uf = UndoableUnionFind::new(4);
+                uf.unite(0, 1);
+                uf.unite(2, 3);
+                let changed = uf.unite(x, y);
+                assert_eq!(changed, x / 2 != y / 2);
+                for query in 0..4 {
+                    assert_eq!(uf.size(query), if changed { 4 } else { 2 });
+                }
+                if changed {
+                    uf.undo();
+                }
+                for query in 0..4 {
+                    assert_eq!(uf.same(query, 0), query < 2);
+                    assert_eq!(uf.size(query), 2);
+                }
+                uf.undo();
+                assert!(uf.same(0, 1));
+                assert!(!uf.same(2, 3));
+                assert_eq!(uf.size(2), 1);
+                assert_eq!(uf.size(3), 1);
+            }
+        }
         let mut rng = Xorshift::default();
         for _ in 0..10 {
             rand!(rng, n: 1..=N, m: 1..=M, g: MixedTree(m), p: [(0..n, 0..n); m]);

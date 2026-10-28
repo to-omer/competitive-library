@@ -189,27 +189,27 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
+#[cfg(test)]
+mod tests {
     use super::*;
 
-    #[kani::proof]
-    #[kani::unwind(17)]
-    fn proof_u8_normalization() {
-        let num: u8 = kani::any();
-        let den: u8 = kani::any();
-        kani::assume(num != 0 || den != 0);
-        let (mut a, mut b) = (num as u16, den as u16);
-        while b != 0 {
-            (a, b) = (b, a % b);
+    #[test]
+    fn test_normalization() {
+        for num in u8::MIN..=u8::MAX {
+            for den in u8::MIN..=u8::MAX {
+                if num == 0 && den == 0 {
+                    continue;
+                }
+                let (mut a, mut b) = (u16::from(num), u16::from(den));
+                while b != 0 {
+                    (a, b) = (b, a % b);
+                }
+                let actual = URational::new(num, den);
+                assert_eq!(
+                    (u16::from(actual.num), u16::from(actual.den)),
+                    (u16::from(num) / a, u16::from(den) / a)
+                );
+            }
         }
-        let actual = URational::new(num, den);
-        kani::assert(
-            actual.num as u16 == num as u16 / a && actual.den as u16 == den as u16 / a,
-            "For every nonzero u8 numerator-denominator pair, unsigned rational normalization equals independent widened Euclidean reduction, including zero and positive infinity",
-        );
-        kani::cover!(num == u8::MAX && den == 0);
-        kani::cover!(num == u8::MAX && den == u8::MAX);
-        kani::cover!(num == 0 && den == u8::MAX);
     }
 }

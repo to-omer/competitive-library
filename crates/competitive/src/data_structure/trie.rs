@@ -1,22 +1,13 @@
 use super::Monoid;
 use std::collections::VecDeque;
-#[cfg(verus_keep_ghost)]
-use vstd::prelude::*;
 
-#[cfg_attr(verus_keep_ghost, verus_verify)]
-// Clone itself has no formal postcondition.
-#[cfg_attr(verus_keep_ghost, verifier::allow(autoderive_clone_without_spec))]
 #[derive(Debug, Clone)]
 pub struct Trie {
     child: Vec<usize>,
     node_size: usize,
     char_size: usize,
 }
-#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl Trie {
-    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        ensures result@ == (Seq::new(char_size as nat, |_: int| !0usize), 1usize, char_size),
-    ))]
     pub fn new(char_size: usize) -> Self {
         Self {
             child: vec![!0; char_size],
@@ -24,10 +15,6 @@ impl Trie {
             char_size,
         }
     }
-    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires capacity as int * char_size as int <= usize::MAX,
-        ensures result@ == (Seq::new(char_size as nat, |_: int| !0usize), 1usize, char_size),
-    ))]
     pub fn with_capacity(char_size: usize, capacity: usize) -> Self {
         let mut child = Vec::with_capacity(capacity * char_size);
         child.resize(char_size, !0);
@@ -37,60 +24,12 @@ impl Trie {
             char_size,
         }
     }
-}
-impl Trie {
-    #[cfg_attr(verus_keep_ghost, verus_verify)]
-    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires
-            old(self)@.1 > 0, old(self)@.2 > 0,
-            old(self)@.0.len() == old(self)@.1 as int * old(self)@.2 as int,
-            node < old(self)@.1, ch < old(self)@.2,
-            old(self)@.0.len() + old(self)@.2 <= usize::MAX,
-            forall|i: int| 0 <= i < old(self)@.0.len() ==>
-                #[trigger] old(self)@.0[i] == !0usize || old(self)@.0[i] < old(self)@.1,
-        ensures
-            final(self)@.2 == old(self)@.2,
-            final(self)@.1 == old(self)@.1
-                + if old(self)@.0[node as int * old(self)@.2 as int + ch] == !0usize { 1int } else { 0int },
-            result < final(self)@.1,
-            final(self)@.0 == if old(self)@.0[node as int * old(self)@.2 as int + ch] == !0usize {
-                old(self)@.0.update(node as int * old(self)@.2 as int + ch, old(self)@.1)
-                    + Seq::new(old(self)@.2 as nat, |_: int| !0usize)
-            } else { old(self)@.0 },
-            result == final(self)@.0[node as int * final(self)@.2 as int + ch],
-    ))]
     pub fn insert_once_at(&mut self, node: usize, ch: usize) -> usize {
-        #[cfg(verus_keep_ghost)]
-        proof_decl! { let ghost before = self@; }
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            assert(node as int * self.char_size as int + ch < self.child.len()) by(nonlinear_arith)
-                requires node < self.node_size, ch < self.char_size,
-                    self.char_size > 0,
-                    self.child.len() == self.node_size as int * self.char_size as int;
-            assert(self.node_size < usize::MAX) by(nonlinear_arith)
-                requires self.char_size > 0,
-                    self.child.len() == self.node_size as int * self.char_size as int,
-                    self.child.len() + self.char_size <= usize::MAX;
-        }
         let index = node * self.char_size + ch;
         if self.child[index] == !0 {
             self.child[index] = self.node_size;
             self.child.resize(self.child.len() + self.char_size, !0);
             self.node_size += 1;
-            #[cfg(verus_keep_ghost)]
-            proof! {
-                #[verifier::proof_note("For any well-formed trie with a nonempty alphabet and room for one more node, inserting an absent edge creates exactly one fresh node with no outgoing edges and preserves all other existing edges")]
-                assert(self.child@ =~= before.0.update(index as int, before.1)
-                    + Seq::new(before.2 as nat, |_: int| !0usize));
-            }
-        }
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            if before.0[index as int] != !0usize {
-                #[verifier::proof_note("Reinserting an existing edge reuses its node and leaves the trie unchanged")]
-                assert(self@ == before);
-            }
         }
         self.child[index]
     }
@@ -133,37 +72,13 @@ impl Trie {
     {
         self.find_at(0, iter)
     }
-    #[cfg_attr(verus_keep_ghost, verus_verify)]
-    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires
-            self@.0.len() == self@.1 as int * self@.2 as int,
-            node < self@.1, ch < self@.2,
-        ensures result == if self@.0[node as int * self@.2 as int + ch] == !0usize {
-            None
-        } else { Some(self@.0[node as int * self@.2 as int + ch]) },
-    ))]
     pub fn next_node(&self, node: usize, ch: usize) -> Option<usize> {
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            assert(node as int * self.char_size as int + ch < self.child.len()) by(nonlinear_arith)
-                requires node < self.node_size, ch < self.char_size,
-                    self.char_size > 0,
-                    self.child.len() == self.node_size as int * self.char_size as int;
-        }
         let index = node * self.char_size + ch;
-        let result = if self.child[index] == !0 {
+        if self.child[index] == !0 {
             None
         } else {
             Some(self.child[index])
-        };
-        #[cfg(verus_keep_ghost)]
-        proof! {
-            #[verifier::proof_note("For every valid node and alphabet index in any correctly sized trie table, next_node returns None exactly for an absent edge and otherwise returns its stored destination")]
-            assert(result == if self.child@[index as int] == !0usize {
-                None
-            } else { Some(self.child@[index as int]) });
         }
-        result
     }
     pub fn node_size(&self) -> usize {
         self.node_size
@@ -213,32 +128,210 @@ impl Trie {
     }
 }
 
-#[cfg(verus_keep_ghost)]
+#[cfg(kani)]
 mod verification {
     use super::*;
 
-    verus! {
-    pub fn first_edge(char_size: usize, ch: usize) -> (result: Trie)
-        requires 0 < char_size, ch < char_size, 2 * char_size as int <= usize::MAX,
-        ensures result@.1 == 2, result@.2 == char_size, result@.0[ch as int] == 1,
-    {
-        let mut trie = Trie::new(char_size);
-        let node = trie.insert_once_at(0, ch);
-        let next = trie.next_node(0, ch);
-        assert(1usize != !0usize) by(bit_vector);
-        #[verifier::proof_note("Constructing a trie with any nonempty alphabet and inserting its first edge creates node 1, preserves the alphabet, and makes that edge reachable from the root")]
-        assert(node == 1 && next == Some(1));
-        trie
-    }
-    }
-}
+    fn check_failure_two_binary_branches<const LEFT: usize, const RIGHT: usize>() {
+        use crate::algebra::BitOrOperation;
 
-#[cfg(verus_keep_ghost)]
-verus! {
-    impl View for Trie {
-        type V = (Seq<usize>, usize, usize);
-        closed spec fn view(&self) -> Self::V {
-            (self.child@, self.node_size, self.char_size)
+        let left = LEFT;
+        let right = RIGHT;
+        // Prefixes of the two words [0, left] and [1, right], with fixed node IDs.
+        let mut trie = Trie {
+            child: vec![
+                1,
+                2,
+                if left == 0 { 3 } else { usize::MAX },
+                if left == 1 { 3 } else { usize::MAX },
+                if right == 0 { 4 } else { usize::MAX },
+                if right == 1 { 4 } else { usize::MAX },
+                usize::MAX,
+                usize::MAX,
+                usize::MAX,
+                usize::MAX,
+            ],
+            node_size: 5,
+            char_size: 2,
+        };
+        let original: [u8; 5] = kani::any();
+        let mut labels = original;
+        trie.build_failure::<BitOrOperation<u8>>(&mut labels);
+        kani::assert(
+            labels[0] == original[0]
+                && labels[1] == (original[1] | original[0])
+                && labels[2] == (original[2] | original[0])
+                && labels[3] == (original[3] | original[left + 1] | original[0])
+                && labels[4] == (original[4] | original[right + 1] | original[0]),
+            "For all four tries formed by binary words 0a and 1b and arbitrary u8 node labels, failure construction aggregates exactly the labels of every stored suffix, including the node and root",
+        );
+        let words = [[0usize; 2], [0, 0], [1, 0], [0, left], [1, right]];
+        let lengths = [0, 1, 1, 2, 2];
+        let node = kani::any::<u8>() as usize;
+        kani::assume(node < 5);
+        let symbol = usize::from(kani::any::<bool>());
+        let last = if lengths[node] == 1 {
+            words[node][0]
+        } else {
+            words[node][1]
+        };
+        let expected = if lengths[node] > 0 && last == 0 && symbol == left {
+            3
+        } else if lengths[node] > 0 && last == 1 && symbol == right {
+            4
+        } else {
+            symbol + 1
+        };
+        kani::assert(
+            trie.next_node(node, symbol) == Some(expected),
+            "Every completed transition in these four binary tries reaches the longest stored prefix that is a suffix after consuming the next symbol",
+        );
+        kani::cover!(node == 0);
+        kani::cover!(node == 4);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_failure_binary_00_11() {
+        check_failure_two_binary_branches::<0, 1>();
+    }
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_failure_binary_00_10() {
+        check_failure_two_binary_branches::<0, 0>();
+    }
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_failure_binary_01_10() {
+        check_failure_two_binary_branches::<1, 0>();
+    }
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_failure_binary_01_11() {
+        check_failure_two_binary_branches::<1, 1>();
+    }
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_failure_composition_order() {
+        use crate::algebra::{Associative, Magma, Unital};
+
+        enum Composition {}
+        impl Magma for Composition {
+            // Truth tables of all functions from bool to bool.
+            type T = (bool, bool);
+            fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+                (if y.0 { x.1 } else { x.0 }, if y.1 { x.1 } else { x.0 })
+            }
         }
+        impl Associative for Composition {}
+        impl Unital for Composition {
+            fn unit() -> Self::T {
+                (false, true)
+            }
+        }
+
+        // Prefixes of 01 and 10. Failure links are 3 -> 2 -> 0 and 4 -> 1 -> 0.
+        let mut trie = Trie {
+            child: vec![
+                1,
+                2,
+                usize::MAX,
+                3,
+                4,
+                usize::MAX,
+                usize::MAX,
+                usize::MAX,
+                usize::MAX,
+                usize::MAX,
+            ],
+            node_size: 5,
+            char_size: 2,
+        };
+        let original: [(bool, bool); 5] = kani::any();
+        let mut labels = original;
+        trie.build_failure::<Composition>(&mut labels);
+        let input: bool = kani::any();
+        let root = if input { original[0].1 } else { original[0].0 };
+        let first = if root { original[1].1 } else { original[1].0 };
+        let second = if root { original[2].1 } else { original[2].0 };
+        let expected = [
+            root,
+            first,
+            second,
+            if second { original[3].1 } else { original[3].0 },
+            if first { original[4].1 } else { original[4].0 },
+        ];
+        for node in 0..5 {
+            let actual = if input {
+                labels[node].1
+            } else {
+                labels[node].0
+            };
+            kani::assert(
+                actual == expected[node],
+                "For the trie of 01 and 10 and every assignment of bool-to-bool functions, failure aggregation composes the node with its suffix ancestors in decreasing suffix-length order; this monoid is noncommutative",
+            );
+        }
+        kani::cover!(original[0] == (false, false) && original[1] == (true, false));
+    }
+
+    #[kani::proof]
+    #[kani::unwind(7)]
+    fn proof_failure_unary_chain() {
+        use crate::algebra::BitOrOperation;
+
+        let mut trie = Trie {
+            child: vec![1, 2, 3, 4, usize::MAX],
+            node_size: 5,
+            char_size: 1,
+        };
+        let original: [u8; 5] = kani::any();
+        let mut labels = original;
+        trie.build_failure::<BitOrOperation<u8>>(&mut labels);
+        let mut expected = 0;
+        for node in 0..5 {
+            expected |= original[node];
+            kani::assert(
+                labels[node] == expected,
+                "For the unary trie of depths zero through four and arbitrary u8 labels, each aggregated label contains exactly all prefix labels through its depth, including the full chain of proper suffixes",
+            );
+            kani::assert(
+                trie.next_node(node, 0) == Some((node + 1).min(4)),
+                "Every unary transition advances to the next depth or stays at the longest stored prefix",
+            );
+        }
+    }
+
+    fn check_failure_root_alphabet<const ALPHABET: usize>() {
+        use crate::algebra::BitOrOperation;
+
+        let mut trie = Trie::new(ALPHABET);
+        let original: u8 = kani::any();
+        let mut labels = [original];
+        trie.build_failure::<BitOrOperation<u8>>(&mut labels);
+        kani::assert(
+            labels[0] == original && trie.node_size() == 1,
+            "Failure construction for a root-only trie preserves its label and size for alphabet sizes zero through four",
+        );
+        for symbol in 0..ALPHABET {
+            kani::assert(
+                trie.next_node(0, symbol) == Some(0),
+                "Every symbol of a root-only trie becomes a self-loop",
+            );
+        }
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn proof_failure_root_alphabets() {
+        check_failure_root_alphabet::<0>();
+        check_failure_root_alphabet::<1>();
+        check_failure_root_alphabet::<2>();
+        check_failure_root_alphabet::<3>();
+        check_failure_root_alphabet::<4>();
     }
 }

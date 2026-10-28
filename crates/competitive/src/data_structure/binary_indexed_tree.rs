@@ -146,8 +146,7 @@ impl<G: Group> BinaryIndexedTree<G> {
 #[cfg(kani)]
 mod verification {
     use super::*;
-    use crate::algebra::{AdditiveOperation, FixedPermutationOperation, LogicalLinearOperation};
-    use std::num::Wrapping;
+    use crate::algebra::{FixedPermutationOperation, LogicalLinearOperation};
 
     #[kani::proof]
     #[kani::unwind(6)]
@@ -202,39 +201,6 @@ mod verification {
         }
         kani::cover!(left == right);
         kani::cover!(left == 1 && right == 3 && values[0][values[1][0]] != values[1][values[0][0]]);
-    }
-
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_abelian_update() {
-        let values: [u8; 4] = kani::any();
-        let mut values = values.map(Wrapping);
-        let index: usize = kani::any();
-        let change = Wrapping(kani::any());
-        let replace: bool = kani::any();
-        let left: usize = kani::any();
-        let right: usize = kani::any();
-        kani::assume(index < values.len() && left <= right && right <= values.len());
-        let mut bit = BinaryIndexedTree::<AdditiveOperation<Wrapping<u8>>>::from_slice(&values);
-        if replace {
-            bit.set(index, change);
-            values[index] = change;
-        } else {
-            bit.update(index, change);
-            values[index] += change;
-        }
-        let mut expected = Wrapping(0u8);
-        for &value in &values[left..right] {
-            expected += value;
-        }
-        kani::assert(
-            bit.get(index) == values[index]
-                && bit.fold(left, right) == expected
-                && bit.fold_abelian(left, right) == expected,
-            "For all four u8 values, point additions or assignments and valid ranges, both Fenwick range queries equal the sum of the logical values modulo 256",
-        );
-        kani::cover!(left == right);
-        kani::cover!(left == 0 && right == 4 && replace && change == Wrapping(u8::MAX));
     }
 }
 

@@ -112,74 +112,6 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-    use crate::algebra::{AdditiveOperation, BitXorOperation};
-    use std::num::Wrapping;
-
-    #[kani::proof]
-    #[kani::unwind(4)]
-    fn proof_rectangle_update() {
-        let mut values: [[u64; 3]; 2] = kani::any();
-        let row: usize = kani::any();
-        let column: usize = kani::any();
-        let change: u64 = kani::any();
-        let replace: bool = kani::any();
-        let top: usize = kani::any();
-        let bottom: usize = kani::any();
-        let left: usize = kani::any();
-        let right: usize = kani::any();
-        kani::assume(row < 2 && column < 3);
-        kani::assume(top <= bottom && bottom <= 2 && left <= right && right <= 3);
-        let mut bit = BinaryIndexedTree2D::<BitXorOperation<u64>>::new(2, 3);
-        for (i, values) in values.iter().enumerate() {
-            for (j, &value) in values.iter().enumerate() {
-                bit.update(i, j, value);
-            }
-        }
-        if replace {
-            bit.set(row, column, change);
-            values[row][column] = change;
-        } else {
-            bit.update(row, column, change);
-            values[row][column] ^= change;
-        }
-        let mut expected = 0;
-        for values in &values[top..bottom] {
-            for &value in &values[left..right] {
-                expected ^= value;
-            }
-        }
-        kani::assert(
-            bit.get(row, column) == values[row][column]
-                && bit.fold(top, left, bottom, right) == expected,
-            "For all 2-by-3 u64 grids, point XOR updates or assignments and valid rectangles, 2D Fenwick queries equal the logical grid XOR; unchecked accesses stay within the allocated table",
-        );
-        kani::cover!(top == bottom || left == right);
-        kani::cover!(top == 0 && bottom == 2 && left == 0 && right == 3 && column == 2);
-
-        // A single occupied cell distinguishes inverse operations that XOR cannot check.
-        let initial = Wrapping(kani::any());
-        let change = Wrapping(kani::any());
-        let mut bit = BinaryIndexedTree2D::<AdditiveOperation<Wrapping<u8>>>::new(2, 3);
-        bit.update(row, column, initial);
-        let value = if replace {
-            bit.set(row, column, change);
-            change
-        } else {
-            bit.update(row, column, change);
-            initial + change
-        };
-        let contains = top <= row && row < bottom && left <= column && column < right;
-        kani::assert(
-            bit.get(row, column) == value
-                && bit.fold(top, left, bottom, right) == if contains { value } else { Wrapping(0) },
-            "For every single-cell position in a 2-by-3 grid and all u8 initial and replacement or increment values, addition modulo 256 preserves the cell value and returns it exactly for rectangles containing the cell",
-        );
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -187,6 +119,7 @@ mod tests {
         algebra::{AdditiveOperation, MaxOperation},
         tools::Xorshift,
     };
+    use std::num::Wrapping;
 
     const A: u64 = 1_000_000_000;
     const B: i64 = 1_000_000_000;
@@ -248,6 +181,51 @@ mod tests {
 
     #[test]
     fn test_group_binary_indexed_tree2d() {
+        for (h, w) in [(0, 0), (0, 3), (2, 0)] {
+            let bit = BinaryIndexedTree2D::<AdditiveOperation<i64>>::new(h, w);
+            assert_eq!(bit.fold(0, 0, h, w), 0);
+        }
+        for (row, column) in (0..2).flat_map(|row| (0..3).map(move |column| (row, column))) {
+            for change in [Wrapping(0u8), Wrapping(1), Wrapping(u8::MAX)] {
+                for replace in [false, true] {
+                    let mut values = [
+                        [Wrapping(0u8), Wrapping(1), Wrapping(127)],
+                        [Wrapping(128), Wrapping(254), Wrapping(255)],
+                    ];
+                    let mut bit = BinaryIndexedTree2D::<AdditiveOperation<Wrapping<u8>>>::new(2, 3);
+                    for (i, row) in values.iter().enumerate() {
+                        for (j, &value) in row.iter().enumerate() {
+                            bit.update(i, j, value);
+                        }
+                    }
+                    if replace {
+                        bit.set(row, column, change);
+                        values[row][column] = change;
+                    } else {
+                        bit.update(row, column, change);
+                        values[row][column] += change;
+                    }
+                    for (i, row) in values.iter().enumerate() {
+                        for (j, &value) in row.iter().enumerate() {
+                            assert_eq!(bit.get(i, j), value);
+                        }
+                    }
+                    for top in 0..=2 {
+                        for bottom in top..=2 {
+                            for left in 0..=3 {
+                                for right in left..=3 {
+                                    let expected: Wrapping<u8> = values[top..bottom]
+                                        .iter()
+                                        .flat_map(|row| &row[left..right])
+                                        .sum();
+                                    assert_eq!(bit.fold(top, left, bottom, right), expected);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         let mut rng = Xorshift::default();
         for _ in 0..32 {
             let h = rng.rand(32) as usize;

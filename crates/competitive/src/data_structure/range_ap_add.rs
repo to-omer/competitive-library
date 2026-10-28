@@ -1,8 +1,7 @@
 #[cfg(verus_keep_ghost)]
-use vstd::prelude::*;
+use vstd::{prelude::*, std_specs::iter::IteratorSpec};
 
 #[cfg_attr(verus_keep_ghost, verus_verify)]
-// Clone itself has no formal postcondition.
 #[cfg_attr(verus_keep_ghost, verifier::allow(autoderive_clone_without_spec))]
 #[derive(Debug, Clone)]
 pub struct RangeArithmeticProgressionAdd {
@@ -147,17 +146,19 @@ impl RangeArithmeticProgressionAdd {
                     assert(self.dd[0] == prefix_sum(start, 1));
                 }
             }
-            let n = self.dd.len();
+            #[cfg(verus_keep_ghost)]
+            proof_decl! { let ghost n = self.dd.len(); }
             #[cfg_attr(verus_keep_ghost, verus_spec(iter =>
                 invariant
                     self.dd.len() == start.len(), n == start.len(),
+                    iter.seq() == (1usize..n).remaining(),
                     prefix_sums_bounded(start),
                     forall|j: int| 0 <= j < iter.index() + 1 && j < start.len()
                         ==> #[trigger] self.dd@[j] == prefix_sum(start, j + 1),
                     forall|j: int| iter.index() + 1 <= j < start.len()
                         ==> #[trigger] self.dd@[j] == start[j],
             ))]
-            for i in 1..n {
+            for i in 1..self.dd.len() {
                 #[cfg(verus_keep_ghost)]
                 proof! {
                     assert(prefix_sum(start, i as int + 1)

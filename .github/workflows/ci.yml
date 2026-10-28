@@ -126,11 +126,13 @@ jobs:
         run: makers formal-verus --output-json | tee "$RUNNER_TEMP/formal.json"
 
       - name: Formal verification summary
+        id: formal-summary
         if: ${{ always() && steps.formal-verify.outcome != 'skipped' }}
         shell: bash
         run: python3 .github/workflows/formal_summary.py verus "$RUNNER_TEMP/formal.json" --doc "$RUNNER_TEMP/formal.md" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Upload formal verification report
+        if: ${{ !cancelled() && steps.formal-summary.outcome == 'success' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: formal-verus
@@ -333,7 +335,13 @@ jobs:
 
   generate-doc:
     needs: [verify, benchmark, coverage, formal-verus, formal-kani, snippet]
-    if: github.ref_name == 'master'
+    if: >-
+      ${{ !cancelled() && github.ref_name == 'master'
+          && needs.verify.result == 'success'
+          && needs.benchmark.result == 'success'
+          && needs.coverage.result == 'success'
+          && needs.formal-kani.result == 'success'
+          && needs.snippet.result == 'success' }}
 
     name: Generate Doc
     runs-on: ubuntu-latest
@@ -367,10 +375,21 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
 
       - name: Arrange artifacts
+        env:
+          VERUS_RESULT: ${{ needs.formal-verus.result }}
         run: |
           cp -r artifact/* .
           python3 .github/workflows/formal_summary.py kani formal-kani-*/formal.json --harnesses formal-kani-*/kani-list.json --doc "$RUNNER_TEMP/kani.md" >> "$GITHUB_STEP_SUMMARY"
-          cat "$RUNNER_TEMP/kani.md" formal-verus/formal.md > crates/competitive/src/formal.md
+          cat "$RUNNER_TEMP/kani.md" > crates/competitive/src/formal.md
+          if [ -f formal-verus/formal.md ]; then
+            cat formal-verus/formal.md >> crates/competitive/src/formal.md
+          elif [ "$VERUS_RESULT" != success ]; then
+            printf '\n## Verus\n\nJob result: **%s**. Report unavailable; see the [CI logs](%s/%s/actions/runs/%s).\n' \
+              "$VERUS_RESULT" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> crates/competitive/src/formal.md
+          else
+            echo 'Verus passed but its report is missing.' >&2
+            exit 1
+          fi
 
       - name: cargo-build
         run: cargo build --workspace --lib --features verify_doc

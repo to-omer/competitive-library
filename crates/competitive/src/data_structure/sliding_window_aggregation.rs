@@ -218,48 +218,6 @@ mod verification {
     use super::*;
     use crate::algebra::LogicalLinearOperation;
 
-    #[kani::proof]
-    #[kani::unwind(6)]
-    fn proof_queue_transfer() {
-        let values: [(u8, u8); 4] = kani::any();
-        let pops: usize = kani::any();
-        let input: u8 = kani::any();
-        kani::assume(pops <= 3);
-        let mut queue = QueueAggregation::<LogicalLinearOperation<u8>>::new();
-        kani::assert(
-            queue.pop().is_none(),
-            "An empty QueueAggregation returns None",
-        );
-        for &value in &values[..3] {
-            queue.push(value);
-        }
-        for &value in &values[..pops] {
-            kani::assert(
-                queue.pop() == Some(value),
-                "For any three u8 bitwise affine maps and 0..=3 removals, QueueAggregation preserves FIFO order through transfer to the front stack",
-            );
-        }
-        queue.push(values[3]);
-        kani::cover!(!queue.front_stack.is_empty() && !queue.back_stack.is_empty());
-        kani::assert(
-            queue.pop() == Some(values[pops]),
-            "Appending a fourth arbitrary map preserves the oldest remaining value, including when the queue was emptied",
-        );
-        let mut output = input;
-        for &(mask, xor) in &values[pops + 1..] {
-            output = (output & mask) ^ xor;
-        }
-        kani::assert(
-            queue.len() == 3 - pops
-                && queue.is_empty() == (pops == 3)
-                && queue.last() == (pops < 3).then_some(&values[3])
-                && LogicalLinearOperation::eval(&queue.fold_all(), &input) == output,
-            "After the bounded transfer/refill sequence, queue length, last value and noncommutative aggregate match the remaining FIFO values",
-        );
-        kani::cover!(pops == 0);
-        kani::cover!(pops == 3);
-    }
-
     macro_rules! proof_deque_rebalance {
         ($name:ident, $len:expr, $push:ident, $pop:ident, $initial_front:expr) => {
             #[kani::proof]
@@ -333,4 +291,49 @@ mod verification {
     proof_deque_rebalance!(proof_deque_front_four, 4, push_back, pop_front, false);
     proof_deque_rebalance!(proof_deque_back_three, 3, push_front, pop_back, true);
     proof_deque_rebalance!(proof_deque_back_four, 4, push_front, pop_back, true);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{algebra::LogicalLinearOperation, tools::testutil::exhaustive_sequences};
+    use std::collections::VecDeque;
+
+    #[test]
+    fn test_queue_aggregation() {
+        let maps = [(0u8, 0u8), (0, u8::MAX), (u8::MAX, 0), (u8::MAX, u8::MAX)];
+        for values in exhaustive_sequences(maps, 4..=4) {
+            for pops in 0..=3 {
+                let mut queue = QueueAggregation::<LogicalLinearOperation<u8>>::new();
+                let mut expected = VecDeque::new();
+                assert_eq!(queue.pop(), None);
+                for &value in &values[..3] {
+                    queue.push(value);
+                    expected.push_back(value);
+                }
+                for _ in 0..pops {
+                    assert_eq!(queue.pop(), expected.pop_front());
+                }
+                queue.push(values[3]);
+                expected.push_back(values[3]);
+                loop {
+                    assert_eq!(queue.len(), expected.len());
+                    assert_eq!(queue.is_empty(), expected.is_empty());
+                    assert_eq!(queue.last(), expected.back());
+                    let (mask, xor) = queue.fold_all();
+                    for input in [0, u8::MAX] {
+                        let output = expected
+                            .iter()
+                            .fold(input, |value, &(mask, xor)| (value & mask) ^ xor);
+                        assert_eq!((input & mask) ^ xor, output);
+                    }
+                    let value = expected.pop_front();
+                    assert_eq!(queue.pop(), value);
+                    if value.is_none() {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }

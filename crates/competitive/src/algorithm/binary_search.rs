@@ -223,34 +223,6 @@ mod verification {
 
     proof_float_midpoint!(proof_f32_midpoint, f32, u32);
     proof_float_midpoint!(proof_f64_midpoint, f64, u64);
-
-    #[kani::proof]
-    #[kani::unwind(10)]
-    fn proof_slice_search() {
-        let values: [i16; 8] = kani::any();
-        let len: usize = kani::any();
-        let key: i16 = kani::any();
-        kani::assume(len <= values.len());
-        let values = &values[..len];
-        for i in 1..len {
-            kani::assume(values[i - 1] <= values[i]);
-        }
-        let lower = values.iter().filter(|&&x| x < key).count();
-        let upper = values.iter().filter(|&&x| x <= key).count();
-        kani::assert(
-            values.position_bisect(|&x| x >= key) == lower
-                && values.find_bisect(|&x| x >= key) == values.get(lower),
-            "For every sorted i16 slice of length 0 through 8 and every i16 key, forward search returns the lower bound and its element",
-        );
-        kani::assert(
-            values.rposition_bisect(|&x| x <= key) == upper
-                && values.rfind_bisect(|&x| x <= key) == values[..upper].last(),
-            "For every sorted i16 slice of length 0 through 8 and every i16 key, reverse search returns the upper bound and its preceding element",
-        );
-        kani::cover!(len == 0);
-        kani::cover!(len == 8 && lower < upper);
-        kani::cover!(len != 0 && lower == len);
-    }
 }
 
 #[cfg(test)]

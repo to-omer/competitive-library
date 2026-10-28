@@ -1,25 +1,42 @@
+#[cfg(verus_keep_ghost)]
+use vstd::{prelude::*, std_specs::cmp::PartialOrdSpec};
+
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 pub trait PartialOrdExt: Sized {
     fn chmin(&mut self, other: Self);
     fn chmax(&mut self, other: Self);
     fn minmax(self, other: Self) -> (Self, Self);
 }
+#[cfg_attr(verus_keep_ghost, verus_verify)]
 impl<T> PartialOrdExt for T
 where
     T: PartialOrd,
 {
     #[inline]
+    #[cfg_attr(verus_keep_ghost, verus_spec(
+        ensures T::obeys_partial_cmp_spec() ==> *final(self) ==
+            if (*old(self)).partial_cmp_spec(&other) == Some(std::cmp::Ordering::Greater) { other } else { *old(self) },
+    ))]
     fn chmin(&mut self, other: Self) {
         if *self > other {
             *self = other;
         }
     }
     #[inline]
+    #[cfg_attr(verus_keep_ghost, verus_spec(
+        ensures T::obeys_partial_cmp_spec() ==> *final(self) ==
+            if (*old(self)).partial_cmp_spec(&other) == Some(std::cmp::Ordering::Less) { other } else { *old(self) },
+    ))]
     fn chmax(&mut self, other: Self) {
         if *self < other {
             *self = other;
         }
     }
     #[inline]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures T::obeys_partial_cmp_spec() ==> result ==
+            if self.partial_cmp_spec(&other) == Some(std::cmp::Ordering::Less) { (self, other) } else { (other, self) },
+    ))]
     fn minmax(self, other: Self) -> (Self, Self) {
         if self < other {
             (self, other)
@@ -68,6 +85,53 @@ macro_rules! chmax {
 #[macro_export]
 macro_rules! minmax {
     ($($t:tt)*) => { ($crate::min!($($t)*), $crate::max!($($t)*)) };
+}
+
+#[cfg(verus_keep_ghost)]
+mod verification {
+    use super::*;
+
+    verus! {
+        fn extrema(values: &[i64]) -> (result: (i64, i64))
+            requires values.len() > 0,
+            ensures values@.contains(result.0), values@.contains(result.1),
+                forall|i: int| 0 <= i < values.len() ==> result.0 <= #[trigger] values@[i] <= result.1,
+        {
+            let mut minimum = values[0];
+            let mut maximum = values[0];
+            for &value in cursor: values
+                invariant values@.contains(minimum), values@.contains(maximum),
+                    forall|i: int| 0 <= i < cursor.index() ==> minimum <= #[trigger] values@[i] <= maximum,
+            {
+                minimum.chmin(value);
+                maximum.chmax(value);
+            }
+            let result = minimum.minmax(maximum);
+            proof {
+                assert(minimum <= values@[0] <= maximum);
+                #[verifier::proof_note("Folding the actual chmin and chmax methods over every nonempty i64 slice, followed by minmax, returns attained global extrema that bound every input element; duplicate values and the full signed range are included")]
+                assert(values@.contains(result.0) && values@.contains(result.1)
+                    && forall|i: int| 0 <= i < values.len() ==> result.0 <= #[trigger] values@[i] <= result.1);
+            }
+            result
+        }
+
+        fn unordered_or_equal<T>(left: T, right: T)
+            where T: PartialOrd,
+            requires T::obeys_partial_cmp_spec(),
+                left.partial_cmp_spec(&right) == None || left.partial_cmp_spec(&right) == Some(std::cmp::Ordering::Equal),
+        {
+            let mut minimum = &left;
+            let mut maximum = &left;
+            minimum.chmin(&right);
+            maximum.chmax(&right);
+            let pair = (&left).minmax(&right);
+            proof {
+                #[verifier::proof_note("For any type obeying its partial-comparison model, chmin and chmax retain the original value when the comparison is equal or incomparable, while minmax reverses the pair in those cases; the helpers do not assume all pairs are comparable")]
+                assert(*minimum == left && *maximum == left && pair == (&right, &left));
+            }
+        }
+    }
 }
 
 #[cfg(test)]

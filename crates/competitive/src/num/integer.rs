@@ -1135,49 +1135,6 @@ mod verification {
     proof_mod_add_sub!(proof_u64_mod_add_sub, u64);
     proof_mod_add_sub!(proof_u128_mod_add_sub, u128);
     proof_mod_add_sub!(proof_usize_mod_add_sub, usize);
-
-    #[kani::proof]
-    #[kani::unwind(17)]
-    fn proof_u8_lcm() {
-        let x: u8 = kani::any();
-        let y: u8 = kani::any();
-        let (mut a, mut b) = (x as u16, y as u16);
-        while b != 0 {
-            (a, b) = (b, a % b);
-        }
-        let expected = if a == 0 { 0 } else { x as u16 * y as u16 / a };
-        kani::assume(expected <= u8::MAX as u16);
-        kani::assert(
-            x.lcm(y) as u16 == expected,
-            "For all u8 operand pairs whose least common multiple fits u8, lcm equals the widened product divided by an independently computed Euclidean gcd, including either or both zero operands",
-        );
-        kani::cover!(x == 0 && y == 0);
-        kani::cover!(x == u8::MAX && y == u8::MAX);
-        kani::cover!(x > 1 && y > 1 && a == 1);
-    }
-
-    #[kani::proof]
-    #[kani::unwind(14)]
-    fn proof_u8_mod_inverse() {
-        let a: u8 = kani::any();
-        let modulo: u8 = kani::any();
-        kani::assume(modulo > 0);
-        let (mut x, mut y) = (a, modulo);
-        while y != 0 {
-            (x, y) = (y, x % y);
-        }
-        kani::assume(x == 1);
-        let inverse = a.mod_inv(modulo);
-        kani::assert(
-            inverse < modulo && (a as u16 * inverse as u16) % modulo as u16 == 1 % modulo as u16,
-            "For every nonzero u8 modulus and every coprime u8 input, including unreduced inputs and modulus one, mod_inv returns the canonical multiplicative inverse",
-        );
-        kani::cover!(modulo == u8::MAX && a == 1);
-        kani::cover!(modulo == 128 && a == 127);
-        kani::cover!(modulo == 1 && a == 1);
-        kani::cover!(modulo == 1 && a == 0);
-        kani::cover!(a > modulo && modulo > 1);
-    }
 }
 
 #[cfg(test)]
@@ -1272,10 +1229,13 @@ mod tests {
                                 assert_eq!((1 as $t).mod_inv(m), 1);
                                 assert_eq!((m - 1).mod_inv(m), m - 1);
                             }
-                            for _ in 0..Q {
-                                let m = rng.random(1..=$t::MAX);
-                                let a = rng.random(0..=$t::MAX);
-                                let g = a.gcd(m);
+                            let pairs: Vec<($t, $t)> = if $t::BITS == 8 {
+                                (0..=$t::MAX).flat_map(|a| (1..=$t::MAX).map(move |m| (a, m))).collect()
+                            } else {
+                                rng.random_iter((0..=$t::MAX, 1..=$t::MAX)).take(Q).collect()
+                            };
+                            for (a, m) in pairs {
+                                let g = gcd(a, m);
                                 let m = m / g;
                                 let a = a / g;
                                 let x = a.mod_inv(m);
@@ -1309,7 +1269,8 @@ mod tests {
                                 assert_eq!(<$t as Unsigned>::abs_diff(a, b), a.abs_diff(b));
                                 assert_eq!(<$t as Unsigned>::is_power_of_two(a), a.is_power_of_two());
                                 assert_eq!(<$t as Unsigned>::is_multiple_of(a, b), a.is_multiple_of(b));
-                                assert_eq!(<$t as Unsigned>::gcd(a, b), gcd(a, b));
+                                let divisor = gcd(a, b);
+                                assert_eq!(<$t as Unsigned>::gcd(a, b), divisor);
                                 if b != 0 {
                                     assert_eq!(<$t as Unsigned>::div_ceil(a, b), a.div_ceil(b));
                                 }
@@ -1319,10 +1280,10 @@ mod tests {
                                 if let Some(expected) = a.checked_next_multiple_of(b) {
                                     assert_eq!(<$t as Unsigned>::next_multiple_of(a, b), expected);
                                 }
-                                let a: $t = rng.random(0..=15);
-                                let b: $t = rng.random(0..=15);
-                                let expected = (1..=a * b).find(|x| x % a == 0 && x % b == 0).unwrap_or(0);
-                                assert_eq!(<$t as Unsigned>::lcm(a, b), expected);
+                                let expected = if divisor == 0 { 0 } else { a as u128 * b as u128 / divisor as u128 };
+                                if let Ok(expected) = <$t>::try_from(expected) {
+                                    assert_eq!(<$t as Unsigned>::lcm(a, b), expected);
+                                }
                                 assert_eq!(<$t as Unsigned>::signed(a) as $t, a);
                             }
                         }

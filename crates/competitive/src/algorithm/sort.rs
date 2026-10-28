@@ -304,35 +304,6 @@ mod verification {
 
     #[kani::proof]
     #[kani::unwind(6)]
-    fn proof_bubble_sort() {
-        let keys: [u8; 4] = kani::any();
-        let len: usize = kani::any();
-        kani::assume(len <= 4);
-        let mut actual = keys;
-        actual[..len].bubble_sort();
-        for pair in actual[..len].windows(2) {
-            kani::assert(
-                pair[0] <= pair[1],
-                "Bubble sort orders every sequence of zero through four arbitrary u8 values",
-            );
-        }
-        let key: u8 = kani::any();
-        kani::assert(
-            actual[..len].iter().filter(|&&x| x == key).count()
-                == keys[..len].iter().filter(|&&x| x == key).count(),
-            "Bubble sort preserves the multiplicity of every u8 value in the sorted prefix",
-        );
-        kani::assert(
-            actual[len..] == keys[len..],
-            "Bubble sort preserves every element following the sorted prefix",
-        );
-        kani::cover!(len == 0);
-        kani::cover!(len == 4 && keys[0] > keys[1] && keys[1] > keys[2] && keys[2] > keys[3]);
-        kani::cover!(len == 4 && keys[0] == keys[1] && keys[1] == keys[2] && keys[2] == keys[3]);
-    }
-
-    #[kani::proof]
-    #[kani::unwind(6)]
     fn proof_merge_sort() {
         let keys: [u8; 4] = kani::any();
         let mut values = keys;
@@ -377,8 +348,21 @@ mod tests {
     use super::*;
     use crate::tools::{
         Xorshift, spec,
-        testutil::{sample_usize, sequence_cases},
+        testutil::{exhaustive_sequences, sample_usize, sequence_cases},
     };
+
+    #[test]
+    fn test_bubble_sort_prefix() {
+        for values in exhaustive_sequences([0u8, 1, u8::MAX - 1, u8::MAX], 0..=4) {
+            for len in 0..=values.len() {
+                let mut expected = values.clone();
+                expected[..len].sort();
+                let mut actual = values.clone();
+                actual[..len].bubble_sort();
+                assert_eq!(actual, expected);
+            }
+        }
+    }
 
     #[test]
     fn test_comparison_sorts() {

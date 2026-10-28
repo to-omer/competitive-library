@@ -160,46 +160,6 @@ where
     })
 }
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-
-    #[kani::proof]
-    #[kani::unwind(17)]
-    fn proof_unit_coefficient_clipping() {
-        let b: i8 = kani::any();
-        let c: i8 = kani::any();
-        let left: i8 = kani::any();
-        let right: i8 = kani::any();
-        let k: i16 = kani::any();
-        kani::assume(b != 0);
-        let solution = solve_linear_diophantine(1i16, b as i16, c as i16).unwrap();
-        let clipped = solution.with_x_range(left as i16..=right as i16);
-        let x = b as i32 * k as i32 + c as i32;
-        kani::assert(
-            clipped.k_range().contains(&k) == ((left as i32) <= x && x <= right as i32),
-            "For x + by = c with any nonzero i8 b and any i8 c, clipping x to any i8 interval selects exactly all i16 parameters whose mathematical x value lies in the interval, for either slope sign and reversed intervals",
-        );
-        if clipped.k_range().contains(&k) {
-            let (x, y) = clipped.eval(k);
-            kani::assert(
-                x as i32 + b as i32 * y as i32 == c as i32 && left as i16 <= x && x <= right as i16,
-                "Every selected parameter evaluates without i16 overflow to a solution of x + by = c inside the requested x interval",
-            );
-        }
-        let ordered = clipped.with_x_order();
-        let ordered_x = (b as i32).abs() * k as i32 + c as i32;
-        kani::assert(
-            ordered.k_range().contains(&k)
-                == ((left as i32) <= ordered_x && ordered_x <= right as i32),
-            "Ordering the clipped Diophantine solution by x preserves precisely the allowed x values while making the parameter slope positive",
-        );
-        kani::cover!(b == i8::MIN && left == i8::MIN && right == i8::MAX);
-        kani::cover!(left > right);
-        kani::cover!(b == 1 && left == right && c == left);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

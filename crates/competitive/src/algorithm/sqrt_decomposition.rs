@@ -139,63 +139,6 @@ where
     }
 }
 
-#[cfg(kani)]
-mod verification {
-    use super::*;
-    use crate::algebra::BitXorOperation;
-
-    #[kani::proof]
-    #[kani::unwind(8)]
-    fn proof_range_and_point_updates() {
-        let values: [u64; 5] = kani::any();
-        let action: u64 = kani::any();
-        let point_action: u64 = kani::any();
-        let (left, right): (u8, u8) = kani::any();
-        let (query_left, query_right): (u8, u8) = kani::any();
-        let index: u8 = kani::any();
-        let query: u8 = kani::any();
-        kani::assume(left <= right && right <= 5);
-        kani::assume(query_left <= query_right && query_right <= 5);
-        kani::assume(index < 5 && query < 5);
-        let mut buckets =
-            RangeUpdateRangeFoldSqrtDecomposition::<BitXorOperation<u64>>::sqrt_decomposition(
-                5,
-                Some(2),
-            );
-        for (i, value) in values.into_iter().enumerate() {
-            buckets.update_cell(i, value);
-        }
-        buckets.update(left as usize..right as usize, action);
-        buckets.update_cell(index as usize, point_action);
-        let mut expected = 0;
-        let mut expected_point = 0;
-        for (i, mut value) in values.into_iter().enumerate() {
-            if left as usize <= i && i < right as usize {
-                value ^= action;
-            }
-            if i == index as usize {
-                value ^= point_action;
-            }
-            if query_left as usize <= i && i < query_right as usize {
-                expected ^= value;
-            }
-            if i == query as usize {
-                expected_point = value;
-            }
-        }
-        kani::assert(
-            buckets.fold(query_left as usize..query_right as usize) == expected,
-            "For all five-element u64 XOR arrays with bucket size two, a range update followed by a point update preserves every range fold, including empty ranges and a partial final bucket",
-        );
-        kani::assert(
-            buckets.get(query as usize) == expected_point,
-            "Every point lookup combines its cell update with the pending bucket update",
-        );
-        kani::cover!(left == 0 && right == 4 && index == 1 && query_left == 1 && query_right == 5);
-        kani::cover!(left == 1 && right == 3 && query_left == query_right);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -208,6 +151,36 @@ mod tests {
     #[test]
     fn test_sqrt_decomposition() {
         let mut rng = Xorshift::default();
+        for left in 0..=5 {
+            for right in left..=5 {
+                for index in 0..5 {
+                    let mut expected = [1, 2, 3, 4, 5];
+                    let mut buckets = RangeUpdateRangeFoldSqrtDecomposition::<
+                        AdditiveOperation<i64>,
+                    >::sqrt_decomposition(5, Some(2));
+                    for (i, &value) in expected.iter().enumerate() {
+                        buckets.update_cell(i, value);
+                    }
+                    buckets.update(left..right, 7);
+                    for value in &mut expected[left..right] {
+                        *value += 7;
+                    }
+                    buckets.update_cell(index, -11);
+                    expected[index] -= 11;
+                    for (i, &value) in expected.iter().enumerate() {
+                        assert_eq!(buckets.get(i), value);
+                    }
+                    for start in 0..=5 {
+                        for end in start..=5 {
+                            assert_eq!(
+                                buckets.fold(start..end),
+                                expected[start..end].iter().sum::<i64>()
+                            );
+                        }
+                    }
+                }
+            }
+        }
         for _ in 0..100 {
             rand!(rng, n: 1..100, mut a: [0i64..1000; n]);
             let mut s =
