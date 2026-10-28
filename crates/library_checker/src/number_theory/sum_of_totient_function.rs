@@ -5,7 +5,10 @@ use competitive::{
 };
 use competitive::{num::One, prelude::*};
 
-#[verify::library_checker("sum_of_totient_function")]
+#[verify::library_checker(
+    "sum_of_totient_function",
+    include("ArrayOperation", "QuotientArray", "MInt")
+)]
 pub fn sum_of_totient_function(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n: u64);

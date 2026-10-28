@@ -1,6 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, graph::TreeGraphScanner};
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Add { p: usize, x: i64 }
@@ -8,7 +9,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("vertex_add_range_contour_sum_on_tree")]
+#[verify::library_checker(
+    "vertex_add_range_contour_sum_on_tree",
+    include("AdditiveOperation", "Query", "centroid_decomposition")
+)]
 pub fn vertex_add_range_contour_sum_on_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; n], (graph, _): @TreeGraphScanner::<usize, ()>::new(n));

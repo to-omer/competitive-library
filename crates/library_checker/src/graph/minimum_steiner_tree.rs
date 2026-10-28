@@ -1,7 +1,7 @@
 use competitive::graph::{SteinerTreeExt, UndirectedGraphScanner};
 use competitive::prelude::*;
 
-#[verify::library_checker("minimum_steiner_tree")]
+#[verify::library_checker("minimum_steiner_tree", include("SparseGraph", "steiner_tree"))]
 pub fn minimum_steiner_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, (graph, weights): @UndirectedGraphScanner::<usize, u64>::new(n, m));

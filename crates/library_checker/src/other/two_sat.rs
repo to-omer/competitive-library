@@ -1,7 +1,7 @@
 use competitive::graph::TwoSatisfiability;
 use competitive::prelude::*;
 
-#[verify::library_checker("two_sat")]
+#[verify::library_checker("two_sat", include("TwoSatisfiability"))]
 pub fn two_sat(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(_p: String,

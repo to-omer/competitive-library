@@ -1,6 +1,7 @@
 use competitive::data_structure::RangeFrequency;
 use competitive::prelude::*;
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Set { k: usize, v: i32 }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("point_set_range_frequency")]
+#[verify::library_checker("point_set_range_frequency", include("Query", "RangeFrequency"))]
 pub fn point_set_range_frequency(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i32; n]);

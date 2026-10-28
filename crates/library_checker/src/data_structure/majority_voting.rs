@@ -4,6 +4,7 @@ use competitive::{
     data_structure::{RangeFrequency, SegmentTree},
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Update { p: usize, x: i32 }
@@ -11,7 +12,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("majority_voting")]
+#[verify::library_checker(
+    "majority_voting",
+    include("FindMajorityOperation", "Query", "RangeFrequency", "SegmentTree")
+)]
 pub fn majority_voting(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i32; n]);

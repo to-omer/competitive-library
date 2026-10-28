@@ -1,7 +1,7 @@
 use competitive::graph::{DirectedSparseGraph, StronglyConnectedComponent};
 use competitive::prelude::*;
 
-#[verify::library_checker("scc")]
+#[verify::library_checker("scc", include("StronglyConnectedComponent"))]
 pub fn scc(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, edges: [(usize, usize); es]);

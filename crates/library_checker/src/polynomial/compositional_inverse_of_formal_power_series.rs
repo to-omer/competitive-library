@@ -1,7 +1,10 @@
 use competitive::prelude::*;
 use competitive::{math::Fps998244353, num::montgomery::MInt998244353 as M};
 
-#[verify::library_checker("compositional_inverse_of_formal_power_series")]
+#[verify::library_checker(
+    "compositional_inverse_of_formal_power_series",
+    include("FormalPowerSeries")
+)]
 pub fn compositional_inverse_of_formal_power_series(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [M; n]);

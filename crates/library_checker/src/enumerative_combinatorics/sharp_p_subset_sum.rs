@@ -4,7 +4,7 @@ use competitive::{
     num::{One, Zero, montgomery::MInt998244353 as M},
 };
 
-#[verify::library_checker("sharp_p_subset_sum")]
+#[verify::library_checker("sharp_p_subset_sum", include("FormalPowerSeries"))]
 pub fn sharp_p_subset_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, t, s: [usize; iter n]);

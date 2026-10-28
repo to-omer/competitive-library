@@ -1,7 +1,7 @@
 use competitive::graph::TreeGraphScanner;
 use competitive::prelude::*;
 
-#[verify::library_checker("frequency_table_of_tree_distance")]
+#[verify::library_checker("frequency_table_of_tree_distance", include("distance_frequencies"))]
 pub fn frequency_table_of_tree_distance(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, (g, _): @TreeGraphScanner::<usize>::new(n));

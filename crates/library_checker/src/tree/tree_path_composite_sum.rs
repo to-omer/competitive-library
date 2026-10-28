@@ -4,7 +4,10 @@ use competitive::{
     tree::ReRooting,
 };
 
-#[verify::library_checker("tree_path_composite_sum")]
+#[verify::library_checker(
+    "tree_path_composite_sum",
+    include("AdditiveOperation", "ReRooting", "TupleOperation", "MInt")
+)]
 pub fn tree_path_composite_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, values: [M; n], (graph, edges): @TreeGraphScanner::<usize, (M, M)>::new(n));

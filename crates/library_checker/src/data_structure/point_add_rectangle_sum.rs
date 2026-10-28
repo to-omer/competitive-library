@@ -5,6 +5,7 @@ use competitive::{
     data_structure::{CompressedSegmentTree2d, WaveletMatrix, WaveletMatrixPointAdd},
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     #[derive(Clone, Copy)]
     enum Query: u8 {
@@ -13,7 +14,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("point_add_rectangle_sum")]
+#[verify::library_checker(
+    "point_add_rectangle_sum",
+    include("AdditiveOperation", "Query", "WaveletMatrix", "sort")
+)]
 pub fn point_add_rectangle_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, xyw: [(u32, u32, u64); iter n]);
@@ -55,7 +59,10 @@ pub fn point_add_rectangle_sum(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("point_add_rectangle_sum")]
+#[verify::library_checker(
+    "point_add_rectangle_sum",
+    include("AdditiveOperation", "CompressedSegmentTree", "Query")
+)]
 pub fn point_add_rectangle_sum_compressed_segment_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, xyw: [(u32, u32, u64); n], queries: [Query; q]);

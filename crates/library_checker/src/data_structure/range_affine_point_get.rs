@@ -3,6 +3,7 @@ use competitive::{
     algebra::LinearAct, data_structure::DualSegmentTree, num::mint_basic::MInt998244353 as M,
 };
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Update { l: usize, r: usize, bc: (M, M) }
@@ -10,7 +11,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("range_affine_point_get")]
+#[verify::library_checker("range_affine_point_get", include("DualSegmentTree", "Query"))]
 pub fn range_affine_point_get(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [M; iter n]);

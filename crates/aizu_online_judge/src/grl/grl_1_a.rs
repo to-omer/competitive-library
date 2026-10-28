@@ -4,7 +4,7 @@ use competitive::{
     num::Bounded,
 };
 
-#[verify::aizu_online_judge("GRL_1_A")]
+#[verify::aizu_online_judge("GRL_1_A", include("SparseGraph", "shortest_path"))]
 pub fn grl_1_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, r, (graph, d): @DirectedGraphScanner::<usize, u64>::new(vs, es));
@@ -18,7 +18,7 @@ pub fn grl_1_a(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::aizu_online_judge("GRL_1_A")]
+#[verify::aizu_online_judge("GRL_1_A", include("SparseGraph", "shortest_path"))]
 pub fn grl_1_a_option(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, r, (graph, d): @DirectedGraphScanner::<usize, u64>::new(vs, es));

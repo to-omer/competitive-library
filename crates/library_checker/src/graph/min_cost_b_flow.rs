@@ -1,7 +1,7 @@
 use competitive::graph::NetworkSimplex;
 use competitive::prelude::*;
 
-#[verify::library_checker("min_cost_b_flow")]
+#[verify::library_checker("min_cost_b_flow", include("NetworkSimplex"))]
 pub fn min_cost_b_flow(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, b: [i64; iter n]);

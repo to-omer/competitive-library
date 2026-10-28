@@ -4,7 +4,10 @@ use competitive::{
     num::mint_basic::MInt998244353 as M,
 };
 
-#[verify::library_checker("static_rectangle_add_rectangle_sum")]
+#[verify::library_checker(
+    "static_rectangle_add_rectangle_sum",
+    include("StaticRectangleAddRectangleSum", "MInt")
+)]
 pub fn static_rectangle_add_rectangle_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(buffered; reader, writer);
     sc!(n, q, rectangles: [(u32, u32, u32, u32, M); iter n]);

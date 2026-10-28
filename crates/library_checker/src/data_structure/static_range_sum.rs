@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, data_structure::Accumulate};
 
-#[verify::library_checker("static_range_sum")]
+#[verify::library_checker("static_range_sum", include("Accumulate", "AdditiveOperation"))]
 pub fn static_range_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; iter n]);

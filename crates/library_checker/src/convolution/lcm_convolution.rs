@@ -5,7 +5,7 @@ use competitive::{
     num::montgomery::MInt998244353 as M,
 };
 
-#[verify::library_checker("lcm_convolution")]
+#[verify::library_checker("lcm_convolution", include("LcmConvolve", "montgomery"))]
 pub fn lcm_convolution(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, mut a: [M; n], mut b: [M; n]);

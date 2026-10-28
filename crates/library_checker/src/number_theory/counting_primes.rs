@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, math::QuotientArray};
 
-#[verify::library_checker("counting_primes")]
+#[verify::library_checker("counting_primes", include("QuotientArray"))]
 pub fn counting_primes(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n: u64);

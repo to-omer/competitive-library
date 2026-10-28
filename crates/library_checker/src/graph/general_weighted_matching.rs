@@ -1,7 +1,7 @@
 use competitive::graph::GeneralWeightedMatching;
 use competitive::prelude::*;
 
-#[verify::library_checker("general_weighted_matching")]
+#[verify::library_checker("general_weighted_matching", include("GeneralWeightedMatching"))]
 pub fn general_weighted_matching(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, uvw: [(usize, usize, i64); iter m]);

@@ -1,7 +1,7 @@
 use competitive::math::prime_factors_flatten;
 use competitive::prelude::*;
 
-#[verify::library_checker("factorize")]
+#[verify::library_checker("factorize", include("prime_factors"))]
 pub fn factorize(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(q);

@@ -4,7 +4,7 @@ use competitive::{
     data_structure::{DaryPrefixSumTreeU32, StaticSearch},
 };
 
-#[verify::library_checker("ordered_set")]
+#[verify::library_checker("ordered_set", include("DaryPrefixSumTree", "StaticSearch", "sort"))]
 pub fn ordered_set(reader: impl Read, writer: impl Write) {
     prepare_io!(buffered; reader, writer);
     sc!(n, q, a: [u32; n], queries: [(u8, u32); q]);

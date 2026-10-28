@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::MaxOperation, graph::TreeGraphScanner, tree::ReRooting};
 
-#[verify::aizu_online_judge("GRL_5_B")]
+#[verify::aizu_online_judge("GRL_5_B", include("MaxOperation", "ReRooting"))]
 pub fn grl_5_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, (graph, w): @TreeGraphScanner::<usize, u64>::new(n));

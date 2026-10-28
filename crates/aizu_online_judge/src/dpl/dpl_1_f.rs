@@ -1,7 +1,7 @@
 use competitive::combinatorial_optimization::KnapsackProblemSmallValue;
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("DPL_1_F")]
+#[verify::aizu_online_judge("DPL_1_F", include("knapsack_problem"))]
 pub fn dpl_1_f(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, w: i64, vw: [(usize, i64); n]);

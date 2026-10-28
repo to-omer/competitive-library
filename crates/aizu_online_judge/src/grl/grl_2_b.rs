@@ -1,7 +1,10 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 
-#[verify::aizu_online_judge("GRL_2_B")]
+#[verify::aizu_online_judge(
+    "GRL_2_B",
+    include("AdditiveOperation", "minimum_spanning_arborescence")
+)]
 pub fn grl_2_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, root, (graph, w): @EdgeListGraphScanner::<usize, i64>::new(vs, es));

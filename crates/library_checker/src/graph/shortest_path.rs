@@ -1,7 +1,7 @@
 use competitive::graph::{DirectedGraphScanner, ShortestPathExt};
 use competitive::prelude::*;
 
-#[verify::library_checker("shortest_path")]
+#[verify::library_checker("shortest_path", include("SparseGraph", "shortest_path"))]
 pub fn shortest_path(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, s, t, (g, c): @DirectedGraphScanner::<usize, u64>::new(n, m));

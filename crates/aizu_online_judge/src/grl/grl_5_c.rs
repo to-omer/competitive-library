@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{graph::UndirectedSparseGraph, tools::SizedCollect};
 
-#[verify::aizu_online_judge("GRL_5_C")]
+#[verify::aizu_online_judge("GRL_5_C", include("EulerTour"))]
 pub fn grl_5_c(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, c: [SizedCollect<usize>; iter n]);

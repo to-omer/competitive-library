@@ -1,6 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::RangeMinRangeAdd, data_structure::LazySegmentTree};
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: u8 {
         0 => Add { l: usize, r: usize, x: i64 }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("range_add_range_min")]
+#[verify::library_checker("range_add_range_min", include("LazySegmentTree", "Query"))]
 pub fn range_add_range_min(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; iter n]);

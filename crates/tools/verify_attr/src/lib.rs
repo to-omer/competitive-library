@@ -106,8 +106,11 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                         },
                         _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
                     },
-                    _ => (),
+                    _ => return Err(syn::Error::new(nv.path.span(), "unknown parameter")),
                 }
+            }
+            LitOrMeta::Meta(Meta::List(list)) if list.path.is_ident("include") => {
+                list.parse_args_with(Punctuated::<LitStr, Token![,]>::parse_separated_nonempty)?;
             }
             LitOrMeta::Lit(Lit::Str(litstr)) => match problem_id {
                 None => problem_id = Some(litstr.clone()),

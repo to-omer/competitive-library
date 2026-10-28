@@ -1,7 +1,7 @@
 use competitive::combinatorial_optimization::LongestIncreasingSubsequence;
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("DPL_1_D")]
+#[verify::aizu_online_judge("DPL_1_D", include("LongestIncreasingSubsequence"))]
 pub fn dpl_1_d(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [u64; iter n]);

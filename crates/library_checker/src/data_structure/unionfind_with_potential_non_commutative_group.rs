@@ -6,6 +6,7 @@ use competitive::{
     num::{One, Zero, montgomery::MInt998244353 as M},
 };
 
+#[codesnip::entry("Query", include("montgomery"))]
 competitive::define_enum_scan! {
     enum Query: u8 {
         0 => Unite { u: usize, v: usize, x: [[M; const 2]; const 2] }
@@ -13,6 +14,7 @@ competitive::define_enum_scan! {
     }
 }
 
+#[codesnip::entry("Sl2", include("algebra", "montgomery"))]
 define_monoid!(
     Sl2,
     [[M; 2]; 2],
@@ -27,13 +29,17 @@ define_monoid!(
     [[M::one(), M::zero()], [M::zero(), M::one()]]
 );
 
+#[codesnip::entry("Sl2")]
 impl Invertible for Sl2 {
     fn inverse(x: &Self::T) -> Self::T {
         [[x[1][1], -x[0][1]], [-x[1][0], x[0][0]]]
     }
 }
 
-#[verify::library_checker("unionfind_with_potential_non_commutative_group")]
+#[verify::library_checker(
+    "unionfind_with_potential_non_commutative_group",
+    include("Query", "Sl2", "UnionFind")
+)]
 pub fn unionfind_with_potential_non_commutative_group(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);

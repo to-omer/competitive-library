@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::MinOperation, data_structure::QueueAggregation};
 
-#[verify::aizu_online_judge("DSL_3_D")]
+#[verify::aizu_online_judge("DSL_3_D", include("MinOperation", "sliding_window_aggregation"))]
 pub fn dsl_3_d(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, l, a: [u64; iter n]);

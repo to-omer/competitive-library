@@ -1,6 +1,7 @@
 use competitive::data_structure::OfflineLiChaoTree;
 use competitive::prelude::*;
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Add { l: i32, r: i32, a: i32, b: i64 }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("segment_add_get_min")]
+#[verify::library_checker("segment_add_get_min", include("LiChaoTree", "Query"))]
 pub fn segment_add_get_min(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);

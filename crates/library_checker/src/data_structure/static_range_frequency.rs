@@ -1,7 +1,7 @@
 use competitive::data_structure::{RangeFrequency, WaveletMatrix};
 use competitive::prelude::*;
 
-#[verify::library_checker("static_range_frequency")]
+#[verify::library_checker("static_range_frequency", include("RangeFrequency"))]
 pub fn static_range_frequency(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u32; n]);
@@ -13,7 +13,7 @@ pub fn static_range_frequency(reader: impl Read, writer: impl Write) {
     pp!(@lf @it range_frequency.execute());
 }
 
-#[verify::library_checker("static_range_frequency")]
+#[verify::library_checker("static_range_frequency", include("WaveletMatrix"))]
 pub fn static_range_frequency_wavelet_matrix(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [usize; n]);

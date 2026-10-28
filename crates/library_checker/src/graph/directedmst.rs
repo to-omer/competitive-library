@@ -1,7 +1,10 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 
-#[verify::library_checker("directedmst")]
+#[verify::library_checker(
+    "directedmst",
+    include("AdditiveOperation", "minimum_spanning_arborescence")
+)]
 pub fn directedmst(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, s, (graph, w): @EdgeListGraphScanner::<usize, i64>::new(n, m));

@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{math::Fps998244353, num::montgomery::MInt998244353 as M};
 
-#[verify::library_checker("division_of_polynomials")]
+#[verify::library_checker("division_of_polynomials", include("FormalPowerSeries"))]
 pub fn division_of_polynomials(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, f: [M; n], g: [M; m]);

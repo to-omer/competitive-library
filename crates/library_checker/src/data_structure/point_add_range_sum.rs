@@ -4,6 +4,7 @@ use competitive::{
     data_structure::{BinaryIndexedTree, SegmentTree},
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Add { p: usize, x: i64 }
@@ -11,7 +12,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("point_add_range_sum")]
+#[verify::library_checker(
+    "point_add_range_sum",
+    include("AdditiveOperation", "BinaryIndexedTree", "Query")
+)]
 pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; n]);
@@ -29,7 +33,10 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, writer: impl W
     }
 }
 
-#[verify::library_checker("point_add_range_sum")]
+#[verify::library_checker(
+    "point_add_range_sum",
+    include("AdditiveOperation", "Query", "SegmentTree")
+)]
 pub fn point_add_range_sum_segment_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; n]);

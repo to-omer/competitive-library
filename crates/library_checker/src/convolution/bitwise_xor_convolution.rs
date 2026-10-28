@@ -5,7 +5,7 @@ use competitive::{
     num::montgomery::MInt998244353 as M,
 };
 
-#[verify::library_checker("bitwise_xor_convolution")]
+#[verify::library_checker("bitwise_xor_convolution", include("BitwisexorConvolve", "montgomery"))]
 pub fn bitwise_xor_convolution(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [M; 1 << n], b: [M; 1 << n]);

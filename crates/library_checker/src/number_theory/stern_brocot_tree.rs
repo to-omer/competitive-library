@@ -4,17 +4,18 @@ use competitive::{
     num::URational,
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: raw {
         "ENCODE_PATH" => EncodePath { a: u32, b: u32 }
-        "DECODE_PATH" => DecodePath { k: usize, path: [(char, u32); k] }
+        "DECODE_PATH" => DecodePath { _k: usize, path: [(char, u32); _k] }
         "LCA" => Lca { a: u32, b: u32, c: u32, d: u32 }
         "ANCESTOR" => Ancestor { k: u32, a: u32, b: u32 }
         "RANGE" => Range { a: u32, b: u32 }
     }
 }
 
-#[verify::library_checker("stern_brocot_tree")]
+#[verify::library_checker("stern_brocot_tree", include("Query", "stern_brocot_tree"))]
 pub fn stern_brocot_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(t);

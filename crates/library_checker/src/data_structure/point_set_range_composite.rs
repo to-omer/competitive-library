@@ -3,6 +3,7 @@ use competitive::{
     algebra::LinearOperation, data_structure::SegmentTree, num::mint_basic::MInt998244353 as M,
 };
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Set { p: usize, cd: (M, M) }
@@ -10,7 +11,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("point_set_range_composite")]
+#[verify::library_checker(
+    "point_set_range_composite",
+    include("LinearOperation", "Query", "SegmentTree")
+)]
 pub fn point_set_range_composite(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, ab: [(M, M); n]);

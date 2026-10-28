@@ -1,7 +1,7 @@
 use competitive::math::PrimeList;
 use competitive::prelude::*;
 
-#[verify::library_checker("enumerate_primes")]
+#[verify::library_checker("enumerate_primes", include("PrimeList"))]
 pub fn enumerate_primes(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n: u32, a, b);

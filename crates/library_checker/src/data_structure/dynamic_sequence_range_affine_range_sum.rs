@@ -5,6 +5,7 @@ use competitive::{
     num::mint_basic::MInt998244353 as M,
 };
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Insert { i: usize, x: M }
@@ -15,7 +16,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
+#[verify::library_checker(
+    "dynamic_sequence_range_affine_range_sum",
+    include("ImplicitTreap", "Query")
+)]
 pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [M; iter n]);
@@ -44,7 +48,10 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, writer: impl W
     }
 }
 
-#[verify::library_checker("dynamic_sequence_range_affine_range_sum")]
+#[verify::library_checker(
+    "dynamic_sequence_range_affine_range_sum",
+    include("ImplicitSplayTree", "Query")
+)]
 pub fn dynamic_sequence_range_affine_range_sum_implicit_splay_tree(
     reader: impl Read,
     writer: impl Write,

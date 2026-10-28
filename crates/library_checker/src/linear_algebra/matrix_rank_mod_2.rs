@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{data_structure::BitSet, math::BitMatrix};
 
-#[verify::library_checker("matrix_rank_mod_2")]
+#[verify::library_checker("matrix_rank_mod_2", include("BitMatrix"))]
 pub fn matrix_rank_mod_2(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m);

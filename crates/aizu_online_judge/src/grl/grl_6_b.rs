@@ -1,7 +1,7 @@
 use competitive::graph::PrimalDualBuilder;
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("GRL_6_B")]
+#[verify::aizu_online_judge("GRL_6_B", include("PrimalDual"))]
 pub fn grl_6_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, f: u64, edges: [(usize, usize, u64, i64); iter es]);

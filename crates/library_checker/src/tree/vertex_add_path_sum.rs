@@ -5,6 +5,7 @@ use competitive::{
     tree::{LowestCommonAncestor, XorLinkedRootedTreeScanner},
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Add { p: usize, x: i64 }
@@ -12,7 +13,16 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("vertex_add_path_sum")]
+#[verify::library_checker(
+    "vertex_add_path_sum",
+    include(
+        "AdditiveOperation",
+        "BinaryIndexedTree",
+        "EulerTour",
+        "Query",
+        "XorLinkedRootedTree"
+    )
+)]
 pub fn vertex_add_path_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, mut a: [i64; n],

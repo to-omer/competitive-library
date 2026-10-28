@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{math::Fps998244353, num::Zero as _, num::montgomery::MInt998244353 as M};
 
-#[verify::library_checker("log_of_formal_power_series_sparse")]
+#[verify::library_checker("log_of_formal_power_series_sparse", include("FormalPowerSeries"))]
 pub fn log_of_formal_power_series_sparse(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, k);

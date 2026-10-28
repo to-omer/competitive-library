@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::AddMulOperation, math::Matrix, num::mint_basic::MInt998244353 as M};
 
-#[verify::library_checker("matrix_rank")]
+#[verify::library_checker("matrix_rank", include("Matrix", "MInt"))]
 pub fn matrix_rank(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m);

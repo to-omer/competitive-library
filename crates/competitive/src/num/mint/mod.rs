@@ -30,10 +30,7 @@ pub use mint_dot_product::MIntDotProduct;
     codesnip::entry(when("MInt", "MIntDotProduct"), include("simd_matrix", "avx_helper"))
 )]
 mod mint_basic_dot_product;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("MIntDotProduct", include("MIntBase", "ring"))
-)]
+#[cfg_attr(nightly, codesnip::entry("MIntDotProduct", when("MIntBase", "ring")))]
 mod mint_dot_product;
 #[cfg_attr(
     nightly,

@@ -4,7 +4,7 @@ use competitive::{
     graph::{LowLink, UndirectedSparseGraph},
 };
 
-#[verify::library_checker("two_edge_connected_components")]
+#[verify::library_checker("two_edge_connected_components", include("LowLink", "UnionFind"))]
 pub fn two_edge_connected_components(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, edges: [(usize, usize); m]);

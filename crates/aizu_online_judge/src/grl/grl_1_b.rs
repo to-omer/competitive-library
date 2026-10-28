@@ -1,7 +1,7 @@
 use competitive::graph::{DirectedGraphScanner, ShortestPathExt};
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("GRL_1_B")]
+#[verify::aizu_online_judge("GRL_1_B", include("SparseGraph", "shortest_path"))]
 pub fn grl_1_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, r, (graph, d): @DirectedGraphScanner::<usize, i64>::new(vs, es));

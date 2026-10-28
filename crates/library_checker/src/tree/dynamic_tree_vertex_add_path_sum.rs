@@ -4,8 +4,10 @@ use competitive::{
     tree::{PathLinkCutTree, TopTree, TopTreeSpec},
 };
 
+#[codesnip::entry("SumTopTree", include("TopTree"))]
 struct SumTopTree;
 
+#[codesnip::entry("SumTopTree")]
 impl TopTreeSpec for SumTopTree {
     type Info = i64;
     type Point = i64;
@@ -34,6 +36,7 @@ impl TopTreeSpec for SumTopTree {
     fn reverse(_path: &mut Self::Path) {}
 }
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Relink { u: usize, v: usize, w: usize, x: usize }
@@ -42,7 +45,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("dynamic_tree_vertex_add_path_sum")]
+#[verify::library_checker("dynamic_tree_vertex_add_path_sum", include("LinkCutTree", "Query"))]
 pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; n], edges: [(usize, usize); n - 1]);
@@ -62,7 +65,7 @@ pub fn dynamic_tree_vertex_add_path_sum(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("dynamic_tree_vertex_add_path_sum")]
+#[verify::library_checker("dynamic_tree_vertex_add_path_sum", include("Query", "SumTopTree"))]
 pub fn dynamic_tree_vertex_add_path_sum_top_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; n], edges: [(usize, usize); n - 1]);

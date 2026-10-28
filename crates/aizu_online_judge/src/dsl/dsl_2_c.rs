@@ -1,7 +1,7 @@
 use competitive::data_structure::Static2DTree;
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("DSL_2_C")]
+#[verify::aizu_online_judge("DSL_2_C", include("Static2DTree"))]
 pub fn dsl_2_c(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, xy: [(i64, i64); iter n]);

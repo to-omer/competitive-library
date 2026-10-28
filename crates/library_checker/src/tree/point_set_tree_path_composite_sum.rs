@@ -6,12 +6,14 @@ use competitive::{
     tree::MonoidCluster,
 };
 
+#[codesnip::entry("Dp", include("MInt", "StaticTopTree"))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Point {
     sum: M,
     cnt: u32,
 }
 
+#[codesnip::entry("Dp")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Path {
     a: M,
@@ -20,7 +22,9 @@ struct Path {
     cnt: u32,
 }
 
+#[codesnip::entry("Dp")]
 struct PointMonoid;
+#[codesnip::entry("Dp")]
 impl Magma for PointMonoid {
     type T = Point;
     fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -30,6 +34,7 @@ impl Magma for PointMonoid {
         }
     }
 }
+#[codesnip::entry("Dp")]
 impl Unital for PointMonoid {
     fn unit() -> Self::T {
         Point {
@@ -38,9 +43,12 @@ impl Unital for PointMonoid {
         }
     }
 }
+#[codesnip::entry("Dp")]
 impl Associative for PointMonoid {}
 
+#[codesnip::entry("Dp")]
 struct PathMonoid;
+#[codesnip::entry("Dp")]
 impl Magma for PathMonoid {
     type T = Path;
     fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -52,6 +60,7 @@ impl Magma for PathMonoid {
         }
     }
 }
+#[codesnip::entry("Dp")]
 impl Unital for PathMonoid {
     fn unit() -> Self::T {
         Path {
@@ -64,13 +73,16 @@ impl Unital for PathMonoid {
 }
 impl Associative for PathMonoid {}
 
+#[codesnip::entry("Dp")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct PathPair {
     forward: Path,
     reverse: Path,
 }
 
+#[codesnip::entry("Dp")]
 struct PathPairMonoid;
+#[codesnip::entry("Dp")]
 impl Magma for PathPairMonoid {
     type T = PathPair;
     fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -80,6 +92,7 @@ impl Magma for PathPairMonoid {
         }
     }
 }
+#[codesnip::entry("Dp")]
 impl Unital for PathPairMonoid {
     fn unit() -> Self::T {
         PathPair {
@@ -88,10 +101,13 @@ impl Unital for PathPairMonoid {
         }
     }
 }
+#[codesnip::entry("Dp")]
 impl Associative for PathPairMonoid {}
 
+#[codesnip::entry("Dp")]
 struct Dp;
 
+#[codesnip::entry("Dp")]
 impl MonoidCluster for Dp {
     type Vertex = M;
     type Edge = (M, M);
@@ -126,6 +142,7 @@ impl MonoidCluster for Dp {
     }
 }
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => SetVertex { v: usize, x: M, r: usize }
@@ -133,7 +150,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("point_set_tree_path_composite_sum")]
+#[verify::library_checker("point_set_tree_path_composite_sum", include("Dp", "Query"))]
 pub fn point_set_tree_path_composite_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n,

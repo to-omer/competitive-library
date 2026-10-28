@@ -1,7 +1,7 @@
 use competitive::data_structure::WaveletMatrix;
 use competitive::prelude::*;
 
-#[verify::library_checker("range_kth_smallest")]
+#[verify::library_checker("range_kth_smallest", include("WaveletMatrix"))]
 pub fn range_kth_smallest(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [usize; n], queries: [(usize, usize, usize); iter q]);

@@ -1,7 +1,7 @@
 use competitive::math::ArbitraryModBinomial;
 use competitive::prelude::*;
 
-#[verify::library_checker("binomial_coefficient")]
+#[verify::library_checker("binomial_coefficient", include("ArbitraryModBinomial"))]
 pub fn binomial_coefficient(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(t, m: u64);

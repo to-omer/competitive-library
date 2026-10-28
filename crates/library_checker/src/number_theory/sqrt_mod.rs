@@ -1,7 +1,7 @@
 use competitive::num::mint_basic::DynMIntU32;
 use competitive::prelude::*;
 
-#[verify::library_checker("sqrt_mod")]
+#[verify::library_checker("sqrt_mod", include("MInt", "mod_sqrt"))]
 pub fn sqrt_mod(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(q, yp: [(u32, u32); iter q]);

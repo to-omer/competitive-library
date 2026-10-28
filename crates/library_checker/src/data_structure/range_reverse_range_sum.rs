@@ -4,6 +4,7 @@ use competitive::{
     data_structure::{ImplicitSplayTree, ImplicitTreap},
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: u8 {
         0 => Reverse { l: usize, r: usize }
@@ -11,7 +12,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("range_reverse_range_sum")]
+#[verify::library_checker("range_reverse_range_sum", include("ImplicitTreap", "Query"))]
 pub fn range_reverse_range_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; iter n]);
@@ -31,7 +32,7 @@ pub fn range_reverse_range_sum(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("range_reverse_range_sum")]
+#[verify::library_checker("range_reverse_range_sum", include("ImplicitSplayTree", "Query"))]
 pub fn range_reverse_range_sum_implicit_splay_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; iter n]);

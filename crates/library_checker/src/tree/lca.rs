@@ -2,7 +2,7 @@ use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
 use competitive::tree::LowestCommonAncestor;
 
-#[verify::library_checker("lca")]
+#[verify::library_checker("lca", include("EulerTour"))]
 pub fn lca(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, p: [usize; iter n - 1]);
@@ -15,7 +15,7 @@ pub fn lca(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("lca")]
+#[verify::library_checker("lca", include("HeavyLightDecomposition"))]
 pub fn lca_hld(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, p: [usize; iter n - 1]);

@@ -4,6 +4,7 @@ use competitive::{
     tools::SizedCollect,
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Add { v: usize, w: i64 }
@@ -11,7 +12,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::aizu_online_judge("GRL_5_D")]
+#[verify::aizu_online_judge(
+    "GRL_5_D",
+    include("AdditiveOperation", "BinaryIndexedTree", "EulerTour", "Query")
+)]
 pub fn grl_5_d(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, c: [SizedCollect<usize>; iter n]);

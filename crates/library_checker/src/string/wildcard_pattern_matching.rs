@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::string::wildcard_pattern_matching as wildcard_pattern_matching_library;
 
-#[verify::library_checker("wildcard_pattern_matching")]
+#[verify::library_checker("wildcard_pattern_matching", include("wildcard_pattern_matching"))]
 pub fn wildcard_pattern_matching(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(mut s: Bytes, mut t: Bytes);

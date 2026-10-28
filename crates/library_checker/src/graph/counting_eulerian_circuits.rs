@@ -3,7 +3,7 @@ use competitive::{
     algebra::AddMulOperation, graph::EdgeListGraph, num::mint_basic::MInt998244353 as M,
 };
 
-#[verify::library_checker("counting_eulerian_circuits")]
+#[verify::library_checker("counting_eulerian_circuits", include("count_spanning_tree", "MInt"))]
 pub fn counting_eulerian_circuits(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, edges: [(usize, usize); m]);

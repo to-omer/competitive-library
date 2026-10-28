@@ -4,7 +4,7 @@ use competitive::{
     graph::{DirectedSparseGraph, Graph},
 };
 
-#[verify::library_checker("persistent_unionfind")]
+#[verify::library_checker("persistent_unionfind", include("SparseGraph", "UnionFind"))]
 pub fn persistent_unionfind(reader: impl Read, writer: impl Write) {
     prepare_io!(buffered; reader, writer);
     sc!(n, q, queries: [(u8, i32, u32, u32); q]);

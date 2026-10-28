@@ -1,7 +1,7 @@
 use competitive::math::miller_rabin;
 use competitive::prelude::*;
 
-#[verify::library_checker("primality_test")]
+#[verify::library_checker("primality_test", include("miller_rabin"))]
 pub fn primality_test(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(q);

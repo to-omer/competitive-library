@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{math::Fps998244353, num::montgomery::MInt998244353 as M};
 
-#[verify::library_checker("multipoint_evaluation")]
+#[verify::library_checker("multipoint_evaluation", include("FormalPowerSeries"))]
 pub fn multipoint_evaluation(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, c: [M; n], p: [M; m]);

@@ -6,6 +6,7 @@ use competitive::{
     tree::XorLinkedRootedTree,
 };
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Add { u: usize, x: u64 }
@@ -13,7 +14,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("vertex_add_subtree_sum")]
+#[verify::library_checker(
+    "vertex_add_subtree_sum",
+    include("DaryPrefixSumTree", "Query", "XorLinkedRootedTree")
+)]
 pub fn vertex_add_subtree_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], p: [usize; iter n - 1]);
@@ -34,7 +38,10 @@ pub fn vertex_add_subtree_sum(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("vertex_add_subtree_sum")]
+#[verify::library_checker(
+    "vertex_add_subtree_sum",
+    include("AdditiveOperation", "HeavyLightDecomposition", "Query", "SegmentTree")
+)]
 pub fn vertex_add_subtree_sum_hld(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], p: [usize; iter n - 1]);

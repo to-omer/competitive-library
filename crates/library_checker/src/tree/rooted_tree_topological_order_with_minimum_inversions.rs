@@ -1,7 +1,10 @@
 use competitive::algorithm::solve_01_on_tree;
 use competitive::prelude::*;
 
-#[verify::library_checker("rooted_tree_topological_order_with_minimum_inversions")]
+#[verify::library_checker(
+    "rooted_tree_topological_order_with_minimum_inversions",
+    include("01_on_tree")
+)]
 pub fn rooted_tree_topological_order_with_minimum_inversions(
     reader: impl Read,
     writer: impl Write,

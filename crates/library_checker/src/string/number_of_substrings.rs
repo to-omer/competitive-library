@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::string::{StringSearch, SuffixAutomaton};
 
-#[verify::library_checker("number_of_substrings")]
+#[verify::library_checker("number_of_substrings", include("StringSearch"))]
 pub fn number_of_substrings(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(s: Chars);
@@ -14,7 +14,7 @@ pub fn number_of_substrings(reader: impl Read, writer: impl Write) {
     pp!(ans);
 }
 
-#[verify::library_checker("number_of_substrings")]
+#[verify::library_checker("number_of_substrings", include("SuffixAutomaton"))]
 pub fn number_of_substrings_suffix_automaton(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(s: Bytes);

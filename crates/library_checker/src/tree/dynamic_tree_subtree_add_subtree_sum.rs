@@ -7,8 +7,10 @@ use competitive::{
     },
 };
 
+#[codesnip::entry("SubtreeSum", include("LinkCutTree"))]
 struct SubtreeSum;
 
+#[codesnip::entry("SubtreeSum")]
 struct SubtreeSumData {
     value: u64,
     virtual_sum: u64,
@@ -20,6 +22,7 @@ struct SubtreeSumData {
     path_parent_lazy: u64,
 }
 
+#[codesnip::entry("SubtreeSum")]
 impl SubtreeSum {
     fn apply(data: &mut SubtreeSumData, action: u64) {
         if action == 0 {
@@ -33,6 +36,7 @@ impl SubtreeSum {
     }
 }
 
+#[codesnip::entry("SubtreeSum")]
 impl LinkCutTreeSpec for SubtreeSum {
     type Value = u64;
     type Data = SubtreeSumData;
@@ -103,6 +107,7 @@ impl LinkCutTreeSpec for SubtreeSum {
     }
 }
 
+#[codesnip::entry("SubtreeSum")]
 impl LinkCutTreeSubtreeFold for SubtreeSum {
     type Subtree = u64;
 
@@ -111,6 +116,7 @@ impl LinkCutTreeSubtreeFold for SubtreeSum {
     }
 }
 
+#[codesnip::entry("SubtreeSum")]
 impl LinkCutTreeSubtreeUpdate for SubtreeSum {
     type SubtreeAction = u64;
 
@@ -119,8 +125,10 @@ impl LinkCutTreeSubtreeUpdate for SubtreeSum {
     }
 }
 
+#[codesnip::entry("TopTreeSubtreeSum", include("TopTree"))]
 struct TopTreeSubtreeSum;
 
+#[codesnip::entry("TopTreeSubtreeSum")]
 impl TopTreeSpec for TopTreeSubtreeSum {
     type Info = u64;
     type Point = (u64, u64);
@@ -149,8 +157,10 @@ impl TopTreeSpec for TopTreeSubtreeSum {
     fn reverse(_path: &mut Self::Path) {}
 }
 
+#[codesnip::entry("TopTreeSubtreeSum")]
 struct AddAction;
 
+#[codesnip::entry("TopTreeSubtreeSum")]
 impl TopTreeAction<TopTreeSubtreeSum> for AddAction {
     type Action = u64;
     type ActionMonoid = AdditiveOperation<u64>;
@@ -172,6 +182,7 @@ impl TopTreeAction<TopTreeSubtreeSum> for AddAction {
     }
 }
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Relink { u: usize, v: usize, w: usize, x: usize }
@@ -180,7 +191,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("dynamic_tree_subtree_add_subtree_sum")]
+#[verify::library_checker("dynamic_tree_subtree_add_subtree_sum", include("Query", "SubtreeSum"))]
 pub fn dynamic_tree_subtree_add_subtree_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
@@ -200,7 +211,10 @@ pub fn dynamic_tree_subtree_add_subtree_sum(reader: impl Read, writer: impl Writ
     }
 }
 
-#[verify::library_checker("dynamic_tree_subtree_add_subtree_sum")]
+#[verify::library_checker(
+    "dynamic_tree_subtree_add_subtree_sum",
+    include("Query", "TopTreeSubtreeSum")
+)]
 pub fn dynamic_tree_subtree_add_subtree_sum_top_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], edges: [(usize, usize); n - 1]);

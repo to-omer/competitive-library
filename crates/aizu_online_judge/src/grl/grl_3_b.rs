@@ -1,7 +1,7 @@
 use competitive::graph::{LowLink, UndirectedGraphScanner};
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("GRL_3_B")]
+#[verify::aizu_online_judge("GRL_3_B", include("LowLink"))]
 pub fn grl_3_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, (graph, _): @UndirectedGraphScanner::<usize, ()>::new(vs, es));

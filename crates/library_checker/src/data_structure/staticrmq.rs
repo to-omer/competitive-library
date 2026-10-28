@@ -4,7 +4,7 @@ use competitive::{
     data_structure::{DisjointSparseTable, RangeMinimumQuery, SegmentTree, StaticRangeProduct},
 };
 
-#[verify::library_checker("staticrmq")]
+#[verify::library_checker("staticrmq", include("DisjointSparseTable", "MinOperation"))]
 pub fn staticrmq_disjoint_sparse_table(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], lr: [(usize, usize); iter q]);
@@ -14,7 +14,7 @@ pub fn staticrmq_disjoint_sparse_table(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("staticrmq")]
+#[verify::library_checker("staticrmq", include("MinOperation", "SegmentTree"))]
 pub fn staticrmq_segment_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], lr: [(usize, usize); iter q]);
@@ -24,7 +24,7 @@ pub fn staticrmq_segment_tree(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("staticrmq")]
+#[verify::library_checker("staticrmq", include("RangeMinimumQuery"))]
 pub fn staticrmq_range_minimum_query(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], lr: [(usize, usize); iter q]);
@@ -34,7 +34,7 @@ pub fn staticrmq_range_minimum_query(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("staticrmq")]
+#[verify::library_checker("staticrmq", include("MinOperation", "StaticRangeProduct"))]
 pub fn staticrmq_static_range_product(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], lr: [(usize, usize); iter q]);

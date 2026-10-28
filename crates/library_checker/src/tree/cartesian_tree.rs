@@ -1,7 +1,7 @@
 use competitive::algorithm::CartesianTree;
 use competitive::prelude::*;
 
-#[verify::library_checker("cartesian_tree")]
+#[verify::library_checker("cartesian_tree", include("CartesianTree"))]
 pub fn cartesian_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [i32; n]);

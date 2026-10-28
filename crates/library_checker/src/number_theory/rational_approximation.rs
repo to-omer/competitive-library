@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algorithm::rational_binary_search, num::URational};
 
-#[verify::library_checker("rational_approximation")]
+#[verify::library_checker("rational_approximation", include("stern_brocot_tree"))]
 pub fn rational_approximation(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(t);

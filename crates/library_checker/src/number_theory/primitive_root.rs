@@ -1,7 +1,7 @@
 use competitive::math::primitive_root as primitive_root_library;
 use competitive::prelude::*;
 
-#[verify::library_checker("primitive_root")]
+#[verify::library_checker("primitive_root", include("primitive_root"))]
 pub fn primitive_root(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(q, p: [u64; iter q]);

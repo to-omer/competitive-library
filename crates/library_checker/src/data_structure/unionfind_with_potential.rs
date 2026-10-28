@@ -4,6 +4,7 @@ use competitive::{
     num::montgomery::MInt998244353 as M,
 };
 
+#[codesnip::entry("Query", include("montgomery"))]
 competitive::define_enum_scan! {
     enum Query: u8 {
         0 => Unite { u: usize, v: usize, x: M }
@@ -11,7 +12,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("unionfind_with_potential")]
+#[verify::library_checker(
+    "unionfind_with_potential",
+    include("AdditiveOperation", "Query", "UnionFind")
+)]
 pub fn unionfind_with_potential(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);

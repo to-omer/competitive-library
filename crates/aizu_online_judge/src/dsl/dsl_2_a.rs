@@ -1,6 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::MinOperation, data_structure::SegmentTree};
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Update { x: usize, y: usize }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::aizu_online_judge("DSL_2_A")]
+#[verify::aizu_online_judge("DSL_2_A", include("MinOperation", "Query", "SegmentTree"))]
 pub fn dsl_2_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);

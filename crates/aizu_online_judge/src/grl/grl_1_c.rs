@@ -4,7 +4,7 @@ use competitive::{
     num::Saturating,
 };
 
-#[verify::aizu_online_judge("GRL_1_C")]
+#[verify::aizu_online_judge("GRL_1_C", include("SparseGraph", "integer", "shortest_path"))]
 pub fn grl_1_c(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, (graph, d): @DirectedGraphScanner::<usize, i64>::new(vs, es));

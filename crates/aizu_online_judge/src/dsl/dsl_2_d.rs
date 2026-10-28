@@ -1,6 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::RangeMinRangeUpdate, data_structure::LazySegmentTree};
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Update { s: usize, t: usize, x: i32 }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::aizu_online_judge("DSL_2_D")]
+#[verify::aizu_online_judge("DSL_2_D", include("LazySegmentTree", "Query"))]
 pub fn dsl_2_d(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);

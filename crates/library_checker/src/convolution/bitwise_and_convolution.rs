@@ -5,7 +5,7 @@ use competitive::{
     num::montgomery::MInt998244353 as M,
 };
 
-#[verify::library_checker("bitwise_and_convolution")]
+#[verify::library_checker("bitwise_and_convolution", include("BitwiseandConvolve", "montgomery"))]
 pub fn bitwise_and_convolution(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [M; 1 << n], b: [M; 1 << n]);
@@ -13,7 +13,7 @@ pub fn bitwise_and_convolution(reader: impl Read, writer: impl Write) {
     pp!(@it c);
 }
 
-#[verify::library_checker("bitwise_and_convolution")]
+#[verify::library_checker("bitwise_and_convolution", include("BitwiseorConvolve", "montgomery"))]
 pub fn bitwise_or_convolution(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, mut a: [M; 1 << n], mut b: [M; 1 << n]);

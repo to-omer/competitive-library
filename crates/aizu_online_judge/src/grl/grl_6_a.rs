@@ -1,7 +1,7 @@
 use competitive::graph::DinicBuilder;
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("GRL_6_A")]
+#[verify::aizu_online_judge("GRL_6_A", include("Dinic"))]
 pub fn grl_6_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, edges: [(usize, usize, u64); iter es]);

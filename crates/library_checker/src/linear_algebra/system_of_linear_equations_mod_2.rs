@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{data_structure::BitSet, math::BitMatrix};
 
-#[verify::library_checker("system_of_linear_equations_mod_2")]
+#[verify::library_checker("system_of_linear_equations_mod_2", include("BitMatrix"))]
 pub fn system_of_linear_equations_mod_2(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, _m, a: [@BitSet::from_binary; n], b: @BitSet::from_binary);

@@ -3,7 +3,7 @@ use competitive::{
     algebra::AddMulOperation, math::SparseMatrix, num::mint_basic::MInt998244353 as M,
 };
 
-#[verify::library_checker("sparse_matrix_det")]
+#[verify::library_checker("sparse_matrix_det", include("BlackBoxMatrix", "MInt"))]
 pub fn sparse_matrix_det(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, k, abc: [(usize, usize, M); k]);

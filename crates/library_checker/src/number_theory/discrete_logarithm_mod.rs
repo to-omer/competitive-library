@@ -1,7 +1,7 @@
 use competitive::math::discrete_logarithm;
 use competitive::prelude::*;
 
-#[verify::library_checker("discrete_logarithm_mod")]
+#[verify::library_checker("discrete_logarithm_mod", include("discrete_logarithm"))]
 pub fn discrete_logarithm_mod(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(t, query: [(u64, u64, u64); iter t]);

@@ -1,7 +1,7 @@
 use competitive::graph::{DirectedGraphScanner, StronglyConnectedComponent};
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("GRL_3_C")]
+#[verify::aizu_online_judge("GRL_3_C", include("StronglyConnectedComponent"))]
 pub fn grl_3_c(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, (graph, _): @DirectedGraphScanner::<usize, ()>::new(vs, es));

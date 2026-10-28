@@ -5,7 +5,7 @@ use competitive::{
     num::mint_basic::MInt998244353 as M,
 };
 
-#[verify::library_checker("subset_convolution")]
+#[verify::library_checker("subset_convolution", include("SubsetConvolve", "MInt"))]
 pub fn subset_convolution(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, a: [M; 1 << n], b: [M; 1 << n]);

@@ -4,7 +4,10 @@ use competitive::{
     data_structure::{RangeFoldWithUpperBound, WaveletMatrix},
 };
 
-#[verify::library_checker("static_range_sum_with_upper_bound")]
+#[verify::library_checker(
+    "static_range_sum_with_upper_bound",
+    include("AdditiveOperation", "RangeFoldWithUpperBound", "TupleOperation")
+)]
 pub fn static_range_sum_with_upper_bound(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u32; iter n]);
@@ -18,7 +21,10 @@ pub fn static_range_sum_with_upper_bound(reader: impl Read, writer: impl Write) 
     pp!(@ittup fold.execute());
 }
 
-#[verify::library_checker("static_range_sum_with_upper_bound")]
+#[verify::library_checker(
+    "static_range_sum_with_upper_bound",
+    include("AdditiveOperation", "WaveletMatrix")
+)]
 pub fn static_range_sum_with_upper_bound_wavelet_matrix(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [i64; n]);

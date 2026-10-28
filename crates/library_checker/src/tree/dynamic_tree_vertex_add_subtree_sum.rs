@@ -3,14 +3,17 @@ use competitive::tree::{
     LinkCutTree, LinkCutTreeSpec, LinkCutTreeSubtreeFold, TopTree, TopTreeSpec,
 };
 
+#[codesnip::entry("SubtreeSum")]
 struct SubtreeSum;
 
+#[codesnip::entry("SubtreeSumLinkCutTree", include("SubtreeSum", "LinkCutTree"))]
 struct SubtreeSumData {
     value: u64,
     virtual_sum: u64,
     sum: u64,
 }
 
+#[codesnip::entry("SubtreeSumLinkCutTree")]
 impl LinkCutTreeSpec for SubtreeSum {
     type Value = u64;
     type Data = SubtreeSumData;
@@ -54,6 +57,7 @@ impl LinkCutTreeSpec for SubtreeSum {
     }
 }
 
+#[codesnip::entry("SubtreeSumLinkCutTree")]
 impl LinkCutTreeSubtreeFold for SubtreeSum {
     type Subtree = u64;
 
@@ -62,6 +66,7 @@ impl LinkCutTreeSubtreeFold for SubtreeSum {
     }
 }
 
+#[codesnip::entry("SubtreeSumTopTree", include("SubtreeSum", "TopTree"))]
 impl TopTreeSpec for SubtreeSum {
     type Info = u64;
     type Point = (u64, u64);
@@ -90,6 +95,7 @@ impl TopTreeSpec for SubtreeSum {
     fn reverse(_path: &mut Self::Path) {}
 }
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Relink { u: usize, v: usize, w: usize, x: usize }
@@ -98,7 +104,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("dynamic_tree_vertex_add_subtree_sum")]
+#[verify::library_checker(
+    "dynamic_tree_vertex_add_subtree_sum",
+    include("Query", "SubtreeSumLinkCutTree")
+)]
 pub fn dynamic_tree_vertex_add_subtree_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], edges: [(usize, usize); n - 1]);
@@ -118,7 +127,10 @@ pub fn dynamic_tree_vertex_add_subtree_sum(reader: impl Read, writer: impl Write
     }
 }
 
-#[verify::library_checker("dynamic_tree_vertex_add_subtree_sum")]
+#[verify::library_checker(
+    "dynamic_tree_vertex_add_subtree_sum",
+    include("Query", "SubtreeSumTopTree")
+)]
 pub fn dynamic_tree_vertex_add_subtree_sum_top_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [u64; n], edges: [(usize, usize); n - 1]);

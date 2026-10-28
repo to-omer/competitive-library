@@ -4,7 +4,7 @@ use competitive::{
     num::mint_basic::{MInt1000000007, Modulo1000000007},
 };
 
-#[verify::library_checker("convolution_mod_1000000007")]
+#[verify::library_checker("convolution_mod_1000000007", include("NumberTheoreticTransform"))]
 pub fn convolution_mod_1000000007(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     type M = MInt1000000007;

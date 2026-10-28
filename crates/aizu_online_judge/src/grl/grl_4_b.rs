@@ -1,7 +1,11 @@
 use competitive::graph::{DirectedGraphScanner, TopologicalSortExt};
 use competitive::prelude::*;
 
-#[verify::aizu_online_judge("GRL_4_B", judge = "judge_grl_4_b")]
+#[verify::aizu_online_judge(
+    "GRL_4_B",
+    judge = "judge_grl_4_b",
+    include("SparseGraph", "topological_sort")
+)]
 pub fn grl_4_b(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(vs, es, (graph, _): @DirectedGraphScanner::<usize, ()>::new(vs, es));

@@ -5,7 +5,10 @@ use competitive::{
     data_structure::{StaticSearch, WaveletMatrix},
 };
 
-#[verify::library_checker("rectangle_sum")]
+#[verify::library_checker(
+    "rectangle_sum",
+    include("AdditiveOperation", "StaticSearch", "WaveletMatrix", "sort")
+)]
 pub fn rectangle_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(buffered; reader, writer);
     sc!(n, q, mut xyw: [(u32, u32, i64); n], queries: [(u32, u32, u32, u32); q]);

@@ -6,6 +6,7 @@ use competitive::{
     num::mint_basic::MInt998244353 as M,
 };
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     #[derive(Clone, Copy)]
     enum Query: u8 {
@@ -14,7 +15,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("point_set_range_composite_large_array")]
+#[verify::library_checker(
+    "point_set_range_composite_large_array",
+    include("LinearOperation", "Query", "SegmentTree", "StaticSearch", "sort")
+)]
 pub fn point_set_range_composite_large_array(reader: impl Read, writer: impl Write) {
     prepare_io!(buffered; reader, writer);
     sc!(_n: u32, q, queries: [Query; q]);

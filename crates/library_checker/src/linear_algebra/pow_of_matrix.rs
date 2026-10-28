@@ -5,7 +5,7 @@ use competitive::{
     num::mint_basic::MInt998244353 as M,
 };
 
-#[verify::library_checker("pow_of_matrix")]
+#[verify::library_checker("pow_of_matrix", include("MIntMatrix", "MInt"))]
 pub fn pow_of_matrix(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, k, a: [[M; n]; n]);
@@ -14,7 +14,7 @@ pub fn pow_of_matrix(reader: impl Read, writer: impl Write) {
     pp!(@it2d b.data);
 }
 
-#[verify::library_checker("pow_of_matrix")]
+#[verify::library_checker("pow_of_matrix", include("Matrix", "MInt"))]
 pub fn pow_of_matrix_strassen(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, k, a: [[M; n]; n]);

@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algorithm::SliceSortExt, graph::EdgeListGraphScanner};
 
-#[verify::library_checker("minimum_spanning_tree")]
+#[verify::library_checker("minimum_spanning_tree", include("minimum_spanning_tree", "sort"))]
 pub fn minimum_spanning_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, m, (graph, w): @EdgeListGraphScanner::<usize, u32>::new(n, m));

@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::string::{Mersenne61x1, RollingHasher, Zarray};
 
-#[verify::library_checker("zalgorithm")]
+#[verify::library_checker("zalgorithm", include("ZAlgorithm"))]
 pub fn zalgorithm(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(s: Chars);
@@ -9,7 +9,7 @@ pub fn zalgorithm(reader: impl Read, writer: impl Write) {
     pp!(@it (0..s.len()).map(|i| z[i]));
 }
 
-#[verify::library_checker("zalgorithm")]
+#[verify::library_checker("zalgorithm", include("RollingHash"))]
 pub fn zalgorithm_rolling_hash(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(s: Bytes);

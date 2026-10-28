@@ -3,6 +3,7 @@ use competitive::{
     algebra::LinearOperation, data_structure::DequeAggregation, num::mint_basic::MInt998244353 as M,
 };
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => PushFront { ab: (M, M) }
@@ -13,7 +14,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("deque_operate_all_composite")]
+#[verify::library_checker(
+    "deque_operate_all_composite",
+    include("LinearOperation", "Query", "sliding_window_aggregation")
+)]
 pub fn deque_operate_all_composite(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(q);

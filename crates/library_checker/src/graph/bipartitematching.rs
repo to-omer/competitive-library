@@ -1,7 +1,7 @@
 use competitive::graph::{BipartiteMatching, DinicBuilder};
 use competitive::prelude::*;
 
-#[verify::library_checker("bipartitematching")]
+#[verify::library_checker("bipartitematching", include("Dinic"))]
 pub fn bipartitematching_dinic(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(l, r, m, ab: [(usize, usize); m]);
@@ -27,7 +27,7 @@ pub fn bipartitematching_dinic(reader: impl Read, writer: impl Write) {
     pp!(f; @ittup ans);
 }
 
-#[verify::library_checker("bipartitematching")]
+#[verify::library_checker("bipartitematching", include("BipartiteMatching"))]
 pub fn bipartitematching(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(l, r, m, ab: [(usize, usize); m]);

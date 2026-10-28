@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::string::SuffixArray;
 
-#[verify::library_checker("suffixarray")]
+#[verify::library_checker("suffixarray", include("SuffixArray"))]
 pub fn suffixarray(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(s: Chars);

@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, graph::TreeGraphScanner};
 
-#[verify::aizu_online_judge("GRL_5_A")]
+#[verify::aizu_online_judge("GRL_5_A", include("AdditiveOperation", "weighted_tree_depth"))]
 pub fn grl_5_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, (graph, w): @TreeGraphScanner::<usize, u64>::new(n));

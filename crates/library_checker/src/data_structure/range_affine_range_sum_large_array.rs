@@ -6,6 +6,7 @@ use competitive::{
     num::{Zero, mint_basic::MInt998244353 as M},
 };
 
+#[codesnip::entry("Query", include("MInt"))]
 competitive::define_enum_scan! {
     #[derive(Clone, Copy)]
     enum Query: u8 {
@@ -14,7 +15,10 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("range_affine_range_sum_large_array")]
+#[verify::library_checker(
+    "range_affine_range_sum_large_array",
+    include("LazySegmentTree", "Query", "StaticSearch", "sort")
+)]
 pub fn range_affine_range_sum_large_array(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n: u32, q, queries: [Query; q]);

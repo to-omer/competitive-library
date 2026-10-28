@@ -1,7 +1,7 @@
 use competitive::graph::TreeGraphScanner;
 use competitive::prelude::*;
 
-#[verify::library_checker("jump_on_tree")]
+#[verify::library_checker("jump_on_tree", include("HeavyLightDecomposition"))]
 pub fn jump_on_tree(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, (g, _): @TreeGraphScanner::<usize>::new(n));
@@ -15,7 +15,7 @@ pub fn jump_on_tree(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("jump_on_tree")]
+#[verify::library_checker("jump_on_tree", include("EulerTour", "LevelAncestor"))]
 pub fn jump_on_tree_level_ancestor(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, (g, _): @TreeGraphScanner::<usize>::new(n));
@@ -38,7 +38,7 @@ pub fn jump_on_tree_level_ancestor(reader: impl Read, writer: impl Write) {
     }
 }
 
-#[verify::library_checker("jump_on_tree")]
+#[verify::library_checker("jump_on_tree", include("EulerTour", "LevelAncestor"))]
 pub fn jump_on_tree_level_ancestor_batch(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, (g, _): @TreeGraphScanner::<usize>::new(n), queries: [(usize, usize, usize); iter q]);

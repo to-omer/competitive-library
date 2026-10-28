@@ -1,6 +1,7 @@
 use competitive::data_structure::UnionFind;
 use competitive::prelude::*;
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Unite { x: usize, y: usize }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::aizu_online_judge("DSL_1_A")]
+#[verify::aizu_online_judge("DSL_1_A", include("Query", "UnionFind"))]
 pub fn dsl_1_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);

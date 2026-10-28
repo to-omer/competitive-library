@@ -4,7 +4,10 @@ use competitive::{
     num::{One, montgomery::MInt998244353 as M},
 };
 
-#[verify::library_checker("kth_term_of_linearly_recurrent_sequence")]
+#[verify::library_checker(
+    "kth_term_of_linearly_recurrent_sequence",
+    include("FormalPowerSeries")
+)]
 pub fn kth_term_of_linearly_recurrent_sequence(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(d, k, a: [M; d], c: [M; d]);

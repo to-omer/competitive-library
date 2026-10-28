@@ -33,6 +33,11 @@ jobs:
           curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
           pip install -r requirements.txt
 
+      - name: Setup submission toolchain
+        uses: dtolnay/rust-toolchain@1.89.0
+        with:
+          targets: x86_64-unknown-linux-gnu, aarch64-apple-darwin
+
       - name: Setup `${{ matrix.toolchain }}`
         uses: dtolnay/rust-toolchain@master
         with:
@@ -76,7 +81,7 @@ jobs:
       - name: Setup `1.89.0`
         uses: dtolnay/rust-toolchain@1.89.0
         with:
-          targets: x86_64-unknown-linux-gnu
+          targets: x86_64-unknown-linux-gnu, aarch64-apple-darwin
 
       - name: Setup `stable`
         uses: dtolnay/rust-toolchain@stable
@@ -94,6 +99,16 @@ jobs:
 
       - name: Snippet Verification
         run: bash .github/workflows/snippet.sh
+
+      - name: Submission source verification
+        run: cargo run -p verify_source
+
+      - name: Upload submission sources
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: submissions
+          path: target/doc/submissions
+          if-no-files-found: error
 
   formal-verus:
     name: Formal verification (verus)
@@ -290,10 +305,15 @@ jobs:
           curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
           pip install -r requirements.txt
 
+      - name: Setup submission toolchain
+        uses: dtolnay/rust-toolchain@1.89.0
+        with:
+          targets: x86_64-unknown-linux-gnu, aarch64-apple-darwin
+
       - name: Setup `nightly`
         uses: dtolnay/rust-toolchain@nightly
         with:
-          components: llvm-tools-preview
+          components: llvm-tools-preview, rustfmt
 
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
@@ -422,6 +442,9 @@ jobs:
 
       - name: Generate snippets
         run: python3 util/snippets.py
+
+      - name: Arrange submission sources
+        run: cp -r submissions target/doc/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0

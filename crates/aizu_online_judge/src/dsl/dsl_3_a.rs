@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 use competitive::{algebra::AdditiveOperation, data_structure::QueueAggregation};
 
-#[verify::aizu_online_judge("DSL_3_A")]
+#[verify::aizu_online_judge("DSL_3_A", include("AdditiveOperation", "sliding_window_aggregation"))]
 pub fn dsl_3_a(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, s: u64, a: [u64; iter n]);

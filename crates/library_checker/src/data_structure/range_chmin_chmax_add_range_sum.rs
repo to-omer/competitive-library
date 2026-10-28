@@ -5,6 +5,7 @@ use competitive::{
     num::Saturating,
 };
 
+#[codesnip::entry("Query", include("integer"))]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Chmin { l: usize, r: usize, b: Saturating<i64> }
@@ -14,7 +15,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("range_chmin_chmax_add_range_sum")]
+#[verify::library_checker("range_chmin_chmax_add_range_sum", include("LazySegmentTree", "Query"))]
 pub fn range_chmin_chmax_add_range_sum(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q, a: [Saturating<i64>; iter n]);

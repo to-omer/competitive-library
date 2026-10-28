@@ -1,6 +1,7 @@
 use competitive::data_structure::UnionFind;
 use competitive::prelude::*;
 
+#[codesnip::entry("Query")]
 competitive::define_enum_scan! {
     enum Query: usize {
         0 => Unite { u: usize, v: usize }
@@ -8,7 +9,7 @@ competitive::define_enum_scan! {
     }
 }
 
-#[verify::library_checker("unionfind")]
+#[verify::library_checker("unionfind", include("Query", "UnionFind"))]
 pub fn unionfind(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
     sc!(n, q);
