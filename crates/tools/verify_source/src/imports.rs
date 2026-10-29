@@ -133,6 +133,7 @@ impl ReferenceLibrary {
             ])
             .arg(root.join("target/verify_source"))
             .env_remove("RUSTC")
+            .env("RUSTC_WRAPPER", "")
             .env("CARGO_ENCODED_RUSTFLAGS", "")
             .current_dir(root);
         if optimization == "3" {
