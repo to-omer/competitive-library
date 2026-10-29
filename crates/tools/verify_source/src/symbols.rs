@@ -305,47 +305,6 @@ impl Symbols {
     }
 }
 
-pub fn namespace_source(
-    paths: &BTreeMap<Vec<String>, Symbol>,
-    visibility: &syn::Visibility,
-) -> String {
-    #[derive(Default)]
-    struct Namespace<'a> {
-        exports: BTreeMap<&'a str, &'a Symbol>,
-        children: BTreeMap<&'a str, Namespace<'a>>,
-    }
-    impl Namespace<'_> {
-        fn write(&self, visibility: &str, code: &mut String) {
-            for (name, symbol) in &self.exports {
-                for cfg in &symbol.cfg {
-                    code.push_str(cfg);
-                }
-                code.push_str(&format!("{visibility} use {}", symbol.path.join("::")));
-                if symbol.path.last().map(String::as_str) != Some(name) {
-                    code.push_str(&format!(" as {name}"));
-                }
-                code.push_str(";\n");
-            }
-            for (name, child) in &self.children {
-                code.push_str(&format!("{visibility} mod {name} {{\n"));
-                child.write(visibility, code);
-                code.push_str("}\n");
-            }
-        }
-    }
-    let mut namespaces = Namespace::default();
-    for (path, symbol) in paths {
-        let mut namespace = &mut namespaces;
-        for part in &path[..path.len() - 1] {
-            namespace = namespace.children.entry(part).or_default();
-        }
-        namespace.exports.insert(path.last().unwrap(), symbol);
-    }
-    let mut code = String::new();
-    namespaces.write(&visibility.to_token_stream().to_string(), &mut code);
-    code
-}
-
 pub fn imports(tree: &UseTree) -> Vec<(Vec<String>, Option<String>)> {
     fn visit(tree: &UseTree, mut path: Vec<String>, out: &mut Vec<(Vec<String>, Option<String>)>) {
         match tree {

@@ -1,4 +1,4 @@
-use crate::symbols::{Symbol, Symbols, imports, namespace_source};
+use crate::symbols::{Symbol, Symbols, imports};
 use anyhow::{Context as _, Result, ensure};
 use codesnip_core::parse_file_recursive;
 use quote::ToTokens as _;
@@ -15,7 +15,9 @@ use syn::{
 };
 
 pub struct ImportResolver {
-    libraries: Vec<ReferenceLibrary>,
+    library: PathBuf,
+    host_dependencies: PathBuf,
+    cfg: Vec<Meta>,
 }
 
 pub struct ResolvedImports {
@@ -23,99 +25,8 @@ pub struct ResolvedImports {
     pub exports: BTreeMap<Vec<String>, Symbol>,
 }
 
-struct ReferenceLibrary {
-    target: &'static str,
-    optimization: &'static str,
-    library: PathBuf,
-    host_dependencies: PathBuf,
-    cfg: Vec<Meta>,
-}
-
 impl ImportResolver {
     pub fn new(root: &Path) -> Result<Self> {
-        let mut libraries = Vec::new();
-        for target in crate::TARGETS {
-            for optimization in crate::OPTIMIZATIONS {
-                libraries.push(ReferenceLibrary::new(root, target, optimization)?);
-            }
-        }
-        Ok(Self { libraries })
-    }
-
-    pub fn resolve(
-        &self,
-        items: &[Item],
-        solution: &str,
-        symbols: &Symbols,
-    ) -> Result<ResolvedImports> {
-        let mut code = String::new();
-        for item in items {
-            if let Item::Use(import) = item {
-                code.push_str(&import.to_token_stream().to_string());
-                code.push('\n');
-            }
-        }
-        code.push_str(solution);
-        let mut used = BTreeSet::new();
-        for library in &self.libraries {
-            used.extend(
-                library
-                    .used_imports(&code, "competitive")
-                    .context("checking original imports failed")?,
-            );
-        }
-        let mut selected = Vec::new();
-        for item in syn::parse_file(&code)?.items {
-            if let Item::Use(mut import) = item
-                && retain_tree(&mut import.tree, &used)
-            {
-                selected.push(import);
-            }
-        }
-
-        // An unused explicit import still marks its reexport as used.
-        // Resolve reexports after removing imports unused in every configuration.
-        let mut exports = symbols.namespace_paths();
-        let mut reference = exports.clone();
-        for (path, symbol) in &mut reference {
-            symbol.path = vec![String::new(), "__verify_library".to_owned()];
-            symbol.path.extend_from_slice(path);
-        }
-        let namespaces = namespace_source(&reference, &parse_quote!(pub(crate)));
-        let uses = selected
-            .iter()
-            .map(|import| import.to_token_stream().to_string())
-            .collect::<Vec<_>>()
-            .join("\n");
-        let code = format!(
-            "extern crate self as competitive;\n{namespaces}\nmod submission {{\n{uses}\n{solution}\n}}"
-        );
-        let mut file = syn::parse_file(&code)?;
-        CrateVisibility.visit_file_mut(&mut file);
-        let code = file.to_token_stream().to_string();
-        let mut used = BTreeSet::new();
-        for library in &self.libraries {
-            used.extend(
-                library
-                    .used_imports(&code, "__verify_library")
-                    .context("checking library reexports failed")?,
-            );
-        }
-        let mut referenced = ReferencedExports {
-            used: &used,
-            paths: BTreeSet::new(),
-        };
-        referenced.visit_file(&syn::parse_file(&code)?);
-        exports.retain(|path, _| referenced.paths.contains(path));
-        Ok(ResolvedImports {
-            imports: selected,
-            exports,
-        })
-    }
-}
-
-impl ReferenceLibrary {
-    fn new(root: &Path, target: &'static str, optimization: &'static str) -> Result<Self> {
         let mut command = Command::new("rustup");
         command
             .args([
@@ -123,12 +34,13 @@ impl ReferenceLibrary {
                 "1.89.0",
                 "cargo",
                 "build",
+                "--release",
                 "-p",
                 "competitive",
                 "--lib",
                 "--message-format=json",
                 "--target",
-                target,
+                crate::TARGET,
                 "--target-dir",
             ])
             .arg(root.join("target/verify_source"))
@@ -136,9 +48,6 @@ impl ReferenceLibrary {
             .env("RUSTC_WRAPPER", "")
             .env("CARGO_ENCODED_RUSTFLAGS", "")
             .current_dir(root);
-        if optimization == "3" {
-            command.arg("--release");
-        }
         let output = command.output()?;
         let messages: Vec<serde_json::Value> = String::from_utf8(output.stdout)?
             .lines()
@@ -146,7 +55,8 @@ impl ReferenceLibrary {
             .collect::<Result<_, _>>()?;
         ensure!(
             output.status.success(),
-            "building competitive for {target}, opt-level={optimization} failed:\n{}{}",
+            "building competitive for {} failed:\n{}{}",
+            crate::TARGET,
             messages
                 .iter()
                 .filter_map(|message| message["message"]["rendered"].as_str())
@@ -169,8 +79,7 @@ impl ReferenceLibrary {
             })
             .context("missing competitive library artifact")?;
         let output = crate::submission_compiler()
-            .args(["--print=cfg", "--target", target, "-C"])
-            .arg(format!("opt-level={optimization}"))
+            .args(["--print=cfg", "--target", crate::TARGET])
             .output()?;
         ensure!(
             output.status.success(),
@@ -182,18 +91,66 @@ impl ReferenceLibrary {
             .map(syn::parse_str)
             .collect::<syn::Result<_>>()?;
         Ok(Self {
-            target,
-            optimization,
             library,
-            host_dependencies: root
-                .join("target/verify_source")
-                .join(if optimization == "3" {
-                    "release"
-                } else {
-                    "debug"
-                })
-                .join("deps"),
+            host_dependencies: root.join("target/verify_source/release/deps"),
             cfg,
+        })
+    }
+
+    pub fn resolve(
+        &self,
+        items: &[Item],
+        solution: &str,
+        symbols: &Symbols,
+    ) -> Result<ResolvedImports> {
+        let mut code = String::new();
+        for item in items {
+            if let Item::Use(import) = item {
+                code.push_str(&import.to_token_stream().to_string());
+                code.push('\n');
+            }
+        }
+        code.push_str(solution);
+        let used = self
+            .used_imports(&code, "competitive")
+            .context("checking original imports failed")?;
+        let mut selected = Vec::new();
+        for item in syn::parse_file(&code)?.items {
+            if let Item::Use(mut import) = item
+                && retain_tree(&mut import.tree, &used)
+            {
+                selected.push(import);
+            }
+        }
+
+        // An unused explicit import still marks its reexport as used.
+        // Resolve reexports after removing unused imports.
+        let mut exports = symbols.namespace_paths();
+        let mut code = format!(
+            "extern crate self as competitive;\n{}\nmod submission {{\n",
+            reference_source(&exports),
+        );
+        for import in &selected {
+            code.push_str(&import.to_token_stream().to_string());
+            code.push('\n');
+        }
+        code.push_str(solution);
+        code.push_str("\n}");
+        let mut file = syn::parse_file(&code)?;
+        CrateVisibility.visit_file_mut(&mut file);
+        let code = file.to_token_stream().to_string();
+        let used = self
+            .used_imports(&code, "__verify_library")
+            .context("checking library reexports failed")?;
+        let mut referenced = ReferencedExports {
+            used: &used,
+            paths: BTreeSet::new(),
+        };
+        referenced.visit_file(&syn::parse_file(&code)?);
+        exports.retain(|path, _| referenced.paths.contains(path));
+        Ok(ResolvedImports {
+            imports: selected,
+            exports,
         })
     }
 
@@ -211,10 +168,8 @@ impl ReferenceLibrary {
                 "--force-warn",
                 "unused_imports",
                 "--target",
-                self.target,
-                "-C",
+                crate::TARGET,
             ])
-            .arg(format!("opt-level={}", self.optimization))
             .arg("--extern")
             .arg(format!("{name}={}", self.library.display()))
             .arg("-L")
@@ -234,9 +189,8 @@ impl ReferenceLibrary {
             .collect::<Result<_, _>>()?;
         ensure!(
             output.status.success(),
-            "{}, opt-level={}:\n{}",
-            self.target,
-            self.optimization,
+            "{}:\n{}",
+            crate::TARGET,
             diagnostics
                 .iter()
                 .filter_map(|message| message["rendered"].as_str())
@@ -279,6 +233,43 @@ impl ReferenceLibrary {
         used.visit_file(&active);
         Ok(used.offsets)
     }
+}
+
+fn reference_source(paths: &BTreeMap<Vec<String>, Symbol>) -> String {
+    #[derive(Default)]
+    struct Namespace<'a> {
+        exports: Vec<(&'a [String], &'a Symbol)>,
+        children: BTreeMap<&'a str, Namespace<'a>>,
+    }
+    impl Namespace<'_> {
+        fn write(&self, code: &mut String) {
+            for (path, symbol) in &self.exports {
+                for cfg in &symbol.cfg {
+                    code.push_str(cfg);
+                }
+                code.push_str(&format!(
+                    "pub(crate) use ::__verify_library::{};\n",
+                    path.join("::"),
+                ));
+            }
+            for (name, child) in &self.children {
+                code.push_str(&format!("pub(crate) mod {name} {{\n"));
+                child.write(code);
+                code.push_str("}\n");
+            }
+        }
+    }
+    let mut namespaces = Namespace::default();
+    for (path, symbol) in paths {
+        let mut namespace = &mut namespaces;
+        for part in &path[..path.len() - 1] {
+            namespace = namespace.children.entry(part).or_default();
+        }
+        namespace.exports.push((path, symbol));
+    }
+    let mut code = String::new();
+    namespaces.write(&mut code);
+    code
 }
 
 fn retain_tree(tree: &mut UseTree, used: &BTreeSet<usize>) -> bool {

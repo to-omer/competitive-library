@@ -10,13 +10,12 @@ mod imports;
 mod source;
 mod symbols;
 
-const TARGETS: [&str; 2] = ["x86_64-unknown-linux-gnu", "aarch64-apple-darwin"];
-const OPTIMIZATIONS: [&str; 2] = ["0", "3"];
+const TARGET: &str = "x86_64-unknown-linux-gnu";
 
 fn main() -> Result<()> {
     ensure!(
         std::env::args().nth(1).is_none(),
-        "usage: cargo run -p verify_source (from workspace root)"
+        "usage: cargo run --release -p verify_source (from workspace root)"
     );
     eprintln!("Loading snippets");
     let (symbols, snippets, resolver) = load_library(Path::new("."))?;
@@ -60,52 +59,26 @@ fn submission_compiler() -> Command {
         "--edition=2024",
         "--crate-name=submission",
         "-Dwarnings",
+        "-O",
     ]);
     command
-}
-
-#[cfg(test)]
-fn compile(source: &Path, binary: &Path) -> Result<()> {
-    let output = submission_compiler()
-        .arg("--error-format=short")
-        .arg(source)
-        .arg("-o")
-        .arg(binary)
-        .output()?;
-    ensure!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    Ok(())
 }
 
 fn check_source(code: &str) -> Result<()> {
     let temporary = tempfile::tempdir()?;
     let source = temporary.path().join("submission.rs");
     fs::write(&source, code)?;
-    for target in TARGETS {
-        for optimization in OPTIMIZATIONS {
-            let output = submission_compiler()
-                .args([
-                    "--error-format=short",
-                    "--target",
-                    target,
-                    "--emit=obj",
-                    "-C",
-                ])
-                .arg(format!("opt-level={optimization}"))
-                .arg(&source)
-                .arg("-o")
-                .arg(temporary.path().join("submission.o"))
-                .output()?;
-            ensure!(
-                output.status.success(),
-                "invalid generated submission ({target}, opt-level={optimization}):\n{}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-        }
-    }
+    let output = submission_compiler()
+        .args(["--error-format=short", "--target", TARGET, "--emit=obj"])
+        .arg(&source)
+        .arg("-o")
+        .arg(temporary.path().join("submission.o"))
+        .output()?;
+    ensure!(
+        output.status.success(),
+        "invalid generated submission ({TARGET}):\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
     Ok(())
 }
 
@@ -705,7 +678,7 @@ mod tests {
     }
 
     #[test]
-    fn conditional_imports_are_preserved() {
+    fn conditional_imports_use_submission_configuration() {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
         let (symbols, snippets, resolver) = load_library(&root).unwrap();
         let file = syn::parse_file(
@@ -717,7 +690,7 @@ mod tests {
             use competitive::math::lcm as divisor;
             #[cfg(debug_assertions)]
             use competitive::num::Bounded;
-            #[verify::library_checker("aplusb", include("gcd", "lcm", "bounded"))]
+            #[verify::library_checker("aplusb", include("gcd"))]
             pub fn plain(reader: impl Read, writer: impl Write) {
                 prepare_io!(reader, writer);
                 #[cfg(debug_assertions)]
@@ -734,12 +707,18 @@ mod tests {
         };
         let code = source::generate(&file.items, function, &symbols, &snippets, &resolver).unwrap();
         check_source(&code).unwrap();
-        let expected = if cfg!(target_os = "macos") {
-            b"12 1\n".as_slice()
-        } else {
-            b"2 1\n"
-        };
-        assert_eq!(run(&code, b""), expected);
+    }
+
+    #[test]
+    fn submission_warnings_are_rejected() {
+        let code = r#"
+            fn main() {
+                #[cfg(all(target_os = "linux", target_arch = "x86_64", not(debug_assertions)))]
+                let unused = 0;
+            }
+        "#;
+        let error = check_source(code).unwrap_err().to_string();
+        assert!(error.contains("unused variable"), "{error}");
     }
 
     #[test]
@@ -840,12 +819,6 @@ mod tests {
                 "missing submission snippet for competitive::math::lcm: lcm",
             ),
             (
-                ", include(\"gcd\")",
-                "#[cfg(not(debug_assertions))] pp!(divisor(6_u64, 4_u64));",
-                "use competitive::math::gcd as divisor;",
-                "unused import",
-            ),
-            (
                 "",
                 "pp!(@it (0..2).merge_by(2..4, |a, b| a < b));",
                 "use competitive::tools::IteratorExt as _;",
@@ -880,7 +853,18 @@ mod tests {
         let source = temporary.path().join("submission.rs");
         let binary = temporary.path().join("submission");
         fs::write(&source, code).unwrap();
-        compile(&source, &binary).unwrap();
+        let output = submission_compiler()
+            .arg("--error-format=short")
+            .arg(&source)
+            .arg("-o")
+            .arg(&binary)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
         let mut child = Command::new(binary)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())

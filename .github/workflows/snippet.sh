@@ -14,5 +14,6 @@ do
         --toolchain=1.89.0 \
         --edition=2024 \
         --target=x86_64-unknown-linux-gnu \
+        --rustc-arg=-O \
         --rustc-arg="-Ctarget-feature=${features}"
 done

@@ -29,8 +29,8 @@ generate documentation
 ```sh
 $ RUSTDOCFLAGS="--html-in-header util/header.html" cargo doc --no-deps --document-private-items
 $ cp -r util/gh-pages/* target/doc
-$ rustup toolchain install 1.89.0 --profile minimal --target x86_64-unknown-linux-gnu,aarch64-apple-darwin
-$ cargo run -p verify_source
+$ rustup toolchain install 1.89.0 --profile minimal --target x86_64-unknown-linux-gnu
+$ cargo run --release -p verify_source
 ```
 
 ## Snippet
