@@ -1,6 +1,6 @@
 pub use crate::tools::{
-    Bytes, Chars, FastInput, FastIterPrint, FastOutput, FastPrint, IterPrint, Scan, ScanSource,
-    Scanner, Usize1, read_all_unchecked,
+    Bytes, Chars, FastInput, FastIterPrint, FastOutput, FastPrint, HugePageAllocator, IterPrint,
+    Scan, ScanSource, Scanner, Usize1, read_all_unchecked,
 };
 pub use crate::{iter_print, prepare_io, scan};
 pub use std::io::{Read, Write};

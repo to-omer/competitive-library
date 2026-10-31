@@ -1,4 +1,4 @@
-use super::{FastInput, ScanSource};
+use super::{FastInput, ScanSource, advise_huge_pages};
 use std::str::from_utf8_unchecked;
 
 macro_rules! impl_fast_scan_integer {
@@ -10,7 +10,14 @@ macro_rules! impl_fast_scan_integer {
     )*};
 }
 
-impl ScanSource for FastInput {
+impl ScanSource for FastInput<'_> {
+    fn read_u32_vec(&mut self, size: usize, capacity: usize) -> Vec<u32> {
+        let mut values = Vec::with_capacity(capacity.max(size));
+        advise_huge_pages(&mut values);
+        unsafe { self.extend_u32(&mut values, size) };
+        values
+    }
+
     #[inline]
     fn skip_whitespace(&mut self) {
         self.skip_whitespace();
@@ -318,6 +325,49 @@ mod tests {
     }
 
     #[test]
+    fn test_bulk_vectors() {
+        use crate::num::montgomery::MInt998244353 as M;
+        use std::io::Write as _;
+        let mut rng = Xorshift::default();
+        for n in [0, 1, 7, 8, 543, 544, 545, 4097, 65536] {
+            let values: Vec<_> = integer_boundary_values!(u32)
+                .into_iter()
+                .chain(rng.random_iter(0..=u32::MAX))
+                .take(n)
+                .collect();
+            let tokens = values
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(" ");
+            let input = format!("{tokens}\n{tokens}\nEND\n");
+            let expected: String = values.iter().map(|x| format!("{x:10} ")).collect();
+            macro_rules! check {
+                ($($mode:ident;)?) => {{
+                    let mut output = Vec::new();
+                    {
+                        crate::prepare_io!($($mode;)? input.as_bytes(), &mut output);
+                        sc!(plain: [u32; n; capacity n + 17], modular: [M; n; capacity n + 17]);
+                        sc!(end: &str);
+                        assert_eq!(end, "END");
+                        assert_eq!(plain, values);
+                        assert_eq!(modular, values.iter().copied().map(M::new).collect::<Vec<_>>());
+                        assert!(plain.capacity() >= n + 17);
+                        assert!(modular.capacity() >= n + 17);
+                        pp!(@padded_u32 plain);
+                    }
+                    assert_eq!(output, format!("{expected}\n").as_bytes());
+                }};
+            }
+            check!();
+            check!(buffered;);
+            let mut output = Vec::new();
+            crate::iter_print!(output, @padded_u32 values.as_slice());
+            assert_eq!(output, format!("{expected}\n").as_bytes());
+        }
+    }
+
+    #[test]
     fn test_collection_scan() {
         use crate::tools::Collect;
         let mut rng = Xorshift::default();
@@ -350,7 +400,7 @@ mod tests {
                 for _ in 0..32 {
                     assert!(crate::scan_value!(scanner, [u8; 0]).is_empty());
                     assert!(crate::scan_value!(scanner, [u8; const 0]).is_empty());
-                    assert!(scanner.scan_vec::<u8>(0).is_empty());
+                    assert!(scanner.scan_vec::<u8>(0, 0).is_empty());
                     assert_eq!(crate::scan_value!(scanner, [u8; iter 0]).count(), 0);
                     assert!(scanner.mscan(Collect::<u8>::new(0)).is_empty());
                 }

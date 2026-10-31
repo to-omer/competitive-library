@@ -89,7 +89,7 @@ mod main_macros {
             #[allow(unused_mut, unused_variables)]
             let mut __scanner = unsafe { FastInput::stdin() };
             #[allow(unused_mut, unused_variables)]
-            let mut __out = FastOutput::new(std::io::stdout().lock());
+            let mut __out = FastOutput::stdout();
             #[allow(unused_macros)]
             macro_rules! sc { ($dol($dol t:tt)*) => { $dol crate::scan!(__scanner, $dol($dol t)*) } }
             #[allow(unused_macros)]
@@ -106,6 +106,11 @@ mod main_macros {
     }
     #[macro_export]
     macro_rules! main {
+        (huge_pages; $($t:tt)*) => {
+            #[global_allocator]
+            static __ALLOCATOR: HugePageAllocator = HugePageAllocator;
+            $crate::main!($($t)*);
+        };
         (avx2; $($t:tt)*) => {
             #[allow(dead_code)]
             fn main() {

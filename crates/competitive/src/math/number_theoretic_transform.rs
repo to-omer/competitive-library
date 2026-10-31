@@ -41,19 +41,10 @@ pub type MIntConvolve<M> = Convolve<(M, (Modulo167772161, Modulo469762049, Modul
 /// and transform again before multiplying another factor.
 pub type U64Convolve = Convolve<(u64, (Modulo167772161, Modulo469762049, Modulo754974721))>;
 
-macro_rules! impl_ntt_modulus {
-    ($([$name:ident, $g:expr]),*) => {
-        $(
-            impl Montgomery32NttModulus for $name {}
-        )*
-    };
-}
-impl_ntt_modulus!(
-    [Modulo167772161, 3],
-    [Modulo469762049, 3],
-    [Modulo754974721, 11],
-    [Modulo998244353, 3]
-);
+impl Montgomery32NttModulus for Modulo167772161 {}
+impl Montgomery32NttModulus for Modulo469762049 {}
+impl Montgomery32NttModulus for Modulo754974721 {}
+impl Montgomery32NttModulus for Modulo998244353 {}
 
 const fn reduce(z: u64, p: u32, r: u32) -> u32 {
     let mut z = ((z + r.wrapping_mul(z as u32) as u64 * p as u64) >> 32) as u32;
@@ -115,7 +106,6 @@ pub trait Montgomery32NttModulus: Sized + MontgomeryReduction32 {
 pub struct NttInfo {
     root: [u32; 32],
     inv_root: [u32; 32],
-    rate3: [u32; 32],
     rate3_packed: [[u32; 8]; 32],
     inv_rate3_packed: [[u32; 8]; 32],
 }
@@ -126,7 +116,6 @@ impl NttInfo {
     {
         let mut root = [0; 32];
         let mut inv_root = [0; 32];
-        let mut rate3_values = [0; 32];
         let mut rate3_packed = [[0; 8]; 32];
         let mut inv_rate3_packed = [[0; 8]; 32];
         let rank = M::RANK as usize;
@@ -147,7 +136,6 @@ impl NttInfo {
         let (mut i, mut prod, mut inv_prod) = (0, M::N1, M::N1);
         while i < rank - 2 {
             let rate3 = mod_mul(root[i + 3], prod, M::MOD, M::R);
-            rate3_values[i] = rate3;
             let rate3_2 = mod_mul(rate3, rate3, M::MOD, M::R);
             let rate3_3 = mod_mul(rate3_2, rate3, M::MOD, M::R);
             let inv_rate3 = mod_mul(inv_root[i + 3], inv_prod, M::MOD, M::R);
@@ -181,7 +169,6 @@ impl NttInfo {
         NttInfo {
             root,
             inv_root,
-            rate3: rate3_values,
             rate3_packed,
             inv_rate3_packed,
         }
@@ -494,7 +481,7 @@ where
 #[allow(unsafe_op_in_unsafe_fn)] // SIMD intrinsics and raw pointers are confined here
 mod ntt_simd;
 
-fn convolve_naive<T>(a: &[T], b: &[T]) -> Vec<T>
+fn convolve_naive<T, const BLOCKED: bool>(a: &[T], b: &[T]) -> Vec<T>
 where
     T: Copy + Zero + AddAssign<T> + Mul<Output = T>,
 {
@@ -504,11 +491,29 @@ where
     let len = a.len() + b.len() - 1;
     let mut c = vec![T::zero(); len];
     let (a, b) = if a.len() >= b.len() { (a, b) } else { (b, a) };
+    if !BLOCKED {
+        for (i, &b) in b.iter().enumerate() {
+            for (a, c) in a.iter().zip(&mut c[i..i + a.len()]).rev() {
+                *c += *a * b;
+            }
+        }
+        return c;
+    }
+    // Reverse only when equal page offsets cause load/store aliasing on x86-64.
+    let reverse =
+        cfg!(target_arch = "x86_64") && (a.as_ptr().addr() ^ c.as_ptr().addr()) & 4095 == 0;
     for (block, a) in a.chunks(1024).enumerate() {
         for (i, &b) in b.iter().enumerate() {
             let start = block * 1024 + i;
-            for (a, c) in a.iter().zip(&mut c[start..start + a.len()]) {
-                *c += *a * b;
+            let pairs = a.iter().zip(&mut c[start..start + a.len()]);
+            if reverse {
+                for (a, c) in pairs.rev() {
+                    *c += *a * b;
+                }
+            } else {
+                for (a, c) in pairs {
+                    *c += *a * b;
+                }
             }
         }
     }
@@ -520,7 +525,7 @@ where
     T: Copy + Zero + AddAssign<T> + SubAssign<T> + Mul<Output = T>,
 {
     if a.len().min(b.len()) <= 30 {
-        return convolve_naive(a, b);
+        return convolve_naive::<_, { !cfg!(target_arch = "x86_64") }>(a, b);
     }
     let block_len = a.len().min(b.len()).next_power_of_two();
     if a.len().max(b.len()) > block_len * 4 {
@@ -655,26 +660,32 @@ where
         assert_eq!(f.len(), g.len());
         #[cfg(target_arch = "x86_64")]
         if use_block_ntt::<M>(f.len()) {
-            unsafe { ntt_simd::multiply_blocks_avx2(f, g) };
+            unsafe { ntt_simd::multiply_blocks_avx2(f, Some(g)) };
             return;
         }
         pointwise_multiply(f, g);
     }
     fn square(t: Self::T, len: usize) -> Self::T {
         let mut f = Self::transform(t, len);
+        #[cfg(target_arch = "x86_64")]
+        if use_block_ntt::<M>(f.len()) {
+            unsafe { ntt_simd::multiply_blocks_avx2(&mut f, None) };
+            return Self::inverse_transform(f, len);
+        }
         let g = f.clone();
         Self::multiply(&mut f, &g);
         Self::inverse_transform(f, len)
     }
     fn convolve(mut a: Self::T, mut b: Self::T) -> Self::T {
+        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let (threshold, naive_threshold) = (100, 60);
         #[cfg(target_arch = "x86_64")]
         let (threshold, naive_threshold) = if use_block_ntt::<M>(64) {
             (
                 60,
-                if M::RANK >= 13 && a.len().max(b.len()) <= 4096 {
+                if M::RANK >= 13 && len <= 8192 {
                     18
-                } else if M::RANK >= 19 && a.len().max(b.len()) <= 262144 {
+                } else if M::RANK >= 19 && len <= 262144 {
                     32
                 } else {
                     34
@@ -687,9 +698,8 @@ where
             return convolve_karatsuba(&a, &b);
         }
         if Self::length(&a).min(Self::length(&b)) <= naive_threshold {
-            return convolve_naive(&a, &b);
+            return convolve_naive::<_, true>(&a, &b);
         }
-        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let size = len.max(1).next_power_of_two();
         let max_size = 1usize << M::RANK;
         #[cfg(target_arch = "x86_64")]
@@ -722,13 +732,14 @@ where
         #[cfg(target_arch = "x86_64")]
         if use_block_ntt::<M>(size) {
             let input_len = (a.len(), b.len());
-            a.reserve(size - a.len());
-            b.reserve(size - b.len());
-            advise_huge_pages(&mut a);
-            advise_huge_pages(&mut b);
-            a.resize_with(size, Zero::zero);
-            b.resize_with(size, Zero::zero);
-            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same, input_len) };
+            // The first NTT stage overwrites an all-zero upper half without reading it.
+            for x in [&mut a, &mut b] {
+                x.reserve(size - x.len());
+                advise_huge_pages(x);
+                let initialized = if x.len() <= size / 2 { size / 2 } else { size };
+                x.resize_with(initialized, Zero::zero);
+            }
+            unsafe { ntt_simd::convolve_blocks_avx2(&mut a, &mut b, same, size, input_len) };
             a.truncate(len);
             return a;
         }
@@ -908,7 +919,7 @@ where
     }
     let block_len = ((capacity - 1) / (modulus - 1).pow(2)) as usize;
     if block_len == 0 {
-        return convolve_naive(&a, &b);
+        return convolve_naive::<_, true>(&a, &b);
     }
     let mut result = vec![MInt::<M>::zero(); a.len() + b.len() - 1];
     for (i, a) in a.chunks(block_len).enumerate() {
@@ -1033,8 +1044,7 @@ where
                         let mut product = f[left].clone();
                         Convolve::<M>::multiply(&mut product, &g[part - left]);
                         for (value, product) in sum.iter_mut().zip(product) {
-                            // Block products contain lazy Montgomery residues.
-                            *value = MInt::new(value.inner() + product.inner());
+                            *value += product;
                         }
                     }
                     f[part] = sum;
@@ -1079,7 +1089,7 @@ where
             let mut c = std::mem::ManuallyDrop::new(if max_len <= 300 || min_len > 60 {
                 convolve_karatsuba(a_wrapping, b_wrapping)
             } else {
-                convolve_naive(a_wrapping, b_wrapping)
+                convolve_naive::<_, true>(a_wrapping, b_wrapping)
             });
             return unsafe { Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
         }
@@ -1567,6 +1577,15 @@ mod tests {
         testutil::{exhaustive_sequences, sample_usize},
     };
 
+    #[cfg(target_arch = "x86_64")]
+    enum Modulo1073479681 {}
+    #[cfg(target_arch = "x86_64")]
+    impl MontgomeryReduction32 for Modulo1073479681 {
+        const MOD: u32 = 1073479681;
+    }
+    #[cfg(target_arch = "x86_64")]
+    impl Montgomery32NttModulus for Modulo1073479681 {}
+
     #[test]
     fn test_ntt_batch() {
         fn check<M: Montgomery32NttModulus>() {
@@ -1636,8 +1655,8 @@ mod tests {
                     c[i + j] += a[i] * b[j];
                 }
             }
-            assert_eq!(c, convolve_naive(&a, &b));
-            assert_eq!(c, convolve_naive(&b, &a));
+            assert_eq!(c, convolve_naive::<_, true>(&a, &b));
+            assert_eq!(c, convolve_naive::<_, true>(&b, &a));
         }
     }
 
@@ -1668,7 +1687,7 @@ mod tests {
     #[test]
     fn test_ntt998244353() {
         let mut rng = Xorshift::default();
-        let sizes = sample_usize(&mut rng, 5, 0..=1025, 0);
+        let sizes = sample_usize(&mut rng, 5, 0..=513, 0);
         let mut lengths: Vec<_> = sizes
             .iter()
             .flat_map(|&n| sizes.iter().map(move |&m| (n, m)))
@@ -1686,10 +1705,20 @@ mod tests {
                 )
             }
         }));
+        for half in [32, 64, 128, 256, 512, 1024] {
+            lengths.extend([
+                (0, half),
+                (half - 1, half),
+                (half, half),
+                (half + 1, half - 1),
+                (half + 1, half + 1),
+                (2 * half, 1),
+            ]);
+        }
         for (n, m) in lengths {
             let a: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
             let mut b: Vec<MInt998244353> = rng.random_iter(..).take(m).collect();
-            if n == m && rng.random(0..2) == 0 {
+            if n == m && (n.is_power_of_two() || rng.random(0..2) == 0) {
                 b = a.clone();
             }
 
@@ -1699,10 +1728,23 @@ mod tests {
                     c[i + j] += a[i] * b[j];
                 }
             }
-            let f = Convolve998244353::transform(a.clone(), n);
-            assert_eq!(Convolve998244353::inverse_transform(f, n), a);
-            let d = Convolve998244353::convolve(a, b);
-            assert_eq!(c, d);
+            let len = c.len().max(n).max(m);
+            let mut f = Convolve998244353::transform(a.clone(), len);
+            assert_eq!(Convolve998244353::inverse_transform(f.clone(), n), a);
+            let g = Convolve998244353::transform(b.clone(), len);
+            Convolve998244353::multiply(&mut f, &g);
+            assert_eq!(Convolve998244353::inverse_transform(f, c.len()), c);
+            if a == b {
+                assert_eq!(Convolve998244353::square(a.clone(), c.len()), c);
+            }
+            assert_eq!(c, Convolve998244353::convolve(a.clone(), b.clone()));
+            let size = (n + m).max(1).next_power_of_two();
+            let mut a = a;
+            a.resize(size, -MInt998244353::one());
+            b.resize(size, -MInt998244353::one());
+            a.truncate(n);
+            b.truncate(m);
+            assert_eq!(c, Convolve998244353::convolve(a, b));
         }
         assert_eq!(NttInfo::new::<Modulo998244353>(), Modulo998244353::INFO);
     }
@@ -1750,13 +1792,142 @@ mod tests {
                             .map(MInt::from)
                             .collect()
                     };
-                    assert_eq!(convolve_naive(&a, &b), Convolve::<M>::convolve(a, b));
+                    assert_eq!(
+                        convolve_naive::<_, true>(&a, &b),
+                        Convolve::<M>::convolve(a, b)
+                    );
                 }
             }
         }
         check::<Modulo17>();
         check::<Modulo97>();
         check::<Modulo193>();
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[test]
+    fn test_block_transform() {
+        if !is_x86_feature_detected!("avx2") {
+            return;
+        }
+        fn check<M>()
+        where
+            M: Montgomery32NttModulus,
+        {
+            let mut rng = Xorshift::default();
+            for log_n in 3..=7 {
+                let blocks = 1usize << log_n;
+                let size = blocks * 8;
+                for n in [0, size / 2 - 1, size / 2, size / 2 + 1, size] {
+                    for pattern in 0..4 {
+                        let a: Vec<_> = (0..n)
+                            .map(|i| {
+                                MInt::<M>::new_unchecked(match pattern {
+                                    0 => 0,
+                                    1 => M::MOD - 1,
+                                    2 => {
+                                        if i % 2 == 0 {
+                                            0
+                                        } else {
+                                            M::MOD - 1
+                                        }
+                                    }
+                                    _ => rng.random(0..M::MOD),
+                                })
+                            })
+                            .collect();
+                        let root =
+                            MInt::<M>::new(M::PRIMITIVE_ROOT).pow((M::MOD as usize - 1) >> log_n);
+                        let mut expected = vec![MInt::<M>::zero(); size];
+                        for (block, out) in expected.chunks_mut(8).enumerate() {
+                            let w = root.pow(block.reverse_bits() >> (usize::BITS - log_n as u32));
+                            let mut weight = MInt::<M>::one();
+                            for chunk in a.chunks(8) {
+                                for (&x, y) in chunk.iter().zip(&mut *out) {
+                                    *y += x * weight;
+                                }
+                                weight *= w;
+                            }
+                        }
+                        let f = Convolve::<M>::transform(a.clone(), size);
+                        assert_eq!(f, expected);
+                        let mut a = a;
+                        a.resize(size, MInt::<M>::zero());
+                        assert_eq!(Convolve::<M>::inverse_transform(f, size), a);
+                    }
+                }
+            }
+        }
+        check::<Modulo998244353>();
+        check::<Modulo1073479681>();
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[test]
+    fn test_block_multiply() {
+        if !is_x86_feature_detected!("avx2") {
+            return;
+        }
+        fn check<M>()
+        where
+            M: Montgomery32NttModulus,
+        {
+            let mut rng = Xorshift::default();
+            for log_n in 3..=7 {
+                let n = 1usize << log_n;
+                for pattern in 0..4 {
+                    let mut input = || {
+                        (0..n * 8)
+                            .map(|i| {
+                                MInt::<M>::new_unchecked(match pattern {
+                                    0 => 0,
+                                    1 => M::MOD - 1,
+                                    2 => {
+                                        if i % 2 == 0 {
+                                            0
+                                        } else {
+                                            M::MOD - 1
+                                        }
+                                    }
+                                    _ => rng.random(0..M::MOD),
+                                })
+                            })
+                            .collect::<Vec<_>>()
+                    };
+                    let mut f = input();
+                    let mut g = input();
+                    for _ in 0..4 {
+                        let mut expected = vec![MInt::<M>::zero(); n * 8];
+                        let root = MInt::<M>::new_unchecked(M::INFO.root[log_n as usize]);
+                        for (block, ((a, b), c)) in f
+                            .chunks_exact(8)
+                            .zip(g.chunks_exact(8))
+                            .zip(expected.chunks_exact_mut(8))
+                            .enumerate()
+                        {
+                            let weight = root.pow(block.reverse_bits() >> (usize::BITS - log_n));
+                            for (i, &a) in a.iter().enumerate() {
+                                for (j, &b) in b.iter().enumerate() {
+                                    c[(i + j) % 8] +=
+                                        a * b * if i + j < 8 { MInt::<M>::one() } else { weight };
+                                }
+                            }
+                        }
+                        if f == g {
+                            let mut square = f.clone();
+                            unsafe { ntt_simd::multiply_blocks_avx2(&mut square, None) };
+                            assert_eq!(square, expected);
+                        }
+                        Convolve::<M>::multiply(&mut f, &g);
+                        assert_eq!(f, expected);
+                        g.clone_from(&f);
+                    }
+                }
+            }
+        }
+
+        check::<Modulo998244353>();
+        check::<Modulo1073479681>();
     }
 
     #[test]

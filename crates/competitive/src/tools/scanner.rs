@@ -33,6 +33,11 @@ pub fn read_stdin_line() -> String {
 pub trait Scan: Sized {
     type Output;
     fn scan<S: ScanSource>(source: &mut S) -> Option<Self::Output>;
+    fn scan_vec<S: ScanSource>(source: &mut S, size: usize, capacity: usize) -> Vec<Self::Output> {
+        let mut values = Vec::with_capacity(capacity.max(size));
+        values.extend((0..size).map(|_| source.scan::<Self>()));
+        values
+    }
 }
 pub trait MarkedScan: Sized {
     type Output;
@@ -57,6 +62,11 @@ pub trait ScanSource: Sized {
     #[inline]
     fn read_u32(&mut self) -> Option<u32> {
         self.next_token()?.parse().ok()
+    }
+    fn read_u32_vec(&mut self, size: usize, capacity: usize) -> Vec<u32> {
+        let mut values = Vec::with_capacity(capacity.max(size));
+        values.extend((0..size).map(|_| self.scan::<u32>()));
+        values
     }
     #[inline]
     fn read_u64(&mut self) -> Option<u64> {
@@ -104,11 +114,11 @@ pub trait ScanSource: Sized {
     fn mscan<T: MarkedScan>(&mut self, marker: T) -> T::Output {
         marker.mscan(self).expect("scan error")
     }
-    fn scan_vec<T: Scan>(&mut self, size: usize) -> Vec<T::Output> {
+    fn scan_vec<T: Scan>(&mut self, size: usize, capacity: usize) -> Vec<T::Output> {
         if size == 0 {
             self.skip_whitespace();
         }
-        (0..size).map(|_| self.scan::<T>()).collect()
+        T::scan_vec(self, size, capacity)
     }
     #[inline]
     fn iter<T: Scan>(&mut self) -> ScannerIter<'_, Self, T> {
@@ -165,10 +175,21 @@ macro_rules! impl_integer_scan {
     )*};
 }
 impl_integer_scan!(
-    u8 => read_u8, u16 => read_u16, u32 => read_u32, u64 => read_u64,
+    u8 => read_u8, u16 => read_u16, u64 => read_u64,
     u128 => read_u128, usize => read_usize, i8 => read_i8, i16 => read_i16,
     i32 => read_i32, i64 => read_i64, i128 => read_i128, isize => read_isize,
 );
+
+impl Scan for u32 {
+    type Output = Self;
+    #[inline]
+    fn scan<S: ScanSource>(source: &mut S) -> Option<Self> {
+        source.read_u32()
+    }
+    fn scan_vec<S: ScanSource>(source: &mut S, size: usize, capacity: usize) -> Vec<Self> {
+        source.read_u32_vec(size, capacity)
+    }
+}
 
 macro_rules! impl_scan_tuple {
     (@impl $($T:ident)*) => {
@@ -214,6 +235,7 @@ impl<S: ScanSource, T: Scan> Iterator for ScannerIter<'_, S, T> {
 /// - `@$expr`: MarkedScan
 /// - `$ty = $expr`: MarkedScan
 /// - `[ELEMENT; $expr]`: vector
+/// - `[$ty; $len; capacity $capacity]`: vector with reserved capacity
 /// - `[ELEMENT; const $expr]`: array
 /// - `[ELEMENT]`: iterator
 /// - `[ELEMENT; iter $expr]`: iterator of the specified length
@@ -233,6 +255,7 @@ macro_rules! scan_value {
     (@sparen $scanner:expr, [] $($args:tt)*)                                   => { $crate::scan_value!(@repeat $scanner, [$($args)*]) };
     (@sparen $scanner:expr, [$($args:tt)+] const $len:expr)                    => { $crate::scan_value!(@array $scanner, [$($args)+] $len) };
     (@sparen $scanner:expr, [$($args:tt)+] iter $len:expr)                     => { $crate::scan_value!(@iter $scanner, [$($args)+] $len) };
+    (@sparen $scanner:expr, [$($args:tt)+] $len:expr; capacity $capacity:expr) => {{ let size = $len; let capacity = $capacity; $scanner.scan_vec::<$($args)+>(size, capacity) }};
     (@sparen $scanner:expr, [$($args:tt)+] $len:expr)                          => { $crate::scan_value!(@repeat $scanner, [$($args)+] $len) };
     (@$tag:ident $scanner:expr, [[$($args:tt)*]])                              => { $($args)* };
     (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr $(, $($t:tt)*)?)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $(, $($t)*)?) };
@@ -566,6 +589,36 @@ mod tests {
     use crate::tools::Xorshift;
     use std::array;
 
+    #[test]
+    fn test_scan_vec() {
+        let mut scanner = Scanner::new("3 8 1 2 3 END");
+        let values =
+            scan_value!(scanner, [u32; scanner.scan::<usize>(); capacity scanner.scan::<usize>()]);
+        assert_eq!(values, [1, 2, 3]);
+        assert!(values.capacity() >= 8);
+        assert_eq!(scanner.next_token(), Some("END"));
+
+        let mut scanner = Scanner::new("3 1 2 3");
+        let values = scan_value!(scanner, [u32; scanner.scan::<usize>()]);
+        assert_eq!(values, [1, 2, 3]);
+
+        let mut scanner = Scanner::new("1 2 3");
+        let mut calls = 0;
+        let values = scan_value!(
+            {
+                calls += 1;
+                &mut scanner
+            },
+            [u32; 3]
+        );
+        assert_eq!(values, [1, 2, 3]);
+        assert_eq!(calls, 3);
+
+        let mut scanner = Scanner::new("1 2 3 4");
+        let pairs = scan_value!(scanner, [(u32, u32); 2; capacity 4]);
+        assert_eq!(pairs, [(1, 2), (3, 4)]);
+        assert!(pairs.capacity() >= 4);
+    }
     #[test]
     fn test_scan() {
         let mut rng = Xorshift::default();

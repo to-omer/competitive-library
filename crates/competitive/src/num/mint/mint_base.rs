@@ -292,6 +292,15 @@ where
     fn scan<S: ScanSource>(source: &mut S) -> Option<Self> {
         M::Inner::scan(source).map(Self::new)
     }
+    fn scan_vec<S: ScanSource>(source: &mut S, size: usize, capacity: usize) -> Vec<Self> {
+        let mut values: Vec<_> = source
+            .scan_vec::<M::Inner>(size, capacity)
+            .into_iter()
+            .map(Self::new)
+            .collect();
+        values.reserve_exact(capacity.saturating_sub(values.len()));
+        values
+    }
 }
 macro_rules! impl_mint_ref_binop {
     ($imp:ident, $method:ident, $t:ty) => {

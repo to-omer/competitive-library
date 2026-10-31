@@ -24,7 +24,7 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        montgomery_simd::montgomery_add_512(a, b, mod2_vec)
+        montgomery_simd::add_mod_512(a, b, mod2_vec)
     } else {
         montgomery_simd::add_mod_512(a, b, mod_vec)
     }
@@ -35,7 +35,7 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        montgomery_simd::montgomery_sub_512(a, b, mod2_vec)
+        montgomery_simd::sub_mod_512(a, b, mod2_vec)
     } else {
         montgomery_simd::sub_mod_512(a, b, mod_vec)
     }
@@ -207,7 +207,7 @@ where
                 *rr.add(i) = M::mod_sub(a0na2, a1na3imag);
                 i += 1;
             }
-            w1 = M::mod_mul(w1, M::INFO.rate3[s.trailing_ones() as usize]);
+            w1 = M::mod_mul(w1, M::INFO.rate3_packed[s.trailing_ones() as usize][1]);
         }
         v >>= 2;
     }

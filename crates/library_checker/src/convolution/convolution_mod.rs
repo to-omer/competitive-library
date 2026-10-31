@@ -7,7 +7,10 @@ use competitive::{
 #[verify::library_checker("convolution_mod", include("NumberTheoreticTransform"))]
 pub fn convolution_mod(reader: impl Read, writer: impl Write) {
     prepare_io!(reader, writer);
-    sc!(n, m, a: [M; n], b: [M; m]);
+    sc!(n, m);
+    let size = (n + m).saturating_sub(1).max(1).next_power_of_two();
+    sc!(a: [M; n; capacity size], b: [M; m; capacity size]);
     let c = Convolve998244353::convolve(a, b);
-    pp!(@it c);
+    let c: Vec<_> = c.into_iter().map(M::inner).collect();
+    pp!(@padded_u32 c);
 }

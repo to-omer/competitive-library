@@ -71,6 +71,7 @@ impl_iter_print_tuple!(A a B b C c D d E e F f G g H h I i J j K k);
 /// - `@fmt ($lit, $($expr),*)`: print `format!($lit, $($expr),*)`
 /// - `@flush`: flush writer (auto insert `!`)
 /// - `@it $expr`: print iterator
+/// - `@padded_u32 $expr`: print a u32 slice in ten-column fields followed by spaces
 /// - `@it1 $expr`: print iterator as 1-indexed
 /// - `@cw ($char $expr)`: print iterator as `(elem as u8 + $char as u8) as char`
 /// - `@bw ($byte $expr)`: print iterator as `(elem as u8 + $byte) as char`
@@ -144,6 +145,22 @@ macro_rules! iter_print {
             $crate::iter_print!(@@item $mode $writer, $sep, false, item);
         }
     }};
+    (@@padded_u32 fast $writer:expr, $sep:expr, $is_head:expr, $values:expr) => {{
+        if !$is_head {
+            FastPrint::fast_print(&$sep, &mut $writer);
+        }
+        $writer.u32_slice_padded(&$values);
+    }};
+    (@@padded_u32 normal $writer:expr, $sep:expr, $is_head:expr, $values:expr) => {{
+        if !$is_head {
+            ::std::write!($writer, "{}", $sep).expect("io error");
+        }
+        let values = &$values;
+        let values: &[u32] = values.as_ref();
+        for value in values {
+            ::std::write!($writer, "{value:10} ").expect("io error");
+        }
+    }};
     (@@it1 $mode:ident $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
         let mut iter = $iter.into_iter();
         if let Some(item) = iter.next() {
@@ -209,6 +226,7 @@ macro_rules! iter_print {
     };
     (@@assert_tag item) => {};
     (@@assert_tag it) => {};
+    (@@assert_tag padded_u32) => {};
     (@@assert_tag it1) => {};
     (@@assert_tag it2d) => {};
     (@@assert_tag tup) => {};
@@ -302,6 +320,30 @@ mod tests {
     use crate::tools::{FastIterPrint, FastOutput, FastPrint};
     use std::array;
     use std::iter;
+
+    #[test]
+    fn test_padded_u32() {
+        use std::cell::RefCell;
+        macro_rules! check {
+            ($writer:ident $(, $mode:ident)?) => {{
+                let values = RefCell::new(vec![1u32, 2]);
+                iter_print!($($mode;)? $writer, @padded_u32 values.borrow(), ({
+                    values.borrow_mut().push(3);
+                    values.borrow().len()
+                }));
+                iter_print!($($mode;)? $writer, @padded_u32 vec![u32::MAX]);
+            }};
+        }
+        let mut normal = Vec::new();
+        check!(normal);
+        let mut fast = Vec::new();
+        {
+            let mut output = FastOutput::new(&mut fast);
+            check!(output, fast);
+        }
+        assert_eq!(normal, b"         1          2  3\n4294967295 \n");
+        assert_eq!(fast, normal);
+    }
 
     #[test]
     fn test_iter_print() {

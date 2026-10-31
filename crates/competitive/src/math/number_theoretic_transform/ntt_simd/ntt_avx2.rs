@@ -92,16 +92,16 @@ where
         }
         let pair = if INVERSE {
             let y = _mm256_shuffle_epi32::<0xb1>(x);
-            let sum = montgomery_simd::montgomery_add_256(x, y, modulus2);
-            let diff = montgomery_simd::montgomery_sub_256(x, y, modulus2);
+            let sum = montgomery_simd::add_mod_256(x, y, modulus2);
+            let diff = montgomery_simd::sub_mod_256(x, y, modulus2);
             let sum = _mm256_shuffle_epi32::<0x88>(sum);
             let diff = _mm256_shuffle_epi32::<0x88>(diff);
             let diff = montgomery_simd::montgomery_mul_256(diff, imag, r, modulus);
             _mm256_unpacklo_epi64(sum, diff)
         } else {
             let y = _mm256_shuffle_epi32::<0x4e>(x);
-            let sum = montgomery_simd::montgomery_add_256(x, y, modulus2);
-            let diff = montgomery_simd::montgomery_sub_256(x, y, modulus2);
+            let sum = montgomery_simd::add_mod_256(x, y, modulus2);
+            let diff = montgomery_simd::sub_mod_256(x, y, modulus2);
             _mm256_unpacklo_epi64(sum, diff)
         };
         let left = _mm256_shuffle_epi32::<0xa0>(pair);
@@ -109,8 +109,8 @@ where
         if !INVERSE {
             right = montgomery_simd::montgomery_mul_256(right, imag, r, modulus);
         }
-        let sum = montgomery_simd::montgomery_add_256(left, right, modulus2);
-        let diff = montgomery_simd::montgomery_sub_256(left, right, modulus2);
+        let sum = montgomery_simd::add_mod_256(left, right, modulus2);
+        let diff = montgomery_simd::sub_mod_256(left, right, modulus2);
         let mut value = _mm256_blend_epi32::<0xaa>(sum, diff);
         if INVERSE {
             value = _mm256_shuffle_epi32::<0xd8>(value);
@@ -153,7 +153,7 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        montgomery_simd::montgomery_add_256(a, b, mod2_vec)
+        montgomery_simd::add_mod_256(a, b, mod2_vec)
     } else {
         montgomery_simd::add_mod_256(a, b, mod_vec)
     }
@@ -169,7 +169,7 @@ where
     M: Montgomery32NttModulus,
 {
     if M::MOD < LAZY_THRESHOLD {
-        montgomery_simd::montgomery_sub_256(a, b, mod2_vec)
+        montgomery_simd::sub_mod_256(a, b, mod2_vec)
     } else {
         montgomery_simd::sub_mod_256(a, b, mod_vec)
     }
