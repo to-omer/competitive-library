@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["page_layout","use_huge_pages"],"struct":["HugePageAllocator"]};
