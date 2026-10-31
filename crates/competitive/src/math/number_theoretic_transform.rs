@@ -1900,9 +1900,11 @@ mod tests {
                         let mut expected = vec![MInt::<M>::zero(); n * 8];
                         let root = MInt::<M>::new_unchecked(M::INFO.root[log_n as usize]);
                         for (block, ((a, b), c)) in f
-                            .chunks_exact(8)
-                            .zip(g.chunks_exact(8))
-                            .zip(expected.chunks_exact_mut(8))
+                            .as_chunks::<8>()
+                            .0
+                            .iter()
+                            .zip(g.as_chunks::<8>().0)
+                            .zip(expected.as_chunks_mut::<8>().0)
                             .enumerate()
                         {
                             let weight = root.pow(block.reverse_bits() >> (usize::BITS - log_n));
