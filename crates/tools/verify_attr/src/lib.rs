@@ -50,6 +50,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
     let mut problem_id = None;
     let mut eps = None;
     let mut special_judge = None;
+    let mut huge_pages = false;
     for item in punc.iter() {
         match item {
             LitOrMeta::Meta(Meta::NameValue(nv)) => {
@@ -111,6 +112,12 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
             }
             LitOrMeta::Meta(Meta::List(list)) if list.path.is_ident("include") => {
                 list.parse_args_with(Punctuated::<LitStr, Token![,]>::parse_separated_nonempty)?;
+            }
+            LitOrMeta::Meta(Meta::Path(path)) if path.is_ident("huge_pages") => {
+                if huge_pages {
+                    return Err(syn::Error::new(path.span(), "duplicate huge_pages"));
+                }
+                huge_pages = true;
             }
             LitOrMeta::Lit(Lit::Str(litstr)) => match problem_id {
                 None => problem_id = Some(litstr.clone()),

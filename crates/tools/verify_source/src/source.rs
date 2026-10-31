@@ -12,8 +12,13 @@ use syn::{
     spanned::Spanned as _, visit::Visit, visit_mut::VisitMut,
 };
 
-pub fn verification(function: &ItemFn) -> Result<Option<Vec<String>>> {
-    fn find(meta: &Meta) -> Result<Option<Vec<String>>> {
+pub struct Verification {
+    includes: Vec<String>,
+    huge_pages: bool,
+}
+
+pub fn verification(function: &ItemFn) -> Result<Option<Verification>> {
+    fn find(meta: &Meta) -> Result<Option<Verification>> {
         let path = meta.path().to_token_stream().to_string();
         if matches!(
             path.as_str(),
@@ -25,7 +30,15 @@ pub fn verification(function: &ItemFn) -> Result<Option<Vec<String>>> {
             let args =
                 list.parse_args_with(Punctuated::<syn::Expr, Token![,]>::parse_terminated)?;
             let mut includes = None;
+            let mut huge_pages = false;
             for arg in args {
+                if let syn::Expr::Path(path) = &arg
+                    && path.path.is_ident("huge_pages")
+                {
+                    ensure!(!huge_pages, "duplicate huge_pages");
+                    huge_pages = true;
+                    continue;
+                }
                 let name = match &arg {
                     syn::Expr::Call(call) => &call.func,
                     syn::Expr::Assign(assign) => &assign.left,
@@ -46,7 +59,10 @@ pub fn verification(function: &ItemFn) -> Result<Option<Vec<String>>> {
                     );
                 }
             }
-            return Ok(Some(includes.unwrap_or_default()));
+            return Ok(Some(Verification {
+                includes: includes.unwrap_or_default(),
+                huge_pages,
+            }));
         }
         if meta.path().is_ident("cfg_attr")
             && let Meta::List(list) = meta
@@ -95,8 +111,14 @@ pub fn generate(
         ),
         "unsupported prepare_io!: {parameters}"
     );
-    let mut dependencies = verification(selected)?.context("not a verify function")?;
+    let Verification {
+        includes: mut dependencies,
+        huge_pages,
+    } = verification(selected)?.context("not a verify function")?;
     dependencies.push("fast_main".into());
+    if huge_pages {
+        dependencies.push("HugePageAllocator".into());
+    }
     let mut local = SnippetMap::new();
     let mut helpers = Vec::new();
     for item in items {
@@ -221,18 +243,29 @@ pub fn generate(
     let solve_end = syn::parse_file(&code)?.items[0].span().byte_range().end;
     let code = format!("{}\n{}", &code[..solve_end], code[solve_end..].trim_start());
     let main = snippets.map.get("main").context("missing main snippet")?;
+    let mut main = main.contents.clone();
+    if huge_pages {
+        let template = syn::parse_file(&main)?;
+        let mut calls = template.items.iter().filter_map(|item| match item {
+            Item::Macro(item) if item.mac.path.to_token_stream().to_string() == "crate :: main" => {
+                Some(item)
+            }
+            _ => None,
+        });
+        let call = calls.next().context("missing main! invocation")?;
+        ensure!(calls.next().is_none(), "multiple main! invocations");
+        main.insert_str(
+            call.mac.delimiter.span().open().byte_range().end,
+            "huge_pages;",
+        );
+    }
     let dependencies: Vec<_> = included
         .iter()
         .filter(|name| snippets.map.contains_key(*name))
         .map(String::as_str)
         .collect();
     let library = snippets.bundle(&dependencies, BTreeSet::from(["main"]), false)?;
-    let code = format!(
-        "{}\n{}\n{}\n",
-        code.trim_end(),
-        main.contents.trim(),
-        library.trim(),
-    );
+    let code = format!("{}\n{}\n{}\n", code.trim_end(), main.trim(), library.trim());
     Ok(code)
 }
 

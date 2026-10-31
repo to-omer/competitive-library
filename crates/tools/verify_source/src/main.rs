@@ -284,7 +284,7 @@ mod tests {
                     }
                 }
             }
-            #[verify::library_checker("unionfind", include("UnionFind", "Query", "adjust", "TotalOrd"))]
+            #[verify::library_checker("unionfind", include("UnionFind", "Query", "adjust", "TotalOrd"), huge_pages)]
             pub fn adjusted(reader: impl Read, writer: impl Write) {
                 prepare_io!(buffered; reader, writer);
                 sc!(n, q);
@@ -321,6 +321,26 @@ mod tests {
                 );
                 let parsed = syn::parse_file(&code).unwrap();
                 let items = &parsed.items;
+                let main = items
+                    .iter()
+                    .find_map(|item| match item {
+                        Item::Macro(item)
+                            if item.mac.path.to_token_stream().to_string() == "crate :: main" =>
+                        {
+                            Some(&item.mac)
+                        }
+                        _ => None,
+                    })
+                    .unwrap();
+                let huge_pages = function.sig.ident == "adjusted";
+                assert_eq!(
+                    main.tokens.to_string().starts_with("huge_pages ;"),
+                    huge_pages
+                );
+                assert_eq!(code.contains("pub struct HugePageAllocator"), huge_pages);
+                if huge_pages {
+                    check_source(&code).unwrap();
+                }
                 let solve = items
                     .iter()
                     .position(|item| matches!(item, Item::Fn(f) if f.sig.ident == "solve"))
@@ -761,6 +781,7 @@ mod tests {
                 "duplicate include",
             ),
             (", include(\"Missing\")", "", "", "Missing"),
+            (", huge_pages, huge_pages", "", "", "duplicate huge_pages"),
             ("", "let unused = 0;", "", "unused variable: `unused`"),
             (
                 "",
