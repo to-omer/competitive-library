@@ -128,7 +128,13 @@ jobs:
           cache: false # Resolve latest releases on each run.
 
       - name: Update Verus standard library
-        run: cargo update -p vstd
+        shell: bash
+        run: |
+          verus_version=$(verus --version --output-json | jq -er '.verus.version')
+          vstd_version=$(cargo verus toolchain list | awk -F '"' -v version="$verus_version" '
+            /^verus =/ && $2 == version { getline; print $2 }
+          ')
+          cargo update -p vstd --precise "${vstd_version:?vstd version not found}"
 
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
