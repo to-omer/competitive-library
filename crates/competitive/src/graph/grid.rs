@@ -345,7 +345,7 @@ verus! {
     impl vstd::std_specs::iter::IteratorSpecImpl for GridVertices {
         open spec fn obeys_prophetic_iter_laws(&self) -> bool { true }
         open spec fn remaining(&self) -> Seq<(usize, usize)> { self@ }
-        open spec fn will_return_none(&self) -> bool { true }
+        open spec fn produces(&self) -> Seq<bool> { Seq::new(self@.len(), |i: int| true) }
         open spec fn decrease(&self) -> Option<nat> { Some(self@.len()) }
         open spec fn peek(&self, index: int) -> Option<(usize, usize)> {
             if 0 <= index < self@.len() { Some(self@[index]) } else { None }
@@ -426,7 +426,9 @@ mod verification {
             let scaled = direction.ndxdy(distance);
             proof {
                 #[verifier::proof_note("All eight grid directions have the stated unit offsets, and ndxdy scales both components by every nonnegative distance representable as isize, including zero")]
-                assert(scaled.0 as int == unit.0 as int * distance && scaled.1 as int == unit.1 as int * distance);
+                assert(scaled.0 as int == unit.0 as int * distance && scaled.1 as int == unit.1 as int * distance) by(nonlinear_arith)
+                    requires (unit.0 as int, unit.1 as int) == direction.offset(1),
+                        (scaled.0 as int, scaled.1 as int) == direction.offset(distance as int);
             }
         }
     }

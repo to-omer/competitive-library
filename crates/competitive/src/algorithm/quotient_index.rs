@@ -28,9 +28,8 @@ impl FloorQuotientIndex {
         requires self.index_invariant(),
         ensures
             result.obeys_prophetic_iter_laws(), result.decrease() is Some,
-            result.remaining().len() <= self.index_len(),
-            result.will_return_none() ==> result.remaining().len() == self.index_len(),
-            forall|i: int| 0 <= i < result.remaining().len()
+            result.remaining().len() == self.index_len(),
+            forall|i: int| 0 <= i < result.remaining().len() && result.produces()[i]
                 ==> #[trigger] result.remaining()[i] == self.value_at(i),
     ))]
     pub fn values(&self) -> impl ExactSizeIterator<Item = usize> + FusedIterator + '_ {
@@ -49,9 +48,8 @@ impl FloorQuotientIndex {
         requires self.index_invariant(),
         ensures
             result.obeys_prophetic_iter_laws(), result.decrease() is Some,
-            result.remaining().len() <= self.index_len(),
-            result.will_return_none() ==> result.remaining().len() == self.index_len(),
-            forall|i: int| 0 <= i < result.remaining().len() ==> {
+            result.remaining().len() == self.index_len(),
+            forall|i: int| 0 <= i < result.remaining().len() && result.produces()[i] ==> {
                 let entry = #[trigger] result.remaining()[i];
                 entry.1 == self.value_at(i)
                     && 1 <= entry.0@.start <= entry.0@.end <= self@
