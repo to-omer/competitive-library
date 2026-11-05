@@ -265,7 +265,7 @@ unsafe fn advance_avx2(
     let n = text.len() - 14;
     let offsets = _mm256_set_epi64x(3, 2, 1, 0);
     let all = _mm256_set1_epi64x(-1);
-    for group in pattern.chunks_exact(256) {
+    for group in pattern.as_chunks::<256>().0 {
         for (i, &id) in group.iter().enumerate() {
             masks[id + i / 64] |= 1 << (i % 64);
         }
@@ -326,7 +326,7 @@ unsafe fn advance_avx512(
     let reverse = _mm512_set_epi64(0, 1, 2, 3, 4, 5, 6, 7);
     let rotate = _mm512_set_epi64(6, 5, 4, 3, 2, 1, 0, 7);
     let all = _mm512_set1_epi64(-1);
-    for group in pattern.chunks_exact(512) {
+    for group in pattern.as_chunks::<512>().0 {
         for (i, &id) in group.iter().enumerate() {
             masks[id + i / 64] |= 1 << (i % 64);
         }
