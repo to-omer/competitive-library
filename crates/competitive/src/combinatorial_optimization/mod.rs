@@ -10,7 +10,9 @@ pub use self::knapsack_problem::*;
 #[codesnip::entry("largest_pattern")]
 pub use self::largest_pattern::*;
 #[codesnip::entry("levenshtein_distance")]
-pub use self::levenshtein_distance::levenshtein_distance;
+pub use self::levenshtein_distance::{
+    LevenshteinEdit, levenshtein_distance, levenshtein_distance_with_edits,
+};
 #[codesnip::entry("LexicographicalSubsequence")]
 pub use self::lexicographical_subsequence::LexicographicalSubsequence;
 #[codesnip::entry("LongestIncreasingSubsequence")]
