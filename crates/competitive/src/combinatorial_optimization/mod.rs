@@ -1,3 +1,5 @@
+#[cfg(target_arch = "x86_64")]
+use crate::tools::avx512_enabled;
 use crate::{
     data_structure::{BitSet, DoublyLinkedList},
     num::Zero,
@@ -22,7 +24,10 @@ pub use self::subset_sum_problem::SubsetSumProblem;
 mod knapsack_problem;
 #[cfg_attr(nightly, codesnip::entry("largest_pattern"))]
 mod largest_pattern;
-#[cfg_attr(nightly, codesnip::entry("levenshtein_distance"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("levenshtein_distance", include("avx_helper"))
+)]
 mod levenshtein_distance;
 #[cfg_attr(nightly, codesnip::entry("LexicographicalSubsequence"))]
 mod lexicographical_subsequence;
