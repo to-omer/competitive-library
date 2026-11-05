@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["levenshtein_distance"]};
+window.SIDEBAR_ITEMS = {"enum":["LevenshteinEdit"],"fn":["advance_avx2","advance_avx512","levenshtein_distance","levenshtein_distance_impl","levenshtein_distance_scalar","levenshtein_distance_simd","levenshtein_distance_with_edits","levenshtein_edits"]};
