@@ -41,67 +41,40 @@ pub use self::tree_hash::TreeHasher;
 #[codesnip::entry("XorLinkedRootedTree")]
 pub use self::xor_linked_tree::*;
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "centroid_decomposition",
-        include("SparseGraph", "tree_order", "BinaryIndexedTree")
-    )
+#[codesnip::entry(
+    "centroid_decomposition",
+    include("SparseGraph", "tree_order", "BinaryIndexedTree")
 )]
 mod centroid_decomposition;
 mod depth;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "distance_frequencies",
-        include("SparseGraph", "NumberTheoreticTransform")
-    )
+#[codesnip::entry(
+    "distance_frequencies",
+    include("SparseGraph", "NumberTheoreticTransform")
 )]
 mod distance_frequencies;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("EulerTour", include("RangeMinimumQuery", "SparseGraph", "tree_order"))
-)]
+#[codesnip::entry("EulerTour", include("RangeMinimumQuery", "SparseGraph", "tree_order"))]
 mod euler_tour;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("tree_generator", include("SparseGraph", "random_generator"))
-)]
+#[codesnip::entry("tree_generator", include("SparseGraph", "random_generator"))]
 mod generator;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "HeavyLightDecomposition",
-        include("algebra", "SparseGraph", "CartesianTree")
-    )
+#[codesnip::entry(
+    "HeavyLightDecomposition",
+    include("algebra", "SparseGraph", "CartesianTree")
 )]
 mod heavy_light_decomposition;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("LevelAncestor", include("SparseGraph", "tree_order"))
-)]
+#[codesnip::entry("LevelAncestor", include("SparseGraph", "tree_order"))]
 mod level_ancestor;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "LinkCutTree",
-        include("_splay_operations", "Allocator", "LazyMapMonoid")
-    )
+#[codesnip::entry(
+    "LinkCutTree",
+    include("_splay_operations", "Allocator", "LazyMapMonoid")
 )]
 mod link_cut_tree;
 mod rerooting;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("StaticTopTree", include("algebra", "SparseGraph"))
-)]
+#[codesnip::entry("StaticTopTree", include("algebra", "SparseGraph"))]
 mod static_top_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("TopTree", include("_splay_operations", "Allocator", "algebra"))
-)]
+#[codesnip::entry("TopTree", include("_splay_operations", "Allocator", "algebra"))]
 mod top_tree;
 mod tree_center;
-#[cfg_attr(nightly, codesnip::entry("tree_centroid", include("SparseGraph")))]
+#[codesnip::entry("tree_centroid", include("SparseGraph"))]
 mod tree_centroid;
 mod tree_dp;
 mod tree_hash;
@@ -111,5 +84,5 @@ mod tree_hash;
 )]
 mod tree_mo_algorithm;
 mod tree_order;
-#[cfg_attr(nightly, codesnip::entry("XorLinkedRootedTree", include("scanner")))]
+#[codesnip::entry("XorLinkedRootedTree", include("scanner"))]
 mod xor_linked_tree;

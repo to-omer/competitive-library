@@ -134,190 +134,121 @@ pub use self::vec_map::VecMap;
 #[codesnip::entry("WaveletMatrix")]
 pub use self::wavelet_matrix::{WaveletMatrix, WaveletMatrixPointAdd};
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Accumulate", include("algebra", "discrete_steps"))
-)]
+#[codesnip::entry("Accumulate", include("algebra", "discrete_steps"))]
 mod accumulate;
-#[cfg_attr(nightly, codesnip::entry("Allocator"))]
+#[codesnip::entry("Allocator")]
 mod allocator;
-#[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree", include("algebra")))]
+#[codesnip::entry("BinaryIndexedTree", include("algebra"))]
 mod binary_indexed_tree;
-#[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree2D", include("algebra")))]
+#[codesnip::entry("BinaryIndexedTree2D", include("algebra"))]
 mod binary_indexed_tree_2d;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("binary_search_tree", include("Allocator", "LazyMapMonoid"))
-)]
+#[codesnip::entry("binary_search_tree", include("Allocator", "LazyMapMonoid"))]
 pub mod binary_search_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("BinaryTrie", include("algebra", "LazyMapMonoid"))
-)]
+#[codesnip::entry("BinaryTrie", include("algebra", "LazyMapMonoid"))]
 mod binary_trie;
-#[cfg_attr(nightly, codesnip::entry("BitVector"))]
+#[codesnip::entry("BitVector")]
 mod bit_vector;
-#[cfg_attr(nightly, codesnip::entry("BitSet", include("avx_helper")))]
+#[codesnip::entry("BitSet", include("avx_helper"))]
 mod bitset;
-#[cfg_attr(nightly, codesnip::entry("BucketQueue"))]
+#[codesnip::entry("BucketQueue")]
 mod bucket_queue;
-#[cfg_attr(nightly, codesnip::entry("compress"))]
+#[codesnip::entry("compress")]
 mod compress;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("CompressedBinaryIndexedTree", include("algebra"))
-)]
+#[codesnip::entry("CompressedBinaryIndexedTree", include("algebra"))]
 mod compressed_binary_indexed_tree;
-#[cfg_attr(nightly, codesnip::entry("CompressedSegmentTree", include("algebra")))]
+#[codesnip::entry("CompressedSegmentTree", include("algebra"))]
 mod compressed_segment_tree;
-#[cfg_attr(nightly, codesnip::entry("container"))]
+#[codesnip::entry("container")]
 mod container;
-#[cfg_attr(nightly, codesnip::entry("Counter"))]
+#[codesnip::entry("Counter")]
 mod counter;
-#[cfg_attr(nightly, codesnip::entry("DaryHeap", include("_simd")))]
+#[codesnip::entry("DaryHeap", include("_simd"))]
 mod dary_heap;
-#[cfg_attr(nightly, codesnip::entry("DaryPrefixSumTree", include("_simd")))]
+#[codesnip::entry("DaryPrefixSumTree", include("_simd"))]
 mod dary_prefix_sum_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("DarySegmentTree", include("_simd", "discrete_steps"))
-)]
+#[codesnip::entry("DarySegmentTree", include("_simd", "discrete_steps"))]
 mod dary_segment_tree;
-#[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
+#[codesnip::entry("DisjointSparseTable", include("algebra"))]
 mod disjoint_sparse_table;
-#[cfg_attr(nightly, codesnip::entry("DoublyLinkedList"))]
+#[codesnip::entry("DoublyLinkedList")]
 mod doubly_linked_list;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("DualSegmentTree", include("MonoidAct", "discrete_steps"))
-)]
+#[codesnip::entry("DualSegmentTree", include("MonoidAct", "discrete_steps"))]
 mod dual_segment_tree;
-#[cfg_attr(nightly, codesnip::entry("FibonacciHash"))]
+#[codesnip::entry("FibonacciHash")]
 mod fibonacci_hash;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("ImplicitSplayTree", include("_splay_operations"))
-)]
+#[codesnip::entry("ImplicitSplayTree", include("_splay_operations"))]
 mod implicit_splay_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("ImplicitTreap", include("binary_search_tree", "Xorshift"))
-)]
+#[codesnip::entry("ImplicitTreap", include("binary_search_tree", "Xorshift"))]
 mod implicit_treap;
-#[cfg_attr(nightly, codesnip::entry("Static2DTree"))]
+#[codesnip::entry("Static2DTree")]
 mod kdtree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("LazySegmentTree", include("LazyMapMonoid", "discrete_steps"))
-)]
+#[codesnip::entry("LazySegmentTree", include("LazyMapMonoid", "discrete_steps"))]
 mod lazy_segment_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "LazySegmentTreeMap",
-        include("FibonacciHash", "LazyMapMonoid", "discrete_steps")
-    )
+#[codesnip::entry(
+    "LazySegmentTreeMap",
+    include("FibonacciHash", "LazyMapMonoid", "discrete_steps")
 )]
 mod lazy_segment_tree_map;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("LiChaoTree", include("bounded", "integer", "sort", "zero_one"))
-)]
+#[codesnip::entry("LiChaoTree", include("bounded", "integer", "sort", "zero_one"))]
 mod li_chao_tree;
-#[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
+#[codesnip::entry("LineSet", include("bounded"))]
 mod line_set;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("PairingHeap", include("Comparator", "MonoidAct"))
-)]
+#[codesnip::entry("PairingHeap", include("Comparator", "MonoidAct"))]
 mod pairing_heap;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "PartiallyRetroactivePriorityQueue",
-        include("bounded", "SegmentTree", "MaxOperation", "MinOperation")
-    )
+#[codesnip::entry(
+    "PartiallyRetroactivePriorityQueue",
+    include("bounded", "SegmentTree", "MaxOperation", "MinOperation")
 )]
 pub mod partially_retroactive_priority_queue;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "PersistentSegmentTree",
-        include("Allocator", "algebra", "discrete_steps")
-    )
+#[codesnip::entry(
+    "PersistentSegmentTree",
+    include("Allocator", "algebra", "discrete_steps")
 )]
 mod persistent_segment_tree;
-#[cfg_attr(nightly, codesnip::entry("RadixHeap"))]
+#[codesnip::entry("RadixHeap")]
 mod radix_heap;
-#[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
+#[codesnip::entry("RangeArithmeticProgressionAdd")]
 mod range_ap_add;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("RangeFoldWithUpperBound", include("BinaryIndexedTree", "sort"))
-)]
+#[codesnip::entry("RangeFoldWithUpperBound", include("BinaryIndexedTree", "sort"))]
 mod range_fold_with_upper_bound;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "RangeFrequency",
-        include("BinaryIndexedTree", "AdditiveOperation", "FibonacciHash")
-    )
+#[codesnip::entry(
+    "RangeFrequency",
+    include("BinaryIndexedTree", "AdditiveOperation", "FibonacciHash")
 )]
 mod range_frequency;
-#[cfg_attr(nightly, codesnip::entry("RangeMap"))]
+#[codesnip::entry("RangeMap")]
 mod range_map;
-#[cfg_attr(nightly, codesnip::entry("RangeMinimumQuery"))]
+#[codesnip::entry("RangeMinimumQuery")]
 mod range_minimum_query;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "RangeMinimumSubsetSize",
-        include("BinaryIndexedTree", "AdditiveOperation", "TupleOperation")
-    )
+#[codesnip::entry(
+    "RangeMinimumSubsetSize",
+    include("BinaryIndexedTree", "AdditiveOperation", "TupleOperation")
 )]
 mod range_minimum_subset_size;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("SegmentTree", include("algebra", "discrete_steps"))
-)]
+#[codesnip::entry("SegmentTree", include("algebra", "discrete_steps"))]
 mod segment_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "SegmentTreeMap",
-        include("FibonacciHash", "algebra", "discrete_steps")
-    )
+#[codesnip::entry(
+    "SegmentTreeMap",
+    include("FibonacciHash", "algebra", "discrete_steps")
 )]
 mod segment_tree_map;
-#[cfg_attr(nightly, codesnip::entry("_simd", include("avx_helper")))]
+#[codesnip::entry("_simd", include("avx_helper"))]
 pub mod simd;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("sliding_window_aggregation", include("algebra"))
-)]
+#[codesnip::entry("sliding_window_aggregation", include("algebra"))]
 mod sliding_window_aggregation;
-#[cfg_attr(nightly, codesnip::entry("slope_trick"))]
+#[codesnip::entry("slope_trick")]
 mod slope_trick;
-#[cfg_attr(nightly, codesnip::entry("SparseSet"))]
+#[codesnip::entry("SparseSet")]
 mod sparse_set;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("_splay_operations", include("binary_search_tree"))
-)]
+#[codesnip::entry("_splay_operations", include("binary_search_tree"))]
 pub mod splay_operations;
-#[cfg_attr(nightly, codesnip::entry("SplayTree", include("_splay_operations")))]
+#[codesnip::entry("SplayTree", include("_splay_operations"))]
 mod splay_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))
-)]
+#[codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))]
 mod static_range_product;
-#[cfg_attr(nightly, codesnip::entry("StaticSearch", include("_simd")))]
+#[codesnip::entry("StaticSearch", include("_simd"))]
 mod static_search;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("SubmaskRangeQuery", include("algebra", "BitDp", "Xorshift"))
-)]
+#[codesnip::entry("SubmaskRangeQuery", include("algebra", "BitDp", "Xorshift"))]
 pub mod submask_range_query;
 #[cfg_attr(
     nightly,
@@ -325,30 +256,18 @@ pub mod submask_range_query;
 )]
 mod transducer;
 pub mod transducer_examples;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("TransitionTable", include("transducer", "integer", "Matrix"))
-)]
+#[codesnip::entry("TransitionTable", include("transducer", "integer", "Matrix"))]
 mod transition_table;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Treap", include("binary_search_tree", "Xorshift"))
-)]
+#[codesnip::entry("Treap", include("binary_search_tree", "Xorshift"))]
 pub mod treap;
-#[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
+#[codesnip::entry("Trie", include("algebra"))]
 mod trie;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("UnionFind", include("algebra", "TupleOperation"))
-)]
+#[codesnip::entry("UnionFind", include("algebra", "TupleOperation"))]
 pub mod union_find;
-#[cfg_attr(nightly, codesnip::entry("VecMap", include("container")))]
+#[codesnip::entry("VecMap", include("container"))]
 mod vec_map;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "WaveletMatrix",
-        include("BinaryIndexedTree", "BitVector", "compress", "algebra", "avx_helper")
-    )
+#[codesnip::entry(
+    "WaveletMatrix",
+    include("BinaryIndexedTree", "BitVector", "compress", "algebra", "avx_helper")
 )]
 mod wavelet_matrix;

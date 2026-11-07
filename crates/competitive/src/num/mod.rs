@@ -33,43 +33,34 @@ pub use self::urational::URational;
 #[codesnip::entry("zero_one")]
 pub use self::zero_one::{One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("BarrettReduction", include("zero_one")))]
+#[codesnip::entry("BarrettReduction", include("zero_one"))]
 mod barrett_reduction;
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 mod bounded;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Complex", include("zero_one", "scanner", "float"))
-)]
+#[codesnip::entry("Complex", include("zero_one", "scanner", "float"))]
 mod complex;
-#[cfg_attr(nightly, codesnip::entry("Decimal", include("zero_one", "scanner")))]
+#[codesnip::entry("Decimal", include("zero_one", "scanner"))]
 pub mod decimal;
-#[cfg_attr(nightly, codesnip::entry(include("bounded")))]
+#[codesnip::entry(include("bounded"))]
 mod discrete_steps;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner", "Decimal"))
-)]
+#[codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner", "Decimal"))]
 mod double_double;
-#[cfg_attr(nightly, codesnip::entry("DualNumber", include("zero_one")))]
+#[codesnip::entry("DualNumber", include("zero_one"))]
 mod dual_number;
-#[cfg_attr(nightly, codesnip::entry("Dyadic", include("integer")))]
+#[codesnip::entry("Dyadic", include("integer"))]
 mod dyadic;
-#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
+#[codesnip::entry(include("zero_one", "bounded", "scanner"))]
 mod float;
-#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
+#[codesnip::entry(include("zero_one", "bounded", "scanner"))]
 mod integer;
 mod mint;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("QuadDouble", include("zero_one", "bounded", "scanner", "Decimal"))
-)]
+#[codesnip::entry("QuadDouble", include("zero_one", "bounded", "scanner", "Decimal"))]
 mod quad_double;
-#[cfg_attr(nightly, codesnip::entry("Rational", include("integer")))]
+#[codesnip::entry("Rational", include("integer"))]
 mod rational;
-#[cfg_attr(nightly, codesnip::entry("URational", include("integer")))]
+#[codesnip::entry("URational", include("integer"))]
 mod urational;
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 mod zero_one;
 
 #[codesnip::entry(when("integer", "fastio"))]

@@ -25,39 +25,27 @@ pub use self::polygon::{polygon_area2, polygon_centroid, polygon_edge_moments, p
 #[codesnip::entry("StaticRectangleAddRectangleSum")]
 pub use self::static_rectangle_add_rectangle_sum::StaticRectangleAddRectangleSum;
 
-#[cfg_attr(nightly, codesnip::entry("Approx"))]
+#[codesnip::entry("Approx")]
 mod approx;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "area_of_union_of_rectangles",
-        include("LazySegmentTree", "StaticSearch", "sort")
-    )
+#[codesnip::entry(
+    "area_of_union_of_rectangles",
+    include("LazySegmentTree", "StaticSearch", "sort")
 )]
 mod area_of_union_of_rectangles;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Ccw", include("Approx", "Complex", "zero_one"))
-)]
+#[codesnip::entry("Ccw", include("Approx", "Complex", "zero_one"))]
 mod ccw;
-#[cfg_attr(nightly, codesnip::entry("Circle", include("Ccw")))]
+#[codesnip::entry("Circle", include("Ccw"))]
 mod circle;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("closest_pair", include("Complex", "TotalOrd"))
-)]
+#[codesnip::entry("closest_pair", include("Complex", "TotalOrd"))]
 mod closest_pair;
-#[cfg_attr(nightly, codesnip::entry("ConvexHull", include("Complex", "TotalOrd")))]
+#[codesnip::entry("ConvexHull", include("Complex", "TotalOrd"))]
 mod convex_hull;
-#[cfg_attr(nightly, codesnip::entry("Line", include("Ccw")))]
+#[codesnip::entry("Line", include("Ccw"))]
 mod line;
-#[cfg_attr(nightly, codesnip::entry("polygon", include("Approx", "Complex")))]
+#[codesnip::entry("polygon", include("Approx", "Complex"))]
 mod polygon;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "StaticRectangleAddRectangleSum",
-        include("BinaryIndexedTree", "StaticSearch", "sort", "ring", "ArrayOperation")
-    )
+#[codesnip::entry(
+    "StaticRectangleAddRectangleSum",
+    include("BinaryIndexedTree", "StaticSearch", "sort", "ring", "ArrayOperation")
 )]
 mod static_rectangle_add_rectangle_sum;

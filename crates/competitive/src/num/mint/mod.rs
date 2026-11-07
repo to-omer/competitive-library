@@ -11,7 +11,7 @@ use crate::{
 #[codesnip::entry("MIntBase", include("scanner", "zero_one"))]
 pub use mint_base::{MInt, MIntBase, MIntConvert};
 
-#[cfg_attr(nightly, codesnip::entry("MIntBase"))]
+#[codesnip::entry("MIntBase")]
 mod mint_base;
 
 #[cfg_attr(
@@ -20,7 +20,7 @@ mod mint_base;
 )]
 pub mod mint_basic;
 
-#[cfg_attr(nightly, codesnip::entry("montgomery", include("MIntBase")))]
+#[codesnip::entry("montgomery", include("MIntBase"))]
 pub mod montgomery;
 
 #[codesnip::entry("MIntDotProduct")]
@@ -30,25 +30,19 @@ pub use mint_dot_product::MIntDotProduct;
     codesnip::entry(when("MInt", "MIntDotProduct"), include("simd_matrix", "avx_helper"))
 )]
 mod mint_basic_dot_product;
-#[cfg_attr(nightly, codesnip::entry("MIntDotProduct", when("MIntBase", "ring")))]
+#[codesnip::entry("MIntDotProduct", when("MIntBase", "ring"))]
 mod mint_dot_product;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        when("montgomery", "MIntDotProduct"),
-        include("simd_matrix", "montgomery_simd", "avx_helper")
-    )
+#[codesnip::entry(
+    when("montgomery", "MIntDotProduct"),
+    include("simd_matrix", "montgomery_simd", "avx_helper")
 )]
 mod montgomery_dot_product;
 #[cfg(target_arch = "x86_64")]
-#[cfg_attr(nightly, codesnip::entry("montgomery_simd"))]
+#[codesnip::entry("montgomery_simd")]
 pub mod montgomery_simd;
 
 #[cfg(target_arch = "x86_64")]
-#[cfg_attr(
-    nightly,
-    codesnip::entry("simd_matrix", include("MIntBase", "avx_helper", "_huge_pages"))
-)]
+#[codesnip::entry("simd_matrix", include("MIntBase", "avx_helper", "_huge_pages"))]
 mod simd_matrix;
 
 #[codesnip::entry(when("MIntBase", "fastio"))]
@@ -79,7 +73,7 @@ where
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry(when("MIntBase", "random_generator")))]
+#[codesnip::entry(when("MIntBase", "random_generator"))]
 mod random_spec {
     use super::*;
     use std::ops::{RangeFull, RangeTo};

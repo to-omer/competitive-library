@@ -104,205 +104,139 @@ pub use self::relaxed_convolution::RelaxedConvolution;
 #[codesnip::entry("SubsetConvolve")]
 pub use self::subset_convolve::SubsetConvolve;
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "ArbitraryModBinomial",
-        include("BarrettReduction", "integer", "linear_congruence", "prime_factors")
-    )
+#[codesnip::entry(
+    "ArbitraryModBinomial",
+    include("BarrettReduction", "integer", "linear_congruence", "prime_factors")
 )]
 mod arbitrary_mod_binomial;
-#[cfg_attr(nightly, codesnip::entry("ArrayVec"))]
+#[codesnip::entry("ArrayVec")]
 mod array_vec;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("BinomialPrefixSum", include("factorial", "MIntDotProduct"))
-)]
+#[codesnip::entry("BinomialPrefixSum", include("factorial", "MIntDotProduct"))]
 mod binomial_prefix_sum;
-#[cfg_attr(nightly, codesnip::entry("BitMatrix", include("BitSet", "avx_helper")))]
+#[codesnip::entry("BitMatrix", include("BitSet", "avx_helper"))]
 mod bit_matrix;
-#[cfg_attr(nightly, codesnip::entry("bitwise_transform"))]
+#[codesnip::entry("bitwise_transform")]
 mod bitwise_transform;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("BitwiseandConvolve", include("_zeta_transform", "bitwise_transform"))
-)]
+#[codesnip::entry("BitwiseandConvolve", include("_zeta_transform", "bitwise_transform"))]
 mod bitwiseand_convolve;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "bitwise_transform"))
-)]
+#[codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "bitwise_transform"))]
 mod bitwiseor_convolve;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("BitwisexorConvolve", include("_zeta_transform", "bitwise_transform"))
-)]
+#[codesnip::entry("BitwisexorConvolve", include("_zeta_transform", "bitwise_transform"))]
 mod bitwisexor_convolve;
-#[cfg_attr(nightly, codesnip::entry("BlackBoxMatrix", include("Matrix")))]
+#[codesnip::entry("BlackBoxMatrix", include("Matrix"))]
 mod black_box_matrix;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "BlackBoxMIntMatrix",
-        include("BlackBoxMatrix", "FormalPowerSeries", "MIntDotProduct", "Xorshift")
-    )
+#[codesnip::entry(
+    "BlackBoxMIntMatrix",
+    include("BlackBoxMatrix", "FormalPowerSeries", "MIntDotProduct", "Xorshift")
 )]
 mod black_box_mint_matrix;
-#[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
+#[codesnip::entry("ConvolveSteps")]
 mod convolve_steps;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "discrete_logarithm",
-        include(
-            "BarrettReduction",
-            "lcm",
-            "modinv",
-            "primitive_root",
-            "PrimeList",
-            "Xorshift"
-        )
+#[codesnip::entry(
+    "discrete_logarithm",
+    include(
+        "BarrettReduction",
+        "lcm",
+        "modinv",
+        "primitive_root",
+        "PrimeList",
+        "Xorshift"
     )
 )]
 mod discrete_logarithm;
-#[cfg_attr(nightly, codesnip::entry("factorial", include("MIntBase")))]
+#[codesnip::entry("factorial", include("MIntBase"))]
 mod factorial;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "fast_fourier_transform",
-        include(
-            "Complex",
-            "_partial_fft",
-            "ConvolveSteps",
-            "avx_helper",
-            "_huge_pages"
-        )
+#[codesnip::entry(
+    "fast_fourier_transform",
+    include(
+        "Complex",
+        "_partial_fft",
+        "ConvolveSteps",
+        "avx_helper",
+        "_huge_pages"
     )
 )]
 mod fast_fourier_transform;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "FastPrimeMod",
-        include("BarrettReduction", "miller_rabin", "primitive_root", "Xorshift")
-    )
+#[codesnip::entry(
+    "FastPrimeMod",
+    include("BarrettReduction", "miller_rabin", "primitive_root", "Xorshift")
 )]
 mod fast_prime_mod;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("floor_sum", include("algebra", "ring", "integer", "BarrettReduction"))
-)]
+#[codesnip::entry("floor_sum", include("algebra", "ring", "integer", "BarrettReduction"))]
 mod floor_sum;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "FormalPowerSeries",
-        include(
-            "NumberTheoreticTransform",
-            "montgomery",
-            "mod_sqrt",
-            "factorial",
-            "PartialIgnoredOrd",
-            "gcd"
-        )
+#[codesnip::entry(
+    "FormalPowerSeries",
+    include(
+        "NumberTheoreticTransform",
+        "montgomery",
+        "mod_sqrt",
+        "factorial",
+        "PartialIgnoredOrd",
+        "gcd"
     )
 )]
 mod formal_power_series;
-#[cfg_attr(nightly, codesnip::entry(include("integer")))]
+#[codesnip::entry(include("integer"))]
 mod garner;
 mod gcd;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))
-)]
+#[codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))]
 mod gcd_convolve;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))
-)]
+#[codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))]
 mod lagrange_interpolation;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("LcmConvolve", include("_zeta_transform", "PrimeList"))
-)]
+#[codesnip::entry("LcmConvolve", include("_zeta_transform", "PrimeList"))]
 mod lcm_convolve;
-#[cfg_attr(nightly, codesnip::entry(include("integer")))]
+#[codesnip::entry(include("integer"))]
 mod linear_congruence;
-#[cfg_attr(nightly, codesnip::entry(include("integer", "discrete_steps")))]
+#[codesnip::entry(include("integer", "discrete_steps"))]
 mod linear_diophantine;
-#[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one", "ring")))]
+#[codesnip::entry("Matrix", include("zero_one", "ring"))]
 mod matrix;
-#[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
+#[codesnip::entry("miller_rabin", include("BarrettReduction"))]
 mod miller_rabin;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("min_plus_convolution", include("integer", "NumberTheoreticTransform"))
-)]
+#[codesnip::entry("min_plus_convolution", include("integer", "NumberTheoreticTransform"))]
 mod min_plus_convolution;
 #[cfg(target_arch = "x86_64")]
-#[cfg_attr(nightly, codesnip::entry("NumberTheoreticTransform"))]
+#[codesnip::entry("NumberTheoreticTransform")]
 mod mint_fft_convolve;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "MIntMatrix",
-        include("Matrix", "MIntDotProduct", "factorial", "Xorshift")
-    )
+#[codesnip::entry(
+    "MIntMatrix",
+    include("Matrix", "MIntDotProduct", "factorial", "Xorshift")
 )]
 mod mint_matrix;
-#[cfg_attr(nightly, codesnip::entry("mod_sqrt", include("MIntBase")))]
+#[codesnip::entry("mod_sqrt", include("MIntBase"))]
 mod mod_sqrt;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "NumberTheoreticTransform",
-        include(
-            "MInt",
-            "montgomery",
-            "montgomery_simd",
-            "ConvolveSteps",
-            "avx_helper",
-            "fast_fourier_transform",
-            "_huge_pages"
-        )
+#[codesnip::entry(
+    "NumberTheoreticTransform",
+    include(
+        "MInt",
+        "montgomery",
+        "montgomery_simd",
+        "ConvolveSteps",
+        "avx_helper",
+        "fast_fourier_transform",
+        "_huge_pages"
     )
 )]
 mod number_theoretic_transform;
-#[cfg_attr(nightly, codesnip::entry("_partial_fft", include("Complex")))]
+#[codesnip::entry("_partial_fft", include("Complex"))]
 pub mod partial_fft;
 mod polynomial;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("PowPrec", include("MIntBase", "prime_factors"))
-)]
+#[codesnip::entry("PowPrec", include("MIntBase", "prime_factors"))]
 mod pow_prec;
 mod prime;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("prime_factors", include("miller_rabin", "gcd", "Xorshift"))
-)]
+#[codesnip::entry("prime_factors", include("miller_rabin", "gcd", "Xorshift"))]
 mod prime_factors;
-#[cfg_attr(nightly, codesnip::entry("PrimeList"))]
+#[codesnip::entry("PrimeList")]
 mod prime_list;
-#[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
+#[codesnip::entry("PrimeTable")]
 mod prime_table;
-#[cfg_attr(nightly, codesnip::entry("primitive_root", include("prime_factors")))]
+#[codesnip::entry("primitive_root", include("prime_factors"))]
 mod primitive_root;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))
-)]
+#[codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))]
 mod quotient_array;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("RelaxedConvolution", include("ConvolveSteps", "zero_one"))
-)]
+#[codesnip::entry("RelaxedConvolution", include("ConvolveSteps", "zero_one"))]
 mod relaxed_convolution;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("SubsetConvolve", include("BitwiseorConvolve", "_huge_pages"))
-)]
+#[codesnip::entry("SubsetConvolve", include("BitwiseorConvolve", "_huge_pages"))]
 mod subset_convolve;
 
 #[codesnip::entry("_zeta_transform", include("algebra", "ring", "ConvolveSteps"))]

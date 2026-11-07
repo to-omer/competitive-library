@@ -52,28 +52,25 @@ mod associated_value;
 mod avx_helper;
 #[cfg_attr(nightly, codesnip::entry)]
 mod capture;
-#[cfg_attr(nightly, codesnip::entry("char_convert"))]
+#[codesnip::entry("char_convert")]
 mod char_convert;
-#[cfg_attr(nightly, codesnip::entry("coding"))]
+#[codesnip::entry("coding")]
 mod coding;
-#[cfg_attr(nightly, codesnip::entry("Comparator"))]
+#[codesnip::entry("Comparator")]
 pub mod comparator;
-#[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
+#[codesnip::entry("digit_sequence")]
 mod digit_sequence;
-#[cfg_attr(nightly, codesnip::entry("fastio"))]
+#[codesnip::entry("fastio")]
 mod fast_print;
-#[cfg_attr(nightly, codesnip::entry("fastio"))]
+#[codesnip::entry("fastio")]
 mod fast_scanner;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("fastio", include("_iter_print", "scanner", "_huge_pages"))
-)]
+#[codesnip::entry("fastio", include("_iter_print", "scanner", "_huge_pages"))]
 mod fastio;
-#[cfg_attr(nightly, codesnip::entry("HugePageAllocator"))]
+#[codesnip::entry("HugePageAllocator")]
 mod huge_page_allocator;
-#[cfg_attr(nightly, codesnip::entry("_huge_pages"))]
+#[codesnip::entry("_huge_pages")]
 mod huge_pages;
-#[cfg_attr(nightly, codesnip::entry("IdGenerator"))]
+#[codesnip::entry("IdGenerator")]
 mod id_generator;
 #[cfg_attr(nightly, codesnip::entry)]
 mod invariant;
@@ -81,7 +78,7 @@ mod invariant;
 mod iter_print;
 #[cfg_attr(nightly, codesnip::entry("comprehension"))]
 mod iterable;
-#[cfg_attr(nightly, codesnip::entry("IteratorExt"))]
+#[codesnip::entry("IteratorExt")]
 mod iterator_ext;
 #[cfg_attr(
     nightly,
@@ -92,15 +89,15 @@ mod main;
 mod mlambda;
 #[cfg_attr(nightly, codesnip::entry("ord_tools"))]
 mod ord_tools;
-#[cfg_attr(nightly, codesnip::entry("PartialIgnoredOrd"))]
+#[codesnip::entry("PartialIgnoredOrd")]
 mod partial_ignored_ord;
 #[cfg_attr(nightly, codesnip::entry("random_generator", include("Xorshift")))]
 mod random_generator;
 #[cfg_attr(nightly, codesnip::entry("scanner", include("array")))]
 mod scanner;
-#[cfg_attr(nightly, codesnip::entry("TotalOrd"))]
+#[codesnip::entry("TotalOrd")]
 mod totalord;
-#[cfg_attr(nightly, codesnip::entry("Xorshift"))]
+#[codesnip::entry("Xorshift")]
 mod xorshift;
 
 #[codesnip::entry("fast_main", include("main", "fastio"))]

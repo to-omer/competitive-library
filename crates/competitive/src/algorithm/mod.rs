@@ -14,11 +14,11 @@ use crate::num::{
 use crate::tools::{RandomSpec, SerdeByteStr, Xorshift};
 use crate::tree::LevelAncestor;
 
-#[cfg_attr(nightly, codesnip::entry("automata_learning"))]
+#[codesnip::entry("automata_learning")]
 pub use self::automata_learning::*;
-#[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
+#[codesnip::entry("baby_step_giant_step")]
 pub use self::baby_step_giant_step::baby_step_giant_step;
-#[cfg_attr(nightly, codesnip::entry("binary_search"))]
+#[codesnip::entry("binary_search")]
 pub use self::binary_search::{Bisect, SliceBisectExt, binary_search, parallel_binary_search};
 #[codesnip::entry("BitDp")]
 pub use self::bitdp::{BitDpExt, Combinations, Subsets};
@@ -68,86 +68,68 @@ pub use self::todd_coxeter::ToddCoxeter;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "automata_learning",
-        include("BitSet", "coding", "Matrix", "random_generator")
-    )
+#[codesnip::entry(
+    "automata_learning",
+    include("BitSet", "coding", "Matrix", "random_generator")
 )]
 mod automata_learning;
-#[cfg_attr(nightly, codesnip::entry("baby_step_giant_step", include("algebra")))]
+#[codesnip::entry("baby_step_giant_step", include("algebra"))]
 mod baby_step_giant_step;
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 mod binary_search;
-#[cfg_attr(nightly, codesnip::entry("BitDp", include("zero_one")))]
+#[codesnip::entry("BitDp", include("zero_one"))]
 mod bitdp;
-#[cfg_attr(nightly, codesnip::entry("CartesianTree"))]
+#[codesnip::entry("CartesianTree")]
 mod cartesian_tree;
-#[cfg_attr(nightly, codesnip::entry("chromatic_number"))]
+#[codesnip::entry("chromatic_number")]
 mod chromatic_number;
-#[cfg_attr(nightly, codesnip::entry("combinations"))]
+#[codesnip::entry("combinations")]
 mod combinations;
-#[cfg_attr(nightly, codesnip::entry("ConvexHullTrick"))]
+#[codesnip::entry("ConvexHullTrick")]
 mod convex_hull_trick;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Doubling", include("LevelAncestor", "SparseGraph", "algebra"))
-)]
+#[codesnip::entry("Doubling", include("LevelAncestor", "SparseGraph", "algebra"))]
 mod doubling;
-#[cfg_attr(nightly, codesnip::entry("dyadic_ranges"))]
+#[codesnip::entry("dyadic_ranges")]
 mod dyadic_ranges;
-#[cfg_attr(nightly, codesnip::entry("esper", include("Matrix")))]
+#[codesnip::entry("esper", include("Matrix"))]
 mod esper;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "GameAnalyzer",
-        include("Graph", "Dyadic", "ClosureGraph", "topological_sort")
-    )
+#[codesnip::entry(
+    "GameAnalyzer",
+    include("Graph", "Dyadic", "ClosureGraph", "topological_sort")
 )]
 mod game_analyzer;
-#[cfg_attr(nightly, codesnip::entry("HornSatisfiability"))]
+#[codesnip::entry("HornSatisfiability")]
 mod horn_satisfiability;
 #[cfg_attr(nightly, codesnip::entry)]
 mod mo_algorithm;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "number_of_increasing_sequences_between",
-        include("NumberTheoreticTransform")
-    )
+#[codesnip::entry(
+    "number_of_increasing_sequences_between",
+    include("NumberTheoreticTransform")
 )]
 mod number_of_increasing_sequences_between;
 mod other;
-#[cfg_attr(nightly, codesnip::entry("QuotientIndex"))]
+#[codesnip::entry("QuotientIndex")]
 mod quotient_index;
-#[cfg_attr(nightly, codesnip::entry("RhoPath"))]
+#[codesnip::entry("RhoPath")]
 mod rho_path;
-#[cfg_attr(nightly, codesnip::entry("01_on_tree", include("UnionFind")))]
+#[codesnip::entry("01_on_tree", include("UnionFind"))]
 mod solve_01_on_tree;
-#[cfg_attr(nightly, codesnip::entry("sort"))]
+#[codesnip::entry("sort")]
 mod sort;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("SqrtDecomposition", include("algebra", "discrete_steps"))
-)]
+#[codesnip::entry("SqrtDecomposition", include("algebra", "discrete_steps"))]
 mod sqrt_decomposition;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "static_range_count_distinct",
-        include("DaryPrefixSumTree", "FibonacciHash")
-    )
+#[codesnip::entry(
+    "static_range_count_distinct",
+    include("DaryPrefixSumTree", "FibonacciHash")
 )]
 mod static_range_count_distinct;
-#[cfg_attr(nightly, codesnip::entry("stern_brocot_tree", include("URational")))]
+#[codesnip::entry("stern_brocot_tree", include("URational"))]
 mod stern_brocot_tree;
 #[cfg_attr(nightly, codesnip::entry)]
 mod syakutori;
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 pub mod ternary_search;
-#[cfg_attr(nightly, codesnip::entry("ToddCoxeter", include("UnionFind")))]
+#[codesnip::entry("ToddCoxeter", include("UnionFind"))]
 mod todd_coxeter;
-#[cfg_attr(nightly, codesnip::entry("XorBasis"))]
+#[codesnip::entry("XorBasis")]
 mod xorbasis;

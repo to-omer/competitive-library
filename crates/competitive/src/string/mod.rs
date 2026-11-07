@@ -27,31 +27,22 @@ pub use self::wildcard_pattern_matching::wildcard_pattern_matching;
 #[codesnip::entry("ZAlgorithm")]
 pub use self::z_algorithm::Zarray;
 
-#[cfg_attr(nightly, codesnip::entry("KnuthMorrisPratt"))]
+#[codesnip::entry("KnuthMorrisPratt")]
 mod knuth_morris_pratt;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "RollingHash",
-        include("Xorshift", "algebra", "ring", "Gf2_63", "Mersenne61")
-    )
+#[codesnip::entry(
+    "RollingHash",
+    include("Xorshift", "algebra", "ring", "Gf2_63", "Mersenne61")
 )]
 pub mod rolling_hash;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("StringSearch", include("SuffixArray", "RangeMinimumQuery"))
-)]
+#[codesnip::entry("StringSearch", include("SuffixArray", "RangeMinimumQuery"))]
 mod string_search;
-#[cfg_attr(nightly, codesnip::entry("SuffixArray", include("binary_search")))]
+#[codesnip::entry("SuffixArray", include("binary_search"))]
 mod suffix_array;
-#[cfg_attr(nightly, codesnip::entry("SuffixAutomaton"))]
+#[codesnip::entry("SuffixAutomaton")]
 mod suffix_automaton;
-#[cfg_attr(nightly, codesnip::entry("SuffixTree", include("SuffixArray")))]
+#[codesnip::entry("SuffixTree", include("SuffixArray"))]
 mod suffix_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(include("_partial_fft", "_huge_pages", "avx_helper"))
-)]
+#[codesnip::entry(include("_partial_fft", "_huge_pages", "avx_helper"))]
 mod wildcard_pattern_matching;
-#[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]
+#[codesnip::entry("ZAlgorithm")]
 mod z_algorithm;

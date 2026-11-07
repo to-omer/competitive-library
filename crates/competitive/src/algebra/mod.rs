@@ -3,9 +3,9 @@
 use crate::num::{Bounded, One, Zero};
 use crate::tools::AssociatedValue;
 
-#[cfg_attr(nightly, codesnip::entry("MonoidAct"))]
+#[codesnip::entry("MonoidAct")]
 pub use self::action::*;
-#[cfg_attr(nightly, codesnip::entry("LazyMapMonoid"))]
+#[codesnip::entry("LazyMapMonoid")]
 pub use self::lazy_map::*;
 #[codesnip::entry("algebra")]
 pub use self::magma::*;
@@ -14,39 +14,30 @@ pub use self::operations::*;
 pub use self::ring::*;
 pub use self::ring_operations::*;
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "MonoidAct",
-        include("TupleOperation", "LastOperation", "LinearOperation")
-    )
+#[codesnip::entry(
+    "MonoidAct",
+    include("TupleOperation", "LastOperation", "LinearOperation")
 )]
 mod action;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "LazyMapMonoid",
-        include(
-            "MonoidAct",
-            "AdditiveOperation",
-            "ArrayOperation",
-            "MaxOperation",
-            "MinOperation",
-            "CountingOperation",
-            "bounded"
-        )
+#[codesnip::entry(
+    "LazyMapMonoid",
+    include(
+        "MonoidAct",
+        "AdditiveOperation",
+        "ArrayOperation",
+        "MaxOperation",
+        "MinOperation",
+        "CountingOperation",
+        "bounded"
     )
 )]
 mod lazy_map;
 #[cfg_attr(nightly, codesnip::entry("algebra"))]
 mod magma;
 mod operations;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "ring",
-        include("algebra", "AdditiveOperation", "MultiplicativeOperation")
-    )
+#[codesnip::entry(
+    "ring",
+    include("algebra", "AdditiveOperation", "MultiplicativeOperation")
 )]
 mod ring;
 mod ring_operations;

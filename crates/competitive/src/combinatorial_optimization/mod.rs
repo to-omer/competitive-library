@@ -22,26 +22,20 @@ pub use self::maximum_scoring_segment_sets::maximum_scoring_segment_sets;
 #[codesnip::entry("SubsetSumProblem")]
 pub use self::subset_sum_problem::SubsetSumProblem;
 
-#[cfg_attr(nightly, codesnip::entry("knapsack_problem"))]
+#[codesnip::entry("knapsack_problem")]
 mod knapsack_problem;
-#[cfg_attr(nightly, codesnip::entry("largest_pattern"))]
+#[codesnip::entry("largest_pattern")]
 mod largest_pattern;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("levenshtein_distance", include("avx_helper"))
-)]
+#[codesnip::entry("levenshtein_distance", include("avx_helper"))]
 mod levenshtein_distance;
-#[cfg_attr(nightly, codesnip::entry("LexicographicalSubsequence"))]
+#[codesnip::entry("LexicographicalSubsequence")]
 mod lexicographical_subsequence;
-#[cfg_attr(nightly, codesnip::entry("LongestIncreasingSubsequence"))]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 mod longest_increasing_subsequence;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "maximum_scoring_segment_sets",
-        include("DoublyLinkedList", "zero_one")
-    )
+#[codesnip::entry(
+    "maximum_scoring_segment_sets",
+    include("DoublyLinkedList", "zero_one")
 )]
 mod maximum_scoring_segment_sets;
-#[cfg_attr(nightly, codesnip::entry("SubsetSumProblem", include("BitSet")))]
+#[codesnip::entry("SubsetSumProblem", include("BitSet"))]
 mod subset_sum_problem;

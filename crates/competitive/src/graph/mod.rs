@@ -63,109 +63,73 @@ pub use self::topological_sort::TopologicalSortExt;
 #[codesnip::entry("TwoSatisfiability")]
 pub use self::two_satisfiability::TwoSatisfiability;
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("AdjacencyListGraph", include("scanner", "Graph"))
-)]
+#[codesnip::entry("AdjacencyListGraph", include("scanner", "Graph"))]
 mod adjacency_list;
-#[cfg_attr(nightly, codesnip::entry("minimum_assignment"))]
+#[codesnip::entry("minimum_assignment")]
 mod assignment;
-#[cfg_attr(nightly, codesnip::entry("bipartite_coloring", include("SparseGraph")))]
+#[codesnip::entry("bipartite_coloring", include("SparseGraph"))]
 mod bipartite_coloring;
-#[cfg_attr(nightly, codesnip::entry("BipartiteMatching"))]
+#[codesnip::entry("BipartiteMatching")]
 mod bipartite_matching;
-#[cfg_attr(nightly, codesnip::entry("ClosureGraph", include("Graph")))]
+#[codesnip::entry("ClosureGraph", include("Graph"))]
 mod closure;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("count_spanning_tree", include("EdgeListGraph", "Matrix"))
-)]
+#[codesnip::entry("count_spanning_tree", include("EdgeListGraph", "Matrix"))]
 mod count_spanning_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "dulmage_mendelsohn_decomposition",
-        include("BipartiteMatching", "StronglyConnectedComponent")
-    )
+#[codesnip::entry(
+    "dulmage_mendelsohn_decomposition",
+    include("BipartiteMatching", "StronglyConnectedComponent")
 )]
 mod dulmage_mendelsohn_decomposition;
-#[cfg_attr(nightly, codesnip::entry("EdgeListGraph", include("scanner")))]
+#[codesnip::entry("EdgeListGraph", include("scanner"))]
 mod edge_list;
-#[cfg_attr(nightly, codesnip::entry("GeneralMatching"))]
+#[codesnip::entry("GeneralMatching")]
 mod general_matching;
-#[cfg_attr(nightly, codesnip::entry("GeneralWeightedMatching"))]
+#[codesnip::entry("GeneralWeightedMatching")]
 mod general_weighted_matching;
-#[cfg_attr(nightly, codesnip::entry("Graph"))]
+#[codesnip::entry("Graph")]
 mod graph_base;
-#[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
+#[codesnip::entry("graphvis", include("SparseGraph"))]
 mod graphvis;
-#[cfg_attr(nightly, codesnip::entry("GridGraph", include("Graph")))]
+#[codesnip::entry("GridGraph", include("Graph"))]
 mod grid;
-#[cfg_attr(nightly, codesnip::entry("LowLink", include("SparseGraph")))]
+#[codesnip::entry("LowLink", include("SparseGraph"))]
 mod low_link;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("Dinic", include("SparseGraph", "bounded", "zero_one"))
-)]
+#[codesnip::entry("Dinic", include("SparseGraph", "bounded", "zero_one"))]
 mod maximum_flow;
-#[cfg_attr(nightly, codesnip::entry("PrimalDual", include("SparseGraph")))]
+#[codesnip::entry("PrimalDual", include("SparseGraph"))]
 mod minimum_cost_flow;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "minimum_spanning_arborescence",
-        include("EdgeListGraph", "PairingHeap", "UnionFind")
-    )
+#[codesnip::entry(
+    "minimum_spanning_arborescence",
+    include("EdgeListGraph", "PairingHeap", "UnionFind")
 )]
 mod minimum_spanning_arborescence;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("minimum_spanning_tree", include("EdgeListGraph", "UnionFind"))
-)]
+#[codesnip::entry("minimum_spanning_tree", include("EdgeListGraph", "UnionFind"))]
 mod minimum_spanning_tree;
-#[cfg_attr(nightly, codesnip::entry("NetworkSimplex", include("zero_one")))]
+#[codesnip::entry("NetworkSimplex", include("zero_one"))]
 mod network_simplex;
-#[cfg_attr(nightly, codesnip::entry("graph_order", include("Graph")))]
+#[codesnip::entry("graph_order", include("Graph"))]
 mod order;
-#[cfg_attr(nightly, codesnip::entry("ProjectSelectionProblem", include("Dinic")))]
+#[codesnip::entry("ProjectSelectionProblem", include("Dinic"))]
 mod project_selection_problem;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("regular_bipartite_edge_coloring", include("BipartiteMatching"))
-)]
+#[codesnip::entry("regular_bipartite_edge_coloring", include("BipartiteMatching"))]
 mod regular_bipartite_edge_coloring;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "shortest_path",
-        include("Graph", "ring", "PartialIgnoredOrd", "bounded")
-    )
+#[codesnip::entry(
+    "shortest_path",
+    include("Graph", "ring", "PartialIgnoredOrd", "bounded")
 )]
 pub mod shortest_path;
-#[cfg_attr(nightly, codesnip::entry("SparseGraph", include("scanner", "Graph")))]
+#[codesnip::entry("SparseGraph", include("scanner", "Graph"))]
 mod sparse_graph;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("steiner_tree", include("shortest_path", "BitDp", "UnionFind"))
-)]
+#[codesnip::entry("steiner_tree", include("shortest_path", "BitDp", "UnionFind"))]
 mod steiner_tree;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))
-)]
+#[codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))]
 mod strongly_connected_component;
-#[cfg_attr(nightly, codesnip::entry("topological_sort", include("Graph")))]
+#[codesnip::entry("topological_sort", include("Graph"))]
 mod topological_sort;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "tree_diameter",
-        include("EdgeListGraph", "XorLinkedRootedTree", "zero_one")
-    )
+#[codesnip::entry(
+    "tree_diameter",
+    include("EdgeListGraph", "XorLinkedRootedTree", "zero_one")
 )]
 mod tree_diameter;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("TwoSatisfiability", include("StronglyConnectedComponent"))
-)]
+#[codesnip::entry("TwoSatisfiability", include("StronglyConnectedComponent"))]
 mod two_satisfiability;
