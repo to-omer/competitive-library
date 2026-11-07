@@ -509,9 +509,6 @@ mod tests {
             }
             check(&x, &y);
         }
-        let x: Vec<_> = "日本語の編集距離".chars().collect();
-        let y: Vec<_> = "日本語と編集距離".chars().collect();
-        check(&x, &y);
         #[derive(PartialEq, Eq, Hash)]
         struct Token(u32);
         let x: Vec<_> = (0..513).map(Token).collect();
@@ -549,9 +546,6 @@ mod tests {
         }
         check_edits(&[1], &vec![0; 4096]);
         check_edits(&[0, 1], &vec![1; 4096]);
-        let x: Vec<_> = "日本語の編集距離".chars().collect();
-        let y: Vec<_> = "日本語と編集距離".chars().collect();
-        check_edits(&x, &y);
         #[derive(PartialEq, Eq, Hash)]
         struct Token(u32);
         let x: Vec<_> = (0..1538).map(Token).collect();

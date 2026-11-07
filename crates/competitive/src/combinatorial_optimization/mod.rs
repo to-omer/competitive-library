@@ -15,6 +15,10 @@ pub use self::levenshtein_distance::{
 };
 #[codesnip::entry("LexicographicalSubsequence")]
 pub use self::lexicographical_subsequence::LexicographicalSubsequence;
+#[codesnip::entry("longest_common_subsequence")]
+pub use self::longest_common_subsequence::{
+    longest_common_subsequence, longest_common_subsequence_length,
+};
 #[codesnip::entry("LongestIncreasingSubsequence")]
 pub use self::longest_increasing_subsequence::LongestIncreasingSubsequence;
 #[codesnip::entry("maximum_scoring_segment_sets")]
@@ -30,6 +34,8 @@ mod largest_pattern;
 mod levenshtein_distance;
 #[codesnip::entry("LexicographicalSubsequence")]
 mod lexicographical_subsequence;
+#[codesnip::entry("longest_common_subsequence", include("avx_helper"))]
+mod longest_common_subsequence;
 #[codesnip::entry("LongestIncreasingSubsequence")]
 mod longest_increasing_subsequence;
 #[codesnip::entry(

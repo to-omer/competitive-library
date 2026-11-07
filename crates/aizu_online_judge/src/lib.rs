@@ -6,6 +6,7 @@
 //! [Aizu Online Judge]: https://onlinejudge.u-aizu.ac.jp/courses/list
 //! [verification summary]: ?search=verify
 
+pub mod alds1;
 pub mod cgl;
 pub mod dpl;
 pub mod dsl;
