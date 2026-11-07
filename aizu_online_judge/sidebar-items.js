@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["cgl","dpl","dsl","grl","itp1"]};
+window.SIDEBAR_ITEMS = {"mod":["alds1","cgl","dpl","dsl","grl","itp1"]};
