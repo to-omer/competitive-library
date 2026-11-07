@@ -27,12 +27,9 @@ pub struct ResolvedImports {
 
 impl ImportResolver {
     pub fn new(root: &Path) -> Result<Self> {
-        let mut command = Command::new("rustup");
+        let mut command = Command::new("cargo");
         command
             .args([
-                "run",
-                "1.89.0",
-                "cargo",
                 "build",
                 "--release",
                 "-p",
@@ -78,12 +75,12 @@ impl ImportResolver {
                     .map(PathBuf::from)
             })
             .context("missing competitive library artifact")?;
-        let output = crate::submission_compiler()
-            .args(["--print=cfg", "--target", crate::TARGET])
+        let output = Command::new("rustc")
+            .args(["-O", "--print=cfg", "--target", crate::TARGET])
             .output()?;
         ensure!(
             output.status.success(),
-            "reading submission cfg failed: {}",
+            "reading target cfg failed: {}",
             String::from_utf8_lossy(&output.stderr)
         );
         let cfg = String::from_utf8(output.stdout)?
@@ -158,8 +155,11 @@ impl ImportResolver {
         let temporary = tempfile::tempdir()?;
         let path = temporary.path().join("imports.rs");
         fs::write(&path, code)?;
-        let output = crate::submission_compiler()
+        let output = Command::new("rustc")
             .args([
+                "--edition=2024",
+                "--crate-name=submission",
+                "-O",
                 "--crate-type=lib",
                 "--emit=metadata",
                 "--error-format=json",
