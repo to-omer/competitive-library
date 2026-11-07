@@ -16,7 +16,7 @@ use syn::{
 
 pub struct ImportResolver {
     library: PathBuf,
-    host_dependencies: PathBuf,
+    dependencies: BTreeSet<PathBuf>,
     cfg: Vec<Meta>,
 }
 
@@ -30,7 +30,7 @@ impl ImportResolver {
         let mut command = Command::new("cargo");
         command
             .args([
-                "build",
+                "check",
                 "--release",
                 "-p",
                 "competitive",
@@ -52,7 +52,7 @@ impl ImportResolver {
             .collect::<Result<_, _>>()?;
         ensure!(
             output.status.success(),
-            "building competitive for {} failed:\n{}{}",
+            "checking competitive for {} failed:\n{}{}",
             crate::TARGET,
             messages
                 .iter()
@@ -71,10 +71,18 @@ impl ImportResolver {
                     .as_array()?
                     .iter()
                     .filter_map(|path| path.as_str())
-                    .find(|path| path.ends_with(".rlib"))
+                    .find(|path| path.ends_with(".rmeta"))
                     .map(PathBuf::from)
             })
-            .context("missing competitive library artifact")?;
+            .context("missing competitive metadata artifact")?;
+        let dependencies = messages
+            .iter()
+            .filter(|message| message["reason"] == "compiler-artifact")
+            .filter_map(|message| message["filenames"].as_array())
+            .flatten()
+            .filter_map(|path| Path::new(path.as_str()?).parent())
+            .map(Path::to_path_buf)
+            .collect();
         let output = Command::new("rustc")
             .args(["-O", "--print=cfg", "--target", crate::TARGET])
             .output()?;
@@ -89,7 +97,7 @@ impl ImportResolver {
             .collect::<syn::Result<_>>()?;
         Ok(Self {
             library,
-            host_dependencies: root.join("target/verify_source/release/deps"),
+            dependencies,
             cfg,
         })
     }
@@ -172,13 +180,11 @@ impl ImportResolver {
             ])
             .arg("--extern")
             .arg(format!("{name}={}", self.library.display()))
-            .arg("-L")
-            .arg(format!(
-                "dependency={}",
-                self.library.parent().unwrap().join("deps").display()
-            ))
-            .arg("-L")
-            .arg(format!("dependency={}", self.host_dependencies.display()))
+            .args(
+                self.dependencies
+                    .iter()
+                    .map(|path| format!("-Ldependency={}", path.display())),
+            )
             .arg(&path)
             .arg("-o")
             .arg(temporary.path().join("imports.rmeta"))
