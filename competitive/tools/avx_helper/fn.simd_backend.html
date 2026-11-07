@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `simd_backend` fn in crate `competitive`."><title>simd_backend in competitive::tools::avx_helper - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5c590327.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (2d20b42b8 2026-11-04)" data-channel="nightly" data-search-js="search-835b9732.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-b2682d9c.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `simd_backend` fn in crate `competitive`."><title>simd_backend in competitive::tools::avx_helper - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-020b02a2.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.101.0-nightly (c980177d8 2026-11-06)" data-channel="nightly" data-search-js="search-835b9732.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-b2682d9c.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -440,7 +440,7 @@
 <span data-nosnippet>386</span>    }
 <span data-nosnippet>387</span>    <span class="kw">let </span>inv = M::mod_inv(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::from(n <span class="kw">as </span>u32));
 <span data-nosnippet>388</span>    <span class="kw">for </span>a <span class="kw">in </span>a {
-<span data-nosnippet>389</span>        <span class="kw-2">*</span>a = <a href="../algebra/lazy_map.rs.html#9">M::mod_mul</a>(<span class="kw-2">*</span>a, inv);
+<span data-nosnippet>389</span>        <span class="kw-2">*</span>a = M::mod_mul(<span class="kw-2">*</span>a, inv);
 <span data-nosnippet>390</span>    }
 <span data-nosnippet>391</span>}
 <span data-nosnippet>392</span>
@@ -645,7 +645,7 @@
 <span data-nosnippet>313</span>                <span class="kw">let </span>z = indices[<span class="number">2</span>][(key &gt;&gt; <span class="number">16</span>) &amp; masks[<span class="number">2</span>]];
 <span data-nosnippet>314</span>                <span class="kw">let </span>w = indices[<span class="number">3</span>][(key &gt;&gt; <span class="number">24</span>) &amp; masks[<span class="number">3</span>]];
 <span data-nosnippet>315</span>                <span class="kw">if </span>x | y | z | w != <span class="number">0 </span>{
-<span data-nosnippet>316</span>                    <span class="kw">let </span>p = <span class="kw-2">&amp;</span>table[<a href="../algebra/action.rs.html#54">x</a>].words()[word..];
+<span data-nosnippet>316</span>                    <span class="kw">let </span>p = <span class="kw-2">&amp;</span>table[x].words()[word..];
 <span data-nosnippet>317</span>                    <span class="kw">let </span>q = <span class="kw-2">&amp;</span>table[<span class="number">256 </span>+ y].words()[word..];
 <span data-nosnippet>318</span>                    <span class="kw">let </span>r = <span class="kw-2">&amp;</span>table[<span class="number">512 </span>+ z].words()[word..];
 <span data-nosnippet>319</span>                    <span class="kw">let </span>s = <span class="kw-2">&amp;</span>table[<span class="number">768 </span>+ w].words()[word..];
@@ -736,7 +736,7 @@
 <span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::zeros((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">1</span>));
 <span data-nosnippet>405</span>        <span class="kw">let </span>ones = <span class="self">self</span>.data.iter().map(BitSet::count_ones).sum::&lt;u64&gt;();
 <span data-nosnippet>406</span>        <span class="kw">let </span>size = <span class="self">self</span>.shape.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64;
-<span data-nosnippet>407</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256 </span>|| <span class="self">self</span>.shape.<span class="number">1 </span>&lt; <span class="number">32 </span>|| ones &lt;= size / <span class="number">8 </span>{
+<span data-nosnippet>407</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256 </span>|| <span class="self">self</span>.shape.<span class="number">1 </span>&lt; <span class="number">32 </span>|| ones &lt;= <a href="../algebra/magma.rs.html#169">size</a> / <span class="number">8 </span>{
 <span data-nosnippet>408</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>409</span>                <span class="kw">for </span>j <span class="kw">in </span>a.iter_ones() {
 <span data-nosnippet>410</span>                    xor(c.words_mut(), rhs[j].words());
@@ -751,11 +751,11 @@
 <span data-nosnippet>419</span>            }
 <span data-nosnippet>420</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>421</span>                c.words_mut().copy_from_slice(sum.words());
-<span data-nosnippet>422</span>                <span class="kw">for </span>j <span class="kw">in </span>(!a.clone()).iter_ones() {
+<span data-nosnippet>422</span>                <span class="kw">for </span>j <span class="kw">in </span>(!<a href="../algebra/magma.rs.html#189">a</a>.clone()).iter_ones() {
 <span data-nosnippet>423</span>                    xor(c.words_mut(), rhs[j].words());
 <span data-nosnippet>424</span>                }
 <span data-nosnippet>425</span>            }
-<span data-nosnippet>426</span>            <span class="kw">return </span><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">result</a>;
+<span data-nosnippet>426</span>            <span class="kw">return </span>result;
 <span data-nosnippet>427</span>        }
 <span data-nosnippet>428</span>        <span class="kw">let </span>width = rhs.shape.<span class="number">1</span>.div_ceil(<span class="number">64</span>);
 <span data-nosnippet>429</span>        <span class="kw">if </span>width == <span class="number">0 </span>{
@@ -771,7 +771,7 @@
 <span data-nosnippet>439</span>                <span class="kw">let </span>col = start + t * <span class="number">8</span>;
 <span data-nosnippet>440</span>                <span class="kw">for </span>bit <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1</span>.saturating_sub(col).min(<span class="number">8</span>) {
 <span data-nosnippet>441</span>                    <span class="kw">let </span>row = rhs[col + bit].words();
-<span data-nosnippet>442</span>                    <span class="kw">let </span>half = (<span class="number">1 </span>&lt;&lt; <a href="../num/zero_one.rs.html#16">bit</a>) * width;
+<span data-nosnippet>442</span>                    <span class="kw">let </span>half = (<span class="number">1 </span>&lt;&lt; bit) * width;
 <span data-nosnippet>443</span>                    <span class="kw">let </span>(lower, upper) = table.split_at_mut(half);
 <span data-nosnippet>444</span>                    <span class="kw">for </span>(source, dest) <span class="kw">in
 <span data-nosnippet>445</span>                        </span>lower.chunks_exact(width).zip(upper.chunks_exact_mut(width))
@@ -837,7 +837,7 @@
 <span data-nosnippet>505</span>        full: bool,
 <span data-nosnippet>506</span>        require_full_rank: bool,
 <span data-nosnippet>507</span>    ) -&gt; Vec&lt;usize&gt; {
-<span data-nosnippet>508</span>        <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.eliminate_impl(cols, full, require_full_rank)
+<span data-nosnippet>508</span>        <span class="self">self</span>.eliminate_impl(cols, full, require_full_rank)
 <span data-nosnippet>509</span>    }
 <span data-nosnippet>510</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>511</span>    #[target_feature(enable = <span class="string">"avx2"</span>)]
@@ -1163,7 +1163,7 @@
 <span data-nosnippet>378</span>            <span class="kw">let </span>root_slot = (stage_log - <span class="number">2</span>) &gt;&gt; <span class="number">1</span>;
 <span data-nosnippet>379</span>            <span class="kw">let </span><span class="kw-2">mut </span>root = roots[root_slot];
 <span data-nosnippet>380</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="kw">if </span>tile == <span class="number">0 </span>{ group_len } <span class="kw">else </span>{ <span class="number">0 </span>};
-<span data-nosnippet>381</span>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../../../algebra/magma.rs.html#1-370">group</a> = (tile + i) &gt;&gt; stage_log;
+<span data-nosnippet>381</span>            <span class="kw">let </span><span class="kw-2">mut </span>group = (tile + i) &gt;&gt; stage_log;
 <span data-nosnippet>382</span>            <span class="kw">while </span>i &lt; tile_len {
 <span data-nosnippet>383</span>                <span class="kw">let </span>current = root;
 <span data-nosnippet>384</span>                root = update_root_avx2(
@@ -1294,7 +1294,7 @@
 <span data-nosnippet>509</span>    <span class="kw">if </span>nn != n {
 <span data-nosnippet>510</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>511</span>        <span class="kw">while </span>i &lt; nn {
-<span data-nosnippet>512</span>            <span class="kw">let </span>x0 = load_block_avx2(a, i);
+<span data-nosnippet>512</span>            <span class="kw">let </span>x0 = load_block_avx2(<a href="../../../algebra/magma.rs.html#189">a</a>, i);
 <span data-nosnippet>513</span>            <span class="kw">let </span>x1 = load_block_avx2(a, nn + i);
 <span data-nosnippet>514</span>            store_block_avx2(
 <span data-nosnippet>515</span>                a,
