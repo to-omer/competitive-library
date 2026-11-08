@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["path_matching_candidates","path_weighted_matching_queries"],"struct":["PathWeightedMatching","RangeState"]};
