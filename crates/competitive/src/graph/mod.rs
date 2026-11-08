@@ -2,11 +2,13 @@
 
 use crate::{
     algebra::{
-        AddMulOperation, AdditiveOperation, DotProduct, Field, Group, Invertible, Monoid,
-        MonoidAct, Ring, SemiRing,
+        AddMulOperation, AdditiveOperation, Associative, DotProduct, Field, Group, Invertible,
+        Magma, Monoid, MonoidAct, Ring, SemiRing, Unital,
     },
     algorithm::BitDpExt,
-    data_structure::{MergingUnionFind, PairingHeap, UnionFind},
+    data_structure::{
+        MergingUnionFind, PairingHeap, RangeMinimumQuery, SegmentTree, UnionFind, WaveletMatrix,
+    },
     math::Matrix,
     num::{Bounded, One, Zero},
     tools::{MarkedScan, PartialIgnoredOrd, Scan, ScanSource, comparator},
@@ -43,6 +45,8 @@ pub use self::minimum_cost_flow::{PrimalDual, PrimalDualBuilder};
 pub use self::network_simplex::NetworkSimplex;
 #[codesnip::entry("graph_order")]
 pub use self::order::GraphOrderExt;
+#[codesnip::entry("PathWeightedMatching")]
+pub use self::path_weighted_matching::{PathWeightedMatching, path_weighted_matching_queries};
 #[codesnip::entry("ProjectSelectionProblem")]
 pub use self::project_selection_problem::ProjectSelectionProblem;
 #[codesnip::entry("regular_bipartite_edge_coloring")]
@@ -109,6 +113,11 @@ mod minimum_spanning_tree;
 mod network_simplex;
 #[codesnip::entry("graph_order", include("Graph"))]
 mod order;
+#[codesnip::entry(
+    "PathWeightedMatching",
+    include("zero_one", "SegmentTree", "RangeMinimumQuery", "WaveletMatrix")
+)]
+mod path_weighted_matching;
 #[codesnip::entry("ProjectSelectionProblem", include("Dinic"))]
 mod project_selection_problem;
 #[codesnip::entry("regular_bipartite_edge_coloring", include("BipartiteMatching"))]
