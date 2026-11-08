@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -253,7 +268,7 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>303</span>                }
 <span data-nosnippet>304</span>                <span class="kw">let </span><span class="kw-2">mut </span>lengths = [done; <span class="number">4</span>];
 <span data-nosnippet>305</span>                <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
-<span data-nosnippet>306</span>                    <span class="self">self</span>.ptr = input[<a href="../algebra/magma.rs.html#65">k</a>];
+<span data-nosnippet>306</span>                    <span class="self">self</span>.ptr = input[k];
 <span data-nosnippet>307</span>                    <span class="kw">while </span><span class="self">self</span>.ptr &lt; end[k] {
 <span data-nosnippet>308</span>                        output[k].add(lengths[k]).write(<span class="self">self</span>.u32());
 <span data-nosnippet>309</span>                        lengths[k] += <span class="number">1</span>;
@@ -576,7 +591,7 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>305</span>                <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
 <span data-nosnippet>306</span>                    <span class="self">self</span>.ptr = input[k];
 <span data-nosnippet>307</span>                    <span class="kw">while </span><span class="self">self</span>.ptr &lt; end[k] {
-<span data-nosnippet>308</span>                        output[k].add(lengths[<a href="../algebra/magma.rs.html#15">k</a>]).write(<span class="self">self</span>.<span class="highlight">u32</span>());
+<span data-nosnippet>308</span>                        output[k].add(lengths[k]).write(<span class="self">self</span>.<span class="highlight">u32</span>());
 <span data-nosnippet>309</span>                        lengths[k] += <span class="number">1</span>;
 <span data-nosnippet>310</span>                    }
 <span data-nosnippet>311</span>                }
@@ -659,9 +674,9 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>388</span>                    <span class="self">self</span>.ptr = <span class="self">self</span>.ptr.add(<span class="number">4</span>);
 <span data-nosnippet>389</span>                } <span class="kw">else </span>{
 <span data-nosnippet>390</span>                    <span class="kw">let </span>four = (rem &amp; <span class="number">0xf0f0f0f0</span>) == <span class="number">0</span>;
-<span data-nosnippet>391</span>                    rem = rem.wrapping_shl((!<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">four</a> <span class="kw">as </span>u32) &lt;&lt; <span class="number">3</span>);
+<span data-nosnippet>391</span>                    rem = rem.wrapping_shl((!four <span class="kw">as </span>u32) &lt;&lt; <span class="number">3</span>);
 <span data-nosnippet>392</span>                    rem = rem.wrapping_mul(<span class="number">10</span>).wrapping_add(rem &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0x00ff00ff</span>;
-<span data-nosnippet>393</span>                    rem = rem.wrapping_mul(<span class="number">100</span>).wrapping_add(<a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">rem</a> &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0000ffff</span>;
+<span data-nosnippet>393</span>                    rem = rem.wrapping_mul(<span class="number">100</span>).wrapping_add(rem &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0000ffff</span>;
 <span data-nosnippet>394</span>                    res = res
 <span data-nosnippet>395</span>                        .wrapping_mul(<span class="number">1000 </span>+ <span class="number">9000 </span>* four <span class="kw">as </span>u64)
 <span data-nosnippet>396</span>                        .wrapping_add(rem <span class="kw">as </span>u64);
@@ -676,7 +691,7 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>405</span>                res = res.wrapping_mul(<span class="number">10</span>).wrapping_add((rem &amp; <span class="number">0x0000000f</span>) <span class="kw">as </span>u64);
 <span data-nosnippet>406</span>                <span class="self">self</span>.ptr = <span class="self">self</span>.ptr.add(<span class="number">2</span>);
 <span data-nosnippet>407</span>            } <span class="kw">else </span>{
-<span data-nosnippet>408</span>                <span class="self">self</span>.ptr = <span class="self">self</span>.ptr.add(<span class="number">1</span>);
+<span data-nosnippet>408</span>                <span class="self">self</span>.ptr = <a class="self" href="../algebra/magma.rs.html#151">self</a>.ptr.add(<span class="number">1</span>);
 <span data-nosnippet>409</span>            }
 <span data-nosnippet>410</span>            res
 <span data-nosnippet>411</span>        }
@@ -687,14 +702,14 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>416</span>    </span><span class="kw">pub unsafe fn </span>u64(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; u64 {
 <span data-nosnippet>417</span>        <span class="kw">unsafe </span>{
 <span data-nosnippet>418</span>            <span class="kw">let </span><span class="kw-2">mut </span>res;
-<span data-nosnippet>419</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = ptr::read_unaligned(<span class="self">self</span>.ptr <span class="kw">as </span><span class="kw-2">*const </span>u64);
+<span data-nosnippet>419</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = ptr::read_unaligned(<span class="self">self</span>.ptr <span class="kw">as </span><span class="kw-2">*const </span><a href="../algebra/magma.rs.html#155">u64</a>);
 <span data-nosnippet>420</span>            x ^= <span class="number">0x3030303030303030</span>;
 <span data-nosnippet>421</span>            <span class="kw">if </span>(x &amp; <span class="number">0xf0f0f0f0f0f0f0f0</span>) == <span class="number">0 </span>{
 <span data-nosnippet>422</span>                <span class="self">self</span>.ptr = <span class="self">self</span>.ptr.add(<span class="number">8</span>);
 <span data-nosnippet>423</span>                <span class="kw">let </span><span class="kw-2">mut </span>y = ptr::read_unaligned(<span class="self">self</span>.ptr <span class="kw">as </span><span class="kw-2">*const </span>u64);
 <span data-nosnippet>424</span>                x = x.wrapping_mul(<span class="number">10</span>).wrapping_add(x &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0x00ff00ff00ff00ff</span>;
 <span data-nosnippet>425</span>                x = x.wrapping_mul(<span class="number">100</span>).wrapping_add(x &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0000ffff0000ffff</span>;
-<span data-nosnippet>426</span>                x = <a href="../algebra/magma.rs.html#189">x</a>.wrapping_mul(<span class="number">10000</span>).wrapping_add(x &gt;&gt; <span class="number">32</span>) &amp; <span class="number">0x00000000ffffffff</span>;
+<span data-nosnippet>426</span>                x = x.wrapping_mul(<span class="number">10000</span>).wrapping_add(x &gt;&gt; <span class="number">32</span>) &amp; <span class="number">0x00000000ffffffff</span>;
 <span data-nosnippet>427</span>                res = x;
 <span data-nosnippet>428</span>                y ^= <span class="number">0x3030303030303030</span>;
 <span data-nosnippet>429</span>                <span class="kw">if </span>(y &amp; <span class="number">0xf0f0f0f0f0f0f0f0</span>) == <span class="number">0 </span>{
@@ -712,7 +727,7 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>441</span>                        <span class="self">self</span>.ptr = <span class="self">self</span>.ptr.add(<span class="number">5</span>);
 <span data-nosnippet>442</span>                    } <span class="kw">else if </span>(rem &amp; <span class="number">0xf0f0f0</span>) == <span class="number">0 </span>{
 <span data-nosnippet>443</span>                        res = res.wrapping_mul(<span class="number">1000</span>).wrapping_add(
-<span data-nosnippet>444</span>                            ((rem &amp; <span class="number">0xff</span>) <span class="kw">as </span><a href="../algebra/magma.rs.html#229">u64</a>)
+<span data-nosnippet>444</span>                            ((rem &amp; <span class="number">0xff</span>) <span class="kw">as </span>u64)
 <span data-nosnippet>445</span>                                .wrapping_mul(<span class="number">100</span>)
 <span data-nosnippet>446</span>                                .wrapping_add((((rem.wrapping_mul(<span class="number">2561</span>)) &amp; <span class="number">0xff0000</span>) &gt;&gt; <span class="number">16</span>) <span class="kw">as </span>u64),
 <span data-nosnippet>447</span>                        );
@@ -837,7 +852,7 @@ Subsequent <code>ScanSource</code> reads must satisfy this type’s token requir
 <span data-nosnippet>566</span>            <span class="kw">let </span><span class="kw-2">mut </span>rem = x;
 <span data-nosnippet>567</span>            <span class="kw">if </span>(x &amp; <span class="number">0xf0f0f0f0</span>) == <span class="number">0 </span>{
 <span data-nosnippet>568</span>                rem &gt;&gt;= <span class="number">32</span>;
-<span data-nosnippet>569</span>                x = x.wrapping_mul(<span class="number">10</span>).wrapping_add(x &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0x00ff00ff</span>;
+<span data-nosnippet>569</span>                x = x.wrapping_mul(<span class="number">10</span>).<a href="../algebra/operations.rs.html#12-17">wrapping_add</a>(x &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0x00ff00ff</span>;
 <span data-nosnippet>570</span>                x = x.wrapping_mul(<span class="number">100</span>).wrapping_add(x &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0000ffff</span>;
 <span data-nosnippet>571</span>                res2 = x;
 <span data-nosnippet>572</span>                pow = <span class="number">10000</span>;

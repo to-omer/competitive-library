@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -453,7 +468,7 @@
 <span data-nosnippet>540</span>    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>I) -&gt; <span class="prelude-ty">Option</span>&lt;(S, O)&gt;,
 <span data-nosnippet>541</span>    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; bool,
 <span data-nosnippet>542</span>{
-<span data-nosnippet>543</span>    <span class="kw">pub fn </span>new(fn_start: F, fn_relation: G, fn_accept: H) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>543</span>    <span class="kw">pub fn </span>new(fn_start: F, fn_relation: G, fn_accept: <a href="../algebra/magma.rs.html#189">H</a>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>544</span>        <span class="self">Self </span>{
 <span data-nosnippet>545</span>            fn_start,
 <span data-nosnippet>546</span>            fn_relation,
@@ -722,7 +737,7 @@
 <span data-nosnippet>809</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>810</span>        state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State,
 <span data-nosnippet>811</span>        input: <span class="kw-2">&amp;</span><span class="self">Self</span>::Input,
-<span data-nosnippet>812</span>    ) -&gt; <a class="prelude-ty" href="../algebra/magma.rs.html#54-81">Option</a>&lt;(<span class="self">Self</span>::State, <span class="self">Self</span>::Output)&gt; {
+<span data-nosnippet>812</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="self">Self</span>::State, <span class="self">Self</span>::Output)&gt; {
 <span data-nosnippet>813</span>        <span class="self">self</span>.inner.relation(state, <span class="kw-2">&amp;</span>(<span class="self">self</span>.f)(input))
 <span data-nosnippet>814</span>    }
 <span data-nosnippet>815</span>    <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; bool {
@@ -858,7 +873,7 @@
 <span data-nosnippet>945</span>
 <span data-nosnippet>946</span><span class="kw">impl</span>&lt;T, A, F&gt; Transducer <span class="kw">for </span>TryFoldTransducer&lt;T, A, F&gt;
 <span data-nosnippet>947</span><span class="kw">where
-<span data-nosnippet>948</span>    </span><a href="../algebra/operations.rs.html#138">T</a>: Transducer,
+<span data-nosnippet>948</span>    </span>T: Transducer,
 <span data-nosnippet>949</span>    A: Clone,
 <span data-nosnippet>950</span>    F: Fn(<span class="kw-2">&amp;</span>A, <span class="kw-2">&amp;</span>T::Output) -&gt; <span class="prelude-ty">Option</span>&lt;A&gt;,
 <span data-nosnippet>951</span>{
@@ -871,7 +886,7 @@
 <span data-nosnippet>958</span>    <span class="kw">fn </span>relation(
 <span data-nosnippet>959</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>960</span>        (state, acc): <span class="kw-2">&amp;</span><span class="self">Self</span>::State,
-<span data-nosnippet>961</span>        <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">input</a>: <span class="kw-2">&amp;</span><span class="self">Self</span>::Input,
+<span data-nosnippet>961</span>        input: <span class="kw-2">&amp;</span><span class="self">Self</span>::Input,
 <span data-nosnippet>962</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="self">Self</span>::State, <span class="self">Self</span>::Output)&gt; {
 <span data-nosnippet>963</span>        <span class="kw">let </span>(next_state, output) = <span class="self">self</span>.inner.relation(state, input)<span class="question-mark">?</span>;
 <span data-nosnippet>964</span>        <span class="kw">let </span>next_acc = (<span class="self">self</span>.f)(acc, <span class="kw-2">&amp;</span>output)<span class="question-mark">?</span>;

@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -316,7 +331,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>789</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>790</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>791</span>{
-<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;<a href="../algebra/magma.rs.html#4-18">::new</a>(N1::get_mod()).inv();
+<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
 <span data-nosnippet>793</span>    <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>794</span>    <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>795</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64;
@@ -332,12 +347,12 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>805</span>        .map(|((c1, c2), c3)| {
 <span data-nosnippet>806</span>            <span class="kw">let </span>d1 = c1.inner();
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * <a href="../algebra/magma.rs.html#56">m1_3</a>;
 <span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
 <span data-nosnippet>812</span>            } <span class="kw">else </span>{
-<span data-nosnippet>813</span>                ((d1 <span class="kw">as </span><a href="../../../../../algebra/struct.Bits.html">u128</a> + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
+<span data-nosnippet>813</span>                ((d1 <span class="kw">as </span>u128 + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
 <span data-nosnippet>814</span>                    <span class="kw">as </span>u64
 <span data-nosnippet>815</span>            };
 <span data-nosnippet>816</span>            MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32)
@@ -635,7 +650,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1108</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1109</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
 <span data-nosnippet>1110</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
-<span data-nosnippet>1111</span>                            <span class="kw">let </span><a href="../algebra/mod.rs.html#37">value</a> = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
+<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
 <span data-nosnippet>1112</span>                            <span class="kw-2">*</span>value = value.wrapping_add(a.wrapping_mul(b));
 <span data-nosnippet>1113</span>                        }
 <span data-nosnippet>1114</span>                    }
@@ -810,7 +825,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
 <span data-nosnippet>1285</span>        <span class="kw">for </span>a <span class="kw">in </span>a.chunks_mut(<span class="number">4</span>) {
-<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().zip(<span class="kw-2">&amp;mut </span>rot) {
+<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().<a href="../num/zero_one.rs.html#16">zip</a>(<span class="kw-2">&amp;mut </span>rot) {
 <span data-nosnippet>1287</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>rot;
 <span data-nosnippet>1288</span>                <span class="kw-2">*</span>rot <span class="kw-2">*</span>= step;
 <span data-nosnippet>1289</span>            }
@@ -906,7 +921,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1379</span>            }
 <span data-nosnippet>1380</span>            <span class="kw">let </span>k = k - <span class="number">1</span>;
 <span data-nosnippet>1381</span>            <span class="kw">if </span>br[k].is_empty() {
-<span data-nosnippet>1382</span>                <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; k];
+<span data-nosnippet>1382</span>                <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; <a href="../algebra/operations.rs.html#444">k</a>];
 <span data-nosnippet>1383</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; k {
 <span data-nosnippet>1384</span>                    v[i] = (v[i &gt;&gt; <span class="number">1</span>] &gt;&gt; <span class="number">1</span>) | ((i &amp; <span class="number">1</span>) &lt;&lt; k.saturating_sub(<span class="number">1</span>));
 <span data-nosnippet>1385</span>                }
@@ -1146,7 +1161,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>547</span>            }
 <span data-nosnippet>548</span>            delta.data[..m - <span class="number">1</span>].fill(T::zero());
 <span data-nosnippet>549</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta_fft = <span class="highlight">C::transform_ntt</span>(delta.data, <span class="number">2 </span>* m);
-<span data-nosnippet>550</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span><a href="../../algebra/magma.rs.html#21-46">inverse_fft</a>);
+<span data-nosnippet>550</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span>inverse_fft);
 <span data-nosnippet>551</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = C::inverse_transform_ntt(delta_fft, <span class="number">2 </span>* m);
 <span data-nosnippet>552</span>            delta.pop();
 <span data-nosnippet>553</span>            delta.push(T::zero());
@@ -1482,7 +1497,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>883</span>    <span class="kw">pub fn </span>sqrt(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
 <span data-nosnippet>884</span>        <span class="kw">if </span><span class="self">self</span>[<span class="number">0</span>].is_zero() {
 <span data-nosnippet>885</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(k) = <span class="self">self</span>.iter().position(|x| !x.is_zero()) {
-<span data-nosnippet>886</span>                <span class="kw">if </span><a href="../../algebra/operations.rs.html#81">k</a> % <span class="number">2 </span>!= <span class="number">0 </span>{
+<span data-nosnippet>886</span>                <span class="kw">if </span>k % <span class="number">2 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>887</span>                    <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>888</span>                } <span class="kw">else if </span>deg &gt; k / <span class="number">2 </span>{
 <span data-nosnippet>889</span>                    <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="self">self </span>&gt;&gt; k).sqrt(deg - k / <span class="number">2</span>)<span class="question-mark">? </span>&lt;&lt; (k / <span class="number">2</span>));
@@ -1610,11 +1625,11 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1011</span>    <span class="doccomment">/// [x^n] P(x) / Q(x)
 <span data-nosnippet>1012</span>    </span><span class="kw">pub fn </span>bostan_mori(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>rhs: <span class="self">Self</span>, <span class="kw-2">mut </span>n: usize) -&gt; T
 <span data-nosnippet>1013</span>    <span class="kw">where
-<span data-nosnippet>1014</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>1014</span>        </span>C: NttReuse&lt;T = <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Vec</a>&lt;T&gt;&gt;,
 <span data-nosnippet>1015</span>    {
 <span data-nosnippet>1016</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = T::zero();
 <span data-nosnippet>1017</span>        rhs.trim_tail_zeros();
-<span data-nosnippet>1018</span>        <span class="kw">if </span><span class="self">self</span>.length() &gt;= rhs.length() {
+<span data-nosnippet>1018</span>        <span class="kw">if </span><span class="self">self</span>.length() &gt;= <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">rhs</a>.length() {
 <span data-nosnippet>1019</span>            <span class="kw">let </span>r = <span class="kw-2">&amp;</span><span class="self">self </span>/ <span class="kw-2">&amp;</span>rhs;
 <span data-nosnippet>1020</span>            <span class="kw">if </span>n &lt; r.length() {
 <span data-nosnippet>1021</span>                res = r[n].clone();
@@ -1634,7 +1649,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1035</span>            };
 <span data-nosnippet>1036</span>            q = t;
 <span data-nosnippet>1037</span>            n /= <span class="number">2</span>;
-<span data-nosnippet>1038</span>            <span class="kw">if </span><a href="../../algebra/operations.rs.html#279">n</a> != <span class="number">0 </span>{
+<span data-nosnippet>1038</span>            <span class="kw">if </span>n != <span class="number">0 </span>{
 <span data-nosnippet>1039</span>                <span class="kw">if </span>n &lt; k / <span class="number">2 </span>{
 <span data-nosnippet>1040</span>                    p = <span class="highlight">C::transform_ntt</span>(C::inverse_transform_ntt(p, k / <span class="number">2</span>), k);
 <span data-nosnippet>1041</span>                    q = <span class="highlight">C::transform_ntt</span>(C::inverse_transform_ntt(q, k / <span class="number">2</span>), k);
@@ -1666,7 +1681,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1067</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>1068</span>        }
 <span data-nosnippet>1069</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>1070</span>        <span class="kw">let </span>ts = C::transform(s.<a href="../../algebra/magma.rs.html#54-81">prefix</a>(len).data, len);
+<span data-nosnippet>1070</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>1071</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>1072</span>    }
 <span data-nosnippet>1073</span>    <span class="doccomment">/// x^n mod self
@@ -1686,7 +1701,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1087</span>    }
 <span data-nosnippet>1088</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
 <span data-nosnippet>1089</span>    <span class="kw">where
-<span data-nosnippet>1090</span>        </span>C: NttReuse&lt;<a href="../../algebra/operations.rs.html#351">T</a> = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>1090</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>1091</span>        C::F: Clone,
 <span data-nosnippet>1092</span>    {
 <span data-nosnippet>1093</span>        <span class="kw">let </span>n = points.len();
@@ -1753,7 +1768,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1154</span>        {
 <span data-nosnippet>1155</span>            <span class="kw">let </span><span class="kw-2">mut </span>remainder = <span class="self">Self</span>::zeros(block);
 <span data-nosnippet>1156</span>            <span class="kw">for </span>(j, value) <span class="kw">in </span>values.iter().enumerate() {
-<span data-nosnippet>1157</span>                <span class="kw">for </span>(r, p) <span class="kw">in </span>remainder.data[..=j].iter_mut().zip(<span class="kw-2">&amp;</span>product[block - j..]) {
+<span data-nosnippet>1157</span>                <span class="kw">for </span>(r, p) <span class="kw">in </span>remainder.data[..=<a href="../../algebra/operations.rs.html#443">j</a>].iter_mut().zip(<span class="kw-2">&amp;</span>product[block - j..]) {
 <span data-nosnippet>1158</span>                    <span class="kw-2">*</span>r += value.clone() * p;
 <span data-nosnippet>1159</span>                }
 <span data-nosnippet>1160</span>            }
@@ -1922,7 +1937,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>498</span>
 <span data-nosnippet>499</span>    <span class="kw">fn </span>exp_newton(<span class="kw-2">&amp;</span><span class="self">self</span>, deg: usize, indices: <span class="kw-2">&amp;</span>[T], inv: <span class="kw-2">&amp;</span>[T]) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>, C::F)
 <span data-nosnippet>500</span>    <span class="kw">where
-<span data-nosnippet>501</span>        </span>C: NttReuse&lt;T = Vec&lt;T&gt;&gt;,
+<span data-nosnippet>501</span>        </span>C: <a href="../../algebra/lazy_map.rs.html#1-905">NttReuse</a>&lt;T = Vec&lt;T&gt;&gt;,
 <span data-nosnippet>502</span>        C::F: Clone,
 <span data-nosnippet>503</span>    {
 <span data-nosnippet>504</span>        <span class="kw">if </span>deg == <span class="number">1 </span>{
@@ -2020,7 +2035,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>596</span>                    }
 <span data-nosnippet>597</span>                    value -= <span class="self">self</span>[j].clone() * <span class="kw-2">&amp;</span>derivative[i - j];
 <span data-nosnippet>598</span>                }
-<span data-nosnippet>599</span>                derivative[i] = value * <span class="kw-2">&amp;</span>inverse;
+<span data-nosnippet>599</span>                derivative[i] = <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">value</a> * <span class="kw-2">&amp;</span>inverse;
 <span data-nosnippet>600</span>            }
 <span data-nosnippet>601</span>            <span class="kw">if </span>pos.is_empty() {
 <span data-nosnippet>602</span>                <span class="kw">return </span>derivative;
@@ -2075,7 +2090,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>651</span>            <span class="kw">return </span><span class="self">Self</span>::from_vec(
 <span data-nosnippet>652</span>                once(T::one())
 <span data-nosnippet>653</span>                    .chain(repeat_with(T::zero))
-<span data-nosnippet>654</span>                    .take(<a href="../../algebra/magma.rs.html#224">deg</a>)
+<span data-nosnippet>654</span>                    .take(deg)
 <span data-nosnippet>655</span>                    .collect(),
 <span data-nosnippet>656</span>            );
 <span data-nosnippet>657</span>        }
@@ -2228,7 +2243,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>804</span>        }
 <span data-nosnippet>805</span>        <span class="kw">if </span>exp_p != <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.iter().all(|x| x.is_zero()) {
 <span data-nosnippet>806</span>            <span class="macro">assert!</span>(exp_p &gt; <span class="number">0</span>);
-<span data-nosnippet>807</span>            <span class="kw">return </span><span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">zeros</a>(deg);
+<span data-nosnippet>807</span>            <span class="kw">return </span><span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>808</span>        }
 <span data-nosnippet>809</span>        <span class="kw">if </span>exp_q != <span class="number">0 </span>&amp;&amp; q.iter().all(|x| x.is_zero()) {
 <span data-nosnippet>810</span>            <span class="macro">assert!</span>(exp_q &gt; <span class="number">0</span>);
@@ -2244,7 +2259,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>820</span>                exp &gt;= <span class="number">0 </span>|| k == <span class="number">0</span>,
 <span data-nosnippet>821</span>                <span class="string">"Negative exponent with zero constant term"
 <span data-nosnippet>822</span>            </span>);
-<span data-nosnippet>823</span>            <span class="kw">let </span>c = f[k].clone();
+<span data-nosnippet>823</span>            <span class="kw">let </span>c = f[k].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
 <span data-nosnippet>824</span>            <span class="kw">let </span>f = (f.clone() &gt;&gt; k) / <span class="kw-2">&amp;</span>c;
 <span data-nosnippet>825</span>            (k, c, f)
 <span data-nosnippet>826</span>        };
@@ -2553,14 +2568,14 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1129</span>        <span class="kw">let </span>m = <span class="self">self</span>.length();
 <span data-nosnippet>1130</span>        <span class="kw">let </span>v = <span class="self">Self</span>::from_vec(product).reversed().resized(m);
 <span data-nosnippet>1131</span>        <span class="kw">let </span>s = C::transform(<span class="self">self</span>.data, m * <span class="number">2</span>);
-<span data-nosnippet>1132</span>        uptree_t.push(v.<a href="../../num/zero_one.rs.html#16">inv</a>(m).middle_product(<span class="kw-2">&amp;</span>s, m * <span class="number">2</span>).resized(size));
+<span data-nosnippet>1132</span>        uptree_t.push(v.inv(m).middle_product(<span class="kw-2">&amp;</span>s, m * <span class="number">2</span>).resized(size));
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].length();
 <span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
 <span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();
-<span data-nosnippet>1139</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
+<span data-nosnippet>1139</span>            <a href="../../algebra/operations.rs.html#444">C</a>::multiply_prefix(<span class="kw-2">&amp;mut </span>child, <span class="kw-2">&amp;</span>right);
 <span data-nosnippet>1140</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="highlight">C::inverse_transform_ntt</span>(child, degree);
 <span data-nosnippet>1141</span>            child.drain(..degree / <span class="number">2</span>);
 <span data-nosnippet>1142</span>            uptree_t.push(<span class="self">Self</span>::from_vec(child));
@@ -2791,7 +2806,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>789</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>790</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>791</span>{
-<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;<a href="../algebra/magma.rs.html#4-18">::new</a>(N1::get_mod()).inv();
+<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
 <span data-nosnippet>793</span>    <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>794</span>    <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>795</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64;
@@ -2807,12 +2822,12 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>805</span>        .map(|((c1, c2), c3)| {
 <span data-nosnippet>806</span>            <span class="kw">let </span>d1 = c1.inner();
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * <a href="../algebra/magma.rs.html#56">m1_3</a>;
 <span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
 <span data-nosnippet>812</span>            } <span class="kw">else </span>{
-<span data-nosnippet>813</span>                ((d1 <span class="kw">as </span><a href="../../../../../algebra/struct.Bits.html">u128</a> + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
+<span data-nosnippet>813</span>                ((d1 <span class="kw">as </span>u128 + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
 <span data-nosnippet>814</span>                    <span class="kw">as </span>u64
 <span data-nosnippet>815</span>            };
 <span data-nosnippet>816</span>            MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32)
@@ -3110,7 +3125,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1108</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1109</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
 <span data-nosnippet>1110</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
-<span data-nosnippet>1111</span>                            <span class="kw">let </span><a href="../algebra/mod.rs.html#37">value</a> = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
+<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
 <span data-nosnippet>1112</span>                            <span class="kw-2">*</span>value = value.wrapping_add(a.wrapping_mul(b));
 <span data-nosnippet>1113</span>                        }
 <span data-nosnippet>1114</span>                    }
@@ -3285,7 +3300,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
 <span data-nosnippet>1285</span>        <span class="kw">for </span>a <span class="kw">in </span>a.chunks_mut(<span class="number">4</span>) {
-<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().zip(<span class="kw-2">&amp;mut </span>rot) {
+<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().<a href="../num/zero_one.rs.html#16">zip</a>(<span class="kw-2">&amp;mut </span>rot) {
 <span data-nosnippet>1287</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>rot;
 <span data-nosnippet>1288</span>                <span class="kw-2">*</span>rot <span class="kw-2">*</span>= step;
 <span data-nosnippet>1289</span>            }
@@ -3381,7 +3396,7 @@ If <code>monic</code>, the input represents a monic degree-<code>n</code> polyno
 <span data-nosnippet>1379</span>            }
 <span data-nosnippet>1380</span>            <span class="kw">let </span>k = k - <span class="number">1</span>;
 <span data-nosnippet>1381</span>            <span class="kw">if </span>br[k].is_empty() {
-<span data-nosnippet>1382</span>                <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; k];
+<span data-nosnippet>1382</span>                <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">1 </span>&lt;&lt; <a href="../algebra/operations.rs.html#444">k</a>];
 <span data-nosnippet>1383</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; k {
 <span data-nosnippet>1384</span>                    v[i] = (v[i &gt;&gt; <span class="number">1</span>] &gt;&gt; <span class="number">1</span>) | ((i &amp; <span class="number">1</span>) &lt;&lt; k.saturating_sub(<span class="number">1</span>));
 <span data-nosnippet>1385</span>                }

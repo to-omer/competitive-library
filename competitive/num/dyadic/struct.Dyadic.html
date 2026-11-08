@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -195,7 +210,7 @@
 <span data-nosnippet>183</span>                (option.map(<span class="self">Self</span>::from), <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>[][..])
 <span data-nosnippet>184</span>            }
 <span data-nosnippet>185</span>            GameValueNode::NumberUpNimber(q, <span class="number">0</span>, n) =&gt; (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((<span class="kw-2">*</span>q, <span class="kw-2">*</span>n)), <span class="kw-2">&amp;</span>[][..]),
-<span data-nosnippet>186</span>            GameValueNode::<a href="../../algebra/mod.rs.html#34">NumberUpNimber</a>(q, k, <span class="number">1</span>)
+<span data-nosnippet>186</span>            GameValueNode::NumberUpNimber(q, k, <span class="number">1</span>)
 <span data-nosnippet>187</span>                <span class="kw">if </span><span class="macro">matches!</span>((<span class="kw-2">*</span>k, player), (<span class="number">1</span>, Player::Left) | (-<span class="number">1</span>, Player::Right)) =&gt;
 <span data-nosnippet>188</span>            {
 <span data-nosnippet>189</span>                (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((<span class="kw-2">*</span>q, <span class="number">2</span>)), <span class="kw-2">&amp;</span>[][..])
@@ -320,7 +335,7 @@
 <span data-nosnippet>308</span>                &amp;&amp; ts == us
 <span data-nosnippet>309</span>                &amp;&amp; a &gt; b
 <span data-nosnippet>310</span>            {
-<span data-nosnippet>311</span>                <span class="kw">let </span>(sum, difference) = (a + b, a - <a href="../../algebra/magma.rs.html#171">b</a>);
+<span data-nosnippet>311</span>                <span class="kw">let </span>(sum, difference) = (a + b, a - b);
 <span data-nosnippet>312</span>                <span class="kw">let </span>temperature = Dyadic::new(difference.<span class="highlight">numerator</span>(), difference.exponent() + <span class="number">1</span>);
 <span data-nosnippet>313</span>                <span class="kw">if </span>ts.first().is_none_or(|<span class="kw-2">&amp;</span>t| temperature &gt; t) {
 <span data-nosnippet>314</span>                    <span class="kw">return </span><span class="self">Self</span>::from_switches(
@@ -480,7 +495,7 @@
 <span data-nosnippet>468</span>                    <span class="number">0</span>.into(),
 <span data-nosnippet>469</span>                    Rc::new((
 <span data-nosnippet>470</span>                        right.iter().map(|g| g.negated(cache)).collect(),
-<span data-nosnippet>471</span>                        left.iter().map(|g| g.<a href="../../num/bounded.rs.html#4">negated</a>(cache)).collect(),
+<span data-nosnippet>471</span>                        left.iter().map(|g| g.negated(cache)).collect(),
 <span data-nosnippet>472</span>                    )),
 <span data-nosnippet>473</span>                ));
 <span data-nosnippet>474</span>                cache.insert(key, value.clone());
@@ -567,11 +582,11 @@
 <span data-nosnippet>555</span>            <span class="kw">return </span><span class="self">self</span>.clone();
 <span data-nosnippet>556</span>        }
 <span data-nosnippet>557</span>        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
-<span data-nosnippet>558</span>            GameValueNode::NumberUpNimber(<a href="../../algebra/operations.rs.html#138">q</a>, k, n) =&gt; <span class="self">Self</span>::number_up_nimber(<span class="kw-2">*</span>q + number, <span class="kw-2">*</span>k, <span class="kw-2">*</span>n),
+<span data-nosnippet>558</span>            GameValueNode::NumberUpNimber(q, k, n) =&gt; <span class="self">Self</span>::number_up_nimber(<span class="kw-2">*</span>q + number, <span class="kw-2">*</span>k, <span class="kw-2">*</span>n),
 <span data-nosnippet>559</span>            GameValueNode::Switches(v) =&gt; {
 <span data-nosnippet>560</span>                <span class="self">Self</span>(GameValueNode::Switches(Rc::new(GameValueSwitches {
 <span data-nosnippet>561</span>                    number: v.number + number,
-<span data-nosnippet>562</span>                    ..(<span class="kw-2">**</span>v).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+<span data-nosnippet>562</span>                    ..(<span class="kw-2">**</span>v).clone()
 <span data-nosnippet>563</span>                })))
 <span data-nosnippet>564</span>            }
 <span data-nosnippet>565</span>            GameValueNode::Options(q, options) =&gt; {
@@ -949,7 +964,7 @@
 <span data-nosnippet>316</span>                        k,
 <span data-nosnippet>317</span>                        n,
 <span data-nosnippet>318</span>                        std::iter::once(temperature)
-<span data-nosnippet>319</span>                            .<a href="../../algebra/magma.rs.html#4-18">chain</a>(ts.iter().copied())
+<span data-nosnippet>319</span>                            .chain(ts.iter().copied())
 <span data-nosnippet>320</span>                            .collect(),
 <span data-nosnippet>321</span>                        <span class="self">Self</span>::temperature_hash(temperature) ^ left[<span class="number">0</span>].switch_hash(),
 <span data-nosnippet>322</span>                    );
@@ -995,7 +1010,7 @@
 <span data-nosnippet>362</span>            <span class="kw">if </span>reversible.is_empty() {
 <span data-nosnippet>363</span>                <span class="kw">return </span>game;
 <span data-nosnippet>364</span>            }
-<span data-nosnippet>365</span>            drop(game);
+<span data-nosnippet>365</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">drop</a>(game);
 <span data-nosnippet>366</span>            (left, right) = Rc::unwrap_or_clone(options);
 <span data-nosnippet>367</span>            <span class="kw">for </span>(player, i, reply) <span class="kw">in </span>reversible.into_iter().rev() {
 <span data-nosnippet>368</span>                <span class="kw">let </span>moves = <span class="kw">if </span>player == Player::Left {
@@ -1244,7 +1259,7 @@
 <span data-nosnippet>316</span>                        k,
 <span data-nosnippet>317</span>                        n,
 <span data-nosnippet>318</span>                        std::iter::once(temperature)
-<span data-nosnippet>319</span>                            .<a href="../../algebra/magma.rs.html#4-18">chain</a>(ts.iter().copied())
+<span data-nosnippet>319</span>                            .chain(ts.iter().copied())
 <span data-nosnippet>320</span>                            .collect(),
 <span data-nosnippet>321</span>                        <span class="self">Self</span>::temperature_hash(temperature) ^ left[<span class="number">0</span>].switch_hash(),
 <span data-nosnippet>322</span>                    );
@@ -1290,7 +1305,7 @@
 <span data-nosnippet>362</span>            <span class="kw">if </span>reversible.is_empty() {
 <span data-nosnippet>363</span>                <span class="kw">return </span>game;
 <span data-nosnippet>364</span>            }
-<span data-nosnippet>365</span>            drop(game);
+<span data-nosnippet>365</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">drop</a>(game);
 <span data-nosnippet>366</span>            (left, right) = Rc::unwrap_or_clone(options);
 <span data-nosnippet>367</span>            <span class="kw">for </span>(player, i, reply) <span class="kw">in </span>reversible.into_iter().rev() {
 <span data-nosnippet>368</span>                <span class="kw">let </span>moves = <span class="kw">if </span>player == Player::Left {
@@ -1398,12 +1413,12 @@ Returns <code>None</code> for an empty interval.</p>
 <span data-nosnippet>328</span>            <span class="kw">if </span>count != left.len() + right.len() {
 <span data-nosnippet>329</span>                <span class="kw">continue</span>;
 <span data-nosnippet>330</span>            }
-<span data-nosnippet>331</span>            <span class="kw">let </span>options = <a href="../../prelude.rs.html#1-36">Rc::new</a>((left, right));
+<span data-nosnippet>331</span>            <span class="kw">let </span>options = Rc::new((left, right));
 <span data-nosnippet>332</span>            <span class="kw">let </span>game = <span class="self">Self</span>(GameValueNode::Options(<span class="number">0</span>.into(), options.clone()));
 <span data-nosnippet>333</span>            <span class="comment">// Bypasses preserve the game, so all checks use the same candidate.
 <span data-nosnippet>334</span>            </span><span class="kw">let </span><span class="kw-2">mut </span>reversible = Vec::new();
 <span data-nosnippet>335</span>            <span class="kw">for </span>player <span class="kw">in </span>[Player::Left, Player::Right] {
-<span data-nosnippet>336</span>                <span class="kw">let </span>moves = <span class="kw">match </span>player {
+<span data-nosnippet>336</span>                <span class="kw">let </span><a href="../../graph/mod.rs.html#1-144">moves</a> = <span class="kw">match </span>player {
 <span data-nosnippet>337</span>                    Player::Left =&gt; <span class="kw-2">&amp;</span>options.<span class="number">0</span>,
 <span data-nosnippet>338</span>                    Player::Right =&gt; <span class="kw-2">&amp;</span>options.<span class="number">1</span>,
 <span data-nosnippet>339</span>                };

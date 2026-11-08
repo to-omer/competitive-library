@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -251,7 +266,7 @@
 <span data-nosnippet>616</span>        spectrum = Convolve::&lt;M&gt;::inverse_transform_ntt(spectrum, ntt_len);
 <span data-nosnippet>617</span>        <span class="kw">let </span>offset = diagonal * block_len;
 <span data-nosnippet>618</span>        <span class="kw">for </span>(result, value) <span class="kw">in </span>result[offset..].iter_mut().zip(spectrum) {
-<span data-nosnippet>619</span>            <span class="kw-2">*</span>result += <a href="../algebra/magma.rs.html#4-18">value</a>;
+<span data-nosnippet>619</span>            <span class="kw-2">*</span>result += value;
 <span data-nosnippet>620</span>        }
 <span data-nosnippet>621</span>    }
 <span data-nosnippet>622</span>    result
@@ -295,7 +310,7 @@
 <span data-nosnippet>660</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>661</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>662</span>        </span><span class="kw">if </span>use_block_ntt::&lt;M&gt;(f.len()) {
-<span data-nosnippet>663</span>            <span class="kw">unsafe </span>{ ntt_simd::multiply_blocks_avx2(<a href="../algebra/magma.rs.html#58">f</a>, <span class="prelude-val">Some</span>(g)) };
+<span data-nosnippet>663</span>            <span class="kw">unsafe </span>{ ntt_simd::multiply_blocks_avx2(f, <span class="prelude-val">Some</span>(g)) };
 <span data-nosnippet>664</span>            <span class="kw">return</span>;
 <span data-nosnippet>665</span>        }
 <span data-nosnippet>666</span>        pointwise_multiply(f, g);
@@ -372,7 +387,7 @@
 <span data-nosnippet>737</span>                x.reserve(size - x.len());
 <span data-nosnippet>738</span>                advise_huge_pages(x);
 <span data-nosnippet>739</span>                <span class="kw">let </span>initialized = <span class="kw">if </span>x.len() &lt;= size / <span class="number">2 </span>{ size / <span class="number">2 </span>} <span class="kw">else </span>{ size };
-<span data-nosnippet>740</span>                x.resize_with(initialized, Zero::<a href="../algebra/magma.rs.html#170">zero</a>);
+<span data-nosnippet>740</span>                x.resize_with(initialized, Zero::zero);
 <span data-nosnippet>741</span>            }
 <span data-nosnippet>742</span>            <span class="kw">unsafe </span>{ ntt_simd::convolve_blocks_avx2(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;mut </span>b, same, size, input_len) };
 <span data-nosnippet>743</span>            a.truncate(len);
@@ -442,7 +457,7 @@
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
 <span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
 <span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
-<span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
+<span data-nosnippet>810</span>            <span class="kw">let </span><a href="../algebra/magma.rs.html#223-232">value</a> = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
 <span data-nosnippet>812</span>            } <span class="kw">else </span>{
 <span data-nosnippet>813</span>                ((d1 <span class="kw">as </span>u128 + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
@@ -605,7 +620,7 @@
 <span data-nosnippet>970</span>            t: <span class="kw-2">&amp;</span>[u64],
 <span data-nosnippet>971</span>            len: usize,
 <span data-nosnippet>972</span>            bits: usize,
-<span data-nosnippet>973</span>            <a href="../algebra/magma.rs.html#4-18">parts</a>: usize,
+<span data-nosnippet>973</span>            parts: usize,
 <span data-nosnippet>974</span>        ) -&gt; [MVec&lt;M&gt;; <span class="number">3</span>] {
 <span data-nosnippet>975</span>            std::array::from_fn(|part| {
 <span data-nosnippet>976</span>                <span class="kw">if </span>part &gt;= parts {
@@ -633,7 +648,7 @@
 <span data-nosnippet>998</span>        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>999</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>1000</span>        <span class="kw">let </span>m2 = m1 * N2::get_mod() <span class="kw">as </span>u64;
-<span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0u64</span>; len.min(f.<span class="number">0</span>[<span class="number">0</span>].len())];
+<span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">vec!</a>[<span class="number">0u64</span>; len.min(f.<span class="number">0</span>[<span class="number">0</span>].len())];
 <span data-nosnippet>1002</span>        <span class="kw">for </span>(part, ((f1, f2), f3)) <span class="kw">in </span>f.<span class="number">0</span>.into_iter().zip(f.<span class="number">1</span>).zip(f.<span class="number">2</span>).enumerate() {
 <span data-nosnippet>1003</span>            <span class="kw">if </span>f1.is_empty() {
 <span data-nosnippet>1004</span>                <span class="kw">continue</span>;
@@ -651,7 +666,7 @@
 <span data-nosnippet>1016</span>                <span class="kw">let </span>limb = (d1 <span class="kw">as </span>u64)
 <span data-nosnippet>1017</span>                    .wrapping_add((d2 <span class="kw">as </span>u64).wrapping_mul(m1))
 <span data-nosnippet>1018</span>                    .wrapping_add((d3 <span class="kw">as </span>u64).wrapping_mul(m2));
-<span data-nosnippet>1019</span>                <span class="kw-2">*</span>value = value.wrapping_add(<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">limb</a> &lt;&lt; (part * bits));
+<span data-nosnippet>1019</span>                <span class="kw-2">*</span>value = value.wrapping_add(limb &lt;&lt; (part * bits));
 <span data-nosnippet>1020</span>            }
 <span data-nosnippet>1021</span>        }
 <span data-nosnippet>1022</span>        result

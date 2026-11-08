@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -929,7 +944,7 @@
 <span data-nosnippet>283</span>
 <span data-nosnippet>284</span>    <span class="kw">pub fn </span>from_vec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: Vec&lt;M::T&gt;) -&gt; PersistentSegmentTreeVersion {
 <span data-nosnippet>285</span>        <span class="macro">assert_eq!</span>(v.len(), <span class="self">self</span>.len);
-<span data-nosnippet>286</span>        <span class="kw">let </span><a href="../algebra/ring.rs.html#1-164">root</a> = <span class="kw">if </span><span class="self">self</span>.len == <span class="number">0 </span>{
+<span data-nosnippet>286</span>        <span class="kw">let </span>root = <span class="kw">if </span><span class="self">self</span>.len == <span class="number">0 </span>{
 <span data-nosnippet>287</span>            <span class="prelude-val">None
 <span data-nosnippet>288</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>289</span>            <span class="self">self</span>.build_dfs(<span class="number">0</span>, <span class="self">self</span>.len, <span class="kw-2">&amp;</span>v)
@@ -960,7 +975,7 @@
 <span data-nosnippet>314</span>    }
 <span data-nosnippet>315</span>
 <span data-nosnippet>316</span>    <span class="attr">#[must_use]
-<span data-nosnippet>317</span>    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, version: PersistentSegmentTreeVersion, index: usize) -&gt; M::T {
+<span data-nosnippet>317</span>    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, version: PersistentSegmentTreeVersion, index: <a href="../algebra/magma.rs.html#4-18">usize</a>) -&gt; M::T {
 <span data-nosnippet>318</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.len);
 <span data-nosnippet>319</span>        <span class="self">Self</span>::point_get_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index)
 <span data-nosnippet>320</span>    }
@@ -1271,7 +1286,7 @@
 <span data-nosnippet>271</span>        <span class="kw">if </span>end - start == <span class="number">1 </span>{
 <span data-nosnippet>272</span>            <span class="kw">return </span><span class="self">self</span>.leaf_node(M::operate(<span class="kw-2">&amp;</span><span class="self">Self</span>::subtree_value(node), value));
 <span data-nosnippet>273</span>        }
-<span data-nosnippet>274</span>        <span class="kw">let </span>mid = (<a href="../graph/mod.rs.html#1-144">start</a> + end) / <span class="number">2</span>;
+<span data-nosnippet>274</span>        <span class="kw">let </span>mid = (start + end) / <span class="number">2</span>;
 <span data-nosnippet>275</span>        <span class="kw">let </span><span class="kw-2">mut </span>children = <span class="self">Self</span>::children(node);
 <span data-nosnippet>276</span>        <span class="kw">if </span>index &lt; mid {
 <span data-nosnippet>277</span>            children[<span class="number">0</span>] = <span class="self">self</span>.update_dfs(children[<span class="number">0</span>], start, mid, index, value);
@@ -1482,7 +1497,7 @@
 <span data-nosnippet>309</span>        value: M::T,
 <span data-nosnippet>310</span>    ) -&gt; PersistentSegmentTreeVersion {
 <span data-nosnippet>311</span>        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.len);
-<span data-nosnippet>312</span>        <span class="kw">let </span>root = <span class="self">self</span>.update_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index, <span class="kw-2">&amp;</span>value);
+<span data-nosnippet>312</span>        <span class="kw">let </span>root = <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.update_dfs(<span class="self">self</span>.version_root(version), <span class="number">0</span>, <span class="self">self</span>.len, index, <span class="kw-2">&amp;</span>value);
 <span data-nosnippet>313</span>        <span class="self">self</span>.push_version_root(root)
 <span data-nosnippet>314</span>    }
 <span data-nosnippet>315</span>
@@ -1852,8 +1867,8 @@
 <span data-nosnippet>363</span>        <span class="kw">let </span>root = <span class="self">self</span>.version_root(version);
 <span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
 <span data-nosnippet>365</span>        <span class="kw">let </span>pos = <span class="kw">if </span><span class="self">self</span>.len == <span class="number">0 </span>{
-<span data-nosnippet>366</span>            <span class="prelude-val">None
-<span data-nosnippet>367</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>366</span>            <a class="prelude-val" href="../math/mod.rs.html#1-263">None</a>
+<span data-nosnippet>367</span>        } <span class="kw">else </span>{
 <span data-nosnippet>368</span>            <span class="highlight"><span class="self">Self</span>::rpartition_point_dfs</span>(root, <span class="number">0</span>, <span class="self">self</span>.len, right, <span class="kw-2">&amp;mut </span>acc, <span class="kw-2">&amp;mut </span>pred)
 <span data-nosnippet>369</span>        };
 <span data-nosnippet>370</span>        (pos.unwrap_or(<span class="number">0</span>), acc)

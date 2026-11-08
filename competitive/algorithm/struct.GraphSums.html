@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -248,7 +263,7 @@
 <span data-nosnippet>439</span>        <span class="kw">let </span>next = game
 <span data-nosnippet>440</span>            .graph
 <span data-nosnippet>441</span>            .neighbors(state[i])
-<span data-nosnippet>442</span>            .filter_map(|<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">next</a>| {
+<span data-nosnippet>442</span>            .filter_map(|next| {
 <span data-nosnippet>443</span>                <span class="kw">let </span>(g, counter) = game.generalized_grundy[game.index_of(next.to)]<span class="question-mark">?</span>;
 <span data-nosnippet>444</span>                (g == target).then_some((next, counter))
 <span data-nosnippet>445</span>            })
@@ -304,7 +319,7 @@
 <span data-nosnippet>495</span>    }
 <span data-nosnippet>496</span>
 <span data-nosnippet>497</span>    <span class="kw">fn </span>sum_grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex]) -&gt; u64 {
-<span data-nosnippet>498</span>        state.iter().fold(<span class="number">0</span>, |value, s| value ^ <span class="self">self</span>.grundy(s))
+<span data-nosnippet>498</span>        state.iter().fold(<span class="number">0</span>, |value, s| <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">value</a> ^ <span class="self">self</span>.grundy(s))
 <span data-nosnippet>499</span>    }
 <span data-nosnippet>500</span>
 <span data-nosnippet>501</span>    <span class="kw">fn </span>sum_outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex], misere: bool) -&gt; GameOutcome {
@@ -318,7 +333,7 @@
 <span data-nosnippet>509</span>            <span class="self">self</span>.solve_generalized_grundy();
 <span data-nosnippet>510</span>            <span class="kw">return </span><span class="self">self</span>.sum_normal_outcome(<span class="kw-2">&amp;</span>indices);
 <span data-nosnippet>511</span>        }
-<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().edges;
+<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.<a href="../../../algebra/trait.Monoid.html">as_ref</a>().unwrap().edges;
 <span data-nosnippet>513</span>        <span class="kw">let </span>root = <span class="self">self</span>.sums.prepare(indices, edges);
 <span data-nosnippet>514</span>        <span class="self">self</span>.sums.outcomes.values[root]
 <span data-nosnippet>515</span>    }
@@ -386,7 +401,7 @@
 <span data-nosnippet>577</span>        });
 <span data-nosnippet>578</span>    }
 <span data-nosnippet>579</span>
-<span data-nosnippet>580</span>    <span class="kw">fn </span>index_of(<span class="kw-2">&amp;</span><span class="self">self</span>, v: G::Vertex) -&gt; usize {
+<span data-nosnippet>580</span>    <span class="kw">fn </span>index_of(<span class="kw-2">&amp;</span><span class="self">self</span>, v: G::Vertex) -&gt; <a href="../../../algebra/trait.Group.html">usize</a> {
 <span data-nosnippet>581</span>        <span class="self">self</span>.graph
 <span data-nosnippet>582</span>            .vmap_get(<span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().indices, v)
 <span data-nosnippet>583</span>            .expect(<span class="string">"vertex is not enumerated by the graph"</span>)
@@ -394,7 +409,7 @@
 <span data-nosnippet>585</span>
 <span data-nosnippet>586</span>    <span class="kw">fn </span>solve_generalized_grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 <span data-nosnippet>587</span>        <span class="kw">let </span>index = <span class="self">self</span>.index.as_ref().unwrap();
-<span data-nosnippet>588</span>        <span class="kw">let </span>n = index.edges.len();
+<span data-nosnippet>588</span>        <span class="kw">let </span>n = index.<a href="../../algebra/magma.rs.html#223-232">edges</a>.len();
 <span data-nosnippet>589</span>        <span class="kw">if </span><span class="self">self</span>.generalized_grundy.len() == n {
 <span data-nosnippet>590</span>            <span class="kw">return</span>;
 <span data-nosnippet>591</span>        }

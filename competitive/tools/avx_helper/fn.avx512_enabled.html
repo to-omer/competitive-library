@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -287,7 +302,7 @@
 <span data-nosnippet>163</span>
 <span data-nosnippet>164</span>    <span class="doccomment">/// Sets all bits to `value`.
 <span data-nosnippet>165</span>    </span><span class="kw">pub fn </span>fill(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: bool) {
-<span data-nosnippet>166</span>        <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.bits.fill(Block([<span class="kw">if </span>value { u64::MAX } <span class="kw">else </span>{ <span class="number">0 </span>}; <span class="number">8</span>]));
+<span data-nosnippet>166</span>        <span class="self">self</span>.bits.fill(Block([<span class="kw">if </span>value { u64::MAX } <span class="kw">else </span>{ <span class="number">0 </span>}; <span class="number">8</span>]));
 <span data-nosnippet>167</span>        <span class="self">self</span>.trim();
 <span data-nosnippet>168</span>    }
 <span data-nosnippet>169</span>
@@ -347,7 +362,7 @@
 <span data-nosnippet>223</span>            }
 <span data-nosnippet>224</span>        }
 <span data-nosnippet>225</span>        <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0 </span>{
-<span data-nosnippet>226</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#4-18">words</a>.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
+<span data-nosnippet>226</span>            <span class="kw">return </span>words.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
 <span data-nosnippet>227</span>        }
 <span data-nosnippet>228</span>        words[..full_words].iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
 <span data-nosnippet>229</span>            &amp;&amp; words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>))
@@ -434,7 +449,7 @@
 <span data-nosnippet>310</span>    <span class="doccomment">/// Returns words in increasing bit-index order; unused high bits in the last word are zero.
 <span data-nosnippet>311</span>    </span><span class="kw">pub fn </span>words(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u64] {
 <span data-nosnippet>312</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>313</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts(<span class="self">self</span>.bits.as_ptr().cast(), <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.size.div_ceil(<span class="number">64</span>)) }
+<span data-nosnippet>313</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts(<span class="self">self</span>.bits.as_ptr().cast(), <span class="self">self</span>.size.div_ceil(<span class="number">64</span>)) }
 <span data-nosnippet>314</span>    }
 <span data-nosnippet>315</span>
 <span data-nosnippet>316</span>    <span class="doccomment">/// Returns mutable words in increasing bit-index order.
@@ -442,7 +457,7 @@
 <span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>words_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[u64] {
 <span data-nosnippet>319</span>        <span class="kw">let </span>len = <span class="self">self</span>.size.div_ceil(<span class="number">64</span>);
 <span data-nosnippet>320</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<span class="self">self</span>.bits.as_mut_ptr().cast(), len) }
+<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<a class="self" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.next">self</a>.bits.as_mut_ptr().cast(), len) }
 <span data-nosnippet>322</span>    }
 <span data-nosnippet>323</span>
 <span data-nosnippet>324</span>    <span class="kw">fn </span>trim(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {

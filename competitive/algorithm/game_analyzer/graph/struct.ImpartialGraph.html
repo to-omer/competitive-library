@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -222,7 +237,7 @@
 <span data-nosnippet>217</span>    GameAnalysis&lt;<span class="lifetime">'_</span>, ImpartialGraph&lt;<span class="lifetime">'g</span>, G&gt;, [S], V, MISERE, E&gt;
 <span data-nosnippet>218</span><span class="kw">where
 <span data-nosnippet>219</span>    </span>S: Copy,
-<span data-nosnippet>220</span>    G: <a href="../../algebra/magma.rs.html#1-370">Graph</a>&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
+<span data-nosnippet>220</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
 <span data-nosnippet>221</span>    E: FnMut(<span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'g</span>, G&gt;, <span class="kw-2">&amp;</span>[S]) -&gt; V,
 <span data-nosnippet>222</span>{
 <span data-nosnippet>223</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (usize, L), V&gt;&gt; {
@@ -652,7 +667,7 @@
 <span data-nosnippet>220</span>    G: Graph&lt;Vertex = S, Label = L&gt; + VertexMap&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
 <span data-nosnippet>221</span>    E: FnMut(<span class="kw-2">&amp;mut </span>ImpartialGraph&lt;<span class="lifetime">'g</span>, G&gt;, <span class="kw-2">&amp;</span>[S]) -&gt; V,
 <span data-nosnippet>222</span>{
-<span data-nosnippet>223</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (<a href="../../algebra/magma.rs.html#1-370">usize</a>, L), V&gt;&gt; {
+<span data-nosnippet>223</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; Vec&lt;EvaluatedMove&lt;Vec&lt;S&gt;, (usize, L), V&gt;&gt; {
 <span data-nosnippet>224</span>        <span class="self">self</span>.eval(state);
 <span data-nosnippet>225</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
 <span data-nosnippet>226</span>        <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>component) <span class="kw">in </span>state.iter().enumerate() {
@@ -751,7 +766,7 @@
 <span data-nosnippet>319</span>                </span>};
 <span data-nosnippet>320</span>                <span class="kw">if </span>wins {
 <span data-nosnippet>321</span>                    <span class="kw">let </span><span class="kw-2">mut </span>to = state.to_vec();
-<span data-nosnippet>322</span>                    <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">to</a>[i] = next.to;
+<span data-nosnippet>322</span>                    to[i] = next.to;
 <span data-nosnippet>323</span>                    result.push(Neighbor::new(to, (i, next.label)));
 <span data-nosnippet>324</span>                }
 <span data-nosnippet>325</span>            }
@@ -763,7 +778,7 @@
 <span data-nosnippet>331</span>    <span class="doccomment">/// A move that guarantees termination when winning, or preserves a draw.
 <span data-nosnippet>332</span>    /// Returns `None` at terminal or losing positions.
 <span data-nosnippet>333</span>    </span><span class="kw">pub fn </span>best_move(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[S]) -&gt; <span class="prelude-ty">Option</span>&lt;Neighbor&lt;Vec&lt;S&gt;, (usize, L)&gt;&gt; {
-<span data-nosnippet>334</span>        <span class="kw">if </span>state.is_empty() {
+<span data-nosnippet>334</span>        <span class="kw">if </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">state</a>.is_empty() {
 <span data-nosnippet>335</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>336</span>        }
 <span data-nosnippet>337</span>        <span class="kw">if let </span>[single] = state {
@@ -927,7 +942,7 @@
 <span data-nosnippet>495</span>    }
 <span data-nosnippet>496</span>
 <span data-nosnippet>497</span>    <span class="kw">fn </span>sum_grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex]) -&gt; u64 {
-<span data-nosnippet>498</span>        state.iter().fold(<span class="number">0</span>, |<a href="../../algebra/mod.rs.html#36">value</a>, s| value ^ <span class="self">self</span>.grundy(s))
+<span data-nosnippet>498</span>        state.iter().fold(<span class="number">0</span>, |value, s| value ^ <span class="self">self</span>.grundy(s))
 <span data-nosnippet>499</span>    }
 <span data-nosnippet>500</span>
 <span data-nosnippet>501</span>    <span class="kw">fn </span>sum_outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex], misere: bool) -&gt; GameOutcome {
@@ -1132,7 +1147,7 @@
 <span data-nosnippet>439</span>        <span class="kw">let </span>next = game
 <span data-nosnippet>440</span>            .graph
 <span data-nosnippet>441</span>            .neighbors(state[i])
-<span data-nosnippet>442</span>            .filter_map(|<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">next</a>| {
+<span data-nosnippet>442</span>            .filter_map(|next| {
 <span data-nosnippet>443</span>                <span class="kw">let </span>(g, counter) = game.generalized_grundy[game.index_of(next.to)]<span class="question-mark">?</span>;
 <span data-nosnippet>444</span>                (g == target).then_some((next, counter))
 <span data-nosnippet>445</span>            })
@@ -1188,7 +1203,7 @@
 <span data-nosnippet>495</span>    }
 <span data-nosnippet>496</span>
 <span data-nosnippet>497</span>    <span class="kw">fn </span>sum_grundy(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex]) -&gt; u64 {
-<span data-nosnippet>498</span>        state.iter().fold(<span class="number">0</span>, |value, s| value ^ <span class="self">self</span>.grundy(s))
+<span data-nosnippet>498</span>        state.iter().fold(<span class="number">0</span>, |value, s| <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">value</a> ^ <span class="self">self</span>.grundy(s))
 <span data-nosnippet>499</span>    }
 <span data-nosnippet>500</span>
 <span data-nosnippet>501</span>    <span class="kw">fn </span>sum_outcome(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>[G::Vertex], misere: bool) -&gt; GameOutcome {
@@ -1202,7 +1217,7 @@
 <span data-nosnippet>509</span>            <span class="self">self</span>.solve_generalized_grundy();
 <span data-nosnippet>510</span>            <span class="kw">return </span><span class="self">self</span>.sum_normal_outcome(<span class="kw-2">&amp;</span>indices);
 <span data-nosnippet>511</span>        }
-<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().edges;
+<span data-nosnippet>512</span>        <span class="kw">let </span>edges = <span class="kw-2">&amp;</span><span class="self">self</span>.index.<a href="../../../../../../../algebra/trait.Monoid.html">as_ref</a>().unwrap().edges;
 <span data-nosnippet>513</span>        <span class="kw">let </span>root = <span class="self">self</span>.sums.prepare(indices, edges);
 <span data-nosnippet>514</span>        <span class="self">self</span>.sums.outcomes.values[root]
 <span data-nosnippet>515</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.prepare" class="method"><a class="src rightside" href="../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#548-578">Source</a><h4 class="code-header">fn <a href="#method.prepare" class="fn">prepare</a>(&amp;mut self)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#133&#34;,&#34;line 133&#34;],[[19,19],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#151&#34;,&#34;line 151&#34;],[[34,34],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#166&#34;,&#34;line 166&#34;],[[51,51],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#183&#34;,&#34;line 183&#34;],[[327,327],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#459&#34;,&#34;line 459&#34;],[[356,356],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#488&#34;,&#34;line 488&#34;],[[412,412],&#34;../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#544&#34;,&#34;line 544&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/game_analyzer/graph.rs (<a href="../../../../src/competitive/algorithm/game_analyzer/graph.rs.html#133">line 133</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>132</span>    <span class="kw">pub fn </span>moves(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>S) -&gt; Vec&lt;EvaluatedMove&lt;S, L, V&gt;&gt; {
@@ -1472,7 +1487,7 @@
 <span data-nosnippet>396</span>            });
 <span data-nosnippet>397</span>            <span class="comment">// Preserve two infinite components, or keep the finite XOR outside
 <span data-nosnippet>398</span>            // the remaining infinite component's finite follower values.
-<span data-nosnippet>399</span>            </span><span class="kw">if </span>target.<a href="../../../../../../../algebra/trait.Invertible.html">is_none_or</a>(|g| g == xor) {
+<span data-nosnippet>399</span>            </span><span class="kw">if </span>target.is_none_or(|g| g == xor) {
 <span data-nosnippet>400</span>                <span class="kw">let </span>to = edges[v]
 <span data-nosnippet>401</span>                    .iter()
 <span data-nosnippet>402</span>                    .copied()
@@ -1886,7 +1901,7 @@
 <span data-nosnippet>396</span>            });
 <span data-nosnippet>397</span>            <span class="comment">// Preserve two infinite components, or keep the finite XOR outside
 <span data-nosnippet>398</span>            // the remaining infinite component's finite follower values.
-<span data-nosnippet>399</span>            </span><span class="kw">if </span>target.<a href="../../../../../../../algebra/trait.Invertible.html">is_none_or</a>(|g| g == xor) {
+<span data-nosnippet>399</span>            </span><span class="kw">if </span>target.is_none_or(|g| g == xor) {
 <span data-nosnippet>400</span>                <span class="kw">let </span>to = edges[v]
 <span data-nosnippet>401</span>                    .iter()
 <span data-nosnippet>402</span>                    .copied()

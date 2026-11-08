@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -331,7 +346,7 @@
 <span data-nosnippet>789</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>790</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>791</span>{
-<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::<a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">new</a>(N1::get_mod()).inv();
+<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
 <span data-nosnippet>793</span>    <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>794</span>    <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>795</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64;
@@ -347,8 +362,8 @@
 <span data-nosnippet>805</span>        .map(|((c1, c2), c3)| {
 <span data-nosnippet>806</span>            <span class="kw">let </span>d1 = c1.inner();
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * <a href="../algebra/magma.rs.html#85">m1_3</a>;
-<span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
+<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">t2</a>).inner();
 <span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
 <span data-nosnippet>812</span>            } <span class="kw">else </span>{
@@ -388,7 +403,7 @@
 <span data-nosnippet>846</span>            Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len),
 <span data-nosnippet>847</span>        ))
 <span data-nosnippet>848</span>    }
-<span data-nosnippet>849</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>849</span>    <span class="kw">fn </span>multiply(<a href="../algebra/magma.rs.html#185">f</a>: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>850</span>        Convolve::&lt;N1&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>, <span class="kw-2">&amp;</span>g.<span class="number">0</span>);
 <span data-nosnippet>851</span>        Convolve::&lt;N2&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>, <span class="kw-2">&amp;</span>g.<span class="number">1</span>);
 <span data-nosnippet>852</span>        Convolve::&lt;N3&gt;::multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
@@ -539,7 +554,7 @@
 <span data-nosnippet>997</span>        <span class="kw">let </span>m1 = N1::get_mod() <span class="kw">as </span>u64;
 <span data-nosnippet>998</span>        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>999</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
-<span data-nosnippet>1000</span>        <span class="kw">let </span>m2 = m1 * N2::get_mod() <span class="kw">as </span>u64;
+<span data-nosnippet>1000</span>        <span class="kw">let </span>m2 = m1 * N2::<a href="../num/bounded.rs.html#2-17">get_mod</a>() <span class="kw">as </span>u64;
 <span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0u64</span>; len.min(f.<span class="number">0</span>[<span class="number">0</span>].len())];
 <span data-nosnippet>1002</span>        <span class="kw">for </span>(part, ((f1, f2), f3)) <span class="kw">in </span>f.<span class="number">0</span>.into_iter().zip(f.<span class="number">1</span>).zip(f.<span class="number">2</span>).enumerate() {
 <span data-nosnippet>1003</span>            <span class="kw">if </span>f1.is_empty() {

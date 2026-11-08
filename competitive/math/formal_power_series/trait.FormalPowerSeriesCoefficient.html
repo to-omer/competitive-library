@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -308,7 +323,7 @@
 <span data-nosnippet>484</span>            values.truncate(block);
 <span data-nosnippet>485</span>            <span class="kw">let </span>len = block.min(deg - q * block);
 <span data-nosnippet>486</span>            <span class="kw">for </span>(i, value) <span class="kw">in </span>values.iter_mut().take(len).enumerate() {
-<span data-nosnippet>487</span>                <span class="kw-2">*</span>value <span class="kw-2">*</span>= <span class="kw-2">&amp;</span>inv[q * block + i];
+<span data-nosnippet>487</span>                <span class="kw-2">*</span><a href="../../algebra/magma.rs.html#4-18">value</a> <span class="kw-2">*</span>= <span class="kw-2">&amp;</span>inv[q * block + i];
 <span data-nosnippet>488</span>            }
 <span data-nosnippet>489</span>            values[len..].fill(T::zero());
 <span data-nosnippet>490</span>            <span class="kw">let </span><span class="kw-2">mut </span>values = C::transform(values, block * <span class="number">2</span>);
@@ -334,7 +349,7 @@
 <span data-nosnippet>510</span>        <span class="kw">let </span><span class="kw-2">mut </span>inverse_fft = C::transform_ntt(inverse.data.clone(), <span class="number">2</span>);
 <span data-nosnippet>511</span>        <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">2</span>;
 <span data-nosnippet>512</span>        <span class="kw">while </span>m &lt; deg {
-<span data-nosnippet>513</span>            <span class="kw">let </span>f_fft = C::transform_ntt(f.<a href="../../algebra/magma.rs.html#56">data</a>.clone(), <span class="number">2 </span>* m);
+<span data-nosnippet>513</span>            <span class="kw">let </span>f_fft = C::transform_ntt(f.data.clone(), <span class="number">2 </span>* m);
 <span data-nosnippet>514</span>
 <span data-nosnippet>515</span>            <span class="kw">let </span>previous_inverse_fft = inverse_fft;
 <span data-nosnippet>516</span>            <span class="kw">let </span><span class="kw-2">mut </span>error_fft = previous_inverse_fft.clone();
@@ -376,7 +391,7 @@
 <span data-nosnippet>552</span>            delta.pop();
 <span data-nosnippet>553</span>            delta.push(T::zero());
 <span data-nosnippet>554</span>            <span class="kw">let </span>target = (<span class="number">2 </span>* m).min(deg);
-<span data-nosnippet>555</span>            <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..target).rev() {
+<span data-nosnippet>555</span>            <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..target).<a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">rev</a>() {
 <span data-nosnippet>556</span>                delta[i] = delta[i - <span class="number">1</span>].clone() * <span class="kw-2">&amp;</span>inv[i];
 <span data-nosnippet>557</span>            }
 <span data-nosnippet>558</span>            delta[<span class="number">0</span>] = T::zero();
@@ -386,7 +401,7 @@
 <span data-nosnippet>562</span>            }
 <span data-nosnippet>563</span>            delta[..m].fill(T::zero());
 <span data-nosnippet>564</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta_fft = C::transform_ntt(delta, <span class="number">2 </span>* m);
-<span data-nosnippet>565</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span>f_fft);
+<span data-nosnippet>565</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">f_fft</a>);
 <span data-nosnippet>566</span>            <span class="kw">let </span>delta = C::inverse_transform_ntt(delta_fft, <span class="number">2 </span>* m);
 <span data-nosnippet>567</span>            f.data
 <span data-nosnippet>568</span>                .extend(delta.into_iter().skip(m).take((deg - m).min(m)));
@@ -440,7 +455,7 @@
 <span data-nosnippet>616</span>        <span class="kw">let </span><span class="kw-2">mut </span>quotient = C::transform(derivative.prefix_ref(half).data, half * <span class="number">2</span>);
 <span data-nosnippet>617</span>        C::multiply(<span class="kw-2">&amp;mut </span>quotient, <span class="kw-2">&amp;</span>inverse);
 <span data-nosnippet>618</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = C::inverse_transform(quotient, half * <span class="number">2</span>);
-<span data-nosnippet>619</span>        <a href="../../algebra/magma.rs.html#145-176">result</a>.truncate(half);
+<span data-nosnippet>619</span>        result.truncate(half);
 <span data-nosnippet>620</span>        <span class="kw">if </span>n - half &lt;= <span class="number">4 </span>{
 <span data-nosnippet>621</span>            <span class="kw">let </span>inverse = T::one() / <span class="self">self</span>[<span class="number">0</span>].clone();
 <span data-nosnippet>622</span>            <span class="kw">for </span>i <span class="kw">in </span>half..n {
@@ -772,7 +787,7 @@
 <span data-nosnippet>948</span>                f.data
 <span data-nosnippet>949</span>                    .extend(delta.into_iter().take(len - i).map(|x| x * <span class="kw-2">&amp;</span>inv2));
 <span data-nosnippet>950</span>                <span class="kw">if </span>i * <span class="number">2 </span>+ <span class="number">4 </span>&lt; deg {
-<span data-nosnippet>951</span>                    <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform(<a href="../../algebra/operations.rs.html#255">f</a>.data.clone(), i * <span class="number">2</span>);
+<span data-nosnippet>951</span>                    <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform(f.data.clone(), i * <span class="number">2</span>);
 <span data-nosnippet>952</span>                    C::multiply(<span class="kw-2">&amp;mut </span>error_fft, <span class="kw-2">&amp;</span>factor);
 <span data-nosnippet>953</span>                    <span class="kw">let </span>error = C::inverse_transform(error_fft, i * <span class="number">2</span>);
 <span data-nosnippet>954</span>                    <span class="kw">let </span><span class="kw-2">mut </span>error_fft = C::transform(error.into_iter().skip(i).collect(), i * <span class="number">2</span>);
@@ -918,7 +933,7 @@
 <span data-nosnippet>1094</span>        <span class="kw">if </span>n &lt;= <span class="number">32 </span>|| <span class="self">self</span>.length() &lt;= <span class="number">32 </span>{
 <span data-nosnippet>1095</span>            <span class="kw">return </span>points.iter().map(|p| <span class="self">self</span>.eval(p.clone())).collect();
 <span data-nosnippet>1096</span>        }
-<span data-nosnippet>1097</span>        <span class="kw">let </span>size = n.next_power_of_two();
+<span data-nosnippet>1097</span>        <span class="kw">let </span>size = <a href="../../algebra/operations.rs.html#412">n</a>.next_power_of_two();
 <span data-nosnippet>1098</span>        <span class="kw">let </span>block = <span class="number">16</span>;
 <span data-nosnippet>1099</span>        <span class="kw">let </span>leaves = size / block;
 <span data-nosnippet>1100</span>        <span class="kw">let </span><span class="kw-2">mut </span>subproduct_tree = Vec::with_capacity(leaves * <span class="number">2</span>);
@@ -927,7 +942,7 @@
 <span data-nosnippet>1103</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..leaves {
 <span data-nosnippet>1104</span>            <span class="kw">let </span><span class="kw-2">mut </span>product = <span class="macro">vec!</span>[T::one()];
 <span data-nosnippet>1105</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block {
-<span data-nosnippet>1106</span>                <span class="kw">let </span>x = points.get(i * block + j).cloned().unwrap_or_else(<a href="../../algebra/operations.rs.html#443">T</a>::zero);
+<span data-nosnippet>1106</span>                <span class="kw">let </span>x = points.get(i * block + j).cloned().unwrap_or_else(T::zero);
 <span data-nosnippet>1107</span>                product.push(T::one());
 <span data-nosnippet>1108</span>                <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">1</span>..=j).rev() {
 <span data-nosnippet>1109</span>                    product[k] = product[k - <span class="number">1</span>].clone() - x.clone() * <span class="kw-2">&amp;</span>product[k];
@@ -1175,8 +1190,8 @@
 <span data-nosnippet>1351</span>
 <span data-nosnippet>1352</span>        <span class="kw">let </span>h_fps = <span class="self">Self</span>::from_vec(h);
 <span data-nosnippet>1353</span>        <span class="kw">let </span>inv_n = T::one() / n_t;
-<span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>t = h_fps.log(n);
-<span data-nosnippet>1355</span>        t <span class="kw-2">*</span>= -inv_n;
+<span data-nosnippet>1354</span>        <span class="kw">let </span><span class="kw-2">mut </span>t = h_fps.log(<a href="../../algebra/operations.rs.html#700">n</a>);
+<span data-nosnippet>1355</span>        <a href="../../algebra/operations.rs.html#700">t</a> <span class="kw-2">*</span>= -inv_n;
 <span data-nosnippet>1356</span>        <span class="kw">let </span>g_over_x = t.exp(n);
 <span data-nosnippet>1357</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = (g_over_x &lt;&lt; <span class="number">1</span>).prefix(deg);
 <span data-nosnippet>1358</span>

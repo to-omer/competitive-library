@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -425,7 +440,7 @@
 <span data-nosnippet>294</span>        C::add_edge(<span class="kw-2">&amp;</span>path)
 <span data-nosnippet>295</span>    }
 <span data-nosnippet>296</span>
-<span data-nosnippet>297</span>    <span class="kw">fn </span>build_compress(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>vertex: usize, heavy_child: <span class="kw-2">&amp;</span>[usize], mask: <span class="kw-2">&amp;</span>[u64]) -&gt; Node {
+<span data-nosnippet>297</span>    <span class="kw">fn </span>build_compress(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>vertex: usize, heavy_child: <span class="kw-2">&amp;</span>[usize], mask: <span class="kw-2">&amp;</span>[<a href="../num/mod.rs.html#1-72">u64</a>]) -&gt; Node {
 <span data-nosnippet>298</span>        <span class="kw">let </span>start = vertex;
 <span data-nosnippet>299</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::new();
 <span data-nosnippet>300</span>        <span class="kw">while </span>vertex != usize::MAX {
@@ -497,7 +512,7 @@
 <span data-nosnippet>366</span>
 <span data-nosnippet>367</span>    <span class="kw">fn </span>set_parent(<span class="kw-2">&amp;mut </span><span class="self">self</span>, slot: Slot, parent: usize) {
 <span data-nosnippet>368</span>        <span class="kw">match </span>slot {
-<span data-nosnippet>369</span>            Slot::CompressLeaf(<a href="../algebra/magma.rs.html#65">v</a>) =&gt; <span class="self">self</span>.vertex_links[v].compress_parent = parent,
+<span data-nosnippet>369</span>            Slot::CompressLeaf(v) =&gt; <span class="self">self</span>.vertex_links[v].compress_parent = parent,
 <span data-nosnippet>370</span>            Slot::CompressInner(i) =&gt; <span class="self">self</span>.compressed[i].parent = parent,
 <span data-nosnippet>371</span>            Slot::RakeLeaf(v) =&gt; <span class="self">self</span>.vertex_links[v].rake_parent = parent,
 <span data-nosnippet>372</span>            Slot::RakeInner(i) =&gt; <span class="self">self</span>.raked[i].parent = parent,
@@ -506,7 +521,7 @@
 <span data-nosnippet>375</span>
 <span data-nosnippet>376</span>    <span class="kw">fn </span>init_compress&lt;C&gt;(
 <span data-nosnippet>377</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>378</span>        data: <span class="kw-2">&amp;mut </span>StaticTopTreeDataBuilder&lt;C&gt;,
+<span data-nosnippet>378</span>        data: <span class="kw-2">&amp;mut </span>StaticTopTreeDataBuilder&lt;<a href="../algebra/magma.rs.html#65">C</a>&gt;,
 <span data-nosnippet>379</span>        vertices: <span class="kw-2">&amp;</span>[&lt;C <span class="kw">as </span>Cluster&gt;::Vertex],
 <span data-nosnippet>380</span>        edges: <span class="kw-2">&amp;</span>[&lt;C <span class="kw">as </span>Cluster&gt;::Edge],
 <span data-nosnippet>381</span>        slot: Slot,
@@ -577,7 +592,7 @@
 <span data-nosnippet>446</span>        </span>C: Cluster,
 <span data-nosnippet>447</span>    {
 <span data-nosnippet>448</span>        <span class="kw">let </span>point = <span class="kw">if let </span><span class="prelude-val">Some</span>(slot) = <span class="self">self</span>.rake_roots[vertex] {
-<span data-nosnippet>449</span>            <span class="self">self</span>.init_rake(<a href="../algebra/magma.rs.html#170">data</a>, vertices, edges, slot)
+<span data-nosnippet>449</span>            <span class="self">self</span>.init_rake(data, vertices, edges, slot)
 <span data-nosnippet>450</span>        } <span class="kw">else </span>{
 <span data-nosnippet>451</span>            C::unit_point()
 <span data-nosnippet>452</span>        };
@@ -595,13 +610,13 @@
 <span data-nosnippet>464</span>        </span>C: Cluster,
 <span data-nosnippet>465</span>    {
 <span data-nosnippet>466</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(slot) = <span class="self">self</span>.rake_roots[vertex] {
-<span data-nosnippet>467</span>            <span class="self">self</span>.fold_rake::&lt;<a href="../algebra/magma.rs.html#185">C</a>&gt;(vertices, edges, slot)
+<span data-nosnippet>467</span>            <span class="self">self</span>.fold_rake::&lt;C&gt;(vertices, edges, slot)
 <span data-nosnippet>468</span>        } <span class="kw">else </span>{
 <span data-nosnippet>469</span>            C::unit_point()
 <span data-nosnippet>470</span>        }
 <span data-nosnippet>471</span>    }
 <span data-nosnippet>472</span>
-<span data-nosnippet>473</span>    <span class="kw">fn </span>init_rake&lt;<a href="../algebra/magma.rs.html#189">C</a>&gt;(
+<span data-nosnippet>473</span>    <span class="kw">fn </span>init_rake&lt;C&gt;(
 <span data-nosnippet>474</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>475</span>        data: <span class="kw-2">&amp;mut </span>StaticTopTreeDataBuilder&lt;C&gt;,
 <span data-nosnippet>476</span>        vertices: <span class="kw-2">&amp;</span>[&lt;C <span class="kw">as </span>Cluster&gt;::Vertex],
@@ -802,7 +817,7 @@
 <span data-nosnippet>671</span>            <span class="kw">let </span>path = <span class="self">self</span>.update_compress(links.compress_parent, base);
 <span data-nosnippet>672</span>            <span class="kw">let </span>point = C::add_edge(<span class="kw-2">&amp;</span>path);
 <span data-nosnippet>673</span>            <span class="kw">let </span>point = <span class="self">self</span>.update_rake(links.rake_parent, point);
-<span data-nosnippet>674</span>            <span class="kw">if </span>links.heavy_parent == usize::MAX {
+<span data-nosnippet>674</span>            <span class="kw">if </span>links.<a href="../algebra/operations.rs.html#12-17">heavy_parent</a> == usize::MAX {
 <span data-nosnippet>675</span>                <span class="self">self</span>.all_point = point;
 <span data-nosnippet>676</span>            } <span class="kw">else </span>{
 <span data-nosnippet>677</span>                <span class="self">self</span>.light_points[links.heavy_parent] = point;
@@ -1982,7 +1997,7 @@ The graph must be a tree. Uses O(n log n) time and O(n) auxiliary space.</p>
 <span data-nosnippet>462</span>                            entries.push((to, distance + <span class="number">1</span>));
 <span data-nosnippet>463</span>                        }
 <span data-nosnippet>464</span>                    }
-<span data-nosnippet>465</span>                    <a href="../algebra/magma.rs.html#15">i</a> += <span class="number">1</span>;
+<span data-nosnippet>465</span>                    i += <span class="number">1</span>;
 <span data-nosnippet>466</span>                }
 <span data-nosnippet>467</span>                boundaries.push(entries.len());
 <span data-nosnippet>468</span>            }
@@ -2028,7 +2043,7 @@ The graph must be a tree. Uses O(n log n) time and O(n) auxiliary space.</p>
 <span data-nosnippet>508</span>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">1</span>..=n {
 <span data-nosnippet>509</span>            info_indptr[v] += info_indptr[v - <span class="number">1</span>];
 <span data-nosnippet>510</span>        }
-<span data-nosnippet>511</span>        <span class="kw">let </span><span class="kw-2">mut </span>infos = <span class="macro">vec!</span>[ContourInfo { <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">comp</a>: <span class="number">0</span>, dep: <span class="number">0 </span>}; vertex_info.len()];
+<span data-nosnippet>511</span>        <span class="kw">let </span><span class="kw-2">mut </span>infos = <span class="macro">vec!</span>[ContourInfo { comp: <span class="number">0</span>, dep: <span class="number">0 </span>}; vertex_info.len()];
 <span data-nosnippet>512</span>        <span class="kw">let </span><span class="kw-2">mut </span>positions = info_indptr.clone();
 <span data-nosnippet>513</span>        <span class="kw">for </span>(v, info) <span class="kw">in </span>vertex_info {
 <span data-nosnippet>514</span>            <span class="kw">let </span>v = v <span class="kw">as </span>usize;

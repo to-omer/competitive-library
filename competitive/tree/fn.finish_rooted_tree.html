@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -360,10 +375,10 @@
 <span data-nosnippet>633</span>{
 <span data-nosnippet>634</span>    <span class="kw">pub fn </span>with_parent(
 <span data-nosnippet>635</span>        <span class="self">self</span>,
-<span data-nosnippet>636</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, RecordParent, D, H, PE, EC, X, B, E&gt; {
+<span data-nosnippet>636</span>    ) -&gt; XorLinkedRootedTreeScanner&lt;U, T, RecordParent, D, H, PE, EC, X, <a href="../algebra/magma.rs.html#58">B</a>, E&gt; {
 <span data-nosnippet>637</span>        XorLinkedRootedTreeScanner {
 <span data-nosnippet>638</span>            n: <span class="self">self</span>.n,
-<span data-nosnippet>639</span>            root: <span class="self">self</span>.root,
+<span data-nosnippet>639</span>            <a href="../algebra/magma.rs.html#56">root</a>: <span class="self">self</span>.root,
 <span data-nosnippet>640</span>            _marker: PhantomData,
 <span data-nosnippet>641</span>        }
 <span data-nosnippet>642</span>    }
@@ -462,7 +477,7 @@
 <span data-nosnippet>735</span>}
 <span data-nosnippet>736</span>
 <span data-nosnippet>737</span><span class="kw">impl</span>&lt;U, T, P, D, H, X, B&gt; MarkedScan
-<span data-nosnippet>738</span>    <span class="kw">for </span>XorLinkedRootedTreeScanner&lt;U, T, P, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
+<span data-nosnippet>738</span>    <span class="kw">for </span>XorLinkedRootedTreeScanner&lt;U, T, <a href="../algebra/magma.rs.html#147">P</a>, D, H, NoParentEdge, NoEdgeChild, X, B, NoEIndexed&gt;
 <span data-nosnippet>739</span><span class="kw">where
 <span data-nosnippet>740</span>    </span>U: Scan&lt;Output = usize&gt;,
 <span data-nosnippet>741</span>    T: Scan,
@@ -477,17 +492,17 @@
 <span data-nosnippet>750</span>        Vec&lt;&lt;T <span class="kw">as </span>Scan&gt;::Output&gt;,
 <span data-nosnippet>751</span>    );
 <span data-nosnippet>752</span>
-<span data-nosnippet>753</span>    <span class="kw">fn </span>mscan&lt;I: ScanSource&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+<span data-nosnippet>753</span>    <span class="kw">fn </span>mscan&lt;I: ScanSource&gt;(<span class="self">self</span>, <a href="../algebra/magma.rs.html#170">iter</a>: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
 <span data-nosnippet>754</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = XorAccumulator::new(<span class="self">self</span>.n);
 <span data-nosnippet>755</span>        <span class="kw">let </span><span class="kw-2">mut </span>weights = Vec::with_capacity(<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>));
-<span data-nosnippet>756</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.<a href="../algebra/magma.rs.html#189">n</a>.saturating_sub(<span class="number">1</span>) {
+<span data-nosnippet>756</span>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.n.saturating_sub(<span class="number">1</span>) {
 <span data-nosnippet>757</span>            <span class="kw">let </span>u = U::scan(iter)<span class="question-mark">?</span>;
 <span data-nosnippet>758</span>            <span class="kw">let </span>v = U::scan(iter)<span class="question-mark">?</span>;
 <span data-nosnippet>759</span>            acc.add_edge(u, v);
 <span data-nosnippet>760</span>            weights.push(T::scan(iter)<span class="question-mark">?</span>);
 <span data-nosnippet>761</span>        }
 <span data-nosnippet>762</span>        <span class="prelude-val">Some</span>((
-<span data-nosnippet>763</span>            finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.n, <span class="self">self</span>.root, acc),
+<span data-nosnippet>763</span>            finish_accumulator::&lt;P, D, H, X, B&gt;(<span class="self">self</span>.<a href="../algebra/magma.rs.html#185">n</a>, <span class="self">self</span>.root, acc),
 <span data-nosnippet>764</span>            weights,
 <span data-nosnippet>765</span>        ))
 <span data-nosnippet>766</span>    }

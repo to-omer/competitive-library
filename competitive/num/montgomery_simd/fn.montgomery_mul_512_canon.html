@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -251,7 +266,7 @@
 <span data-nosnippet>226</span>        <span class="kw">return</span>;
 <span data-nosnippet>227</span>    }
 <span data-nosnippet>228</span>    <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
-<span data-nosnippet>229</span>    <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, a.len());
+<span data-nosnippet>229</span>    <span class="kw">let </span>a = std::<a href="../../../algebra/magma.rs.html#4-18">slice</a>::from_raw_parts_mut(ptr, a.len());
 <span data-nosnippet>230</span>    <span class="kw">let </span>mod_vec = _mm512_set1_epi32(M::MOD <span class="kw">as </span>i32);
 <span data-nosnippet>231</span>    <span class="kw">let </span>mod2_vec = _mm512_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
 <span data-nosnippet>232</span>    <span class="kw">let </span>r_vec = _mm512_set1_epi32(M::R <span class="kw">as </span>i32);
@@ -299,7 +314,7 @@
 <span data-nosnippet>274</span>                <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec);
 <span data-nosnippet>275</span>                <span class="kw">let </span>y1 = add_vec_avx512::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec);
 <span data-nosnippet>276</span>                <span class="kw">let </span>y2 = sub_vec_avx512::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec);
-<span data-nosnippet>277</span>                <span class="kw">let </span>y3 = sub_vec_avx512::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec);
+<span data-nosnippet>277</span>                <span class="kw">let </span>y3 = sub_vec_avx512::&lt;M&gt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">a0na1</a>, a2na3iimag, mod_vec, mod2_vec);
 <span data-nosnippet>278</span>
 <span data-nosnippet>279</span>                <span class="kw">let </span>(y1, y2, y3) = <span class="kw">if </span>s == <span class="number">0 </span>{
 <span data-nosnippet>280</span>                    (y1, y2, y3)
@@ -344,7 +359,7 @@
 <span data-nosnippet>319</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 <span data-nosnippet>320</span>        <span class="kw">while </span>i + <span class="number">16 </span>&lt;= half {
 <span data-nosnippet>321</span>            <span class="kw">let </span>x0 = _mm512_loadu_si512(a.as_ptr().add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
-<span data-nosnippet>322</span>            <span class="kw">let </span>x1 = _mm512_loadu_si512(a.<a href="../../../algebra/magma.rs.html#145-176">as_ptr</a>().add(half + i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
+<span data-nosnippet>322</span>            <span class="kw">let </span>x1 = _mm512_loadu_si512(a.as_ptr().add(half + i) <span class="kw">as </span><span class="kw-2">*const </span>__m512i);
 <span data-nosnippet>323</span>            <span class="kw">let </span>y0 = add_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>324</span>            <span class="kw">let </span>y1 = sub_vec_avx512::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>325</span>            _mm512_storeu_si512(a.as_mut_ptr().add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m512i, y0);

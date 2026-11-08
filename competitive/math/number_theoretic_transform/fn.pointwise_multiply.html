@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -352,7 +367,7 @@
 <span data-nosnippet>946</span>        t.len()
 <span data-nosnippet>947</span>    }
 <span data-nosnippet>948</span>
-<span data-nosnippet>949</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>949</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <a href="../algebra/magma.rs.html#9"><span class="self">Self</span>::F</a> {
 <span data-nosnippet>950</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
 <span data-nosnippet>951</span>        <span class="macro">assert!</span>(npot &lt;= <span class="number">1usize </span>&lt;&lt; N1::RANK.min(N2::RANK).min(N3::RANK));
 <span data-nosnippet>952</span>        <span class="comment">// The 22-bit fallback needs room for three limb products per coefficient.
@@ -397,7 +412,7 @@
 <span data-nosnippet>991</span>        )
 <span data-nosnippet>992</span>    }
 <span data-nosnippet>993</span>
-<span data-nosnippet>994</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>994</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="../../../../../algebra/trait.Group.html">usize</a>) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>995</span>        <span class="kw">let </span>bits = <span class="kw">if </span>f.<span class="number">0</span>[<span class="number">2</span>].is_empty() { <span class="number">32 </span>} <span class="kw">else </span>{ <span class="number">22 </span>};
 <span data-nosnippet>996</span>        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
 <span data-nosnippet>997</span>        <span class="kw">let </span>m1 = N1::get_mod() <span class="kw">as </span>u64;
@@ -639,7 +654,7 @@
 <span data-nosnippet>1233</span>        qy: usize,
 <span data-nosnippet>1234</span>    ) -&gt; (<span class="self">Self</span>::T, <span class="self">Self</span>::T) {
 <span data-nosnippet>1235</span>        <span class="kw">let </span>base = n * <span class="number">2</span>;
-<span data-nosnippet>1236</span>        <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">len_p</a> = base * py;
+<span data-nosnippet>1236</span>        <span class="kw">let </span>len_p = base * py;
 <span data-nosnippet>1237</span>        <span class="kw">let </span>len_q = base * qy;
 <span data-nosnippet>1238</span>        <span class="kw">let </span>len = (len_p + len_q - <span class="number">1</span>).max(len_q + len_q - <span class="number">1</span>);
 <span data-nosnippet>1239</span>        <span class="kw">let </span>half = len.max(<span class="number">1</span>).next_power_of_two() / <span class="number">2</span>;
@@ -684,9 +699,9 @@
 <span data-nosnippet>1278</span>        <span class="kw">if </span>monic {
 <span data-nosnippet>1279</span>            a[<span class="number">0</span>] -= MInt::&lt;M&gt;::from(<span class="number">2</span>);
 <span data-nosnippet>1280</span>        }
-<span data-nosnippet>1281</span>        <span class="kw">let </span>zeta = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[<a href="../algebra/operations.rs.html#255">k</a> + <span class="number">1</span>]);
+<span data-nosnippet>1281</span>        <span class="kw">let </span>zeta = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[k + <span class="number">1</span>]);
 <span data-nosnippet>1282</span>        <span class="kw">let </span>zeta2 = zeta * zeta;
-<span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">zeta2</a> * <a href="../num/zero_one.rs.html#1-14">zeta</a>];
+<span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
 <span data-nosnippet>1285</span>        <span class="kw">for </span>a <span class="kw">in </span>a.chunks_mut(<span class="number">4</span>) {
 <span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().zip(<span class="kw-2">&amp;mut </span>rot) {

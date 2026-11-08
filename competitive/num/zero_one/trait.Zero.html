@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -318,7 +333,7 @@
 <span data-nosnippet>257</span>            <span class="kw">if </span>step != <span class="number">1 </span>{
 <span data-nosnippet>258</span>                step = gcd(step, i <span class="kw">as </span>u64);
 <span data-nosnippet>259</span>            }
-<span data-nosnippet>260</span>            <span class="kw">if </span>count &gt; limit {
+<span data-nosnippet>260</span>            <span class="kw">if </span>count &gt; <a href="../../graph/mod.rs.html#1-144">limit</a> {
 <span data-nosnippet>261</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>262</span>            }
 <span data-nosnippet>263</span>        }
@@ -619,12 +634,12 @@
 <span data-nosnippet>558</span>            delta[<span class="number">0</span>] = T::zero();
 <span data-nosnippet>559</span>            delta[target..].fill(T::zero());
 <span data-nosnippet>560</span>            <span class="kw">for </span>i <span class="kw">in </span>m..(<span class="number">2 </span>* m).min(<span class="self">self</span>.length()) {
-<span data-nosnippet>561</span>                delta[i] += <span class="self">self</span>[i].clone();
+<span data-nosnippet>561</span>                delta[i] += <a class="self" href="../../num/zero_one.rs.html#1-14">self</a>[i].clone();
 <span data-nosnippet>562</span>            }
 <span data-nosnippet>563</span>            delta[..m].fill(T::zero());
 <span data-nosnippet>564</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta_fft = C::transform_ntt(delta, <span class="number">2 </span>* m);
 <span data-nosnippet>565</span>            C::multiply_prefix(<span class="kw-2">&amp;mut </span>delta_fft, <span class="kw-2">&amp;</span>f_fft);
-<span data-nosnippet>566</span>            <span class="kw">let </span>delta = C::inverse_transform_ntt(delta_fft, <span class="number">2 </span>* <a href="../../algebra/operations.rs.html#24">m</a>);
+<span data-nosnippet>566</span>            <span class="kw">let </span>delta = C::inverse_transform_ntt(delta_fft, <span class="number">2 </span>* m);
 <span data-nosnippet>567</span>            f.data
 <span data-nosnippet>568</span>                .extend(delta.into_iter().skip(m).take((deg - m).min(m)));
 <span data-nosnippet>569</span>            m <span class="kw-2">*</span>= <span class="number">2</span>;
@@ -689,7 +704,7 @@
 <span data-nosnippet>628</span>            }
 <span data-nosnippet>629</span>            <span class="kw">return </span><span class="self">Self</span>::from_vec(result).integral();
 <span data-nosnippet>630</span>        }
-<span data-nosnippet>631</span>        <span class="kw">let </span>quotient = C::transform(result.clone(), half * <span class="number">2</span>);
+<span data-nosnippet>631</span>        <span class="kw">let </span>quotient = C::transform(result.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(), half * <span class="number">2</span>);
 <span data-nosnippet>632</span>        <span class="kw">let </span><span class="kw-2">mut </span>error = C::transform(<span class="self">self</span>.prefix_ref(n).data, half * <span class="number">2</span>);
 <span data-nosnippet>633</span>        C::multiply(<span class="kw-2">&amp;mut </span>error, <span class="kw-2">&amp;</span>quotient);
 <span data-nosnippet>634</span>        <span class="kw">let </span><span class="kw-2">mut </span>error = C::inverse_transform(error, half * <span class="number">2</span>);
@@ -822,11 +837,11 @@
 <span data-nosnippet>761</span>        <span class="kw">let </span>dq = diff(<span class="kw-2">&amp;</span>q);
 <span data-nosnippet>762</span>
 <span data-nosnippet>763</span>        <span class="kw">let </span>mf = T::memorized_factorial(deg);
-<span data-nosnippet>764</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::zeros(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">deg</a>);
+<span data-nosnippet>764</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>765</span>        <span class="kw">let </span><span class="kw-2">mut </span>qf = <span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>766</span>        <span class="kw">let </span><span class="kw-2">mut </span>dq_f = <span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>767</span>        <span class="kw">let </span><span class="kw-2">mut </span>d_qf = <span class="self">Self</span>::zeros(deg);
-<span data-nosnippet>768</span>        <a href="../../algebra/operations.rs.html#275">f</a>[<span class="number">0</span>] = T::one();
+<span data-nosnippet>768</span>        f[<span class="number">0</span>] = T::one();
 <span data-nosnippet>769</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..deg - <span class="number">1 </span>{
 <span data-nosnippet>770</span>            qf[i] = f.sparse_fold(q.iter().cloned(), i);
 <span data-nosnippet>771</span>            dq_f[i] = f.sparse_fold(dq.iter().cloned(), i);
@@ -886,7 +901,7 @@
 <span data-nosnippet>825</span>            (k, c, f)
 <span data-nosnippet>826</span>        };
 <span data-nosnippet>827</span>        <span class="kw">let </span>(sp, cp, <span class="kw-2">mut </span>p) = normalize(<span class="self">self</span>, exp_p);
-<span data-nosnippet>828</span>        <span class="kw">let </span>(sq, cq, <span class="kw-2">mut </span>q) = normalize(q, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">exp_q</a>);
+<span data-nosnippet>828</span>        <span class="kw">let </span>(sq, cq, <span class="kw-2">mut </span>q) = normalize(q, exp_q);
 <span data-nosnippet>829</span>
 <span data-nosnippet>830</span>        <span class="kw">let </span>shift = exp_p
 <span data-nosnippet>831</span>            .saturating_mul(sp <span class="kw">as _</span>)
@@ -894,7 +909,7 @@
 <span data-nosnippet>833</span>        <span class="kw">if </span>shift &gt;= deg {
 <span data-nosnippet>834</span>            <span class="kw">return </span><span class="self">Self</span>::zeros(deg);
 <span data-nosnippet>835</span>        }
-<span data-nosnippet>836</span>        p.truncate(deg - shift);
+<span data-nosnippet>836</span>        p.truncate(<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html#tymethod.div">deg</a> - <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">shift</a>);
 <span data-nosnippet>837</span>        q.truncate(deg - shift);
 <span data-nosnippet>838</span>
 <span data-nosnippet>839</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::solve_sparse_differential2(
@@ -953,7 +968,7 @@
 <span data-nosnippet>892</span>        } <span class="kw">else </span>{
 <span data-nosnippet>893</span>            <span class="kw">let </span>s = <span class="self">self</span>[<span class="number">0</span>].sqrt_coefficient()<span class="question-mark">?</span>;
 <span data-nosnippet>894</span>            <span class="kw">if </span>deg &lt;= <span class="number">1 </span>{
-<span data-nosnippet>895</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">Self</span>::from(s).prefix(deg));
+<span data-nosnippet>895</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">Self</span>::from(<a href="../../algebra/operations.rs.html#402">s</a>).prefix(deg));
 <span data-nosnippet>896</span>            }
 <span data-nosnippet>897</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(step) = <span class="self">self</span>.sparse_stride(deg, <span class="number">4</span>) {
 <span data-nosnippet>898</span>                <span class="kw">let </span>t = <span class="self">self</span>[<span class="number">0</span>].clone();
@@ -1193,7 +1208,7 @@
 <span data-nosnippet>1132</span>        uptree_t.push(v.inv(m).middle_product(<span class="kw-2">&amp;</span>s, m * <span class="number">2</span>).resized(size));
 <span data-nosnippet>1133</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..leaves {
 <span data-nosnippet>1134</span>            <span class="kw">let </span>degree = uptree_t[i].length();
-<span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[i].data), degree);
+<span data-nosnippet>1135</span>            <span class="kw">let </span>spectrum = C::transform_ntt(std::mem::take(<span class="kw-2">&amp;mut </span>uptree_t[<a href="../../algebra/operations.rs.html#700">i</a>].data), degree);
 <span data-nosnippet>1136</span>            <span class="kw">let </span>left = subproduct_tree[i * <span class="number">2</span>].take().unwrap();
 <span data-nosnippet>1137</span>            <span class="kw">let </span>right = subproduct_tree[i * <span class="number">2 </span>+ <span class="number">1</span>].take().unwrap();
 <span data-nosnippet>1138</span>            <span class="kw">let </span><span class="kw-2">mut </span>child = spectrum.clone();

@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -454,7 +469,7 @@
 <span data-nosnippet>431</span>            <span class="kw">let </span>(a_upper, a_lower) = a.data.split_at_mut(r + <span class="number">1</span>);
 <span data-nosnippet>432</span>            <span class="kw">let </span>pivot_a = <span class="kw-2">&amp;</span>a_upper[r];
 <span data-nosnippet>433</span>            <span class="kw">let </span>(inverse_upper, inverse_lower) = inverse.data.split_at_mut(r + <span class="number">1</span>);
-<span data-nosnippet>434</span>            <span class="kw">let </span>pivot_inverse = <span class="kw-2">&amp;</span>inverse_upper[<a href="../algebra/magma.rs.html#224">r</a>];
+<span data-nosnippet>434</span>            <span class="kw">let </span>pivot_inverse = <span class="kw-2">&amp;</span>inverse_upper[r];
 <span data-nosnippet>435</span>            <span class="kw">let </span>(ranges_upper, ranges_lower) = ranges.split_at_mut(r + <span class="number">1</span>);
 <span data-nosnippet>436</span>            <span class="kw">let </span>(left, right) = ranges_upper[r];
 <span data-nosnippet>437</span>            <span class="kw">for </span>((a, inverse), range) <span class="kw">in </span>a_lower.iter_mut().zip(inverse_lower).zip(ranges_lower) {
@@ -677,7 +692,7 @@
 <span data-nosnippet>654</span><span class="kw">where
 <span data-nosnippet>655</span>    </span>R: SemiRing,
 <span data-nosnippet>656</span>{
-<span data-nosnippet>657</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
+<span data-nosnippet>657</span>    <span class="kw">type </span>Output = Matrix&lt;<a href="../algebra/operations.rs.html#81">R</a>&gt;;
 <span data-nosnippet>658</span>    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>659</span>        <span class="self">self</span>.mul(<span class="kw-2">&amp;</span>rhs)
 <span data-nosnippet>660</span>    }
@@ -832,7 +847,7 @@
 <span data-nosnippet>656</span>        <span class="kw">if </span>!<span class="self">self</span>.prefixes.is_empty() &amp;&amp; !<span class="self">self</span>.suffixes.is_empty() &amp;&amp; F::is_zero(<span class="kw-2">&amp;</span>h[<span class="number">0</span>][<span class="number">0</span>]) {
 <span data-nosnippet>657</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">1</span>..<span class="self">self</span>.suffixes.len() {
 <span data-nosnippet>658</span>                <span class="kw">if </span>!F::is_zero(<span class="kw-2">&amp;</span>h[<span class="number">0</span>][j]) {
-<span data-nosnippet>659</span>                    <span class="self">self</span>.<a href="../algebra/lazy_map.rs.html#1-905">suffixes</a>.swap(<span class="number">0</span>, j);
+<span data-nosnippet>659</span>                    <span class="self">self</span>.suffixes.swap(<span class="number">0</span>, j);
 <span data-nosnippet>660</span>                    <span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span>h.data {
 <span data-nosnippet>661</span>                        row.swap(<span class="number">0</span>, j);
 <span data-nosnippet>662</span>                    }
@@ -849,7 +864,7 @@
 <span data-nosnippet>673</span>        <span class="kw">let </span><span class="kw-2">mut </span>new_prefixes = <span class="macro">vec!</span>[];
 <span data-nosnippet>674</span>        <span class="kw">let </span><span class="kw-2">mut </span>new_suffixes = <span class="macro">vec!</span>[];
 <span data-nosnippet>675</span>        <span class="kw">for </span>(i, j) <span class="kw">in </span>pivots {
-<span data-nosnippet>676</span>            new_prefixes.push(<span class="self">self</span>.prefixes[i].clone());
+<span data-nosnippet>676</span>            new_prefixes.push(<a class="self" href="../algebra/ring.rs.html#1-164">self</a>.prefixes[i].clone());
 <span data-nosnippet>677</span>            new_suffixes.push(<span class="self">self</span>.suffixes[j].clone());
 <span data-nosnippet>678</span>        }
 <span data-nosnippet>679</span>        <span class="self">self</span>.prefixes = new_prefixes;
@@ -1105,7 +1120,7 @@
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data.iter().all(|a| a.len() == n));
 <span data-nosnippet>483</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..(n - <span class="number">1</span>) {
-<span data-nosnippet>484</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = ((j + <span class="number">1</span>)..n).<a href="mod.rs.html#1-263">find</a>(|<span class="kw-2">&amp;</span>x| !R::is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>[x][j])) {
+<span data-nosnippet>484</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = ((j + <span class="number">1</span>)..n).find(|<span class="kw-2">&amp;</span>x| !R::is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>[x][j])) {
 <span data-nosnippet>485</span>                <span class="self">self</span>.data.swap(j + <span class="number">1</span>, x);
 <span data-nosnippet>486</span>                <span class="self">self</span>.data.iter_mut().for_each(|a| a.swap(j + <span class="number">1</span>, x));
 <span data-nosnippet>487</span>                <span class="kw">let </span>inv = R::inv(<span class="kw-2">&amp;</span><span class="self">self</span>[j + <span class="number">1</span>][j]);
@@ -1288,14 +1303,14 @@
 <span data-nosnippet>664</span>    </span>R: SemiRing,
 <span data-nosnippet>665</span>{
 <span data-nosnippet>666</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>667</span>    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>667</span>    <span class="kw">fn </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">mul</a>(<span class="self">self</span>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">rhs</a>: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>668</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">1</span>, rhs.shape.<span class="number">0</span>);
-<span data-nosnippet>669</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="../algebra/magma.rs.html#56">data</a>) = R::try_matrix_product(<span class="kw-2">&amp;</span><span class="self">self</span>.data, <span class="kw-2">&amp;</span>rhs.data) {
+<span data-nosnippet>669</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = R::try_matrix_product(<span class="kw-2">&amp;</span><span class="self">self</span>.data, <span class="kw-2">&amp;</span>rhs.data) {
 <span data-nosnippet>670</span>            <span class="kw">return </span>Matrix::from_vec(data);
 <span data-nosnippet>671</span>        }
 <span data-nosnippet>672</span>        <span class="kw">let </span>rhs = rhs.transpose();
 <span data-nosnippet>673</span>        Matrix::new_with((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">0</span>), |i, j| {
-<span data-nosnippet>674</span>            R::dot_product(<span class="kw-2">&amp;</span><span class="self">self</span>[i], <span class="kw-2">&amp;</span>rhs[j])
+<span data-nosnippet>674</span>            R::dot_product(<span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>[i], <span class="kw-2">&amp;</span>rhs[j])
 <span data-nosnippet>675</span>        })
 <span data-nosnippet>676</span>    }
 <span data-nosnippet>677</span>}
@@ -1543,7 +1558,7 @@
 <span data-nosnippet>919</span>                x = <span class="kw-2">&amp;</span>x * <span class="kw-2">&amp;</span>x;
 <span data-nosnippet>920</span>            }
 <span data-nosnippet>921</span>        }
-<span data-nosnippet>922</span>        <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">res</a>
+<span data-nosnippet>922</span>        res
 <span data-nosnippet>923</span>    }
 <span data-nosnippet>924</span>}
 <span data-nosnippet>925</span>

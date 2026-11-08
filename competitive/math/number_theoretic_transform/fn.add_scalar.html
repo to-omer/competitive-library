@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -223,19 +238,19 @@
 <span data-nosnippet>335</span>                <span class="kw">let </span>a3 = mul_scalar::&lt;M&gt;(<span class="kw-2">*</span>rr.add(i), w3);
 <span data-nosnippet>336</span>                <span class="kw">let </span>a0pa2 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0, a2);
 <span data-nosnippet>337</span>                <span class="kw">let </span>a0na2 = sub_scalar::&lt;M&gt;(a0, a2);
-<span data-nosnippet>338</span>                <span class="kw">let </span><a href="../../../graph/mod.rs.html#1-144">a1pa3</a> = <span class="highlight">add_scalar::&lt;M&gt;</span>(a1, a3);
+<span data-nosnippet>338</span>                <span class="kw">let </span>a1pa3 = <span class="highlight">add_scalar::&lt;M&gt;</span>(a1, a3);
 <span data-nosnippet>339</span>                <span class="kw">let </span>a1na3 = sub_scalar::&lt;M&gt;(a1, a3);
 <span data-nosnippet>340</span>                <span class="kw">let </span>a1na3imag = mul_scalar::&lt;M&gt;(a1na3, imag);
 <span data-nosnippet>341</span>                <span class="kw-2">*</span>ll.add(i) = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0pa2, a1pa3);
 <span data-nosnippet>342</span>                <span class="kw-2">*</span>lr.add(i) = sub_scalar::&lt;M&gt;(a0pa2, a1pa3);
 <span data-nosnippet>343</span>                <span class="kw-2">*</span>rl.add(i) = <span class="highlight">add_scalar::&lt;M&gt;</span>(a0na2, a1na3imag);
-<span data-nosnippet>344</span>                <span class="kw-2">*</span>rr.add(i) = sub_scalar::&lt;M&gt;(a0na2, a1na3imag);
+<span data-nosnippet>344</span>                <span class="kw-2">*</span>rr.add(i) = sub_scalar::&lt;M&gt;(a0na2, <a href="../../../heuristic/mod.rs.html#1-11">a1na3imag</a>);
 <span data-nosnippet>345</span>                i += <span class="number">1</span>;
 <span data-nosnippet>346</span>            }
 <span data-nosnippet>347</span>            <span class="kw">let </span>rate = <span class="kw-2">&amp;</span>M::INFO.rate3_packed[s.trailing_ones() <span class="kw">as </span>usize];
 <span data-nosnippet>348</span>            w1 = M::mod_mul(w1, rate[<span class="number">1</span>]);
 <span data-nosnippet>349</span>            w2 = M::mod_mul(w2, rate[<span class="number">3</span>]);
-<span data-nosnippet>350</span>            w3 = M::mod_mul(w3, rate[<span class="number">5</span>]);
+<span data-nosnippet>350</span>            w3 = M::mod_mul(w3, <a href="../../../num/zero_one.rs.html#1-14">rate</a>[<span class="number">5</span>]);
 <span data-nosnippet>351</span>        }
 <span data-nosnippet>352</span>        v &gt;&gt;= <span class="number">2</span>;
 <span data-nosnippet>353</span>    }
@@ -318,7 +333,7 @@
 <span data-nosnippet>430</span>                store_ntt_avx2(ll.add(i), y0, step);
 <span data-nosnippet>431</span>                store_ntt_avx2(lr.add(i), y1, step);
 <span data-nosnippet>432</span>                store_ntt_avx2(rl.add(i), y2, step);
-<span data-nosnippet>433</span>                store_ntt_avx2(rr.add(i), y3, <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">step</a>);
+<span data-nosnippet>433</span>                store_ntt_avx2(rr.add(i), y3, step);
 <span data-nosnippet>434</span>                i += step;
 <span data-nosnippet>435</span>            }
 <span data-nosnippet>436</span>            <span class="kw">while </span>i &lt; quarter {
@@ -353,7 +368,7 @@
 <span data-nosnippet>465</span>            <span class="kw">let </span>y0 = add_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>466</span>            <span class="kw">let </span>y1 = sub_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec);
 <span data-nosnippet>467</span>            store_ntt_avx2(a.as_mut_ptr().add(i), y0, step);
-<span data-nosnippet>468</span>            store_ntt_avx2(<a href="../../../algebra/magma.rs.html#147">a</a>.as_mut_ptr().add(half + i), y1, step);
+<span data-nosnippet>468</span>            store_ntt_avx2(a.as_mut_ptr().add(half + i), y1, step);
 <span data-nosnippet>469</span>            i += step;
 <span data-nosnippet>470</span>        }
 <span data-nosnippet>471</span>        <span class="kw">while </span>i &lt; half {

@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -332,7 +347,7 @@
 <span data-nosnippet>291</span>        <span class="kw">loop </span>{
 <span data-nosnippet>292</span>            <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
 <span data-nosnippet>293</span>                <span class="kw">let </span><span class="kw-2">mut </span>res = ord - k;
-<span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
+<span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">iter</a>().zip(<span class="kw-2">&amp;</span>row) {
 <span data-nosnippet>295</span>                    <span class="kw">for _ in </span><span class="number">0</span>..r {
 <span data-nosnippet>296</span>                        res += c;
 <span data-nosnippet>297</span>                        <span class="kw">if </span>res &gt;= ord {
@@ -387,7 +402,7 @@
 <span data-nosnippet>346</span>}
 <span data-nosnippet>347</span>
 <span data-nosnippet>348</span><span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
-<span data-nosnippet>349</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
+<span data-nosnippet>349</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
 <span data-nosnippet>350</span>    <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(n <span class="kw">as </span>u128);
 <span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
@@ -395,7 +410,7 @@
 <span data-nosnippet>354</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
 <span data-nosnippet>356</span>    <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block_size {
-<span data-nosnippet>357</span>        <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">baby</a>.entry(xj).or_insert(j);
+<span data-nosnippet>357</span>        baby.entry(xj).or_insert(j);
 <span data-nosnippet>358</span>        xj = mul(xj, g);
 <span data-nosnippet>359</span>    }
 <span data-nosnippet>360</span>    <span class="kw">let </span>xi = modinv(xj, n);
@@ -409,7 +424,7 @@
 <span data-nosnippet>368</span>                ok = <span class="bool-val">true</span>;
 <span data-nosnippet>369</span>                <span class="kw">break</span>;
 <span data-nosnippet>370</span>            }
-<span data-nosnippet>371</span>            h = mul(h, xi);
+<span data-nosnippet>371</span>            <a href="../algebra/magma.rs.html#147">h</a> = mul(h, xi);
 <span data-nosnippet>372</span>        }
 <span data-nosnippet>373</span>        <span class="kw">if </span>!ok {
 <span data-nosnippet>374</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
@@ -419,7 +434,7 @@
 <span data-nosnippet>378</span>}
 <span data-nosnippet>379</span>
 <span data-nosnippet>380</span><span class="doccomment">/// a^x ≡ b (mod p^e)
-<span data-nosnippet>381</span></span><span class="kw">fn </span>discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>381</span></span><span class="kw">fn </span>discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="../algebra/magma.rs.html#155">u64</a>, u64)&gt; {
 <span data-nosnippet>382</span>    <span class="macro">assert_ne!</span>(p, <span class="number">0</span>);
 <span data-nosnippet>383</span>    <span class="macro">assert_ne!</span>(e, <span class="number">0</span>);
 <span data-nosnippet>384</span>    <span class="kw">let </span>n = p.pow(e);

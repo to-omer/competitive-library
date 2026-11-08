@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -271,7 +286,7 @@
 <span data-nosnippet>224</span>        <span class="kw">while </span>start &lt; cols {
 <span data-nosnippet>225</span>            <span class="kw">let </span>first = pivots.len();
 <span data-nosnippet>226</span>            <span class="kw">let </span>word = start / <span class="number">64</span>;
-<span data-nosnippet>227</span>            reduced.fill(first);
+<span data-nosnippet>227</span>            reduced.fill(<a href="../algebra/magma.rs.html#4-18">first</a>);
 <span data-nosnippet>228</span>            <span class="kw">let </span>end = cols.min(start + block);
 <span data-nosnippet>229</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = start;
 <span data-nosnippet>230</span>            <span class="kw">while </span>c &lt; end {
@@ -333,7 +348,7 @@
 <span data-nosnippet>286</span>                    count += <span class="number">1</span>;
 <span data-nosnippet>287</span>                    <span class="kw">for </span>index <span class="kw">in </span><span class="number">0</span>..half {
 <span data-nosnippet>288</span>                        keys[index + half] = keys[index] | (<span class="number">1 </span>&lt;&lt; ((c - start) % <span class="number">8</span>));
-<span data-nosnippet>289</span>                        <span class="kw">let </span>(lower, upper) = table.split_at_mut(group * <span class="number">256 </span>+ index + half);
+<span data-nosnippet>289</span>                        <span class="kw">let </span>(lower, upper) = table.split_at_mut(group * <span class="number">256 </span>+ index + <a href="../algebra/magma.rs.html#56">half</a>);
 <span data-nosnippet>290</span>                        <span class="kw">let </span>target = <span class="kw-2">&amp;mut </span>upper[<span class="number">0</span>].words_mut()[word..];
 <span data-nosnippet>291</span>                        <span class="kw">let </span>source = <span class="kw-2">&amp;</span>lower[group * <span class="number">256 </span>+ index].words()[word..];
 <span data-nosnippet>292</span>                        <span class="kw">let </span>pivot = <span class="kw-2">&amp;</span><span class="self">self</span>[first + row].words()[word..];
@@ -661,7 +676,7 @@
 <span data-nosnippet>163</span>
 <span data-nosnippet>164</span>    <span class="doccomment">/// Sets all bits to `value`.
 <span data-nosnippet>165</span>    </span><span class="kw">pub fn </span>fill(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: bool) {
-<span data-nosnippet>166</span>        <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.bits.fill(Block([<span class="kw">if </span>value { u64::MAX } <span class="kw">else </span>{ <span class="number">0 </span>}; <span class="number">8</span>]));
+<span data-nosnippet>166</span>        <span class="self">self</span>.bits.fill(Block([<span class="kw">if </span>value { u64::MAX } <span class="kw">else </span>{ <span class="number">0 </span>}; <span class="number">8</span>]));
 <span data-nosnippet>167</span>        <span class="self">self</span>.trim();
 <span data-nosnippet>168</span>    }
 <span data-nosnippet>169</span>
@@ -721,7 +736,7 @@
 <span data-nosnippet>223</span>            }
 <span data-nosnippet>224</span>        }
 <span data-nosnippet>225</span>        <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0 </span>{
-<span data-nosnippet>226</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#4-18">words</a>.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
+<span data-nosnippet>226</span>            <span class="kw">return </span>words.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
 <span data-nosnippet>227</span>        }
 <span data-nosnippet>228</span>        words[..full_words].iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
 <span data-nosnippet>229</span>            &amp;&amp; words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>))
@@ -808,7 +823,7 @@
 <span data-nosnippet>310</span>    <span class="doccomment">/// Returns words in increasing bit-index order; unused high bits in the last word are zero.
 <span data-nosnippet>311</span>    </span><span class="kw">pub fn </span>words(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u64] {
 <span data-nosnippet>312</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>313</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts(<span class="self">self</span>.bits.as_ptr().cast(), <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.size.div_ceil(<span class="number">64</span>)) }
+<span data-nosnippet>313</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts(<span class="self">self</span>.bits.as_ptr().cast(), <span class="self">self</span>.size.div_ceil(<span class="number">64</span>)) }
 <span data-nosnippet>314</span>    }
 <span data-nosnippet>315</span>
 <span data-nosnippet>316</span>    <span class="doccomment">/// Returns mutable words in increasing bit-index order.
@@ -816,7 +831,7 @@
 <span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>words_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[u64] {
 <span data-nosnippet>319</span>        <span class="kw">let </span>len = <span class="self">self</span>.size.div_ceil(<span class="number">64</span>);
 <span data-nosnippet>320</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<span class="self">self</span>.bits.as_mut_ptr().cast(), len) }
+<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<a class="self" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.next">self</a>.bits.as_mut_ptr().cast(), len) }
 <span data-nosnippet>322</span>    }
 <span data-nosnippet>323</span>
 <span data-nosnippet>324</span>    <span class="kw">fn </span>trim(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
@@ -1817,7 +1832,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>484</span>                bits[bits.len() - word_shift - <span class="number">1</span>] = bits[bits.len() - <span class="number">1</span>] &gt;&gt; bit_shift;
 <span data-nosnippet>485</span>            }
 <span data-nosnippet>486</span>        }
-<span data-nosnippet>487</span>        <span class="kw">if </span>!<a href="../heuristic/mod.rs.html#1-11">OR_ASSIGN</a> {
+<span data-nosnippet>487</span>        <span class="kw">if </span>!OR_ASSIGN {
 <span data-nosnippet>488</span>            <span class="kw">let </span>end = bits.len() - word_shift;
 <span data-nosnippet>489</span>            bits[end..].fill(<span class="number">0</span>);
 <span data-nosnippet>490</span>        }
@@ -2067,7 +2082,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>289</span>                        <span class="kw">let </span>(lower, upper) = table.split_at_mut(group * <span class="number">256 </span>+ index + half);
 <span data-nosnippet>290</span>                        <span class="kw">let </span>target = <span class="kw-2">&amp;mut </span>upper[<span class="number">0</span>].words_mut()[word..];
 <span data-nosnippet>291</span>                        <span class="kw">let </span>source = <span class="kw-2">&amp;</span>lower[group * <span class="number">256 </span>+ index].words()[word..];
-<span data-nosnippet>292</span>                        <span class="kw">let </span>pivot = <span class="kw-2">&amp;</span><span class="self">self</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">first</a> + row].words()[word..];
+<span data-nosnippet>292</span>                        <span class="kw">let </span>pivot = <span class="kw-2">&amp;</span><span class="self">self</span>[first + row].words()[word..];
 <span data-nosnippet>293</span>                        <span class="kw">for </span>((x, y), z) <span class="kw">in </span>target.iter_mut().zip(source).zip(pivot) {
 <span data-nosnippet>294</span>                            <span class="kw-2">*</span>x = y ^ z;
 <span data-nosnippet>295</span>                        }
@@ -2083,7 +2098,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>305</span>                <span class="kw">let </span>x = indices[<span class="number">0</span>][key &amp; masks[<span class="number">0</span>]];
 <span data-nosnippet>306</span>                <span class="kw">if </span>block &lt;= <span class="number">8 </span>{
 <span data-nosnippet>307</span>                    <span class="kw">if </span>x != <span class="number">0 </span>{
-<span data-nosnippet>308</span>                        xor(<span class="kw-2">&amp;mut </span><span class="self">self</span>[i].words_mut()[word..], <span class="kw-2">&amp;</span>table[x].words()[word..]);
+<span data-nosnippet>308</span>                        xor(<span class="kw-2">&amp;mut </span><a class="self" href="../algebra/magma.rs.html#56">self</a>[i].words_mut()[word..], <span class="kw-2">&amp;</span>table[x].words()[word..]);
 <span data-nosnippet>309</span>                    }
 <span data-nosnippet>310</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>311</span>                }
@@ -2585,7 +2600,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>305</span>                <span class="kw">let </span>x = indices[<span class="number">0</span>][key &amp; masks[<span class="number">0</span>]];
 <span data-nosnippet>306</span>                <span class="kw">if </span>block &lt;= <span class="number">8 </span>{
 <span data-nosnippet>307</span>                    <span class="kw">if </span>x != <span class="number">0 </span>{
-<span data-nosnippet>308</span>                        xor(<span class="kw-2">&amp;mut </span><span class="self">self</span>[i].words_mut()[word..], <span class="kw-2">&amp;</span>table[x].<span class="highlight">words</span>()[word..]);
+<span data-nosnippet>308</span>                        xor(<span class="kw-2">&amp;mut </span><span class="self">self</span>[i].words_mut()[word..], <span class="kw-2">&amp;</span>table[x].<span class="highlight">words</span>()[<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">word</a>..]);
 <span data-nosnippet>309</span>                    }
 <span data-nosnippet>310</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>311</span>                }
@@ -2638,7 +2653,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>358</span>        <span class="kw">let </span><span class="kw-2">mut </span>pivots = Vec::new();
 <span data-nosnippet>359</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
 <span data-nosnippet>360</span>            <span class="kw">loop </span>{
-<span data-nosnippet>361</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(c) = <span class="self">self</span>[i].iter_ones().next().filter(|<span class="kw-2">&amp;</span>c| c &lt; cols) <span class="kw">else </span>{
+<span data-nosnippet>361</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(c) = <span class="self">self</span>[<a href="../algebra/magma.rs.html#185">i</a>].iter_ones().next().filter(|<span class="kw-2">&amp;</span>c| c &lt; cols) <span class="kw">else </span>{
 <span data-nosnippet>362</span>                    <span class="kw">if </span>require_full_rank {
 <span data-nosnippet>363</span>                        <span class="kw">return </span>pivots;
 <span data-nosnippet>364</span>                    }
@@ -2683,7 +2698,7 @@ Returns <code>None</code> if any other character occurs.</p>
 <span data-nosnippet>403</span>    </span><span class="kw">fn </span>mul_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::zeros((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">1</span>));
 <span data-nosnippet>405</span>        <span class="kw">let </span>ones = <span class="self">self</span>.data.iter().map(BitSet::count_ones).sum::&lt;u64&gt;();
-<span data-nosnippet>406</span>        <span class="kw">let </span>size = <span class="self">self</span>.<a href="../algebra/magma.rs.html#4-18">shape</a>.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64;
+<span data-nosnippet>406</span>        <span class="kw">let </span>size = <span class="self">self</span>.shape.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64;
 <span data-nosnippet>407</span>        <span class="kw">if </span><span class="self">self</span>.shape.<span class="number">0 </span>&lt; <span class="number">256 </span>|| <span class="self">self</span>.shape.<span class="number">1 </span>&lt; <span class="number">32 </span>|| ones &lt;= size / <span class="number">8 </span>{
 <span data-nosnippet>408</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span><span class="self">self</span>.data.iter().zip(<span class="kw-2">&amp;mut </span>result.data) {
 <span data-nosnippet>409</span>                <span class="kw">for </span>j <span class="kw">in </span>a.iter_ones() {
@@ -3252,7 +3267,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>244</span>                        <span class="kw">break</span>;
 <span data-nosnippet>245</span>                    }
 <span data-nosnippet>246</span>                }
-<span data-nosnippet>247</span>                <span class="kw">if let </span><a class="prelude-val" href="../../../../../algebra/struct.Bits.html">Some</a>(p) = pivot {
+<span data-nosnippet>247</span>                <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = pivot {
 <span data-nosnippet>248</span>                    <span class="self">self</span>.data.swap(r, p);
 <span data-nosnippet>249</span>                    reduced.swap(r, p);
 <span data-nosnippet>250</span>                    pivots.push(c);
@@ -3463,10 +3478,10 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>455</span>                <span class="kw">let </span>offset = (key &amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>456</span>                <span class="kw">let </span>p0 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>457</span>                <span class="kw">let </span>offset = group + (key &gt;&gt; <span class="number">8 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
-<span data-nosnippet>458</span>                <span class="kw">let </span>p1 = <span class="kw-2">&amp;</span>table[offset..offset + <a href="../algebra/mod.rs.html#37">width</a>];
+<span data-nosnippet>458</span>                <span class="kw">let </span>p1 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>459</span>                <span class="kw">let </span>offset = <span class="number">2 </span>* group + (key &gt;&gt; <span class="number">16 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>460</span>                <span class="kw">let </span>p2 = <span class="kw-2">&amp;</span>table[offset..offset + width];
-<span data-nosnippet>461</span>                <span class="kw">let </span>offset = <span class="number">3 </span>* group + (key &gt;&gt; <span class="number">24 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
+<span data-nosnippet>461</span>                <span class="kw">let </span>offset = <span class="number">3 </span>* <a href="../algebra/mod.rs.html#36">group</a> + (key &gt;&gt; <span class="number">24 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>462</span>                <span class="kw">let </span>p3 = <span class="kw-2">&amp;</span>table[offset..offset + width];
 <span data-nosnippet>463</span>                <span class="kw">let </span>offset = <span class="number">4 </span>* group + (key &gt;&gt; <span class="number">32 </span>&amp; <span class="number">255</span>) <span class="kw">as </span>usize * width;
 <span data-nosnippet>464</span>                <span class="kw">let </span>p4 = <span class="kw-2">&amp;</span>table[offset..offset + width];
@@ -3614,7 +3629,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>163</span>
 <span data-nosnippet>164</span>    <span class="doccomment">/// Sets all bits to `value`.
 <span data-nosnippet>165</span>    </span><span class="kw">pub fn </span>fill(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: bool) {
-<span data-nosnippet>166</span>        <a class="self" href="../num/zero_one.rs.html#1-14">self</a>.bits.fill(Block([<span class="kw">if </span>value { u64::MAX } <span class="kw">else </span>{ <span class="number">0 </span>}; <span class="number">8</span>]));
+<span data-nosnippet>166</span>        <span class="self">self</span>.bits.fill(Block([<span class="kw">if </span>value { u64::MAX } <span class="kw">else </span>{ <span class="number">0 </span>}; <span class="number">8</span>]));
 <span data-nosnippet>167</span>        <span class="self">self</span>.trim();
 <span data-nosnippet>168</span>    }
 <span data-nosnippet>169</span>
@@ -3674,7 +3689,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>223</span>            }
 <span data-nosnippet>224</span>        }
 <span data-nosnippet>225</span>        <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>== <span class="number">0 </span>{
-<span data-nosnippet>226</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#4-18">words</a>.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
+<span data-nosnippet>226</span>            <span class="kw">return </span>words.iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX);
 <span data-nosnippet>227</span>        }
 <span data-nosnippet>228</span>        words[..full_words].iter().all(|<span class="kw-2">&amp;</span>word| word == u64::MAX)
 <span data-nosnippet>229</span>            &amp;&amp; words[full_words] == u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>))
@@ -3761,7 +3776,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>310</span>    <span class="doccomment">/// Returns words in increasing bit-index order; unused high bits in the last word are zero.
 <span data-nosnippet>311</span>    </span><span class="kw">pub fn </span>words(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u64] {
 <span data-nosnippet>312</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>313</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts(<span class="self">self</span>.bits.as_ptr().cast(), <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.size.div_ceil(<span class="number">64</span>)) }
+<span data-nosnippet>313</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts(<span class="self">self</span>.bits.as_ptr().cast(), <span class="self">self</span>.size.div_ceil(<span class="number">64</span>)) }
 <span data-nosnippet>314</span>    }
 <span data-nosnippet>315</span>
 <span data-nosnippet>316</span>    <span class="doccomment">/// Returns mutable words in increasing bit-index order.
@@ -3769,7 +3784,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>words_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[u64] {
 <span data-nosnippet>319</span>        <span class="kw">let </span>len = <span class="self">self</span>.size.div_ceil(<span class="number">64</span>);
 <span data-nosnippet>320</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<span class="self">self</span>.bits.as_mut_ptr().cast(), len) }
+<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<a class="self" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.next">self</a>.bits.as_mut_ptr().cast(), len) }
 <span data-nosnippet>322</span>    }
 <span data-nosnippet>323</span>
 <span data-nosnippet>324</span>    <span class="kw">fn </span>trim(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
@@ -3958,7 +3973,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>507</span>    }
 <span data-nosnippet>508</span>}
 <span data-nosnippet>509</span>
-<span data-nosnippet>510</span><span class="kw">impl </span>ShlAssign&lt;<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a>&gt; <span class="kw">for </span>BitSet {
+<span data-nosnippet>510</span><span class="kw">impl </span>ShlAssign&lt;usize&gt; <span class="kw">for </span>BitSet {
 <span data-nosnippet>511</span>    <span class="attr">#[inline]
 <span data-nosnippet>512</span>    </span><span class="kw">fn </span>shl_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
 <span data-nosnippet>513</span>        <span class="self">self</span>.shift_left::&lt;<span class="bool-val">false</span>&gt;(rhs);
@@ -3982,7 +3997,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>531</span>
 <span data-nosnippet>532</span><span class="kw">impl </span>Shr&lt;usize&gt; <span class="kw">for </span>BitSet {
 <span data-nosnippet>533</span>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<span data-nosnippet>534</span>    <span class="kw">fn </span>shr(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a>) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>534</span>    <span class="kw">fn </span>shr(<span class="kw-2">mut </span><span class="self">self</span>, rhs: usize) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>535</span>        <span class="self">self </span>&gt;&gt;= rhs;
 <span data-nosnippet>536</span>        <span class="self">self
 <span data-nosnippet>537</span>    </span>}
@@ -4308,7 +4323,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>334</span>    }
 <span data-nosnippet>335</span>
 <span data-nosnippet>336</span>    <span class="attr">#[inline]
-<span data-nosnippet>337</span>    </span><span class="kw">fn </span>bitop_assign&lt;<span class="kw">const </span>OP: u8&gt;(<span class="kw-2">&amp;mut </span><a class="self" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">self</a>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+<span data-nosnippet>337</span>    </span><span class="kw">fn </span>bitop_assign&lt;<span class="kw">const </span>OP: u8&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
 <span data-nosnippet>338</span>        <span class="macro">assert_eq!</span>(
 <span data-nosnippet>339</span>            <span class="self">self</span>.size, rhs.size,
 <span data-nosnippet>340</span>            <span class="string">"bitwise operations require equal lengths"
@@ -4322,7 +4337,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>348</span>            }
 <span data-nosnippet>349</span>            <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
 <span data-nosnippet>350</span>                <span class="comment">// SAFETY: 64-byte alignment also satisfies AVX2 and feature detection checked it.
-<span data-nosnippet>351</span>                </span><span class="kw">unsafe </span>{ simd::bitop_avx2::&lt;OP&gt;(<span class="kw-2">&amp;mut </span><a class="self" href="../../../../../algebra/struct.Bits.html">self</a>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
+<span data-nosnippet>351</span>                </span><span class="kw">unsafe </span>{ simd::bitop_avx2::&lt;OP&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, <span class="kw-2">&amp;</span>rhs.bits) };
 <span data-nosnippet>352</span>                <span class="kw">return</span>;
 <span data-nosnippet>353</span>            }
 <span data-nosnippet>354</span>        }
@@ -4374,7 +4389,7 @@ Callers must keep unused high bits in the last word zero.</p>
 <span data-nosnippet>400</span>        <span class="kw">let </span>word_shift = rhs &gt;&gt; <span class="number">6</span>;
 <span data-nosnippet>401</span>        <span class="kw">let </span>bit_shift = rhs &amp; <span class="number">63</span>;
 <span data-nosnippet>402</span>        <span class="kw">if </span>bit_shift == <span class="number">0 </span>{
-<span data-nosnippet>403</span>            <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..bits.len() - word_shift).rev() {
+<span data-nosnippet>403</span>            <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..bits.<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">len</a>() - word_shift).rev() {
 <span data-nosnippet>404</span>                <span class="kw">if </span>OR_ASSIGN {
 <span data-nosnippet>405</span>                    bits[i + word_shift] |= bits[i];
 <span data-nosnippet>406</span>                } <span class="kw">else </span>{

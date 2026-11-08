@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -214,7 +229,7 @@
 <span data-nosnippet>464</span>            <span class="kw">return </span>value;
 <span data-nosnippet>465</span>        }
 <span data-nosnippet>466</span>        <span class="kw">let </span><span class="kw-2">mut </span>active = HashSet::from([root]);
-<span data-nosnippet>467</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(root, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">index</a>.edges[root].iter())];
+<span data-nosnippet>467</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(root, index.edges[root].iter())];
 <span data-nosnippet>468</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>((v, moves)) = stack.last_mut() {
 <span data-nosnippet>469</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>u) = moves.next() {
 <span data-nosnippet>470</span>                <span class="kw">if </span><span class="self">self</span>.grundy[u].is_none() {
@@ -281,7 +296,7 @@
 <span data-nosnippet>531</span>            <span class="kw">if </span>can_win {
 <span data-nosnippet>532</span>                GameOutcome::Win
 <span data-nosnippet>533</span>            } <span class="kw">else </span>{
-<span data-nosnippet>534</span>                GameOutcome::Draw
+<span data-nosnippet>534</span>                GameOutcome::<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">Draw</a>
 <span data-nosnippet>535</span>            }
 <span data-nosnippet>536</span>        } <span class="kw">else if </span>xor == <span class="number">0 </span>{
 <span data-nosnippet>537</span>            GameOutcome::Lose
@@ -329,7 +344,7 @@
 <span data-nosnippet>579</span>
 <span data-nosnippet>580</span>    <span class="kw">fn </span>index_of(<span class="kw-2">&amp;</span><span class="self">self</span>, v: G::Vertex) -&gt; usize {
 <span data-nosnippet>581</span>        <span class="self">self</span>.graph
-<span data-nosnippet>582</span>            .vmap_get(<span class="kw-2">&amp;</span><span class="self">self</span>.index.as_ref().unwrap().indices, v)
+<span data-nosnippet>582</span>            .vmap_get(<span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">self</a>.index.as_ref().unwrap().indices, v)
 <span data-nosnippet>583</span>            .expect(<span class="string">"vertex is not enumerated by the graph"</span>)
 <span data-nosnippet>584</span>    }
 <span data-nosnippet>585</span>
@@ -394,7 +409,7 @@
 <span data-nosnippet>644</span>                    }
 <span data-nosnippet>645</span>                }
 <span data-nosnippet>646</span>                <span class="comment">// A larger value already had a follower at this vertex's mex.
-<span data-nosnippet>647</span>                </span><span class="kw">if </span>mex &lt; mexes[u] &amp;&amp; !queued[u] {
+<span data-nosnippet>647</span>                </span><span class="kw">if </span><a href="../../algebra/magma.rs.html#224">mex</a> &lt; mexes[u] &amp;&amp; !queued[u] {
 <span data-nosnippet>648</span>                    queued[u] = <span class="bool-val">true</span>;
 <span data-nosnippet>649</span>                    queue.push_back(u);
 <span data-nosnippet>650</span>                }
@@ -506,12 +521,12 @@
 <span data-nosnippet>328</span>            <span class="kw">if </span>count != left.len() + right.len() {
 <span data-nosnippet>329</span>                <span class="kw">continue</span>;
 <span data-nosnippet>330</span>            }
-<span data-nosnippet>331</span>            <span class="kw">let </span>options = <a href="../../prelude.rs.html#1-36">Rc::new</a>((left, right));
+<span data-nosnippet>331</span>            <span class="kw">let </span>options = Rc::new((left, right));
 <span data-nosnippet>332</span>            <span class="kw">let </span>game = <span class="self">Self</span>(GameValueNode::Options(<span class="number">0</span>.into(), options.clone()));
 <span data-nosnippet>333</span>            <span class="comment">// Bypasses preserve the game, so all checks use the same candidate.
 <span data-nosnippet>334</span>            </span><span class="kw">let </span><span class="kw-2">mut </span>reversible = Vec::new();
 <span data-nosnippet>335</span>            <span class="kw">for </span>player <span class="kw">in </span>[Player::Left, Player::Right] {
-<span data-nosnippet>336</span>                <span class="kw">let </span>moves = <span class="kw">match </span>player {
+<span data-nosnippet>336</span>                <span class="kw">let </span><a href="../../graph/mod.rs.html#1-144">moves</a> = <span class="kw">match </span>player {
 <span data-nosnippet>337</span>                    Player::Left =&gt; <span class="kw-2">&amp;</span>options.<span class="number">0</span>,
 <span data-nosnippet>338</span>                    Player::Right =&gt; <span class="kw-2">&amp;</span>options.<span class="number">1</span>,
 <span data-nosnippet>339</span>                };

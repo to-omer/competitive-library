@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -268,7 +283,7 @@
 <span data-nosnippet>789</span>    N2: Montgomery32NttModulus,
 <span data-nosnippet>790</span>    N3: Montgomery32NttModulus,
 <span data-nosnippet>791</span>{
-<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;<a href="../algebra/magma.rs.html#4-18">::new</a>(N1::get_mod()).inv();
+<span data-nosnippet>792</span>    <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
 <span data-nosnippet>793</span>    <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>794</span>    <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>795</span>    <span class="kw">let </span>modulus = &lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::mod_into() <span class="kw">as </span>u64;
@@ -284,12 +299,12 @@
 <span data-nosnippet>805</span>        .map(|((c1, c2), c3)| {
 <span data-nosnippet>806</span>            <span class="kw">let </span>d1 = c1.inner();
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * <a href="../algebra/magma.rs.html#56">m1_3</a>;
 <span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
 <span data-nosnippet>812</span>            } <span class="kw">else </span>{
-<span data-nosnippet>813</span>                ((d1 <span class="kw">as </span><a href="../../../../../algebra/struct.Bits.html">u128</a> + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
+<span data-nosnippet>813</span>                ((d1 <span class="kw">as </span>u128 + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
 <span data-nosnippet>814</span>                    <span class="kw">as </span>u64
 <span data-nosnippet>815</span>            };
 <span data-nosnippet>816</span>            MInt::&lt;M&gt;::from(value <span class="kw">as </span>u32)
@@ -587,7 +602,7 @@
 <span data-nosnippet>1108</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1109</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
 <span data-nosnippet>1110</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
-<span data-nosnippet>1111</span>                            <span class="kw">let </span><a href="../algebra/mod.rs.html#37">value</a> = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
+<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
 <span data-nosnippet>1112</span>                            <span class="kw-2">*</span>value = value.wrapping_add(a.wrapping_mul(b));
 <span data-nosnippet>1113</span>                        }
 <span data-nosnippet>1114</span>                    }
@@ -762,7 +777,7 @@
 <span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
 <span data-nosnippet>1285</span>        <span class="kw">for </span>a <span class="kw">in </span>a.chunks_mut(<span class="number">4</span>) {
-<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().zip(<span class="kw-2">&amp;mut </span>rot) {
+<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().<a href="../num/zero_one.rs.html#16">zip</a>(<span class="kw-2">&amp;mut </span>rot) {
 <span data-nosnippet>1287</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>rot;
 <span data-nosnippet>1288</span>                <span class="kw-2">*</span>rot <span class="kw-2">*</span>= step;
 <span data-nosnippet>1289</span>            }

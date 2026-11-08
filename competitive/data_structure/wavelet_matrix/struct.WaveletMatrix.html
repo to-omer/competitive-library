@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -547,7 +562,7 @@
 <span data-nosnippet>822</span>                    }
 <span data-nosnippet>823</span>                    <span class="kw">super</span>::SimdBackend::Avx2 <span class="kw">if </span><span class="self">self</span>.len &lt; <span class="number">1048576 </span>=&gt; {
 <span data-nosnippet>824</span>                        simd::rank_lessthan_avx2(
-<span data-nosnippet>825</span>                            <span class="kw-2">&amp;</span><span class="self">self</span>.bit_vectors[first..],
+<span data-nosnippet>825</span>                            <span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.next">self</a>.bit_vectors[first..],
 <span data-nosnippet>826</span>                            <span class="kw-2">&amp;</span><span class="self">self</span>.zeros[first..],
 <span data-nosnippet>827</span>                            <span class="kw-2">&amp;mut </span>states[..count.next_multiple_of(<span class="number">4</span>)],
 <span data-nosnippet>828</span>                        );
@@ -599,7 +614,7 @@
 <span data-nosnippet>874</span>    </span><span class="kw">pub fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; T {
 <span data-nosnippet>875</span>        <span class="kw">if </span>!<span class="self">self</span>.quad_vectors.is_empty() {
 <span data-nosnippet>876</span>            <span class="kw">let </span><span class="kw-2">mut </span>index = <span class="number">0</span>;
-<span data-nosnippet>877</span>            <span class="kw">for </span>vector <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.<a href="../../../../../algebra/trait.AbelianGroup.html">quad_vectors</a> {
+<span data-nosnippet>877</span>            <span class="kw">for </span>vector <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.quad_vectors {
 <span data-nosnippet>878</span>                <span class="kw">let </span>(digit, rank) = vector.access_rank(k);
 <span data-nosnippet>879</span>                index = index * <span class="number">4 </span>+ digit;
 <span data-nosnippet>880</span>                k = vector.starts[digit] + rank;
@@ -714,7 +729,7 @@
 <span data-nosnippet>989</span>            k -= <span class="kw">if </span>bit { z } <span class="kw">else </span>{ <span class="number">0 </span>};
 <span data-nosnippet>990</span>            idx |= (bit <span class="kw">as </span>usize) &lt;&lt; d;
 <span data-nosnippet>991</span>            range.start = <span class="kw">if </span>bit {
-<span data-nosnippet>992</span>                <span class="self">self</span>.zeros[<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">level</a>] + start1
+<span data-nosnippet>992</span>                <span class="self">self</span>.zeros[level] + start1
 <span data-nosnippet>993</span>            } <span class="kw">else </span>{
 <span data-nosnippet>994</span>                start0
 <span data-nosnippet>995</span>            };
@@ -728,7 +743,7 @@
 <span data-nosnippet>1003</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>1004</span>        <span class="kw-2">mut </span>range: Range&lt;usize&gt;,
 <span data-nosnippet>1005</span>        <span class="kw-2">mut </span>k: usize,
-<span data-nosnippet>1006</span>        level: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">usize</a>,
+<span data-nosnippet>1006</span>        level: usize,
 <span data-nosnippet>1007</span>        <span class="kw-2">mut </span>index: usize,
 <span data-nosnippet>1008</span>    ) -&gt; T {
 <span data-nosnippet>1009</span>        <span class="kw">for </span>vector <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.quad_vectors[level..] {
@@ -793,7 +808,7 @@
 <span data-nosnippet>1068</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(ranks.len());
 <span data-nosnippet>1069</span>        <span class="kw">if </span>!<span class="self">self</span>.quad_vectors.is_empty() {
 <span data-nosnippet>1070</span>            <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(range, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, ranks)];
-<span data-nosnippet>1071</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>((range, base, index, level, ranks)) = stack.pop() {
+<span data-nosnippet>1071</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>((range, base, index, level, ranks)) = <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">stack</a>.pop() {
 <span data-nosnippet>1072</span>                <span class="kw">if </span>level == <span class="self">self</span>.quad_vectors.len() {
 <span data-nosnippet>1073</span>                    result.resize(
 <span data-nosnippet>1074</span>                        result.len() + ranks.len(),
@@ -872,14 +887,14 @@
 <span data-nosnippet>1147</span>                <span class="kw">let </span>outer_end = vector.ranks(outer.end);
 <span data-nosnippet>1148</span>                <span class="kw">let </span><span class="kw-2">mut </span>digit = <span class="number">0</span>;
 <span data-nosnippet>1149</span>                <span class="kw">while </span>digit &lt; <span class="number">3 </span>{
-<span data-nosnippet>1150</span>                    <span class="kw">let </span>count = outer_end[digit] - outer_start[digit] - (end[digit] - start[<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">digit</a>]);
+<span data-nosnippet>1150</span>                    <span class="kw">let </span>count = outer_end[digit] - outer_start[digit] - (end[digit] - start[digit]);
 <span data-nosnippet>1151</span>                    <span class="kw">if </span>k &lt; count {
 <span data-nosnippet>1152</span>                        <span class="kw">break</span>;
 <span data-nosnippet>1153</span>                    }
 <span data-nosnippet>1154</span>                    k -= count;
 <span data-nosnippet>1155</span>                    digit += <span class="number">1</span>;
 <span data-nosnippet>1156</span>                }
-<span data-nosnippet>1157</span>                <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">index</a> = index * <span class="number">4 </span>+ digit;
+<span data-nosnippet>1157</span>                index = index * <span class="number">4 </span>+ digit;
 <span data-nosnippet>1158</span>                range = vector.starts[digit] + start[digit]..vector.starts[digit] + end[digit];
 <span data-nosnippet>1159</span>                outer = vector.starts[digit] + outer_start[digit]
 <span data-nosnippet>1160</span>                    ..vector.starts[digit] + outer_end[digit];
@@ -903,7 +918,7 @@
 <span data-nosnippet>1178</span>                k -= z;
 <span data-nosnippet>1179</span>                idx |= <span class="number">1 </span>&lt;&lt; d;
 <span data-nosnippet>1180</span>                range.start = <span class="self">self</span>.zeros[level] + range_start1;
-<span data-nosnippet>1181</span>                range.end = <span class="self">self</span>.zeros[<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">level</a>] + range_end1;
+<span data-nosnippet>1181</span>                range.end = <span class="self">self</span>.zeros[level] + range_end1;
 <span data-nosnippet>1182</span>                orange.start = <span class="self">self</span>.zeros[level] + outer_start1;
 <span data-nosnippet>1183</span>                orange.end = <span class="self">self</span>.zeros[level] + outer_end1;
 <span data-nosnippet>1184</span>            } <span class="kw">else </span>{
@@ -972,12 +987,12 @@
 <span data-nosnippet>1247</span>                <span class="kw">let </span>block = <span class="kw-2">&amp;</span>vector.blocks[position / <span class="number">64</span>];
 <span data-nosnippet>1248</span>                <span class="kw">let </span>mask = !(u64::MAX &lt;&lt; (position % <span class="number">64</span>));
 <span data-nosnippet>1249</span>                <span class="kw">let </span>low = <span class="kw">if </span>digit &amp; <span class="number">1 </span>== <span class="number">0 </span>{ !block.lo } <span class="kw">else </span>{ block.lo };
-<span data-nosnippet>1250</span>                <span class="kw">let </span>high = <span class="kw">if </span>digit &amp; <span class="number">2 </span>== <span class="number">0 </span>{ !block.hi } <span class="kw">else </span>{ block.hi };
+<span data-nosnippet>1250</span>                <span class="kw">let </span><a href="../num/zero_one.rs.html#1-14">high</a> = <span class="kw">if </span>digit &amp; <span class="number">2 </span>== <span class="number">0 </span>{ !block.hi } <span class="kw">else </span>{ block.hi };
 <span data-nosnippet>1251</span>                <span class="kw">let </span>exact = block.rank[digit] <span class="kw">as </span>usize + (low &amp; high &amp; mask).count_ones() <span class="kw">as </span>usize;
 <span data-nosnippet>1252</span>                <span class="kw">let </span>less = <span class="kw">match </span>digit {
 <span data-nosnippet>1253</span>                    <span class="number">0 </span>=&gt; <span class="number">0</span>,
 <span data-nosnippet>1254</span>                    <span class="number">1 </span>=&gt; {
-<span data-nosnippet>1255</span>                        block.rank[<span class="number">0</span>] <span class="kw">as </span>usize
+<span data-nosnippet>1255</span>                        <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">block</a>.rank[<span class="number">0</span>] <span class="kw">as </span>usize
 <span data-nosnippet>1256</span>                            + (!(block.lo | block.hi) &amp; mask).count_ones() <span class="kw">as </span>usize
 <span data-nosnippet>1257</span>                    }
 <span data-nosnippet>1258</span>                    <span class="number">2 </span>=&gt; {
@@ -1033,7 +1048,7 @@
 <span data-nosnippet>1308</span>                <span class="kw">let </span>low = (lower &gt;&gt; d) &amp; <span class="number">3</span>;
 <span data-nosnippet>1309</span>                <span class="kw">let </span>high = (upper &gt;&gt; d) &amp; <span class="number">3</span>;
 <span data-nosnippet>1310</span>                <span class="kw">if </span>low == high {
-<span data-nosnippet>1311</span>                    range = vector.starts[low] + <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitAnd.html">vector</a>.rank(low, range.start)
+<span data-nosnippet>1311</span>                    range = vector.starts[low] + vector.rank(low, range.start)
 <span data-nosnippet>1312</span>                        ..vector.starts[low] + vector.rank(low, range.end);
 <span data-nosnippet>1313</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>1314</span>                }
@@ -1315,7 +1330,7 @@
 <span data-nosnippet>1590</span>        <span class="self">self</span>.fold_lessthan_with_count(val, range).<span class="number">1
 <span data-nosnippet>1591</span>    </span>}
 <span data-nosnippet>1592</span>
-<span data-nosnippet>1593</span>    <span class="kw">pub fn </span>fold_lessthan_with_count(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, range: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Range</a>&lt;usize&gt;) -&gt; (usize, M::T) {
+<span data-nosnippet>1593</span>    <span class="kw">pub fn </span>fold_lessthan_with_count(<span class="kw-2">&amp;</span><span class="self">self</span>, val: T, range: Range&lt;usize&gt;) -&gt; (usize, M::T) {
 <span data-nosnippet>1594</span>        <span class="macro">debug_assert!</span>(range.end &lt;= <span class="self">self</span>.wavelet_matrix.len);
 <span data-nosnippet>1595</span>        <span class="kw">let </span>[result] = <span class="self">self</span>.fold_lessthan_indices_with_count(
 <span data-nosnippet>1596</span>            [<span class="self">self</span>.wavelet_matrix.compress.index_lower_bound(<span class="kw-2">&amp;</span>val)],
@@ -1515,14 +1530,14 @@
 <span data-nosnippet>775</span>                            <span class="number">0</span>,
 <span data-nosnippet>776</span>                            end[<span class="number">0</span>] - start[<span class="number">0</span>],
 <span data-nosnippet>777</span>                            end[<span class="number">0</span>] + end[<span class="number">1</span>] - start[<span class="number">0</span>] - start[<span class="number">1</span>],
-<span data-nosnippet>778</span>                            state[<span class="number">1</span>] - state[<span class="number">0</span>] - (<a href="../num/mod.rs.html#1-72">end</a>[<span class="number">3</span>] - start[<span class="number">3</span>]),
+<span data-nosnippet>778</span>                            state[<span class="number">1</span>] - state[<span class="number">0</span>] - (end[<span class="number">3</span>] - start[<span class="number">3</span>]),
 <span data-nosnippet>779</span>                        ];
 <span data-nosnippet>780</span>                        <span class="kw">let </span>digit = (state[<span class="number">2</span>] &gt;= prefix[<span class="number">1</span>]) <span class="kw">as </span>usize
 <span data-nosnippet>781</span>                            + (state[<span class="number">2</span>] &gt;= prefix[<span class="number">2</span>]) <span class="kw">as </span>usize
 <span data-nosnippet>782</span>                            + (state[<span class="number">2</span>] &gt;= prefix[<span class="number">3</span>]) <span class="kw">as </span>usize;
 <span data-nosnippet>783</span>                        state[<span class="number">2</span>] -= prefix[digit];
 <span data-nosnippet>784</span>                        state[<span class="number">0</span>] = vector.starts[digit] + start[digit];
-<span data-nosnippet>785</span>                        state[<span class="number">1</span>] = vector.starts[digit] + end[digit];
+<span data-nosnippet>785</span>                        state[<span class="number">1</span>] = vector.starts[<a href="../tools/mod.rs.html#1-110">digit</a>] + end[digit];
 <span data-nosnippet>786</span>                        state[<span class="number">3</span>] = state[<span class="number">3</span>] * <span class="number">4 </span>+ digit;
 <span data-nosnippet>787</span>                    }
 <span data-nosnippet>788</span>                    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
@@ -1636,7 +1651,7 @@
 <span data-nosnippet>896</span>    }
 <span data-nosnippet>897</span>
 <span data-nosnippet>898</span>    <span class="doccomment">/// Returns the values at `indices` in input order.
-<span data-nosnippet>899</span>    </span><span class="kw">pub fn </span>access_batch(<span class="kw-2">&amp;</span><span class="self">self</span>, indices: <span class="kw">impl </span>IntoIterator&lt;Item = usize&gt;) -&gt; Vec&lt;T&gt; {
+<span data-nosnippet>899</span>    </span><span class="kw">pub fn </span>access_batch(<span class="kw-2">&amp;</span><span class="self">self</span>, indices: <span class="kw">impl </span>IntoIterator&lt;Item = usize&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">Vec</a>&lt;T&gt; {
 <span data-nosnippet>900</span>        <span class="kw">let </span>indices: Vec&lt;<span class="kw">_</span>&gt; = indices.into_iter().collect();
 <span data-nosnippet>901</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(indices.len());
 <span data-nosnippet>902</span>        <span class="kw">for </span>indices <span class="kw">in </span>indices.chunks(<span class="number">16</span>) {
@@ -1700,7 +1715,7 @@
 <span data-nosnippet>960</span>            }
 <span data-nosnippet>961</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(i);
 <span data-nosnippet>962</span>        }
-<span data-nosnippet>963</span>        <span class="kw">for </span>level <span class="kw">in </span>(<span class="self">self</span>.compress.size().is_power_of_two() <span class="kw">as </span>usize..<span class="self">self</span>.bit_length).rev() {
+<span data-nosnippet>963</span>        <span class="kw">for </span>level <span class="kw">in </span>(<span class="self">self</span>.compress.size().is_power_of_two() <span class="kw">as </span>usize..<span class="self">self</span>.bit_length).<a href="../algebra/magma.rs.html#228">rev</a>() {
 <span data-nosnippet>964</span>            <span class="kw">if </span>i &gt;= <span class="self">self</span>.zeros[level] {
 <span data-nosnippet>965</span>                i = <span class="self">self</span>.bit_vectors[level]
 <span data-nosnippet>966</span>                    .select1(i - <span class="self">self</span>.zeros[level])
@@ -1861,7 +1876,7 @@
 <span data-nosnippet>1121</span>            <span class="kw">let </span>boundary = ranks.partition_point(|<span class="kw-2">&amp;</span>k| k &lt; split);
 <span data-nosnippet>1122</span>            <span class="kw">if </span>boundary &lt; ranks.len() {
 <span data-nosnippet>1123</span>                stack.push((
-<span data-nosnippet>1124</span>                    <span class="self">self</span>.zeros[level] + start1..<span class="self">self</span>.zeros[level] + end1,
+<span data-nosnippet>1124</span>                    <span class="self">self</span>.zeros[<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">level</a>] + start1..<span class="self">self</span>.zeros[level] + end1,
 <span data-nosnippet>1125</span>                    split,
 <span data-nosnippet>1126</span>                    index | (<span class="number">1 </span>&lt;&lt; d),
 <span data-nosnippet>1127</span>                    d,
@@ -2014,10 +2029,10 @@
 <span data-nosnippet>1274</span>
 <span data-nosnippet>1275</span>    <span class="kw">fn </span>rank_lessthan_index(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, bits: usize) -&gt; usize {
 <span data-nosnippet>1276</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="number">0</span>;
-<span data-nosnippet>1277</span>        <span class="kw">for </span>d <span class="kw">in </span>(idx.trailing_zeros() <span class="kw">as </span>usize..bits).rev() {
+<span data-nosnippet>1277</span>        <span class="kw">for </span>d <span class="kw">in </span>(idx.trailing_zeros() <span class="kw">as </span>usize..bits).<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html">rev</a>() {
 <span data-nosnippet>1278</span>            <span class="kw">let </span>level = <span class="self">self</span>.level(d);
 <span data-nosnippet>1279</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.<span class="highlight">rank1</span>(level, range.start);
-<span data-nosnippet>1280</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.<span class="highlight">rank1</span>(level, range.<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">end</a>);
+<span data-nosnippet>1280</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.<span class="highlight">rank1</span>(level, range.end);
 <span data-nosnippet>1281</span>            <span class="kw">let </span>bit = (idx &gt;&gt; d) &amp; <span class="number">1 </span>!= <span class="number">0</span>;
 <span data-nosnippet>1282</span>            <span class="kw">let </span>start0 = range.start - start1;
 <span data-nosnippet>1283</span>            <span class="kw">let </span>end0 = range.end - end1;
@@ -2035,7 +2050,7 @@
 <span data-nosnippet>1295</span>    <span class="doccomment">/// the number of valrange in range
 <span data-nosnippet>1296</span>    </span><span class="kw">pub fn </span>rank_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;T&gt;, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
 <span data-nosnippet>1297</span>        <span class="kw">let </span>lower = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.start);
-<span data-nosnippet>1298</span>        <span class="kw">let </span>upper = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.end);
+<span data-nosnippet>1298</span>        <span class="kw">let </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">upper</a> = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.end);
 <span data-nosnippet>1299</span>        <span class="kw">if </span>lower &gt;= upper {
 <span data-nosnippet>1300</span>            <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>1301</span>        }
@@ -2092,7 +2107,7 @@
 <span data-nosnippet>1352</span>    </span><span class="kw">pub fn </span>rank_range_batch(
 <span data-nosnippet>1353</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
 <span data-nosnippet>1354</span>        queries: <span class="kw">impl </span>IntoIterator&lt;Item = (Range&lt;T&gt;, Range&lt;usize&gt;)&gt;,
-<span data-nosnippet>1355</span>    ) -&gt; <a href="../num/zero_one.rs.html#15-28">Vec</a>&lt;usize&gt; {
+<span data-nosnippet>1355</span>    ) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>1356</span>        <span class="kw">let </span>queries: Vec&lt;<span class="kw">_</span>&gt; = queries.into_iter().collect();
 <span data-nosnippet>1357</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(queries.len());
 <span data-nosnippet>1358</span>        <span class="kw">for </span>queries <span class="kw">in </span>queries.chunks(<span class="number">8</span>) {
@@ -2140,7 +2155,7 @@
 <span data-nosnippet>1400</span>                <span class="kw">if </span>digit &amp; <span class="number">2 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>1401</span>                    f(d + <span class="number">1</span>, start[<span class="number">0</span>] + start[<span class="number">1</span>]..end[<span class="number">0</span>] + end[<span class="number">1</span>]);
 <span data-nosnippet>1402</span>                }
-<span data-nosnippet>1403</span>                <span class="kw">if </span>digit &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+<span data-nosnippet>1403</span>                <span class="kw">if </span><a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">digit</a> &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
 <span data-nosnippet>1404</span>                    <span class="kw">let </span>zero = digit &amp; <span class="number">2</span>;
 <span data-nosnippet>1405</span>                    f(
 <span data-nosnippet>1406</span>                        d,
@@ -2672,7 +2687,7 @@
 <span data-nosnippet>1308</span>                <span class="kw">let </span>low = (lower &gt;&gt; d) &amp; <span class="number">3</span>;
 <span data-nosnippet>1309</span>                <span class="kw">let </span>high = (upper &gt;&gt; d) &amp; <span class="number">3</span>;
 <span data-nosnippet>1310</span>                <span class="kw">if </span>low == high {
-<span data-nosnippet>1311</span>                    <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">range</a> = vector.starts[low] + vector.rank(low, range.start)
+<span data-nosnippet>1311</span>                    range = vector.starts[low] + vector.rank(low, range.start)
 <span data-nosnippet>1312</span>                        ..vector.starts[low] + vector.rank(low, range.end);
 <span data-nosnippet>1313</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>1314</span>                }
@@ -2719,7 +2734,7 @@
 <span data-nosnippet>1355</span>    ) -&gt; Vec&lt;usize&gt; {
 <span data-nosnippet>1356</span>        <span class="kw">let </span>queries: Vec&lt;<span class="kw">_</span>&gt; = queries.into_iter().collect();
 <span data-nosnippet>1357</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(queries.len());
-<span data-nosnippet>1358</span>        <span class="kw">for </span>queries <span class="kw">in </span>queries.chunks(<span class="number">8</span>) {
+<span data-nosnippet>1358</span>        <span class="kw">for </span>queries <span class="kw">in </span><a href="../num/bounded.rs.html#2-17">queries</a>.chunks(<span class="number">8</span>) {
 <span data-nosnippet>1359</span>            <span class="kw">let </span><span class="kw-2">mut </span>states = [[<span class="number">0</span>; <span class="number">4</span>]; <span class="number">16</span>];
 <span data-nosnippet>1360</span>            <span class="kw">for </span>(i, (values, range)) <span class="kw">in </span>queries.iter().enumerate() {
 <span data-nosnippet>1361</span>                <span class="macro">assert!</span>(range.start &lt;= range.end &amp;&amp; range.end &lt;= <span class="self">self</span>.len);
@@ -2890,7 +2905,7 @@
 <span data-nosnippet>1122</span>            <span class="kw">if </span>boundary &lt; ranks.len() {
 <span data-nosnippet>1123</span>                stack.push((
 <span data-nosnippet>1124</span>                    <span class="self">self</span>.zeros[level] + start1..<span class="self">self</span>.zeros[level] + end1,
-<span data-nosnippet>1125</span>                    split,
+<span data-nosnippet>1125</span>                    <a href="../tools/mod.rs.html#1-110">split</a>,
 <span data-nosnippet>1126</span>                    index | (<span class="number">1 </span>&lt;&lt; d),
 <span data-nosnippet>1127</span>                    d,
 <span data-nosnippet>1128</span>                    <span class="kw-2">&amp;</span>ranks[boundary..],
@@ -3377,7 +3392,7 @@ in nondecreasing order and every rank must be less than the range length.</p>
 <span data-nosnippet>1294</span>
 <span data-nosnippet>1295</span>    <span class="doccomment">/// the number of valrange in range
 <span data-nosnippet>1296</span>    </span><span class="kw">pub fn </span>rank_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;T&gt;, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
-<span data-nosnippet>1297</span>        <span class="kw">let </span>lower = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.<a href="../graph/mod.rs.html#1-144">start</a>);
+<span data-nosnippet>1297</span>        <span class="kw">let </span>lower = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.start);
 <span data-nosnippet>1298</span>        <span class="kw">let </span>upper = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.end);
 <span data-nosnippet>1299</span>        <span class="kw">if </span>lower &gt;= upper {
 <span data-nosnippet>1300</span>            <span class="kw">return </span><span class="number">0</span>;
@@ -3413,7 +3428,7 @@ in nondecreasing order and every rank must be less than the range length.</p>
 <span data-nosnippet>1330</span>            <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>1331</span>        }
 <span data-nosnippet>1332</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.bit_length).rev() {
-<span data-nosnippet>1333</span>            <span class="kw">let </span>level = <span class="self">self</span>.level(d);
+<span data-nosnippet>1333</span>            <span class="kw">let </span>level = <span class="self">self</span>.<a href="../../../../../algebra/trait.Magma.html">level</a>(d);
 <span data-nosnippet>1334</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.rank1(level, range.start);
 <span data-nosnippet>1335</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.rank1(level, range.end);
 <span data-nosnippet>1336</span>            <span class="kw">let </span>zero_range = range.start - start1..range.end - end1;
@@ -3536,7 +3551,7 @@ in nondecreasing order and every rank must be less than the range length.</p>
 <span data-nosnippet>1294</span>
 <span data-nosnippet>1295</span>    <span class="doccomment">/// the number of valrange in range
 <span data-nosnippet>1296</span>    </span><span class="kw">pub fn </span>rank_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;T&gt;, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
-<span data-nosnippet>1297</span>        <span class="kw">let </span>lower = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.<a href="../graph/mod.rs.html#1-144">start</a>);
+<span data-nosnippet>1297</span>        <span class="kw">let </span>lower = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.start);
 <span data-nosnippet>1298</span>        <span class="kw">let </span>upper = <span class="self">self</span>.compress.index_lower_bound(<span class="kw-2">&amp;</span>valrange.end);
 <span data-nosnippet>1299</span>        <span class="kw">if </span>lower &gt;= upper {
 <span data-nosnippet>1300</span>            <span class="kw">return </span><span class="number">0</span>;
@@ -3572,7 +3587,7 @@ in nondecreasing order and every rank must be less than the range length.</p>
 <span data-nosnippet>1330</span>            <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>1331</span>        }
 <span data-nosnippet>1332</span>        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.bit_length).rev() {
-<span data-nosnippet>1333</span>            <span class="kw">let </span>level = <span class="self">self</span>.level(d);
+<span data-nosnippet>1333</span>            <span class="kw">let </span>level = <span class="self">self</span>.<a href="../../../../../algebra/trait.Magma.html">level</a>(d);
 <span data-nosnippet>1334</span>            <span class="kw">let </span>start1 = <span class="self">self</span>.rank1(level, range.start);
 <span data-nosnippet>1335</span>            <span class="kw">let </span>end1 = <span class="self">self</span>.rank1(level, range.end);
 <span data-nosnippet>1336</span>            <span class="kw">let </span>zero_range = range.start - start1..range.end - end1;

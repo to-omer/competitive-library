@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -180,7 +195,7 @@
 <span data-nosnippet>952</span>        <span class="comment">// The 22-bit fallback needs room for three limb products per coefficient.
 <span data-nosnippet>953</span>        </span><span class="macro">assert!</span>(
 <span data-nosnippet>954</span>            <span class="number">3 </span>* npot <span class="kw">as </span>u128 * ((<span class="number">1u128 </span>&lt;&lt; <span class="number">22</span>) - <span class="number">1</span>).pow(<span class="number">2</span>)
-<span data-nosnippet>955</span>                &lt; <a href="../num/bounded.rs.html#2-17">N1::MOD</a> <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
+<span data-nosnippet>955</span>                &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
 <span data-nosnippet>956</span>        );
 <span data-nosnippet>957</span>        <span class="kw">let </span>bits = <span class="kw">if </span><span class="number">2 </span>* npot <span class="kw">as </span>u128 * (u32::MAX <span class="kw">as </span>u128).pow(<span class="number">2</span>)
 <span data-nosnippet>958</span>            &lt; N1::MOD <span class="kw">as </span>u128 * N2::MOD <span class="kw">as </span>u128 * N3::MOD <span class="kw">as </span>u128
@@ -300,7 +315,7 @@
 <span data-nosnippet>1072</span>
 <span data-nosnippet>1073</span>    <span class="kw">fn </span>square(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1074</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::transform(t, len);
-<span data-nosnippet>1075</span>        <span class="kw">let </span>g = f.<a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">clone</a>();
+<span data-nosnippet>1075</span>        <span class="kw">let </span>g = f.clone();
 <span data-nosnippet>1076</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>f, <span class="kw-2">&amp;</span>g);
 <span data-nosnippet>1077</span>        <span class="self">Self</span>::inverse_transform(f, len)
 <span data-nosnippet>1078</span>    }
@@ -336,7 +351,7 @@
 <span data-nosnippet>1108</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1109</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
 <span data-nosnippet>1110</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
-<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
+<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + <a href="../algebra/magma.rs.html#189">j</a>) * block_len + x + y];
 <span data-nosnippet>1112</span>                            <span class="kw-2">*</span>value = value.wrapping_add(a.wrapping_mul(b));
 <span data-nosnippet>1113</span>                        }
 <span data-nosnippet>1114</span>                    }
@@ -360,10 +375,10 @@
 <span data-nosnippet>1132</span>    convolve_u64_fft_scalar(a, b)
 <span data-nosnippet>1133</span>}
 <span data-nosnippet>1134</span>
-<span data-nosnippet>1135</span><span class="kw">fn </span>convolve_u64_fft_scalar(a: Vec&lt;u64&gt;, b: Vec&lt;<a href="../algebra/magma.rs.html#228">u64</a>&gt;) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>1135</span><span class="kw">fn </span>convolve_u64_fft_scalar(a: Vec&lt;u64&gt;, b: Vec&lt;u64&gt;) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>1136</span>    <span class="kw">fn </span>split(values: <span class="kw-2">&amp;</span>[u64]) -&gt; [Vec&lt;i64&gt;; <span class="number">5</span>] {
 <span data-nosnippet>1137</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = std::array::from_fn(|<span class="kw">_</span>| Vec::with_capacity(values.len()));
-<span data-nosnippet>1138</span>        <span class="kw">for </span><span class="kw-2">mut </span>value <span class="kw">in </span>values.iter().copied() {
+<span data-nosnippet>1138</span>        <span class="kw">for </span><span class="kw-2">mut </span><a href="../../../../../algebra/trait.Group.html">value</a> <span class="kw">in </span>values.iter().copied() {
 <span data-nosnippet>1139</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>result {
 <span data-nosnippet>1140</span>                <span class="kw">let </span>digit = ((value &lt;&lt; <span class="number">51</span>) <span class="kw">as </span>i64) &gt;&gt; <span class="number">51</span>;
 <span data-nosnippet>1141</span>                part.push(digit);
@@ -493,7 +508,7 @@
 <span data-nosnippet>1265</span>        t
 <span data-nosnippet>1266</span>    }
 <span data-nosnippet>1267</span>
-<span data-nosnippet>1268</span>    <span class="kw">fn </span>inverse_transform_ntt(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>1268</span>    <span class="kw">fn </span>inverse_transform_ntt(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <a href="../num/bounded.rs.html#2-17"><span class="self">Self</span>::T</a> {
 <span data-nosnippet>1269</span>        intt(<span class="kw-2">&amp;mut </span>f);
 <span data-nosnippet>1270</span>        f.truncate(len);
 <span data-nosnippet>1271</span>        f

@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -267,7 +282,7 @@
 <span data-nosnippet>230</span>                    <span class="self">self</span>[start + i][end + j].clone()
 <span data-nosnippet>231</span>                });
 <span data-nosnippet>232</span>                <span class="kw">let </span>update = <span class="kw-2">&amp;</span>lower * <span class="kw-2">&amp;</span>upper;
-<span data-nosnippet>233</span>                <span class="kw">for </span>(row, update) <span class="kw">in </span><span class="self">self</span>.data[rank..].<a href="../algebra/lazy_map.rs.html#1-905">iter_mut</a>().zip(update.data) {
+<span data-nosnippet>233</span>                <span class="kw">for </span>(row, update) <span class="kw">in </span><span class="self">self</span>.data[rank..].iter_mut().zip(update.data) {
 <span data-nosnippet>234</span>                    <span class="kw">for </span>(x, y) <span class="kw">in </span>row[end..].iter_mut().zip(update) {
 <span data-nosnippet>235</span>                        R::add_assign(x, <span class="kw-2">&amp;</span>y);
 <span data-nosnippet>236</span>                    }
@@ -336,7 +351,7 @@
 <span data-nosnippet>299</span>    </span>}
 <span data-nosnippet>300</span>
 <span data-nosnippet>301</span>    <span class="kw">pub fn </span>determinant(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; R::T {
-<span data-nosnippet>302</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
+<span data-nosnippet>302</span>        <a href="../algebra/magma.rs.html#49">assert_eq!</a>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
 <span data-nosnippet>303</span>        <span class="self">self</span>.eliminate::&lt;<span class="bool-val">true</span>&gt;().<span class="number">1
 <span data-nosnippet>304</span>    </span>}
 <span data-nosnippet>305</span>
@@ -391,7 +406,7 @@
 <span data-nosnippet>354</span>                <span class="kw">if </span>R::is_zero(<span class="kw-2">&amp;</span>row[c]) {
 <span data-nosnippet>355</span>                    <span class="kw">continue</span>;
 <span data-nosnippet>356</span>                }
-<span data-nosnippet>357</span>                <span class="kw">let </span>factor = row[c].<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">clone</a>();
+<span data-nosnippet>357</span>                <span class="kw">let </span>factor = row[c].clone();
 <span data-nosnippet>358</span>                row[c] = <span class="highlight">R::zero</span>();
 <span data-nosnippet>359</span>                R::sub_assign(value, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
 <span data-nosnippet>360</span>                R::add_scaled_assign(coefficients, pivot_coefficients, <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>factor));
@@ -416,7 +431,7 @@
 <span data-nosnippet>379</span>
 <span data-nosnippet>380</span>    <span class="kw">pub fn </span>inverse(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Matrix&lt;R&gt;&gt; {
 <span data-nosnippet>381</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
-<span data-nosnippet>382</span>        <span class="kw">let </span>n = <a class="self" href="../algebra/magma.rs.html#56">self</a>.shape.<span class="number">0</span>;
+<span data-nosnippet>382</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>383</span>        <span class="kw">if </span>n &gt;= <span class="number">64 </span>{
 <span data-nosnippet>384</span>            <span class="kw">let </span>m = n / <span class="number">2</span>;
 <span data-nosnippet>385</span>            <span class="kw">let </span>a = <span class="self">Self</span>::new_with((m, m), |i, j| <span class="self">self</span>[i][j].clone());
@@ -431,7 +446,7 @@
 <span data-nosnippet>394</span>                <span class="kw">let </span>r = <span class="kw-2">&amp;</span>u * <span class="kw-2">&amp;</span>di;
 <span data-nosnippet>395</span>                <span class="kw">let </span>t = <span class="kw-2">&amp;</span>di * <span class="kw-2">&amp;</span>v;
 <span data-nosnippet>396</span>                ai += <span class="kw-2">&amp;</span>r * <span class="kw-2">&amp;</span>v;
-<span data-nosnippet>397</span>                <span class="kw">let </span><span class="kw-2">mut </span>inverse = <span class="self">Self</span>::zeros((n, n));
+<span data-nosnippet>397</span>                <span class="kw">let </span><span class="kw-2">mut </span>inverse = <span class="self">Self</span>::zeros((n, <a href="../algebra/magma.rs.html#185">n</a>));
 <span data-nosnippet>398</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..m {
 <span data-nosnippet>399</span>                    inverse[i][..m].clone_from_slice(<span class="kw-2">&amp;</span>ai[i]);
 <span data-nosnippet>400</span>                    <span class="kw">for </span>(x, y) <span class="kw">in </span>inverse[i][m..].iter_mut().zip(<span class="kw-2">&amp;</span>r[i]) {
@@ -584,7 +599,7 @@
 <span data-nosnippet>547</span>    </span>R: SemiRing,
 <span data-nosnippet>548</span>{
 <span data-nosnippet>549</span>    <span class="kw">type </span>Output = R::T;
-<span data-nosnippet>550</span>    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, <a href="../algebra/mod.rs.html#37">index</a>: (usize, usize)) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+<span data-nosnippet>550</span>    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: (usize, usize)) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
 <span data-nosnippet>551</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.data[index.<span class="number">0</span>][index.<span class="number">1</span>]
 <span data-nosnippet>552</span>    }
 <span data-nosnippet>553</span>}
@@ -658,7 +673,7 @@
 <span data-nosnippet>621</span>        </span>{
 <span data-nosnippet>622</span>            <span class="kw">type </span>Output = Matrix&lt;R&gt;;
 <span data-nosnippet>623</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>Matrix&lt;R&gt;) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>624</span>                <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.clone();
+<span data-nosnippet>624</span>                <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.<a href="../algebra/magma.rs.html#4-18">clone</a>();
 <span data-nosnippet>625</span>                this.<span class="macro-nonterminal">$method_assign</span>(rhs);
 <span data-nosnippet>626</span>                this
 <span data-nosnippet>627</span>            }
@@ -875,7 +890,7 @@
 <span data-nosnippet>838</span>            <span class="kw">return </span>Matrix::from_vec(data);
 <span data-nosnippet>839</span>        }
 <span data-nosnippet>840</span>        <span class="kw">let </span>(n, m) = <span class="self">self</span>.shape;
-<span data-nosnippet>841</span>        <span class="kw">let </span>p = rhs.<a href="../algebra/mod.rs.html#37">shape</a>.<span class="number">1</span>;
+<span data-nosnippet>841</span>        <span class="kw">let </span>p = rhs.shape.<span class="number">1</span>;
 <span data-nosnippet>842</span>        <span class="kw">if </span>n == <span class="number">0 </span>|| m == <span class="number">0 </span>|| p == <span class="number">0 </span>{
 <span data-nosnippet>843</span>            <span class="kw">return </span>Matrix::zeros((n, p));
 <span data-nosnippet>844</span>        }
@@ -885,7 +900,7 @@
 <span data-nosnippet>848</span>        }
 <span data-nosnippet>849</span>        <span class="kw">let </span>rows = n.div_ceil(split) * split;
 <span data-nosnippet>850</span>        <span class="kw">let </span>inner = m.div_ceil(split) * split;
-<span data-nosnippet>851</span>        <span class="kw">let </span>cols = p.div_ceil(split) * split;
+<span data-nosnippet>851</span>        <span class="kw">let </span>cols = p.div_ceil(split) * <a href="../algebra/mod.rs.html#37">split</a>;
 <span data-nosnippet>852</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[<span class="highlight">R::zero</span>(); rows * inner];
 <span data-nosnippet>853</span>        <span class="kw">for </span>(a, data) <span class="kw">in </span>a.chunks_exact_mut(inner).zip(<span class="kw-2">&amp;</span><span class="self">self</span>.data) {
 <span data-nosnippet>854</span>            a[..m].clone_from_slice(data);
@@ -1495,7 +1510,7 @@
 <span data-nosnippet>373</span>            });
 <span data-nosnippet>374</span>            i_prefix += <span class="number">1</span>;
 <span data-nosnippet>375</span>        }
-<span data-nosnippet>376</span>        dfa
+<span data-nosnippet>376</span>        <a href="../num/zero_one.rs.html#15-28">dfa</a>
 <span data-nosnippet>377</span>    }
 <span data-nosnippet>378</span>    <span class="kw">pub fn </span>train_sample(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dfa: <span class="kw-2">&amp;</span>DeterministicFiniteAutomaton, sample: <span class="kw-2">&amp;</span>[usize]) -&gt; bool {
 <span data-nosnippet>379</span>        <span class="kw">let </span>expected = <span class="self">self</span>.automaton.behavior(sample.iter().cloned());
@@ -2408,7 +2423,7 @@
 <span data-nosnippet>356</span>                }
 <span data-nosnippet>357</span>                <span class="kw">let </span>factor = row[c].clone();
 <span data-nosnippet>358</span>                row[c] = R::zero();
-<span data-nosnippet>359</span>                R::sub_assign(value, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
+<span data-nosnippet>359</span>                R::sub_assign(<a href="../algebra/magma.rs.html#4-18">value</a>, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
 <span data-nosnippet>360</span>                R::add_scaled_assign(coefficients, pivot_coefficients, <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>factor));
 <span data-nosnippet>361</span>            }
 <span data-nosnippet>362</span>        }
@@ -2529,7 +2544,7 @@
 <span data-nosnippet>477</span>    <span class="kw">pub fn </span>characteristic_polynomial(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;R::T&gt; {
 <span data-nosnippet>478</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>479</span>        <span class="kw">if </span>n == <span class="number">0 </span>{
-<span data-nosnippet>480</span>            <span class="kw">return </span><span class="macro">vec!</span>[R::one()];
+<span data-nosnippet>480</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#229">vec!</a>[R::one()];
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data.iter().all(|a| a.len() == n));
 <span data-nosnippet>483</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..(n - <span class="number">1</span>) {
@@ -3230,7 +3245,7 @@
 <span data-nosnippet>446</span>                    <span class="kw-2">&amp;</span>pivot_inverse[left..right],
 <span data-nosnippet>447</span>                    <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>e),
 <span data-nosnippet>448</span>                );
-<span data-nosnippet>449</span>                range.<span class="number">0 </span>= range.<span class="number">0</span>.min(left);
+<span data-nosnippet>449</span>                <a href="../algebra/magma.rs.html#223-232">range</a>.<span class="number">0 </span>= range.<span class="number">0</span>.min(left);
 <span data-nosnippet>450</span>                range.<span class="number">1 </span>= range.<span class="number">1</span>.max(right);
 <span data-nosnippet>451</span>            }
 <span data-nosnippet>452</span>        }
@@ -4079,7 +4094,7 @@
 <span data-nosnippet>356</span>                }
 <span data-nosnippet>357</span>                <span class="kw">let </span>factor = row[c].clone();
 <span data-nosnippet>358</span>                row[c] = R::zero();
-<span data-nosnippet>359</span>                R::sub_assign(value, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
+<span data-nosnippet>359</span>                R::sub_assign(<a href="../algebra/magma.rs.html#4-18">value</a>, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
 <span data-nosnippet>360</span>                R::add_scaled_assign(coefficients, pivot_coefficients, <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>factor));
 <span data-nosnippet>361</span>            }
 <span data-nosnippet>362</span>        }
@@ -4200,7 +4215,7 @@
 <span data-nosnippet>477</span>    <span class="kw">pub fn </span>characteristic_polynomial(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;R::T&gt; {
 <span data-nosnippet>478</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>479</span>        <span class="kw">if </span>n == <span class="number">0 </span>{
-<span data-nosnippet>480</span>            <span class="kw">return </span><span class="macro">vec!</span>[R::one()];
+<span data-nosnippet>480</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#229">vec!</a>[R::one()];
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data.iter().all(|a| a.len() == n));
 <span data-nosnippet>483</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..(n - <span class="number">1</span>) {
@@ -4750,7 +4765,7 @@
 <span data-nosnippet>356</span>                }
 <span data-nosnippet>357</span>                <span class="kw">let </span>factor = row[c].clone();
 <span data-nosnippet>358</span>                row[c] = R::zero();
-<span data-nosnippet>359</span>                R::sub_assign(value, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
+<span data-nosnippet>359</span>                R::sub_assign(<a href="../algebra/magma.rs.html#4-18">value</a>, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
 <span data-nosnippet>360</span>                <span class="highlight">R::add_scaled_assign</span>(coefficients, pivot_coefficients, <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>factor));
 <span data-nosnippet>361</span>            }
 <span data-nosnippet>362</span>        }
@@ -4871,7 +4886,7 @@
 <span data-nosnippet>477</span>    <span class="kw">pub fn </span>characteristic_polynomial(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;R::T&gt; {
 <span data-nosnippet>478</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>479</span>        <span class="kw">if </span>n == <span class="number">0 </span>{
-<span data-nosnippet>480</span>            <span class="kw">return </span><span class="macro">vec!</span>[R::one()];
+<span data-nosnippet>480</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#229">vec!</a>[R::one()];
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data.iter().all(|a| a.len() == n));
 <span data-nosnippet>483</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..(n - <span class="number">1</span>) {
@@ -5481,7 +5496,7 @@
 <span data-nosnippet>356</span>                }
 <span data-nosnippet>357</span>                <span class="kw">let </span>factor = row[c].clone();
 <span data-nosnippet>358</span>                row[c] = R::zero();
-<span data-nosnippet>359</span>                R::sub_assign(value, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
+<span data-nosnippet>359</span>                R::sub_assign(<a href="../algebra/magma.rs.html#4-18">value</a>, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>factor, <span class="kw-2">&amp;</span>pivot_b));
 <span data-nosnippet>360</span>                R::add_scaled_assign(coefficients, pivot_coefficients, <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>factor));
 <span data-nosnippet>361</span>            }
 <span data-nosnippet>362</span>        }
@@ -5602,7 +5617,7 @@
 <span data-nosnippet>477</span>    <span class="kw">pub fn </span>characteristic_polynomial(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;R::T&gt; {
 <span data-nosnippet>478</span>        <span class="kw">let </span>n = <span class="self">self</span>.shape.<span class="number">0</span>;
 <span data-nosnippet>479</span>        <span class="kw">if </span>n == <span class="number">0 </span>{
-<span data-nosnippet>480</span>            <span class="kw">return </span><span class="macro">vec!</span>[R::one()];
+<span data-nosnippet>480</span>            <span class="kw">return </span><a href="../algebra/magma.rs.html#229">vec!</a>[R::one()];
 <span data-nosnippet>481</span>        }
 <span data-nosnippet>482</span>        <span class="macro">assert!</span>(<span class="self">self</span>.data.iter().all(|a| a.len() == n));
 <span data-nosnippet>483</span>        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..(n - <span class="number">1</span>) {
@@ -5973,7 +5988,7 @@
 <span data-nosnippet>848</span>        }
 <span data-nosnippet>849</span>        <span class="kw">let </span>rows = n.div_ceil(split) * split;
 <span data-nosnippet>850</span>        <span class="kw">let </span>inner = m.div_ceil(split) * split;
-<span data-nosnippet>851</span>        <span class="kw">let </span>cols = p.div_ceil(split) * split;
+<span data-nosnippet>851</span>        <span class="kw">let </span>cols = p.div_ceil(<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">split</a>) * split;
 <span data-nosnippet>852</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[R::zero(); rows * inner];
 <span data-nosnippet>853</span>        <span class="kw">for </span>(a, data) <span class="kw">in </span>a.chunks_exact_mut(inner).zip(<span class="kw-2">&amp;</span><span class="self">self</span>.data) {
 <span data-nosnippet>854</span>            a[..m].clone_from_slice(data);
@@ -5992,7 +6007,7 @@
 <span data-nosnippet>867</span>    }
 <span data-nosnippet>868</span>}
 <span data-nosnippet>869</span>
-<span data-nosnippet>870</span><span class="kw">impl</span>&lt;<a href="../algebra/operations.rs.html#279">R</a>&gt; MulAssign&lt;<span class="kw-2">&amp;</span>R::T&gt; <span class="kw">for </span>Matrix&lt;R&gt;
+<span data-nosnippet>870</span><span class="kw">impl</span>&lt;R&gt; MulAssign&lt;<span class="kw-2">&amp;</span>R::T&gt; <span class="kw">for </span>Matrix&lt;R&gt;
 <span data-nosnippet>871</span><span class="kw">where
 <span data-nosnippet>872</span>    </span>R: SemiRing,
 <span data-nosnippet>873</span>{

@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -300,7 +315,7 @@
 <span data-nosnippet>483</span><span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
 <span data-nosnippet>484</span>#[target_feature(enable = <span class="string">"avx2"</span>)]
 <span data-nosnippet>485</span>#[inline]
-<span data-nosnippet>486</span></span><span class="kw">unsafe fn </span>min_i64x4(left: __m256i, <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">right</a>: __m256i) -&gt; __m256i {
+<span data-nosnippet>486</span></span><span class="kw">unsafe fn </span>min_i64x4(left: __m256i, right: __m256i) -&gt; __m256i {
 <span data-nosnippet>487</span>    _mm256_blendv_epi8(left, right, _mm256_cmpgt_epi64(left, right))
 <span data-nosnippet>488</span>}
 <span data-nosnippet>489</span>
@@ -308,7 +323,7 @@
 <span data-nosnippet>491</span>#[target_feature(enable = <span class="string">"avx2"</span>)]
 <span data-nosnippet>492</span>#[inline]
 <span data-nosnippet>493</span></span><span class="kw">unsafe fn </span>max_i64x4(left: __m256i, right: __m256i) -&gt; __m256i {
-<span data-nosnippet>494</span>    _mm256_blendv_epi8(right, left, _mm256_cmpgt_epi64(left, right))
+<span data-nosnippet>494</span>    _mm256_blendv_epi8(right, <a href="../algebra/magma.rs.html#151">left</a>, _mm256_cmpgt_epi64(left, right))
 <span data-nosnippet>495</span>}
 <span data-nosnippet>496</span>
 <span data-nosnippet>497</span><span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
@@ -361,7 +376,7 @@
 <span data-nosnippet>544</span>#[inline]
 <span data-nosnippet>545</span></span><span class="kw">pub unsafe fn </span>sum_i64x8_avx2(values: <span class="kw-2">&amp;</span>[i64; <span class="number">8</span>]) -&gt; i64 {
 <span data-nosnippet>546</span>    <span class="kw">let </span>low = _mm256_loadu_si256(values.as_ptr().cast());
-<span data-nosnippet>547</span>    <span class="kw">let </span>high = _mm256_loadu_si256(values.as_ptr().<a href="../algebra/magma.rs.html#228">add</a>(<span class="number">4</span>).cast());
+<span data-nosnippet>547</span>    <span class="kw">let </span>high = _mm256_loadu_si256(values.as_ptr().add(<span class="number">4</span>).cast());
 <span data-nosnippet>548</span>    reduce_sum_i64x4(_mm256_add_epi64(low, high))
 <span data-nosnippet>549</span>}
 <span data-nosnippet>550</span>

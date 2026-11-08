@@ -14,6 +14,21 @@
     });
   });
 </script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
@@ -353,7 +368,7 @@
 <span data-nosnippet>381</span>                .collect();
 <span data-nosnippet>382</span>            <span class="kw">const </span>SPARSE_BLOCK: u32 = <span class="number">1 </span>&lt;&lt; <span class="number">22</span>;
 <span data-nosnippet>383</span>            <span class="kw">for </span>start <span class="kw">in </span>(<span class="number">0</span>..limit).step_by(SPARSE_BLOCK <span class="kw">as </span>usize) {
-<span data-nosnippet>384</span>                <span class="kw">let </span>right = <span class="highlight">to_ordinal</span>(start.saturating_add(SPARSE_BLOCK).<a href="../algebra/magma.rs.html#147">min</a>(limit));
+<span data-nosnippet>384</span>                <span class="kw">let </span>right = <span class="highlight">to_ordinal</span>(start.saturating_add(SPARSE_BLOCK).min(limit));
 <span data-nosnippet>385</span>                <span class="kw">for </span>i <span class="kw">in </span>medium_primes_begin..SQRT_PRIME_COUNT {
 <span data-nosnippet>386</span>                    (positions[i], states[i]) =
 <span data-nosnippet>387</span>                        sieve_sparse(<span class="kw-2">&amp;mut </span><span class="self">self</span>.bits, positions[i], right, i, states[i], <span class="kw-2">&amp;</span>steps);
@@ -366,7 +381,7 @@
 <span data-nosnippet>394</span>
 <span data-nosnippet>395</span>        <span class="self">self</span>.prime_count = WHEEL_PRIMES.partition_point(|<span class="kw-2">&amp;</span>p| p &lt;= max_n);
 <span data-nosnippet>396</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span>last, rest)) = <span class="self">self</span>.bits.split_last() {
-<span data-nosnippet>397</span>            <a class="self" href="../algebra/magma.rs.html#170">self</a>.prime_count += rest
+<span data-nosnippet>397</span>            <span class="self">self</span>.prime_count += rest
 <span data-nosnippet>398</span>                .iter()
 <span data-nosnippet>399</span>                .map(|word| word.count_ones() <span class="kw">as </span>usize)
 <span data-nosnippet>400</span>                .sum::&lt;usize&gt;();
@@ -375,7 +390,7 @@
 <span data-nosnippet>403</span>            </span>} <span class="kw">else </span>{
 <span data-nosnippet>404</span>                (<span class="number">1 </span>&lt;&lt; (<span class="self">self</span>.bit_len % <span class="number">64</span>)) - <span class="number">1
 <span data-nosnippet>405</span>            </span>};
-<span data-nosnippet>406</span>            <span class="self">self</span>.prime_count += (last &amp; last_mask).count_ones() <span class="kw">as </span>usize;
+<span data-nosnippet>406</span>            <span class="self">self</span>.prime_count += (<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.next">last</a> &amp; last_mask).count_ones() <span class="kw">as </span>usize;
 <span data-nosnippet>407</span>        }
 <span data-nosnippet>408</span>        <span class="self">self</span>.max_n = max_n;
 <span data-nosnippet>409</span>    }</code></pre></div></div></div></section></div></main></body></html>
