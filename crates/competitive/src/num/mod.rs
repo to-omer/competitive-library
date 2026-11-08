@@ -10,8 +10,8 @@ pub use self::complex::Complex;
 pub use self::decimal::Decimal;
 #[codesnip::entry("discrete_steps")]
 pub use self::discrete_steps::{DiscreteSteps, RangeBoundsExt};
-#[codesnip::entry("DoubleDouble")]
-pub use self::double_double::DoubleDouble;
+#[codesnip::entry("double_double")]
+pub use self::double_double::{DoubleDouble, QuadDouble};
 #[codesnip::entry("DualNumber")]
 pub use self::dual_number::DualNumber;
 #[codesnip::entry("Dyadic")]
@@ -24,8 +24,6 @@ pub use self::integer::{
     Wrappingable,
 };
 pub use self::mint::*;
-#[codesnip::entry("QuadDouble")]
-pub use self::quad_double::QuadDouble;
 #[codesnip::entry("Rational")]
 pub use self::rational::Rational;
 #[codesnip::entry("URational")]
@@ -43,7 +41,7 @@ mod complex;
 pub mod decimal;
 #[codesnip::entry(include("bounded"))]
 mod discrete_steps;
-#[codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner", "Decimal"))]
+#[codesnip::entry("double_double", include("float", "Decimal"))]
 mod double_double;
 #[codesnip::entry("DualNumber", include("zero_one"))]
 mod dual_number;
@@ -54,8 +52,6 @@ mod float;
 #[codesnip::entry(include("zero_one", "bounded", "scanner"))]
 mod integer;
 mod mint;
-#[codesnip::entry("QuadDouble", include("zero_one", "bounded", "scanner", "Decimal"))]
-mod quad_double;
 #[codesnip::entry("Rational", include("integer"))]
 mod rational;
 #[codesnip::entry("URational", include("integer"))]

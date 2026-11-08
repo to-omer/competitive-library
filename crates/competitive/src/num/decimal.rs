@@ -231,11 +231,25 @@ mod tests {
         check_integer!(
             u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
         );
+        macro_rules! check_float {
+            ($t:ident, $precision:expr) => {
+                let boundaries = [0.0, 0.1, 1.0, $t::from_bits(1), $t::MIN_POSITIVE, $t::MAX];
+                for value in boundaries.into_iter().flat_map(|x| [x, -x]).chain(
+                    rng.random_iter(..)
+                        .take(1000)
+                        .map($t::from_bits)
+                        .filter(|x| x.is_finite()),
+                ) {
+                    let expected: Decimal = format!("{value:.precision$}", precision = $precision)
+                        .parse()
+                        .unwrap();
+                    assert_eq!(Decimal::from(value), expected);
+                }
+            };
+        }
+        check_float!(f32, 149);
+        check_float!(f64, 1074);
         for _ in 0..1000 {
-            let x = rng.random(-1_000_000..=1_000_000) as f64 / 10f64.powi(rng.random(0..=12));
-            assert_eq!(Decimal::from(x).to_string(), x.to_string());
-            let x = x as f32;
-            assert_eq!(Decimal::from(x).to_string(), x.to_string());
             let n = rng.random(0..=100);
             let digits: String = rng
                 .random_iter(b'0'..=b'9')

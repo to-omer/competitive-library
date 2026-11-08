@@ -193,15 +193,55 @@ macro_rules! impl_from_signed {
 impl_from_signed!(u64; i8 i16 i32 i64 isize);
 impl_from_signed!(u128; i128);
 
-macro_rules! impl_from_through_string {
-    ($($t:ty)*) => {
-        $(
-            impl From<$t> for Decimal {
-                fn from(val: $t) -> Self {
-                    val.to_string().parse().unwrap()
-                }
-            }
-        )*
-    };
+impl From<f32> for Decimal {
+    fn from(value: f32) -> Self {
+        Self::from(f64::from(value))
+    }
 }
-impl_from_through_string!(f32 f64);
+
+impl From<f64> for Decimal {
+    /// Preserves the exact binary value. The input must be finite.
+    fn from(value: f64) -> Self {
+        assert!(value.is_finite());
+        let bits = value.to_bits();
+        let exponent = ((bits >> 52) & 0x7ff) as i32;
+        let mantissa = (bits & ((1 << 52) - 1)) | (u64::from(exponent != 0) << 52);
+        let mut result = Self::from(mantissa);
+        let mut exponent = exponent.max(1) - 1075;
+        while exponent > 0 {
+            let shift = exponent.min(60);
+            let mut carry = 0u128;
+            for digit in &mut result.integer {
+                let value = ((*digit as u128) << shift) + carry;
+                *digit = (value % RADIX as u128) as u64;
+                carry = value / RADIX as u128;
+            }
+            while carry != 0 {
+                result.integer.push((carry % RADIX as u128) as u64);
+                carry /= RADIX as u128;
+            }
+            exponent -= shift;
+        }
+        while exponent < 0 {
+            let shift = (-exponent).min(60);
+            let mask = (1u128 << shift) - 1;
+            let mut remainder = 0u128;
+            for digit in result.integer.iter_mut().rev().chain(&mut result.decimal) {
+                let value = remainder * RADIX as u128 + *digit as u128;
+                *digit = (value >> shift) as u64;
+                remainder = value & mask;
+            }
+            while remainder != 0 {
+                let value = remainder * RADIX as u128;
+                result.decimal.push((value >> shift) as u64);
+                remainder = value & mask;
+            }
+            exponent += shift;
+        }
+        if value.is_sign_negative() {
+            result.sign = -result.sign;
+        }
+        result.normalize();
+        result
+    }
+}

@@ -1,7 +1,6 @@
 use super::{Bounded, One, Scan, ScanSource, Zero};
 use std::{
     cmp::Ordering,
-    convert::TryInto,
     fmt::Display,
     num::FpCategory,
     ops::{Add, Div, Mul, Neg, Rem, Sub},
@@ -25,6 +24,7 @@ pub trait Float:
     + Neg<Output = Self>
     + Rem<Output = Self>
 {
+    type Bits;
     fn floor(self) -> Self;
     fn ceil(self) -> Self;
     fn round(self) -> Self;
@@ -76,8 +76,8 @@ pub trait Float:
     fn max(self, other: Self) -> Self;
     fn min(self, other: Self) -> Self;
     fn midpoint(self, other: Self) -> Self;
-    fn to_bits(self) -> u64;
-    fn from_bits(v: u64) -> Self;
+    fn to_bits(self) -> Self::Bits;
+    fn from_bits(v: Self::Bits) -> Self;
     fn total_cmp(&self, other: &Self) -> Ordering;
     fn clamp(self, min: Self, max: Self) -> Self;
     const RADIX: u32;
@@ -116,6 +116,7 @@ pub trait Float:
 macro_rules! impl_primitive_float {
     ($({$t:ident $i:ident $u:ident $e:expr})*) => {$(
         impl Float for $t {
+            type Bits = $u;
             fn floor(self) -> Self { $t::floor(self) }
             fn ceil(self) -> Self { $t::ceil(self) }
             fn round(self) -> Self { $t::round(self) }
@@ -167,8 +168,8 @@ macro_rules! impl_primitive_float {
             fn max(self, other: Self) -> Self { $t::max(self, other) }
             fn min(self, other: Self) -> Self { $t::min(self, other) }
             fn midpoint(self, other: Self) -> Self { $t::midpoint(self, other) }
-            fn to_bits(self) -> u64 { $t::to_bits(self).into() }
-            fn from_bits(v: u64) -> Self { $t::from_bits(v.try_into().unwrap()) }
+            fn to_bits(self) -> Self::Bits { $t::to_bits(self) }
+            fn from_bits(v: Self::Bits) -> Self { $t::from_bits(v) }
             fn total_cmp(&self, other: &Self) -> Ordering { $t::total_cmp(self, other) }
             fn clamp(self, min: Self, max: Self) -> Self { $t::clamp(self, min, max) }
             const RADIX: u32 = $t::RADIX;
@@ -209,7 +210,7 @@ impl_primitive_float!({f32 i32 u32 31} {f64 i64 u64 63});
 
 macro_rules! impl_ord_float {
     ($({$t:ident $n:ident})*) => {$(
-        #[derive(Debug, Copy, Clone, PartialEq, Default)]
+        #[derive(Debug, Copy, Clone, Default)]
         #[repr(transparent)]
         pub struct $n(pub $t);
         impl std::fmt::Display for $n {
@@ -231,6 +232,9 @@ macro_rules! impl_ord_float {
         impl Zero for $n {
             fn zero() -> Self {
                 Self(<$t as Zero>::zero())
+            }
+            fn is_zero(&self) -> bool {
+                self.0 == 0.0
             }
         }
         impl One for $n {
@@ -282,6 +286,11 @@ macro_rules! impl_ord_float {
                 Self(<$t as Rem>::rem(self.0, rhs.0))
             }
         }
+        impl PartialEq for $n {
+            fn eq(&self, other: &Self) -> bool {
+                self.total_cmp(other).is_eq()
+            }
+        }
         impl Eq for $n {}
         impl PartialOrd for $n {
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -300,6 +309,7 @@ macro_rules! impl_ord_float {
             }
         }
         impl Float for $n {
+            type Bits = <$t as Float>::Bits;
             fn floor(self) -> Self { Self(<$t as Float>::floor(self.0)) }
             fn ceil(self) -> Self { Self(<$t as Float>::ceil(self.0)) }
             fn round(self) -> Self { Self(<$t as Float>::round(self.0)) }
@@ -351,8 +361,8 @@ macro_rules! impl_ord_float {
             fn max(self, other: Self) -> Self { Self(<$t as Float>::max(self.0, other.0)) }
             fn min(self, other: Self) -> Self { Self(<$t as Float>::min(self.0, other.0)) }
             fn midpoint(self, other: Self) -> Self { Self(<$t as Float>::midpoint(self.0, other.0)) }
-            fn to_bits(self) -> u64 { <$t as Float>::to_bits(self.0) }
-            fn from_bits(v: u64) -> Self { Self(<$t as Float>::from_bits(v)) }
+            fn to_bits(self) -> Self::Bits { <$t as Float>::to_bits(self.0) }
+            fn from_bits(v: Self::Bits) -> Self { Self(<$t as Float>::from_bits(v)) }
             fn total_cmp(&self, other: &Self) -> Ordering { <$t as Float>::total_cmp(&self.0, &other.0) }
             fn clamp(self, min: Self, max: Self) -> Self { Self(<$t as Float>::clamp(self.0, min.0, max.0)) }
             const RADIX: u32 = <$t as Float>::RADIX;

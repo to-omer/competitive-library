@@ -228,7 +228,10 @@ mod verification {
 mod tests {
     use super::*;
     use crate::tools::testutil::integer_boundary_values;
-    use crate::{num::DoubleDouble, tools::Xorshift};
+    use crate::{
+        num::{DoubleDouble, Float},
+        tools::Xorshift,
+    };
     use std::array;
 
     #[test]
