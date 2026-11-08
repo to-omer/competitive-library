@@ -271,16 +271,56 @@
 <a href=#193 id=193 data-nosnippet>193</a><a href="#177-192">impl_from_signed!</a>(u64; <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>);
 <a href=#194 id=194 data-nosnippet>194</a><a href="#177-192">impl_from_signed!</a>(u128; <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>);
 <a href=#195 id=195 data-nosnippet>195</a>
-<a href=#196 id=196 data-nosnippet>196</a><span class="macro">macro_rules!</span> <a href="../../../../competitive/num/decimal/convert/macro.impl_from_through_string.html">impl_from_through_string</a> {
-<a href=#197 id=197 data-nosnippet>197</a>    ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
-<a href=#198 id=198 data-nosnippet>198</a>        $(
-<a href=#199 id=199 data-nosnippet>199</a>            <span class="kw">impl </span>From&lt;<span class="macro-nonterminal">$t</span>&gt; <span class="kw">for </span>Decimal {
-<a href=#200 id=200 data-nosnippet>200</a>                <span class="kw">fn </span>from(val: <span class="macro-nonterminal">$t</span>) -&gt; <span class="self">Self </span>{
-<a href=#201 id=201 data-nosnippet>201</a>                    val.to_string().parse().unwrap()
-<a href=#202 id=202 data-nosnippet>202</a>                }
-<a href=#203 id=203 data-nosnippet>203</a>            }
-<a href=#204 id=204 data-nosnippet>204</a>        )*
-<a href=#205 id=205 data-nosnippet>205</a>    };
-<a href=#206 id=206 data-nosnippet>206</a>}
-<a href=#207 id=207 data-nosnippet>207</a><a href="#196-206">impl_from_through_string!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>);
+<a href=#196 id=196 data-nosnippet>196</a><span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html">From</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt; <span class="kw">for </span><a href="../decimal.rs.html#58-62">Decimal</a> {
+<a href=#197 id=197 data-nosnippet>197</a>    <span class="kw">fn </span>from(value: <a href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>) -&gt; <span class="self">Self </span>{
+<a href=#198 id=198 data-nosnippet>198</a>        <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#197">value</a>))
+<a href=#199 id=199 data-nosnippet>199</a>    }
+<a href=#200 id=200 data-nosnippet>200</a>}
+<a href=#201 id=201 data-nosnippet>201</a>
+<a href=#202 id=202 data-nosnippet>202</a><span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html">From</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt; <span class="kw">for </span><a href="../decimal.rs.html#58-62">Decimal</a> {
+<a href=#203 id=203 data-nosnippet>203</a>    <span class="doccomment">/// Preserves the exact binary value. The input must be finite.
+<a href=#204 id=204 data-nosnippet>204</a>    </span><span class="kw">fn </span>from(value: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
+<a href=#205 id=205 data-nosnippet>205</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(value.is_finite());
+<a href=#206 id=206 data-nosnippet>206</a>        <span class="kw">let </span>bits = <a href="#204">value</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.f64.html#method.to_bits">to_bits</a>();
+<a href=#207 id=207 data-nosnippet>207</a>        <span class="kw">let </span>exponent = ((<a href="#206">bits</a> &gt;&gt; <span class="number">52</span>) &amp; <span class="number">0x7ff</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>;
+<a href=#208 id=208 data-nosnippet>208</a>        <span class="kw">let </span>mantissa = (<a href="#206">bits</a> &amp; ((<span class="number">1 </span>&lt;&lt; <span class="number">52</span>) - <span class="number">1</span>)) | (<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#207">exponent</a> != <span class="number">0</span>) &lt;&lt; <span class="number">52</span>);
+<a href=#209 id=209 data-nosnippet>209</a>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#208">mantissa</a>);
+<a href=#210 id=210 data-nosnippet>210</a>        <span class="kw">let </span><span class="kw-2">mut </span>exponent = <a href="#207">exponent</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">max</a>(<span class="number">1</span>) - <span class="number">1075</span>;
+<a href=#211 id=211 data-nosnippet>211</a>        <span class="kw">while </span>exponent &gt; <span class="number">0 </span>{
+<a href=#212 id=212 data-nosnippet>212</a>            <span class="kw">let </span>shift = exponent.min(<span class="number">60</span>);
+<a href=#213 id=213 data-nosnippet>213</a>            <span class="kw">let </span><span class="kw-2">mut </span>carry = <span class="number">0u128</span>;
+<a href=#214 id=214 data-nosnippet>214</a>            <span class="kw">for </span>digit <span class="kw">in </span><span class="kw-2">&amp;mut </span>result.integer {
+<a href=#215 id=215 data-nosnippet>215</a>                <span class="kw">let </span>value = ((<span class="kw-2">*</span>digit <span class="kw">as </span>u128) &lt;&lt; shift) + carry;
+<a href=#216 id=216 data-nosnippet>216</a>                <span class="kw-2">*</span>digit = (value % RADIX <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<a href=#217 id=217 data-nosnippet>217</a>                carry = value / RADIX <span class="kw">as </span>u128;
+<a href=#218 id=218 data-nosnippet>218</a>            }
+<a href=#219 id=219 data-nosnippet>219</a>            <span class="kw">while </span>carry != <span class="number">0 </span>{
+<a href=#220 id=220 data-nosnippet>220</a>                result.integer.push((carry % RADIX <span class="kw">as </span>u128) <span class="kw">as </span>u64);
+<a href=#221 id=221 data-nosnippet>221</a>                carry /= RADIX <span class="kw">as </span>u128;
+<a href=#222 id=222 data-nosnippet>222</a>            }
+<a href=#223 id=223 data-nosnippet>223</a>            exponent -= shift;
+<a href=#224 id=224 data-nosnippet>224</a>        }
+<a href=#225 id=225 data-nosnippet>225</a>        <span class="kw">while </span>exponent &lt; <span class="number">0 </span>{
+<a href=#226 id=226 data-nosnippet>226</a>            <span class="kw">let </span>shift = (-exponent).min(<span class="number">60</span>);
+<a href=#227 id=227 data-nosnippet>227</a>            <span class="kw">let </span>mask = (<span class="number">1u128 </span>&lt;&lt; shift) - <span class="number">1</span>;
+<a href=#228 id=228 data-nosnippet>228</a>            <span class="kw">let </span><span class="kw-2">mut </span>remainder = <span class="number">0u128</span>;
+<a href=#229 id=229 data-nosnippet>229</a>            <span class="kw">for </span>digit <span class="kw">in </span>result.integer.iter_mut().rev().chain(<span class="kw-2">&amp;mut </span>result.decimal) {
+<a href=#230 id=230 data-nosnippet>230</a>                <span class="kw">let </span>value = remainder * RADIX <span class="kw">as </span>u128 + <span class="kw-2">*</span>digit <span class="kw">as </span>u128;
+<a href=#231 id=231 data-nosnippet>231</a>                <span class="kw-2">*</span>digit = (value &gt;&gt; shift) <span class="kw">as </span>u64;
+<a href=#232 id=232 data-nosnippet>232</a>                remainder = value &amp; mask;
+<a href=#233 id=233 data-nosnippet>233</a>            }
+<a href=#234 id=234 data-nosnippet>234</a>            <span class="kw">while </span>remainder != <span class="number">0 </span>{
+<a href=#235 id=235 data-nosnippet>235</a>                <span class="kw">let </span>value = remainder * RADIX <span class="kw">as </span>u128;
+<a href=#236 id=236 data-nosnippet>236</a>                result.decimal.push((value &gt;&gt; shift) <span class="kw">as </span>u64);
+<a href=#237 id=237 data-nosnippet>237</a>                remainder = value &amp; mask;
+<a href=#238 id=238 data-nosnippet>238</a>            }
+<a href=#239 id=239 data-nosnippet>239</a>            exponent += shift;
+<a href=#240 id=240 data-nosnippet>240</a>        }
+<a href=#241 id=241 data-nosnippet>241</a>        <span class="kw">if </span><a href="#204">value</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.f64.html#method.is_sign_negative">is_sign_negative</a>() {
+<a href=#242 id=242 data-nosnippet>242</a>            <a href="#209">result</a>.sign = -<a href="#209">result</a>.sign;
+<a href=#243 id=243 data-nosnippet>243</a>        }
+<a href=#244 id=244 data-nosnippet>244</a>        <a href="#209">result</a>.<a href="../decimal.rs.html#126-152">normalize</a>();
+<a href=#245 id=245 data-nosnippet>245</a>        <a href="#209">result</a>
+<a href=#246 id=246 data-nosnippet>246</a>    }
+<a href=#247 id=247 data-nosnippet>247</a>}
 </code></pre></div></section></main></body></html>
