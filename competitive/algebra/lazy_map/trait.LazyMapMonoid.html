@@ -627,7 +627,81 @@
 <span data-nosnippet>647</span>        } <span class="kw">else </span>{
 <span data-nosnippet>648</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
 <span data-nosnippet>649</span>        })
-<span data-nosnippet>650</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#471&#34;,&#34;line 471&#34;],[[44,44],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#514&#34;,&#34;line 514&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#471">line 471</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>470</span>    <span class="kw">fn </span>top_down(data: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, children: [<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data&gt;; <span class="number">2</span>]) {
+<span data-nosnippet>650</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#36&#34;,&#34;line 36&#34;],[[44,44],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#79&#34;,&#34;line 79&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/sqrt_tree/lazy.rs (<a href="../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#36">line 36</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>35</span>    <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, values: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>36</span>        <span class="kw">if </span>!<span class="highlight focus">L::is_act_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.act) {
+<span data-nosnippet>37</span>            <span class="kw">for </span>value <span class="kw">in </span>values {
+<span data-nosnippet>38</span>                <span class="kw">let </span>value = P::get_mut(value);
+<span data-nosnippet>39</span>                <span class="kw-2">*</span>value = L::act_key(value, <span class="kw-2">&amp;</span><span class="self">self</span>.act);
+<span data-nosnippet>40</span>            }
+<span data-nosnippet>41</span>            <span class="self">self</span>.act = L::act_unit();
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    }
+<span data-nosnippet>44</span>}
+<span data-nosnippet>45</span>
+<span data-nosnippet>46</span><span class="kw">impl</span>&lt;T, L, P&gt; Buckets&lt;T, LazyState&lt;L, P&gt;&gt;
+<span data-nosnippet>47</span><span class="kw">where
+<span data-nosnippet>48</span>    </span>L: LazyMapMonoidWithKeyAct,
+<span data-nosnippet>49</span>    P: BucketValue&lt;T, Value = L::Key&gt;,
+<span data-nosnippet>50</span>{
+<span data-nosnippet>51</span>    <span class="kw">fn </span>fold(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; LazyMapAgg&lt;L&gt; {
+<span data-nosnippet>52</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = L::agg_unit();
+<span data-nosnippet>53</span>        <span class="macro">assert!</span>(range.start &lt;= range.end);
+<span data-nosnippet>54</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>55</span>            <span class="kw">return </span>result;
+<span data-nosnippet>56</span>        }
+<span data-nosnippet>57</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<span data-nosnippet>58</span>        <span class="kw">for </span>Bucket { values, state } <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.buckets {
+<span data-nosnippet>59</span>            <span class="kw">let </span>end = offset + values.len();
+<span data-nosnippet>60</span>            <span class="kw">if </span>range.end &lt;= offset {
+<span data-nosnippet>61</span>                <span class="kw">break</span>;
+<span data-nosnippet>62</span>            }
+<span data-nosnippet>63</span>            <span class="kw">if </span>range.start &lt;= offset &amp;&amp; end &lt;= range.end {
+<span data-nosnippet>64</span>                L::agg_operate_assign(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>state.agg);
+<span data-nosnippet>65</span>            } <span class="kw">else if </span>range.start &lt; end {
+<span data-nosnippet>66</span>                state.push(values);
+<span data-nosnippet>67</span>                <span class="kw">for </span>value <span class="kw">in
+<span data-nosnippet>68</span>                    </span><span class="kw-2">&amp;</span>values[range.start.saturating_sub(offset)..range.end.min(end) - offset]
+<span data-nosnippet>69</span>                {
+<span data-nosnippet>70</span>                    L::agg_operate_assign(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>L::single_agg(P::get(value)));
+<span data-nosnippet>71</span>                }
+<span data-nosnippet>72</span>            }
+<span data-nosnippet>73</span>            offset = end;
+<span data-nosnippet>74</span>        }
+<span data-nosnippet>75</span>        result
+<span data-nosnippet>76</span>    }
+<span data-nosnippet>77</span>    <span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;, act: LazyMapAct&lt;L&gt;) {
+<span data-nosnippet>78</span>        <span class="macro">assert!</span>(range.start &lt;= range.end);
+<span data-nosnippet>79</span>        <span class="kw">if </span>range.is_empty() || <span class="highlight">L::is_act_unit</span>(<span class="kw-2">&amp;</span>act) {
+<span data-nosnippet>80</span>            <span class="kw">return</span>;
+<span data-nosnippet>81</span>        }
+<span data-nosnippet>82</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<span data-nosnippet>83</span>        <span class="kw">for </span>Bucket { values, state } <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.buckets {
+<span data-nosnippet>84</span>            <span class="kw">let </span>end = offset + values.len();
+<span data-nosnippet>85</span>            <span class="kw">if </span>range.end &lt;= offset {
+<span data-nosnippet>86</span>                <span class="kw">break</span>;
+<span data-nosnippet>87</span>            }
+<span data-nosnippet>88</span>            <span class="kw">if </span>range.start &lt;= offset
+<span data-nosnippet>89</span>                &amp;&amp; end &lt;= range.end
+<span data-nosnippet>90</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(agg) = L::act_agg(<span class="kw-2">&amp;</span>state.agg, <span class="kw-2">&amp;</span>act)
+<span data-nosnippet>91</span>            {
+<span data-nosnippet>92</span>                state.agg = agg;
+<span data-nosnippet>93</span>                L::act_operate_assign(<span class="kw-2">&amp;mut </span>state.act, <span class="kw-2">&amp;</span>act);
+<span data-nosnippet>94</span>                offset = end;
+<span data-nosnippet>95</span>                <span class="kw">continue</span>;
+<span data-nosnippet>96</span>            }
+<span data-nosnippet>97</span>            <span class="kw">if </span>range.start &lt; end {
+<span data-nosnippet>98</span>                state.push(values);
+<span data-nosnippet>99</span>                <span class="kw">for </span>value <span class="kw">in
+<span data-nosnippet>100</span>                    </span><span class="kw-2">&amp;mut </span>values[range.start.saturating_sub(offset)..range.end.min(end) - offset]
+<span data-nosnippet>101</span>                {
+<span data-nosnippet>102</span>                    <span class="kw">let </span>value = P::get_mut(value);
+<span data-nosnippet>103</span>                    <span class="kw-2">*</span>value = L::act_key(value, <span class="kw-2">&amp;</span>act);
+<span data-nosnippet>104</span>                }
+<span data-nosnippet>105</span>                <span class="kw-2">*</span>state = LazyState::new(values);
+<span data-nosnippet>106</span>            }
+<span data-nosnippet>107</span>            offset = end;
+<span data-nosnippet>108</span>        }
+<span data-nosnippet>109</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#471&#34;,&#34;line 471&#34;],[[44,44],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#514&#34;,&#34;line 514&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#471">line 471</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>470</span>    <span class="kw">fn </span>top_down(data: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, children: [<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data&gt;; <span class="number">2</span>]) {
 <span data-nosnippet>471</span>        <span class="kw">if </span><span class="highlight focus">L::is_act_unit</span>(<span class="kw-2">&amp;</span>data.value.act) {
 <span data-nosnippet>472</span>            <span class="kw">return</span>;
 <span data-nosnippet>473</span>        }
@@ -892,55 +966,7 @@
 <span data-nosnippet>130</span>                <span class="self">Self</span>::reverse(right);
 <span data-nosnippet>131</span>            }
 <span data-nosnippet>132</span>        }
-<span data-nosnippet>133</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/implicit_treap.rs.html#88&#34;,&#34;line 88&#34;],[[30,30],&#34;../../../src/competitive/data_structure/implicit_treap.rs.html#117&#34;,&#34;line 117&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../src/competitive/data_structure/implicit_treap.rs.html#88">line 88</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>87</span>    <span class="kw">fn </span>update_act(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;, act: <span class="kw-2">&amp;</span>LazyMapAct&lt;T&gt;) {
-<span data-nosnippet>88</span>        <span class="kw">if </span><span class="highlight focus">T::is_act_unit</span>(act) {
-<span data-nosnippet>89</span>            <span class="kw">return</span>;
-<span data-nosnippet>90</span>        }
-<span data-nosnippet>91</span>        T::act_operate_assign(<span class="kw-2">&amp;mut </span>node.data_mut().value.act, act);
-<span data-nosnippet>92</span>        node.data_mut().value.key = T::act_key(<span class="kw-2">&amp;</span>node.reborrow().into_data().value.key, act);
-<span data-nosnippet>93</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(agg) = T::act_agg(<span class="kw-2">&amp;</span>node.reborrow().into_data().value.agg, act) {
-<span data-nosnippet>94</span>            node.data_mut().value.agg = agg;
-<span data-nosnippet>95</span>        } <span class="kw">else </span>{
-<span data-nosnippet>96</span>            <span class="self">Self</span>::top_down(node.reborrow_datamut());
-<span data-nosnippet>97</span>            <span class="self">Self</span>::bottom_up(node);
-<span data-nosnippet>98</span>        }
-<span data-nosnippet>99</span>    }
-<span data-nosnippet>100</span>
-<span data-nosnippet>101</span>    <span class="kw">fn </span>reverse(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
-<span data-nosnippet>102</span>        node.swap_children();
-<span data-nosnippet>103</span>        <span class="kw">let </span>data = node.data_mut();
-<span data-nosnippet>104</span>        T::toggle(<span class="kw-2">&amp;mut </span>data.value.agg);
-<span data-nosnippet>105</span>        data.rev ^= <span class="bool-val">true</span>;
-<span data-nosnippet>106</span>    }
-<span data-nosnippet>107</span>}
-<span data-nosnippet>108</span>
-<span data-nosnippet>109</span><span class="kw">impl</span>&lt;T&gt; BstSpec <span class="kw">for </span>ImplicitTreapSpec&lt;T&gt;
-<span data-nosnippet>110</span><span class="kw">where
-<span data-nosnippet>111</span>    </span>T: LazyMapMonoidWithKeyAct,
-<span data-nosnippet>112</span>{
-<span data-nosnippet>113</span>    <span class="kw">type </span>Parent = WithNoParent&lt;<span class="self">Self</span>::Data&gt;;
-<span data-nosnippet>114</span>    <span class="kw">type </span>Data = ImplicitTreapData&lt;T&gt;;
-<span data-nosnippet>115</span>
-<span data-nosnippet>116</span>    <span class="kw">fn </span>top_down(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
-<span data-nosnippet>117</span>        <span class="kw">if </span>!<span class="highlight">T::is_act_unit</span>(<span class="kw-2">&amp;</span>node.reborrow().into_data().value.act) {
-<span data-nosnippet>118</span>            <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().value.act, T::act_unit());
-<span data-nosnippet>119</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(left) = node.reborrow_datamut().left().descend() {
-<span data-nosnippet>120</span>                <span class="self">Self</span>::update_act(left, <span class="kw-2">&amp;</span>act);
-<span data-nosnippet>121</span>            }
-<span data-nosnippet>122</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(right) = node.reborrow_datamut().right().descend() {
-<span data-nosnippet>123</span>                <span class="self">Self</span>::update_act(right, <span class="kw-2">&amp;</span>act);
-<span data-nosnippet>124</span>            }
-<span data-nosnippet>125</span>        }
-<span data-nosnippet>126</span>        <span class="kw">if </span>node.reborrow().into_data().rev {
-<span data-nosnippet>127</span>            node.data_mut().rev = <span class="bool-val">false</span>;
-<span data-nosnippet>128</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(left) = node.reborrow_datamut().left().descend() {
-<span data-nosnippet>129</span>                <span class="self">Self</span>::reverse(left);
-<span data-nosnippet>130</span>            }
-<span data-nosnippet>131</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(right) = node.reborrow_datamut().right().descend() {
-<span data-nosnippet>132</span>                <span class="self">Self</span>::reverse(right);
-<span data-nosnippet>133</span>            }
-<span data-nosnippet>134</span>        }
-<span data-nosnippet>135</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/data_structure/binary_trie.rs.html#231">crates/competitive/src/data_structure/binary_trie.rs</a></li><li><a href="../../../src/competitive/data_structure/binary_search_tree/data.rs.html#153">crates/competitive/src/data_structure/binary_search_tree/data.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.agg_unit" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#25-27">Source</a><h4 class="code-header">fn <a href="#method.agg_unit" class="fn">agg_unit</a>() -&gt; <a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#153&#34;,&#34;line 153&#34;],[[65,65],&#34;../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#216&#34;,&#34;line 216&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_search_tree/seeker.rs (<a href="../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#153">line 153</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>151</span>    <span class="kw">pub fn </span>new(f: F) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>133</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/data_structure/implicit_treap.rs.html#88">crates/competitive/src/data_structure/implicit_treap.rs</a></li><li><a href="../../../src/competitive/data_structure/binary_trie.rs.html#231">crates/competitive/src/data_structure/binary_trie.rs</a></li><li><a href="../../../src/competitive/data_structure/binary_search_tree/data.rs.html#153">crates/competitive/src/data_structure/binary_search_tree/data.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.agg_unit" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#25-27">Source</a><h4 class="code-header">fn <a href="#method.agg_unit" class="fn">agg_unit</a>() -&gt; <a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#153&#34;,&#34;line 153&#34;],[[65,65],&#34;../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#216&#34;,&#34;line 216&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_search_tree/seeker.rs (<a href="../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#153">line 153</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>151</span>    <span class="kw">pub fn </span>new(f: F) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>152</span>        <span class="self">Self </span>{
 <span data-nosnippet>153</span>            acc: <span class="highlight focus">L::agg_unit</span>(),
 <span data-nosnippet>154</span>            f,
@@ -1807,7 +1833,58 @@
 <span data-nosnippet>309</span>                <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>310</span>            }
 <span data-nosnippet>311</span>        }
-<span data-nosnippet>312</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.act_unit" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#29-31">Source</a><h4 class="code-header">fn <a href="#method.act_unit" class="fn">act_unit</a>() -&gt; <a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#54&#34;,&#34;line 54&#34;],[[37,37],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#90&#34;,&#34;line 90&#34;],[[38,38],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#91&#34;,&#34;line 91&#34;],[[126,126],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#179&#34;,&#34;line 179&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree_map.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#54">line 54</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>53</span>    <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) -&gt; <span class="kw-2">&amp;mut </span>(LazyMapAgg&lt;M&gt;, LazyMapAct&lt;M&gt;) {
+<span data-nosnippet>312</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#26&#34;,&#34;line 26&#34;],[[27,27],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/sqrt_tree/lazy.rs (<a href="../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#26">line 26</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>25</span>    <span class="kw">fn </span>new(values: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>26</span>        <span class="kw">let </span>agg = values.iter().fold(<span class="highlight focus">L::agg_unit</span>(), |agg, value| {
+<span data-nosnippet>27</span>            L::agg_operate(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>L::single_agg(P::get(value)))
+<span data-nosnippet>28</span>        });
+<span data-nosnippet>29</span>        <span class="self">Self </span>{
+<span data-nosnippet>30</span>            agg,
+<span data-nosnippet>31</span>            act: L::act_unit(),
+<span data-nosnippet>32</span>            _marker: PhantomData,
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>    <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, values: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>36</span>        <span class="kw">if </span>!L::is_act_unit(<span class="kw-2">&amp;</span><span class="self">self</span>.act) {
+<span data-nosnippet>37</span>            <span class="kw">for </span>value <span class="kw">in </span>values {
+<span data-nosnippet>38</span>                <span class="kw">let </span>value = P::get_mut(value);
+<span data-nosnippet>39</span>                <span class="kw-2">*</span>value = L::act_key(value, <span class="kw-2">&amp;</span><span class="self">self</span>.act);
+<span data-nosnippet>40</span>            }
+<span data-nosnippet>41</span>            <span class="self">self</span>.act = L::act_unit();
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    }
+<span data-nosnippet>44</span>}
+<span data-nosnippet>45</span>
+<span data-nosnippet>46</span><span class="kw">impl</span>&lt;T, L, P&gt; Buckets&lt;T, LazyState&lt;L, P&gt;&gt;
+<span data-nosnippet>47</span><span class="kw">where
+<span data-nosnippet>48</span>    </span>L: LazyMapMonoidWithKeyAct,
+<span data-nosnippet>49</span>    P: BucketValue&lt;T, Value = L::Key&gt;,
+<span data-nosnippet>50</span>{
+<span data-nosnippet>51</span>    <span class="kw">fn </span>fold(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; LazyMapAgg&lt;L&gt; {
+<span data-nosnippet>52</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="highlight">L::agg_unit</span>();
+<span data-nosnippet>53</span>        <span class="macro">assert!</span>(range.start &lt;= range.end);
+<span data-nosnippet>54</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>55</span>            <span class="kw">return </span>result;
+<span data-nosnippet>56</span>        }
+<span data-nosnippet>57</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<span data-nosnippet>58</span>        <span class="kw">for </span>Bucket { values, state } <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.buckets {
+<span data-nosnippet>59</span>            <span class="kw">let </span>end = offset + values.len();
+<span data-nosnippet>60</span>            <span class="kw">if </span>range.end &lt;= offset {
+<span data-nosnippet>61</span>                <span class="kw">break</span>;
+<span data-nosnippet>62</span>            }
+<span data-nosnippet>63</span>            <span class="kw">if </span>range.start &lt;= offset &amp;&amp; end &lt;= range.end {
+<span data-nosnippet>64</span>                L::agg_operate_assign(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>state.agg);
+<span data-nosnippet>65</span>            } <span class="kw">else if </span>range.start &lt; end {
+<span data-nosnippet>66</span>                state.push(values);
+<span data-nosnippet>67</span>                <span class="kw">for </span>value <span class="kw">in
+<span data-nosnippet>68</span>                    </span><span class="kw-2">&amp;</span>values[range.start.saturating_sub(offset)..range.end.min(end) - offset]
+<span data-nosnippet>69</span>                {
+<span data-nosnippet>70</span>                    L::agg_operate_assign(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>L::single_agg(P::get(value)));
+<span data-nosnippet>71</span>                }
+<span data-nosnippet>72</span>            }
+<span data-nosnippet>73</span>            offset = end;
+<span data-nosnippet>74</span>        }
+<span data-nosnippet>75</span>        result
+<span data-nosnippet>76</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.act_unit" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#29-31">Source</a><h4 class="code-header">fn <a href="#method.act_unit" class="fn">act_unit</a>() -&gt; <a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#54&#34;,&#34;line 54&#34;],[[37,37],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#90&#34;,&#34;line 90&#34;],[[38,38],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#91&#34;,&#34;line 91&#34;],[[126,126],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#179&#34;,&#34;line 179&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree_map.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#54">line 54</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>53</span>    <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) -&gt; <span class="kw-2">&amp;mut </span>(LazyMapAgg&lt;M&gt;, LazyMapAct&lt;M&gt;) {
 <span data-nosnippet>54</span>        <span class="self">self</span>.seg.entry(k).or_insert((M::agg_unit(), <span class="highlight focus">M::act_unit</span>()))
 <span data-nosnippet>55</span>    }
 <span data-nosnippet>56</span>    <span class="attr">#[inline]
@@ -2283,7 +2360,25 @@
 <span data-nosnippet>112</span>        }
 <span data-nosnippet>113</span>        <span class="self">self</span>.update_at(<span class="number">2 </span>* k, <span class="kw-2">&amp;</span>x);
 <span data-nosnippet>114</span>        <span class="self">self</span>.update_at(<span class="number">2 </span>* k + <span class="number">1</span>, <span class="kw-2">&amp;</span>x);
-<span data-nosnippet>115</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#474&#34;,&#34;line 474&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#474">line 474</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>470</span>    <span class="kw">fn </span>top_down(data: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, children: [<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data&gt;; <span class="number">2</span>]) {
+<span data-nosnippet>115</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#31&#34;,&#34;line 31&#34;],[[16,16],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#41&#34;,&#34;line 41&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/sqrt_tree/lazy.rs (<a href="../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#31">line 31</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>25</span>    <span class="kw">fn </span>new(values: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>26</span>        <span class="kw">let </span>agg = values.iter().fold(L::agg_unit(), |agg, value| {
+<span data-nosnippet>27</span>            L::agg_operate(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>L::single_agg(P::get(value)))
+<span data-nosnippet>28</span>        });
+<span data-nosnippet>29</span>        <span class="self">Self </span>{
+<span data-nosnippet>30</span>            agg,
+<span data-nosnippet>31</span>            act: <span class="highlight focus">L::act_unit</span>(),
+<span data-nosnippet>32</span>            _marker: PhantomData,
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>    <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, values: <span class="kw-2">&amp;mut </span>[T]) {
+<span data-nosnippet>36</span>        <span class="kw">if </span>!L::is_act_unit(<span class="kw-2">&amp;</span><span class="self">self</span>.act) {
+<span data-nosnippet>37</span>            <span class="kw">for </span>value <span class="kw">in </span>values {
+<span data-nosnippet>38</span>                <span class="kw">let </span>value = P::get_mut(value);
+<span data-nosnippet>39</span>                <span class="kw-2">*</span>value = L::act_key(value, <span class="kw-2">&amp;</span><span class="self">self</span>.act);
+<span data-nosnippet>40</span>            }
+<span data-nosnippet>41</span>            <span class="self">self</span>.act = <span class="highlight">L::act_unit</span>();
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    }</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#474&#34;,&#34;line 474&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#474">line 474</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>470</span>    <span class="kw">fn </span>top_down(data: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, children: [<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data&gt;; <span class="number">2</span>]) {
 <span data-nosnippet>471</span>        <span class="kw">if </span>L::is_act_unit(<span class="kw-2">&amp;</span>data.value.act) {
 <span data-nosnippet>472</span>            <span class="kw">return</span>;
 <span data-nosnippet>473</span>        }
@@ -2291,26 +2386,16 @@
 <span data-nosnippet>475</span>        <span class="kw">for </span>child <span class="kw">in </span>children.into_iter().flatten() {
 <span data-nosnippet>476</span>            <span class="self">Self</span>::apply_non_unit(child, <span class="kw-2">&amp;</span>action);
 <span data-nosnippet>477</span>        }
-<span data-nosnippet>478</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/data_structure/implicit_splay_tree.rs.html#116&#34;,&#34;line 116&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_splay_tree.rs (<a href="../../../src/competitive/data_structure/implicit_splay_tree.rs.html#116">line 116</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>114</span>    <span class="kw">fn </span>top_down(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
-<span data-nosnippet>115</span>        <span class="kw">if </span>!T::is_act_unit(<span class="kw-2">&amp;</span>node.reborrow().into_data().value.act) {
-<span data-nosnippet>116</span>            <span class="kw">let </span>act = replace(<span class="kw-2">&amp;mut </span>node.data_mut().value.act, <span class="highlight focus">T::act_unit</span>());
-<span data-nosnippet>117</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(left) = node.reborrow_datamut().left().descend() {
-<span data-nosnippet>118</span>                <span class="self">Self</span>::update_act(left, <span class="kw-2">&amp;</span>act);
-<span data-nosnippet>119</span>            }
-<span data-nosnippet>120</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(right) = node.reborrow_datamut().right().descend() {
-<span data-nosnippet>121</span>                <span class="self">Self</span>::update_act(right, <span class="kw-2">&amp;</span>act);
-<span data-nosnippet>122</span>            }
-<span data-nosnippet>123</span>        }
-<span data-nosnippet>124</span>        <span class="kw">if </span>node.reborrow().into_data().rev {
-<span data-nosnippet>125</span>            node.data_mut().rev = <span class="bool-val">false</span>;
-<span data-nosnippet>126</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(left) = node.reborrow_datamut().left().descend() {
-<span data-nosnippet>127</span>                <span class="self">Self</span>::reverse(left);
-<span data-nosnippet>128</span>            }
-<span data-nosnippet>129</span>            <span class="kw">if let </span><span class="prelude-val">Ok</span>(right) = node.reborrow_datamut().right().descend() {
-<span data-nosnippet>130</span>                <span class="self">Self</span>::reverse(right);
-<span data-nosnippet>131</span>            }
-<span data-nosnippet>132</span>        }
-<span data-nosnippet>133</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/data_structure/implicit_treap.rs.html#118">crates/competitive/src/data_structure/implicit_treap.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.agg_operate" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#33-35">Source</a><h4 class="code-header">fn <a href="#method.agg_operate" class="fn">agg_operate</a>(x: &amp;<a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;) -&gt; <a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#82&#34;,&#34;line 82&#34;],[[84,84],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#161&#34;,&#34;line 161&#34;],[[91,91],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#168&#34;,&#34;line 168&#34;],[[97,97],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#174&#34;,&#34;line 174&#34;],[[130,130],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#207&#34;,&#34;line 207&#34;],[[153,153],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#230&#34;,&#34;line 230&#34;],[[179,179],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#256&#34;,&#34;line 256&#34;],[[195,195],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#272&#34;,&#34;line 272&#34;],[[229,229],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#306&#34;,&#34;line 306&#34;],[[245,245],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#322&#34;,&#34;line 322&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree_map.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#82">line 82</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>77</span>    <span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
+<span data-nosnippet>478</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/data_structure/implicit_splay_tree.rs.html#116">crates/competitive/src/data_structure/implicit_splay_tree.rs</a></li><li><a href="../../../src/competitive/data_structure/implicit_treap.rs.html#118">crates/competitive/src/data_structure/implicit_treap.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.agg_operate" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#33-35">Source</a><h4 class="code-header">fn <a href="#method.agg_operate" class="fn">agg_operate</a>(x: &amp;<a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;) -&gt; <a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[2,2],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#27&#34;,&#34;line 27&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/sqrt_tree/lazy.rs (<a href="../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#27">line 27</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>25</span>    <span class="kw">fn </span>new(values: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>26</span>        <span class="kw">let </span>agg = values.iter().fold(L::agg_unit(), |agg, value| {
+<span data-nosnippet>27</span>            <span class="highlight focus">L::agg_operate</span>(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>L::single_agg(P::get(value)))
+<span data-nosnippet>28</span>        });
+<span data-nosnippet>29</span>        <span class="self">Self </span>{
+<span data-nosnippet>30</span>            agg,
+<span data-nosnippet>31</span>            act: L::act_unit(),
+<span data-nosnippet>32</span>            _marker: PhantomData,
+<span data-nosnippet>33</span>        }
+<span data-nosnippet>34</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#82&#34;,&#34;line 82&#34;],[[84,84],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#161&#34;,&#34;line 161&#34;],[[91,91],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#168&#34;,&#34;line 168&#34;],[[97,97],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#174&#34;,&#34;line 174&#34;],[[130,130],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#207&#34;,&#34;line 207&#34;],[[153,153],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#230&#34;,&#34;line 230&#34;],[[179,179],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#256&#34;,&#34;line 256&#34;],[[195,195],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#272&#34;,&#34;line 272&#34;],[[229,229],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#306&#34;,&#34;line 306&#34;],[[245,245],&#34;../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#322&#34;,&#34;line 322&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree_map.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree_map.rs.html#82">line 82</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>77</span>    <span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
 <span data-nosnippet>78</span>        <span class="kw">let </span>x = <span class="kw">match </span>(<span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>(<span class="number">2 </span>* k)), <span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>(<span class="number">2 </span>* k + <span class="number">1</span>))) {
 <span data-nosnippet>79</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; M::agg_unit(),
 <span data-nosnippet>80</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((y, <span class="kw">_</span>))) =&gt; y.clone(),
@@ -2566,7 +2651,7 @@
 <span data-nosnippet>330</span>            c &gt;&gt;= <span class="number">1</span>;
 <span data-nosnippet>331</span>        }
 <span data-nosnippet>332</span>        <span class="number">0
-<span data-nosnippet>333</span>    </span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#483&#34;,&#34;line 483&#34;],[[6,6],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#486&#34;,&#34;line 486&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#483">line 483</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>480</span>    <span class="kw">fn </span>bottom_up(data: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, children: [<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::Data&gt;; <span class="number">2</span>]) {
+<span data-nosnippet>333</span>    </span>}</code></pre></div></div><div class="scraped-example expanded" data-locs="[[[3,3],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#483&#34;,&#34;line 483&#34;],[[6,6],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#486&#34;,&#34;line 486&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#483">line 483</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>480</span>    <span class="kw">fn </span>bottom_up(data: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Data, children: [<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::Data&gt;; <span class="number">2</span>]) {
 <span data-nosnippet>481</span>        <span class="kw">let </span><span class="kw-2">mut </span>aggregate = L::single_agg(<span class="kw-2">&amp;</span>data.value.key);
 <span data-nosnippet>482</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = children[<span class="number">0</span>] {
 <span data-nosnippet>483</span>            aggregate = <span class="highlight focus">L::agg_operate</span>(<span class="kw-2">&amp;</span>left.value.agg, <span class="kw-2">&amp;</span>aggregate);
@@ -2857,23 +2942,7 @@
 <span data-nosnippet>148</span>        <span class="kw">let </span>data = node.data_mut();
 <span data-nosnippet>149</span>        data.value.agg = agg;
 <span data-nosnippet>150</span>        data.size = size;
-<span data-nosnippet>151</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/implicit_treap.rs.html#142&#34;,&#34;line 142&#34;],[[10,10],&#34;../../../src/competitive/data_structure/implicit_treap.rs.html#147&#34;,&#34;line 147&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/implicit_treap.rs (<a href="../../../src/competitive/data_structure/implicit_treap.rs.html#142">line 142</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>137</span>    <span class="kw">fn </span>bottom_up(<span class="kw-2">mut </span>node: BstDataMutRef&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt;) {
-<span data-nosnippet>138</span>        <span class="kw">let </span><span class="kw-2">mut </span>agg = T::single_agg(<span class="kw-2">&amp;</span>node.reborrow().into_data().value.key);
-<span data-nosnippet>139</span>        <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="number">1</span>;
-<span data-nosnippet>140</span>        <span class="kw">if let </span><span class="prelude-val">Ok</span>(left) = node.reborrow().left().descend() {
-<span data-nosnippet>141</span>            <span class="kw">let </span>data = left.into_data();
-<span data-nosnippet>142</span>            agg = <span class="highlight focus">T::agg_operate</span>(<span class="kw-2">&amp;</span>data.value.agg, <span class="kw-2">&amp;</span>agg);
-<span data-nosnippet>143</span>            size += data.size;
-<span data-nosnippet>144</span>        }
-<span data-nosnippet>145</span>        <span class="kw">if let </span><span class="prelude-val">Ok</span>(right) = node.reborrow().right().descend() {
-<span data-nosnippet>146</span>            <span class="kw">let </span>data = right.into_data();
-<span data-nosnippet>147</span>            agg = <span class="highlight">T::agg_operate</span>(<span class="kw-2">&amp;</span>agg, <span class="kw-2">&amp;</span>data.value.agg);
-<span data-nosnippet>148</span>            size += data.size;
-<span data-nosnippet>149</span>        }
-<span data-nosnippet>150</span>        <span class="kw">let </span>data = node.data_mut();
-<span data-nosnippet>151</span>        data.value.agg = agg;
-<span data-nosnippet>152</span>        data.size = size;
-<span data-nosnippet>153</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#171">crates/competitive/src/data_structure/binary_search_tree/seeker.rs</a></li><li><a href="../../../src/competitive/data_structure/binary_trie.rs.html#220">crates/competitive/src/data_structure/binary_trie.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.act_operate" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#37-39">Source</a><h4 class="code-header">fn <a href="#method.act_operate" class="fn">act_operate</a>(x: &amp;<a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;) -&gt; <a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#91&#34;,&#34;line 91&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#91">line 91</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>85</span>    <span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: <span class="kw-2">&amp;</span>LazyMapAct&lt;M&gt;) {
+<span data-nosnippet>151</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/data_structure/implicit_treap.rs.html#142">crates/competitive/src/data_structure/implicit_treap.rs</a></li><li><a href="../../../src/competitive/data_structure/binary_search_tree/seeker.rs.html#171">crates/competitive/src/data_structure/binary_search_tree/seeker.rs</a></li><li><a href="../../../src/competitive/data_structure/binary_trie.rs.html#220">crates/competitive/src/data_structure/binary_trie.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.act_operate" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#37-39">Source</a><h4 class="code-header">fn <a href="#method.act_operate" class="fn">act_operate</a>(x: &amp;<a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;) -&gt; <a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/data_structure/lazy_segment_tree.rs.html#91&#34;,&#34;line 91&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/lazy_segment_tree.rs (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#91">line 91</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>85</span>    <span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: <span class="kw-2">&amp;</span>LazyMapAct&lt;M&gt;) {
 <span data-nosnippet>86</span>        <span class="kw">if </span>M::is_act_unit(x) {
 <span data-nosnippet>87</span>            <span class="kw">return</span>;
 <span data-nosnippet>88</span>        }
@@ -2907,7 +2976,32 @@
 <span data-nosnippet>72</span>        } <span class="kw">else </span>{
 <span data-nosnippet>73</span>            <span class="macro">panic!</span>(<span class="string">"act failed on leaf"</span>);
 <span data-nosnippet>74</span>        }
-<span data-nosnippet>75</span>    }</code></pre></div></div></div></details></div></details><section id="method.agg_operate_assign" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#41-43">Source</a><h4 class="code-header">fn <a href="#method.agg_operate_assign" class="fn">agg_operate_assign</a>(x: &amp;mut <a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;)</h4></section><details class="toggle method-toggle" open><summary><section id="method.act_operate_assign" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#45-47">Source</a><h4 class="code-header">fn <a href="#method.act_operate_assign" class="fn">act_operate_assign</a>(x: &amp;mut <a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#439&#34;,&#34;line 439&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#439">line 439</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>438</span>    <span class="kw">fn </span>apply_non_unit(data: <span class="kw-2">&amp;mut </span>PathLinkCutTreeData&lt;L&gt;, action: <span class="kw-2">&amp;</span>LazyMapAct&lt;L&gt;) {
+<span data-nosnippet>75</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.agg_operate_assign" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#41-43">Source</a><h4 class="code-header">fn <a href="#method.agg_operate_assign" class="fn">agg_operate_assign</a>(x: &amp;mut <a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAgg.html" title="type competitive::algebra::LazyMapAgg">LazyMapAgg</a>&lt;Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#64&#34;,&#34;line 64&#34;],[[19,19],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#70&#34;,&#34;line 70&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/sqrt_tree/lazy.rs (<a href="../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#64">line 64</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>51</span>    <span class="kw">fn </span>fold(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; LazyMapAgg&lt;L&gt; {
+<span data-nosnippet>52</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = L::agg_unit();
+<span data-nosnippet>53</span>        <span class="macro">assert!</span>(range.start &lt;= range.end);
+<span data-nosnippet>54</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>55</span>            <span class="kw">return </span>result;
+<span data-nosnippet>56</span>        }
+<span data-nosnippet>57</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<span data-nosnippet>58</span>        <span class="kw">for </span>Bucket { values, state } <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.buckets {
+<span data-nosnippet>59</span>            <span class="kw">let </span>end = offset + values.len();
+<span data-nosnippet>60</span>            <span class="kw">if </span>range.end &lt;= offset {
+<span data-nosnippet>61</span>                <span class="kw">break</span>;
+<span data-nosnippet>62</span>            }
+<span data-nosnippet>63</span>            <span class="kw">if </span>range.start &lt;= offset &amp;&amp; end &lt;= range.end {
+<span data-nosnippet>64</span>                <span class="highlight focus">L::agg_operate_assign</span>(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>state.agg);
+<span data-nosnippet>65</span>            } <span class="kw">else if </span>range.start &lt; end {
+<span data-nosnippet>66</span>                state.push(values);
+<span data-nosnippet>67</span>                <span class="kw">for </span>value <span class="kw">in
+<span data-nosnippet>68</span>                    </span><span class="kw-2">&amp;</span>values[range.start.saturating_sub(offset)..range.end.min(end) - offset]
+<span data-nosnippet>69</span>                {
+<span data-nosnippet>70</span>                    <span class="highlight">L::agg_operate_assign</span>(<span class="kw-2">&amp;mut </span>result, <span class="kw-2">&amp;</span>L::single_agg(P::get(value)));
+<span data-nosnippet>71</span>                }
+<span data-nosnippet>72</span>            }
+<span data-nosnippet>73</span>            offset = end;
+<span data-nosnippet>74</span>        }
+<span data-nosnippet>75</span>        result
+<span data-nosnippet>76</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.act_operate_assign" class="method"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#45-47">Source</a><h4 class="code-header">fn <a href="#method.act_operate_assign" class="fn">act_operate_assign</a>(x: &amp;mut <a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;, y: &amp;<a class="type" href="../type.LazyMapAct.html" title="type competitive::algebra::LazyMapAct">LazyMapAct</a>&lt;Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/tree/link_cut_tree.rs.html#439&#34;,&#34;line 439&#34;]]"><div class="scraped-example-title">crates/competitive/src/tree/link_cut_tree.rs (<a href="../../../src/competitive/tree/link_cut_tree.rs.html#439">line 439</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>438</span>    <span class="kw">fn </span>apply_non_unit(data: <span class="kw-2">&amp;mut </span>PathLinkCutTreeData&lt;L&gt;, action: <span class="kw-2">&amp;</span>LazyMapAct&lt;L&gt;) {
 <span data-nosnippet>439</span>        <span class="highlight focus">L::act_operate_assign</span>(<span class="kw-2">&amp;mut </span>data.value.act, action);
 <span data-nosnippet>440</span>        data.value.key = L::act_key(<span class="kw-2">&amp;</span>data.value.key, action);
 <span data-nosnippet>441</span>        data.value.agg = L::act_agg(<span class="kw-2">&amp;</span>data.value.agg, action)
@@ -2973,7 +3067,39 @@
 <span data-nosnippet>162</span>            <span class="self">Self</span>::top_down(node.reborrow_datamut());
 <span data-nosnippet>163</span>            <span class="self">Self</span>::bottom_up(node.reborrow_datamut());
 <span data-nosnippet>164</span>        }
-<span data-nosnippet>165</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><details class="toggle implementors-toggle"><summary><section id="impl-LazyMapMonoid-for-EmptyActLazy%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#57-70">Source</a><a href="#impl-LazyMapMonoid-for-EmptyActLazy%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="../trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a> for <a class="struct" href="../struct.EmptyActLazy.html" title="struct competitive::algebra::EmptyActLazy">EmptyActLazy</a>&lt;M&gt;<div class="where">where
+<span data-nosnippet>165</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[16,16],&#34;../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#93&#34;,&#34;line 93&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/sqrt_tree/lazy.rs (<a href="../../../src/competitive/data_structure/sqrt_tree/lazy.rs.html#93">line 93</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>77</span>    <span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;, act: LazyMapAct&lt;L&gt;) {
+<span data-nosnippet>78</span>        <span class="macro">assert!</span>(range.start &lt;= range.end);
+<span data-nosnippet>79</span>        <span class="kw">if </span>range.is_empty() || L::is_act_unit(<span class="kw-2">&amp;</span>act) {
+<span data-nosnippet>80</span>            <span class="kw">return</span>;
+<span data-nosnippet>81</span>        }
+<span data-nosnippet>82</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<span data-nosnippet>83</span>        <span class="kw">for </span>Bucket { values, state } <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.buckets {
+<span data-nosnippet>84</span>            <span class="kw">let </span>end = offset + values.len();
+<span data-nosnippet>85</span>            <span class="kw">if </span>range.end &lt;= offset {
+<span data-nosnippet>86</span>                <span class="kw">break</span>;
+<span data-nosnippet>87</span>            }
+<span data-nosnippet>88</span>            <span class="kw">if </span>range.start &lt;= offset
+<span data-nosnippet>89</span>                &amp;&amp; end &lt;= range.end
+<span data-nosnippet>90</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(agg) = L::act_agg(<span class="kw-2">&amp;</span>state.agg, <span class="kw-2">&amp;</span>act)
+<span data-nosnippet>91</span>            {
+<span data-nosnippet>92</span>                state.agg = agg;
+<span data-nosnippet>93</span>                <span class="highlight focus">L::act_operate_assign</span>(<span class="kw-2">&amp;mut </span>state.act, <span class="kw-2">&amp;</span>act);
+<span data-nosnippet>94</span>                offset = end;
+<span data-nosnippet>95</span>                <span class="kw">continue</span>;
+<span data-nosnippet>96</span>            }
+<span data-nosnippet>97</span>            <span class="kw">if </span>range.start &lt; end {
+<span data-nosnippet>98</span>                state.push(values);
+<span data-nosnippet>99</span>                <span class="kw">for </span>value <span class="kw">in
+<span data-nosnippet>100</span>                    </span><span class="kw-2">&amp;mut </span>values[range.start.saturating_sub(offset)..range.end.min(end) - offset]
+<span data-nosnippet>101</span>                {
+<span data-nosnippet>102</span>                    <span class="kw">let </span>value = P::get_mut(value);
+<span data-nosnippet>103</span>                    <span class="kw-2">*</span>value = L::act_key(value, <span class="kw-2">&amp;</span>act);
+<span data-nosnippet>104</span>                }
+<span data-nosnippet>105</span>                <span class="kw-2">*</span>state = LazyState::new(values);
+<span data-nosnippet>106</span>            }
+<span data-nosnippet>107</span>            offset = end;
+<span data-nosnippet>108</span>        }
+<span data-nosnippet>109</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><details class="toggle implementors-toggle"><summary><section id="impl-LazyMapMonoid-for-EmptyActLazy%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#57-70">Source</a><a href="#impl-LazyMapMonoid-for-EmptyActLazy%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="../trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a> for <a class="struct" href="../struct.EmptyActLazy.html" title="struct competitive::algebra::EmptyActLazy">EmptyActLazy</a>&lt;M&gt;<div class="where">where
     M: <a class="trait" href="../trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,</div></h3></section></summary><div class="impl-items"><section id="associatedtype.Key-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#61">Source</a><a href="#associatedtype.Key-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Key" class="associatedtype">Key</a> = &lt;M as <a class="trait" href="../trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section><section id="associatedtype.AggMonoid-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#62">Source</a><a href="#associatedtype.AggMonoid-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.AggMonoid" class="associatedtype">AggMonoid</a> = M</h4></section><section id="associatedtype.ActMonoid-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#63">Source</a><a href="#associatedtype.ActMonoid-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.ActMonoid" class="associatedtype">ActMonoid</a> = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a></h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-LazyMapMonoid-for-FlattenLazy%3CM%3E" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#104-118">Source</a><a href="#impl-LazyMapMonoid-for-FlattenLazy%3CM%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="../trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a> for <a class="struct" href="../struct.FlattenLazy.html" title="struct competitive::algebra::FlattenLazy">FlattenLazy</a>&lt;M&gt;<div class="where">where
     M: <a class="trait" href="../trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,
     M::<a class="associatedtype" href="../trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>,</div></h3></section></summary><div class="impl-items"><section id="associatedtype.Key-2" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#109">Source</a><a href="#associatedtype.Key-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Key" class="associatedtype">Key</a> = &lt;M as <a class="trait" href="../trait.Magma.html" title="trait competitive::algebra::Magma">Magma</a>&gt;::<a class="associatedtype" href="../trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section><section id="associatedtype.AggMonoid-2" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#110">Source</a><a href="#associatedtype.AggMonoid-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.AggMonoid" class="associatedtype">AggMonoid</a> = M</h4></section><section id="associatedtype.ActMonoid-2" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#111">Source</a><a href="#associatedtype.ActMonoid-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.ActMonoid" class="associatedtype">ActMonoid</a> = M</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-LazyMapMonoid-for-RangePowerSumRangeLinear%3CT,+K%3E" class="impl"><a class="src rightside" href="../../../src/competitive/algebra/lazy_map.rs.html#189-221">Source</a><a href="#impl-LazyMapMonoid-for-RangePowerSumRangeLinear%3CT,+K%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T, const K: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a class="trait" href="../trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a> for <a class="struct" href="../struct.RangePowerSumRangeLinear.html" title="struct competitive::algebra::RangePowerSumRangeLinear">RangePowerSumRangeLinear</a>&lt;T, K&gt;<div class="where">where

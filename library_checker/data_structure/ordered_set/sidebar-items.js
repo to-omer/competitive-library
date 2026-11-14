@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["ordered_set","test_ordered_set"]};
+window.SIDEBAR_ITEMS = {"fn":["ordered_set","ordered_set_sqrt_set","test_ordered_set","test_ordered_set_sqrt_set"]};

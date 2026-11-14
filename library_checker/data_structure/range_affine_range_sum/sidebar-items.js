@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_affine_range_sum","test_range_affine_range_sum"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_affine_range_sum","range_affine_range_sum_sqrt_vec","test_range_affine_range_sum","test_range_affine_range_sum_sqrt_vec"]};
