@@ -111,6 +111,11 @@ pub use self::slope_trick::SlopeTrick;
 pub use self::sparse_set::SparseSet;
 #[codesnip::entry("SplayTree")]
 pub use self::splay_tree::SplayTree;
+#[codesnip::entry("SqrtTree")]
+pub use self::sqrt_tree::{
+    SqrtFoldMap, SqrtFoldVec, SqrtIntoIter, SqrtIter, SqrtLazyMap, SqrtLazyVec, SqrtMap,
+    SqrtMultiset, SqrtSet, SqrtVec,
+};
 #[codesnip::entry("StaticRangeProduct")]
 pub use self::static_range_product::StaticRangeProduct;
 #[codesnip::entry("StaticSearch")]
@@ -244,6 +249,8 @@ mod sparse_set;
 pub mod splay_operations;
 #[codesnip::entry("SplayTree", include("_splay_operations"))]
 mod splay_tree;
+#[codesnip::entry("SqrtTree", include("LazyMapMonoid", "discrete_steps"))]
+mod sqrt_tree;
 #[codesnip::entry("StaticRangeProduct", include("DisjointSparseTable"))]
 mod static_range_product;
 #[codesnip::entry("StaticSearch", include("_simd"))]

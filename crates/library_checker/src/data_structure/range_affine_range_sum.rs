@@ -1,6 +1,7 @@
 use competitive::prelude::*;
 use competitive::{
-    algebra::RangeSumRangeLinear, data_structure::LazySegmentTree,
+    algebra::RangeSumRangeLinear,
+    data_structure::{LazySegmentTree, SqrtLazyVec},
     num::mint_basic::MInt998244353 as M,
 };
 
@@ -26,6 +27,20 @@ pub fn range_affine_range_sum(reader: impl Read, writer: impl Write) {
             Query::Fold { l, r } => {
                 pp!(seg.fold(l..r).0);
             }
+        }
+    }
+}
+
+#[verify::library_checker("range_affine_range_sum", include("SqrtTree", "Query"))]
+pub fn range_affine_range_sum_sqrt_vec(reader: impl Read, writer: impl Write) {
+    prepare_io!(reader, writer);
+    sc!(n, q, a: [M; iter n]);
+    let mut seq: SqrtLazyVec<RangeSumRangeLinear<_>> = a.collect();
+    for _ in 0..q {
+        sc!(query: Query);
+        match query {
+            Query::Update { l, r, bc } => seq.update(l..r, bc),
+            Query::Fold { l, r } => pp!(seq.fold(l..r).0),
         }
     }
 }
