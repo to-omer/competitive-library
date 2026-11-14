@@ -22,6 +22,7 @@ pub mod rectangle_sum;
 pub mod segment_add_get_min;
 pub mod static_range_count_distinct;
 pub mod static_range_frequency;
+pub mod static_range_lis_query;
 pub mod static_range_sum;
 pub mod static_range_sum_with_upper_bound;
 pub mod static_rectangle_add_rectangle_sum;

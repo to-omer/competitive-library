@@ -1,7 +1,7 @@
 #[cfg(target_arch = "x86_64")]
 use crate::tools::avx512_enabled;
 use crate::{
-    data_structure::{BitSet, DoublyLinkedList},
+    data_structure::{BitSet, DoublyLinkedList, WaveletMatrix},
     num::Zero,
 };
 
@@ -23,6 +23,10 @@ pub use self::longest_common_subsequence::{
 pub use self::longest_increasing_subsequence::LongestIncreasingSubsequence;
 #[codesnip::entry("maximum_scoring_segment_sets")]
 pub use self::maximum_scoring_segment_sets::maximum_scoring_segment_sets;
+#[codesnip::entry("RangeLongestIncreasingSubsequence")]
+pub use self::range_longest_increasing_subsequence::{
+    RangeLongestIncreasingSubsequence, WeightedRangeLongestIncreasingSubsequence,
+};
 #[codesnip::entry("SubsetSumProblem")]
 pub use self::subset_sum_problem::SubsetSumProblem;
 
@@ -43,5 +47,10 @@ mod longest_increasing_subsequence;
     include("DoublyLinkedList", "zero_one")
 )]
 mod maximum_scoring_segment_sets;
+#[codesnip::entry(
+    "RangeLongestIncreasingSubsequence",
+    include("WaveletMatrix", "zero_one")
+)]
+mod range_longest_increasing_subsequence;
 #[codesnip::entry("SubsetSumProblem", include("BitSet"))]
 mod subset_sum_problem;
