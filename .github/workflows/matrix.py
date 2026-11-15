@@ -4,6 +4,7 @@ from itertools import islice
 from pathlib import Path
 from shutil import move
 from subprocess import PIPE, run
+import sys
 
 verify_packages = ["aizu_online_judge", "library_checker"]
 
@@ -23,6 +24,7 @@ def cargo_verify(package: str, name: str):
             "test",
             "--package",
             package,
+            "--lib",
             "--release",
             name,
             "--",
@@ -33,6 +35,7 @@ def cargo_verify(package: str, name: str):
     )
     if res.returncode:
         print(f"::error::verify failed `{name}`")
+    return res.returncode == 0
 
 
 def verify_list():
@@ -42,13 +45,14 @@ def verify_list():
             "test",
             "--package",
             package,
+            "--lib",
             "--quiet",
             "--release",
             "--",
             "--list",
             "--ignored",
         ]
-        res = run(command, stdout=PIPE)
+        res = run(command, stdout=PIPE, check=True)
         for s in res.stdout.splitlines():
             name = s.split()[0][:-1].decode("utf-8")
             if (package, name) not in excluded_verify_tests:
@@ -56,7 +60,11 @@ def verify_list():
 
 
 def arrange_artifacts():
-    res = run(["git", "ls-files", "-o", "--exclude-standard", "crates"], stdout=PIPE)
+    res = run(
+        ["git", "ls-files", "-o", "--exclude-standard", "crates"],
+        stdout=PIPE,
+        check=True,
+    )
     artifact = Path("artifact")
     artifact.mkdir(exist_ok=True)
     for s in res.stdout.split():
@@ -71,6 +79,8 @@ def main():
     parser.add_argument("size", type=int)
     parser.add_argument("--hash", action="store_true")
     args = parser.parse_args()
+    if not 0 <= args.nth < args.size:
+        parser.error("expected 0 <= nth < size")
 
     if args.hash:
         h = sha256(
@@ -81,10 +91,14 @@ def main():
         ).hexdigest()
         print(f"hash={h}")
     else:
+        success = True
         for package, name in islice(verify_list(), args.nth, None, args.size):
-            cargo_verify(package, name)
+            if not cargo_verify(package, name):
+                success = False
 
         arrange_artifacts()
+        if not success:
+            sys.exit(1)
 
 
 if __name__ == "__main__":

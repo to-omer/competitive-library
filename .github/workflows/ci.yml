@@ -100,6 +100,39 @@ jobs:
       - name: Snippet Verification
         run: bash .github/workflows/snippet.sh
 
+      - name: Generate snippets
+        run: python3 util/snippets.py
+
+      - name: Upload snippets
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: snippets
+          path: target/doc/snippets
+          if-no-files-found: error
+
+  submission:
+    name: Submission source verification
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: full
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup `1.89.0`
+        uses: dtolnay/rust-toolchain@1.89.0
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Setup `stable`
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Cache
+        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+
       - name: Submission source verification
         run: cargo run --release -p verify_source
 
@@ -110,9 +143,12 @@ jobs:
           path: target/doc/submissions
           if-no-files-found: error
 
-  formal-verus:
-    name: Formal verification (verus)
+  formal:
+    name: Formal verification
     runs-on: ubuntu-latest
+    outputs:
+      kani-result: ${{ steps.kani-artifact.outcome }}
+      verus-result: ${{ steps.verus-verify.outcome == 'success' && steps.verus-artifact.outcome == 'success' && 'success' || 'failure' }}
 
     steps:
       - name: Checkout
@@ -121,13 +157,49 @@ jobs:
       - name: Setup `stable`
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install verification tools
+      - name: Cache
+        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          key: formal
+
+      - name: Install Kani
+        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: cargo-make cargo:kani-verifier
+          cache: false # Resolve latest releases on each run.
+
+      - name: Verify Kani
+        id: kani-verify
+        run: |
+          mkdir -p "$RUNNER_TEMP/kani"
+          (cd "$RUNNER_TEMP/kani" && cargo kani -p competitive --manifest-path "$GITHUB_WORKSPACE/Cargo.toml" list --format json)
+          makers formal-kani -Z unstable-options --export-json "$RUNNER_TEMP/kani/formal.json"
+
+      - name: Kani summary
+        id: kani-summary
+        if: ${{ always() && steps.kani-verify.outcome != 'skipped' }}
+        shell: bash
+        run: python3 .github/workflows/formal_summary.py kani "$RUNNER_TEMP/kani/formal.json" --harnesses "$RUNNER_TEMP/kani/kani-list.json" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Kani results
+        id: kani-artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: formal-kani
+          path: ${{ runner.temp }}/kani/*.json
+          if-no-files-found: error
+
+      - name: Install Verus
+        id: verus-install
+        if: ${{ !cancelled() }}
         uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
         with:
           install_args: cargo-make jq github:verus-lang/verus
           cache: false # Resolve latest releases on each run.
 
       - name: Update Verus standard library
+        id: verus-update
+        if: ${{ !cancelled() && steps.verus-install.outcome == 'success' }}
         shell: bash
         run: |
           verus_version=$(verus --version --output-json | jq -er '.verus.version')
@@ -136,71 +208,25 @@ jobs:
           ')
           cargo update -p vstd --precise "${vstd_version:?vstd version not found}"
 
-      - name: Cache
-        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
-        with:
-          key: formal-verus
-
-      - name: Verify
-        id: formal-verify
+      - name: Verify Verus
+        id: verus-verify
+        if: ${{ !cancelled() && steps.verus-update.outcome == 'success' }}
         shell: bash
         run: makers formal-verus --output-json | tee "$RUNNER_TEMP/formal.json"
 
-      - name: Formal verification summary
-        id: formal-summary
-        if: ${{ always() && steps.formal-verify.outcome != 'skipped' }}
+      - name: Verus summary
+        id: verus-summary
+        if: ${{ always() && steps.verus-verify.outcome != 'skipped' }}
         shell: bash
         run: python3 .github/workflows/formal_summary.py verus "$RUNNER_TEMP/formal.json" --doc "$RUNNER_TEMP/formal.md" | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload formal verification report
-        if: ${{ !cancelled() && steps.formal-summary.outcome == 'success' }}
+      - name: Upload Verus report
+        id: verus-artifact
+        if: ${{ !cancelled() && steps.verus-summary.outcome == 'success' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: formal-verus
           path: ${{ runner.temp }}/formal.md
-          if-no-files-found: error
-
-  formal-kani:
-    strategy:
-      fail-fast: false
-      matrix:
-        job-id: [0, 1]
-
-    name: Formal verification (kani ${{ matrix.job-id }})
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Setup `stable`
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install verification tools
-        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
-        with:
-          install_args: cargo-make cargo:kani-verifier
-          cache: false # Resolve latest releases on each run.
-
-      - name: Cache
-        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
-        with:
-          key: formal-kani
-
-      - name: Verify
-        id: formal-verify
-        run: python3 .github/workflows/kani_matrix.py ${{ matrix.job-id }} ${{ strategy.job-total }} "$RUNNER_TEMP/kani"
-
-      - name: Formal verification summary
-        if: ${{ always() && steps.formal-verify.outcome != 'skipped' }}
-        shell: bash
-        run: python3 .github/workflows/formal_summary.py kani "$RUNNER_TEMP/kani/formal.json" | tee -a "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload formal verification results
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: formal-kani-${{ matrix.job-id }}
-          path: ${{ runner.temp }}/kani/*.json
           if-no-files-found: error
 
   verify:
@@ -233,9 +259,6 @@ jobs:
 
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
-
-      - name: cargo-build
-        run: cargo build --release --workspace --lib --tests
 
       - id: testcases-hash
         run: python ./.github/workflows/matrix.py ${{ matrix.job-id }} ${{ strategy.job-total }} --hash >> "$GITHUB_OUTPUT"
@@ -296,6 +319,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
+      CARGO_PROFILE_TEST_OPT_LEVEL: "1"
 
     steps:
       - name: Checkout
@@ -360,14 +384,15 @@ jobs:
           path: coverage/**/*
 
   generate-doc:
-    needs: [verify, benchmark, coverage, formal-verus, formal-kani, snippet]
+    needs: [verify, benchmark, coverage, formal, snippet, submission]
     if: >-
       ${{ !cancelled() && github.ref_name == 'master'
           && needs.verify.result == 'success'
           && needs.benchmark.result == 'success'
           && needs.coverage.result == 'success'
-          && needs.formal-kani.result == 'success'
-          && needs.snippet.result == 'success' }}
+          && needs.formal.outputs.kani-result == 'success'
+          && needs.snippet.result == 'success'
+          && needs.submission.result == 'success' }}
 
     name: Generate Doc
     runs-on: ubuntu-latest
@@ -380,12 +405,6 @@ jobs:
 
       - name: Setup `nightly`
         uses: dtolnay/rust-toolchain@nightly
-
-      - name: Install codesnip
-        uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
-        with:
-          install_args: cargo:codesnip
-          cache: false # Resolve latest releases on each run.
 
       - name: Cache
         uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
@@ -402,15 +421,15 @@ jobs:
 
       - name: Arrange artifacts
         env:
-          VERUS_RESULT: ${{ needs.formal-verus.result }}
+          VERUS_RESULT: ${{ needs.formal.outputs.verus-result }}
         run: |
           cp -r artifact/* .
-          python3 .github/workflows/formal_summary.py kani formal-kani-*/formal.json --harnesses formal-kani-*/kani-list.json --doc "$RUNNER_TEMP/kani.md" >> "$GITHUB_STEP_SUMMARY"
+          python3 .github/workflows/formal_summary.py kani formal-kani/formal.json --harnesses formal-kani/kani-list.json --doc "$RUNNER_TEMP/kani.md" >> "$GITHUB_STEP_SUMMARY"
           cat "$RUNNER_TEMP/kani.md" > crates/competitive/src/formal.md
           if [ -f formal-verus/formal.md ]; then
             cat formal-verus/formal.md >> crates/competitive/src/formal.md
           elif [ "$VERUS_RESULT" != success ]; then
-            printf '\n## Verus\n\nJob result: **%s**. Report unavailable; see the [CI logs](%s/%s/actions/runs/%s).\n' \
+            printf '\n## Verus\n\nResult: **%s**. Report unavailable; see the [CI logs](%s/%s/actions/runs/%s).\n' \
               "$VERUS_RESULT" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> crates/competitive/src/formal.md
           else
             echo 'Verus passed but its report is missing.' >&2
@@ -446,8 +465,8 @@ jobs:
       - name: Arrange doc resources
         run: cp -r util/gh-pages/* target/doc
 
-      - name: Generate snippets
-        run: python3 util/snippets.py
+      - name: Arrange snippets
+        run: cp -r snippets target/doc/
 
       - name: Arrange submission sources
         run: cp -r submissions target/doc/

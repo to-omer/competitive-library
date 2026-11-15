@@ -4,8 +4,6 @@ from html import escape
 from json import JSONDecoder, loads
 from pathlib import Path
 
-from kani_matrix import harness_names
-
 
 def cell(text):
     return (
@@ -160,7 +158,13 @@ def main():
         else:
             expected = None
             for path in args.harnesses:
-                names = harness_names(loads(path.read_text()))
+                data = loads(path.read_text())
+                names = {
+                    name
+                    for kind in ("standard-harnesses", "contract-harnesses")
+                    for names in data[kind].values()
+                    for name in names
+                }
                 if expected is not None and names != expected:
                     raise ValueError("Kani harness lists differ between jobs")
                 expected = names

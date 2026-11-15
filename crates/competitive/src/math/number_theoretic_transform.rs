@@ -2078,6 +2078,26 @@ mod tests {
         }
         impl Montgomery32NttModulus for Modulo97 {}
         type SmallCrt = Convolve<(u64, (Modulo998244353, Modulo469762049, Modulo97))>;
+        let expected_convolve = |a: &[u64], b: &[u64]| {
+            let (n, m) = (a.len(), b.len());
+            let mut c = vec![0u64; (n + m).saturating_sub(1)];
+            if let (Some(&x), Some(&y)) = (a.first(), b.first())
+                && a.iter().all(|&v| v == x)
+                && b.iter().all(|&v| v == y)
+            {
+                for (i, value) in c.iter_mut().enumerate() {
+                    let count = (i + 1).min(n).min(m).min(n + m - 1 - i) as u64;
+                    *value = count.wrapping_mul(x).wrapping_mul(y);
+                }
+            } else {
+                for (i, &x) in a.iter().enumerate() {
+                    for (j, &y) in b.iter().enumerate() {
+                        c[i + j] = c[i + j].wrapping_add(x.wrapping_mul(y));
+                    }
+                }
+            }
+            c
+        };
         let mut rng = Xorshift::default();
         let inputs: Vec<_> = exhaustive_sequences([0u64, 1, u64::MAX], 0..=3).collect();
         let exhaustive = inputs
@@ -2126,13 +2146,8 @@ mod tests {
             }
         }
         for (a, b) in exhaustive.chain(cases) {
-            let (n, m) = (a.len(), b.len());
-            let mut c = vec![0u64; (n + m).saturating_sub(1)];
-            for i in 0..n {
-                for j in 0..m {
-                    c[i + j] = c[i + j].wrapping_add(a[i].wrapping_mul(b[j]));
-                }
-            }
+            let n = a.len();
+            let c = expected_convolve(&a, &b);
             let mut f = U64Convolve::transform(a.clone(), c.len());
             let g = U64Convolve::transform(b.clone(), c.len());
             U64Convolve::multiply(&mut f, &g);
@@ -2146,12 +2161,7 @@ mod tests {
             assert_eq!(U64Convolve::convolve(a.clone(), b), c);
             let f = U64Convolve::transform(a.clone(), n);
             assert_eq!(U64Convolve::inverse_transform(f, n), a);
-            let mut square = vec![0u64; (n * 2).saturating_sub(1)];
-            for (i, &x) in a.iter().enumerate() {
-                for (j, &y) in a.iter().enumerate() {
-                    square[i + j] = square[i + j].wrapping_add(x.wrapping_mul(y));
-                }
-            }
+            let square = expected_convolve(&a, &a);
             assert_eq!(U64Convolve::square(a, square.len()), square);
         }
 
