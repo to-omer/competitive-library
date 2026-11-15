@@ -1,5 +1,5 @@
 use super::{
-    BstDataAccess, BstImmutRef, BstSpec, LazyMapAgg, LazyMapMonoid, data, data::LazyMapElement,
+    BstDataAccess, BstImmutRef, BstSpec, LazyMapMonoid, MapAgg, data, data::LazyMapElement,
 };
 use std::{borrow::Borrow, cmp::Ordering, marker::PhantomData};
 
@@ -138,7 +138,7 @@ pub struct SeekByAccCond<Spec, L, F>
 where
     L: LazyMapMonoid,
 {
-    acc: LazyMapAgg<L>,
+    acc: MapAgg<L>,
     f: F,
     _marker: PhantomData<fn() -> (Spec, L)>,
 }
@@ -146,7 +146,7 @@ where
 impl<Spec, L, F> SeekByAccCond<Spec, L, F>
 where
     L: LazyMapMonoid,
-    F: FnMut(&LazyMapAgg<L>) -> bool,
+    F: FnMut(&MapAgg<L>) -> bool,
 {
     pub fn new(f: F) -> Self {
         Self {
@@ -161,7 +161,7 @@ impl<Spec, L, F> BstSeeker for SeekByAccCond<Spec, L, F>
 where
     Spec: BstSpec<Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>>,
     L: LazyMapMonoid,
-    F: FnMut(&LazyMapAgg<L>) -> bool,
+    F: FnMut(&MapAgg<L>) -> bool,
 {
     type Spec = Spec;
 
@@ -201,7 +201,7 @@ pub struct SeekByRaccCond<Spec, L, F>
 where
     L: LazyMapMonoid,
 {
-    acc: LazyMapAgg<L>,
+    acc: MapAgg<L>,
     f: F,
     _marker: PhantomData<fn() -> (Spec, L)>,
 }
@@ -209,7 +209,7 @@ where
 impl<Spec, L, F> SeekByRaccCond<Spec, L, F>
 where
     L: LazyMapMonoid,
-    F: FnMut(&LazyMapAgg<L>) -> bool,
+    F: FnMut(&MapAgg<L>) -> bool,
 {
     pub fn new(f: F) -> Self {
         Self {
@@ -224,7 +224,7 @@ impl<Spec, L, F> BstSeeker for SeekByRaccCond<Spec, L, F>
 where
     Spec: BstSpec<Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>>,
     L: LazyMapMonoid,
-    F: FnMut(&LazyMapAgg<L>) -> bool,
+    F: FnMut(&MapAgg<L>) -> bool,
 {
     type Spec = Spec;
 

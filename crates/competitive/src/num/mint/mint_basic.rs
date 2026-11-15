@@ -3,7 +3,7 @@ use std::{cell::UnsafeCell, mem::swap};
 
 #[macro_export]
 macro_rules! define_basic_mintbase {
-    ($name:ident, $m:expr, $basety:ty, $signedty:ty, $upperty:ty, [$($unsigned:ty),*], [$($signed:ty),*]) => {
+    ($name:ident, $m:expr, $basety:ty, $signedty:ty, $upperty:ty, [$($unsigned:ty),*], [$($signed:ty),*] $(, const_mod = $const_mod:expr)?) => {
         pub enum $name {}
         impl MIntBase for $name {
             type Inner = $basety;
@@ -22,6 +22,10 @@ macro_rules! define_basic_mintbase {
             #[inline]
             fn mod_add(x: Self::Inner, y: Self::Inner) -> Self::Inner {
                 let m = Self::get_mod();
+                $(if $const_mod && m <= <$basety>::MAX / 2 + 1 {
+                    let z = x + y;
+                    return if z >= m { z - m } else { z };
+                })?
                 let (z, borrow) = x.overflowing_sub(m - y);
                 if borrow { z.wrapping_add(m) } else { z }
             }
@@ -117,7 +121,8 @@ macro_rules! define_basic_mint32 {
             i32,
             u64,
             [u32, u64, u128, usize],
-            [i32, i64, i128, isize]
+            [i32, i64, i128, isize],
+            const_mod = true
         );
         impl $name {
             fn rem(x: u64) -> u64 {
@@ -301,6 +306,34 @@ mod tests {
     test_mint!(test_mint998244353 MInt998244353);
     test_mint!(test_mint1000000007 MInt1000000007);
     test_mint!(test_mint1000000009 MInt1000000009);
+
+    #[test]
+    #[allow(clippy::modulo_one)] // Exercise modulus one through the public macro.
+    fn test_fixed_mint_add() {
+        define_basic_mint32!(
+            [Modulo1, 1, MInt1],
+            [Modulo2147483648, 2_147_483_648, MInt2147483648],
+            [Modulo2147483649, 2_147_483_649, MInt2147483649],
+            [Modulo4294967295, 4_294_967_295, MInt4294967295]
+        );
+        fn check<M>(from: impl Fn(u32) -> MInt<M>)
+        where
+            M: MIntBase<Inner = u32>,
+        {
+            let modulus = M::get_mod();
+            let values = [0, 1 % modulus, modulus / 2, modulus - 1];
+            for x in values {
+                for y in values {
+                    let sum = from(x) + from(y);
+                    assert_eq!(sum.inner() as u64, (x as u64 + y as u64) % modulus as u64);
+                }
+            }
+        }
+        check(MInt1::from);
+        check(MInt2147483648::from);
+        check(MInt2147483649::from);
+        check(MInt4294967295::from);
+    }
 
     macro_rules! test_dyn_mint_arithmetic {
         ($name:ident, $mint:ident, $int:ty, $signed:ty) => {

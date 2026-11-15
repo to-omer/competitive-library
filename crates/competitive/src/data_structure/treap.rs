@@ -1,6 +1,6 @@
 use super::{
-    Allocator, BoxAllocator, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct,
-    MonoidAct, Xorshift,
+    Allocator, BoxAllocator, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, MapAgg, MonoidAct,
+    Xorshift,
     binary_search_tree::{
         BstDataAccess, BstDataMutRef, BstNode, BstNodeId, BstNodeIdManager, BstRoot, BstSeeker,
         BstSpec, EqualSide,
@@ -40,7 +40,7 @@ impl<M, L> Debug for TreapData<M, L>
 where
     M: MonoidAct<Key: Ord + Debug, Act: Debug>,
     L: LazyMapMonoid<Key: Debug>,
-    LazyMapAgg<L>: Debug,
+    MapAgg<L>: Debug,
     LazyMapAct<L>: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -435,7 +435,7 @@ where
 
     pub fn find_by_acc_cond<F>(&mut self, f: F) -> Option<BstNodeId<TreapSpec<M, L>>>
     where
-        F: FnMut(&LazyMapAgg<L>) -> bool,
+        F: FnMut(&MapAgg<L>) -> bool,
     {
         let split = Split::new(
             &mut self.root,
@@ -448,7 +448,7 @@ where
 
     pub fn find_by_racc_cond<F>(&mut self, f: F) -> Option<BstNodeId<TreapSpec<M, L>>>
     where
-        F: FnMut(&LazyMapAgg<L>) -> bool,
+        F: FnMut(&MapAgg<L>) -> bool,
     {
         let split = Split::new(
             &mut self.root,
@@ -474,7 +474,7 @@ where
     M: MonoidAct<Key: Ord>,
     L: LazyMapMonoidWithKeyAct,
 {
-    pub fn fold(&self) -> LazyMapAgg<L> {
+    pub fn fold(&self) -> MapAgg<L> {
         if let Some(node) = self.split3.mid() {
             node.reborrow().into_data().value.agg.clone()
         } else {

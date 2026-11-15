@@ -1,4 +1,4 @@
-use super::{FibHashMap, LazyMapAct, LazyMapAgg, LazyMapMonoid, RangeBoundsExt};
+use super::{FibHashMap, LazyMapAct, LazyMapMonoid, MapAgg, RangeBoundsExt};
 use std::{
     fmt::{self, Debug, Formatter},
     mem::replace,
@@ -10,7 +10,7 @@ where
     M: LazyMapMonoid,
 {
     n: usize,
-    seg: FibHashMap<usize, (LazyMapAgg<M>, LazyMapAct<M>)>,
+    seg: FibHashMap<usize, (MapAgg<M>, LazyMapAct<M>)>,
 }
 
 impl<M> Clone for LazySegmentTreeMap<M>
@@ -28,7 +28,7 @@ where
 impl<M> Debug for LazySegmentTreeMap<M>
 where
     M: LazyMapMonoid,
-    LazyMapAgg<M>: Debug,
+    MapAgg<M>: Debug,
     LazyMapAct<M>: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -50,7 +50,7 @@ where
         }
     }
     #[inline]
-    fn get_mut(&mut self, k: usize) -> &mut (LazyMapAgg<M>, LazyMapAct<M>) {
+    fn get_mut(&mut self, k: usize) -> &mut (MapAgg<M>, LazyMapAct<M>) {
         self.seg.entry(k).or_insert((M::agg_unit(), M::act_unit()))
     }
     #[inline]
@@ -141,7 +141,7 @@ where
         self.recalc(range.start + self.n, false, false);
         self.recalc(range.end + self.n, true, false);
     }
-    pub fn fold<R>(&mut self, range: R) -> LazyMapAgg<M>
+    pub fn fold<R>(&mut self, range: R) -> MapAgg<M>
     where
         R: RangeBounds<usize>,
     {
@@ -173,13 +173,13 @@ where
         }
         M::agg_operate(&vl, &vr)
     }
-    pub fn set(&mut self, k: usize, x: LazyMapAgg<M>) {
+    pub fn set(&mut self, k: usize, x: MapAgg<M>) {
         let k = k + self.n;
         self.propagate(k, false, true);
         *self.get_mut(k) = (x, M::act_unit());
         self.recalc(k, false, true);
     }
-    pub fn get(&mut self, k: usize) -> LazyMapAgg<M> {
+    pub fn get(&mut self, k: usize) -> MapAgg<M> {
         assert!(k < self.n);
         let k = k + self.n;
         self.propagate(k, false, true);
@@ -188,17 +188,17 @@ where
             .map(|(x, _)| x.clone())
             .unwrap_or_else(M::agg_unit)
     }
-    pub fn fold_all(&mut self) -> LazyMapAgg<M> {
+    pub fn fold_all(&mut self) -> MapAgg<M> {
         self.fold(0..self.n)
     }
     fn partition_point_perfect<P>(
         &mut self,
         mut pos: usize,
-        mut acc: LazyMapAgg<M>,
+        mut acc: MapAgg<M>,
         mut pred: P,
-    ) -> (usize, LazyMapAgg<M>)
+    ) -> (usize, MapAgg<M>)
     where
-        P: FnMut(&LazyMapAgg<M>) -> bool,
+        P: FnMut(&MapAgg<M>) -> bool,
     {
         while pos < self.n {
             self.propagate_at(pos);
@@ -217,11 +217,11 @@ where
     fn rpartition_point_perfect<P>(
         &mut self,
         mut pos: usize,
-        mut acc: LazyMapAgg<M>,
+        mut acc: MapAgg<M>,
         mut pred: P,
-    ) -> (usize, LazyMapAgg<M>)
+    ) -> (usize, MapAgg<M>)
     where
-        P: FnMut(&LazyMapAgg<M>) -> bool,
+        P: FnMut(&MapAgg<M>) -> bool,
     {
         while pos < self.n {
             self.propagate_at(pos);
@@ -239,7 +239,7 @@ where
     }
     pub fn partition_point_acc<P>(&mut self, left: usize, mut pred: P) -> usize
     where
-        P: FnMut(&LazyMapAgg<M>) -> bool,
+        P: FnMut(&MapAgg<M>) -> bool,
     {
         let mut acc = M::agg_unit();
         if left == self.n {
@@ -282,7 +282,7 @@ where
     }
     pub fn rpartition_point_acc<P>(&mut self, right: usize, mut pred: P) -> usize
     where
-        P: FnMut(&LazyMapAgg<M>) -> bool,
+        P: FnMut(&MapAgg<M>) -> bool,
     {
         let mut acc = M::agg_unit();
         if right == 0 {

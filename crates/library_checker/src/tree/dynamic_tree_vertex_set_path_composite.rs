@@ -1,8 +1,8 @@
 use competitive::prelude::*;
 use competitive::{
     algebra::{
-        Associative, EmptyAct, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct,
-        LinearOperation, Magma, MonoidAct, Unital,
+        Associative, EmptyAct, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, LinearOperation,
+        Magma, MapAgg, MapMonoid, MonoidAct, ReversibleMapMonoid, Unital,
     },
     num::mint_basic::MInt998244353 as M,
     tree::{PathLinkCutTree, TopTree, TopTreeSpec},
@@ -44,20 +44,24 @@ struct PathComposite;
     "PathCompositeLinkCutTree",
     include("PathComposite", "BidirectionalAffineMonoid", "LinkCutTree")
 )]
-impl LazyMapMonoid for PathComposite {
+impl MapMonoid for PathComposite {
     type Key = Affine;
     type AggMonoid = BidirectionalAffine;
-    type ActMonoid = ();
-
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
         (*key, *key)
     }
-
-    fn toggle(value: &mut LazyMapAgg<Self>) {
+}
+#[codesnip::entry("PathCompositeLinkCutTree")]
+impl ReversibleMapMonoid for PathComposite {
+    fn toggle(value: &mut MapAgg<Self>) {
         std::mem::swap(&mut value.0, &mut value.1);
     }
+}
+#[codesnip::entry("PathCompositeLinkCutTree")]
+impl LazyMapMonoid for PathComposite {
+    type ActMonoid = ();
 
-    fn act_agg(value: &LazyMapAgg<Self>, _action: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+    fn act_agg(value: &MapAgg<Self>, _action: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(*value)
     }
 }

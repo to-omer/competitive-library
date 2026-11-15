@@ -9,6 +9,8 @@ pub use self::action::*;
 pub use self::lazy_map::*;
 #[codesnip::entry("algebra")]
 pub use self::magma::*;
+#[codesnip::entry("MapMonoid")]
+pub use self::map_monoid::*;
 pub use self::operations::*;
 #[codesnip::entry("ring")]
 pub use self::ring::*;
@@ -23,6 +25,7 @@ mod action;
     "LazyMapMonoid",
     include(
         "MonoidAct",
+        "MapMonoid",
         "AdditiveOperation",
         "ArrayOperation",
         "MaxOperation",
@@ -34,6 +37,8 @@ mod action;
 mod lazy_map;
 #[cfg_attr(nightly, codesnip::entry("algebra"))]
 mod magma;
+#[codesnip::entry("MapMonoid", include("TupleOperation", "ReverseOperation"))]
+mod map_monoid;
 mod operations;
 #[codesnip::entry(
     "ring",

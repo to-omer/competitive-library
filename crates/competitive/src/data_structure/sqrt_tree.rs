@@ -1,12 +1,17 @@
-use super::{LazyMapAct, LazyMapAgg, LazyMapMonoidWithKeyAct, Monoid, RangeBoundsExt};
+use super::{
+    EmptyActLazy, LazyMapAct, LazyMapMonoidWithKeyAct, MapAgg, MapMonoid, Monoid, RangeBoundsExt,
+    ReversibleMapMonoid,
+};
 use std::{
     mem,
-    ops::{Bound, RangeBounds},
+    ops::{Bound, Range, RangeBounds},
 };
 
-pub use self::fold::{SqrtFoldMap, SqrtFoldVec};
-pub use self::lazy::{SqrtLazyMap, SqrtLazyVec};
-pub use self::plain::{SqrtIntoIter, SqrtIter, SqrtMap, SqrtMultiset, SqrtSet, SqrtVec};
+pub use self::fold::{SqrtFoldMap, SqrtFoldVec, SqrtReversibleFoldVec};
+pub use self::lazy::{SqrtLazyMap, SqrtLazyVec, SqrtReversibleLazyVec};
+pub use self::plain::{
+    SqrtIntoIter, SqrtIter, SqrtMap, SqrtMultiset, SqrtReversibleVec, SqrtSet, SqrtVec,
+};
 
 mod fold;
 mod lazy;
@@ -15,6 +20,9 @@ mod plain;
 trait BucketState<T>: Sized {
     fn new(values: &[T]) -> Self;
     fn push(&mut self, values: &mut [T]);
+    fn is_reversed(&self) -> bool {
+        false
+    }
 }
 
 impl<T> BucketState<T> for () {
@@ -22,10 +30,66 @@ impl<T> BucketState<T> for () {
     fn push(&mut self, _: &mut [T]) {}
 }
 
+trait BucketOrder: Default {
+    fn is_reversed(&self) -> bool;
+    fn push<T>(&mut self, values: &mut [T]) {
+        if self.is_reversed() {
+            values.reverse();
+            *self = Self::default();
+        }
+    }
+}
+impl BucketOrder for () {
+    fn is_reversed(&self) -> bool {
+        false
+    }
+}
+impl BucketOrder for bool {
+    fn is_reversed(&self) -> bool {
+        *self
+    }
+}
+impl<T> BucketState<T> for bool {
+    fn new(_: &[T]) -> Self {
+        false
+    }
+    fn push(&mut self, values: &mut [T]) {
+        BucketOrder::push(self, values);
+    }
+    fn is_reversed(&self) -> bool {
+        *self
+    }
+}
+
+trait ReversibleBucketState<T>: BucketState<T> {
+    fn toggle(&mut self);
+}
+impl<T> ReversibleBucketState<T> for bool {
+    fn toggle(&mut self) {
+        *self ^= true;
+    }
+}
+
 #[derive(Clone, Debug)]
 struct Bucket<T, S> {
     values: Vec<T>,
     state: S,
+}
+
+impl<T, S> Bucket<T, S>
+where
+    S: BucketState<T>,
+{
+    fn iter(&self) -> impl DoubleEndedIterator<Item = &T> + ExactSizeIterator {
+        let reversed = self.state.is_reversed();
+        (0..self.values.len()).map(move |i| {
+            &self.values[if reversed {
+                self.values.len() - 1 - i
+            } else {
+                i
+            }]
+        })
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -112,18 +176,8 @@ where
         values.insert(j, value);
         self.sizes[i] += 1;
         if values.len() > 2 * self.bucket_size {
-            let right = values.split_off(values.len() / 2);
-            self.sizes[i] = values.len();
-            self.sizes.insert(i + 1, right.len());
-            *state = S::new(values);
-            let state = S::new(&right);
-            self.buckets.insert(
-                i + 1,
-                Bucket {
-                    values: right,
-                    state,
-                },
-            );
+            let mid = values.len() / 2;
+            self.split_bucket(i, mid);
         } else {
             *state = S::new(values);
         }
@@ -163,6 +217,23 @@ where
         }
     }
 
+    fn split_bucket(&mut self, i: usize, j: usize) {
+        let Bucket { values, state } = &mut self.buckets[i];
+        state.push(values);
+        let right = values.split_off(j);
+        *state = S::new(values);
+        self.sizes[i] = j;
+        self.sizes.insert(i + 1, right.len());
+        let state = S::new(&right);
+        self.buckets.insert(
+            i + 1,
+            Bucket {
+                values: right,
+                state,
+            },
+        );
+    }
+
     fn partition_point(&self, mut before: impl FnMut(&T) -> bool) -> (usize, usize) {
         let i = self
             .buckets
@@ -183,7 +254,13 @@ where
     }
 
     fn at(&self, (i, j): (usize, usize)) -> Option<&T> {
-        self.buckets.get(i).and_then(|b| b.values.get(j))
+        let bucket = self.buckets.get(i)?;
+        let j = if bucket.state.is_reversed() {
+            bucket.values.len().checked_sub(j + 1)?
+        } else {
+            j
+        };
+        bucket.values.get(j)
     }
 
     fn bounds<Q, R>(&self, range: R, key: impl Fn(&T) -> &Q) -> ((usize, usize), (usize, usize))
@@ -217,6 +294,71 @@ where
     }
 }
 
+impl<T, S> Buckets<T, S>
+where
+    S: ReversibleBucketState<T>,
+{
+    fn reverse(&mut self, range: Range<usize>) {
+        assert!(range.start <= range.end);
+        if range.len() <= 1 {
+            return;
+        }
+        let (i, l) = self.locate(range.start);
+        let (mut j, mut r) = self.locate(range.end);
+        if r == 0 {
+            j -= 1;
+            r = self.sizes[j];
+        }
+        if i == j {
+            let Bucket { values, state } = &mut self.buckets[i];
+            if l == 0 && r == values.len() {
+                state.toggle();
+            } else {
+                state.push(values);
+                values[l..r].reverse();
+                *state = S::new(values);
+            }
+            return;
+        }
+        let (start, end) = if l == 0 && r == self.sizes[j] {
+            (i, j + 1)
+        } else {
+            let (left, right) = self.buckets.split_at_mut(j);
+            let left = &mut left[i];
+            let right = &mut right[0];
+            left.state.push(&mut left.values);
+            right.state.push(&mut right.values);
+            // [A B] ... [C D] becomes [A reverse(C)] ... [reverse(B) D].
+            left.values[l..].reverse();
+            right.values[..r].reverse();
+            let n = left.values.len() - l;
+            let m = n.min(r);
+            left.values[l..l + m].swap_with_slice(&mut right.values[..m]);
+            if n < r {
+                left.values.extend(right.values.drain(n..r));
+            } else {
+                right.values.splice(r..r, left.values.drain(l + r..));
+            }
+            left.state = S::new(&left.values);
+            right.state = S::new(&right.values);
+            self.sizes[i] = left.values.len();
+            self.sizes[j] = right.values.len();
+            (i + 1, j)
+        };
+        self.buckets[start..end].reverse();
+        self.sizes[start..end].reverse();
+        for bucket in &mut self.buckets[start..end] {
+            bucket.state.toggle();
+        }
+        for k in [j, i] {
+            if self.sizes[k] > 2 * self.bucket_size {
+                self.split_bucket(k, self.sizes[k] / 2);
+            }
+        }
+        self.rebuild_if_needed();
+    }
+}
+
 fn sort_dedup_map<K, V>(values: &mut Vec<(K, V)>)
 where
     K: Ord,
@@ -237,6 +379,32 @@ trait BucketValue<T> {
     type Value;
     fn get(value: &T) -> &Self::Value;
     fn get_mut(value: &mut T) -> &mut Self::Value;
+    fn fold<M>(mut agg: MapAgg<M>, values: &[T], reversed: bool) -> MapAgg<M>
+    where
+        M: MapMonoid<Key = Self::Value>,
+    {
+        let combine = |agg, [a, b, c, d]: [&T; 4]| {
+            let left = M::agg_operate_key(&M::single_agg(Self::get(a)), Self::get(b));
+            let right = M::agg_operate_key(&M::single_agg(Self::get(c)), Self::get(d));
+            M::agg_operate(&agg, &M::agg_operate(&left, &right))
+        };
+        if reversed {
+            let (rest, chunks) = values.as_rchunks::<4>();
+            for [a, b, c, d] in chunks.iter().rev() {
+                agg = combine(agg, [d, c, b, a]);
+            }
+            rest.iter()
+                .rev()
+                .fold(agg, |agg, value| M::agg_operate_key(&agg, Self::get(value)))
+        } else {
+            let (chunks, rest) = values.as_chunks::<4>();
+            for [a, b, c, d] in chunks {
+                agg = combine(agg, [a, b, c, d]);
+            }
+            rest.iter()
+                .fold(agg, |agg, value| M::agg_operate_key(&agg, Self::get(value)))
+        }
+    }
 }
 struct SequenceValue;
 impl<T> BucketValue<T> for SequenceValue {

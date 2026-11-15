@@ -1,4 +1,4 @@
-use super::{LazyMapAct, LazyMapAgg, LazyMapMonoid, RangeBoundsExt};
+use super::{LazyMapAct, LazyMapMonoid, MapAgg, RangeBoundsExt};
 use std::{
     fmt::{self, Debug, Formatter},
     mem::replace,
@@ -11,7 +11,7 @@ where
 {
     len: usize,
     n: usize,
-    seg: Vec<LazyMapAgg<M>>,
+    seg: Vec<MapAgg<M>>,
     lazy: Vec<LazyMapAct<M>>,
 }
 
@@ -32,7 +32,7 @@ where
 impl<M> Debug for LazySegmentTree<M>
 where
     M: LazyMapMonoid,
-    LazyMapAgg<M>: Debug,
+    MapAgg<M>: Debug,
     LazyMapAct<M>: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -55,7 +55,7 @@ where
         let lazy = vec![M::act_unit(); n];
         Self { len, n, seg, lazy }
     }
-    pub fn from_vec(v: Vec<LazyMapAgg<M>>) -> Self {
+    pub fn from_vec(v: Vec<MapAgg<M>>) -> Self {
         let len = v.len();
         let n = len.next_power_of_two();
         let mut seg = vec![M::agg_unit(); 2 * n];
@@ -167,7 +167,7 @@ where
             }
         }
     }
-    pub fn fold<R>(&mut self, range: R) -> LazyMapAgg<M>
+    pub fn fold<R>(&mut self, range: R) -> MapAgg<M>
     where
         R: RangeBounds<usize>,
     {
@@ -229,22 +229,22 @@ where
         }
         M::agg_operate(&vl, &vr)
     }
-    pub fn set(&mut self, k: usize, x: LazyMapAgg<M>) {
+    pub fn set(&mut self, k: usize, x: MapAgg<M>) {
         assert!(k < self.len);
         let k = k + self.n;
         self.propagate(k);
         self.seg[k] = x;
         self.recalc(k);
     }
-    pub fn get(&mut self, k: usize) -> LazyMapAgg<M> {
+    pub fn get(&mut self, k: usize) -> MapAgg<M> {
         self.fold(k..k + 1)
     }
-    pub fn fold_all(&self) -> LazyMapAgg<M> {
+    pub fn fold_all(&self) -> MapAgg<M> {
         self.seg[1].clone()
     }
     pub fn partition_point_acc<P>(&mut self, left: usize, mut pred: P) -> usize
     where
-        P: FnMut(&LazyMapAgg<M>) -> bool,
+        P: FnMut(&MapAgg<M>) -> bool,
     {
         let mut acc = M::agg_unit();
         if left == self.len {
@@ -278,7 +278,7 @@ where
     }
     pub fn rpartition_point_acc<P>(&mut self, right: usize, mut pred: P) -> usize
     where
-        P: FnMut(&LazyMapAgg<M>) -> bool,
+        P: FnMut(&MapAgg<M>) -> bool,
     {
         let mut acc = M::agg_unit();
         if right == 0 {
@@ -317,7 +317,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{
-            AdditiveOperation, ArrayOperation, Associative, Magma, RangeChminChmaxAdd,
+            AdditiveOperation, ArrayOperation, Associative, Magma, MapMonoid, RangeChminChmaxAdd,
             RangeMaxRangeUpdate, RangeSumRangeAdd, RangeSumRangeChminChmaxAdd, Unital,
         },
         num::Saturating,
@@ -341,16 +341,17 @@ mod tests {
     );
 
     struct History;
-    impl LazyMapMonoid for History {
+    impl MapMonoid for History {
         type Key = i64;
         type AggMonoid = ArrayOperation<AdditiveOperation<i64>, 3>;
-        type ActMonoid = HistoryAction;
-
-        fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+        fn single_agg(key: &Self::Key) -> MapAgg<Self> {
             [1, *key, 0]
         }
+    }
+    impl LazyMapMonoid for History {
+        type ActMonoid = HistoryAction;
 
-        fn act_agg(x: &LazyMapAgg<Self>, act: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+        fn act_agg(x: &MapAgg<Self>, act: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
             let &[n, current, history] = x;
             let &[a, b, c, d] = act;
             Some([n, a * current + b * n, history + c * current + d * n])

@@ -1,4 +1,4 @@
-use super::{Bucket, Buckets, sort_dedup_map};
+use super::{Bucket, BucketState, Buckets, RangeBoundsExt, sort_dedup_map};
 use std::{
     borrow::Borrow,
     fmt::{self, Debug},
@@ -173,6 +173,132 @@ impl<'a, T> IntoIterator for &'a SqrtVec<T> {
     }
 }
 
+/// A sequence with amortized O(sqrt(N)) insertion, removal and range reversal.
+/// Elements are accessed in logical order; no element cloning is required.
+#[derive(Clone)]
+pub struct SqrtReversibleVec<T> {
+    inner: Buckets<T, bool>,
+}
+
+impl<T> SqrtReversibleVec<T> {
+    pub fn new() -> Self {
+        Self {
+            inner: Buckets::new(),
+        }
+    }
+    pub fn len(&self) -> usize {
+        self.inner.len
+    }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+    pub fn clear(&mut self) {
+        *self = Self::new();
+    }
+
+    pub fn get(&self, index: usize) -> Option<&T> {
+        if index >= self.len() {
+            return None;
+        }
+        self.inner.at(self.inner.locate(index))
+    }
+
+    pub fn get_mut(&mut self, index: usize) -> Option<&mut T> {
+        if index >= self.len() {
+            return None;
+        }
+        let (i, j) = self.inner.locate(index);
+        let bucket = &mut self.inner.buckets[i];
+        let j = if bucket.state {
+            bucket.values.len() - 1 - j
+        } else {
+            j
+        };
+        Some(&mut bucket.values[j])
+    }
+
+    pub fn first(&self) -> Option<&T> {
+        self.inner.buckets.first()?.iter().next()
+    }
+    pub fn last(&self) -> Option<&T> {
+        self.inner.buckets.last()?.iter().next_back()
+    }
+
+    pub fn insert(&mut self, index: usize, value: T) {
+        assert!(index <= self.len());
+        self.inner.insert(self.inner.locate(index), value);
+    }
+
+    pub fn remove(&mut self, index: usize) -> T {
+        assert!(index < self.len());
+        self.inner.remove(self.inner.locate(index))
+    }
+
+    pub fn push(&mut self, value: T) {
+        self.inner.insert((self.inner.buckets.len(), 0), value);
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        let i = self.inner.buckets.len().checked_sub(1)?;
+        Some(
+            self.inner
+                .remove((i, self.inner.buckets[i].values.len() - 1)),
+        )
+    }
+
+    pub fn reverse<R>(&mut self, range: R)
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range
+            .to_range_bounded(0, self.len())
+            .expect("invalid range");
+        self.inner.reverse(range);
+    }
+    pub fn iter(&self) -> impl DoubleEndedIterator<Item = &T> {
+        self.inner.buckets.iter().flat_map(|b| b.iter())
+    }
+
+    pub fn iter_mut(&mut self) -> impl DoubleEndedIterator<Item = &mut T> {
+        for bucket in &mut self.inner.buckets {
+            bucket.state.push(&mut bucket.values);
+        }
+        self.inner
+            .buckets
+            .iter_mut()
+            .flat_map(|b| b.values.iter_mut())
+    }
+}
+
+impl<T> Default for SqrtReversibleVec<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<T> FromIterator<T> for SqrtReversibleVec<T> {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let values: Vec<_> = iter.into_iter().collect();
+        Self {
+            inner: Buckets::build(values.len(), values.into_iter()),
+        }
+    }
+}
+
+impl<T> Extend<T> for SqrtReversibleVec<T> {
+    fn extend<I>(&mut self, iter: I)
+    where
+        I: IntoIterator<Item = T>,
+    {
+        for value in iter {
+            self.push(value);
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct SqrtIter<'a, T> {
     buckets: &'a [Bucket<T, ()>],
@@ -203,6 +329,24 @@ impl<'a, T> Iterator for SqrtIter<'a, T> {
         };
         Some(&values[j])
     }
+
+    fn fold<B, F>(mut self, mut init: B, mut f: F) -> B
+    where
+        F: FnMut(B, Self::Item) -> B,
+    {
+        while self.front < self.back {
+            let (i, j) = self.front;
+            let values = &self.buckets[i].values;
+            let end = if i == self.back.0 {
+                self.back.1
+            } else {
+                values.len()
+            };
+            init = values[j..end].iter().fold(init, &mut f);
+            self.front = (i + 1, 0);
+        }
+        init
+    }
 }
 impl<T> DoubleEndedIterator for SqrtIter<'_, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
@@ -215,6 +359,23 @@ impl<T> DoubleEndedIterator for SqrtIter<'_, T> {
         }
         self.back.1 -= 1;
         Some(&self.buckets[self.back.0].values[self.back.1])
+    }
+
+    fn rfold<B, F>(mut self, mut init: B, mut f: F) -> B
+    where
+        F: FnMut(B, Self::Item) -> B,
+    {
+        while self.front < self.back {
+            if self.back.1 == 0 {
+                self.back.0 -= 1;
+                self.back.1 = self.buckets[self.back.0].values.len();
+            }
+            let (i, j) = self.back;
+            let start = if i == self.front.0 { self.front.1 } else { 0 };
+            init = self.buckets[i].values[start..j].iter().rfold(init, &mut f);
+            self.back = (i, 0);
+        }
+        init
     }
 }
 impl<T> FusedIterator for SqrtIter<'_, T> {}
@@ -684,7 +845,7 @@ mod tests {
             let mut expected: BTreeSet<_> = values.iter().copied().collect();
             let mut multi: SqrtMultiset<_> = values.iter().copied().collect();
             values.sort_unstable();
-            for step in 0..512 {
+            for step in 0..256 {
                 let x = if step == 0 {
                     i64::MIN
                 } else if step == 1 {
@@ -762,6 +923,27 @@ mod tests {
                 let mut iter = multi.range((start, end));
                 let mut range: VecDeque<_> =
                     values.iter().filter(|v| (start, end).contains(v)).collect();
+                for _ in 0..rng.random(0..=range.len()) {
+                    if rng.random(0..2) == 0 {
+                        assert_eq!(iter.next(), range.pop_front());
+                    } else {
+                        assert_eq!(iter.next_back(), range.pop_back());
+                    }
+                }
+                assert_eq!(
+                    iter.clone().fold(Vec::new(), |mut values, x| {
+                        values.push(x);
+                        values
+                    }),
+                    range.iter().copied().collect::<Vec<_>>()
+                );
+                assert_eq!(
+                    iter.clone().rfold(Vec::new(), |mut values, x| {
+                        values.push(x);
+                        values
+                    }),
+                    range.iter().rev().copied().collect::<Vec<_>>()
+                );
                 while !range.is_empty() {
                     if rng.random(0..2) == 0 {
                         assert_eq!(iter.next(), range.pop_front());

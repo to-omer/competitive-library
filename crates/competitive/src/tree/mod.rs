@@ -2,8 +2,8 @@
 
 use crate::{
     algebra::{
-        AbelianGroup, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma,
-        Monoid, Unital,
+        AbelianGroup, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma, MapAgg, Monoid,
+        ReversibleMapMonoid, Unital,
     },
     algorithm::CartesianTree,
     data_structure::{

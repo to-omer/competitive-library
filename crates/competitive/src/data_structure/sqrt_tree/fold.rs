@@ -1,5 +1,6 @@
 use super::{
-    Bucket, BucketState, BucketValue, Buckets, MapValue, Monoid, RangeBoundsExt, SequenceValue,
+    Bucket, BucketOrder, BucketState, BucketValue, Buckets, EmptyActLazy, MapAgg, MapMonoid,
+    MapValue, Monoid, RangeBoundsExt, ReversibleBucketState, ReversibleMapMonoid, SequenceValue,
     sort_dedup_map,
 };
 use std::{
@@ -9,52 +10,74 @@ use std::{
     ops::{Range, RangeBounds},
 };
 
-struct FoldState<M, P>
+struct FoldState<M, P, O = ()>
 where
-    M: Monoid,
+    M: MapMonoid,
 {
-    agg: M::T,
+    agg: MapAgg<M>,
+    order: O,
     _marker: PhantomData<fn() -> P>,
 }
 
-impl<T, M, P> BucketState<T> for FoldState<M, P>
+impl<T, M, P, O> BucketState<T> for FoldState<M, P, O>
 where
-    M: Monoid,
-    P: BucketValue<T, Value = M::T>,
+    M: MapMonoid,
+    P: BucketValue<T, Value = M::Key>,
+    O: BucketOrder,
 {
     fn new(values: &[T]) -> Self {
-        let agg = values
-            .iter()
-            .fold(M::unit(), |agg, value| M::operate(&agg, P::get(value)));
+        let agg = P::fold::<M>(M::agg_unit(), values, false);
         Self {
             agg,
+            order: O::default(),
             _marker: PhantomData,
         }
     }
-    fn push(&mut self, _: &mut [T]) {}
+    fn push(&mut self, values: &mut [T]) {
+        self.order.push(values);
+    }
+    fn is_reversed(&self) -> bool {
+        self.order.is_reversed()
+    }
 }
 
-impl<T, M, P> Buckets<T, FoldState<M, P>>
+impl<T, M, P> ReversibleBucketState<T> for FoldState<M, P, bool>
 where
-    M: Monoid,
-    P: BucketValue<T, Value = M::T>,
+    M: ReversibleMapMonoid,
+    P: BucketValue<T, Value = M::Key>,
 {
-    fn fold(&self, range: Range<usize>) -> M::T {
+    fn toggle(&mut self) {
+        M::toggle(&mut self.agg);
+        self.order ^= true;
+    }
+}
+
+impl<T, M, P, O> Buckets<T, FoldState<M, P, O>>
+where
+    M: MapMonoid,
+    P: BucketValue<T, Value = M::Key>,
+    O: BucketOrder,
+{
+    fn fold(&self, range: Range<usize>) -> MapAgg<M> {
         assert!(range.start <= range.end);
-        let mut result = M::unit();
-        let mut offset = 0;
-        for Bucket { values, state } in &self.buckets {
+        let mut result = M::agg_unit();
+        let (start, index) = self.locate(range.start);
+        let mut offset = range.start - index;
+        for Bucket { values, state } in &self.buckets[start..] {
             let end = offset + values.len();
             if range.end <= offset {
                 break;
             }
             if range.start <= offset && end <= range.end {
-                result = M::operate(&result, &state.agg);
+                result = M::agg_operate(&result, &state.agg);
             } else if range.start < end {
-                for value in
-                    &values[range.start.saturating_sub(offset)..range.end.min(end) - offset]
-                {
-                    result = M::operate(&result, P::get(value));
+                let l = range.start.saturating_sub(offset);
+                let r = range.end.min(end) - offset;
+                if state.order.is_reversed() {
+                    result =
+                        P::fold::<M>(result, &values[values.len() - r..values.len() - l], true);
+                } else {
+                    result = P::fold::<M>(result, &values[l..r], false);
                 }
             }
             offset = end;
@@ -69,7 +92,7 @@ pub struct SqrtFoldVec<M>
 where
     M: Monoid,
 {
-    inner: Buckets<M::T, FoldState<M, SequenceValue>>,
+    inner: Buckets<M::T, FoldState<EmptyActLazy<M>, SequenceValue>>,
 }
 
 impl<M> SqrtFoldVec<M>
@@ -173,13 +196,134 @@ where
     }
 }
 
+/// A sequence with range reversal and aggregation, without lazy updates.
+/// With O(1) monoid operations and `toggle`, range reversal is amortized O(sqrt(N)).
+pub struct SqrtReversibleFoldVec<M>
+where
+    M: MapMonoid,
+{
+    inner: Buckets<M::Key, FoldState<M, SequenceValue, bool>>,
+}
+
+impl<M> SqrtReversibleFoldVec<M>
+where
+    M: MapMonoid,
+{
+    pub fn new() -> Self {
+        Self {
+            inner: Buckets::new(),
+        }
+    }
+    pub fn len(&self) -> usize {
+        self.inner.len
+    }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+    pub fn clear(&mut self) {
+        *self = Self::new();
+    }
+    pub fn get(&self, index: usize) -> Option<&M::Key> {
+        if index >= self.len() {
+            return None;
+        }
+        self.inner.at(self.inner.locate(index))
+    }
+    pub fn modify(&mut self, index: usize, f: impl FnOnce(&M::Key) -> M::Key) {
+        assert!(index < self.len());
+        let (i, j) = self.inner.locate(index);
+        let Bucket { values, state } = &mut self.inner.buckets[i];
+        state.push(values);
+        values[j] = f(&values[j]);
+        *state = FoldState::new(values);
+    }
+    pub fn insert(&mut self, index: usize, value: M::Key) {
+        assert!(index <= self.len());
+        self.inner.insert(self.inner.locate(index), value);
+    }
+    pub fn remove(&mut self, index: usize) -> M::Key {
+        assert!(index < self.len());
+        self.inner.remove(self.inner.locate(index))
+    }
+    pub fn push(&mut self, value: M::Key) {
+        self.inner.insert((self.inner.buckets.len(), 0), value);
+    }
+    pub fn pop(&mut self) -> Option<M::Key> {
+        let i = self.inner.buckets.len().checked_sub(1)?;
+        Some(
+            self.inner
+                .remove((i, self.inner.buckets[i].values.len() - 1)),
+        )
+    }
+    pub fn iter(&self) -> impl DoubleEndedIterator<Item = &M::Key> {
+        self.inner.buckets.iter().flat_map(|b| b.iter())
+    }
+    pub fn reverse<R>(&mut self, range: R)
+    where
+        M: ReversibleMapMonoid,
+        R: RangeBounds<usize>,
+    {
+        let range = range
+            .to_range_bounded(0, self.len())
+            .expect("invalid range");
+        self.inner.reverse(range);
+    }
+    pub fn fold<R>(&self, range: R) -> MapAgg<M>
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range
+            .to_range_bounded(0, self.len())
+            .expect("invalid range");
+        self.inner.fold(range)
+    }
+}
+
+impl<M> Default for SqrtReversibleFoldVec<M>
+where
+    M: MapMonoid,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<M> FromIterator<M::Key> for SqrtReversibleFoldVec<M>
+where
+    M: MapMonoid,
+{
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = M::Key>,
+    {
+        let values: Vec<_> = iter.into_iter().collect();
+        Self {
+            inner: Buckets::build(values.len(), values.into_iter()),
+        }
+    }
+}
+
+impl<M> Extend<M::Key> for SqrtReversibleFoldVec<M>
+where
+    M: MapMonoid,
+{
+    fn extend<I>(&mut self, iter: I)
+    where
+        I: IntoIterator<Item = M::Key>,
+    {
+        for value in iter {
+            self.push(value);
+        }
+    }
+}
+
 /// An ordered map with value aggregation in key order and no lazy updates.
 /// Key lookup takes O(log N); folds and amortized updates take O(sqrt(N)) for O(1) monoid operations.
 pub struct SqrtFoldMap<K, M>
 where
     M: Monoid,
 {
-    inner: Buckets<(K, M::T), FoldState<M, MapValue>>,
+    inner: Buckets<(K, M::T), FoldState<EmptyActLazy<M>, MapValue>>,
 }
 
 impl<K, M> SqrtFoldMap<K, M>

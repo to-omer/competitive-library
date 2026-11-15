@@ -5,41 +5,24 @@ use std::{
     ops::{Add, Mul, Sub},
 };
 
-pub type LazyMapAgg<L> = <<L as LazyMapMonoid>::AggMonoid as Magma>::T;
 pub type LazyMapAct<L> = <<L as LazyMapMonoid>::ActMonoid as Magma>::T;
 
-pub trait LazyMapMonoid {
-    type Key;
-    type AggMonoid: Monoid;
+pub trait LazyMapMonoid: MapMonoid {
     type ActMonoid: Monoid<T: PartialEq>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self>;
-    fn toggle(_x: &mut LazyMapAgg<Self>) {}
     #[inline]
     fn is_act_unit(act: &LazyMapAct<Self>) -> bool {
         <Self::ActMonoid as Unital>::is_unit(act)
     }
     /// Returns `None` when descent is needed; must succeed on single-key aggregates.
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>>;
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>>;
 
-    #[inline]
-    fn agg_unit() -> LazyMapAgg<Self> {
-        <Self::AggMonoid as Unital>::unit()
-    }
     #[inline]
     fn act_unit() -> LazyMapAct<Self> {
         <Self::ActMonoid as Unital>::unit()
     }
     #[inline]
-    fn agg_operate(x: &LazyMapAgg<Self>, y: &LazyMapAgg<Self>) -> LazyMapAgg<Self> {
-        <Self::AggMonoid as Magma>::operate(x, y)
-    }
-    #[inline]
     fn act_operate(x: &LazyMapAct<Self>, y: &LazyMapAct<Self>) -> LazyMapAct<Self> {
         <Self::ActMonoid as Magma>::operate(x, y)
-    }
-    #[inline]
-    fn agg_operate_assign(x: &mut LazyMapAgg<Self>, y: &LazyMapAgg<Self>) {
-        *x = <Self::AggMonoid as Magma>::operate(x, y);
     }
     #[inline]
     fn act_operate_assign(x: &mut LazyMapAct<Self>, y: &LazyMapAct<Self>) {
@@ -54,17 +37,32 @@ pub trait LazyMapMonoidWithKeyAct: LazyMapMonoid {
 pub struct EmptyActLazy<M> {
     _marker: PhantomData<fn() -> M>,
 }
-impl<M> LazyMapMonoid for EmptyActLazy<M>
+impl<M> MapMonoid for EmptyActLazy<M>
 where
     M: Monoid,
 {
     type Key = M::T;
     type AggMonoid = M;
-    type ActMonoid = ();
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
         key.clone()
     }
-    fn act_agg(x: &LazyMapAgg<Self>, _a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+    fn agg_operate_key(agg: &MapAgg<Self>, key: &Self::Key) -> MapAgg<Self> {
+        M::operate(agg, key)
+    }
+}
+impl<M> ReversibleMapMonoid for EmptyActLazy<M>
+where
+    M: AbelianMonoid,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
+impl<M> LazyMapMonoid for EmptyActLazy<M>
+where
+    M: Monoid,
+{
+    type ActMonoid = ();
+
+    fn act_agg(x: &MapAgg<Self>, _a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(x.clone())
     }
 }
@@ -80,12 +78,18 @@ where
 pub struct EmptyAggActLazy<T> {
     _marker: PhantomData<fn() -> T>,
 }
-impl<T> LazyMapMonoid for EmptyAggActLazy<T> {
+impl<T> MapMonoid for EmptyAggActLazy<T> {
     type Key = T;
     type AggMonoid = ();
+    fn single_agg(_key: &Self::Key) -> MapAgg<Self> {}
+}
+impl<T> ReversibleMapMonoid for EmptyAggActLazy<T> {
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
+impl<T> LazyMapMonoid for EmptyAggActLazy<T> {
     type ActMonoid = ();
-    fn single_agg(_key: &Self::Key) -> LazyMapAgg<Self> {}
-    fn act_agg(_x: &LazyMapAgg<Self>, _a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(_x: &MapAgg<Self>, _a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(())
     }
 }
@@ -101,18 +105,33 @@ where
 pub struct FlattenLazy<M> {
     _marker: PhantomData<fn() -> M>,
 }
+impl<M> MapMonoid for FlattenLazy<M>
+where
+    M: Monoid,
+{
+    type Key = M::T;
+    type AggMonoid = M;
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        key.clone()
+    }
+    fn agg_operate_key(agg: &MapAgg<Self>, key: &Self::Key) -> MapAgg<Self> {
+        M::operate(agg, key)
+    }
+}
+impl<M> ReversibleMapMonoid for FlattenLazy<M>
+where
+    M: AbelianMonoid,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<M> LazyMapMonoid for FlattenLazy<M>
 where
     M: Monoid,
     M::T: PartialEq,
 {
-    type Key = M::T;
-    type AggMonoid = M;
     type ActMonoid = M;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        key.clone()
-    }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(M::operate(x, a))
     }
 }
@@ -129,17 +148,29 @@ where
 pub struct RangeSumRangeAdd<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeSumRangeAdd<T>
+where
+    T: Copy + Zero + One + Add<Output = T>,
+{
+    type Key = T;
+    type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        (*key, T::one())
+    }
+}
+impl<T> ReversibleMapMonoid for RangeSumRangeAdd<T>
+where
+    T: Copy + Zero + One + Add<Output = T>,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeSumRangeAdd<T>
 where
     T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
 {
-    type Key = T;
-    type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
     type ActMonoid = AdditiveOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        (*key, T::one())
-    }
-    fn act_agg(&(x, y): &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(&(x, y): &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             (x, y)
         } else {
@@ -160,17 +191,29 @@ where
 pub struct RangeSumRangeLinear<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeSumRangeLinear<T>
+where
+    T: Copy + Zero + One + Add<Output = T>,
+{
+    type Key = T;
+    type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        (*key, T::one())
+    }
+}
+impl<T> ReversibleMapMonoid for RangeSumRangeLinear<T>
+where
+    T: Copy + Zero + One + Add<Output = T>,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeSumRangeLinear<T>
 where
     T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
 {
-    type Key = T;
-    type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
     type ActMonoid = LinearOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        (*key, T::one())
-    }
-    fn act_agg(&(x, y): &LazyMapAgg<Self>, &(a, b): &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(&(x, y): &MapAgg<Self>, &(a, b): &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some((a * x + b * y, y))
     }
 }
@@ -186,14 +229,13 @@ where
 pub struct RangePowerSumRangeLinear<T, const K: usize> {
     _marker: PhantomData<fn() -> T>,
 }
-impl<T, const K: usize> LazyMapMonoid for RangePowerSumRangeLinear<T, K>
+impl<T, const K: usize> MapMonoid for RangePowerSumRangeLinear<T, K>
 where
-    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>,
 {
     type Key = T;
     type AggMonoid = ArrayOperation<AdditiveOperation<T>, K>;
-    type ActMonoid = LinearOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
         let mut power = T::one();
         std::array::from_fn(|k| {
             if k != 0 {
@@ -202,7 +244,20 @@ where
             power
         })
     }
-    fn act_agg(x: &LazyMapAgg<Self>, &(a, b): &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+}
+impl<T, const K: usize> ReversibleMapMonoid for RangePowerSumRangeLinear<T, K>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
+impl<T, const K: usize> LazyMapMonoid for RangePowerSumRangeLinear<T, K>
+where
+    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
+{
+    type ActMonoid = LinearOperation<T>;
+
+    fn act_agg(x: &MapAgg<Self>, &(a, b): &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         let mut coefficients = [T::one(); K];
         let mut result = *x;
         for k in 1..K {
@@ -231,17 +286,29 @@ where
 pub struct RangeSumRangeUpdate<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeSumRangeUpdate<T>
+where
+    T: Copy + Zero + One + Add<Output = T>,
+{
+    type Key = T;
+    type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        (*key, T::one())
+    }
+}
+impl<T> ReversibleMapMonoid for RangeSumRangeUpdate<T>
+where
+    T: Copy + Zero + One + Add<Output = T>,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeSumRangeUpdate<T>
 where
     T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
 {
-    type Key = T;
-    type AggMonoid = (AdditiveOperation<T>, AdditiveOperation<T>);
     type ActMonoid = LastOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        (*key, T::one())
-    }
-    fn act_agg(&(x, y): &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(&(x, y): &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some((a.map(|a| a * y).unwrap_or(x), y))
     }
 }
@@ -257,17 +324,29 @@ where
 pub struct RangeMaxRangeUpdate<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeMaxRangeUpdate<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    type Key = T;
+    type AggMonoid = MaxOperation<T>;
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        key.clone()
+    }
+}
+impl<T> ReversibleMapMonoid for RangeMaxRangeUpdate<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeMaxRangeUpdate<T>
 where
     T: Clone + PartialEq + Ord + Bounded,
 {
-    type Key = T;
-    type AggMonoid = MaxOperation<T>;
     type ActMonoid = LastOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        key.clone()
-    }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(a.as_ref().unwrap_or(x).clone())
     }
 }
@@ -283,17 +362,29 @@ where
 pub struct RangeMinRangeUpdate<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeMinRangeUpdate<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    type Key = T;
+    type AggMonoid = MinOperation<T>;
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        key.clone()
+    }
+}
+impl<T> ReversibleMapMonoid for RangeMinRangeUpdate<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeMinRangeUpdate<T>
 where
     T: Clone + PartialEq + Ord + Bounded,
 {
-    type Key = T;
-    type AggMonoid = MinOperation<T>;
     type ActMonoid = LastOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        key.clone()
-    }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(a.as_ref().unwrap_or(x).clone())
     }
 }
@@ -309,17 +400,29 @@ where
 pub struct RangeMaxRangeAdd<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeMaxRangeAdd<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    type Key = T;
+    type AggMonoid = MaxOperation<T>;
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        key.clone()
+    }
+}
+impl<T> ReversibleMapMonoid for RangeMaxRangeAdd<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeMaxRangeAdd<T>
 where
     T: Clone + Ord + Bounded + Zero + Add<Output = T>,
 {
-    type Key = T;
-    type AggMonoid = MaxOperation<T>;
     type ActMonoid = AdditiveOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        key.clone()
-    }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             x.clone()
         } else {
@@ -339,17 +442,29 @@ where
 pub struct RangeMinRangeAdd<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeMinRangeAdd<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    type Key = T;
+    type AggMonoid = MinOperation<T>;
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        key.clone()
+    }
+}
+impl<T> ReversibleMapMonoid for RangeMinRangeAdd<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeMinRangeAdd<T>
 where
     T: Clone + Ord + Bounded + Zero + Add<Output = T>,
 {
-    type Key = T;
-    type AggMonoid = MinOperation<T>;
     type ActMonoid = AdditiveOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        key.clone()
-    }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(if Self::is_act_unit(a) {
             x.clone()
         } else {
@@ -369,17 +484,29 @@ where
 pub struct RangeMinCountRangeAdd<T> {
     _marker: PhantomData<fn() -> T>,
 }
+impl<T> MapMonoid for RangeMinCountRangeAdd<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    type Key = T;
+    type AggMonoid = CountingOperation<MinOperation<T>>;
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        (key.clone(), 1)
+    }
+}
+impl<T> ReversibleMapMonoid for RangeMinCountRangeAdd<T>
+where
+    T: Clone + Ord + Bounded,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
 impl<T> LazyMapMonoid for RangeMinCountRangeAdd<T>
 where
     T: Clone + Ord + Bounded + Zero + Add<Output = T>,
 {
-    type Key = T;
-    type AggMonoid = CountingOperation<MinOperation<T>>;
     type ActMonoid = AdditiveOperation<T>;
-    fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
-        (key.clone(), 1)
-    }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         Some(if x.1 == 0 {
             x.clone()
         } else {
@@ -595,7 +722,7 @@ where
     }
 }
 
-impl<T> LazyMapMonoid for RangeSumRangeChminChmaxAdd<T>
+impl<T> MapMonoid for RangeSumRangeChminChmaxAdd<T>
 where
     T: Copy
         + Zero
@@ -609,11 +736,39 @@ where
 {
     type Key = T;
     type AggMonoid = Self;
-    type ActMonoid = RangeChminChmaxAdd<T>;
-    fn single_agg(&key: &Self::Key) -> LazyMapAgg<Self> {
+    fn single_agg(&key: &Self::Key) -> MapAgg<Self> {
         Self::single(key, T::one())
     }
-    fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+}
+impl<T> ReversibleMapMonoid for RangeSumRangeChminChmaxAdd<T>
+where
+    T: Copy
+        + Zero
+        + One
+        + Ord
+        + Bounded
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + PartialEq,
+{
+    fn toggle(_: &mut MapAgg<Self>) {}
+}
+impl<T> LazyMapMonoid for RangeSumRangeChminChmaxAdd<T>
+where
+    T: Copy
+        + Zero
+        + One
+        + Ord
+        + Bounded
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + PartialEq,
+{
+    type ActMonoid = RangeChminChmaxAdd<T>;
+
+    fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
         if Self::is_act_unit(a) {
             return Some(x.clone());
         }

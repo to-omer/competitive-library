@@ -1,5 +1,5 @@
 use super::{
-    Allocator, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Monoid, MonoidAct,
+    Allocator, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, MapAgg, Monoid, MonoidAct,
 };
 
 pub use data::BstDataAccess;

@@ -1,4 +1,4 @@
-use super::{AbelianMonoid, LazyMapAct, LazyMapAgg, LazyMapMonoid};
+use super::{AbelianMonoid, LazyMapAct, LazyMapMonoid, MapAgg};
 use std::{
     mem::replace,
     ops::{Bound, RangeBounds},
@@ -10,7 +10,7 @@ where
 {
     child: [usize; 2],
     parent: usize,
-    agg: LazyMapAgg<M>,
+    agg: MapAgg<M>,
     lazy: LazyMapAct<M>,
 }
 
@@ -84,11 +84,11 @@ where
         self.nodes.push(Node::new(usize::MAX));
     }
 
-    pub fn set(&mut self, key: u64, value: LazyMapAgg<M>) {
+    pub fn set(&mut self, key: u64, value: MapAgg<M>) {
         self.modify_or_insert(key, |x| *x = value);
     }
 
-    pub fn modify_or_insert(&mut self, key: u64, f: impl FnOnce(&mut LazyMapAgg<M>)) {
+    pub fn modify_or_insert(&mut self, key: u64, f: impl FnOnce(&mut MapAgg<M>)) {
         assert!(key <= self.max_key);
         if self.bit_len == 0 {
             if self.is_empty() {
@@ -121,7 +121,7 @@ where
         self.recalc_up(node);
     }
 
-    pub fn get(&mut self, key: u64) -> Option<LazyMapAgg<M>> {
+    pub fn get(&mut self, key: u64) -> Option<MapAgg<M>> {
         assert!(key <= self.max_key);
         if self.is_empty() {
             return None;
@@ -187,7 +187,7 @@ where
         }
     }
 
-    pub fn fold<R>(&mut self, range: R) -> LazyMapAgg<M>
+    pub fn fold<R>(&mut self, range: R) -> MapAgg<M>
     where
         R: RangeBounds<u64>,
     {
@@ -388,7 +388,10 @@ mod verification {
 mod tests {
     use super::*;
     use crate::{
-        algebra::{AdditiveOperation, Associative, LazyMapMonoid, Magma, RangeSumRangeAdd, Unital},
+        algebra::{
+            AdditiveOperation, Associative, LazyMapMonoid, Magma, MapMonoid, RangeSumRangeAdd,
+            Unital,
+        },
         tools::Xorshift,
     };
     use std::{
@@ -548,16 +551,17 @@ mod tests {
         _marker: PhantomData<fn()>,
     }
 
-    impl LazyMapMonoid for DescendAdd {
+    impl MapMonoid for DescendAdd {
         type Key = i32;
         type AggMonoid = Concat;
-        type ActMonoid = AdditiveOperation<i32>;
-
-        fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+        fn single_agg(key: &Self::Key) -> MapAgg<Self> {
             vec![*key]
         }
+    }
+    impl LazyMapMonoid for DescendAdd {
+        type ActMonoid = AdditiveOperation<i32>;
 
-        fn act_agg(x: &LazyMapAgg<Self>, a: &LazyMapAct<Self>) -> Option<LazyMapAgg<Self>> {
+        fn act_agg(x: &MapAgg<Self>, a: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
             Self::is_act_unit(a)
                 .then_some(x.clone())
                 .or_else(|| (x.len() <= 1).then(|| x.iter().map(|x| x + a).collect()))

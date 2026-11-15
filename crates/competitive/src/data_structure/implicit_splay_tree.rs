@@ -1,5 +1,6 @@
 use super::{
-    Allocator, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, MemoryPool,
+    Allocator, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, MapAgg, MemoryPool,
+    ReversibleMapMonoid,
     binary_search_tree::{
         BstDataAccess, BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, EqualSide,
         data::{self, LazyMapElement},
@@ -36,7 +37,7 @@ where
 impl<T> Debug for ImplicitSplayTreeData<T>
 where
     T: LazyMapMonoid<Key: Debug>,
-    LazyMapAgg<T>: Debug,
+    MapAgg<T>: Debug,
     LazyMapAct<T>: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -80,7 +81,7 @@ where
 
 impl<T> ImplicitSplayTreeSpec<T>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
 {
     fn update_act(mut node: BstDataMutRef<'_, Self>, act: &LazyMapAct<T>) {
         if T::is_act_unit(act) {
@@ -106,7 +107,7 @@ where
 
 impl<T> BstSpec for ImplicitSplayTreeSpec<T>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
 {
     type Parent = WithNoParent<Self::Data>;
     type Data = ImplicitSplayTreeData<T>;
@@ -174,7 +175,7 @@ where
 
 pub struct ImplicitSplayTree<T, A = MemoryPool<ImplicitSplayTreeNode<T>>>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
     A: Allocator<ImplicitSplayTreeNode<T>>,
 {
     root: Option<ImplicitSplayTreeRoot<T>>,
@@ -185,7 +186,7 @@ where
 
 impl<T, A> Default for ImplicitSplayTree<T, A>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
     A: Allocator<ImplicitSplayTreeNode<T>> + Default,
 {
     fn default() -> Self {
@@ -200,7 +201,7 @@ where
 
 impl<T, A> Drop for ImplicitSplayTree<T, A>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
     A: Allocator<ImplicitSplayTreeNode<T>>,
 {
     fn drop(&mut self) {
@@ -215,7 +216,7 @@ where
 
 impl<T> ImplicitSplayTree<T>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
 {
     pub fn new() -> Self {
         Self::default()
@@ -233,7 +234,7 @@ where
 
 impl<T, A> ImplicitSplayTree<T, A>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
     A: Allocator<ImplicitSplayTreeNode<T>>,
 {
     fn node(&mut self, key: T::Key) -> ImplicitSplayTreeRoot<T> {
@@ -277,7 +278,7 @@ where
         }
     }
 
-    pub fn fold<R>(&mut self, range: R) -> LazyMapAgg<T>
+    pub fn fold<R>(&mut self, range: R) -> MapAgg<T>
     where
         R: RangeBounds<usize>,
     {
@@ -363,7 +364,7 @@ where
 
     pub fn partition_point_acc<F>(&mut self, left: usize, mut pred: F) -> usize
     where
-        F: FnMut(&LazyMapAgg<T>) -> bool,
+        F: FnMut(&MapAgg<T>) -> bool,
     {
         let mut split3 = Split3::seek_by_size(&mut self.root, left..);
         let front_size = split3
@@ -380,7 +381,7 @@ where
 
     pub fn rpartition_point_acc<F>(&mut self, right: usize, mut pred: F) -> usize
     where
-        F: FnMut(&LazyMapAgg<T>) -> bool,
+        F: FnMut(&MapAgg<T>) -> bool,
     {
         let mut split3 = Split3::seek_by_size(&mut self.root, ..right);
         let split = split3.split_mid(SeekByRaccCond::new(|acc| !pred(acc)), EqualSide::Left);
@@ -408,7 +409,7 @@ where
 
 impl<T, A> Extend<T::Key> for ImplicitSplayTree<T, A>
 where
-    T: LazyMapMonoidWithKeyAct,
+    T: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
     A: Allocator<ImplicitSplayTreeNode<T>>,
 {
     fn extend<I>(&mut self, iter: I)

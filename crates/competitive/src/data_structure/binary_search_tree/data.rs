@@ -1,5 +1,5 @@
 use super::{
-    BstDataMutRef, BstSpec, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Monoid,
+    BstDataMutRef, BstSpec, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, MapAgg, Monoid,
     MonoidAct,
 };
 use std::{fmt, fmt::Debug, mem::replace};
@@ -113,14 +113,14 @@ where
     L: LazyMapMonoid,
 {
     pub key: L::Key,
-    pub agg: LazyMapAgg<L>,
+    pub agg: MapAgg<L>,
     pub act: LazyMapAct<L>,
 }
 
 impl<L> Debug for LazyMapElement<L>
 where
     L: LazyMapMonoid<Key: Debug>,
-    LazyMapAgg<L>: Debug,
+    MapAgg<L>: Debug,
     LazyMapAct<L>: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

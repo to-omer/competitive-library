@@ -1,5 +1,6 @@
 use super::{
-    Allocator, LazyMapAct, LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, MemoryPool,
+    Allocator, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, MapAgg, MemoryPool,
+    ReversibleMapMonoid,
     binary_search_tree::{
         BstDataMutRef, BstNode, BstRoot, BstSeeker, BstSpec, EqualSide, data::LazyMapElement,
         node::WithParent,
@@ -445,7 +446,7 @@ where
 
 impl<L> LinkCutTreeSpec for PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoidWithKeyAct,
+    L: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
 {
     type Value = L::Key;
     type Data = PathLinkCutTreeData<L>;
@@ -495,9 +496,9 @@ where
 
 impl<L> LinkCutTreePathFold for PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoidWithKeyAct,
+    L: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
 {
-    type Path = LazyMapAgg<L>;
+    type Path = MapAgg<L>;
 
     fn fold_path(data: &Self::Data) -> Self::Path {
         data.value.agg.clone()
@@ -506,7 +507,7 @@ where
 
 impl<L> LinkCutTreePathUpdate for PathLinkCutTreeSpec<L>
 where
-    L: LazyMapMonoidWithKeyAct,
+    L: LazyMapMonoidWithKeyAct + ReversibleMapMonoid,
 {
     type PathAction = LazyMapAct<L>;
 
@@ -524,7 +525,9 @@ pub type PathLinkCutTree<L> = LinkCutTree<PathLinkCutTreeSpec<L>>;
 mod tests {
     use super::*;
     use crate::{
-        algebra::{Associative, EmptyAct, Magma, MonoidAct, RangeSumRangeLinear, Unital},
+        algebra::{
+            Associative, EmptyAct, Magma, MapMonoid, MonoidAct, RangeSumRangeLinear, Unital,
+        },
         graph::{Graph, UndirectedSparseGraph},
         tools::Xorshift,
         tree::{MixedTree, PathTree, StarTree},
@@ -739,23 +742,22 @@ mod tests {
 
     struct StringPath;
 
-    impl LazyMapMonoid for StringPath {
+    impl MapMonoid for StringPath {
         type Key = char;
         type AggMonoid = BidirectionalString;
-        type ActMonoid = ();
-
-        fn single_agg(key: &Self::Key) -> LazyMapAgg<Self> {
+        fn single_agg(key: &Self::Key) -> MapAgg<Self> {
             (key.to_string(), key.to_string())
         }
-
-        fn toggle(value: &mut LazyMapAgg<Self>) {
+    }
+    impl ReversibleMapMonoid for StringPath {
+        fn toggle(value: &mut MapAgg<Self>) {
             std::mem::swap(&mut value.0, &mut value.1);
         }
+    }
+    impl LazyMapMonoid for StringPath {
+        type ActMonoid = ();
 
-        fn act_agg(
-            value: &LazyMapAgg<Self>,
-            _action: &LazyMapAct<Self>,
-        ) -> Option<LazyMapAgg<Self>> {
+        fn act_agg(value: &MapAgg<Self>, _action: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
             Some(value.clone())
         }
     }

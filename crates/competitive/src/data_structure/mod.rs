@@ -1,9 +1,9 @@
 //! data structures
 
 use crate::algebra::{
-    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapAct,
-    LazyMapAgg, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma, MaxOperation, MinOperation, Monoid,
-    MonoidAct, SemiGroup, SemiRing, Unital,
+    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, EmptyActLazy, Group,
+    LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma, MapAgg, MapMonoid, MaxOperation,
+    MinOperation, Monoid, MonoidAct, ReversibleMapMonoid, SemiGroup, SemiRing, Unital,
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceSortExt};
 use crate::math::Matrix;
@@ -114,7 +114,8 @@ pub use self::splay_tree::SplayTree;
 #[codesnip::entry("SqrtTree")]
 pub use self::sqrt_tree::{
     SqrtFoldMap, SqrtFoldVec, SqrtIntoIter, SqrtIter, SqrtLazyMap, SqrtLazyVec, SqrtMap,
-    SqrtMultiset, SqrtSet, SqrtVec,
+    SqrtMultiset, SqrtReversibleFoldVec, SqrtReversibleLazyVec, SqrtReversibleVec, SqrtSet,
+    SqrtVec,
 };
 #[codesnip::entry("StaticRangeProduct")]
 pub use self::static_range_product::StaticRangeProduct;
