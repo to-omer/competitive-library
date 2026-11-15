@@ -457,14 +457,14 @@
 <span data-nosnippet>318</span>    </span><span class="kw">pub fn </span>words_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[u64] {
 <span data-nosnippet>319</span>        <span class="kw">let </span>len = <span class="self">self</span>.size.div_ceil(<span class="number">64</span>);
 <span data-nosnippet>320</span>        <span class="comment">// SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
-<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<a class="self" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.next">self</a>.bits.as_mut_ptr().cast(), len) }
+<span data-nosnippet>321</span>        </span><span class="kw">unsafe </span>{ std::slice::from_raw_parts_mut(<span class="self">self</span>.bits.as_mut_ptr().cast(), len) }
 <span data-nosnippet>322</span>    }
 <span data-nosnippet>323</span>
 <span data-nosnippet>324</span>    <span class="kw">fn </span>trim(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 <span data-nosnippet>325</span>        <span class="kw">let </span>used_words = <span class="self">self</span>.size.div_ceil(<span class="number">64</span>) &amp; <span class="number">7</span>;
 <span data-nosnippet>326</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(last) = <span class="self">self</span>.bits.last_mut() {
 <span data-nosnippet>327</span>            <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>!= <span class="number">0 </span>{
-<span data-nosnippet>328</span>                last.<span class="number">0</span>[(<span class="self">self</span>.size &gt;&gt; <span class="number">6</span>) &amp; <span class="number">7</span>] &amp;= u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>));
+<span data-nosnippet>328</span>                last.<span class="number">0</span>[(<span class="self">self</span>.size &gt;&gt; <span class="number">6</span>) &amp; <span class="number">7</span>] &amp;= u64::MAX &gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.<a href="../algebra/magma.rs.html#56">size</a> &amp; <span class="number">63</span>));
 <span data-nosnippet>329</span>            }
 <span data-nosnippet>330</span>            <span class="kw">if </span>used_words != <span class="number">0 </span>{
 <span data-nosnippet>331</span>                last.<span class="number">0</span>[used_words..].fill(<span class="number">0</span>);

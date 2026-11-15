@@ -326,7 +326,7 @@
 <span data-nosnippet>676</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>f, <span class="kw-2">&amp;</span>g);
 <span data-nosnippet>677</span>        <span class="self">Self</span>::inverse_transform(f, len)
 <span data-nosnippet>678</span>    }
-<span data-nosnippet>679</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>679</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::<a href="../algebra/magma.rs.html#58">T</a>) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>680</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>681</span>        <span class="kw">let </span>(threshold, naive_threshold) = (<span class="number">100</span>, <span class="number">60</span>);
 <span data-nosnippet>682</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
@@ -426,7 +426,7 @@
 <span data-nosnippet>776</span>    <span class="kw">for </span>t <span class="kw">in </span>t {
 <span data-nosnippet>777</span>        <span class="kw">let </span>t: u32 = t.into();
 <span data-nosnippet>778</span>        f.<span class="number">0</span>.push(t.into());
-<span data-nosnippet>779</span>        f.<span class="number">1</span>.push(t.into());
+<span data-nosnippet>779</span>        <a href="../algebra/magma.rs.html#189">f</a>.<span class="number">1</span>.push(t.into());
 <span data-nosnippet>780</span>        f.<span class="number">2</span>.push(t.into());
 <span data-nosnippet>781</span>    }
 <span data-nosnippet>782</span>    f
@@ -457,7 +457,7 @@
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
 <span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
 <span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
-<span data-nosnippet>810</span>            <span class="kw">let </span><a href="../algebra/magma.rs.html#223-232">value</a> = <span class="kw">if </span>fits_u64 {
+<span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
 <span data-nosnippet>812</span>            } <span class="kw">else </span>{
 <span data-nosnippet>813</span>                ((d1 <span class="kw">as </span>u128 + d2 <span class="kw">as </span>u128 * m1 <span class="kw">as </span>u128 + d3 <span class="kw">as </span>u128 * m2 <span class="kw">as </span>u128) % modulus <span class="kw">as </span>u128)
@@ -648,7 +648,7 @@
 <span data-nosnippet>998</span>        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
 <span data-nosnippet>999</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
 <span data-nosnippet>1000</span>        <span class="kw">let </span>m2 = m1 * N2::get_mod() <span class="kw">as </span>u64;
-<span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">vec!</a>[<span class="number">0u64</span>; len.min(f.<span class="number">0</span>[<span class="number">0</span>].len())];
+<span data-nosnippet>1001</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[<span class="number">0u64</span>; len.min(f.<span class="number">0</span>[<span class="number">0</span>].len())];
 <span data-nosnippet>1002</span>        <span class="kw">for </span>(part, ((f1, f2), f3)) <span class="kw">in </span>f.<span class="number">0</span>.into_iter().zip(f.<span class="number">1</span>).zip(f.<span class="number">2</span>).enumerate() {
 <span data-nosnippet>1003</span>            <span class="kw">if </span>f1.is_empty() {
 <span data-nosnippet>1004</span>                <span class="kw">continue</span>;
@@ -889,7 +889,7 @@
 <span data-nosnippet>1239</span>        <span class="kw">let </span>half = len.max(<span class="number">1</span>).next_power_of_two() / <span class="number">2</span>;
 <span data-nosnippet>1240</span>
 <span data-nosnippet>1241</span>        <span class="kw">let </span>p_fft = <span class="self">Self</span>::transform_ntt(p_flat, len);
-<span data-nosnippet>1242</span>        <span class="kw">let </span>q_fft = <span class="self">Self</span>::transform_ntt(q_flat, len);
+<span data-nosnippet>1242</span>        <span class="kw">let </span>q_fft = <span class="self">Self</span>::transform_ntt(q_flat, <a href="../num/zero_one.rs.html#15-28">len</a>);
 <span data-nosnippet>1243</span>        <span class="kw">let </span>pr_fft = <span class="self">Self</span>::odd_mul_normal_neg(<span class="kw-2">&amp;</span>p_fft, <span class="kw-2">&amp;</span>q_fft);
 <span data-nosnippet>1244</span>        <span class="kw">let </span>qr_fft = <span class="self">Self</span>::even_mul_normal_neg(<span class="kw-2">&amp;</span>q_fft, <span class="kw-2">&amp;</span>q_fft);
 <span data-nosnippet>1245</span>        (
@@ -986,7 +986,7 @@
 <span data-nosnippet>1336</span>        h
 <span data-nosnippet>1337</span>    }
 <span data-nosnippet>1338</span>
-<span data-nosnippet>1339</span>    <span class="kw">fn </span>multiply_prefix(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>1339</span>    <span class="kw">fn </span>multiply_prefix(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::<a href="../algebra/operations.rs.html#534">F</a>, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
 <span data-nosnippet>1340</span>        pointwise_multiply(f, g);
 <span data-nosnippet>1341</span>    }
 <span data-nosnippet>1342</span>

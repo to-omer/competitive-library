@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BidirectionalMap"],"trait":["MapMonoid","ReversibleMapMonoid"],"type":["MapAgg"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["LazyState","SqrtLazyMap","SqrtLazyVec"]};
+window.SIDEBAR_ITEMS = {"struct":["LazyState","SqrtLazyMap","SqrtLazyVec","SqrtReversibleLazyVec"]};

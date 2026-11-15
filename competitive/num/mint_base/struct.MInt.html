@@ -261,7 +261,7 @@
 <span data-nosnippet>924</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
 <span data-nosnippet>925</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>926</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
-<span data-nosnippet>927</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.to_vec());
+<span data-nosnippet>927</span>            <span class="kw">let </span>product = <a href="../algebra/lazy_map.rs.html#1-1060">convolve</a>(a.to_vec(), b.to_vec());
 <span data-nosnippet>928</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>929</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>930</span>            }
@@ -322,7 +322,7 @@
 <span data-nosnippet>985</span>            })
 <span data-nosnippet>986</span>        }
 <span data-nosnippet>987</span>        (
-<span data-nosnippet>988</span>            split(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#58">t</a>, npot, bits, parts),
+<span data-nosnippet>988</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>989</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>990</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>991</span>        )
@@ -384,7 +384,7 @@
 <span data-nosnippet>1047</span>                            <span class="kw-2">*</span>value += product;
 <span data-nosnippet>1048</span>                        }
 <span data-nosnippet>1049</span>                    }
-<span data-nosnippet>1050</span>                    f[<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.fold">part</a>] = sum;
+<span data-nosnippet>1050</span>                    f[part] = sum;
 <span data-nosnippet>1051</span>                }
 <span data-nosnippet>1052</span>                Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">0</span>], <span class="kw-2">&amp;</span>g[<span class="number">0</span>]);
 <span data-nosnippet>1053</span>                <span class="kw">return</span>;
@@ -430,7 +430,7 @@
 <span data-nosnippet>1093</span>            });
 <span data-nosnippet>1094</span>            <span class="kw">return unsafe </span>{ Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
 <span data-nosnippet>1095</span>        }
-<span data-nosnippet>1096</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>1096</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#224">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>1097</span>        <span class="kw">let </span>block_len = <span class="kw">if </span>min_len &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
 <span data-nosnippet>1098</span>            <span class="number">1 </span>&lt;&lt; <span class="number">20
 <span data-nosnippet>1099</span>        </span>} <span class="kw">else </span>{
@@ -615,7 +615,7 @@
 <span data-nosnippet>1278</span>        <span class="kw">if </span>monic {
 <span data-nosnippet>1279</span>            a[<span class="number">0</span>] -= MInt::&lt;M&gt;::from(<span class="number">2</span>);
 <span data-nosnippet>1280</span>        }
-<span data-nosnippet>1281</span>        <span class="kw">let </span>zeta = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[k + <span class="number">1</span>]);
+<span data-nosnippet>1281</span>        <span class="kw">let </span>zeta = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[<a href="../algebra/operations.rs.html#81">k</a> + <span class="number">1</span>]);
 <span data-nosnippet>1282</span>        <span class="kw">let </span>zeta2 = zeta * zeta;
 <span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
@@ -708,7 +708,7 @@
 <span data-nosnippet>1371</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd_factor = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
 <span data-nosnippet>1372</span>        <span class="kw">let </span><span class="kw-2">mut </span>factor = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1373</span>        <span class="kw">let </span>k = cols.trailing_zeros() <span class="kw">as </span>usize;
-<span data-nosnippet>1374</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
+<span data-nosnippet>1374</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::<a href="../algebra/operations.rs.html#183-188">new_unchecked</a>(M::INFO.inv_root[k]);
 <span data-nosnippet>1375</span>        BIT_REVERSE.with(|br| {
 <span data-nosnippet>1376</span>            <span class="kw">let </span>br = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>br.get() };
 <span data-nosnippet>1377</span>            <span class="kw">if </span>br.len() &lt; k {
@@ -814,7 +814,7 @@
 <span data-nosnippet>1477</span>            <span class="kw">let </span>n = f.len();
 <span data-nosnippet>1478</span>            <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>1479</span>            <span class="macro">assert!</span>(f.len().is_power_of_two());
-<span data-nosnippet>1480</span>            <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
+<span data-nosnippet>1480</span>            <span class="macro">assert!</span>(f.<a href="../num/zero_one.rs.html#15-28">len</a>() &gt;= <span class="number">2</span>);
 <span data-nosnippet>1481</span>            <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1482</span>            <span class="kw">let </span>u = <span class="highlight">MInt::&lt;M&gt;::new</span>(m) * MInt::&lt;M&gt;::from(n <span class="kw">as </span>u32);
 <span data-nosnippet>1483</span>            <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
@@ -1499,7 +1499,7 @@
 <span data-nosnippet>924</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
 <span data-nosnippet>925</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>926</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
-<span data-nosnippet>927</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.to_vec());
+<span data-nosnippet>927</span>            <span class="kw">let </span>product = <a href="../algebra/lazy_map.rs.html#1-1060">convolve</a>(a.to_vec(), b.to_vec());
 <span data-nosnippet>928</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>929</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>930</span>            }
@@ -1560,7 +1560,7 @@
 <span data-nosnippet>985</span>            })
 <span data-nosnippet>986</span>        }
 <span data-nosnippet>987</span>        (
-<span data-nosnippet>988</span>            split(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#58">t</a>, npot, bits, parts),
+<span data-nosnippet>988</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>989</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>990</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>991</span>        )
@@ -1622,7 +1622,7 @@
 <span data-nosnippet>1047</span>                            <span class="kw-2">*</span>value += product;
 <span data-nosnippet>1048</span>                        }
 <span data-nosnippet>1049</span>                    }
-<span data-nosnippet>1050</span>                    f[<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.fold">part</a>] = sum;
+<span data-nosnippet>1050</span>                    f[part] = sum;
 <span data-nosnippet>1051</span>                }
 <span data-nosnippet>1052</span>                Convolve::&lt;M&gt;::multiply(<span class="kw-2">&amp;mut </span>f[<span class="number">0</span>], <span class="kw-2">&amp;</span>g[<span class="number">0</span>]);
 <span data-nosnippet>1053</span>                <span class="kw">return</span>;
@@ -1668,7 +1668,7 @@
 <span data-nosnippet>1093</span>            });
 <span data-nosnippet>1094</span>            <span class="kw">return unsafe </span>{ Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
 <span data-nosnippet>1095</span>        }
-<span data-nosnippet>1096</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>1096</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#224">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>1097</span>        <span class="kw">let </span>block_len = <span class="kw">if </span>min_len &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
 <span data-nosnippet>1098</span>            <span class="number">1 </span>&lt;&lt; <span class="number">20
 <span data-nosnippet>1099</span>        </span>} <span class="kw">else </span>{
@@ -1853,7 +1853,7 @@
 <span data-nosnippet>1278</span>        <span class="kw">if </span>monic {
 <span data-nosnippet>1279</span>            a[<span class="number">0</span>] -= MInt::&lt;M&gt;::from(<span class="number">2</span>);
 <span data-nosnippet>1280</span>        }
-<span data-nosnippet>1281</span>        <span class="kw">let </span>zeta = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[k + <span class="number">1</span>]);
+<span data-nosnippet>1281</span>        <span class="kw">let </span>zeta = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[<a href="../algebra/operations.rs.html#81">k</a> + <span class="number">1</span>]);
 <span data-nosnippet>1282</span>        <span class="kw">let </span>zeta2 = zeta * zeta;
 <span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
@@ -1946,7 +1946,7 @@
 <span data-nosnippet>1371</span>        <span class="kw">let </span><span class="kw-2">mut </span>odd_factor = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); half];
 <span data-nosnippet>1372</span>        <span class="kw">let </span><span class="kw-2">mut </span>factor = MInt::&lt;M&gt;::from(<span class="number">2</span>).<span class="highlight">inv</span>();
 <span data-nosnippet>1373</span>        <span class="kw">let </span>k = cols.trailing_zeros() <span class="kw">as </span>usize;
-<span data-nosnippet>1374</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
+<span data-nosnippet>1374</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::<a href="../algebra/operations.rs.html#183-188">new_unchecked</a>(M::INFO.inv_root[k]);
 <span data-nosnippet>1375</span>        BIT_REVERSE.with(|br| {
 <span data-nosnippet>1376</span>            <span class="kw">let </span>br = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>br.get() };
 <span data-nosnippet>1377</span>            <span class="kw">if </span>br.len() &lt; k {
@@ -2052,7 +2052,7 @@
 <span data-nosnippet>1477</span>            <span class="kw">let </span>n = f.len();
 <span data-nosnippet>1478</span>            <span class="macro">assert_eq!</span>(f.len(), g.len());
 <span data-nosnippet>1479</span>            <span class="macro">assert!</span>(f.len().is_power_of_two());
-<span data-nosnippet>1480</span>            <span class="macro">assert!</span>(f.len() &gt;= <span class="number">2</span>);
+<span data-nosnippet>1480</span>            <span class="macro">assert!</span>(f.<a href="../num/zero_one.rs.html#15-28">len</a>() &gt;= <span class="number">2</span>);
 <span data-nosnippet>1481</span>            <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).<span class="highlight">inv</span>();
 <span data-nosnippet>1482</span>            <span class="kw">let </span>u = MInt::&lt;M&gt;::new(m) * MInt::&lt;M&gt;::from(n <span class="kw">as </span>u32);
 <span data-nosnippet>1483</span>            <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
@@ -2600,7 +2600,7 @@
 <span data-nosnippet>924</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
 <span data-nosnippet>925</span>    <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>926</span>        <span class="kw">for </span>(j, b) <span class="kw">in </span>b.chunks(block_len).enumerate() {
-<span data-nosnippet>927</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.to_vec());
+<span data-nosnippet>927</span>            <span class="kw">let </span>product = <a href="../algebra/lazy_map.rs.html#1-1060">convolve</a>(a.to_vec(), b.to_vec());
 <span data-nosnippet>928</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[(i + j) * block_len..].iter_mut().zip(product) {
 <span data-nosnippet>929</span>                <span class="kw-2">*</span>value += product;
 <span data-nosnippet>930</span>            }
@@ -2661,7 +2661,7 @@
 <span data-nosnippet>985</span>            })
 <span data-nosnippet>986</span>        }
 <span data-nosnippet>987</span>        (
-<span data-nosnippet>988</span>            split(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#58">t</a>, npot, bits, parts),
+<span data-nosnippet>988</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>989</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>990</span>            split(<span class="kw-2">&amp;</span>t, npot, bits, parts),
 <span data-nosnippet>991</span>        )
@@ -2696,7 +2696,7 @@
 <span data-nosnippet>1020</span>            }
 <span data-nosnippet>1021</span>        }
 <span data-nosnippet>1022</span>        result
-<span data-nosnippet>1023</span>    }</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU32%3E" class="impl"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#141-145">Source</a><a href="#impl-MInt%3CDynModuloU32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MInt.html" title="struct competitive::num::mint_base::MInt">MInt</a>&lt;<a class="enum" href="../mint_basic/enum.DynModuloU32.html" title="enum competitive::num::mint_basic::DynModuloU32">DynModuloU32</a>&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.set_mod" class="method"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#142-144">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/library_checker/number_theory/sqrt_mod.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sqrt_mod.rs (<a href="../../../src/library_checker/number_theory/sqrt_mod.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>sqrt_mod(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>1023</span>    }</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU32%3E" class="impl"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#146-150">Source</a><a href="#impl-MInt%3CDynModuloU32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MInt.html" title="struct competitive::num::mint_base::MInt">MInt</a>&lt;<a class="enum" href="../mint_basic/enum.DynModuloU32.html" title="enum competitive::num::mint_basic::DynModuloU32">DynModuloU32</a>&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.set_mod" class="method"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#147-149">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/library_checker/number_theory/sqrt_mod.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sqrt_mod.rs (<a href="../../../src/library_checker/number_theory/sqrt_mod.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>5</span><span class="kw">pub fn </span>sqrt_mod(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>6</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>7</span>    <span class="macro">sc!</span>(q, yp: [(u32, u32); iter q]);
 <span data-nosnippet>8</span>    <span class="kw">for </span>(y, p) <span class="kw">in </span>yp {
@@ -2717,7 +2717,7 @@
 <span data-nosnippet>12</span>        <span class="kw">let </span>ans: DynMIntU32 = f.combination(n, k);
 <span data-nosnippet>13</span>        <span class="macro">pp!</span>(ans);
 <span data-nosnippet>14</span>    }
-<span data-nosnippet>15</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU64%3E" class="impl"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#157-161">Source</a><a href="#impl-MInt%3CDynModuloU64%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MInt.html" title="struct competitive::num::mint_base::MInt">MInt</a>&lt;<a class="enum" href="../mint_basic/enum.DynModuloU64.html" title="enum competitive::num::mint_basic::DynModuloU64">DynModuloU64</a>&gt;</h3></section></summary><div class="impl-items"><section id="method.set_mod-1" class="method"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#158-160">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod-1" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CM%3E-3" class="impl"><a class="src rightside" href="../../../src/competitive/num/mint/simd_matrix.rs.html#203-304">Source</a><a href="#impl-MInt%3CM%3E-3" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="struct.MInt.html" title="struct competitive::num::mint_base::MInt">MInt</a>&lt;M&gt;<div class="where">where
+<span data-nosnippet>15</span>}</code></pre></div></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CDynModuloU64%3E" class="impl"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#162-166">Source</a><a href="#impl-MInt%3CDynModuloU64%3E" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MInt.html" title="struct competitive::num::mint_base::MInt">MInt</a>&lt;<a class="enum" href="../mint_basic/enum.DynModuloU64.html" title="enum competitive::num::mint_basic::DynModuloU64">DynModuloU64</a>&gt;</h3></section></summary><div class="impl-items"><section id="method.set_mod-1" class="method"><a class="src rightside" href="../../../src/competitive/num/mint/mint_basic.rs.html#163-165">Source</a><h4 class="code-header">pub fn <a href="#method.set_mod-1" class="fn">set_mod</a>(m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-MInt%3CM%3E-3" class="impl"><a class="src rightside" href="../../../src/competitive/num/mint/simd_matrix.rs.html#203-304">Source</a><a href="#impl-MInt%3CM%3E-3" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="struct" href="struct.MInt.html" title="struct competitive::num::mint_base::MInt">MInt</a>&lt;M&gt;<div class="where">where
     M: <a class="trait" href="trait.MIntBase.html" title="trait competitive::num::mint_base::MIntBase">MIntBase</a>&lt;Inner = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.matrix_product_avx2" class="method"><a class="src rightside" href="../../../src/competitive/num/mint/simd_matrix.rs.html#211-303">Source</a><h4 class="code-header">pub unsafe fn <a href="#method.matrix_product_avx2" class="fn">matrix_product_avx2</a>(
     a: &amp;[<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;Self&gt;],
     b: &amp;[<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;Self&gt;],

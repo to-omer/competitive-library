@@ -227,7 +227,7 @@
 <span data-nosnippet>159</span>
 <span data-nosnippet>160</span>    <span class="attr">#[cfg_attr(verus_keep_ghost, verus_verify)]
 <span data-nosnippet>161</span>    #[cfg_attr(verus_keep_ghost, verus_spec(result =&gt;
-<span data-nosnippet>162</span>        <a href="../algebra/lazy_map.rs.html#1-905">requires</a> <span class="self">self</span>@ &gt; <span class="number">0</span>, floor_quotient(<span class="self">self</span>@ <span class="kw">as </span>int, value <span class="kw">as </span>int),
+<span data-nosnippet>162</span>        requires <span class="self">self</span>@ &gt; <span class="number">0</span>, floor_quotient(<span class="self">self</span>@ <span class="kw">as </span>int, value <span class="kw">as </span>int),
 <span data-nosnippet>163</span>        ensures
 <span data-nosnippet>164</span>            <span class="number">1 </span>&lt;= result@.start &lt;= result@.end &lt;= <span class="self">self</span>@,
 <span data-nosnippet>165</span>            forall|k: int| <span class="number">1 </span>&lt;= k &lt;= <span class="self">self</span>@ ==&gt;
@@ -267,7 +267,7 @@
 <span data-nosnippet>199</span>        ensures
 <span data-nosnippet>200</span>            <span class="number">1 </span>&lt;= result@.start &lt;= result@.end &lt;= <span class="self">self</span>@,
 <span data-nosnippet>201</span>            forall|key: int| <span class="number">1 </span>&lt;= key &lt;= <span class="self">self</span>@ ==&gt;
-<span data-nosnippet>202</span>                ((result@.start &lt;= key &lt;= <a href="../../../../../algebra/trait.Unital.html">result</a>@.end)
+<span data-nosnippet>202</span>                ((result@.start &lt;= key &lt;= result@.end)
 <span data-nosnippet>203</span>                    == (#[trigger] </span>(<span class="self">self</span>@ <span class="kw">as </span>int / key) == <span class="self">self</span>.value_at(index <span class="kw">as </span>int))),
 <span data-nosnippet>204</span>    ))]
 <span data-nosnippet>205</span>    <span class="kw">pub unsafe fn </span>index_to_key_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; RangeInclusive&lt;usize&gt; {
@@ -313,7 +313,7 @@
 <span data-nosnippet>245</span>        <span class="attr">#[cfg(verus_keep_ghost)]
 <span data-nosnippet>246</span>        </span><span class="macro">proof!</span> { <span class="self">self</span>.index_value_properties(index <span class="kw">as </span>int); }
 <span data-nosnippet>247</span>        <span class="kw">if </span>index &lt; <span class="self">self</span>.sqrt {
-<span data-nosnippet>248</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">index</a> + <span class="number">1
+<span data-nosnippet>248</span>            index + <span class="number">1
 <span data-nosnippet>249</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>250</span>            <span class="self">self</span>.num / (<span class="self">self</span>.<span class="highlight">len</span>() - index)
 <span data-nosnippet>251</span>        }
@@ -376,7 +376,7 @@
 <span data-nosnippet>308</span>        </span><span class="macro">proof!</span> {
 <span data-nosnippet>309</span>            vstd::arithmetic::div_mod::lemma_div_nonincreasing(<span class="self">self</span>.num <span class="kw">as </span>int, value <span class="kw">as </span>int);
 <span data-nosnippet>310</span>            assert forall|k: int| <span class="number">1 </span>&lt;= k &lt;= <span class="self">self</span>.num implies
-<span data-nosnippet>311</span>                ((start &lt;= k &lt;= end) == (<span class="attr">#[trigger] </span>(<span class="self">self</span>.num <span class="kw">as </span>int / k) == value)) by {
+<span data-nosnippet>311</span>                ((start &lt;= k &lt;= <a href="../algebra/magma.rs.html#224">end</a>) == (<span class="attr">#[trigger] </span>(<span class="self">self</span>.num <span class="kw">as </span>int / k) == value)) by {
 <span data-nosnippet>312</span>                quotient_interval(<span class="self">self</span>.num <span class="kw">as </span>int, value <span class="kw">as </span>int, k);
 <span data-nosnippet>313</span>            }
 <span data-nosnippet>314</span>            <span class="attr">#[verifier::proof_note(<span class="string">"For every present floor quotient below usize::MAX, value_to_key_unchecked returns a nonempty interval containing exactly all keys producing that quotient"</span>)]

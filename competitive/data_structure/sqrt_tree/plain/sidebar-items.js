@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":[["sqrt_set",1]],"struct":["SqrtIntoIter","SqrtIter","SqrtMap","SqrtMultiset","SqrtSet","SqrtVec"]};
+window.SIDEBAR_ITEMS = {"macro":[["sqrt_set",1]],"struct":["SqrtIntoIter","SqrtIter","SqrtMap","SqrtMultiset","SqrtReversibleVec","SqrtSet","SqrtVec"]};

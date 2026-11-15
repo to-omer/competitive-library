@@ -289,7 +289,7 @@
 <span data-nosnippet>868</span>            }
 <span data-nosnippet>869</span>            <span class="kw">if </span>fft_len &lt;= fft_limit {
 <span data-nosnippet>870</span>                <span class="macro">crate::avx_helper!</span>(@dispatch_avx2_fma <span class="kw">return unsafe </span>{
-<span data-nosnippet>871</span>                    convolve_mint_avx2(a, b)
+<span data-nosnippet>871</span>                    convolve_mint_avx2(a, <a href="../algebra/magma.rs.html#65">b</a>)
 <span data-nosnippet>872</span>                }, ());
 <span data-nosnippet>873</span>            }
 <span data-nosnippet>874</span>            convolve_mint_crt::&lt;M, N1, N2, N3&gt;(a, b)
@@ -367,7 +367,7 @@
 <span data-nosnippet>946</span>        t.len()
 <span data-nosnippet>947</span>    }
 <span data-nosnippet>948</span>
-<span data-nosnippet>949</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <a href="../algebra/magma.rs.html#9"><span class="self">Self</span>::F</a> {
+<span data-nosnippet>949</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
 <span data-nosnippet>950</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
 <span data-nosnippet>951</span>        <span class="macro">assert!</span>(npot &lt;= <span class="number">1usize </span>&lt;&lt; N1::RANK.min(N2::RANK).min(N3::RANK));
 <span data-nosnippet>952</span>        <span class="comment">// The 22-bit fallback needs room for three limb products per coefficient.
@@ -412,7 +412,7 @@
 <span data-nosnippet>991</span>        )
 <span data-nosnippet>992</span>    }
 <span data-nosnippet>993</span>
-<span data-nosnippet>994</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="../../../../../algebra/trait.Group.html">usize</a>) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>994</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>995</span>        <span class="kw">let </span>bits = <span class="kw">if </span>f.<span class="number">0</span>[<span class="number">2</span>].is_empty() { <span class="number">32 </span>} <span class="kw">else </span>{ <span class="number">22 </span>};
 <span data-nosnippet>996</span>        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
 <span data-nosnippet>997</span>        <span class="kw">let </span>m1 = N1::get_mod() <span class="kw">as </span>u64;
@@ -569,11 +569,11 @@
 <span data-nosnippet>1148</span>    <span class="kw">let </span>len = a.len() + b.len() - <span class="number">1</span>;
 <span data-nosnippet>1149</span>    <span class="kw">let </span>transform = |values: <span class="kw-2">&amp;</span>[u64]| {
 <span data-nosnippet>1150</span>        <span class="kw">if </span>values.iter().any(|<span class="kw-2">&amp;</span>value| value &gt; u32::MAX <span class="kw">as </span>u64) {
-<span data-nosnippet>1151</span>            <span class="kw">return </span>split(values).map(|part| ConvolveRealFft::transform(part, len));
+<span data-nosnippet>1151</span>            <span class="kw">return </span>split(values).map(|part| ConvolveRealFft::transform(part, <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">len</a>));
 <span data-nosnippet>1152</span>        }
 <span data-nosnippet>1153</span>        <span class="kw">let </span>[a, b, c, <span class="kw">_</span>, <span class="kw">_</span>] = split(values);
 <span data-nosnippet>1154</span>        <span class="kw">let </span>a = ConvolveRealFft::transform(a, len);
-<span data-nosnippet>1155</span>        <span class="kw">let </span>size = a.len();
+<span data-nosnippet>1155</span>        <span class="kw">let </span>size = a.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">len</a>();
 <span data-nosnippet>1156</span>        [
 <span data-nosnippet>1157</span>            a,
 <span data-nosnippet>1158</span>            ConvolveRealFft::transform(b, len),
@@ -735,7 +735,7 @@
 <span data-nosnippet>1314</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
 <span data-nosnippet>1315</span>        <span class="kw">let </span>k = f.len().trailing_zeros() <span class="kw">as </span>usize;
 <span data-nosnippet>1316</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); n];
-<span data-nosnippet>1317</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[k]);
+<span data-nosnippet>1317</span>        <span class="kw">let </span>w = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[<a href="../algebra/operations.rs.html#279">k</a>]);
 <span data-nosnippet>1318</span>        BIT_REVERSE.with(|br| {
 <span data-nosnippet>1319</span>            <span class="kw">let </span>br = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>br.get() };
 <span data-nosnippet>1320</span>            <span class="kw">if </span>br.len() &lt; k {

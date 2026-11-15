@@ -416,7 +416,7 @@
 <span data-nosnippet>347</span>    };
 <span data-nosnippet>348</span>    <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
 <span data-nosnippet>349</span>    <span class="kw">while </span>v &lt; limit {
-<span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>350</span>        <span class="kw">let </span><span class="kw-2">mut </span>w1 = <a href="../algebra/magma.rs.html#147">M</a>::N1;
 <span data-nosnippet>351</span>        <span class="kw">let </span><span class="kw-2">mut </span>w2 = w1;
 <span data-nosnippet>352</span>        <span class="kw">let </span><span class="kw-2">mut </span>w3 = w1;
 <span data-nosnippet>353</span>        <span class="kw">for </span>(s, a) <span class="kw">in </span>a.chunks_exact_mut((v &lt;&lt; <span class="number">2</span>) * width).enumerate() {
@@ -433,7 +433,7 @@
 <span data-nosnippet>364</span>                <span class="kw">let </span>a2pa3 = add_scalar::&lt;M&gt;(a2, a3);
 <span data-nosnippet>365</span>                <span class="kw">let </span>a2na3iimag = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a2, a3), iimag);
 <span data-nosnippet>366</span>                <span class="kw-2">*</span>x0 = add_scalar::&lt;M&gt;(a0pa1, a2pa3);
-<span data-nosnippet>367</span>                <span class="kw-2">*</span>x1 = mul_scalar::&lt;M&gt;(add_scalar::&lt;M&gt;(a0na1, a2na3iimag), w1);
+<span data-nosnippet>367</span>                <span class="kw-2">*</span>x1 = mul_scalar::&lt;M&gt;(add_scalar::&lt;<a href="../algebra/magma.rs.html#185">M</a>&gt;(a0na1, a2na3iimag), w1);
 <span data-nosnippet>368</span>                <span class="kw-2">*</span>x2 = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0pa1, a2pa3), w2);
 <span data-nosnippet>369</span>                <span class="kw-2">*</span>x3 = mul_scalar::&lt;M&gt;(sub_scalar::&lt;M&gt;(a0na1, a2na3iimag), w3);
 <span data-nosnippet>370</span>            }
@@ -651,7 +651,7 @@
 <span data-nosnippet>304</span>                <span class="kw">let </span>key = (<span class="self">self</span>[i].words()[word] &gt;&gt; (start &amp; <span class="number">63</span>)) <span class="kw">as </span>usize;
 <span data-nosnippet>305</span>                <span class="kw">let </span>x = indices[<span class="number">0</span>][key &amp; masks[<span class="number">0</span>]];
 <span data-nosnippet>306</span>                <span class="kw">if </span>block &lt;= <span class="number">8 </span>{
-<span data-nosnippet>307</span>                    <span class="kw">if </span>x != <span class="number">0 </span>{
+<span data-nosnippet>307</span>                    <span class="kw">if </span><a href="../algebra/magma.rs.html#15">x</a> != <span class="number">0 </span>{
 <span data-nosnippet>308</span>                        xor(<span class="kw-2">&amp;mut </span><span class="self">self</span>[i].words_mut()[word..], <span class="kw-2">&amp;</span>table[x].words()[word..]);
 <span data-nosnippet>309</span>                    }
 <span data-nosnippet>310</span>                    <span class="kw">continue</span>;
@@ -747,7 +747,7 @@
 <span data-nosnippet>400</span>    }
 <span data-nosnippet>401</span>
 <span data-nosnippet>402</span>    <span class="attr">#[inline(always)]
-<span data-nosnippet>403</span>    </span><span class="kw">fn </span>mul_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>403</span>    </span><span class="kw">fn </span>mul_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a class="self" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">Self</a> {
 <span data-nosnippet>404</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="self">Self</span>::zeros((<span class="self">self</span>.shape.<span class="number">0</span>, rhs.shape.<span class="number">1</span>));
 <span data-nosnippet>405</span>        <span class="kw">let </span>ones = <span class="self">self</span>.data.iter().map(BitSet::count_ones).sum::&lt;u64&gt;();
 <span data-nosnippet>406</span>        <span class="kw">let </span>size = <span class="self">self</span>.shape.<span class="number">0 </span><span class="kw">as </span>u64 * <span class="self">self</span>.shape.<span class="number">1 </span><span class="kw">as </span>u64;
@@ -1289,12 +1289,12 @@
 <span data-nosnippet>489</span>                    packed_rate_avx2::&lt;M&gt;((!group).trailing_zeros() <span class="kw">as </span>usize, <span class="bool-val">true</span>),
 <span data-nosnippet>490</span>                    modulus,
 <span data-nosnippet>491</span>                );
-<span data-nosnippet>492</span>                <span class="kw">let </span>base = <a href="../../../algebra/magma.rs.html#151">base</a>.add(i &lt;&lt; <span class="number">3</span>);
+<span data-nosnippet>492</span>                <span class="kw">let </span>base = base.add(i &lt;&lt; <span class="number">3</span>);
 <span data-nosnippet>493</span>                <span class="kw">let </span>last = group_len == n;
 <span data-nosnippet>494</span>                <span class="kw">if </span>wide &amp;&amp; quarter &gt; <span class="number">1 </span>{
 <span data-nosnippet>495</span>                    intt_butterfly_avx512::&lt;M&gt;(base, quarter, current, inv, group, last);
 <span data-nosnippet>496</span>                } <span class="kw">else </span>{
-<span data-nosnippet>497</span>                    intt_butterfly_avx2::&lt;M&gt;(base, quarter, current, inv, group, last);
+<span data-nosnippet>497</span>                    intt_butterfly_avx2::&lt;M&gt;(base, quarter, current, inv, group, <a href="../../../algebra/magma.rs.html#56">last</a>);
 <span data-nosnippet>498</span>                }
 <span data-nosnippet>499</span>                i += group_len;
 <span data-nosnippet>500</span>                group += <span class="number">1</span>;

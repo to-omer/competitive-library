@@ -351,7 +351,7 @@
 <span data-nosnippet>1108</span>                <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">60 </span>{
 <span data-nosnippet>1109</span>                    <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>a) <span class="kw">in </span>a.iter().enumerate() {
 <span data-nosnippet>1110</span>                        <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
-<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + <a href="../algebra/magma.rs.html#189">j</a>) * block_len + x + y];
+<span data-nosnippet>1111</span>                            <span class="kw">let </span>value = <span class="kw-2">&amp;mut </span>result[(i + j) * block_len + x + y];
 <span data-nosnippet>1112</span>                            <span class="kw-2">*</span>value = value.wrapping_add(a.wrapping_mul(b));
 <span data-nosnippet>1113</span>                        }
 <span data-nosnippet>1114</span>                    }
@@ -378,7 +378,7 @@
 <span data-nosnippet>1135</span><span class="kw">fn </span>convolve_u64_fft_scalar(a: Vec&lt;u64&gt;, b: Vec&lt;u64&gt;) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>1136</span>    <span class="kw">fn </span>split(values: <span class="kw-2">&amp;</span>[u64]) -&gt; [Vec&lt;i64&gt;; <span class="number">5</span>] {
 <span data-nosnippet>1137</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = std::array::from_fn(|<span class="kw">_</span>| Vec::with_capacity(values.len()));
-<span data-nosnippet>1138</span>        <span class="kw">for </span><span class="kw-2">mut </span><a href="../../../../../algebra/trait.Group.html">value</a> <span class="kw">in </span>values.iter().copied() {
+<span data-nosnippet>1138</span>        <span class="kw">for </span><span class="kw-2">mut </span>value <span class="kw">in </span>values.iter().copied() {
 <span data-nosnippet>1139</span>            <span class="kw">for </span>part <span class="kw">in </span><span class="kw-2">&amp;mut </span>result {
 <span data-nosnippet>1140</span>                <span class="kw">let </span>digit = ((value &lt;&lt; <span class="number">51</span>) <span class="kw">as </span>i64) &gt;&gt; <span class="number">51</span>;
 <span data-nosnippet>1141</span>                part.push(digit);
@@ -508,7 +508,7 @@
 <span data-nosnippet>1265</span>        t
 <span data-nosnippet>1266</span>    }
 <span data-nosnippet>1267</span>
-<span data-nosnippet>1268</span>    <span class="kw">fn </span>inverse_transform_ntt(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <a href="../num/bounded.rs.html#2-17"><span class="self">Self</span>::T</a> {
+<span data-nosnippet>1268</span>    <span class="kw">fn </span>inverse_transform_ntt(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1269</span>        intt(<span class="kw-2">&amp;mut </span>f);
 <span data-nosnippet>1270</span>        f.truncate(len);
 <span data-nosnippet>1271</span>        f
@@ -545,7 +545,7 @@
 <span data-nosnippet>1302</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1303</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
 <span data-nosnippet>1304</span>        (<span class="number">0</span>..n)
-<span data-nosnippet>1305</span>            .map(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
+<span data-nosnippet>1305</span>            .<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">map</a>(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
 <span data-nosnippet>1306</span>            .collect()
 <span data-nosnippet>1307</span>    }
 <span data-nosnippet>1308</span>
@@ -584,7 +584,7 @@
 <span data-nosnippet>1341</span>    }
 <span data-nosnippet>1342</span>
 <span data-nosnippet>1343</span>    <span class="kw">fn </span>multiply_add(sum: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, f: <span class="kw-2">&amp;</span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-<span data-nosnippet>1344</span>        <span class="macro">assert!</span>(sum.len() == f.len() &amp;&amp; sum.len() == g.len());
+<span data-nosnippet>1344</span>        <span class="macro">assert!</span>(<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">sum</a>.len() == f.len() &amp;&amp; sum.len() == g.len());
 <span data-nosnippet>1345</span>        pointwise_multiply_add(sum, f, g);
 <span data-nosnippet>1346</span>    }
 <span data-nosnippet>1347</span>

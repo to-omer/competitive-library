@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["FoldState","SqrtFoldMap","SqrtFoldVec"]};
+window.SIDEBAR_ITEMS = {"struct":["FoldState","SqrtFoldMap","SqrtFoldVec","SqrtReversibleFoldVec"]};

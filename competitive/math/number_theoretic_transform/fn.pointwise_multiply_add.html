@@ -299,7 +299,7 @@
 <span data-nosnippet>805</span>        .map(|((c1, c2), c3)| {
 <span data-nosnippet>806</span>            <span class="kw">let </span>d1 = c1.inner();
 <span data-nosnippet>807</span>            <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * <a href="../algebra/magma.rs.html#56">m1_3</a>;
+<span data-nosnippet>808</span>            <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
 <span data-nosnippet>809</span>            <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
 <span data-nosnippet>810</span>            <span class="kw">let </span>value = <span class="kw">if </span>fits_u64 {
 <span data-nosnippet>811</span>                (d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2) % modulus
@@ -377,7 +377,7 @@
 <span data-nosnippet>883</span>            <span class="kw">return </span>convolve(a, b);
 <span data-nosnippet>884</span>        }
 <span data-nosnippet>885</span>        <span class="kw">let </span>(a, b) = <span class="kw">if </span>a.len() &gt;= b.len() { (a, b) } <span class="kw">else </span>{ (b, a) };
-<span data-nosnippet>886</span>        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
+<span data-nosnippet>886</span>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../algebra/magma.rs.html#54-81">result</a> = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); a.len() + b.len() - <span class="number">1</span>];
 <span data-nosnippet>887</span>        <span class="kw">for </span>(i, a) <span class="kw">in </span>a.chunks(block_len).enumerate() {
 <span data-nosnippet>888</span>            <span class="kw">let </span>product = convolve(a.to_vec(), b.clone());
 <span data-nosnippet>889</span>            <span class="kw">for </span>(value, product) <span class="kw">in </span>result[i * block_len..].iter_mut().zip(product) {
@@ -564,7 +564,7 @@
 <span data-nosnippet>1070</span>        multiply(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>, <span class="kw-2">&amp;</span>g.<span class="number">2</span>);
 <span data-nosnippet>1071</span>    }
 <span data-nosnippet>1072</span>
-<span data-nosnippet>1073</span>    <span class="kw">fn </span>square(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>1073</span>    <span class="kw">fn </span>square(t: <span class="self">Self</span>::T, <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">len</a>: usize) -&gt; <span class="self">Self</span>::T {
 <span data-nosnippet>1074</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = <span class="self">Self</span>::transform(t, len);
 <span data-nosnippet>1075</span>        <span class="kw">let </span>g = f.clone();
 <span data-nosnippet>1076</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>f, <span class="kw-2">&amp;</span>g);
@@ -587,7 +587,7 @@
 <span data-nosnippet>1093</span>            });
 <span data-nosnippet>1094</span>            <span class="kw">return unsafe </span>{ Vec::from_raw_parts(c.as_mut_ptr().cast(), c.len(), c.capacity()) };
 <span data-nosnippet>1095</span>        }
-<span data-nosnippet>1096</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>1096</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../algebra/operations.rs.html#81">b</a>)).saturating_sub(<span class="number">1</span>);
 <span data-nosnippet>1097</span>        <span class="kw">let </span>block_len = <span class="kw">if </span>min_len &gt;= <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
 <span data-nosnippet>1098</span>            <span class="number">1 </span>&lt;&lt; <span class="number">20
 <span data-nosnippet>1099</span>        </span>} <span class="kw">else </span>{
@@ -777,7 +777,7 @@
 <span data-nosnippet>1283</span>        <span class="kw">let </span><span class="kw-2">mut </span>rot = [MInt::one(), zeta, zeta2, zeta2 * zeta];
 <span data-nosnippet>1284</span>        <span class="kw">let </span>step = zeta2 * zeta2;
 <span data-nosnippet>1285</span>        <span class="kw">for </span>a <span class="kw">in </span>a.chunks_mut(<span class="number">4</span>) {
-<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().<a href="../num/zero_one.rs.html#16">zip</a>(<span class="kw-2">&amp;mut </span>rot) {
+<span data-nosnippet>1286</span>            <span class="kw">for </span>(a, rot) <span class="kw">in </span>a.iter_mut().zip(<span class="kw-2">&amp;mut </span>rot) {
 <span data-nosnippet>1287</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>rot;
 <span data-nosnippet>1288</span>                <span class="kw-2">*</span>rot <span class="kw-2">*</span>= step;
 <span data-nosnippet>1289</span>            }
@@ -796,7 +796,7 @@
 <span data-nosnippet>1302</span>        <span class="kw">let </span>inv2 = MInt::&lt;M&gt;::from(<span class="number">2</span>).inv();
 <span data-nosnippet>1303</span>        <span class="kw">let </span>n = f.len() / <span class="number">2</span>;
 <span data-nosnippet>1304</span>        (<span class="number">0</span>..n)
-<span data-nosnippet>1305</span>            .map(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1</span>]) * inv2)
+<span data-nosnippet>1305</span>            .map(|i| (f[i &lt;&lt; <span class="number">1</span>] * g[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] + f[i &lt;&lt; <span class="number">1 </span>| <span class="number">1</span>] * <a href="../algebra/operations.rs.html#347">g</a>[i &lt;&lt; <span class="number">1</span>]) * inv2)
 <span data-nosnippet>1306</span>            .collect()
 <span data-nosnippet>1307</span>    }
 <span data-nosnippet>1308</span>
