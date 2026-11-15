@@ -63,6 +63,20 @@ impl GeneralMatching {
         }
         self.matching_size = self.mate.iter().filter(|&&mate| mate != self.size).count() / 2;
 
+        for u in 0..self.size {
+            if self.mate[u] != self.size {
+                continue;
+            }
+            for &v in &self.graph[u] {
+                if self.mate[v] == self.size {
+                    self.mate[u] = v;
+                    self.mate[v] = u;
+                    self.matching_size += 1;
+                    break;
+                }
+            }
+        }
+
         for v in 0..self.size {
             if self.mate[v] == self.size && self.augment_from(v) {
                 self.matching_size += 1;
