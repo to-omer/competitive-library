@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["inversions_by_blocks","static_range_inversions"]};

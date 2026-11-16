@@ -76,34 +76,34 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">parse_binary_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>bitset::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">bitset</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">parse_<wbr>binary_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/bitset.rs.html#666-682">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn parse_binary_avx2(bytes: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>], words: &amp;mut [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>]) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../../src/competitive/data_structure/bitset.rs.html#55&#34;,&#34;line 55&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/bitset.rs (<a href="../../../../src/competitive/data_structure/bitset.rs.html#55">line 55</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>from_binary(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-<span data-nosnippet>46</span>        <span class="kw">let </span>bytes = s.as_bytes();
-<span data-nosnippet>47</span>        <span class="kw">let </span><span class="kw-2">mut </span>bits = <span class="self">Self</span>::new(bytes.len());
-<span data-nosnippet>48</span>        <span class="kw">let </span>end = bytes.len() / <span class="number">64 </span>* <span class="number">64</span>;
-<span data-nosnippet>49</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>50</span>        </span><span class="kw">let </span>parsed = <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512bw"</span>) {
-<span data-nosnippet>51</span>            <span class="comment">// SAFETY: AVX-512BW is available; each complete chunk contains 64 bytes.
-<span data-nosnippet>52</span>            </span><span class="kw">unsafe </span>{ simd::parse_binary_avx512(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut()) }
-<span data-nosnippet>53</span>        } <span class="kw">else if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
-<span data-nosnippet>54</span>            <span class="comment">// SAFETY: AVX2 is available; each complete chunk contains 64 bytes.
-<span data-nosnippet>55</span>            </span><span class="kw">unsafe </span>{ <span class="highlight focus">simd::parse_binary_avx2</span>(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut()) }
-<span data-nosnippet>56</span>        } <span class="kw">else </span>{
-<span data-nosnippet>57</span>            <span class="self">Self</span>::parse_binary_scalar(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut())
-<span data-nosnippet>58</span>        };
-<span data-nosnippet>59</span>        <span class="attr">#[cfg(not(target_arch = <span class="string">"x86_64"</span>))]
-<span data-nosnippet>60</span>        </span><span class="kw">let </span>parsed = <span class="self">Self</span>::parse_binary_scalar(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut());
-<span data-nosnippet>61</span>        <span class="kw">if </span>!parsed {
-<span data-nosnippet>62</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>63</span>        }
-<span data-nosnippet>64</span>        <span class="kw">if </span>end != bytes.len() {
-<span data-nosnippet>65</span>            <span class="kw">let </span><span class="kw-2">mut </span>word = <span class="number">0</span>;
-<span data-nosnippet>66</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>bytes[end..].iter().enumerate() {
-<span data-nosnippet>67</span>                <span class="kw">if </span>b != <span class="string">b'0' </span>&amp;&amp; b != <span class="string">b'1' </span>{
-<span data-nosnippet>68</span>                    <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>69</span>                }
-<span data-nosnippet>70</span>                word |= u64::from(b &amp; <span class="number">1</span>) &lt;&lt; i;
-<span data-nosnippet>71</span>            }
-<span data-nosnippet>72</span>            bits.words_mut()[end / <span class="number">64</span>] = word;
-<span data-nosnippet>73</span>        }
-<span data-nosnippet>74</span>        <span class="prelude-val">Some</span>(bits)
-<span data-nosnippet>75</span>    }</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">parse_binary_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>bitset::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">bitset</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">parse_<wbr>binary_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/bitset.rs.html#692-708">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn parse_binary_avx2(bytes: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>], words: &amp;mut [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>]) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../../src/competitive/data_structure/bitset.rs.html#56&#34;,&#34;line 56&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/bitset.rs (<a href="../../../../src/competitive/data_structure/bitset.rs.html#56">line 56</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>46</span>    <span class="kw">pub fn </span>from_binary(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+<span data-nosnippet>47</span>        <span class="kw">let </span>bytes = s.as_bytes();
+<span data-nosnippet>48</span>        <span class="kw">let </span><span class="kw-2">mut </span>bits = <span class="self">Self</span>::new(bytes.len());
+<span data-nosnippet>49</span>        <span class="kw">let </span>end = bytes.len() / <span class="number">64 </span>* <span class="number">64</span>;
+<span data-nosnippet>50</span>        <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>51</span>        </span><span class="kw">let </span>parsed = <span class="kw">if </span>avx512_enabled() &amp;&amp; <span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx512bw"</span>) {
+<span data-nosnippet>52</span>            <span class="comment">// SAFETY: AVX-512BW is available; each complete chunk contains 64 bytes.
+<span data-nosnippet>53</span>            </span><span class="kw">unsafe </span>{ simd::parse_binary_avx512(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut()) }
+<span data-nosnippet>54</span>        } <span class="kw">else if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
+<span data-nosnippet>55</span>            <span class="comment">// SAFETY: AVX2 is available; each complete chunk contains 64 bytes.
+<span data-nosnippet>56</span>            </span><span class="kw">unsafe </span>{ <span class="highlight focus">simd::parse_binary_avx2</span>(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut()) }
+<span data-nosnippet>57</span>        } <span class="kw">else </span>{
+<span data-nosnippet>58</span>            <span class="self">Self</span>::parse_binary_scalar(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut())
+<span data-nosnippet>59</span>        };
+<span data-nosnippet>60</span>        <span class="attr">#[cfg(not(target_arch = <span class="string">"x86_64"</span>))]
+<span data-nosnippet>61</span>        </span><span class="kw">let </span>parsed = <span class="self">Self</span>::parse_binary_scalar(<span class="kw-2">&amp;</span>bytes[..end], bits.words_mut());
+<span data-nosnippet>62</span>        <span class="kw">if </span>!parsed {
+<span data-nosnippet>63</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>64</span>        }
+<span data-nosnippet>65</span>        <span class="kw">if </span>end != bytes.len() {
+<span data-nosnippet>66</span>            <span class="kw">let </span><span class="kw-2">mut </span>word = <span class="number">0</span>;
+<span data-nosnippet>67</span>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>bytes[end..].iter().enumerate() {
+<span data-nosnippet>68</span>                <span class="kw">if </span>b != <span class="string">b'0' </span>&amp;&amp; b != <span class="string">b'1' </span>{
+<span data-nosnippet>69</span>                    <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>70</span>                }
+<span data-nosnippet>71</span>                word |= u64::from(b &amp; <span class="number">1</span>) &lt;&lt; i;
+<span data-nosnippet>72</span>            }
+<span data-nosnippet>73</span>            bits.words_mut()[end / <span class="number">64</span>] = word;
+<span data-nosnippet>74</span>        }
+<span data-nosnippet>75</span>        <span class="prelude-val">Some</span>(bits)
+<span data-nosnippet>76</span>    }</code></pre></div></div></div></section></div></main></body></html>
