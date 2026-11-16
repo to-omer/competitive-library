@@ -154,7 +154,7 @@ pub mod binary_search_tree;
 mod binary_trie;
 #[codesnip::entry("BitVector")]
 mod bit_vector;
-#[codesnip::entry("BitSet", include("avx_helper"))]
+#[codesnip::entry("BitSet", include("avx_helper", "discrete_steps"))]
 mod bitset;
 #[codesnip::entry("BucketQueue")]
 mod bucket_queue;

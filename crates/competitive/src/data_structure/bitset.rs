@@ -1,10 +1,11 @@
+use super::RangeBoundsExt;
 #[cfg(target_arch = "x86_64")]
 use super::avx512_enabled;
 use std::{
     cmp::Ordering,
     ops::{
-        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
-        ShrAssign,
+        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, RangeBounds, Shl,
+        ShlAssign, Shr, ShrAssign,
     },
 };
 
@@ -235,16 +236,29 @@ impl BitSet {
             .iter()
             .copied()
             .enumerate()
-            .flat_map(|(word_index, mut word)| {
-                std::iter::from_fn(move || {
-                    if word == 0 {
-                        None
-                    } else {
-                        let bit = word.trailing_zeros() as usize;
-                        word &= word - 1;
-                        Some((word_index << 6) | bit)
-                    }
-                })
+            .flat_map(|(word_index, word)| Self::word_ones(word_index, word))
+    }
+
+    /// Iterates over set-bit indices in `range` in ascending order.
+    pub fn iter_ones_range<R>(&self, range: R) -> impl Iterator<Item = usize> + '_
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range.to_range_bounded(0, self.size).expect("invalid range");
+        let first = range.start >> 6;
+        self.words()[first..range.end.div_ceil(64).max(first)]
+            .iter()
+            .copied()
+            .enumerate()
+            .flat_map(move |(offset, mut word)| {
+                let word_index = first + offset;
+                if word_index == first {
+                    word &= u64::MAX << (range.start & 63);
+                }
+                if word_index == range.end >> 6 {
+                    word &= !(u64::MAX << (range.end & 63));
+                }
+                Self::word_ones(word_index, word)
             })
     }
 
@@ -319,6 +333,18 @@ impl BitSet {
         let len = self.size.div_ceil(64);
         // SAFETY: `Block` is exactly eight contiguous `u64`s, with no trailing padding.
         unsafe { std::slice::from_raw_parts_mut(self.bits.as_mut_ptr().cast(), len) }
+    }
+
+    fn word_ones(word_index: usize, mut word: u64) -> impl Iterator<Item = usize> {
+        std::iter::from_fn(move || {
+            if word == 0 {
+                None
+            } else {
+                let bit = word.trailing_zeros() as usize;
+                word &= word - 1;
+                Some((word_index << 6) | bit)
+            }
+        })
     }
 
     fn trim(&mut self) {
@@ -1330,6 +1356,30 @@ mod tests {
             actual.push(value);
             resized.push(value);
             assert_model(&actual, &resized);
+        }
+    }
+
+    #[test]
+    fn iter_ones_range_matches_boolean_model() {
+        let mut rng = Xorshift::default();
+        for size in bitset_sizes(&mut rng) {
+            let model = random_model(&mut rng, size);
+            let set = bitset(&model);
+            let mut bounds = vec![rng.random(0..=size), rng.random(0..=size)];
+            // Word boundaries at both ends select the partial-word masks.
+            for edge in [0, 1, 63, 64, 65] {
+                bounds.extend([edge.min(size), size.saturating_sub(edge)]);
+            }
+            bounds.push(size / 2);
+            for &start in &bounds {
+                for &end in &bounds {
+                    assert_eq!(
+                        set.iter_ones_range(start..end).collect::<Vec<_>>(),
+                        (start..end).filter(|&i| model[i]).collect::<Vec<_>>(),
+                        "{size} {start}..{end}"
+                    );
+                }
+            }
         }
     }
 
