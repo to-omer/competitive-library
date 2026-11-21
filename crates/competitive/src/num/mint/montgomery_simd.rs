@@ -9,15 +9,15 @@ pub unsafe fn montgomery_mul_256(
     r_vec: __m256i,
     mod_vec: __m256i,
 ) -> __m256i {
-    let a13 = _mm256_bsrli_epi128::<4>(a);
-    let b13 = _mm256_bsrli_epi128::<4>(b);
+    let a13 = _mm256_srli_epi64::<32>(a);
+    let b13 = _mm256_srli_epi64::<32>(b);
     let t02 = _mm256_mul_epu32(a, b);
     let t13 = _mm256_mul_epu32(a13, b13);
     let m02 = mul_epu32_256(t02, r_vec);
     let m13 = mul_epu32_256(t13, r_vec);
     let u02 = _mm256_add_epi64(t02, _mm256_mul_epu32(m02, mod_vec));
     let u13 = _mm256_add_epi64(t13, _mm256_mul_epu32(m13, mod_vec));
-    _mm256_or_si256(_mm256_bsrli_epi128::<4>(u02), u13)
+    _mm256_blend_epi32::<0xaa>(_mm256_srli_epi64::<32>(u02), u13)
 }
 
 #[inline]
@@ -28,14 +28,14 @@ pub unsafe fn montgomery_mul_256_fixed(
     b_r: __m256i,
     mod_vec: __m256i,
 ) -> __m256i {
-    let a13 = _mm256_bsrli_epi128::<4>(a);
+    let a13 = _mm256_srli_epi64::<32>(a);
     let t02 = _mm256_mul_epu32(a, b);
     let t13 = _mm256_mul_epu32(a13, b);
     let m02 = mul_epu32_256(a, b_r);
     let m13 = mul_epu32_256(a13, b_r);
     let u02 = _mm256_add_epi64(t02, _mm256_mul_epu32(m02, mod_vec));
     let u13 = _mm256_add_epi64(t13, _mm256_mul_epu32(m13, mod_vec));
-    _mm256_or_si256(_mm256_bsrli_epi128::<4>(u02), u13)
+    _mm256_blend_epi32::<0xaa>(_mm256_srli_epi64::<32>(u02), u13)
 }
 
 #[inline]

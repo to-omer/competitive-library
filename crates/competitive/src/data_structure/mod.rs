@@ -1,16 +1,20 @@
 //! data structures
 
 use crate::algebra::{
-    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, EmptyActLazy, Group,
-    LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct, Magma, MapAgg, MapMonoid, MaxOperation,
-    MinOperation, Monoid, MonoidAct, ReversibleMapMonoid, SemiGroup, SemiRing, Unital,
+    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, BitXorOperation, Commutative,
+    EmptyAct, EmptyActLazy, Group, Invertible, LazyMapAct, LazyMapMonoid, LazyMapMonoidWithKeyAct,
+    Magma, MapAgg, MapMonoid, MaxOperation, MinOperation, Monoid, MonoidAct, ReversibleMapMonoid,
+    SemiGroup, SemiRing, Unital, UpdateAct,
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceSortExt};
 use crate::math::Matrix;
-use crate::num::{Bounded, IntBase, One, RangeBoundsExt, Saturating, Unsigned, Zero};
 #[cfg(target_arch = "x86_64")]
-use crate::tools::avx512_enabled;
+use crate::num::montgomery_simd;
+use crate::num::{Bounded, IntBase, One, RangeBoundsExt, Saturating, Unsigned, Zero};
+use crate::num::{MIntBase, MIntConvert, mint_basic, montgomery};
 use crate::tools::{Comparator, SimdBackend, Xorshift, comparator, simd_backend};
+#[cfg(target_arch = "x86_64")]
+use crate::tools::{avx512_enabled, prefetch_block};
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
@@ -44,17 +48,26 @@ pub use self::compressed_segment_tree::{
 pub use self::container::{Container, ContainerEntry};
 #[codesnip::entry("Counter")]
 pub use self::counter::{BTreeCounter, HashCounter};
+pub use self::dary_affine_kernel::{
+    AffineFraction, DaryAffinePointKernel, DaryAffineSumKernel, DaryAssignCompositeKernel,
+    DaryInvertibleCompositeKernel, InvertibleAffine, InvertibleAffineBlock, InvertibleAffineValue,
+};
+pub use self::dary_dual_segment_tree::{DaryDualKernel, DaryDualSegmentTree};
 #[codesnip::entry("DaryHeap")]
 pub use self::dary_heap::{
     DaryHeapI32, DaryHeapI64, DaryHeapI128, DaryHeapU32, DaryHeapU64, DaryHeapU128,
 };
+pub use self::dary_lazy_segment_tree::{DaryLazyKernel, DaryLazyPointKernel, DaryLazySegmentTree};
+#[codesnip::entry("DaryNumericKernel")]
+pub use self::dary_numeric_kernel::{
+    DaryAddKernelI32, DaryAddKernelI64, DaryMaxKernelI32, DaryMaxKernelI64, DaryMinKernelI32,
+    DaryMinKernelI64,
+};
+#[codesnip::entry("DaryPrefixGroup")]
+pub use self::dary_prefix_group::DaryPrefixGroup;
 #[codesnip::entry("DaryPrefixSumTree")]
 pub use self::dary_prefix_sum_tree::{DaryPrefixSumTreeU32, DaryPrefixSumTreeU64};
-#[codesnip::entry("DarySegmentTree")]
-pub use self::dary_segment_tree::{
-    DarySegmentTreeAddI32, DarySegmentTreeAddI64, DarySegmentTreeMaxI32, DarySegmentTreeMaxI64,
-    DarySegmentTreeMinI32, DarySegmentTreeMinI64,
-};
+pub use self::dary_segment_tree::{DarySegmentGroup, DarySegmentKernel, DarySegmentTree};
 #[codesnip::entry("DisjointSparseTable")]
 pub use self::disjoint_sparse_table::DisjointSparseTable;
 #[codesnip::entry("DoublyLinkedList")]
@@ -99,10 +112,19 @@ pub use self::range_map::{RangeMap, RangeSet};
 pub use self::range_minimum_query::RangeMinimumQuery;
 #[codesnip::entry("RangeMinimumSubsetSize")]
 pub use self::range_minimum_subset_size::RangeMinimumSubsetSize;
+#[codesnip::entry("RankSelectBitSet")]
+pub use self::rank_select_bitset::RankSelectBitSet;
 #[codesnip::entry("SegmentTree")]
 pub use self::segment_tree::SegmentTree;
 #[codesnip::entry("SegmentTreeMap")]
 pub use self::segment_tree_map::SegmentTreeMap;
+pub use self::simd_binary_indexed_tree::{
+    SimdBinaryIndexedTree, SimdFenwickGroup, SimdFenwickKernel,
+};
+#[codesnip::entry("SimdMonoid")]
+pub use self::simd_monoid::SimdMonoid;
+pub use self::simd_monoid_act::{SimdAggregateAct, SimdMonoidAct};
+pub use self::simd_operations::SimdAddI64;
 #[codesnip::entry("sliding_window_aggregation")]
 pub use self::sliding_window_aggregation::{DequeAggregation, QueueAggregation};
 #[codesnip::entry("slope_trick")]
@@ -168,11 +190,17 @@ mod compressed_segment_tree;
 mod container;
 #[codesnip::entry("Counter")]
 mod counter;
+mod dary_affine_kernel;
+mod dary_dual_segment_tree;
 #[codesnip::entry("DaryHeap", include("_simd"))]
 mod dary_heap;
+mod dary_lazy_segment_tree;
+#[codesnip::entry("DaryNumericKernel", include("DarySegmentTree", "_simd"))]
+mod dary_numeric_kernel;
+#[codesnip::entry("DaryPrefixGroup", include("SimdMonoid", "DarySegmentTree"))]
+mod dary_prefix_group;
 #[codesnip::entry("DaryPrefixSumTree", include("_simd"))]
 mod dary_prefix_sum_tree;
-#[codesnip::entry("DarySegmentTree", include("_simd", "discrete_steps"))]
 mod dary_segment_tree;
 #[codesnip::entry("DisjointSparseTable", include("algebra"))]
 mod disjoint_sparse_table;
@@ -231,6 +259,11 @@ mod range_minimum_query;
     include("BinaryIndexedTree", "AdditiveOperation", "TupleOperation")
 )]
 mod range_minimum_subset_size;
+#[codesnip::entry(
+    "RankSelectBitSet",
+    include("BitSet", "BitVector", "DaryPrefixSumTree")
+)]
+mod rank_select_bitset;
 #[codesnip::entry("SegmentTree", include("algebra", "discrete_steps"))]
 mod segment_tree;
 #[codesnip::entry(
@@ -240,6 +273,11 @@ mod segment_tree;
 mod segment_tree_map;
 #[codesnip::entry("_simd", include("avx_helper"))]
 pub mod simd;
+mod simd_binary_indexed_tree;
+#[codesnip::entry("SimdMonoid", include("algebra"))]
+mod simd_monoid;
+mod simd_monoid_act;
+mod simd_operations;
 #[codesnip::entry("sliding_window_aggregation", include("algebra"))]
 mod sliding_window_aggregation;
 #[codesnip::entry("slope_trick")]

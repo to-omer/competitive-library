@@ -159,9 +159,16 @@ macro_rules! define_dary_prefix_sum_tree {
             /// Panics if a prefix sum has overflowed.
             #[inline]
             pub fn partition_point_acc(&self, value: $value) -> usize {
+                self.partition_point_acc_with_sum(value).0
+            }
+
+            /// Returns the partition index and the sum of values before it.
+            /// The index and overflow condition are the same as in `partition_point_acc`.
+            #[inline]
+            pub fn partition_point_acc_with_sum(&self, value: $value) -> (usize, $value) {
                 assert!(self.partition_valid, "prefix sum overflowed");
                 if value >= self.total {
-                    return self.len;
+                    return (self.len, self.total);
                 }
                 #[cfg(target_arch = "x86_64")]
                 return match self.backend {
@@ -299,10 +306,11 @@ macro_rules! define_dary_prefix_sum_tree {
             }
 
             #[inline(always)]
-            fn partition_point_by<F>(&self, mut value: $value, mut first_gt: F) -> usize
+            fn partition_point_by<F>(&self, mut value: $value, mut first_gt: F) -> (usize, $value)
             where
                 F: FnMut(&[$value; $branch], $value) -> usize,
             {
+                let original = value;
                 let mut node = 0;
                 for level in self.levels.iter().rev() {
                     // SAFETY: `value < total` and non-overflowing prefixes select a real child at
@@ -314,11 +322,11 @@ macro_rules! define_dary_prefix_sum_tree {
                     }
                     node = node * $branch + lane;
                 }
-                node.min(self.len)
+                (node.min(self.len), original - value)
             }
 
             #[inline(always)]
-            fn partition_point_scalar(&self, value: $value) -> usize {
+            fn partition_point_scalar(&self, value: $value) -> (usize, $value) {
                 self.partition_point_by(value, |prefix, value| {
                     prefix.partition_point(|&sum| sum <= value)
                 })
@@ -326,7 +334,7 @@ macro_rules! define_dary_prefix_sum_tree {
 
             #[cfg(target_arch = "x86_64")]
             #[target_feature(enable = "avx2")]
-            unsafe fn partition_point_avx2(&self, value: $value) -> usize {
+            unsafe fn partition_point_avx2(&self, value: $value) -> (usize, $value) {
                 self.partition_point_by(value, |prefix, value| unsafe {
                     simd::$first_gt_avx2(prefix, value)
                 })
@@ -334,7 +342,7 @@ macro_rules! define_dary_prefix_sum_tree {
 
             #[cfg(target_arch = "x86_64")]
             #[target_feature(enable = "avx512f")]
-            unsafe fn partition_point_avx512(&self, value: $value) -> usize {
+            unsafe fn partition_point_avx512(&self, value: $value) -> (usize, $value) {
                 self.partition_point_by(value, |prefix, value| unsafe {
                     simd::$first_gt_avx512(prefix, value)
                 })
@@ -393,6 +401,9 @@ mod tests {
             let values: Vec<_> = (0..len).map(|_| rng.rand(8) as u32).collect();
             for backend in backends() {
                 let mut actual = DaryPrefixSumTreeU32::build(&values, backend);
+                let wide_values: Vec<_> =
+                    values.iter().map(|&value| (value as u64) << 32).collect();
+                let mut wide = DaryPrefixSumTreeU64::build(&wide_values, backend);
                 let mut expected = values.clone();
                 for step in 0..500 {
                     if len != 0 {
@@ -400,10 +411,12 @@ mod tests {
                         if step % 3 == 0 {
                             let value = rng.rand(32) as u32;
                             actual.set(index, value);
+                            wide.set(index, (value as u64) << 32);
                             expected[index] = value;
                         } else {
                             let value = rng.rand(8) as u32;
                             actual.update(index, value);
+                            wide.update(index, (value as u64) << 32);
                             expected[index] += value;
                         }
                     }
@@ -424,13 +437,54 @@ mod tests {
                             sum
                         })
                         .collect();
-                    for value in [0, sum / 2, sum] {
+                    for value in [0, sum / 2, sum, u32::MAX] {
+                        let index = prefix.partition_point(|&prefix| prefix <= value);
+                        let before: u32 = expected[..index].iter().sum();
+                        assert_eq!(actual.partition_point_acc(value), index);
+                        assert_eq!(actual.partition_point_acc_with_sum(value), (index, before));
+                        assert_eq!(wide.partition_point_acc((value as u64) << 32), index);
                         assert_eq!(
-                            actual.partition_point_acc(value),
-                            prefix.partition_point(|&prefix| prefix <= value)
+                            wide.partition_point_acc_with_sum((value as u64) << 32),
+                            (index, (before as u64) << 32)
                         );
                     }
                 }
+            }
+        }
+
+        for len in [1, 7, 8, 9, 15, 16, 17, 255, 256, 257, 4095, 4096, 4097] {
+            let mut values = vec![0; len];
+            let mut wide_values = vec![0; len];
+            values[len / 2] = u32::MAX;
+            wide_values[len / 2] = u64::MAX;
+            for backend in backends() {
+                let actual = DaryPrefixSumTreeU32::build(&values, backend);
+                let wide = DaryPrefixSumTreeU64::build(&wide_values, backend);
+                for value in [0, u32::MAX / 2, u32::MAX - 1] {
+                    assert_eq!(actual.partition_point_acc_with_sum(value), (len / 2, 0));
+                    assert_eq!(
+                        wide.partition_point_acc_with_sum((value as u64) << 32),
+                        (len / 2, 0)
+                    );
+                }
+                assert_eq!(
+                    actual.partition_point_acc_with_sum(u32::MAX),
+                    (len, u32::MAX)
+                );
+                assert_eq!(wide.partition_point_acc_with_sum(u64::MAX), (len, u64::MAX));
+            }
+        }
+
+        for backend in backends() {
+            let high = 1u32 << 31;
+            let actual = DaryPrefixSumTreeU32::build(&[high, 0, high - 1], backend);
+            for value in [high, high + 1, u32::MAX - 1] {
+                assert_eq!(actual.partition_point_acc_with_sum(value), (2, high));
+            }
+            let high = 1u64 << 63;
+            let actual = DaryPrefixSumTreeU64::build(&[high, 0, high - 1], backend);
+            for value in [high, high + 1, u64::MAX - 1] {
+                assert_eq!(actual.partition_point_acc_with_sum(value), (2, high));
             }
         }
 

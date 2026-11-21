@@ -321,6 +321,45 @@ where
     }
 }
 
+pub struct RangeProductRangeUpdate<M> {
+    _marker: PhantomData<fn() -> M>,
+}
+impl<M> MapMonoid for RangeProductRangeUpdate<M>
+where
+    M: Monoid,
+{
+    type Key = M::T;
+    type AggMonoid = (M, AdditiveOperation<usize>);
+    fn single_agg(key: &Self::Key) -> MapAgg<Self> {
+        (key.clone(), 1)
+    }
+}
+impl<M> LazyMapMonoid for RangeProductRangeUpdate<M>
+where
+    M: Monoid,
+    M::T: PartialEq,
+{
+    type ActMonoid = LastOperation<M::T>;
+
+    fn act_agg((value, len): &MapAgg<Self>, action: &LazyMapAct<Self>) -> Option<MapAgg<Self>> {
+        Some((
+            action
+                .as_ref()
+                .map_or_else(|| value.clone(), |value| M::pow(value.clone(), *len)),
+            *len,
+        ))
+    }
+}
+impl<M> LazyMapMonoidWithKeyAct for RangeProductRangeUpdate<M>
+where
+    M: Monoid,
+    M::T: PartialEq,
+{
+    fn act_key(key: &Self::Key, act: &LazyMapAct<Self>) -> Self::Key {
+        UpdateAct::act(key, act)
+    }
+}
+
 pub struct RangeMaxRangeUpdate<T> {
     _marker: PhantomData<fn() -> T>,
 }

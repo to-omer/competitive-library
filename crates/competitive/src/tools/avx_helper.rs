@@ -38,7 +38,7 @@ pub fn avx512_supported() -> bool {
 
 #[inline]
 pub fn simd_backend() -> SimdBackend {
-    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    #[cfg(target_arch = "x86_64")]
     {
         if avx512_enabled() && avx512_supported() {
             return SimdBackend::Avx512;
@@ -48,6 +48,25 @@ pub fn simd_backend() -> SimdBackend {
         }
     }
     SimdBackend::Scalar
+}
+
+/// Hints the cache for the contents of a sized block.
+#[inline]
+pub fn prefetch_block<T>(block: &T) {
+    #[cfg(target_arch = "x86_64")]
+    {
+        let pointer = (block as *const T).cast::<u8>();
+        // SAFETY: every offset is within the block.
+        unsafe {
+            for offset in (0..std::mem::size_of::<T>()).step_by(64) {
+                std::arch::x86_64::_mm_prefetch(
+                    pointer.add(offset).cast(),
+                    std::arch::x86_64::_MM_HINT_T0,
+                );
+            }
+        }
+    }
+    let _ = block;
 }
 
 #[macro_export]

@@ -659,6 +659,7 @@ fn search_batch<K, T>(
 
 #[derive(Clone, Debug)]
 enum StaticSearchStorage {
+    Consecutive { minimum: u128, len: usize },
     Direct(DirectStaticSearch),
     U16(StaticSearchTree<u16, 32>),
     U32(StaticSearchTree<u32, 16>),
@@ -670,6 +671,9 @@ impl StaticSearchStorage {
     #[inline(always)]
     fn lower_bound(&self, value: u128) -> usize {
         match self {
+            Self::Consecutive { minimum, len } => {
+                value.saturating_sub(*minimum).min(*len as u128) as usize
+            }
             Self::Direct(search) => search.lower_bound(value),
             Self::U16(search) => search.lower_bound(
                 u16::try_from(value).expect("SimdKey::encode exceeds its declared width"),
@@ -687,6 +691,9 @@ impl StaticSearchStorage {
     #[inline(always)]
     fn upper_bound(&self, value: u128) -> usize {
         match self {
+            Self::Consecutive { minimum, len } => value.checked_sub(*minimum).map_or(0, |offset| {
+                offset.saturating_add(1).min(*len as u128) as usize
+            }),
             Self::Direct(search) => search.upper_bound(value),
             Self::U16(search) => search.upper_bound(
                 u16::try_from(value).expect("SimdKey::encode exceeds its declared width"),
@@ -704,6 +711,9 @@ impl StaticSearchStorage {
     #[inline(always)]
     fn contains(&self, value: u128) -> bool {
         match self {
+            Self::Consecutive { minimum, len } => value
+                .checked_sub(*minimum)
+                .is_some_and(|offset| offset < *len as u128),
             Self::Direct(search) => search.contains(value),
             Self::U16(search) => search.contains(
                 u16::try_from(value).expect("SimdKey::encode exceeds its declared width"),
@@ -720,6 +730,11 @@ impl StaticSearchStorage {
 
     fn lower_bound_batch<K: SimdKey>(&self, values: &[K], output: &mut [usize]) {
         match self {
+            Self::Consecutive { minimum, len } => {
+                for (&value, position) in values.iter().zip(output) {
+                    *position = value.encode().saturating_sub(*minimum).min(*len as u128) as usize;
+                }
+            }
             Self::Direct(search) => {
                 for (&value, position) in values.iter().zip(output) {
                     *position = search.lower_bound(value.encode());
@@ -758,6 +773,13 @@ impl StaticSearchStorage {
 
     fn upper_bound_batch<K: SimdKey>(&self, values: &[K], output: &mut [usize]) {
         match self {
+            Self::Consecutive { minimum, len } => {
+                for (&value, position) in values.iter().zip(output) {
+                    *position = value.encode().checked_sub(*minimum).map_or(0, |offset| {
+                        offset.saturating_add(1).min(*len as u128) as usize
+                    });
+                }
+            }
             Self::Direct(search) => {
                 for (&value, position) in values.iter().zip(output) {
                     *position = search.upper_bound(value.encode());
@@ -884,8 +906,30 @@ impl<K: SimdKey> StaticSearch<K> {
 
     fn build(values: &[K], backend: SimdBackend, direct: bool) -> Self {
         assert!(matches!(K::BITS, 8 | 16 | 32 | 64 | 128));
-        assert!(values.windows(2).all(|pair| pair[0] <= pair[1]));
         let len = values.len();
+        if !direct
+            && K::BITS > 8
+            && let Some((&first, &last)) = values.first().zip(values.last())
+        {
+            let minimum = first.encode();
+            let maximum = last.encode();
+            if maximum.checked_sub(minimum) == Some(len as u128 - 1)
+                && values.windows(2).all(|pair| {
+                    pair[0] < pair[1] && pair[1].encode().checked_sub(pair[0].encode()) == Some(1)
+                })
+            {
+                assert!(
+                    maximum <= u128::MAX >> (128 - K::BITS),
+                    "SimdKey::encode exceeds its declared width"
+                );
+                return Self {
+                    storage: StaticSearchStorage::Consecutive { minimum, len },
+                    len,
+                    marker: PhantomData,
+                };
+            }
+        }
+        assert!(values.windows(2).all(|pair| pair[0] <= pair[1]));
         let storage = match K::BITS {
             8 => StaticSearchStorage::Direct(DirectStaticSearch::build(values, K::BITS)),
             16 => {
@@ -1089,6 +1133,49 @@ mod tests {
         let queries: Vec<_> = (0..263).map(|_| rng.rand64() as u16).collect();
         check(values, &queries);
 
+        for len in [
+            0usize, 1, 7, 8, 15, 16, 17, 63, 64, 65, 255, 256, 257, 65_535, 65_536,
+        ] {
+            for origin in [0, 1u128 << 100, u128::MAX - 2 * len as u128] {
+                for step in [1u128, 2] {
+                    let values: Vec<_> = (0..len).map(|i| origin + i as u128 * step).collect();
+                    let last = values.last().copied().unwrap_or(origin);
+                    let mut queries: Vec<_> = (0..263)
+                        .map(|_| origin + rng.rand((2 * len + 1) as u64) as u128)
+                        .collect();
+                    queries.extend([
+                        0,
+                        origin.saturating_sub(1),
+                        origin,
+                        last,
+                        last.saturating_add(1),
+                        u128::MAX,
+                    ]);
+                    check(values, &queries);
+                }
+            }
+        }
+        check(vec![10u128, 10, 12], &[9, 10, 11, 12, 13]);
+        for origin in [i128::MIN, -129, i128::MAX - 256] {
+            let values: Vec<_> = (0..257).map(|i| origin + i).collect();
+            let queries = [
+                i128::MIN,
+                origin.saturating_sub(1),
+                origin,
+                origin + 128,
+                origin + 256,
+                (origin + 256).saturating_add(1),
+                i128::MAX,
+            ];
+            check(values, &queries);
+        }
+        for len in [65_535usize, 65_536] {
+            let values: Vec<_> = (0..len).map(|i| i as u16).collect();
+            let mut queries: Vec<_> = (0..263).map(|_| rng.rand64() as u16).collect();
+            queries.extend([0, 1, u16::MAX - 1, u16::MAX]);
+            check(values, &queries);
+        }
+
         #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
         struct Pair(u32, u32);
 
@@ -1104,6 +1191,17 @@ mod tests {
             &mut rng,
             |rng| Pair(rng.rand64() as u32, rng.rand64() as u32),
             &[Pair(0, 0), Pair(u32::MAX, u32::MAX)],
+        );
+        check(
+            (0..257).map(|i| Pair(42, i)).collect(),
+            &[
+                Pair(41, u32::MAX),
+                Pair(42, 0),
+                Pair(42, 128),
+                Pair(42, 256),
+                Pair(42, 257),
+                Pair(43, 0),
+            ],
         );
     }
 }

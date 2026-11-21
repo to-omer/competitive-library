@@ -210,6 +210,40 @@ pub unsafe fn add_suffix_u64x8_avx512(values: &mut [u64; 8], index: usize, delta
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "avx2")]
 #[inline]
+pub unsafe fn add_suffix_u64x16_avx2(values: &mut [u64; 16], lane: usize, delta: u64) {
+    use std::arch::x86_64::*;
+    let d = _mm256_set1_epi64x(delta as i64);
+    let threshold = _mm256_set1_epi64x(lane as i64 - 1);
+    for base in (0..16).step_by(4) {
+        let lanes = _mm256_add_epi64(
+            _mm256_setr_epi64x(0, 1, 2, 3),
+            _mm256_set1_epi64x(base as i64),
+        );
+        let mask = _mm256_cmpgt_epi64(lanes, threshold);
+        let p = values.as_mut_ptr().add(base).cast();
+        _mm256_storeu_si256(
+            p,
+            _mm256_add_epi64(_mm256_loadu_si256(p), _mm256_and_si256(d, mask)),
+        );
+    }
+}
+#[cfg(target_arch = "x86_64")]
+#[target_feature(enable = "avx512f")]
+#[inline]
+pub unsafe fn add_suffix_u64x16_avx512(values: &mut [u64; 16], lane: usize, delta: u64) {
+    use std::arch::x86_64::*;
+    let d = _mm512_set1_epi64(delta as i64);
+    let mask = (u32::from(u16::MAX) << lane) as u16;
+    for base in [0, 8] {
+        let p = values.as_mut_ptr().add(base).cast();
+        let old = _mm512_loadu_si512(p);
+        _mm512_storeu_si512(p, _mm512_mask_add_epi64(old, (mask >> base) as u8, old, d));
+    }
+}
+
+#[cfg(target_arch = "x86_64")]
+#[target_feature(enable = "avx2")]
+#[inline]
 pub unsafe fn max_index_u32x16_avx2(values: &[u32; 16]) -> usize {
     let low = _mm256_loadu_si256(values.as_ptr().cast());
     let high = _mm256_loadu_si256(values.as_ptr().add(8).cast());
