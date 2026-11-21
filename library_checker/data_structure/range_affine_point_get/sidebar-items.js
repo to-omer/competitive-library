@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_affine_point_get","test_range_affine_point_get"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["range_affine_point_get","range_affine_point_get_dary","test_range_affine_point_get","test_range_affine_point_get_dary"]};

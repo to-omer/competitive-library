@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_avx2","add_avx512"],"macro":[["define_add",1]],"type":["SimdAddI64"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":[["define_dary_segment_tree",1]],"struct":["Block","DarySegmentTreeAddI32","DarySegmentTreeAddI64","DarySegmentTreeMaxI32","DarySegmentTreeMaxI64","DarySegmentTreeMinI32","DarySegmentTreeMinI64"]};
+window.SIDEBAR_ITEMS = {"mod":["dary_tree","segment_monoid"]};

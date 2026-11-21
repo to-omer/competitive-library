@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["canonical","invert_affine","invert_affine_batch","invert_affine_products","mul_sum"],"mod":["invertible_vector"],"struct":["AffineFraction","DaryInvertibleCompositeKernel","InvertibleAffine","InvertibleAffineBlock","InvertibleAffineValue"]};

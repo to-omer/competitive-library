@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["point_set_range_composite","test_point_set_range_composite"]};
+window.SIDEBAR_ITEMS = {"enum":["Query"],"fn":["point_set_range_composite","point_set_range_composite_dary","test_point_set_range_composite","test_point_set_range_composite_dary"]};

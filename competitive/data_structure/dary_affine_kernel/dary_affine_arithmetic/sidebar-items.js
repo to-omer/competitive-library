@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["B","ONE","PREFIX_MASK","REV"],"fn":["compose","mod_add","mod_mul","mod_sub"],"struct":["Range"],"type":["Affine"]};

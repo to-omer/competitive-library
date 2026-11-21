@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["edit256","edit512","invert256","invert512"],"macro":[["invert_batches",1]]};

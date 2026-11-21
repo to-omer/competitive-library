@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["assign_vector"],"struct":["AssignmentPowerStore","CompositeBranch","DaryAssignCompositeKernel"]};

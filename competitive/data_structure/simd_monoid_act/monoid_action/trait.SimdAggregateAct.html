@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Acting on an ordered fold must equal acting on each key, lifting, and folding."><title>SimdAggregateAct in competitive::data_structure::simd_monoid_act::monoid_action - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (c7d5ba59d 2026-11-20)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../../static.files/main-419f3a3f.js"></script><script defer src="../../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
+    if (!root) return;
+    const script = document.createElement("script");
+    script.src = new URL(`${root}submissions.js`, document.baseURI).href;
+    document.head.appendChild(script);
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc trait"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">SimdAggregateAct</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Simd<wbr>Aggregate<wbr>Act</a></h2><h3><a href="#provided-associated-consts">Provided Associated Constants</a></h3><ul class="block"><li><a href="#associatedconstant.HAS_CONSTANT_TAGS" title="HAS_CONSTANT_TAGS">HAS_CONSTANT_TAGS</a></li></ul><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.act_aggregate" title="act_aggregate">act_aggregate</a></li><li><a href="#tymethod.lift" title="lift">lift</a></li></ul><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.act_aggregate_lanes" title="act_aggregate_lanes">act_aggregate_lanes</a></li><li><a href="#method.constant_aggregate" title="constant_aggregate">constant_aggregate</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>simd_<wbr>monoid_<wbr>act::<wbr>monoid_<wbr>action</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">data_structure</a>::<wbr><a href="../index.html">simd_monoid_act</a>::<wbr><a href="index.html">monoid_action</a></div><h1>Trait <span class="trait">Simd<wbr>Aggregate<wbr>Act</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#30-59">Source</a> </span></div><pre class="rust item-decl"><code>pub trait SimdAggregateAct&lt;M&gt;: <a class="trait" href="trait.SimdMonoidAct.html" title="trait competitive::data_structure::simd_monoid_act::monoid_action::SimdMonoidAct">SimdMonoidAct</a><div class="where">where
+    M: <a class="trait" href="../../simd_monoid/trait.SimdMonoid.html" title="trait competitive::data_structure::simd_monoid::SimdMonoid">SimdMonoid</a>,</div>{
+    const <a href="#associatedconstant.HAS_CONSTANT_TAGS" class="constant">HAS_CONSTANT_TAGS</a>: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> = false;
+
+    // Required methods
+    fn <a href="#tymethod.lift" class="fn">lift</a>(key: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Key" title="type competitive::algebra::MonoidAct::Key">Key</a>) -&gt; M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.act_aggregate" class="fn">act_aggregate</a>(value: M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>, tag: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Act" title="type competitive::algebra::MonoidAct::Act">Act</a>, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>;
+
+    // Provided methods
+    fn <a href="#method.constant_aggregate" class="fn">constant_aggregate</a>(_tag: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Act" title="type competitive::algebra::MonoidAct::Act">Act</a>, _len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt; { ... }
+<span class="item-spacer"></span>    unsafe fn <a href="#method.act_aggregate_lanes" class="fn">act_aggregate_lanes</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(
+        values: &amp;mut [M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>],
+        tag: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Act" title="type competitive::algebra::MonoidAct::Act">Act</a>,
+        len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    ) { ... }
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Acting on an ordered fold must equal acting on each key, lifting, and folding.</p>
+</div></details><h2 id="provided-associated-consts" class="section-header">Provided Associated Constants<a href="#provided-associated-consts" class="anchor">§</a></h2><div class="methods"><details class="toggle" open><summary><section id="associatedconstant.HAS_CONSTANT_TAGS" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#35">Source</a><h4 class="code-header">const <a href="#associatedconstant.HAS_CONSTANT_TAGS" class="constant">HAS_CONSTANT_TAGS</a>: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> = false</h4></section></summary><div class="docblock"><p>Enables aggregate queries to check for tags that replace the old fold.</p>
+</div></details></div><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><section id="tymethod.lift" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#37">Source</a><h4 class="code-header">fn <a href="#tymethod.lift" class="fn">lift</a>(key: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Key" title="type competitive::algebra::MonoidAct::Key">Key</a>) -&gt; M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section><section id="tymethod.act_aggregate" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#39">Source</a><h4 class="code-header">fn <a href="#tymethod.act_aggregate" class="fn">act_aggregate</a>(value: M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>, tag: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Act" title="type competitive::algebra::MonoidAct::Act">Act</a>, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></div><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.constant_aggregate" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#42-44">Source</a><h4 class="code-header">fn <a href="#method.constant_aggregate" class="fn">constant_aggregate</a>(_tag: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Act" title="type competitive::algebra::MonoidAct::Act">Act</a>, _len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;</h4></section></summary><div class="docblock"><p>Returns the mapped aggregate if it depends only on the tag and length.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1201&#34;,&#34;line 1201&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/dary_lazy_segment_tree.rs (<a href="../../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1201">line 1201</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>1200</span>        <span class="kw">fn </span>constant(_state: <span class="kw-2">&amp;</span>(), tag: A::Act, len: usize) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
+<span data-nosnippet>1201</span>            <span class="highlight focus">A::constant_aggregate</span>(tag, len)
+<span data-nosnippet>1202</span>        }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../../src/competitive/data_structure/simd_monoid_act.rs.html#93&#34;,&#34;line 93&#34;],[[16,16],&#34;../../../../src/competitive/data_structure/simd_monoid_act.rs.html#108&#34;,&#34;line 108&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/simd_monoid_act.rs (<a href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#93">line 93</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>92</span>        <span class="kw">fn </span>act_aggregate(value: M::T, tag: <span class="prelude-ty">Option</span>&lt;M::T&gt;, len: usize) -&gt; M::T {
+<span data-nosnippet>93</span>            <span class="highlight focus">&lt;<span class="self">Self </span><span class="kw">as </span>SimdAggregateAct&lt;M&gt;&gt;::constant_aggregate</span>(tag, len).unwrap_or(value)
+<span data-nosnippet>94</span>        }
+<span data-nosnippet>95</span>
+<span data-nosnippet>96</span>        <span class="attr">#[inline]
+<span data-nosnippet>97</span>        </span><span class="kw">fn </span>constant_aggregate(tag: <span class="prelude-ty">Option</span>&lt;M::T&gt;, len: usize) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
+<span data-nosnippet>98</span>            tag.map(|key| M::pow(key, len))
+<span data-nosnippet>99</span>        }
+<span data-nosnippet>100</span>
+<span data-nosnippet>101</span>        <span class="attr">#[inline]
+<span data-nosnippet>102</span>        </span><span class="kw">unsafe fn </span>act_aggregate_lanes&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>103</span>            values: <span class="kw-2">&amp;mut </span>[M::T],
+<span data-nosnippet>104</span>            tag: <span class="prelude-ty">Option</span>&lt;M::T&gt;,
+<span data-nosnippet>105</span>            len: usize,
+<span data-nosnippet>106</span>        ) {
+<span data-nosnippet>107</span>            <span class="kw">if </span>!values.is_empty()
+<span data-nosnippet>108</span>                &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(repeated) = <span class="highlight">&lt;<span class="self">Self </span><span class="kw">as </span>SimdAggregateAct&lt;M&gt;&gt;::constant_aggregate</span>(tag, len)
+<span data-nosnippet>109</span>            {
+<span data-nosnippet>110</span>                values.fill(repeated);
+<span data-nosnippet>111</span>            }
+<span data-nosnippet>112</span>        }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.act_aggregate_lanes" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#50-58">Source</a><h4 class="code-header">unsafe fn <a href="#method.act_aggregate_lanes" class="fn">act_aggregate_lanes</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(
+    values: &amp;mut [M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>],
+    tag: Self::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Act" title="type competitive::algebra::MonoidAct::Act">Act</a>,
+    len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+)</h4></section></summary><div class="docblock"><p>Applies a broadcast tag to aggregates which all cover <code>len</code> keys.</p>
+<h5 id="safety"><a class="doc-anchor" href="#safety">§</a>Safety</h5>
+<p>The ISA and slice contract is the same as for [<code>Self::act_lanes</code>].</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[25,25],&#34;../../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1282&#34;,&#34;line 1282&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/dary_lazy_segment_tree.rs (<a href="../../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1282">line 1282</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>1257</span>        <span class="kw">unsafe fn </span>edit_branch&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>1258</span>            _state: <span class="kw-2">&amp;mut </span>(),
+<span data-nosnippet>1259</span>            node: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Branch,
+<span data-nosnippet>1260</span>            len: usize,
+<span data-nosnippet>1261</span>            width: usize,
+<span data-nosnippet>1262</span>            full: Range&lt;usize&gt;,
+<span data-nosnippet>1263</span>            edges: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;(usize, M::T)&gt;; <span class="number">2</span>],
+<span data-nosnippet>1264</span>            action: <span class="kw-2">&amp;</span><span class="self">Self</span>::Prepared,
+<span data-nosnippet>1265</span>            carry: A::Act,
+<span data-nosnippet>1266</span>        ) -&gt; M::T {
+<span data-nosnippet>1267</span>            <span class="kw">let </span>whole = len / width;
+<span data-nosnippet>1268</span>            <span class="kw">let </span>tail = len % width;
+<span data-nosnippet>1269</span>            <span class="kw">let </span>count = whole + usize::from(tail != <span class="number">0</span>);
+<span data-nosnippet>1270</span>            <span class="kw">let </span>(full, inside) = <span class="kw">match </span><span class="kw-2">*</span>action {
+<span data-nosnippet>1271</span>                Edit::Apply(tag) <span class="kw">if </span>!full.is_empty() =&gt; (full, A::operate(<span class="kw-2">&amp;</span>carry, <span class="kw-2">&amp;</span>tag)),
+<span data-nosnippet>1272</span>                <span class="kw">_ </span>=&gt; (<span class="number">0</span>..<span class="number">0</span>, carry),
+<span data-nosnippet>1273</span>            };
+<span data-nosnippet>1274</span>            <span class="kw">let </span>equal_span = full.start.min(whole)..full.end.min(whole);
+<span data-nosnippet>1275</span>            <span class="kw">unsafe </span>{
+<span data-nosnippet>1276</span>                apply_selected(
+<span data-nosnippet>1277</span>                    <span class="kw-2">&amp;mut </span>node.values[..whole],
+<span data-nosnippet>1278</span>                    equal_span,
+<span data-nosnippet>1279</span>                    carry,
+<span data-nosnippet>1280</span>                    inside,
+<span data-nosnippet>1281</span>                    |values, tag| {
+<span data-nosnippet>1282</span>                        <span class="highlight focus">A::act_aggregate_lanes::&lt;ISA&gt;</span>(values, tag, width);
+<span data-nosnippet>1283</span>                    },
+<span data-nosnippet>1284</span>                );
+<span data-nosnippet>1285</span>                <span class="kw">if </span>tail != <span class="number">0 </span>{
+<span data-nosnippet>1286</span>                    <span class="kw">let </span>tag = <span class="kw">if </span>full.contains(<span class="kw-2">&amp;</span>whole) { inside } <span class="kw">else </span>{ carry };
+<span data-nosnippet>1287</span>                    node.values[whole] = A::act_aggregate(node.values[whole], tag, tail);
+<span data-nosnippet>1288</span>                }
+<span data-nosnippet>1289</span>                apply_selected(<span class="kw-2">&amp;mut </span>node.tags[..count], full, carry, inside, |tags, tag| {
+<span data-nosnippet>1290</span>                    A::compose_lanes::&lt;ISA&gt;(tags, tag);
+<span data-nosnippet>1291</span>                });
+<span data-nosnippet>1292</span>            }
+<span data-nosnippet>1293</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>(lane, change) <span class="kw">in </span>edges.iter().flatten() {
+<span data-nosnippet>1294</span>                node.values[lane] = change;
+<span data-nosnippet>1295</span>                node.tags[lane] = A::unit();
+<span data-nosnippet>1296</span>            }
+<span data-nosnippet>1297</span>            <span class="kw">unsafe </span>{ M::reduce_lanes::&lt;ISA&gt;(<span class="kw-2">&amp;</span>node.values[..count]) }
+<span data-nosnippet>1298</span>        }</code></pre></div></div></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><details class="toggle implementors-toggle"><summary><section id="impl-SimdAggregateAct%3CM%3E-for-UpdateAct%3C%3CM+as+Magma%3E::T%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#80-113">Source</a><a href="#impl-SimdAggregateAct%3CM%3E-for-UpdateAct%3C%3CM+as+Magma%3E::T%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M&gt; <a class="trait" href="trait.SimdAggregateAct.html" title="trait competitive::data_structure::simd_monoid_act::monoid_action::SimdAggregateAct">SimdAggregateAct</a>&lt;M&gt; for <a class="struct" href="../../../algebra/struct.UpdateAct.html" title="struct competitive::algebra::UpdateAct">UpdateAct</a>&lt;M::<a class="associatedtype" href="../../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>&gt;<div class="where">where
+    M: <a class="trait" href="../../simd_monoid/trait.SimdMonoid.html" title="trait competitive::data_structure::simd_monoid::SimdMonoid">SimdMonoid</a>,</div></h3></section></summary><div class="impl-items"><section id="associatedconstant.HAS_CONSTANT_TAGS-1" class="associatedconstant trait-impl"><a class="src rightside" href="../../../../src/competitive/data_structure/simd_monoid_act.rs.html#84">Source</a><a href="#associatedconstant.HAS_CONSTANT_TAGS-1" class="anchor">§</a><h4 class="code-header">const <a href="#associatedconstant.HAS_CONSTANT_TAGS" class="constant">HAS_CONSTANT_TAGS</a>: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> = true</h4></section></div></details></div><script src="../../../../trait.impl/competitive/data_structure/simd_monoid_act/monoid_action/trait.SimdAggregateAct.js" async></script></section></div></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/li_chao_tree.rs`."><title>li_chao_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1f5a765c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (65ce8611f 2026-11-18)" data-channel="nightly" data-search-js="search-69faa2c4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/li_chao_tree.rs`."><title>li_chao_tree.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (c7d5ba59d 2026-11-20)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -79,7 +79,7 @@
 </head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/data_structure/</div>li_chao_tree.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="../num/bounded.rs.html#2-17">Bounded</a>, <a href="../num/integer.rs.html#18-51">IntBase</a>, <a href="../algorithm/sort.rs.html#3-6">RadixSortKey</a>, <a href="../algorithm/sort.rs.html#47-70">SliceSortExt</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>};
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span>std::{
 <a href=#3 id=3 data-nosnippet>3</a>    <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>,
-<a href=#4 id=4 data-nosnippet>4</a>    ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>},
+<a href=#4 id=4 data-nosnippet>4</a>    ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a>, <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>},
 <a href=#5 id=5 data-nosnippet>5</a>};
 <a href=#6 id=6 data-nosnippet>6</a>
 <a href=#7 id=7 data-nosnippet>7</a><span class="kw">pub trait </span><a href="../../../competitive/data_structure/li_chao_tree/trait.LiChaoLine.html">LiChaoLine</a>&lt;X&gt;: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Copy</a> {
@@ -154,7 +154,7 @@
 <a href=#76 id=76 data-nosnippet>76</a>
 <a href=#77 id=77 data-nosnippet>77</a><span class="attr">#[derive(<a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/clone/derive.Clone.html">Clone</a>)]
 <a href=#78 id=78 data-nosnippet>78</a></span><span class="kw">struct </span><a href="../../../competitive/data_structure/li_chao_tree/struct.LiChaoSegment.html">LiChaoSegment</a>&lt;X, L&gt; {
-<a href=#79 id=79 data-nosnippet>79</a>    range: <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>&lt;X&gt;,
+<a href=#79 id=79 data-nosnippet>79</a>    range: <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>&lt;X&gt;,
 <a href=#80 id=80 data-nosnippet>80</a>    line: L,
 <a href=#81 id=81 data-nosnippet>81</a>}
 <a href=#82 id=82 data-nosnippet>82</a>
@@ -164,7 +164,7 @@
 <a href=#86 id=86 data-nosnippet>86</a>    L: <a href="#7-12">LiChaoLine</a>&lt;X&gt;,
 <a href=#87 id=87 data-nosnippet>87</a>{
 <a href=#88 id=88 data-nosnippet>88</a>    <span class="kw">fn </span>evaluate(<span class="kw-2">&amp;</span><span class="self">self</span>, x: X) -&gt; L::Output {
-<a href=#89 id=89 data-nosnippet>89</a>        <span class="kw">if </span><a class="self" href="#88">self</a>.range.<a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html#method.contains">contains</a>(<span class="kw-2">&amp;</span><a href="#88">x</a>) {
+<a href=#89 id=89 data-nosnippet>89</a>        <span class="kw">if </span><a class="self" href="#88">self</a>.range.<a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html#method.contains">contains</a>(<span class="kw-2">&amp;</span><a href="#88">x</a>) {
 <a href=#90 id=90 data-nosnippet>90</a>            <a class="self" href="#88">self</a>.line.<a href="#11">evaluate</a>(<a href="#88">x</a>)
 <a href=#91 id=91 data-nosnippet>91</a>        } <span class="kw">else </span>{
 <a href=#92 id=92 data-nosnippet>92</a>            L::<a href="#10">infinity</a>().<a href="#11">evaluate</a>(<a href="#88">x</a>)
@@ -184,7 +184,7 @@
 <a href=#106 id=106 data-nosnippet>106</a>
 <a href=#107 id=107 data-nosnippet>107</a><span class="attr">#[derive(<a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/clone/derive.Clone.html">Clone</a>)]
 <a href=#108 id=108 data-nosnippet>108</a></span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/li_chao_tree/struct.LiChaoTree.html">LiChaoTree</a>&lt;X, L&gt; {
-<a href=#109 id=109 data-nosnippet>109</a>    range: <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>&lt;X&gt;,
+<a href=#109 id=109 data-nosnippet>109</a>    range: <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>&lt;X&gt;,
 <a href=#110 id=110 data-nosnippet>110</a>    nodes: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#102-105">LiChaoNode</a>&lt;X, L&gt;&gt;,
 <a href=#111 id=111 data-nosnippet>111</a>}
 <a href=#112 id=112 data-nosnippet>112</a>
@@ -193,7 +193,7 @@
 <a href=#115 id=115 data-nosnippet>115</a>    </span>X: <a href="../num/integer.rs.html#18-51">IntBase</a>,
 <a href=#116 id=116 data-nosnippet>116</a>    L: <a href="#7-12">LiChaoLine</a>&lt;X&gt;,
 <a href=#117 id=117 data-nosnippet>117</a>{
-<a href=#118 id=118 data-nosnippet>118</a>    <span class="kw">pub fn </span>new(range: <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>&lt;X&gt;) -&gt; <span class="self">Self </span>{
+<a href=#118 id=118 data-nosnippet>118</a>    <span class="kw">pub fn </span>new(range: <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>&lt;X&gt;) -&gt; <span class="self">Self </span>{
 <a href=#119 id=119 data-nosnippet>119</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(range.start &lt; range.end);
 <a href=#120 id=120 data-nosnippet>120</a>        <span class="self">Self </span>{
 <a href=#121 id=121 data-nosnippet>121</a>            range: <a href="#118">range</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
@@ -228,7 +228,7 @@
 <a href=#150 id=150 data-nosnippet>150</a>        );
 <a href=#151 id=151 data-nosnippet>151</a>    }
 <a href=#152 id=152 data-nosnippet>152</a>
-<a href=#153 id=153 data-nosnippet>153</a>    <span class="kw">pub fn </span>add_segment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>&lt;X&gt;, line: L) {
+<a href=#153 id=153 data-nosnippet>153</a>    <span class="kw">pub fn </span>add_segment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>&lt;X&gt;, line: L) {
 <a href=#154 id=154 data-nosnippet>154</a>        <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(<span class="self">self</span>.range.start &lt;= range.start &amp;&amp; range.end &lt;= <span class="self">self</span>.range.end);
 <a href=#155 id=155 data-nosnippet>155</a>        <span class="kw">if </span><a href="#153">range</a>.start &lt; <a href="#153">range</a>.end {
 <a href=#156 id=156 data-nosnippet>156</a>            <a class="self" href="#153">self</a>.<a href="#165-273">add_segment_at</a>(
@@ -412,7 +412,7 @@
 <a href=#334 id=334 data-nosnippet>334</a>        <a class="self" href="#333">self</a>.events.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(LiChaoEvent::<a href="#304">Line</a>(<a href="#333">line</a>));
 <a href=#335 id=335 data-nosnippet>335</a>    }
 <a href=#336 id=336 data-nosnippet>336</a>
-<a href=#337 id=337 data-nosnippet>337</a>    <span class="kw">pub fn </span>add_segment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>&lt;X&gt;, line: L) {
+<a href=#337 id=337 data-nosnippet>337</a>    <span class="kw">pub fn </span>add_segment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>&lt;X&gt;, line: L) {
 <a href=#338 id=338 data-nosnippet>338</a>        <a class="self" href="#337">self</a>.events
 <a href=#339 id=339 data-nosnippet>339</a>            .<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(LiChaoEvent::<a href="#305">Segment</a>(<a href="#337">range</a>.start, <a href="#337">range</a>.end, <a href="#337">line</a>));
 <a href=#340 id=340 data-nosnippet>340</a>    }
@@ -557,7 +557,7 @@
 <a href=#479 id=479 data-nosnippet>479</a>        }
 <a href=#480 id=480 data-nosnippet>480</a>    }
 <a href=#481 id=481 data-nosnippet>481</a>
-<a href=#482 id=482 data-nosnippet>482</a>    <span class="kw">fn </span>add_segment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">Range</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, line: L) {
+<a href=#482 id=482 data-nosnippet>482</a>    <span class="kw">fn </span>add_segment(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">Range</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, line: L) {
 <a href=#483 id=483 data-nosnippet>483</a>        <span class="kw">let </span>n = <a class="self" href="#482">self</a>.size;
 <a href=#484 id=484 data-nosnippet>484</a>        <span class="kw">if </span><a href="#482">range</a>.start == <a href="#482">range</a>.end {
 <a href=#485 id=485 data-nosnippet>485</a>            <span class="kw">return</span>;

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["dary_dual_tree","dual_monoid_act"]};

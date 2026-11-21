@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["define_numeric_kernel",1]],"struct":["DaryAddKernelI32","DaryAddKernelI64","DaryMaxKernelI32","DaryMaxKernelI64","DaryMinKernelI32","DaryMinKernelI64","DaryNumericBlock"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["DaryLazySegmentTree"],"trait":["DaryLazyKernel","DaryLazyPointKernel"]};

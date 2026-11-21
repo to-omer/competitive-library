@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["bitrev_vector","dary_affine_arithmetic","dary_affine_point_kernel","dary_affine_sum_kernel","dary_assign_composite_kernel","dary_composite_leaf","dary_invertible_composite_kernel","dary_sum_leaf","dary_sum_vector"],"struct":["CompositeLeaf","SumLeaf"]};

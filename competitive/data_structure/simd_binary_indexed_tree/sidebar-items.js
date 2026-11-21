@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["fenwick_monoid","fenwick_numeric","simd_fenwick_tree"]};

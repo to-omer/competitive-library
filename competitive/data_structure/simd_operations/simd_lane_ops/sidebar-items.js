@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["operate","operate_avx2","operate_avx512","operate_scalar"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["avx2","avx512","even","fold","pairs","reduce256"]};

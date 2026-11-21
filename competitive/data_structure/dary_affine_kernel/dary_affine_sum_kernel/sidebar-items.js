@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["edit_sum_branch"],"struct":["DaryAffineSumKernel","SumBranch"]};

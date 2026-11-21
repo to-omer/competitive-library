@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["edit_affine","edit_sum_leaf","sum"],"macro":[["define_vector",1]],"mod":["avx2","avx512"]};

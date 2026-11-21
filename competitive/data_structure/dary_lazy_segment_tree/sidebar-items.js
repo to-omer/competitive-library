@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["dary_lazy_tree","lazy_monoid_act"]};

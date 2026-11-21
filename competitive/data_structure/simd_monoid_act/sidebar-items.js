@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["monoid_action","simd_act_block"]};

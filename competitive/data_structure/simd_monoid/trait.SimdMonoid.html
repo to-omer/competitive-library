@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A monoid with a lane-wise implementation that can be shared by SIMD trees."><title>SimdMonoid in competitive::data_structure::simd_monoid - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (c7d5ba59d 2026-11-20)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
+    if (!root) return;
+    const script = document.createElement("script");
+    script.src = new URL(`${root}submissions.js`, document.baseURI).href;
+    document.head.appendChild(script);
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc trait"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">SimdMonoid</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Simd<wbr>Monoid</a></h2><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.operate_lanes" title="operate_lanes">operate_lanes</a></li></ul><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.broadcast_suffix" title="broadcast_suffix">broadcast_suffix</a></li><li><a href="#method.reduce_lanes" title="reduce_lanes">reduce_lanes</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>simd_<wbr>monoid</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">data_structure</a>::<wbr><a href="index.html">simd_monoid</a></div><h1>Trait <span class="trait">Simd<wbr>Monoid</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/data_structure/simd_monoid.rs.html#7-65">Source</a> </span></div><pre class="rust item-decl"><code>pub trait SimdMonoid: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a>&gt; {
+    // Required method
+    unsafe fn <a href="#tymethod.operate_lanes" class="fn">operate_lanes</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(lhs: &amp;mut [Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>], rhs: &amp;[Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>]);
+
+    // Provided methods
+    unsafe fn <a href="#method.broadcast_suffix" class="fn">broadcast_suffix</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(
+        values: &amp;mut [Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>],
+        start: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+        rhs: Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>,
+    ) { ... }
+<span class="item-spacer"></span>    unsafe fn <a href="#method.reduce_lanes" class="fn">reduce_lanes</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(values: &amp;[Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>]) -&gt; Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a> { ... }
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A monoid with a lane-wise implementation that can be shared by SIMD trees.</p>
+<p>Implement this trait to use the operation directly in a d-ary segment tree.
+Commutative operations can also be used in a SIMD binary indexed tree.</p>
+</div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.operate_lanes" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/simd_monoid.rs.html#15">Source</a><h4 class="code-header">unsafe fn <a href="#tymethod.operate_lanes" class="fn">operate_lanes</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(lhs: &amp;mut [Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>], rhs: &amp;[Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>])</h4></section></summary><div class="docblock"><p>Replaces each left operand with its ordered product with the right operand.</p>
+<h5 id="safety"><a class="doc-anchor" href="#safety">§</a>Safety</h5>
+<p>The slices have equal lengths. ISA 0 requests portable execution, ISA 1
+guarantees x86-64 AVX2, and ISA 2 guarantees x86-64 AVX-512F/DQ/CD/BW/VL.
+Implementations support unaligned slices of any length, including tails,
+and check any additional CPU requirements themselves.</p>
+</div></details></div><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.broadcast_suffix" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/simd_monoid.rs.html#23-28">Source</a><h4 class="code-header">unsafe fn <a href="#method.broadcast_suffix" class="fn">broadcast_suffix</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(
+    values: &amp;mut [Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>],
+    start: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    rhs: Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>,
+)</h4></section></summary><div class="docblock"><p>Appends the same right operand to every lane from <code>start</code> onward.</p>
+<h5 id="safety-1"><a class="doc-anchor" href="#safety-1">§</a>Safety</h5>
+<p>The ISA and alignment contracts are the same as for <a href="trait.SimdMonoid.html#tymethod.operate_lanes" title="associated function competitive::data_structure::simd_monoid::SimdMonoid::operate_lanes"><code>Self::operate_lanes</code></a>.
+<code>start</code> must be at most <code>values.len()</code>.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/simd_binary_indexed_tree.rs.html#518&#34;,&#34;line 518&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/simd_binary_indexed_tree.rs (<a href="../../../src/competitive/data_structure/simd_binary_indexed_tree.rs.html#518">line 518</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>517</span>        <span class="kw">unsafe fn </span>add&lt;<span class="kw">const </span>ISA: u8&gt;(block: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Block, lane: usize, value: M::T) {
+<span data-nosnippet>518</span>            <span class="kw">unsafe </span>{ <span class="highlight focus">M::broadcast_suffix::&lt;ISA&gt;</span>(block, lane + <span class="number">1</span>, value) };
+<span data-nosnippet>519</span>        }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../../src/competitive/data_structure/dary_prefix_group.rs.html#68&#34;,&#34;line 68&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/dary_prefix_group.rs (<a href="../../../src/competitive/data_structure/dary_prefix_group.rs.html#68">line 68</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>63</span>    <span class="kw">unsafe fn </span>update&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>64</span>        block: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Block,
+<span data-nosnippet>65</span>        lane: usize,
+<span data-nosnippet>66</span>        change: M::T,
+<span data-nosnippet>67</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
+<span data-nosnippet>68</span>        <span class="kw">unsafe </span>{ <span class="highlight focus">M::broadcast_suffix::&lt;ISA&gt;</span>(block, lane, change) };
+<span data-nosnippet>69</span>        <span class="prelude-val">Some</span>(change)
+<span data-nosnippet>70</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.reduce_lanes" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/simd_monoid.rs.html#36-64">Source</a><h4 class="code-header">unsafe fn <a href="#method.reduce_lanes" class="fn">reduce_lanes</a>&lt;const ISA: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;(values: &amp;[Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>]) -&gt; Self::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a></h4></section></summary><div class="docblock"><p>Folds the slice in order, returning the unit for an empty slice.</p>
+<h5 id="safety-2"><a class="doc-anchor" href="#safety-2">§</a>Safety</h5>
+<p>The ISA contract is the same as for <a href="trait.SimdMonoid.html#tymethod.operate_lanes" title="associated function competitive::data_structure::simd_monoid::SimdMonoid::operate_lanes"><code>Self::operate_lanes</code></a>.
+The slice has at most 16 values.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/dary_segment_tree.rs.html#805&#34;,&#34;line 805&#34;],[[9,9],&#34;../../../src/competitive/data_structure/dary_segment_tree.rs.html#813&#34;,&#34;line 813&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/dary_segment_tree.rs (<a href="../../../src/competitive/data_structure/dary_segment_tree.rs.html#805">line 805</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>804</span>        <span class="kw">unsafe fn </span>fold&lt;<span class="kw">const </span>ISA: u8&gt;(block: <span class="kw-2">&amp;</span><span class="self">Self</span>::Block, range: Range&lt;usize&gt;) -&gt; M::T {
+<span data-nosnippet>805</span>            <span class="kw">unsafe </span>{ <span class="highlight focus">M::reduce_lanes::&lt;ISA&gt;</span>(<span class="kw-2">&amp;</span>block[range]) }
+<span data-nosnippet>806</span>        }
+<span data-nosnippet>807</span>        <span class="kw">unsafe fn </span>replace&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>808</span>            block: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Block,
+<span data-nosnippet>809</span>            lane: usize,
+<span data-nosnippet>810</span>            value: M::T,
+<span data-nosnippet>811</span>        ) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
+<span data-nosnippet>812</span>            block[lane] = value;
+<span data-nosnippet>813</span>            <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ <span class="highlight">M::reduce_lanes::&lt;ISA&gt;</span>(block) })
+<span data-nosnippet>814</span>        }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1227&#34;,&#34;line 1227&#34;],[[17,17],&#34;../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1234&#34;,&#34;line 1234&#34;],[[80,80],&#34;../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1297&#34;,&#34;line 1297&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/dary_lazy_segment_tree.rs (<a href="../../../src/competitive/data_structure/dary_lazy_segment_tree.rs.html#1227">line 1227</a>)</div><div class="example-wrap digits-4"><pre class="rust"><code><span data-nosnippet>1217</span>        <span class="kw">unsafe fn </span>fold_leaf&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>1218</span>            _state: <span class="kw-2">&amp;</span>(),
+<span data-nosnippet>1219</span>            node: <span class="kw-2">&amp;</span><span class="self">Self</span>::Leaf,
+<span data-nosnippet>1220</span>            range: Range&lt;usize&gt;,
+<span data-nosnippet>1221</span>        ) -&gt; M::T {
+<span data-nosnippet>1222</span>            <span class="kw">let </span>keys = <span class="kw-2">&amp;</span>node[range];
+<span data-nosnippet>1223</span>            <span class="kw">let </span><span class="kw-2">mut </span>values = [M::unit(); LANES];
+<span data-nosnippet>1224</span>            <span class="kw">for </span>(value, <span class="kw-2">&amp;</span>key) <span class="kw">in </span>values.iter_mut().zip(keys) {
+<span data-nosnippet>1225</span>                <span class="kw-2">*</span>value = A::lift(key);
+<span data-nosnippet>1226</span>            }
+<span data-nosnippet>1227</span>            <span class="kw">unsafe </span>{ <span class="highlight focus">M::reduce_lanes::&lt;ISA&gt;</span>(<span class="kw-2">&amp;</span>values[..keys.len()]) }
+<span data-nosnippet>1228</span>        }
+<span data-nosnippet>1229</span>        <span class="kw">unsafe fn </span>fold_branch&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>1230</span>            _state: <span class="kw-2">&amp;</span>(),
+<span data-nosnippet>1231</span>            node: <span class="kw-2">&amp;</span><span class="self">Self</span>::Branch,
+<span data-nosnippet>1232</span>            range: Range&lt;usize&gt;,
+<span data-nosnippet>1233</span>        ) -&gt; M::T {
+<span data-nosnippet>1234</span>            <span class="kw">unsafe </span>{ <span class="highlight">M::reduce_lanes::&lt;ISA&gt;</span>(<span class="kw-2">&amp;</span>node.values[range]) }
+<span data-nosnippet>1235</span>        }
+<span data-nosnippet>1236</span>        <span class="kw">fn </span>tag(node: <span class="kw-2">&amp;</span><span class="self">Self</span>::Branch, lane: usize) -&gt; A::Act {
+<span data-nosnippet>1237</span>            node.tags[lane]
+<span data-nosnippet>1238</span>        }
+<span data-nosnippet>1239</span>        <span class="kw">unsafe fn </span>edit_leaf&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>1240</span>            state: <span class="kw-2">&amp;mut </span>(),
+<span data-nosnippet>1241</span>            node: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Leaf,
+<span data-nosnippet>1242</span>            len: usize,
+<span data-nosnippet>1243</span>            range: Range&lt;usize&gt;,
+<span data-nosnippet>1244</span>            action: <span class="kw-2">&amp;</span><span class="self">Self</span>::Prepared,
+<span data-nosnippet>1245</span>            carry: A::Act,
+<span data-nosnippet>1246</span>        ) -&gt; M::T {
+<span data-nosnippet>1247</span>            <span class="kw">let </span>keys = <span class="kw-2">&amp;mut </span>node[..len];
+<span data-nosnippet>1248</span>            <span class="kw">match </span><span class="kw-2">*</span>action {
+<span data-nosnippet>1249</span>                Edit::Set(key) =&gt; {
+<span data-nosnippet>1250</span>                    <span class="kw">unsafe </span>{ A::act_lanes::&lt;ISA&gt;(keys, carry) };
+<span data-nosnippet>1251</span>                    keys[range.start] = key;
+<span data-nosnippet>1252</span>                }
+<span data-nosnippet>1253</span>                Edit::Apply(tag) =&gt; <span class="kw">unsafe </span>{ edit_keys::&lt;A, ISA&gt;(keys, range, tag, carry) },
+<span data-nosnippet>1254</span>            }
+<span data-nosnippet>1255</span>            <span class="kw">unsafe </span>{ <span class="self">Self</span>::fold_leaf::&lt;ISA&gt;(state, node, <span class="number">0</span>..len) }
+<span data-nosnippet>1256</span>        }
+<span data-nosnippet>1257</span>        <span class="kw">unsafe fn </span>edit_branch&lt;<span class="kw">const </span>ISA: u8&gt;(
+<span data-nosnippet>1258</span>            _state: <span class="kw-2">&amp;mut </span>(),
+<span data-nosnippet>1259</span>            node: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Branch,
+<span data-nosnippet>1260</span>            len: usize,
+<span data-nosnippet>1261</span>            width: usize,
+<span data-nosnippet>1262</span>            full: Range&lt;usize&gt;,
+<span data-nosnippet>1263</span>            edges: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;(usize, M::T)&gt;; <span class="number">2</span>],
+<span data-nosnippet>1264</span>            action: <span class="kw-2">&amp;</span><span class="self">Self</span>::Prepared,
+<span data-nosnippet>1265</span>            carry: A::Act,
+<span data-nosnippet>1266</span>        ) -&gt; M::T {
+<span data-nosnippet>1267</span>            <span class="kw">let </span>whole = len / width;
+<span data-nosnippet>1268</span>            <span class="kw">let </span>tail = len % width;
+<span data-nosnippet>1269</span>            <span class="kw">let </span>count = whole + usize::from(tail != <span class="number">0</span>);
+<span data-nosnippet>1270</span>            <span class="kw">let </span>(full, inside) = <span class="kw">match </span><span class="kw-2">*</span>action {
+<span data-nosnippet>1271</span>                Edit::Apply(tag) <span class="kw">if </span>!full.is_empty() =&gt; (full, A::operate(<span class="kw-2">&amp;</span>carry, <span class="kw-2">&amp;</span>tag)),
+<span data-nosnippet>1272</span>                <span class="kw">_ </span>=&gt; (<span class="number">0</span>..<span class="number">0</span>, carry),
+<span data-nosnippet>1273</span>            };
+<span data-nosnippet>1274</span>            <span class="kw">let </span>equal_span = full.start.min(whole)..full.end.min(whole);
+<span data-nosnippet>1275</span>            <span class="kw">unsafe </span>{
+<span data-nosnippet>1276</span>                apply_selected(
+<span data-nosnippet>1277</span>                    <span class="kw-2">&amp;mut </span>node.values[..whole],
+<span data-nosnippet>1278</span>                    equal_span,
+<span data-nosnippet>1279</span>                    carry,
+<span data-nosnippet>1280</span>                    inside,
+<span data-nosnippet>1281</span>                    |values, tag| {
+<span data-nosnippet>1282</span>                        A::act_aggregate_lanes::&lt;ISA&gt;(values, tag, width);
+<span data-nosnippet>1283</span>                    },
+<span data-nosnippet>1284</span>                );
+<span data-nosnippet>1285</span>                <span class="kw">if </span>tail != <span class="number">0 </span>{
+<span data-nosnippet>1286</span>                    <span class="kw">let </span>tag = <span class="kw">if </span>full.contains(<span class="kw-2">&amp;</span>whole) { inside } <span class="kw">else </span>{ carry };
+<span data-nosnippet>1287</span>                    node.values[whole] = A::act_aggregate(node.values[whole], tag, tail);
+<span data-nosnippet>1288</span>                }
+<span data-nosnippet>1289</span>                apply_selected(<span class="kw-2">&amp;mut </span>node.tags[..count], full, carry, inside, |tags, tag| {
+<span data-nosnippet>1290</span>                    A::compose_lanes::&lt;ISA&gt;(tags, tag);
+<span data-nosnippet>1291</span>                });
+<span data-nosnippet>1292</span>            }
+<span data-nosnippet>1293</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>(lane, change) <span class="kw">in </span>edges.iter().flatten() {
+<span data-nosnippet>1294</span>                node.values[lane] = change;
+<span data-nosnippet>1295</span>                node.tags[lane] = A::unit();
+<span data-nosnippet>1296</span>            }
+<span data-nosnippet>1297</span>            <span class="kw">unsafe </span>{ <span class="highlight">M::reduce_lanes::&lt;ISA&gt;</span>(<span class="kw-2">&amp;</span>node.values[..count]) }
+<span data-nosnippet>1298</span>        }</code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety".</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><section id="impl-SimdMonoid-for-BitXorOperation%3Cu64%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/simd_operations.rs.html#264-269">Source</a><a href="#impl-SimdMonoid-for-BitXorOperation%3Cu64%3E" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.SimdMonoid.html" title="trait competitive::data_structure::simd_monoid::SimdMonoid">SimdMonoid</a> for <a class="struct" href="../../algebra/bitxor_operation_impl/struct.BitXorOperation.html" title="struct competitive::algebra::bitxor_operation_impl::BitXorOperation">BitXorOperation</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</h3></section><section id="impl-SimdMonoid-for-MaxOperation%3Ci32%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/simd_operations.rs.html#296-301">Source</a><a href="#impl-SimdMonoid-for-MaxOperation%3Ci32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.SimdMonoid.html" title="trait competitive::data_structure::simd_monoid::SimdMonoid">SimdMonoid</a> for <a class="struct" href="../../algebra/max_operation_impl/struct.MaxOperation.html" title="struct competitive::algebra::max_operation_impl::MaxOperation">MaxOperation</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>&gt;</h3></section><section id="impl-SimdMonoid-for-MinOperation%3Ci32%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/simd_operations.rs.html#280-285">Source</a><a href="#impl-SimdMonoid-for-MinOperation%3Ci32%3E" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.SimdMonoid.html" title="trait competitive::data_structure::simd_monoid::SimdMonoid">SimdMonoid</a> for <a class="struct" href="../../algebra/min_operation_impl/struct.MinOperation.html" title="struct competitive::algebra::min_operation_impl::MinOperation">MinOperation</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>&gt;</h3></section><section id="impl-SimdMonoid-for-AdditiveOperation%3CWrapping%3Ci64%3E%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/simd_operations.rs.html#65-146">Source</a><a href="#impl-SimdMonoid-for-AdditiveOperation%3CWrapping%3Ci64%3E%3E" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.SimdMonoid.html" title="trait competitive::data_structure::simd_monoid::SimdMonoid">SimdMonoid</a> for <a class="type" href="../simd_operations/simd_add_i64/type.SimdAddI64.html" title="type competitive::data_structure::simd_operations::simd_add_i64::SimdAddI64">SimdAddI64</a></h3></section></div><script src="../../../trait.impl/competitive/data_structure/simd_monoid/trait.SimdMonoid.js" async></script></section></div></main></body></html>

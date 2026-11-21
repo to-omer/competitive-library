@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["define_fenwick_kernel",1]],"struct":["FenwickNumericBlock"]};
