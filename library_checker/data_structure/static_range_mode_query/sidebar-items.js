@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["static_range_mode_query","test_static_range_mode_query"]};
