@@ -163,26 +163,27 @@
 <span data-nosnippet>29</span>            }
 <span data-nosnippet>30</span>        }
 <span data-nosnippet>31</span>        res
-<span data-nosnippet>32</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/library_checker/graph/two_edge_connected_components.rs.html#13&#34;,&#34;line 13&#34;]]"><div class="scraped-example-title">crates/library_checker/src/graph/two_edge_connected_components.rs (<a href="../../../src/library_checker/graph/two_edge_connected_components.rs.html#13">line 13</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>8</span><span class="kw">pub fn </span>two_edge_connected_components(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
-<span data-nosnippet>9</span>    <span class="macro">prepare_io!</span>(reader, writer);
-<span data-nosnippet>10</span>    <span class="macro">sc!</span>(n, m, edges: [(usize, usize); m]);
-<span data-nosnippet>11</span>    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
-<span data-nosnippet>12</span>    <span class="kw">let </span>low_link = LowLink::new(<span class="kw-2">&amp;</span>graph);
-<span data-nosnippet>13</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = <span class="highlight focus">UnionFind::new</span>(n);
-<span data-nosnippet>14</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v) <span class="kw">in </span><span class="kw-2">&amp;</span>graph.edges {
-<span data-nosnippet>15</span>        <span class="kw">if </span>low_link.ord[u] &gt; low_link.ord[v] {
-<span data-nosnippet>16</span>            std::mem::swap(<span class="kw-2">&amp;mut </span>u, <span class="kw-2">&amp;mut </span>v);
-<span data-nosnippet>17</span>        }
-<span data-nosnippet>18</span>        <span class="kw">if </span>low_link.ord[u] &gt;= low_link.low[v] {
-<span data-nosnippet>19</span>            uf.unite(u, v);
-<span data-nosnippet>20</span>        }
-<span data-nosnippet>21</span>    }
-<span data-nosnippet>22</span>    <span class="kw">let </span>groups = uf.all_group_members();
-<span data-nosnippet>23</span>    <span class="macro">pp!</span>(groups.len());
-<span data-nosnippet>24</span>    <span class="kw">for </span>group <span class="kw">in </span>groups.into_values() {
-<span data-nosnippet>25</span>        <span class="macro">pp!</span>(group.len(), @it group);
-<span data-nosnippet>26</span>    }
-<span data-nosnippet>27</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/data_structure/unionfind_with_potential.rs.html#22">crates/library_checker/src/data_structure/unionfind_with_potential.rs</a></li><li><a href="../../../src/library_checker/data_structure/unionfind_with_potential_non_commutative_group.rs.html#46">crates/library_checker/src/data_structure/unionfind_with_potential_non_commutative_group.rs</a></li><li><a href="../../../src/competitive/graph/steiner_tree.rs.html#265">crates/competitive/src/graph/steiner_tree.rs</a></li><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#19">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.push" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#320-322">Source</a><h4 class="code-header">pub fn <a href="#method.push" class="fn">push</a>(&amp;mut self)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[6,6],&#34;../../../src/competitive/algorithm/todd_coxeter.rs.html#121&#34;,&#34;line 121&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/todd_coxeter.rs (<a href="../../../src/competitive/algorithm/todd_coxeter.rs.html#121">line 121</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>115</span>    <span class="kw">fn </span>define(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: usize, c: usize) -&gt; usize {
+<span data-nosnippet>32</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#27&#34;,&#34;line 27&#34;],[[8,8],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#31&#34;,&#34;line 31&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_parallel_union_find.rs (<a href="../../../src/competitive/data_structure/range_parallel_union_find.rs.html#27">line 27</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>23</span>    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>24</span>        <span class="macro">assert!</span>(n &lt;= i32::MAX <span class="kw">as </span>usize);
+<span data-nosnippet>25</span>        <span class="kw">let </span>blocks = std::iter::successors(<span class="prelude-val">Some</span>(<span class="number">4usize</span>), |w| w.checked_mul(<span class="number">4</span>))
+<span data-nosnippet>26</span>            .take_while(|<span class="kw-2">&amp;</span>w| w &lt; n)
+<span data-nosnippet>27</span>            .map(|w| <span class="highlight focus">UnionFind::new</span>(n - w + <span class="number">1</span>))
+<span data-nosnippet>28</span>            .collect();
+<span data-nosnippet>29</span>        <span class="self">Self </span>{
+<span data-nosnippet>30</span>            n,
+<span data-nosnippet>31</span>            vertices: <span class="highlight">UnionFind::new</span>(n),
+<span data-nosnippet>32</span>            blocks,
+<span data-nosnippet>33</span>            periods: (<span class="number">0</span>..n)
+<span data-nosnippet>34</span>                .step_by(<span class="number">4</span>)
+<span data-nosnippet>35</span>                .map(|mid| PeriodicRange {
+<span data-nosnippet>36</span>                    start: mid,
+<span data-nosnippet>37</span>                    end: mid + <span class="number">1</span>,
+<span data-nosnippet>38</span>                    period: <span class="number">1</span>,
+<span data-nosnippet>39</span>                })
+<span data-nosnippet>40</span>                .collect(),
+<span data-nosnippet>41</span>            recent: <span class="number">0</span>,
+<span data-nosnippet>42</span>        }
+<span data-nosnippet>43</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/library_checker/graph/two_edge_connected_components.rs.html#13">crates/library_checker/src/graph/two_edge_connected_components.rs</a></li><li><a href="../../../src/library_checker/data_structure/unionfind_with_potential.rs.html#22">crates/library_checker/src/data_structure/unionfind_with_potential.rs</a></li><li><a href="../../../src/library_checker/data_structure/unionfind_with_potential_non_commutative_group.rs.html#46">crates/library_checker/src/data_structure/unionfind_with_potential_non_commutative_group.rs</a></li><li><a href="../../../src/competitive/graph/steiner_tree.rs.html#265">crates/competitive/src/graph/steiner_tree.rs</a></li><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#19">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li></ul></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.push" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#320-322">Source</a><h4 class="code-header">pub fn <a href="#method.push" class="fn">push</a>(&amp;mut self)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[6,6],&#34;../../../src/competitive/algorithm/todd_coxeter.rs.html#121&#34;,&#34;line 121&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/todd_coxeter.rs (<a href="../../../src/competitive/algorithm/todd_coxeter.rs.html#121">line 121</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>115</span>    <span class="kw">fn </span>define(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: usize, c: usize) -&gt; usize {
 <span data-nosnippet>116</span>        <span class="kw">let </span>state = <span class="self">self</span>.uf.find_root(state);
 <span data-nosnippet>117</span>        <span class="kw">if </span><span class="self">self</span>.table[state][c] == usize::MAX {
 <span data-nosnippet>118</span>            <span class="macro">assert!</span>(<span class="self">self</span>.table.len() &lt; i32::MAX <span class="kw">as </span>usize);
@@ -561,7 +562,88 @@
 <span data-nosnippet>500</span>        <span class="self">self</span>.<span class="highlight">set_root_info</span>(rx, U::unite(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo));
 <span data-nosnippet>501</span>        <span class="self">self</span>.cells[ry].set_child(rx, potential);
 <span data-nosnippet>502</span>        <span class="bool-val">true
-<span data-nosnippet>503</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.same" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#378-380">Source</a><h4 class="code-header">pub fn <a href="#method.same" class="fn">same</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#24&#34;,&#34;line 24&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_a.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_1_a(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>503</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.same" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#378-380">Source</a><h4 class="code-header">pub fn <a href="#method.same" class="fn">same</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#50&#34;,&#34;line 50&#34;],[[72,72],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#121&#34;,&#34;line 121&#34;],[[76,76],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#125&#34;,&#34;line 125&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_parallel_union_find.rs (<a href="../../../src/competitive/data_structure/range_parallel_union_find.rs.html#50">line 50</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>49</span>    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+<span data-nosnippet>50</span>        <span class="self">self</span>.vertices.<span class="highlight focus">same</span>(x, y)
+<span data-nosnippet>51</span>    }
+<span data-nosnippet>52</span>
+<span data-nosnippet>53</span>    <span class="doccomment">/// Unites `a+i` with `b+i` for `0 &lt;= i &lt; len`, in increasing offset order.
+<span data-nosnippet>54</span>    /// Calls `merge(surviving_root, absorbed_root)` once per successful vertex union.
+<span data-nosnippet>55</span>    </span><span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: usize, b: usize, len: usize, <span class="kw-2">mut </span>merge: <span class="kw">impl </span>FnMut(usize, usize)) {
+<span data-nosnippet>56</span>        <span class="kw">let </span>(first, second) = (a.min(b), a.max(b));
+<span data-nosnippet>57</span>        <span class="macro">assert!</span>(len &lt;= <span class="self">self</span>.n &amp;&amp; second &lt;= <span class="self">self</span>.n - len);
+<span data-nosnippet>58</span>        <span class="kw">if </span>len == <span class="number">0 </span>|| a == b {
+<span data-nosnippet>59</span>            <span class="kw">return</span>;
+<span data-nosnippet>60</span>        }
+<span data-nosnippet>61</span>        <span class="kw">if </span>len &lt; <span class="number">4 </span>{
+<span data-nosnippet>62</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..len {
+<span data-nosnippet>63</span>                <span class="self">self</span>.unite_block(a + i, b + i, <span class="number">0</span>, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>64</span>            }
+<span data-nosnippet>65</span>            <span class="kw">return</span>;
+<span data-nosnippet>66</span>        }
+<span data-nosnippet>67</span>        <span class="kw">let </span>distance = second - first;
+<span data-nosnippet>68</span>        <span class="kw">let </span>end = second + len;
+<span data-nosnippet>69</span>        <span class="kw">let </span>recent = <span class="self">self</span>.periods[<span class="self">self</span>.recent];
+<span data-nosnippet>70</span>        <span class="kw">if </span>first &gt;= recent.start &amp;&amp; end &lt;= recent.end &amp;&amp; distance.is_multiple_of(recent.period) {
+<span data-nosnippet>71</span>            <span class="kw">return</span>;
+<span data-nosnippet>72</span>        }
+<span data-nosnippet>73</span>
+<span data-nosnippet>74</span>        <span class="comment">// The enclosing dyadic interval has width at least eight, so its midpoint is divisible by four.
+<span data-nosnippet>75</span>        </span><span class="kw">let </span>shift = (first ^ (end - <span class="number">1</span>)).ilog2();
+<span data-nosnippet>76</span>        <span class="kw">let </span>half = <span class="number">1usize </span>&lt;&lt; shift;
+<span data-nosnippet>77</span>        <span class="kw">let </span>mid = (end - <span class="number">1</span>) &gt;&gt; shift &lt;&lt; shift;
+<span data-nosnippet>78</span>        <span class="kw">let </span>left = mid - half;
+<span data-nosnippet>79</span>        <span class="kw">let </span>right = (mid + half).min(<span class="self">self</span>.n);
+<span data-nosnippet>80</span>        <span class="kw">let </span>slot = mid / <span class="number">4</span>;
+<span data-nosnippet>81</span>        <span class="kw">let </span><span class="kw-2">mut </span>range = <span class="self">self</span>.periods[slot];
+<span data-nosnippet>82</span>        <span class="kw">let </span>remainder = distance % range.period;
+<span data-nosnippet>83</span>        <span class="kw">let </span>aligned = remainder == <span class="number">0</span>;
+<span data-nosnippet>84</span>
+<span data-nosnippet>85</span>        <span class="comment">// Inside the certified interval each vertex is connected to its period-shifted copy.
+<span data-nosnippet>86</span>        </span><span class="kw">let </span>prefix = range.start.saturating_sub(first).min(len);
+<span data-nosnippet>87</span>        <span class="kw">let </span>suffix = range.end.saturating_sub(second).min(len);
+<span data-nosnippet>88</span>        <span class="kw">if </span>aligned &amp;&amp; prefix == <span class="number">0 </span>&amp;&amp; suffix == len {
+<span data-nosnippet>89</span>            <span class="self">self</span>.recent = slot;
+<span data-nosnippet>90</span>            <span class="kw">return</span>;
+<span data-nosnippet>91</span>        }
+<span data-nosnippet>92</span>        <span class="kw">if </span>prefix &lt; suffix {
+<span data-nosnippet>93</span>            <span class="kw">let </span>residues = <span class="kw">if </span>aligned {
+<span data-nosnippet>94</span>                <span class="number">0
+<span data-nosnippet>95</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>96</span>                range.period.min(suffix - prefix)
+<span data-nosnippet>97</span>            };
+<span data-nosnippet>98</span>            <span class="self">self</span>.unite_blocks(a, b, prefix + residues, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>99</span>            <span class="self">self</span>.unite_blocks(a + suffix, b + suffix, len - suffix, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>100</span>        } <span class="kw">else </span>{
+<span data-nosnippet>101</span>            <span class="self">self</span>.unite_blocks(a, b, len, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>102</span>        }
+<span data-nosnippet>103</span>        <span class="comment">// A full cycle of residue pairs in the overlap identifies residues modulo the gcd.
+<span data-nosnippet>104</span>        </span><span class="kw">let </span>overlap = range.end.min(end) - range.start.max(first);
+<span data-nosnippet>105</span>        <span class="kw">if </span>overlap &gt;= distance &amp;&amp; (aligned || overlap - distance &gt;= range.period) {
+<span data-nosnippet>106</span>            <span class="kw">if </span>!aligned {
+<span data-nosnippet>107</span>                range.period = gcd(range.period <span class="kw">as </span>u64, remainder <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>108</span>            }
+<span data-nosnippet>109</span>            range.start = range.start.min(first);
+<span data-nosnippet>110</span>            range.end = range.end.max(end);
+<span data-nosnippet>111</span>        } <span class="kw">else if </span>first &lt;= range.start &amp;&amp; range.end &lt;= end &amp;&amp; distance &lt;= len {
+<span data-nosnippet>112</span>            range = PeriodicRange {
+<span data-nosnippet>113</span>                start: first,
+<span data-nosnippet>114</span>                end,
+<span data-nosnippet>115</span>                period: distance,
+<span data-nosnippet>116</span>            };
+<span data-nosnippet>117</span>        }
+<span data-nosnippet>118</span>        <span class="kw">while </span>range.start &gt; left
+<span data-nosnippet>119</span>            &amp;&amp; <span class="self">self
+<span data-nosnippet>120</span>                </span>.vertices
+<span data-nosnippet>121</span>                .<span class="highlight">same</span>(range.start - <span class="number">1</span>, range.start - <span class="number">1 </span>+ range.period)
+<span data-nosnippet>122</span>        {
+<span data-nosnippet>123</span>            range.start -= <span class="number">1</span>;
+<span data-nosnippet>124</span>        }
+<span data-nosnippet>125</span>        <span class="kw">while </span>range.end &lt; right &amp;&amp; <span class="self">self</span>.vertices.<span class="highlight">same</span>(range.end - range.period, range.end) {
+<span data-nosnippet>126</span>            range.end += <span class="number">1</span>;
+<span data-nosnippet>127</span>        }
+<span data-nosnippet>128</span>        <span class="self">self</span>.periods[slot] = range;
+<span data-nosnippet>129</span>        <span class="self">self</span>.recent = slot;
+<span data-nosnippet>130</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#24&#34;,&#34;line 24&#34;]]"><div class="scraped-example-title">crates/aizu_online_judge/src/dsl/dsl_1_a.rs (<a href="../../../src/aizu_online_judge/dsl/dsl_1_a.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>dsl_1_a(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>14</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>15</span>    <span class="macro">sc!</span>(n, q);
 <span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(n);
@@ -576,7 +658,7 @@
 <span data-nosnippet>25</span>            }
 <span data-nosnippet>26</span>        }
 <span data-nosnippet>27</span>    }
-<span data-nosnippet>28</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/library_checker/data_structure/unionfind.rs.html#24&#34;,&#34;line 24&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/unionfind.rs (<a href="../../../src/library_checker/data_structure/unionfind.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>unionfind(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>28</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/library_checker/data_structure/unionfind.rs.html#24&#34;,&#34;line 24&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/unionfind.rs (<a href="../../../src/library_checker/data_structure/unionfind.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>13</span><span class="kw">pub fn </span>unionfind(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>14</span>    <span class="macro">prepare_io!</span>(reader, writer);
 <span data-nosnippet>15</span>    <span class="macro">sc!</span>(n, q);
 <span data-nosnippet>16</span>    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(n);
@@ -857,7 +939,144 @@
 <span data-nosnippet>500</span>        <span class="self">self</span>.set_root_info(rx, U::unite(<span class="kw-2">&amp;</span>xinfo, <span class="kw-2">&amp;</span>yinfo));
 <span data-nosnippet>501</span>        <span class="self">self</span>.cells[ry].set_child(rx, potential);
 <span data-nosnippet>502</span>        <span class="bool-val">true
-<span data-nosnippet>503</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.find_root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#422-437">Source</a><h4 class="code-header">pub fn <a href="#method.find_root" class="fn">find_root</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#357&#34;,&#34;line 357&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#379&#34;,&#34;line 379&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#379&#34;,&#34;line 379&#34;],[[27,27],&#34;../../../src/competitive/data_structure/union_find.rs.html#383&#34;,&#34;line 383&#34;],[[32,32],&#34;../../../src/competitive/data_structure/union_find.rs.html#388&#34;,&#34;line 388&#34;],[[43,43],&#34;../../../src/competitive/data_structure/union_find.rs.html#399&#34;,&#34;line 399&#34;],[[85,85],&#34;../../../src/competitive/data_structure/union_find.rs.html#441&#34;,&#34;line 441&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#357">line 357</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>356</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>503</span>    </span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.find_root" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#422-437">Source</a><h4 class="code-header">pub fn <a href="#method.find_root" class="fn">find_root</a>(&amp;mut self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#46&#34;,&#34;line 46&#34;],[[115,115],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#160&#34;,&#34;line 160&#34;],[[116,116],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#161&#34;,&#34;line 161&#34;],[[119,119],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#164&#34;,&#34;line 164&#34;],[[127,127],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#172&#34;,&#34;line 172&#34;],[[128,128],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#173&#34;,&#34;line 173&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_parallel_union_find.rs (<a href="../../../src/competitive/data_structure/range_parallel_union_find.rs.html#46">line 46</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>find_root(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+<span data-nosnippet>46</span>        <span class="self">self</span>.vertices.<span class="highlight focus">find_root</span>(x)
+<span data-nosnippet>47</span>    }
+<span data-nosnippet>48</span>
+<span data-nosnippet>49</span>    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+<span data-nosnippet>50</span>        <span class="self">self</span>.vertices.same(x, y)
+<span data-nosnippet>51</span>    }
+<span data-nosnippet>52</span>
+<span data-nosnippet>53</span>    <span class="doccomment">/// Unites `a+i` with `b+i` for `0 &lt;= i &lt; len`, in increasing offset order.
+<span data-nosnippet>54</span>    /// Calls `merge(surviving_root, absorbed_root)` once per successful vertex union.
+<span data-nosnippet>55</span>    </span><span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: usize, b: usize, len: usize, <span class="kw-2">mut </span>merge: <span class="kw">impl </span>FnMut(usize, usize)) {
+<span data-nosnippet>56</span>        <span class="kw">let </span>(first, second) = (a.min(b), a.max(b));
+<span data-nosnippet>57</span>        <span class="macro">assert!</span>(len &lt;= <span class="self">self</span>.n &amp;&amp; second &lt;= <span class="self">self</span>.n - len);
+<span data-nosnippet>58</span>        <span class="kw">if </span>len == <span class="number">0 </span>|| a == b {
+<span data-nosnippet>59</span>            <span class="kw">return</span>;
+<span data-nosnippet>60</span>        }
+<span data-nosnippet>61</span>        <span class="kw">if </span>len &lt; <span class="number">4 </span>{
+<span data-nosnippet>62</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..len {
+<span data-nosnippet>63</span>                <span class="self">self</span>.unite_block(a + i, b + i, <span class="number">0</span>, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>64</span>            }
+<span data-nosnippet>65</span>            <span class="kw">return</span>;
+<span data-nosnippet>66</span>        }
+<span data-nosnippet>67</span>        <span class="kw">let </span>distance = second - first;
+<span data-nosnippet>68</span>        <span class="kw">let </span>end = second + len;
+<span data-nosnippet>69</span>        <span class="kw">let </span>recent = <span class="self">self</span>.periods[<span class="self">self</span>.recent];
+<span data-nosnippet>70</span>        <span class="kw">if </span>first &gt;= recent.start &amp;&amp; end &lt;= recent.end &amp;&amp; distance.is_multiple_of(recent.period) {
+<span data-nosnippet>71</span>            <span class="kw">return</span>;
+<span data-nosnippet>72</span>        }
+<span data-nosnippet>73</span>
+<span data-nosnippet>74</span>        <span class="comment">// The enclosing dyadic interval has width at least eight, so its midpoint is divisible by four.
+<span data-nosnippet>75</span>        </span><span class="kw">let </span>shift = (first ^ (end - <span class="number">1</span>)).ilog2();
+<span data-nosnippet>76</span>        <span class="kw">let </span>half = <span class="number">1usize </span>&lt;&lt; shift;
+<span data-nosnippet>77</span>        <span class="kw">let </span>mid = (end - <span class="number">1</span>) &gt;&gt; shift &lt;&lt; shift;
+<span data-nosnippet>78</span>        <span class="kw">let </span>left = mid - half;
+<span data-nosnippet>79</span>        <span class="kw">let </span>right = (mid + half).min(<span class="self">self</span>.n);
+<span data-nosnippet>80</span>        <span class="kw">let </span>slot = mid / <span class="number">4</span>;
+<span data-nosnippet>81</span>        <span class="kw">let </span><span class="kw-2">mut </span>range = <span class="self">self</span>.periods[slot];
+<span data-nosnippet>82</span>        <span class="kw">let </span>remainder = distance % range.period;
+<span data-nosnippet>83</span>        <span class="kw">let </span>aligned = remainder == <span class="number">0</span>;
+<span data-nosnippet>84</span>
+<span data-nosnippet>85</span>        <span class="comment">// Inside the certified interval each vertex is connected to its period-shifted copy.
+<span data-nosnippet>86</span>        </span><span class="kw">let </span>prefix = range.start.saturating_sub(first).min(len);
+<span data-nosnippet>87</span>        <span class="kw">let </span>suffix = range.end.saturating_sub(second).min(len);
+<span data-nosnippet>88</span>        <span class="kw">if </span>aligned &amp;&amp; prefix == <span class="number">0 </span>&amp;&amp; suffix == len {
+<span data-nosnippet>89</span>            <span class="self">self</span>.recent = slot;
+<span data-nosnippet>90</span>            <span class="kw">return</span>;
+<span data-nosnippet>91</span>        }
+<span data-nosnippet>92</span>        <span class="kw">if </span>prefix &lt; suffix {
+<span data-nosnippet>93</span>            <span class="kw">let </span>residues = <span class="kw">if </span>aligned {
+<span data-nosnippet>94</span>                <span class="number">0
+<span data-nosnippet>95</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>96</span>                range.period.min(suffix - prefix)
+<span data-nosnippet>97</span>            };
+<span data-nosnippet>98</span>            <span class="self">self</span>.unite_blocks(a, b, prefix + residues, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>99</span>            <span class="self">self</span>.unite_blocks(a + suffix, b + suffix, len - suffix, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>100</span>        } <span class="kw">else </span>{
+<span data-nosnippet>101</span>            <span class="self">self</span>.unite_blocks(a, b, len, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>102</span>        }
+<span data-nosnippet>103</span>        <span class="comment">// A full cycle of residue pairs in the overlap identifies residues modulo the gcd.
+<span data-nosnippet>104</span>        </span><span class="kw">let </span>overlap = range.end.min(end) - range.start.max(first);
+<span data-nosnippet>105</span>        <span class="kw">if </span>overlap &gt;= distance &amp;&amp; (aligned || overlap - distance &gt;= range.period) {
+<span data-nosnippet>106</span>            <span class="kw">if </span>!aligned {
+<span data-nosnippet>107</span>                range.period = gcd(range.period <span class="kw">as </span>u64, remainder <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>108</span>            }
+<span data-nosnippet>109</span>            range.start = range.start.min(first);
+<span data-nosnippet>110</span>            range.end = range.end.max(end);
+<span data-nosnippet>111</span>        } <span class="kw">else if </span>first &lt;= range.start &amp;&amp; range.end &lt;= end &amp;&amp; distance &lt;= len {
+<span data-nosnippet>112</span>            range = PeriodicRange {
+<span data-nosnippet>113</span>                start: first,
+<span data-nosnippet>114</span>                end,
+<span data-nosnippet>115</span>                period: distance,
+<span data-nosnippet>116</span>            };
+<span data-nosnippet>117</span>        }
+<span data-nosnippet>118</span>        <span class="kw">while </span>range.start &gt; left
+<span data-nosnippet>119</span>            &amp;&amp; <span class="self">self
+<span data-nosnippet>120</span>                </span>.vertices
+<span data-nosnippet>121</span>                .same(range.start - <span class="number">1</span>, range.start - <span class="number">1 </span>+ range.period)
+<span data-nosnippet>122</span>        {
+<span data-nosnippet>123</span>            range.start -= <span class="number">1</span>;
+<span data-nosnippet>124</span>        }
+<span data-nosnippet>125</span>        <span class="kw">while </span>range.end &lt; right &amp;&amp; <span class="self">self</span>.vertices.same(range.end - range.period, range.end) {
+<span data-nosnippet>126</span>            range.end += <span class="number">1</span>;
+<span data-nosnippet>127</span>        }
+<span data-nosnippet>128</span>        <span class="self">self</span>.periods[slot] = range;
+<span data-nosnippet>129</span>        <span class="self">self</span>.recent = slot;
+<span data-nosnippet>130</span>    }
+<span data-nosnippet>131</span>
+<span data-nosnippet>132</span>    <span class="kw">fn </span>unite_blocks(
+<span data-nosnippet>133</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>134</span>        a: usize,
+<span data-nosnippet>135</span>        b: usize,
+<span data-nosnippet>136</span>        len: usize,
+<span data-nosnippet>137</span>        merge: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(usize, usize),
+<span data-nosnippet>138</span>    ) {
+<span data-nosnippet>139</span>        <span class="kw">if </span>len == <span class="number">0 </span>{
+<span data-nosnippet>140</span>            <span class="kw">return</span>;
+<span data-nosnippet>141</span>        }
+<span data-nosnippet>142</span>        <span class="kw">let </span>shift = len.ilog2() &amp; !<span class="number">1</span>;
+<span data-nosnippet>143</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>144</span>        <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
+<span data-nosnippet>145</span>        <span class="kw">while </span>offset &lt; len - width {
+<span data-nosnippet>146</span>            <span class="self">self</span>.unite_block(a + offset, b + offset, shift, merge);
+<span data-nosnippet>147</span>            offset += width;
+<span data-nosnippet>148</span>        }
+<span data-nosnippet>149</span>        <span class="self">self</span>.unite_block(a + len - width, b + len - width, shift, merge);
+<span data-nosnippet>150</span>    }
+<span data-nosnippet>151</span>
+<span data-nosnippet>152</span>    <span class="kw">fn </span>unite_block(
+<span data-nosnippet>153</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>154</span>        a: usize,
+<span data-nosnippet>155</span>        b: usize,
+<span data-nosnippet>156</span>        shift: u32,
+<span data-nosnippet>157</span>        merge: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(usize, usize),
+<span data-nosnippet>158</span>    ) {
+<span data-nosnippet>159</span>        <span class="kw">if </span>shift == <span class="number">0 </span>{
+<span data-nosnippet>160</span>            <span class="kw">let </span>x = <span class="self">self</span>.vertices.<span class="highlight">find_root</span>(a);
+<span data-nosnippet>161</span>            <span class="kw">let </span>y = <span class="self">self</span>.vertices.<span class="highlight">find_root</span>(b);
+<span data-nosnippet>162</span>            <span class="kw">if </span>x != y {
+<span data-nosnippet>163</span>                <span class="self">self</span>.vertices.unite(x, y);
+<span data-nosnippet>164</span>                <span class="kw">if </span><span class="self">self</span>.vertices.<span class="highlight">find_root</span>(x) == x {
+<span data-nosnippet>165</span>                    merge(x, y);
+<span data-nosnippet>166</span>                } <span class="kw">else </span>{
+<span data-nosnippet>167</span>                    merge(y, x);
+<span data-nosnippet>168</span>                }
+<span data-nosnippet>169</span>            }
+<span data-nosnippet>170</span>        } <span class="kw">else </span>{
+<span data-nosnippet>171</span>            <span class="kw">let </span>level = (shift / <span class="number">2 </span>- <span class="number">1</span>) <span class="kw">as </span>usize;
+<span data-nosnippet>172</span>            <span class="kw">let </span>x = <span class="self">self</span>.blocks[level].<span class="highlight">find_root</span>(a);
+<span data-nosnippet>173</span>            <span class="kw">let </span>y = <span class="self">self</span>.blocks[level].<span class="highlight">find_root</span>(b);
+<span data-nosnippet>174</span>            <span class="kw">if </span>x != y {
+<span data-nosnippet>175</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
+<span data-nosnippet>176</span>                    <span class="kw">let </span>offset = i &lt;&lt; (shift - <span class="number">2</span>);
+<span data-nosnippet>177</span>                    <span class="self">self</span>.unite_block(a + offset, b + offset, shift - <span class="number">2</span>, merge);
+<span data-nosnippet>178</span>                }
+<span data-nosnippet>179</span>                <span class="self">self</span>.blocks[level].unite(x, y);
+<span data-nosnippet>180</span>            }
+<span data-nosnippet>181</span>        }
+<span data-nosnippet>182</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/data_structure/union_find.rs.html#357&#34;,&#34;line 357&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#379&#34;,&#34;line 379&#34;],[[23,23],&#34;../../../src/competitive/data_structure/union_find.rs.html#379&#34;,&#34;line 379&#34;],[[27,27],&#34;../../../src/competitive/data_structure/union_find.rs.html#383&#34;,&#34;line 383&#34;],[[32,32],&#34;../../../src/competitive/data_structure/union_find.rs.html#388&#34;,&#34;line 388&#34;],[[43,43],&#34;../../../src/competitive/data_structure/union_find.rs.html#399&#34;,&#34;line 399&#34;],[[85,85],&#34;../../../src/competitive/data_structure/union_find.rs.html#441&#34;,&#34;line 441&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/union_find.rs (<a href="../../../src/competitive/data_structure/union_find.rs.html#357">line 357</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>356</span>    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
 <span data-nosnippet>357</span>        <span class="kw">let </span>root = <span class="self">self</span>.<span class="highlight focus">find_root</span>(x);
 <span data-nosnippet>358</span>        <span class="self">self</span>.root_info(root).unwrap() <span class="kw">as </span>usize
 <span data-nosnippet>359</span>    }
@@ -956,7 +1175,7 @@
 <span data-nosnippet>452</span>        <span class="self">self</span>.set_root_info(rx, info);
 <span data-nosnippet>453</span>        <span class="self">self</span>.cells[ry].set_child(rx, P::operate(<span class="kw-2">&amp;</span>potx, <span class="kw-2">&amp;</span>potential));
 <span data-nosnippet>454</span>        <span class="bool-val">true
-<span data-nosnippet>455</span>    </span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[27,27],&#34;../../../src/competitive/algorithm/solve_01_on_tree.rs.html#69&#34;,&#34;line 69&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/solve_01_on_tree.rs (<a href="../../../src/competitive/algorithm/solve_01_on_tree.rs.html#69">line 69</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>42</span><span class="kw">pub fn </span>solve_01_on_tree(
+<span data-nosnippet>455</span>    </span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[27,27],&#34;../../../src/competitive/algorithm/solve_01_on_tree.rs.html#69&#34;,&#34;line 69&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/solve_01_on_tree.rs (<a href="../../../src/competitive/algorithm/solve_01_on_tree.rs.html#69">line 69</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>42</span><span class="kw">pub fn </span>solve_01_on_tree(
 <span data-nosnippet>43</span>    n: usize,
 <span data-nosnippet>44</span>    c01: <span class="kw">impl </span>Fn(usize) -&gt; (usize, usize),
 <span data-nosnippet>45</span>    root: usize,
@@ -1427,38 +1646,37 @@
 <span data-nosnippet>152</span>                }
 <span data-nosnippet>153</span>            }
 <span data-nosnippet>154</span>        }
-<span data-nosnippet>155</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[23,23],&#34;../../../src/competitive/graph/steiner_tree.rs.html#276&#34;,&#34;line 276&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/steiner_tree.rs (<a href="../../../src/competitive/graph/steiner_tree.rs.html#276">line 276</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>253</span>    <span class="kw">pub fn </span>edges_from_source(<span class="kw-2">&amp;</span><span class="self">self</span>, source: G::Vertex) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;G::Label&gt;&gt; {
-<span data-nosnippet>254</span>        <span class="kw">if </span><span class="self">self</span>.dp.is_empty() {
-<span data-nosnippet>255</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="macro">vec!</span>[]);
-<span data-nosnippet>256</span>        }
-<span data-nosnippet>257</span>        <span class="kw">if </span><span class="self">self</span>.minimum_from_source(source) == S::inf() {
-<span data-nosnippet>258</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>259</span>        }
-<span data-nosnippet>260</span>        <span class="kw">let </span>graph = <span class="self">self</span>.graph;
-<span data-nosnippet>261</span>        <span class="kw">let </span><span class="kw-2">mut </span>index = graph.construct_vmap(|| <span class="number">0usize</span>);
-<span data-nosnippet>262</span>        <span class="kw">for </span>(i, u) <span class="kw">in </span>graph.vertices().enumerate() {
-<span data-nosnippet>263</span>            <span class="kw-2">*</span>graph.vmap_get_mut(<span class="kw-2">&amp;mut </span>index, u) = i;
-<span data-nosnippet>264</span>        }
-<span data-nosnippet>265</span>        <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(graph.vsize());
-<span data-nosnippet>266</span>        <span class="kw">let </span><span class="kw-2">mut </span>edges = <span class="macro">vec!</span>[];
-<span data-nosnippet>267</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[(<span class="self">self</span>.dp.len() - <span class="number">1</span>, source)];
-<span data-nosnippet>268</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>((bit, u)) = stack.pop() {
-<span data-nosnippet>269</span>            <span class="kw">match </span>graph.vmap_get(<span class="kw-2">&amp;</span><span class="self">self</span>.parent[bit], u) {
-<span data-nosnippet>270</span>                SteinerTreeParent::None =&gt; {}
-<span data-nosnippet>271</span>                <span class="kw-2">&amp;</span>SteinerTreeParent::Split(sub) =&gt; {
-<span data-nosnippet>272</span>                    stack.push((sub, u));
-<span data-nosnippet>273</span>                    stack.push((bit ^ sub, u));
-<span data-nosnippet>274</span>                }
-<span data-nosnippet>275</span>                SteinerTreeParent::Edge(v, label) =&gt; {
-<span data-nosnippet>276</span>                    <span class="kw">if </span>uf.<span class="highlight focus">unite</span>(<span class="kw-2">*</span>graph.vmap_get(<span class="kw-2">&amp;</span>index, u), <span class="kw-2">*</span>graph.vmap_get(<span class="kw-2">&amp;</span>index, <span class="kw-2">*</span>v)) {
-<span data-nosnippet>277</span>                        edges.push(label.clone());
-<span data-nosnippet>278</span>                    }
-<span data-nosnippet>279</span>                    stack.push((bit, <span class="kw-2">*</span>v));
-<span data-nosnippet>280</span>                }
-<span data-nosnippet>281</span>            }
-<span data-nosnippet>282</span>        }
-<span data-nosnippet>283</span>        <span class="prelude-val">Some</span>(edges)
-<span data-nosnippet>284</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/algorithm/solve_01_on_tree.rs.html#70">crates/competitive/src/algorithm/solve_01_on_tree.rs</a></li><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#33">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li><li><a href="../../../src/competitive/graph/minimum_spanning_arborescence.rs.html#77">crates/competitive/src/graph/minimum_spanning_arborescence.rs</a></li></ul></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#510-520">Source</a><a href="#impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="anchor">§</a><h3 class="code-header">impl&lt;U, M, P, H&gt; <a class="struct" href="struct.UnionFindBase.html" title="struct competitive::data_structure::union_find::UnionFindBase">UnionFindBase</a>&lt;U, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, M, P, H&gt;<div class="where">where
+<span data-nosnippet>155</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#163&#34;,&#34;line 163&#34;],[[27,27],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#179&#34;,&#34;line 179&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_parallel_union_find.rs (<a href="../../../src/competitive/data_structure/range_parallel_union_find.rs.html#163">line 163</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>152</span>    <span class="kw">fn </span>unite_block(
+<span data-nosnippet>153</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>154</span>        a: usize,
+<span data-nosnippet>155</span>        b: usize,
+<span data-nosnippet>156</span>        shift: u32,
+<span data-nosnippet>157</span>        merge: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(usize, usize),
+<span data-nosnippet>158</span>    ) {
+<span data-nosnippet>159</span>        <span class="kw">if </span>shift == <span class="number">0 </span>{
+<span data-nosnippet>160</span>            <span class="kw">let </span>x = <span class="self">self</span>.vertices.find_root(a);
+<span data-nosnippet>161</span>            <span class="kw">let </span>y = <span class="self">self</span>.vertices.find_root(b);
+<span data-nosnippet>162</span>            <span class="kw">if </span>x != y {
+<span data-nosnippet>163</span>                <span class="self">self</span>.vertices.<span class="highlight focus">unite</span>(x, y);
+<span data-nosnippet>164</span>                <span class="kw">if </span><span class="self">self</span>.vertices.find_root(x) == x {
+<span data-nosnippet>165</span>                    merge(x, y);
+<span data-nosnippet>166</span>                } <span class="kw">else </span>{
+<span data-nosnippet>167</span>                    merge(y, x);
+<span data-nosnippet>168</span>                }
+<span data-nosnippet>169</span>            }
+<span data-nosnippet>170</span>        } <span class="kw">else </span>{
+<span data-nosnippet>171</span>            <span class="kw">let </span>level = (shift / <span class="number">2 </span>- <span class="number">1</span>) <span class="kw">as </span>usize;
+<span data-nosnippet>172</span>            <span class="kw">let </span>x = <span class="self">self</span>.blocks[level].find_root(a);
+<span data-nosnippet>173</span>            <span class="kw">let </span>y = <span class="self">self</span>.blocks[level].find_root(b);
+<span data-nosnippet>174</span>            <span class="kw">if </span>x != y {
+<span data-nosnippet>175</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">4 </span>{
+<span data-nosnippet>176</span>                    <span class="kw">let </span>offset = i &lt;&lt; (shift - <span class="number">2</span>);
+<span data-nosnippet>177</span>                    <span class="self">self</span>.unite_block(a + offset, b + offset, shift - <span class="number">2</span>, merge);
+<span data-nosnippet>178</span>                }
+<span data-nosnippet>179</span>                <span class="self">self</span>.blocks[level].<span class="highlight">unite</span>(x, y);
+<span data-nosnippet>180</span>            }
+<span data-nosnippet>181</span>        }
+<span data-nosnippet>182</span>    }</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/graph/steiner_tree.rs.html#276">crates/competitive/src/graph/steiner_tree.rs</a></li><li><a href="../../../src/competitive/algorithm/solve_01_on_tree.rs.html#70">crates/competitive/src/algorithm/solve_01_on_tree.rs</a></li><li><a href="../../../src/library_checker/data_structure/persistent_unionfind.rs.html#33">crates/library_checker/src/data_structure/persistent_unionfind.rs</a></li><li><a href="../../../src/competitive/graph/minimum_spanning_arborescence.rs.html#77">crates/competitive/src/graph/minimum_spanning_arborescence.rs</a></li></ul></div></div></details></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/union_find.rs.html#510-520">Source</a><a href="#impl-UnionFindBase%3CU,+(),+M,+P,+H%3E" class="anchor">§</a><h3 class="code-header">impl&lt;U, M, P, H&gt; <a class="struct" href="struct.UnionFindBase.html" title="struct competitive::data_structure::union_find::UnionFindBase">UnionFindBase</a>&lt;U, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, M, P, H&gt;<div class="where">where
     U: <a class="trait" href="trait.UnionStrategy.html" title="trait competitive::data_structure::union_find::UnionStrategy">UnionStrategy</a>,
     M: <a class="trait" href="trait.UfMergeSpec.html" title="trait competitive::data_structure::union_find::UfMergeSpec">UfMergeSpec</a>,
     P: <a class="trait" href="../../algebra/trait.Monoid.html" title="trait competitive::algebra::Monoid">Monoid</a>,

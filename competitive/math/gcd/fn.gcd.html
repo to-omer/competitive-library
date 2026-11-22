@@ -598,4 +598,79 @@
 <span data-nosnippet>106</span>        y0 = ((rng.rand64() <span class="kw">as </span>u128 * (n - <span class="number">2</span>) <span class="kw">as </span>u128) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>u64 + <span class="number">2</span>;
 <span data-nosnippet>107</span>        c = ((rng.rand64() <span class="kw">as </span>u128 * (n - <span class="number">1</span>) <span class="kw">as </span>u128) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>u64 + <span class="number">1</span>;
 <span data-nosnippet>108</span>    }
-<span data-nosnippet>109</span>}</code></pre></div></div></div></details></div></section></div></main></body></html>
+<span data-nosnippet>109</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[52,52],&#34;../../../src/competitive/data_structure/range_parallel_union_find.rs.html#107&#34;,&#34;line 107&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_parallel_union_find.rs (<a href="../../../src/competitive/data_structure/range_parallel_union_find.rs.html#107">line 107</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>55</span>    <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: usize, b: usize, len: usize, <span class="kw-2">mut </span>merge: <span class="kw">impl </span>FnMut(usize, usize)) {
+<span data-nosnippet>56</span>        <span class="kw">let </span>(first, second) = (a.min(b), a.max(b));
+<span data-nosnippet>57</span>        <span class="macro">assert!</span>(len &lt;= <span class="self">self</span>.n &amp;&amp; second &lt;= <span class="self">self</span>.n - len);
+<span data-nosnippet>58</span>        <span class="kw">if </span>len == <span class="number">0 </span>|| a == b {
+<span data-nosnippet>59</span>            <span class="kw">return</span>;
+<span data-nosnippet>60</span>        }
+<span data-nosnippet>61</span>        <span class="kw">if </span>len &lt; <span class="number">4 </span>{
+<span data-nosnippet>62</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..len {
+<span data-nosnippet>63</span>                <span class="self">self</span>.unite_block(a + i, b + i, <span class="number">0</span>, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>64</span>            }
+<span data-nosnippet>65</span>            <span class="kw">return</span>;
+<span data-nosnippet>66</span>        }
+<span data-nosnippet>67</span>        <span class="kw">let </span>distance = second - first;
+<span data-nosnippet>68</span>        <span class="kw">let </span>end = second + len;
+<span data-nosnippet>69</span>        <span class="kw">let </span>recent = <span class="self">self</span>.periods[<span class="self">self</span>.recent];
+<span data-nosnippet>70</span>        <span class="kw">if </span>first &gt;= recent.start &amp;&amp; end &lt;= recent.end &amp;&amp; distance.is_multiple_of(recent.period) {
+<span data-nosnippet>71</span>            <span class="kw">return</span>;
+<span data-nosnippet>72</span>        }
+<span data-nosnippet>73</span>
+<span data-nosnippet>74</span>        <span class="comment">// The enclosing dyadic interval has width at least eight, so its midpoint is divisible by four.
+<span data-nosnippet>75</span>        </span><span class="kw">let </span>shift = (first ^ (end - <span class="number">1</span>)).ilog2();
+<span data-nosnippet>76</span>        <span class="kw">let </span>half = <span class="number">1usize </span>&lt;&lt; shift;
+<span data-nosnippet>77</span>        <span class="kw">let </span>mid = (end - <span class="number">1</span>) &gt;&gt; shift &lt;&lt; shift;
+<span data-nosnippet>78</span>        <span class="kw">let </span>left = mid - half;
+<span data-nosnippet>79</span>        <span class="kw">let </span>right = (mid + half).min(<span class="self">self</span>.n);
+<span data-nosnippet>80</span>        <span class="kw">let </span>slot = mid / <span class="number">4</span>;
+<span data-nosnippet>81</span>        <span class="kw">let </span><span class="kw-2">mut </span>range = <span class="self">self</span>.periods[slot];
+<span data-nosnippet>82</span>        <span class="kw">let </span>remainder = distance % range.period;
+<span data-nosnippet>83</span>        <span class="kw">let </span>aligned = remainder == <span class="number">0</span>;
+<span data-nosnippet>84</span>
+<span data-nosnippet>85</span>        <span class="comment">// Inside the certified interval each vertex is connected to its period-shifted copy.
+<span data-nosnippet>86</span>        </span><span class="kw">let </span>prefix = range.start.saturating_sub(first).min(len);
+<span data-nosnippet>87</span>        <span class="kw">let </span>suffix = range.end.saturating_sub(second).min(len);
+<span data-nosnippet>88</span>        <span class="kw">if </span>aligned &amp;&amp; prefix == <span class="number">0 </span>&amp;&amp; suffix == len {
+<span data-nosnippet>89</span>            <span class="self">self</span>.recent = slot;
+<span data-nosnippet>90</span>            <span class="kw">return</span>;
+<span data-nosnippet>91</span>        }
+<span data-nosnippet>92</span>        <span class="kw">if </span>prefix &lt; suffix {
+<span data-nosnippet>93</span>            <span class="kw">let </span>residues = <span class="kw">if </span>aligned {
+<span data-nosnippet>94</span>                <span class="number">0
+<span data-nosnippet>95</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>96</span>                range.period.min(suffix - prefix)
+<span data-nosnippet>97</span>            };
+<span data-nosnippet>98</span>            <span class="self">self</span>.unite_blocks(a, b, prefix + residues, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>99</span>            <span class="self">self</span>.unite_blocks(a + suffix, b + suffix, len - suffix, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>100</span>        } <span class="kw">else </span>{
+<span data-nosnippet>101</span>            <span class="self">self</span>.unite_blocks(a, b, len, <span class="kw-2">&amp;mut </span>merge);
+<span data-nosnippet>102</span>        }
+<span data-nosnippet>103</span>        <span class="comment">// A full cycle of residue pairs in the overlap identifies residues modulo the gcd.
+<span data-nosnippet>104</span>        </span><span class="kw">let </span>overlap = range.end.min(end) - range.start.max(first);
+<span data-nosnippet>105</span>        <span class="kw">if </span>overlap &gt;= distance &amp;&amp; (aligned || overlap - distance &gt;= range.period) {
+<span data-nosnippet>106</span>            <span class="kw">if </span>!aligned {
+<span data-nosnippet>107</span>                range.period = <span class="highlight focus">gcd</span>(range.period <span class="kw">as </span>u64, remainder <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>108</span>            }
+<span data-nosnippet>109</span>            range.start = range.start.min(first);
+<span data-nosnippet>110</span>            range.end = range.end.max(end);
+<span data-nosnippet>111</span>        } <span class="kw">else if </span>first &lt;= range.start &amp;&amp; range.end &lt;= end &amp;&amp; distance &lt;= len {
+<span data-nosnippet>112</span>            range = PeriodicRange {
+<span data-nosnippet>113</span>                start: first,
+<span data-nosnippet>114</span>                end,
+<span data-nosnippet>115</span>                period: distance,
+<span data-nosnippet>116</span>            };
+<span data-nosnippet>117</span>        }
+<span data-nosnippet>118</span>        <span class="kw">while </span>range.start &gt; left
+<span data-nosnippet>119</span>            &amp;&amp; <span class="self">self
+<span data-nosnippet>120</span>                </span>.vertices
+<span data-nosnippet>121</span>                .same(range.start - <span class="number">1</span>, range.start - <span class="number">1 </span>+ range.period)
+<span data-nosnippet>122</span>        {
+<span data-nosnippet>123</span>            range.start -= <span class="number">1</span>;
+<span data-nosnippet>124</span>        }
+<span data-nosnippet>125</span>        <span class="kw">while </span>range.end &lt; right &amp;&amp; <span class="self">self</span>.vertices.same(range.end - range.period, range.end) {
+<span data-nosnippet>126</span>            range.end += <span class="number">1</span>;
+<span data-nosnippet>127</span>        }
+<span data-nosnippet>128</span>        <span class="self">self</span>.periods[slot] = range;
+<span data-nosnippet>129</span>        <span class="self">self</span>.recent = slot;
+<span data-nosnippet>130</span>    }</code></pre></div></div></div></details></div></section></div></main></body></html>
