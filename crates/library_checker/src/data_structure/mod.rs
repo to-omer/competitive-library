@@ -17,6 +17,7 @@ pub mod range_affine_range_sum;
 pub mod range_affine_range_sum_large_array;
 pub mod range_chmin_chmax_add_range_sum;
 pub mod range_kth_smallest;
+pub mod range_linear_add_range_min;
 pub mod range_reverse_range_sum;
 pub mod range_set_range_composite;
 pub mod rectangle_sum;

@@ -106,6 +106,8 @@ pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 pub use self::range_fold_with_upper_bound::RangeFoldWithUpperBound;
 #[codesnip::entry("RangeFrequency")]
 pub use self::range_frequency::RangeFrequency;
+#[codesnip::entry("RangeLinearAddRangeMin")]
+pub use self::range_linear_add_range_min::RangeLinearAddRangeMin;
 #[codesnip::entry("RangeMap")]
 pub use self::range_map::{RangeMap, RangeSet};
 #[codesnip::entry("RangeMinimumQuery")]
@@ -250,6 +252,8 @@ mod range_fold_with_upper_bound;
     include("BinaryIndexedTree", "AdditiveOperation", "FibonacciHash")
 )]
 mod range_frequency;
+#[codesnip::entry("RangeLinearAddRangeMin", include("discrete_steps"))]
+mod range_linear_add_range_min;
 #[codesnip::entry("RangeMap")]
 mod range_map;
 #[codesnip::entry("RangeMinimumQuery")]
