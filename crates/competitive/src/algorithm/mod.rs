@@ -61,6 +61,8 @@ pub use self::sqrt_decomposition::{
 pub use self::static_range_count_distinct::static_range_count_distinct;
 #[codesnip::entry("static_range_inversions")]
 pub use self::static_range_inversions::static_range_inversions;
+#[codesnip::entry("static_range_mode")]
+pub use self::static_range_mode::static_range_mode;
 #[codesnip::entry("stern_brocot_tree")]
 pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree, rational_binary_search};
 #[codesnip::entry("ternary_search")]
@@ -127,6 +129,8 @@ mod sqrt_decomposition;
 mod static_range_count_distinct;
 #[codesnip::entry("static_range_inversions", include("BitSet"))]
 mod static_range_inversions;
+#[codesnip::entry("static_range_mode")]
+mod static_range_mode;
 #[codesnip::entry("stern_brocot_tree", include("URational"))]
 mod stern_brocot_tree;
 #[cfg_attr(nightly, codesnip::entry)]
