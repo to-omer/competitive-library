@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BLOCK_SHIFT","FANOUT","ROOT_CAPACITY","SCAN_LIMIT"],"struct":["Envelope","Level","Node","RangeLinearAddRangeMin"],"type":["Line"]};

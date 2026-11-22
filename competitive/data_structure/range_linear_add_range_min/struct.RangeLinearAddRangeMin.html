@@ -1,0 +1,995 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Range minimum queries with additions of an affine function of the index."><title>RangeLinearAddRangeMin in competitive::data_structure::range_linear_add_range_min - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (bdf712ee8 2026-11-21)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
+    if (!root) return;
+    const script = document.createElement("script");
+    script.src = new URL(`${root}submissions.js`, document.baseURI).href;
+    document.head.appendChild(script);
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">RangeLinearAddRangeMin</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Range<wbr>Linear<wbr>AddRange<wbr>Min</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.levels" title="levels">levels</a></li><li><a href="#structfield.values" title="values">values</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.from_keys" title="from_keys">from_keys</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.crossing" title="crossing">crossing</a></li><li><a href="#method.ensure_envelope" title="ensure_envelope">ensure_envelope</a></li><li><a href="#method.fold" title="fold">fold</a></li><li><a href="#method.fold_at" title="fold_at">fold_at</a></li><li><a href="#method.minimum" title="minimum">minimum</a></li><li><a href="#method.split" title="split">split</a></li><li><a href="#method.support" title="support">support</a></li><li><a href="#method.update" title="update">update</a></li><li><a href="#method.update_at" title="update_at">update_at</a></li><li><a href="#method.winning_block" title="winning_block">winning_block</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-RangeLinearAddRangeMin" title="Clone">Clone</a></li><li><a href="#impl-Debug-for-RangeLinearAddRangeMin" title="Debug">Debug</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Forget-for-RangeLinearAddRangeMin" title="Forget">Forget</a></li><li><a href="#impl-Freeze-for-RangeLinearAddRangeMin" title="Freeze">Freeze</a></li><li><a href="#impl-Move-for-RangeLinearAddRangeMin" title="Move">Move</a></li><li><a href="#impl-RefUnwindSafe-for-RangeLinearAddRangeMin" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-RangeLinearAddRangeMin" title="Send">Send</a></li><li><a href="#impl-Sync-for-RangeLinearAddRangeMin" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-RangeLinearAddRangeMin" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-RangeLinearAddRangeMin" title="UnsafeUnpin">UnsafeUnpin</a></li><li><a href="#impl-UnwindSafe-for-RangeLinearAddRangeMin" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>data_<wbr>structure::<wbr>range_<wbr>linear_<wbr>add_<wbr>range_<wbr>min</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">data_structure</a>::<wbr><a href="index.html">range_linear_add_range_min</a></div><h1>Struct <span class="struct">Range<wbr>Linear<wbr>AddRange<wbr>Min</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#15-18">Source</a> </span></div><pre class="rust item-decl"><code>pub struct RangeLinearAddRangeMin {
+    values: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    levels: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.Level.html" title="struct competitive::data_structure::range_linear_add_range_min::Level">Level</a>&gt;,
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Range minimum queries with additions of an affine function of the index.</p>
+<p>For <code>i64</code> values, construction and q operations take O(n + q log² n) time and O(n) space.</p>
+</div></details><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.values" class="structfield section-header"><a href="#structfield.values" class="anchor field">§</a><code>values: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;</code></span><span id="structfield.levels" class="structfield section-header"><a href="#structfield.levels" class="anchor field">§</a><code>levels: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.Level.html" title="struct competitive::data_structure::range_linear_add_range_min::Level">Level</a>&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-RangeLinearAddRangeMin" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#55-380">Source</a><a href="#impl-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from_keys" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#56-84">Source</a><h4 class="code-header">pub fn <a href="#method.from_keys" class="fn">from_keys</a>(keys: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html" title="trait core::iter::traits::exact_size::ExactSizeIterator">ExactSizeIterator</a>&lt;Item = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/library_checker/data_structure/range_linear_add_range_min.rs.html#19&#34;,&#34;line 19&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_linear_add_range_min.rs.html#19">line 19</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>range_linear_add_range_min(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>18</span>    <span class="macro">sc!</span>(n, q, a: [i64; iter n]);
+<span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>data = <span class="highlight focus">RangeLinearAddRangeMin::from_keys</span>(a);
+<span data-nosnippet>20</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>21</span>        <span class="macro">sc!</span>(query: Query);
+<span data-nosnippet>22</span>        <span class="kw">match </span>query {
+<span data-nosnippet>23</span>            Query::Add { l, r, b, c } =&gt; data.update(l..r, b, c),
+<span data-nosnippet>24</span>            Query::Min { l, r } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">pp!</span>(data.fold(l..r));
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#88-103">Source</a><h4 class="code-header">pub fn <a href="#method.update" class="fn">update</a>&lt;R&gt;(&amp;mut self, range: R, slope: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, intercept: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)<div class="where">where
+    R: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html" title="trait core::ops::range::RangeBounds">RangeBounds</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,</div></h4></section></summary><div class="docblock"><p>Adds <code>slope * i + intercept</code> to every element at index <code>i</code> in the range.
+Each resulting element value must fit in <code>i64</code>.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[7,7],&#34;../../../src/library_checker/data_structure/range_linear_add_range_min.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_linear_add_range_min.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>range_linear_add_range_min(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>18</span>    <span class="macro">sc!</span>(n, q, a: [i64; iter n]);
+<span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>data = RangeLinearAddRangeMin::from_keys(a);
+<span data-nosnippet>20</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>21</span>        <span class="macro">sc!</span>(query: Query);
+<span data-nosnippet>22</span>        <span class="kw">match </span>query {
+<span data-nosnippet>23</span>            Query::Add { l, r, b, c } =&gt; data.<span class="highlight focus">update</span>(l..r, b, c),
+<span data-nosnippet>24</span>            Query::Min { l, r } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">pp!</span>(data.fold(l..r));
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#106-117">Source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>&lt;R&gt;(&amp;mut self, range: R) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a><div class="where">where
+    R: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html" title="trait core::ops::range::RangeBounds">RangeBounds</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,</div></h4></section></summary><div class="docblock"><p>Returns the minimum in the range, or <code>i64::MAX</code> for an empty range.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/library_checker/data_structure/range_linear_add_range_min.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/library_checker/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/library_checker/data_structure/range_linear_add_range_min.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">pub fn </span>range_linear_add_range_min(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>17</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>18</span>    <span class="macro">sc!</span>(n, q, a: [i64; iter n]);
+<span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>data = RangeLinearAddRangeMin::from_keys(a);
+<span data-nosnippet>20</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>21</span>        <span class="macro">sc!</span>(query: Query);
+<span data-nosnippet>22</span>        <span class="kw">match </span>query {
+<span data-nosnippet>23</span>            Query::Add { l, r, b, c } =&gt; data.update(l..r, b, c),
+<span data-nosnippet>24</span>            Query::Min { l, r } =&gt; {
+<span data-nosnippet>25</span>                <span class="macro">pp!</span>(data.<span class="highlight focus">fold</span>(l..r));
+<span data-nosnippet>26</span>            }
+<span data-nosnippet>27</span>        }
+<span data-nosnippet>28</span>    }
+<span data-nosnippet>29</span>}</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.split" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#119-134">Source</a><h4 class="code-header">fn <a href="#method.split" class="fn">split</a>(
+    &amp;self,
+    range: <a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    shift: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,
+) -&gt; ([<a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">2</a>], <a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#145&#34;,&#34;line 145&#34;],[[77,77],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#213&#34;,&#34;line 213&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#145">line 145</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>136</span>    <span class="kw">fn </span>update_at(
+<span data-nosnippet>137</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>138</span>        height: usize,
+<span data-nosnippet>139</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>140</span>        ancestors: Line,
+<span data-nosnippet>141</span>        (slope, intercept): Line,
+<span data-nosnippet>142</span>    ) {
+<span data-nosnippet>143</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>144</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>145</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.<span class="highlight focus">split</span>(range, shift);
+<span data-nosnippet>146</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>147</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>148</span>                <span class="kw">continue</span>;
+<span data-nosnippet>149</span>            }
+<span data-nosnippet>150</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>151</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>152</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>153</span>            <span class="kw">let </span>(b, c) = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>154</span>            <span class="kw">let </span>(lower, upper, tag) = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>155</span>                <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>156</span>                <span class="kw">let </span><span class="kw-2">mut </span>minimum = i64::MAX;
+<span data-nosnippet>157</span>                <span class="kw">for </span>(part, b, c) <span class="kw">in </span>[
+<span data-nosnippet>158</span>                    (start..edge.start, b, c),
+<span data-nosnippet>159</span>                    (edge.clone(), b + slope, c + intercept),
+<span data-nosnippet>160</span>                    (edge.end..end, b, c),
+<span data-nosnippet>161</span>                ] {
+<span data-nosnippet>162</span>                    <span class="kw">for </span>(i, x) <span class="kw">in </span>part.clone().zip(<span class="kw-2">&amp;mut </span><span class="self">self</span>.values[part]) {
+<span data-nosnippet>163</span>                        <span class="kw-2">*</span>x = (<span class="kw-2">*</span>x <span class="kw">as </span>i128 + b * i <span class="kw">as </span>i128 + c) <span class="kw">as </span>i64;
+<span data-nosnippet>164</span>                        minimum = minimum.min(<span class="kw-2">*</span>x);
+<span data-nosnippet>165</span>                    }
+<span data-nosnippet>166</span>                }
+<span data-nosnippet>167</span>                <span class="comment">// The raw values now include the ancestors' pending additions.
+<span data-nosnippet>168</span>                </span>(
+<span data-nosnippet>169</span>                    minimum <span class="kw">as </span>i128,
+<span data-nosnippet>170</span>                    minimum <span class="kw">as </span>i128,
+<span data-nosnippet>171</span>                    (-ancestors.<span class="number">0</span>, -ancestors.<span class="number">1</span>),
+<span data-nosnippet>172</span>                )
+<span data-nosnippet>173</span>            } <span class="kw">else </span>{
+<span data-nosnippet>174</span>                <span class="self">self</span>.update_at(height - <span class="number">1</span>, edge, (b, c), (slope, intercept));
+<span data-nosnippet>175</span>                <span class="kw">let </span>first = k * FANOUT;
+<span data-nosnippet>176</span>                <span class="kw">let </span>nodes = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height - <span class="number">1</span>].nodes;
+<span data-nosnippet>177</span>                <span class="kw">let </span>(<span class="kw-2">mut </span>lower, <span class="kw-2">mut </span>upper) = (i128::MAX, i128::MAX);
+<span data-nosnippet>178</span>                <span class="kw">for </span>child <span class="kw">in </span><span class="kw-2">&amp;</span>nodes[first..(first + FANOUT).min(nodes.len())] {
+<span data-nosnippet>179</span>                    lower = lower.min(child.left.min(child.right));
+<span data-nosnippet>180</span>                    upper = upper.min(child.left.max(child.right) + child.spread);
+<span data-nosnippet>181</span>                }
+<span data-nosnippet>182</span>                <span class="kw">let </span>envelope = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k];
+<span data-nosnippet>183</span>                envelope.visits = <span class="number">0</span>;
+<span data-nosnippet>184</span>                envelope.switches.clear();
+<span data-nosnippet>185</span>                (lower, upper, tag)
+<span data-nosnippet>186</span>            };
+<span data-nosnippet>187</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>188</span>            node.lazy = tag;
+<span data-nosnippet>189</span>            node.left = lower + tag.<span class="number">0 </span>* start <span class="kw">as </span>i128 + tag.<span class="number">1</span>;
+<span data-nosnippet>190</span>            node.right = node.left + (tag.<span class="number">0 </span>&lt;&lt; shift);
+<span data-nosnippet>191</span>            node.spread = upper - lower;
+<span data-nosnippet>192</span>        }
+<span data-nosnippet>193</span>        <span class="kw">let </span>step = slope &lt;&lt; shift;
+<span data-nosnippet>194</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = slope * (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + intercept;
+<span data-nosnippet>195</span>        <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[full] {
+<span data-nosnippet>196</span>            node.left += delta;
+<span data-nosnippet>197</span>            delta += step;
+<span data-nosnippet>198</span>            node.right += delta;
+<span data-nosnippet>199</span>            node.lazy.<span class="number">0 </span>+= slope;
+<span data-nosnippet>200</span>            node.lazy.<span class="number">1 </span>+= intercept;
+<span data-nosnippet>201</span>        }
+<span data-nosnippet>202</span>    }
+<span data-nosnippet>203</span>
+<span data-nosnippet>204</span>    <span class="kw">fn </span>fold_at(
+<span data-nosnippet>205</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>206</span>        height: usize,
+<span data-nosnippet>207</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>208</span>        ancestors: Line,
+<span data-nosnippet>209</span>        <span class="kw-2">mut </span>best: i128,
+<span data-nosnippet>210</span>    ) -&gt; i128 {
+<span data-nosnippet>211</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>212</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>213</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.<span class="highlight">split</span>(range, shift);
+<span data-nosnippet>214</span>        <span class="kw">let </span>step = ancestors.<span class="number">0 </span>&lt;&lt; shift;
+<span data-nosnippet>215</span>        <span class="kw">let </span>initial = ancestors.<span class="number">0 </span>* (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + ancestors.<span class="number">1</span>;
+<span data-nosnippet>216</span>        <span class="kw">if </span>height != <span class="number">0 </span>{
+<span data-nosnippet>217</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>218</span>            <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[full.clone()] {
+<span data-nosnippet>219</span>                <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>220</span>                delta += step;
+<span data-nosnippet>221</span>                best = best.min(left.max(node.right + delta) + node.spread);
+<span data-nosnippet>222</span>            }
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>225</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>226</span>                <span class="kw">continue</span>;
+<span data-nosnippet>227</span>            }
+<span data-nosnippet>228</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>229</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>230</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>231</span>            best = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>232</span>                best.min(<span class="self">self</span>.minimum(edge, line) <span class="kw">as </span>i128)
+<span data-nosnippet>233</span>            } <span class="kw">else </span>{
+<span data-nosnippet>234</span>                <span class="self">self</span>.fold_at(height - <span class="number">1</span>, edge, line, best)
+<span data-nosnippet>235</span>            };
+<span data-nosnippet>236</span>        }
+<span data-nosnippet>237</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>238</span>        <span class="kw">for </span>k <span class="kw">in </span>full {
+<span data-nosnippet>239</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>240</span>            <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>241</span>            delta += step;
+<span data-nosnippet>242</span>            <span class="kw">let </span>right = node.right + delta;
+<span data-nosnippet>243</span>            <span class="kw">if </span>left.min(right) &gt;= best {
+<span data-nosnippet>244</span>                <span class="kw">continue</span>;
+<span data-nosnippet>245</span>            }
+<span data-nosnippet>246</span>            <span class="kw">if </span>left == right &amp;&amp; node.spread == <span class="number">0 </span>{
+<span data-nosnippet>247</span>                best = left;
+<span data-nosnippet>248</span>                <span class="kw">continue</span>;
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>251</span>            <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>252</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ node.lazy.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ node.lazy.<span class="number">1</span>);
+<span data-nosnippet>253</span>            <span class="kw">let </span>upper = left.max(right) + node.spread;
+<span data-nosnippet>254</span>            <span class="kw">let </span>minimum = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>255</span>                i128::from(<span class="self">self</span>.minimum(start..end, line))
+<span data-nosnippet>256</span>            } <span class="kw">else if </span><span class="self">self</span>.levels[<a href="../../../../../formal/index.html">height</a>].envelopes[k].visits &lt; SCAN_LIMIT {
+<span data-nosnippet>257</span>                <span class="self">self</span>.levels[height].envelopes[k].visits += <span class="number">1</span>;
+<span data-nosnippet>258</span>                <span class="comment">// Use this node's own upper bound so the cached minimum is exact.
+<span data-nosnippet>259</span>                </span><span class="self">self</span>.fold_at(height - <span class="number">1</span>, start..end, line, upper)
+<span data-nosnippet>260</span>            } <span class="kw">else </span>{
+<span data-nosnippet>261</span>                <span class="self">self</span>.ensure_envelope(height, k, line.<span class="number">0</span>);
+<span data-nosnippet>262</span>                <span class="kw">let </span>(block, line) = <span class="self">self</span>.winning_block(height, k, ancestors);
+<span data-nosnippet>263</span>                i128::from(<span class="self">self</span>.minimum(block, line))
+<span data-nosnippet>264</span>            };
+<span data-nosnippet>265</span>            best = best.min(minimum);
+<span data-nosnippet>266</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>267</span>            node.right = minimum - delta;
+<span data-nosnippet>268</span>            node.left = node.right + step;
+<span data-nosnippet>269</span>            node.spread = <span class="number">0</span>;
+<span data-nosnippet>270</span>        }
+<span data-nosnippet>271</span>        best
+<span data-nosnippet>272</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update_at" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#136-202">Source</a><h4 class="code-header">fn <a href="#method.update_at" class="fn">update_at</a>(
+    &amp;mut self,
+    height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    range: <a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    ancestors: (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>),
+    (slope, intercept): (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>),
+)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,13],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#96-101&#34;,&#34;lines 96-101&#34;],[[86,86],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#174&#34;,&#34;line 174&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#96-101">lines 96-101</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>88</span>    <span class="kw">pub fn </span>update&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R, slope: i64, intercept: i64)
+<span data-nosnippet>89</span>    <span class="kw">where
+<span data-nosnippet>90</span>        </span>R: RangeBounds&lt;usize&gt;,
+<span data-nosnippet>91</span>    {
+<span data-nosnippet>92</span>        <span class="kw">let </span>range = range
+<span data-nosnippet>93</span>            .to_range_bounded(<span class="number">0</span>, <span class="self">self</span>.values.len())
+<span data-nosnippet>94</span>            .expect(<span class="string">"invalid range"</span>);
+<span data-nosnippet>95</span>        <span class="kw">if </span>!range.is_empty() {
+<span data-nosnippet>96</span>            <span class="self">self</span>.<span class="highlight focus">update_at</span>(
+<span data-nosnippet>97</span>                <span class="self">self</span>.levels.len() - <span class="number">1</span>,
+<span data-nosnippet>98</span>                range,
+<span data-nosnippet>99</span>                (<span class="number">0</span>, <span class="number">0</span>),
+<span data-nosnippet>100</span>                (slope.into(), intercept.into()),
+<span data-nosnippet>101</span>            );
+<span data-nosnippet>102</span>        }
+<span data-nosnippet>103</span>    }
+<span data-nosnippet>104</span>
+<span data-nosnippet>105</span>    <span class="doccomment">/// Returns the minimum in the range, or `i64::MAX` for an empty range.
+<span data-nosnippet>106</span>    </span><span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; i64
+<span data-nosnippet>107</span>    <span class="kw">where
+<span data-nosnippet>108</span>        </span>R: RangeBounds&lt;usize&gt;,
+<span data-nosnippet>109</span>    {
+<span data-nosnippet>110</span>        <span class="kw">let </span>range = range
+<span data-nosnippet>111</span>            .to_range_bounded(<span class="number">0</span>, <span class="self">self</span>.values.len())
+<span data-nosnippet>112</span>            .expect(<span class="string">"invalid range"</span>);
+<span data-nosnippet>113</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>114</span>            <span class="kw">return </span>i64::MAX;
+<span data-nosnippet>115</span>        }
+<span data-nosnippet>116</span>        <span class="self">self</span>.fold_at(<span class="self">self</span>.levels.len() - <span class="number">1</span>, range, (<span class="number">0</span>, <span class="number">0</span>), i64::MAX <span class="kw">as </span>i128) <span class="kw">as </span>i64
+<span data-nosnippet>117</span>    }
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">fn </span>split(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;, shift: u32) -&gt; ([Range&lt;usize&gt;; <span class="number">2</span>], Range&lt;usize&gt;) {
+<span data-nosnippet>120</span>        <span class="kw">let </span>mask = (<span class="number">1 </span>&lt;&lt; shift) - <span class="number">1</span>;
+<span data-nosnippet>121</span>        <span class="kw">let </span>n = <span class="self">self</span>.values.len();
+<span data-nosnippet>122</span>        <span class="kw">let </span>l = (range.start + mask) &gt;&gt; shift;
+<span data-nosnippet>123</span>        <span class="kw">let </span>r = (range.end + <span class="kw">if </span>range.end == n { mask } <span class="kw">else </span>{ <span class="number">0 </span>}) &gt;&gt; shift;
+<span data-nosnippet>124</span>        <span class="kw">if </span>l &gt; r {
+<span data-nosnippet>125</span>            <span class="kw">return </span>([range, <span class="number">0</span>..<span class="number">0</span>], l..l);
+<span data-nosnippet>126</span>        }
+<span data-nosnippet>127</span>        (
+<span data-nosnippet>128</span>            [
+<span data-nosnippet>129</span>                range.start..(l &lt;&lt; shift).min(n),
+<span data-nosnippet>130</span>                (r &lt;&lt; shift).min(n)..range.end,
+<span data-nosnippet>131</span>            ],
+<span data-nosnippet>132</span>            l..r,
+<span data-nosnippet>133</span>        )
+<span data-nosnippet>134</span>    }
+<span data-nosnippet>135</span>
+<span data-nosnippet>136</span>    <span class="kw">fn </span>update_at(
+<span data-nosnippet>137</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>138</span>        height: usize,
+<span data-nosnippet>139</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>140</span>        ancestors: Line,
+<span data-nosnippet>141</span>        (slope, intercept): Line,
+<span data-nosnippet>142</span>    ) {
+<span data-nosnippet>143</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>144</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>145</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.split(range, shift);
+<span data-nosnippet>146</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>147</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>148</span>                <span class="kw">continue</span>;
+<span data-nosnippet>149</span>            }
+<span data-nosnippet>150</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>151</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>152</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>153</span>            <span class="kw">let </span>(b, c) = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>154</span>            <span class="kw">let </span>(lower, upper, tag) = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>155</span>                <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>156</span>                <span class="kw">let </span><span class="kw-2">mut </span>minimum = i64::MAX;
+<span data-nosnippet>157</span>                <span class="kw">for </span>(part, b, c) <span class="kw">in </span>[
+<span data-nosnippet>158</span>                    (start..edge.start, b, c),
+<span data-nosnippet>159</span>                    (edge.clone(), b + slope, c + intercept),
+<span data-nosnippet>160</span>                    (edge.end..end, b, c),
+<span data-nosnippet>161</span>                ] {
+<span data-nosnippet>162</span>                    <span class="kw">for </span>(i, x) <span class="kw">in </span>part.clone().zip(<span class="kw-2">&amp;mut </span><span class="self">self</span>.values[part]) {
+<span data-nosnippet>163</span>                        <span class="kw-2">*</span>x = (<span class="kw-2">*</span>x <span class="kw">as </span>i128 + b * i <span class="kw">as </span>i128 + c) <span class="kw">as </span>i64;
+<span data-nosnippet>164</span>                        minimum = minimum.min(<span class="kw-2">*</span>x);
+<span data-nosnippet>165</span>                    }
+<span data-nosnippet>166</span>                }
+<span data-nosnippet>167</span>                <span class="comment">// The raw values now include the ancestors' pending additions.
+<span data-nosnippet>168</span>                </span>(
+<span data-nosnippet>169</span>                    minimum <span class="kw">as </span>i128,
+<span data-nosnippet>170</span>                    minimum <span class="kw">as </span>i128,
+<span data-nosnippet>171</span>                    (-ancestors.<span class="number">0</span>, -ancestors.<span class="number">1</span>),
+<span data-nosnippet>172</span>                )
+<span data-nosnippet>173</span>            } <span class="kw">else </span>{
+<span data-nosnippet>174</span>                <span class="self">self</span>.<span class="highlight">update_at</span>(height - <span class="number">1</span>, edge, (b, c), (slope, intercept));
+<span data-nosnippet>175</span>                <span class="kw">let </span>first = k * FANOUT;
+<span data-nosnippet>176</span>                <span class="kw">let </span>nodes = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height - <span class="number">1</span>].nodes;
+<span data-nosnippet>177</span>                <span class="kw">let </span>(<span class="kw-2">mut </span>lower, <span class="kw-2">mut </span>upper) = (i128::MAX, i128::MAX);
+<span data-nosnippet>178</span>                <span class="kw">for </span>child <span class="kw">in </span><span class="kw-2">&amp;</span>nodes[first..(first + FANOUT).min(nodes.len())] {
+<span data-nosnippet>179</span>                    lower = lower.min(child.left.min(child.right));
+<span data-nosnippet>180</span>                    upper = upper.min(child.left.max(child.right) + child.spread);
+<span data-nosnippet>181</span>                }
+<span data-nosnippet>182</span>                <span class="kw">let </span>envelope = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k];
+<span data-nosnippet>183</span>                envelope.visits = <span class="number">0</span>;
+<span data-nosnippet>184</span>                envelope.switches.clear();
+<span data-nosnippet>185</span>                (lower, upper, tag)
+<span data-nosnippet>186</span>            };
+<span data-nosnippet>187</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>188</span>            node.lazy = tag;
+<span data-nosnippet>189</span>            node.left = lower + tag.<span class="number">0 </span>* start <span class="kw">as </span>i128 + tag.<span class="number">1</span>;
+<span data-nosnippet>190</span>            node.right = node.left + (tag.<span class="number">0 </span>&lt;&lt; shift);
+<span data-nosnippet>191</span>            node.spread = upper - lower;
+<span data-nosnippet>192</span>        }
+<span data-nosnippet>193</span>        <span class="kw">let </span>step = slope &lt;&lt; shift;
+<span data-nosnippet>194</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = slope * (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + intercept;
+<span data-nosnippet>195</span>        <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[full] {
+<span data-nosnippet>196</span>            node.left += delta;
+<span data-nosnippet>197</span>            delta += step;
+<span data-nosnippet>198</span>            node.right += delta;
+<span data-nosnippet>199</span>            node.lazy.<span class="number">0 </span>+= slope;
+<span data-nosnippet>200</span>            node.lazy.<span class="number">1 </span>+= intercept;
+<span data-nosnippet>201</span>        }
+<span data-nosnippet>202</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.fold_at" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#204-272">Source</a><h4 class="code-header">fn <a href="#method.fold_at" class="fn">fold_at</a>(
+    &amp;mut self,
+    height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    range: <a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    ancestors: (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>),
+    best: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[10,10],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#116&#34;,&#34;line 116&#34;],[[128,128],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#234&#34;,&#34;line 234&#34;],[[153,153],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#259&#34;,&#34;line 259&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#116">line 116</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>106</span>    <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; i64
+<span data-nosnippet>107</span>    <span class="kw">where
+<span data-nosnippet>108</span>        </span>R: RangeBounds&lt;usize&gt;,
+<span data-nosnippet>109</span>    {
+<span data-nosnippet>110</span>        <span class="kw">let </span>range = range
+<span data-nosnippet>111</span>            .to_range_bounded(<span class="number">0</span>, <span class="self">self</span>.values.len())
+<span data-nosnippet>112</span>            .expect(<span class="string">"invalid range"</span>);
+<span data-nosnippet>113</span>        <span class="kw">if </span>range.is_empty() {
+<span data-nosnippet>114</span>            <span class="kw">return </span>i64::MAX;
+<span data-nosnippet>115</span>        }
+<span data-nosnippet>116</span>        <span class="self">self</span>.<span class="highlight focus">fold_at</span>(<span class="self">self</span>.levels.len() - <span class="number">1</span>, range, (<span class="number">0</span>, <span class="number">0</span>), i64::MAX <span class="kw">as </span>i128) <span class="kw">as </span>i64
+<span data-nosnippet>117</span>    }
+<span data-nosnippet>118</span>
+<span data-nosnippet>119</span>    <span class="kw">fn </span>split(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;, shift: u32) -&gt; ([Range&lt;usize&gt;; <span class="number">2</span>], Range&lt;usize&gt;) {
+<span data-nosnippet>120</span>        <span class="kw">let </span>mask = (<span class="number">1 </span>&lt;&lt; shift) - <span class="number">1</span>;
+<span data-nosnippet>121</span>        <span class="kw">let </span>n = <span class="self">self</span>.values.len();
+<span data-nosnippet>122</span>        <span class="kw">let </span>l = (range.start + mask) &gt;&gt; shift;
+<span data-nosnippet>123</span>        <span class="kw">let </span>r = (range.end + <span class="kw">if </span>range.end == n { mask } <span class="kw">else </span>{ <span class="number">0 </span>}) &gt;&gt; shift;
+<span data-nosnippet>124</span>        <span class="kw">if </span>l &gt; r {
+<span data-nosnippet>125</span>            <span class="kw">return </span>([range, <span class="number">0</span>..<span class="number">0</span>], l..l);
+<span data-nosnippet>126</span>        }
+<span data-nosnippet>127</span>        (
+<span data-nosnippet>128</span>            [
+<span data-nosnippet>129</span>                range.start..(l &lt;&lt; shift).min(n),
+<span data-nosnippet>130</span>                (r &lt;&lt; shift).min(n)..range.end,
+<span data-nosnippet>131</span>            ],
+<span data-nosnippet>132</span>            l..r,
+<span data-nosnippet>133</span>        )
+<span data-nosnippet>134</span>    }
+<span data-nosnippet>135</span>
+<span data-nosnippet>136</span>    <span class="kw">fn </span>update_at(
+<span data-nosnippet>137</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>138</span>        height: usize,
+<span data-nosnippet>139</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>140</span>        ancestors: Line,
+<span data-nosnippet>141</span>        (slope, intercept): Line,
+<span data-nosnippet>142</span>    ) {
+<span data-nosnippet>143</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>144</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>145</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.split(range, shift);
+<span data-nosnippet>146</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>147</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>148</span>                <span class="kw">continue</span>;
+<span data-nosnippet>149</span>            }
+<span data-nosnippet>150</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>151</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>152</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>153</span>            <span class="kw">let </span>(b, c) = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>154</span>            <span class="kw">let </span>(lower, upper, tag) = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>155</span>                <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>156</span>                <span class="kw">let </span><span class="kw-2">mut </span>minimum = i64::MAX;
+<span data-nosnippet>157</span>                <span class="kw">for </span>(part, b, c) <span class="kw">in </span>[
+<span data-nosnippet>158</span>                    (start..edge.start, b, c),
+<span data-nosnippet>159</span>                    (edge.clone(), b + slope, c + intercept),
+<span data-nosnippet>160</span>                    (edge.end..end, b, c),
+<span data-nosnippet>161</span>                ] {
+<span data-nosnippet>162</span>                    <span class="kw">for </span>(i, x) <span class="kw">in </span>part.clone().zip(<span class="kw-2">&amp;mut </span><span class="self">self</span>.values[part]) {
+<span data-nosnippet>163</span>                        <span class="kw-2">*</span>x = (<span class="kw-2">*</span>x <span class="kw">as </span>i128 + b * i <span class="kw">as </span>i128 + c) <span class="kw">as </span>i64;
+<span data-nosnippet>164</span>                        minimum = minimum.min(<span class="kw-2">*</span>x);
+<span data-nosnippet>165</span>                    }
+<span data-nosnippet>166</span>                }
+<span data-nosnippet>167</span>                <span class="comment">// The raw values now include the ancestors' pending additions.
+<span data-nosnippet>168</span>                </span>(
+<span data-nosnippet>169</span>                    minimum <span class="kw">as </span>i128,
+<span data-nosnippet>170</span>                    minimum <span class="kw">as </span>i128,
+<span data-nosnippet>171</span>                    (-ancestors.<span class="number">0</span>, -ancestors.<span class="number">1</span>),
+<span data-nosnippet>172</span>                )
+<span data-nosnippet>173</span>            } <span class="kw">else </span>{
+<span data-nosnippet>174</span>                <span class="self">self</span>.update_at(height - <span class="number">1</span>, edge, (b, c), (slope, intercept));
+<span data-nosnippet>175</span>                <span class="kw">let </span>first = k * FANOUT;
+<span data-nosnippet>176</span>                <span class="kw">let </span>nodes = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height - <span class="number">1</span>].nodes;
+<span data-nosnippet>177</span>                <span class="kw">let </span>(<span class="kw-2">mut </span>lower, <span class="kw-2">mut </span>upper) = (i128::MAX, i128::MAX);
+<span data-nosnippet>178</span>                <span class="kw">for </span>child <span class="kw">in </span><span class="kw-2">&amp;</span>nodes[first..(first + FANOUT).min(nodes.len())] {
+<span data-nosnippet>179</span>                    lower = lower.min(child.left.min(child.right));
+<span data-nosnippet>180</span>                    upper = upper.min(child.left.max(child.right) + child.spread);
+<span data-nosnippet>181</span>                }
+<span data-nosnippet>182</span>                <span class="kw">let </span>envelope = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k];
+<span data-nosnippet>183</span>                envelope.visits = <span class="number">0</span>;
+<span data-nosnippet>184</span>                envelope.switches.clear();
+<span data-nosnippet>185</span>                (lower, upper, tag)
+<span data-nosnippet>186</span>            };
+<span data-nosnippet>187</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>188</span>            node.lazy = tag;
+<span data-nosnippet>189</span>            node.left = lower + tag.<span class="number">0 </span>* start <span class="kw">as </span>i128 + tag.<span class="number">1</span>;
+<span data-nosnippet>190</span>            node.right = node.left + (tag.<span class="number">0 </span>&lt;&lt; shift);
+<span data-nosnippet>191</span>            node.spread = upper - lower;
+<span data-nosnippet>192</span>        }
+<span data-nosnippet>193</span>        <span class="kw">let </span>step = slope &lt;&lt; shift;
+<span data-nosnippet>194</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = slope * (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + intercept;
+<span data-nosnippet>195</span>        <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[full] {
+<span data-nosnippet>196</span>            node.left += delta;
+<span data-nosnippet>197</span>            delta += step;
+<span data-nosnippet>198</span>            node.right += delta;
+<span data-nosnippet>199</span>            node.lazy.<span class="number">0 </span>+= slope;
+<span data-nosnippet>200</span>            node.lazy.<span class="number">1 </span>+= intercept;
+<span data-nosnippet>201</span>        }
+<span data-nosnippet>202</span>    }
+<span data-nosnippet>203</span>
+<span data-nosnippet>204</span>    <span class="kw">fn </span>fold_at(
+<span data-nosnippet>205</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>206</span>        height: usize,
+<span data-nosnippet>207</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>208</span>        ancestors: Line,
+<span data-nosnippet>209</span>        <span class="kw-2">mut </span>best: i128,
+<span data-nosnippet>210</span>    ) -&gt; i128 {
+<span data-nosnippet>211</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>212</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>213</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.split(range, shift);
+<span data-nosnippet>214</span>        <span class="kw">let </span>step = ancestors.<span class="number">0 </span>&lt;&lt; shift;
+<span data-nosnippet>215</span>        <span class="kw">let </span>initial = ancestors.<span class="number">0 </span>* (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + ancestors.<span class="number">1</span>;
+<span data-nosnippet>216</span>        <span class="kw">if </span>height != <span class="number">0 </span>{
+<span data-nosnippet>217</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>218</span>            <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[full.clone()] {
+<span data-nosnippet>219</span>                <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>220</span>                delta += step;
+<span data-nosnippet>221</span>                best = best.min(left.max(node.right + delta) + node.spread);
+<span data-nosnippet>222</span>            }
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>225</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>226</span>                <span class="kw">continue</span>;
+<span data-nosnippet>227</span>            }
+<span data-nosnippet>228</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>229</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>230</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>231</span>            best = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>232</span>                best.min(<span class="self">self</span>.minimum(edge, line) <span class="kw">as </span>i128)
+<span data-nosnippet>233</span>            } <span class="kw">else </span>{
+<span data-nosnippet>234</span>                <span class="self">self</span>.<span class="highlight">fold_at</span>(height - <span class="number">1</span>, edge, line, best)
+<span data-nosnippet>235</span>            };
+<span data-nosnippet>236</span>        }
+<span data-nosnippet>237</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>238</span>        <span class="kw">for </span>k <span class="kw">in </span>full {
+<span data-nosnippet>239</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>240</span>            <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>241</span>            delta += step;
+<span data-nosnippet>242</span>            <span class="kw">let </span>right = node.right + delta;
+<span data-nosnippet>243</span>            <span class="kw">if </span>left.min(right) &gt;= best {
+<span data-nosnippet>244</span>                <span class="kw">continue</span>;
+<span data-nosnippet>245</span>            }
+<span data-nosnippet>246</span>            <span class="kw">if </span>left == right &amp;&amp; node.spread == <span class="number">0 </span>{
+<span data-nosnippet>247</span>                best = left;
+<span data-nosnippet>248</span>                <span class="kw">continue</span>;
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>251</span>            <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>252</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ node.lazy.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ node.lazy.<span class="number">1</span>);
+<span data-nosnippet>253</span>            <span class="kw">let </span>upper = left.max(right) + node.spread;
+<span data-nosnippet>254</span>            <span class="kw">let </span>minimum = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>255</span>                i128::from(<span class="self">self</span>.minimum(start..end, line))
+<span data-nosnippet>256</span>            } <span class="kw">else if </span><span class="self">self</span>.levels[height].envelopes[k].visits &lt; SCAN_LIMIT {
+<span data-nosnippet>257</span>                <span class="self">self</span>.levels[height].envelopes[k].visits += <span class="number">1</span>;
+<span data-nosnippet>258</span>                <span class="comment">// Use this node's own upper bound so the cached minimum is exact.
+<span data-nosnippet>259</span>                </span><span class="self">self</span>.<span class="highlight">fold_at</span>(height - <span class="number">1</span>, start..end, line, upper)
+<span data-nosnippet>260</span>            } <span class="kw">else </span>{
+<span data-nosnippet>261</span>                <span class="self">self</span>.ensure_envelope(height, k, line.<span class="number">0</span>);
+<span data-nosnippet>262</span>                <span class="kw">let </span>(block, line) = <span class="self">self</span>.winning_block(height, k, ancestors);
+<span data-nosnippet>263</span>                i128::from(<span class="self">self</span>.minimum(block, line))
+<span data-nosnippet>264</span>            };
+<span data-nosnippet>265</span>            best = best.min(minimum);
+<span data-nosnippet>266</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>267</span>            node.right = minimum - delta;
+<span data-nosnippet>268</span>            node.left = node.right + step;
+<span data-nosnippet>269</span>            node.spread = <span class="number">0</span>;
+<span data-nosnippet>270</span>        }
+<span data-nosnippet>271</span>        best
+<span data-nosnippet>272</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.minimum" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#274-281">Source</a><h4 class="code-header">fn <a href="#method.minimum" class="fn">minimum</a>(&amp;self, range: <a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, (b, c): (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>)) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[28,28],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#232&#34;,&#34;line 232&#34;],[[51,51],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#255&#34;,&#34;line 255&#34;],[[59,59],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#263&#34;,&#34;line 263&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#232">line 232</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>204</span>    <span class="kw">fn </span>fold_at(
+<span data-nosnippet>205</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>206</span>        height: usize,
+<span data-nosnippet>207</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>208</span>        ancestors: Line,
+<span data-nosnippet>209</span>        <span class="kw-2">mut </span>best: i128,
+<span data-nosnippet>210</span>    ) -&gt; i128 {
+<span data-nosnippet>211</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>212</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>213</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.split(range, shift);
+<span data-nosnippet>214</span>        <span class="kw">let </span>step = ancestors.<span class="number">0 </span>&lt;&lt; shift;
+<span data-nosnippet>215</span>        <span class="kw">let </span>initial = ancestors.<span class="number">0 </span>* (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + ancestors.<span class="number">1</span>;
+<span data-nosnippet>216</span>        <span class="kw">if </span>height != <span class="number">0 </span>{
+<span data-nosnippet>217</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>218</span>            <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[full.clone()] {
+<span data-nosnippet>219</span>                <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>220</span>                delta += step;
+<span data-nosnippet>221</span>                best = best.min(left.max(node.right + delta) + node.spread);
+<span data-nosnippet>222</span>            }
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>225</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>226</span>                <span class="kw">continue</span>;
+<span data-nosnippet>227</span>            }
+<span data-nosnippet>228</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>229</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>230</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>231</span>            best = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>232</span>                best.min(<span class="self">self</span>.<span class="highlight focus">minimum</span>(edge, line) <span class="kw">as </span>i128)
+<span data-nosnippet>233</span>            } <span class="kw">else </span>{
+<span data-nosnippet>234</span>                <span class="self">self</span>.fold_at(height - <span class="number">1</span>, edge, line, best)
+<span data-nosnippet>235</span>            };
+<span data-nosnippet>236</span>        }
+<span data-nosnippet>237</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>238</span>        <span class="kw">for </span>k <span class="kw">in </span>full {
+<span data-nosnippet>239</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>240</span>            <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>241</span>            delta += step;
+<span data-nosnippet>242</span>            <span class="kw">let </span>right = node.right + delta;
+<span data-nosnippet>243</span>            <span class="kw">if </span>left.min(right) &gt;= best {
+<span data-nosnippet>244</span>                <span class="kw">continue</span>;
+<span data-nosnippet>245</span>            }
+<span data-nosnippet>246</span>            <span class="kw">if </span>left == right &amp;&amp; node.spread == <span class="number">0 </span>{
+<span data-nosnippet>247</span>                best = left;
+<span data-nosnippet>248</span>                <span class="kw">continue</span>;
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>251</span>            <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>252</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ node.lazy.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ node.lazy.<span class="number">1</span>);
+<span data-nosnippet>253</span>            <span class="kw">let </span>upper = left.max(right) + node.spread;
+<span data-nosnippet>254</span>            <span class="kw">let </span>minimum = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>255</span>                i128::from(<span class="self">self</span>.<span class="highlight">minimum</span>(start..end, line))
+<span data-nosnippet>256</span>            } <span class="kw">else if </span><span class="self">self</span>.levels[height].envelopes[k].visits &lt; SCAN_LIMIT {
+<span data-nosnippet>257</span>                <span class="self">self</span>.levels[height].envelopes[k].visits += <span class="number">1</span>;
+<span data-nosnippet>258</span>                <span class="comment">// Use this node's own upper bound so the cached minimum is exact.
+<span data-nosnippet>259</span>                </span><span class="self">self</span>.fold_at(height - <span class="number">1</span>, start..end, line, upper)
+<span data-nosnippet>260</span>            } <span class="kw">else </span>{
+<span data-nosnippet>261</span>                <span class="self">self</span>.ensure_envelope(height, k, line.<span class="number">0</span>);
+<span data-nosnippet>262</span>                <span class="kw">let </span>(block, line) = <span class="self">self</span>.winning_block(height, k, ancestors);
+<span data-nosnippet>263</span>                i128::from(<span class="self">self</span>.<span class="highlight">minimum</span>(block, line))
+<span data-nosnippet>264</span>            };
+<span data-nosnippet>265</span>            best = best.min(minimum);
+<span data-nosnippet>266</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>267</span>            node.right = minimum - delta;
+<span data-nosnippet>268</span>            node.left = node.right + step;
+<span data-nosnippet>269</span>            node.spread = <span class="number">0</span>;
+<span data-nosnippet>270</span>        }
+<span data-nosnippet>271</span>        best
+<span data-nosnippet>272</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.winning_block" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#283-303">Source</a><h4 class="code-header">fn <a href="#method.winning_block" class="fn">winning_block</a>(
+    &amp;self,
+    height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    (slope, intercept): (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>),
+) -&gt; (<a class="struct" href="../dary_affine_kernel/dary_affine_arithmetic/struct.Range.html" title="struct competitive::data_structure::dary_affine_kernel::dary_affine_arithmetic::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>))</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[58,58],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#262&#34;,&#34;line 262&#34;],[[102,102],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#306&#34;,&#34;line 306&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#262">line 262</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>204</span>    <span class="kw">fn </span>fold_at(
+<span data-nosnippet>205</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>206</span>        height: usize,
+<span data-nosnippet>207</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>208</span>        ancestors: Line,
+<span data-nosnippet>209</span>        <span class="kw-2">mut </span>best: i128,
+<span data-nosnippet>210</span>    ) -&gt; i128 {
+<span data-nosnippet>211</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>212</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>213</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.split(range, shift);
+<span data-nosnippet>214</span>        <span class="kw">let </span>step = ancestors.<span class="number">0 </span>&lt;&lt; shift;
+<span data-nosnippet>215</span>        <span class="kw">let </span>initial = ancestors.<span class="number">0 </span>* (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + ancestors.<span class="number">1</span>;
+<span data-nosnippet>216</span>        <span class="kw">if </span>height != <span class="number">0 </span>{
+<span data-nosnippet>217</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>218</span>            <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[full.clone()] {
+<span data-nosnippet>219</span>                <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>220</span>                delta += step;
+<span data-nosnippet>221</span>                best = best.min(left.max(node.right + delta) + node.spread);
+<span data-nosnippet>222</span>            }
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>225</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>226</span>                <span class="kw">continue</span>;
+<span data-nosnippet>227</span>            }
+<span data-nosnippet>228</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>229</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>230</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>231</span>            best = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>232</span>                best.min(<span class="self">self</span>.minimum(edge, line) <span class="kw">as </span>i128)
+<span data-nosnippet>233</span>            } <span class="kw">else </span>{
+<span data-nosnippet>234</span>                <span class="self">self</span>.fold_at(height - <span class="number">1</span>, edge, line, best)
+<span data-nosnippet>235</span>            };
+<span data-nosnippet>236</span>        }
+<span data-nosnippet>237</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>238</span>        <span class="kw">for </span>k <span class="kw">in </span>full {
+<span data-nosnippet>239</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>240</span>            <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>241</span>            delta += step;
+<span data-nosnippet>242</span>            <span class="kw">let </span>right = node.right + delta;
+<span data-nosnippet>243</span>            <span class="kw">if </span>left.min(right) &gt;= best {
+<span data-nosnippet>244</span>                <span class="kw">continue</span>;
+<span data-nosnippet>245</span>            }
+<span data-nosnippet>246</span>            <span class="kw">if </span>left == right &amp;&amp; node.spread == <span class="number">0 </span>{
+<span data-nosnippet>247</span>                best = left;
+<span data-nosnippet>248</span>                <span class="kw">continue</span>;
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>251</span>            <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>252</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ node.lazy.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ node.lazy.<span class="number">1</span>);
+<span data-nosnippet>253</span>            <span class="kw">let </span>upper = left.max(right) + node.spread;
+<span data-nosnippet>254</span>            <span class="kw">let </span>minimum = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>255</span>                i128::from(<span class="self">self</span>.minimum(start..end, line))
+<span data-nosnippet>256</span>            } <span class="kw">else if </span><span class="self">self</span>.levels[height].envelopes[k].visits &lt; SCAN_LIMIT {
+<span data-nosnippet>257</span>                <span class="self">self</span>.levels[height].envelopes[k].visits += <span class="number">1</span>;
+<span data-nosnippet>258</span>                <span class="comment">// Use this node's own upper bound so the cached minimum is exact.
+<span data-nosnippet>259</span>                </span><span class="self">self</span>.fold_at(height - <span class="number">1</span>, start..end, line, upper)
+<span data-nosnippet>260</span>            } <span class="kw">else </span>{
+<span data-nosnippet>261</span>                <span class="self">self</span>.ensure_envelope(height, k, line.<span class="number">0</span>);
+<span data-nosnippet>262</span>                <span class="kw">let </span>(block, line) = <span class="self">self</span>.<span class="highlight focus">winning_block</span>(height, k, ancestors);
+<span data-nosnippet>263</span>                i128::from(<span class="self">self</span>.minimum(block, line))
+<span data-nosnippet>264</span>            };
+<span data-nosnippet>265</span>            best = best.min(minimum);
+<span data-nosnippet>266</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>267</span>            node.right = minimum - delta;
+<span data-nosnippet>268</span>            node.left = node.right + step;
+<span data-nosnippet>269</span>            node.spread = <span class="number">0</span>;
+<span data-nosnippet>270</span>        }
+<span data-nosnippet>271</span>        best
+<span data-nosnippet>272</span>    }
+<span data-nosnippet>273</span>
+<span data-nosnippet>274</span>    <span class="kw">fn </span>minimum(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;, (b, c): Line) -&gt; i64 {
+<span data-nosnippet>275</span>        range
+<span data-nosnippet>276</span>            .clone()
+<span data-nosnippet>277</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.values[range])
+<span data-nosnippet>278</span>            .map(|(i, <span class="kw-2">&amp;</span>v)| (v <span class="kw">as </span>i128 + b * i <span class="kw">as </span>i128 + c) <span class="kw">as </span>i64)
+<span data-nosnippet>279</span>            .min()
+<span data-nosnippet>280</span>            .unwrap()
+<span data-nosnippet>281</span>    }
+<span data-nosnippet>282</span>
+<span data-nosnippet>283</span>    <span class="kw">fn </span>winning_block(
+<span data-nosnippet>284</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>285</span>        <span class="kw-2">mut </span>height: usize,
+<span data-nosnippet>286</span>        <span class="kw-2">mut </span>k: usize,
+<span data-nosnippet>287</span>        (<span class="kw-2">mut </span>slope, <span class="kw-2">mut </span>intercept): Line,
+<span data-nosnippet>288</span>    ) -&gt; (Range&lt;usize&gt;, Line) {
+<span data-nosnippet>289</span>        <span class="kw">while </span>height &gt; <span class="number">0 </span>{
+<span data-nosnippet>290</span>            <span class="kw">let </span>level = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height];
+<span data-nosnippet>291</span>            <span class="kw">let </span>(a, b) = level.nodes[k].lazy;
+<span data-nosnippet>292</span>            slope += a;
+<span data-nosnippet>293</span>            intercept += b;
+<span data-nosnippet>294</span>            <span class="kw">let </span>switches = <span class="kw-2">&amp;</span>level.envelopes[k].switches;
+<span data-nosnippet>295</span>            <span class="kw">let </span>i = switches[<span class="number">1</span>..].partition_point(|<span class="kw-2">&amp;</span>(cut, <span class="kw">_</span>)| slope &lt; cut);
+<span data-nosnippet>296</span>            k = switches[i].<span class="number">1</span>;
+<span data-nosnippet>297</span>            height -= <span class="number">1</span>;
+<span data-nosnippet>298</span>        }
+<span data-nosnippet>299</span>        <span class="kw">let </span>start = k &lt;&lt; BLOCK_SHIFT;
+<span data-nosnippet>300</span>        <span class="kw">let </span>end = (start + (<span class="number">1 </span>&lt;&lt; BLOCK_SHIFT)).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>301</span>        <span class="kw">let </span>(a, b) = <span class="self">self</span>.levels[<span class="number">0</span>].nodes[k].lazy;
+<span data-nosnippet>302</span>        (start..end, (slope + a, intercept + b))
+<span data-nosnippet>303</span>    }
+<span data-nosnippet>304</span>
+<span data-nosnippet>305</span>    <span class="kw">fn </span>support(<span class="kw-2">&amp;</span><span class="self">self</span>, height: usize, k: usize, slope: i128) -&gt; (usize, i128) {
+<span data-nosnippet>306</span>        <span class="kw">let </span>(range, (a, b)) = <span class="self">self</span>.<span class="highlight">winning_block</span>(height, k, (slope, <span class="number">0</span>));
+<span data-nosnippet>307</span>        <span class="comment">// Trial slopes in a crossing search can give values outside i64.
+<span data-nosnippet>308</span>        </span>range
+<span data-nosnippet>309</span>            .clone()
+<span data-nosnippet>310</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.values[range])
+<span data-nosnippet>311</span>            .map(|(x, <span class="kw-2">&amp;</span>y)| (x, i128::from(y) + a * x <span class="kw">as </span>i128 + b))
+<span data-nosnippet>312</span>            .min_by_key(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, y)| y)
+<span data-nosnippet>313</span>            .unwrap()
+<span data-nosnippet>314</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.support" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#305-314">Source</a><h4 class="code-header">fn <a href="#method.support" class="fn">support</a>(&amp;self, height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, slope: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>) -&gt; (<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#322&#34;,&#34;line 322&#34;],[[5,5],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#323&#34;,&#34;line 323&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#322">line 322</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>318</span>    <span class="kw">fn </span>crossing(<span class="kw-2">&amp;</span><span class="self">self</span>, height: usize, left: usize, right: usize, <span class="kw-2">mut </span>slope: i128) -&gt; i128 {
+<span data-nosnippet>319</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>lo, <span class="kw-2">mut </span>hi) = (i128::MIN, i128::MAX);
+<span data-nosnippet>320</span>        <span class="kw">let </span><span class="kw-2">mut </span>secant = <span class="bool-val">true</span>;
+<span data-nosnippet>321</span>        <span class="kw">loop </span>{
+<span data-nosnippet>322</span>            <span class="kw">let </span>(x, y) = <span class="self">self</span>.<span class="highlight focus">support</span>(height, left, slope);
+<span data-nosnippet>323</span>            <span class="kw">let </span>(z, w) = <span class="self">self</span>.<span class="highlight">support</span>(height, right, slope);
+<span data-nosnippet>324</span>            <span class="kw">let </span>gap = w - y;
+<span data-nosnippet>325</span>            <span class="kw">if </span>gap == <span class="number">0 </span>{
+<span data-nosnippet>326</span>                <span class="kw">return </span>slope;
+<span data-nosnippet>327</span>            }
+<span data-nosnippet>328</span>            <span class="kw">if </span>gap &gt; <span class="number">0 </span>{
+<span data-nosnippet>329</span>                hi = slope;
+<span data-nosnippet>330</span>                lo = lo.max(slope - gap - <span class="number">1</span>);
+<span data-nosnippet>331</span>            } <span class="kw">else </span>{
+<span data-nosnippet>332</span>                lo = slope;
+<span data-nosnippet>333</span>                hi = hi.min(slope - gap);
+<span data-nosnippet>334</span>            }
+<span data-nosnippet>335</span>            <span class="kw">if </span>hi - lo == <span class="number">1 </span>{
+<span data-nosnippet>336</span>                <span class="kw">return </span>hi;
+<span data-nosnippet>337</span>            }
+<span data-nosnippet>338</span>            slope = <span class="kw">if </span>secant {
+<span data-nosnippet>339</span>                <span class="kw">let </span>dx = (z - x) <span class="kw">as </span>i128;
+<span data-nosnippet>340</span>                <span class="kw">let </span>q = gap.div_euclid(dx);
+<span data-nosnippet>341</span>                (slope - q).clamp(lo + <span class="number">1</span>, hi - <span class="number">1</span>)
+<span data-nosnippet>342</span>            } <span class="kw">else </span>{
+<span data-nosnippet>343</span>                lo + (hi - lo) / <span class="number">2
+<span data-nosnippet>344</span>            </span>};
+<span data-nosnippet>345</span>            secant = !secant;
+<span data-nosnippet>346</span>        }
+<span data-nosnippet>347</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.crossing" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#318-347">Source</a><h4 class="code-header">fn <a href="#method.crossing" class="fn">crossing</a>(
+    &amp;self,
+    height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    left: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    right: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    slope: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-9"><a href="#scraped-examples-9">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[18,18],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#367&#34;,&#34;line 367&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#367">line 367</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>349</span>    <span class="kw">fn </span>ensure_envelope(<span class="kw-2">&amp;mut </span><span class="self">self</span>, height: usize, k: usize, slope: i128) {
+<span data-nosnippet>350</span>        <span class="kw">if </span>!<span class="self">self</span>.levels[height].envelopes[k].switches.is_empty() {
+<span data-nosnippet>351</span>            <span class="kw">return</span>;
+<span data-nosnippet>352</span>        }
+<span data-nosnippet>353</span>        <span class="kw">let </span><span class="kw-2">mut </span>table = std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k].switches);
+<span data-nosnippet>354</span>        <span class="kw">let </span>first = k * FANOUT;
+<span data-nosnippet>355</span>        <span class="kw">for </span>child <span class="kw">in </span>first..(first + FANOUT).min(<span class="self">self</span>.levels[height - <span class="number">1</span>].nodes.len()) {
+<span data-nosnippet>356</span>            <span class="kw">if </span>height &gt; <span class="number">1 </span>{
+<span data-nosnippet>357</span>                <span class="self">self</span>.ensure_envelope(
+<span data-nosnippet>358</span>                    height - <span class="number">1</span>,
+<span data-nosnippet>359</span>                    child,
+<span data-nosnippet>360</span>                    slope + <span class="self">self</span>.levels[height - <span class="number">1</span>].nodes[child].lazy.<span class="number">0</span>,
+<span data-nosnippet>361</span>                );
+<span data-nosnippet>362</span>            }
+<span data-nosnippet>363</span>            <span class="kw">let </span>cut = <span class="kw">loop </span>{
+<span data-nosnippet>364</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(prev, old)) = table.last() <span class="kw">else </span>{
+<span data-nosnippet>365</span>                    <span class="kw">break </span>i128::MAX;
+<span data-nosnippet>366</span>                };
+<span data-nosnippet>367</span>                <span class="kw">let </span>cut = <span class="self">self</span>.<span class="highlight focus">crossing</span>(height - <span class="number">1</span>, old, child, slope);
+<span data-nosnippet>368</span>                <span class="kw">if </span>cut &lt; prev {
+<span data-nosnippet>369</span>                    <span class="kw">break </span>cut;
+<span data-nosnippet>370</span>                }
+<span data-nosnippet>371</span>                <span class="comment">// The previous child has no winning integer slope.
+<span data-nosnippet>372</span>                </span>table.pop();
+<span data-nosnippet>373</span>            };
+<span data-nosnippet>374</span>            table.push((cut, child));
+<span data-nosnippet>375</span>        }
+<span data-nosnippet>376</span>        <span class="kw">let </span>envelope = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k];
+<span data-nosnippet>377</span>        envelope.visits = SCAN_LIMIT;
+<span data-nosnippet>378</span>        envelope.switches = table;
+<span data-nosnippet>379</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.ensure_envelope" class="method"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#349-379">Source</a><h4 class="code-header">fn <a href="#method.ensure_envelope" class="fn">ensure_envelope</a>(&amp;mut self, height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, slope: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[57,57],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#261&#34;,&#34;line 261&#34;],[[153,157],&#34;../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#357-361&#34;,&#34;lines 357-361&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/range_linear_add_range_min.rs (<a href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#261">line 261</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>204</span>    <span class="kw">fn </span>fold_at(
+<span data-nosnippet>205</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>206</span>        height: usize,
+<span data-nosnippet>207</span>        range: Range&lt;usize&gt;,
+<span data-nosnippet>208</span>        ancestors: Line,
+<span data-nosnippet>209</span>        <span class="kw-2">mut </span>best: i128,
+<span data-nosnippet>210</span>    ) -&gt; i128 {
+<span data-nosnippet>211</span>        <span class="kw">let </span>shift = <span class="self">self</span>.levels[height].shift;
+<span data-nosnippet>212</span>        <span class="kw">let </span>width = <span class="number">1 </span>&lt;&lt; shift;
+<span data-nosnippet>213</span>        <span class="kw">let </span>(edges, full) = <span class="self">self</span>.split(range, shift);
+<span data-nosnippet>214</span>        <span class="kw">let </span>step = ancestors.<span class="number">0 </span>&lt;&lt; shift;
+<span data-nosnippet>215</span>        <span class="kw">let </span>initial = ancestors.<span class="number">0 </span>* (full.start &lt;&lt; shift) <span class="kw">as </span>i128 + ancestors.<span class="number">1</span>;
+<span data-nosnippet>216</span>        <span class="kw">if </span>height != <span class="number">0 </span>{
+<span data-nosnippet>217</span>            <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>218</span>            <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[full.clone()] {
+<span data-nosnippet>219</span>                <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>220</span>                delta += step;
+<span data-nosnippet>221</span>                best = best.min(left.max(node.right + delta) + node.spread);
+<span data-nosnippet>222</span>            }
+<span data-nosnippet>223</span>        }
+<span data-nosnippet>224</span>        <span class="kw">for </span>edge <span class="kw">in </span>edges {
+<span data-nosnippet>225</span>            <span class="kw">if </span>edge.is_empty() {
+<span data-nosnippet>226</span>                <span class="kw">continue</span>;
+<span data-nosnippet>227</span>            }
+<span data-nosnippet>228</span>            <span class="kw">let </span>k = edge.start &gt;&gt; shift;
+<span data-nosnippet>229</span>            <span class="kw">let </span>tag = <span class="self">self</span>.levels[height].nodes[k].lazy;
+<span data-nosnippet>230</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ tag.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ tag.<span class="number">1</span>);
+<span data-nosnippet>231</span>            best = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>232</span>                best.min(<span class="self">self</span>.minimum(edge, line) <span class="kw">as </span>i128)
+<span data-nosnippet>233</span>            } <span class="kw">else </span>{
+<span data-nosnippet>234</span>                <span class="self">self</span>.fold_at(height - <span class="number">1</span>, edge, line, best)
+<span data-nosnippet>235</span>            };
+<span data-nosnippet>236</span>        }
+<span data-nosnippet>237</span>        <span class="kw">let </span><span class="kw-2">mut </span>delta = initial;
+<span data-nosnippet>238</span>        <span class="kw">for </span>k <span class="kw">in </span>full {
+<span data-nosnippet>239</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>240</span>            <span class="kw">let </span>left = node.left + delta;
+<span data-nosnippet>241</span>            delta += step;
+<span data-nosnippet>242</span>            <span class="kw">let </span>right = node.right + delta;
+<span data-nosnippet>243</span>            <span class="kw">if </span>left.min(right) &gt;= best {
+<span data-nosnippet>244</span>                <span class="kw">continue</span>;
+<span data-nosnippet>245</span>            }
+<span data-nosnippet>246</span>            <span class="kw">if </span>left == right &amp;&amp; node.spread == <span class="number">0 </span>{
+<span data-nosnippet>247</span>                best = left;
+<span data-nosnippet>248</span>                <span class="kw">continue</span>;
+<span data-nosnippet>249</span>            }
+<span data-nosnippet>250</span>            <span class="kw">let </span>start = k &lt;&lt; shift;
+<span data-nosnippet>251</span>            <span class="kw">let </span>end = (start + width).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>252</span>            <span class="kw">let </span>line = (ancestors.<span class="number">0 </span>+ node.lazy.<span class="number">0</span>, ancestors.<span class="number">1 </span>+ node.lazy.<span class="number">1</span>);
+<span data-nosnippet>253</span>            <span class="kw">let </span>upper = left.max(right) + node.spread;
+<span data-nosnippet>254</span>            <span class="kw">let </span>minimum = <span class="kw">if </span>height == <span class="number">0 </span>{
+<span data-nosnippet>255</span>                i128::from(<span class="self">self</span>.minimum(start..end, line))
+<span data-nosnippet>256</span>            } <span class="kw">else if </span><span class="self">self</span>.levels[height].envelopes[k].visits &lt; SCAN_LIMIT {
+<span data-nosnippet>257</span>                <span class="self">self</span>.levels[height].envelopes[k].visits += <span class="number">1</span>;
+<span data-nosnippet>258</span>                <span class="comment">// Use this node's own upper bound so the cached minimum is exact.
+<span data-nosnippet>259</span>                </span><span class="self">self</span>.fold_at(height - <span class="number">1</span>, start..end, line, upper)
+<span data-nosnippet>260</span>            } <span class="kw">else </span>{
+<span data-nosnippet>261</span>                <span class="self">self</span>.<span class="highlight focus">ensure_envelope</span>(height, k, line.<span class="number">0</span>);
+<span data-nosnippet>262</span>                <span class="kw">let </span>(block, line) = <span class="self">self</span>.winning_block(height, k, ancestors);
+<span data-nosnippet>263</span>                i128::from(<span class="self">self</span>.minimum(block, line))
+<span data-nosnippet>264</span>            };
+<span data-nosnippet>265</span>            best = best.min(minimum);
+<span data-nosnippet>266</span>            <span class="kw">let </span>node = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].nodes[k];
+<span data-nosnippet>267</span>            node.right = minimum - delta;
+<span data-nosnippet>268</span>            node.left = node.right + step;
+<span data-nosnippet>269</span>            node.spread = <span class="number">0</span>;
+<span data-nosnippet>270</span>        }
+<span data-nosnippet>271</span>        best
+<span data-nosnippet>272</span>    }
+<span data-nosnippet>273</span>
+<span data-nosnippet>274</span>    <span class="kw">fn </span>minimum(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;, (b, c): Line) -&gt; i64 {
+<span data-nosnippet>275</span>        range
+<span data-nosnippet>276</span>            .clone()
+<span data-nosnippet>277</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.values[range])
+<span data-nosnippet>278</span>            .map(|(i, <span class="kw-2">&amp;</span>v)| (v <span class="kw">as </span>i128 + b * i <span class="kw">as </span>i128 + c) <span class="kw">as </span>i64)
+<span data-nosnippet>279</span>            .min()
+<span data-nosnippet>280</span>            .unwrap()
+<span data-nosnippet>281</span>    }
+<span data-nosnippet>282</span>
+<span data-nosnippet>283</span>    <span class="kw">fn </span>winning_block(
+<span data-nosnippet>284</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>285</span>        <span class="kw-2">mut </span>height: usize,
+<span data-nosnippet>286</span>        <span class="kw-2">mut </span>k: usize,
+<span data-nosnippet>287</span>        (<span class="kw-2">mut </span>slope, <span class="kw-2">mut </span>intercept): Line,
+<span data-nosnippet>288</span>    ) -&gt; (Range&lt;usize&gt;, Line) {
+<span data-nosnippet>289</span>        <span class="kw">while </span>height &gt; <span class="number">0 </span>{
+<span data-nosnippet>290</span>            <span class="kw">let </span>level = <span class="kw-2">&amp;</span><span class="self">self</span>.levels[height];
+<span data-nosnippet>291</span>            <span class="kw">let </span>(a, b) = level.nodes[k].lazy;
+<span data-nosnippet>292</span>            slope += a;
+<span data-nosnippet>293</span>            intercept += b;
+<span data-nosnippet>294</span>            <span class="kw">let </span>switches = <span class="kw-2">&amp;</span>level.envelopes[k].switches;
+<span data-nosnippet>295</span>            <span class="kw">let </span>i = switches[<span class="number">1</span>..].partition_point(|<span class="kw-2">&amp;</span>(cut, <span class="kw">_</span>)| slope &lt; cut);
+<span data-nosnippet>296</span>            k = switches[i].<span class="number">1</span>;
+<span data-nosnippet>297</span>            height -= <span class="number">1</span>;
+<span data-nosnippet>298</span>        }
+<span data-nosnippet>299</span>        <span class="kw">let </span>start = k &lt;&lt; BLOCK_SHIFT;
+<span data-nosnippet>300</span>        <span class="kw">let </span>end = (start + (<span class="number">1 </span>&lt;&lt; BLOCK_SHIFT)).min(<span class="self">self</span>.values.len());
+<span data-nosnippet>301</span>        <span class="kw">let </span>(a, b) = <span class="self">self</span>.levels[<span class="number">0</span>].nodes[k].lazy;
+<span data-nosnippet>302</span>        (start..end, (slope + a, intercept + b))
+<span data-nosnippet>303</span>    }
+<span data-nosnippet>304</span>
+<span data-nosnippet>305</span>    <span class="kw">fn </span>support(<span class="kw-2">&amp;</span><span class="self">self</span>, height: usize, k: usize, slope: i128) -&gt; (usize, i128) {
+<span data-nosnippet>306</span>        <span class="kw">let </span>(range, (a, b)) = <span class="self">self</span>.winning_block(height, k, (slope, <span class="number">0</span>));
+<span data-nosnippet>307</span>        <span class="comment">// Trial slopes in a crossing search can give values outside i64.
+<span data-nosnippet>308</span>        </span>range
+<span data-nosnippet>309</span>            .clone()
+<span data-nosnippet>310</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.values[range])
+<span data-nosnippet>311</span>            .map(|(x, <span class="kw-2">&amp;</span>y)| (x, i128::from(y) + a * x <span class="kw">as </span>i128 + b))
+<span data-nosnippet>312</span>            .min_by_key(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, y)| y)
+<span data-nosnippet>313</span>            .unwrap()
+<span data-nosnippet>314</span>    }
+<span data-nosnippet>315</span>
+<span data-nosnippet>316</span>    <span class="comment">// First integer slope with left_min &lt;= right_min. Larger right indices
+<span data-nosnippet>317</span>    // make right_min - left_min increase by at least one per slope step.
+<span data-nosnippet>318</span>    </span><span class="kw">fn </span>crossing(<span class="kw-2">&amp;</span><span class="self">self</span>, height: usize, left: usize, right: usize, <span class="kw-2">mut </span>slope: i128) -&gt; i128 {
+<span data-nosnippet>319</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>lo, <span class="kw-2">mut </span>hi) = (i128::MIN, i128::MAX);
+<span data-nosnippet>320</span>        <span class="kw">let </span><span class="kw-2">mut </span>secant = <span class="bool-val">true</span>;
+<span data-nosnippet>321</span>        <span class="kw">loop </span>{
+<span data-nosnippet>322</span>            <span class="kw">let </span>(x, y) = <span class="self">self</span>.support(height, left, slope);
+<span data-nosnippet>323</span>            <span class="kw">let </span>(z, w) = <span class="self">self</span>.support(height, right, slope);
+<span data-nosnippet>324</span>            <span class="kw">let </span>gap = w - y;
+<span data-nosnippet>325</span>            <span class="kw">if </span>gap == <span class="number">0 </span>{
+<span data-nosnippet>326</span>                <span class="kw">return </span>slope;
+<span data-nosnippet>327</span>            }
+<span data-nosnippet>328</span>            <span class="kw">if </span>gap &gt; <span class="number">0 </span>{
+<span data-nosnippet>329</span>                hi = slope;
+<span data-nosnippet>330</span>                lo = lo.max(slope - gap - <span class="number">1</span>);
+<span data-nosnippet>331</span>            } <span class="kw">else </span>{
+<span data-nosnippet>332</span>                lo = slope;
+<span data-nosnippet>333</span>                hi = hi.min(slope - gap);
+<span data-nosnippet>334</span>            }
+<span data-nosnippet>335</span>            <span class="kw">if </span>hi - lo == <span class="number">1 </span>{
+<span data-nosnippet>336</span>                <span class="kw">return </span>hi;
+<span data-nosnippet>337</span>            }
+<span data-nosnippet>338</span>            slope = <span class="kw">if </span>secant {
+<span data-nosnippet>339</span>                <span class="kw">let </span>dx = (z - x) <span class="kw">as </span>i128;
+<span data-nosnippet>340</span>                <span class="kw">let </span>q = gap.div_euclid(dx);
+<span data-nosnippet>341</span>                (slope - q).clamp(lo + <span class="number">1</span>, hi - <span class="number">1</span>)
+<span data-nosnippet>342</span>            } <span class="kw">else </span>{
+<span data-nosnippet>343</span>                lo + (hi - lo) / <span class="number">2
+<span data-nosnippet>344</span>            </span>};
+<span data-nosnippet>345</span>            secant = !secant;
+<span data-nosnippet>346</span>        }
+<span data-nosnippet>347</span>    }
+<span data-nosnippet>348</span>
+<span data-nosnippet>349</span>    <span class="kw">fn </span>ensure_envelope(<span class="kw-2">&amp;mut </span><span class="self">self</span>, height: usize, k: usize, slope: i128) {
+<span data-nosnippet>350</span>        <span class="kw">if </span>!<span class="self">self</span>.levels[height].envelopes[k].switches.is_empty() {
+<span data-nosnippet>351</span>            <span class="kw">return</span>;
+<span data-nosnippet>352</span>        }
+<span data-nosnippet>353</span>        <span class="kw">let </span><span class="kw-2">mut </span>table = std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k].switches);
+<span data-nosnippet>354</span>        <span class="kw">let </span>first = k * FANOUT;
+<span data-nosnippet>355</span>        <span class="kw">for </span>child <span class="kw">in </span>first..(first + FANOUT).min(<span class="self">self</span>.levels[height - <span class="number">1</span>].nodes.len()) {
+<span data-nosnippet>356</span>            <span class="kw">if </span>height &gt; <span class="number">1 </span>{
+<span data-nosnippet>357</span>                <span class="self">self</span>.<span class="highlight">ensure_envelope</span>(
+<span data-nosnippet>358</span>                    height - <span class="number">1</span>,
+<span data-nosnippet>359</span>                    child,
+<span data-nosnippet>360</span>                    slope + <span class="self">self</span>.levels[height - <span class="number">1</span>].nodes[child].lazy.<span class="number">0</span>,
+<span data-nosnippet>361</span>                );
+<span data-nosnippet>362</span>            }
+<span data-nosnippet>363</span>            <span class="kw">let </span>cut = <span class="kw">loop </span>{
+<span data-nosnippet>364</span>                <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(prev, old)) = table.last() <span class="kw">else </span>{
+<span data-nosnippet>365</span>                    <span class="kw">break </span>i128::MAX;
+<span data-nosnippet>366</span>                };
+<span data-nosnippet>367</span>                <span class="kw">let </span>cut = <span class="self">self</span>.crossing(height - <span class="number">1</span>, old, child, slope);
+<span data-nosnippet>368</span>                <span class="kw">if </span>cut &lt; prev {
+<span data-nosnippet>369</span>                    <span class="kw">break </span>cut;
+<span data-nosnippet>370</span>                }
+<span data-nosnippet>371</span>                <span class="comment">// The previous child has no winning integer slope.
+<span data-nosnippet>372</span>                </span>table.pop();
+<span data-nosnippet>373</span>            };
+<span data-nosnippet>374</span>            table.push((cut, child));
+<span data-nosnippet>375</span>        }
+<span data-nosnippet>376</span>        <span class="kw">let </span>envelope = <span class="kw-2">&amp;mut </span><span class="self">self</span>.levels[height].envelopes[k];
+<span data-nosnippet>377</span>        envelope.visits = SCAN_LIMIT;
+<span data-nosnippet>378</span>        envelope.switches = table;
+<span data-nosnippet>379</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-RangeLinearAddRangeMin" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#14">Source</a><a href="#impl-Clone-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#14">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; Self</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0, const unstable">1.0.0 (const: <a href="https://github.com/rust-lang/rust/issues/142757" title="Tracking issue for const_clone">unstable</a>)</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-RangeLinearAddRangeMin" class="impl"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#14">Source</a><a href="#impl-Debug-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/data_structure/range_linear_add_range_min.rs.html#14">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Forget-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-Forget-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Forget.html" title="trait core::marker::Forget">Forget</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-Freeze-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-Freeze-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-Move-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-Move-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Move.html" title="trait core::marker::Move">Move</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-RefUnwindSafe-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-RefUnwindSafe-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-Send-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-Send-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-Sync-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-Sync-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-Unpin-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-Unpin-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-UnsafeUnpin-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-UnsafeUnpin-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.UnsafeUnpin.html" title="trait core::marker::UnsafeUnpin">UnsafeUnpin</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section><section id="impl-UnwindSafe-for-RangeLinearAddRangeMin" class="impl"><a href="#impl-UnwindSafe-for-RangeLinearAddRangeMin" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.RangeLinearAddRangeMin.html" title="struct competitive::data_structure::range_linear_add_range_min::RangeLinearAddRangeMin">RangeLinearAddRangeMin</a></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#142">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#143">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#222">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-CloneToUninit-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#648">Source</a><a href="#impl-CloneToUninit-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html" title="trait core::clone::CloneToUninit">CloneToUninit</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone_to_uninit" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#650">Source</a><a href="#method.clone_to_uninit" class="anchor">§</a><h4 class="code-header">unsafe fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit" class="fn">clone_to_uninit</a>(&amp;self, dest: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span><span>This is a nightly-only experimental API. (<code>clone_to_uninit</code>)</span></div></span><div class='docblock'>Performs copy-assignment from <code>self</code> to <code>dest</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#787">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#790">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#769-771">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#779">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToArrayVecScalar-for-T" class="impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#20-24">Source</a><a href="#impl-ToArrayVecScalar-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="../../math/array_vec/trait.ToArrayVecScalar.html" title="trait competitive::math::array_vec::ToArrayVecScalar">ToArrayVecScalar</a> for T</h3></section></summary><div class="impl-items"><section id="method.to_array_vec_scalar" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/array_vec.rs.html#21-23">Source</a><a href="#method.to_array_vec_scalar" class="anchor">§</a><h4 class="code-header">fn <a href="../../math/array_vec/trait.ToArrayVecScalar.html#tymethod.to_array_vec_scalar" class="fn">to_array_vec_scalar</a>(self) -&gt; <a class="struct" href="../../math/array_vec/struct.ArrayVecScalar.html" title="struct competitive::math::array_vec::ArrayVecScalar">ArrayVecScalar</a>&lt;T&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-ToOwned-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#72-74">Source</a><a href="#impl-ToOwned-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Owned" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#76">Source</a><a href="#associatedtype.Owned" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'>The resulting type after obtaining ownership.</div></details><details class="toggle method-toggle" open><summary><section id="method.to_owned" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#77">Source</a><a href="#method.to_owned" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned" class="fn">to_owned</a>(&amp;self) -&gt; T</h4></section></summary><div class='docblock'>Creates owned data from borrowed data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#81">Source</a><a href="#method.clone_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into" class="fn">clone_into</a>(&amp;self, target: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a>)</h4></section></summary><div class='docblock'>Uses borrowed data to replace owned data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#814-816">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#818">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.never.html">!</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#821">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.never.html">!</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#798-800">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#802">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#805">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details></div></section></div></main></body></html>
