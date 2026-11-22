@@ -92,6 +92,12 @@ pub use self::lazy_segment_tree_map::LazySegmentTreeMap;
 pub use self::li_chao_tree::{LiChaoLine, LiChaoTree, OfflineLiChaoTree};
 #[codesnip::entry("LineSet")]
 pub use self::line_set::LineSet;
+#[codesnip::entry("MinMaxHeap")]
+pub use self::min_max_heap::MinMaxHeap;
+#[codesnip::entry("OfflineDoubleEndedPriorityQueue")]
+pub use self::offline_double_ended_priority_queue::{
+    OfflineDoubleEndedPriorityQueue, OfflineDoubleEndedPriorityQueueBuilder,
+};
 #[codesnip::entry("PairingHeap")]
 pub use self::pairing_heap::PairingHeap;
 #[codesnip::entry("PartiallyRetroactivePriorityQueue")]
@@ -231,6 +237,10 @@ mod lazy_segment_tree_map;
 mod li_chao_tree;
 #[codesnip::entry("LineSet", include("bounded"))]
 mod line_set;
+#[codesnip::entry("MinMaxHeap")]
+mod min_max_heap;
+#[codesnip::entry("OfflineDoubleEndedPriorityQueue", include("sort"))]
+mod offline_double_ended_priority_queue;
 #[codesnip::entry("PairingHeap", include("Comparator", "MonoidAct"))]
 mod pairing_heap;
 #[codesnip::entry(

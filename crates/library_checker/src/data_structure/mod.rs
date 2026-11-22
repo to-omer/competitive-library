@@ -1,5 +1,6 @@
 pub mod area_of_union_of_rectangles;
 pub mod deque_operate_all_composite;
+pub mod double_ended_priority_queue;
 pub mod dynamic_sequence_range_affine_range_sum;
 pub mod line_add_get_min;
 pub mod majority_voting;
