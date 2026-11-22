@@ -7,7 +7,7 @@ use crate::algebra::{
     SemiGroup, SemiRing, Unital, UpdateAct,
 };
 use crate::algorithm::{BitDpExt, RadixSortKey, SliceSortExt};
-use crate::math::Matrix;
+use crate::math::{Matrix, gcd};
 #[cfg(target_arch = "x86_64")]
 use crate::num::montgomery_simd;
 use crate::num::{Bounded, IntBase, One, RangeBoundsExt, Saturating, Unsigned, Zero};
@@ -114,6 +114,8 @@ pub use self::range_map::{RangeMap, RangeSet};
 pub use self::range_minimum_query::RangeMinimumQuery;
 #[codesnip::entry("RangeMinimumSubsetSize")]
 pub use self::range_minimum_subset_size::RangeMinimumSubsetSize;
+#[codesnip::entry("RangeParallelUnionFind")]
+pub use self::range_parallel_union_find::RangeParallelUnionFind;
 #[codesnip::entry("RankSelectBitSet")]
 pub use self::rank_select_bitset::RankSelectBitSet;
 #[codesnip::entry("SegmentTree")]
@@ -263,6 +265,8 @@ mod range_minimum_query;
     include("BinaryIndexedTree", "AdditiveOperation", "TupleOperation")
 )]
 mod range_minimum_subset_size;
+#[codesnip::entry("RangeParallelUnionFind", include("UnionFind", "gcd"))]
+mod range_parallel_union_find;
 #[codesnip::entry(
     "RankSelectBitSet",
     include("BitSet", "BitVector", "DaryPrefixSumTree")
