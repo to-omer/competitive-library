@@ -61,7 +61,7 @@ def verify_list():
 
 def arrange_artifacts():
     res = run(
-        ["git", "ls-files", "-o", "--exclude-standard", "crates"],
+        ["git", "ls-files", "-o", "--", ":(glob)crates/**/*.md"],
         stdout=PIPE,
         check=True,
     )
