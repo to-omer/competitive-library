@@ -76,45 +76,45 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">dot_product_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">dot_<wbr>product_<wbr>avx2</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#safety" title="Safety">Safety</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>num::<wbr>mint::<wbr>montgomery_<wbr>dot_<wbr>product::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../../index.html">competitive</a>::<wbr><a href="../../../index.html">num</a>::<wbr><a href="../../index.html">mint</a>::<wbr><a href="../index.html">montgomery_dot_product</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">dot_<wbr>product_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#124-158">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn dot_product_avx2&lt;const REVERSE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">dot_product_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">dot_<wbr>product_<wbr>avx2</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#safety" title="Safety">Safety</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>num::<wbr>mint::<wbr>montgomery_<wbr>dot_<wbr>product::<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../../index.html">competitive</a>::<wbr><a href="../../../index.html">num</a>::<wbr><a href="../../index.html">mint</a>::<wbr><a href="../index.html">montgomery_dot_product</a>::<wbr><a href="index.html">simd</a></div><h1>Function <span class="fn">dot_<wbr>product_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#128-162">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe fn dot_product_avx2&lt;const REVERSE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(
     x: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>],
     y: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>],
 ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="safety"><a class="doc-anchor" href="#safety">§</a>Safety</h2>
 <p>AVX2 must be available. Slices have equal lengths and residues are below 2^31.</p>
-</div></details><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[30,30],&#34;../../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#81&#34;,&#34;line 81&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/montgomery_dot_product.rs (<a href="../../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#81">line 81</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>51</span><span class="kw">fn </span>dot_product&lt;M, <span class="kw">const </span>REVERSE: bool&gt;(x: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]) -&gt; MInt&lt;M&gt;
-<span data-nosnippet>52</span><span class="kw">where
-<span data-nosnippet>53</span>    </span>M: MontgomeryReduction32,
-<span data-nosnippet>54</span>{
-<span data-nosnippet>55</span>    <span class="macro">assert_eq!</span>(x.len(), y.len());
-<span data-nosnippet>56</span>    <span class="kw">let </span>reduce = |sum: u128| {
-<span data-nosnippet>57</span>        <span class="comment">// Montgomery reduction accepts values below modulus * 2^32.
-<span data-nosnippet>58</span>        </span><span class="kw">let </span>value = <span class="kw">if </span>sum &lt; (M::MOD <span class="kw">as </span>u128) &lt;&lt; <span class="number">32 </span>{
-<span data-nosnippet>59</span>            sum <span class="kw">as </span>u64
-<span data-nosnippet>60</span>        } <span class="kw">else if </span>sum &lt;= u64::MAX <span class="kw">as </span>u128 {
-<span data-nosnippet>61</span>            sum <span class="kw">as </span>u64 % M::MOD <span class="kw">as </span>u64
-<span data-nosnippet>62</span>        } <span class="kw">else </span>{
-<span data-nosnippet>63</span>            (sum % M::MOD <span class="kw">as </span>u128) <span class="kw">as </span>u64
-<span data-nosnippet>64</span>        };
-<span data-nosnippet>65</span>        MInt::new_unchecked(M::reduce(value))
-<span data-nosnippet>66</span>    };
-<span data-nosnippet>67</span>    <span class="comment">// SAFETY: MInt is transparent over u32; retain the Montgomery residues.
-<span data-nosnippet>68</span>    </span><span class="kw">let </span>(x, y) = <span class="kw">unsafe </span>{
-<span data-nosnippet>69</span>        (
-<span data-nosnippet>70</span>            std::slice::from_raw_parts(x.as_ptr().cast::&lt;u32&gt;(), x.len()),
-<span data-nosnippet>71</span>            std::slice::from_raw_parts(y.as_ptr().cast::&lt;u32&gt;(), y.len()),
-<span data-nosnippet>72</span>        )
-<span data-nosnippet>73</span>    };
-<span data-nosnippet>74</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
-<span data-nosnippet>75</span>    </span><span class="kw">if </span>x.len() &gt;= <span class="number">64 </span>&amp;&amp; M::MOD &lt; <span class="number">1 </span>&lt;&lt; <span class="number">31 </span>{
-<span data-nosnippet>76</span>        <span class="kw">if </span>avx512_enabled() &amp;&amp; avx512_supported() {
-<span data-nosnippet>77</span>            <span class="kw">let </span>sum = <span class="kw">unsafe </span>{ simd::dot_product_avx512::&lt;REVERSE&gt;(x, y) };
-<span data-nosnippet>78</span>            <span class="kw">return </span>reduce(sum);
-<span data-nosnippet>79</span>        }
-<span data-nosnippet>80</span>        <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
-<span data-nosnippet>81</span>            <span class="kw">let </span>sum = <span class="kw">unsafe </span>{ <span class="highlight focus">simd::dot_product_avx2::&lt;REVERSE&gt;</span>(x, y) };
+</div></details><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[30,30],&#34;../../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#85&#34;,&#34;line 85&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/montgomery_dot_product.rs (<a href="../../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#85">line 85</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>55</span><span class="kw">fn </span>dot_product&lt;M, <span class="kw">const </span>REVERSE: bool&gt;(x: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]) -&gt; MInt&lt;M&gt;
+<span data-nosnippet>56</span><span class="kw">where
+<span data-nosnippet>57</span>    </span>M: MontgomeryReduction32,
+<span data-nosnippet>58</span>{
+<span data-nosnippet>59</span>    <span class="macro">assert_eq!</span>(x.len(), y.len());
+<span data-nosnippet>60</span>    <span class="kw">let </span>reduce = |sum: u128| {
+<span data-nosnippet>61</span>        <span class="comment">// Montgomery reduction accepts values below modulus * 2^32.
+<span data-nosnippet>62</span>        </span><span class="kw">let </span>value = <span class="kw">if </span>sum &lt; (M::MOD <span class="kw">as </span>u128) &lt;&lt; <span class="number">32 </span>{
+<span data-nosnippet>63</span>            sum <span class="kw">as </span>u64
+<span data-nosnippet>64</span>        } <span class="kw">else if </span>sum &lt;= u64::MAX <span class="kw">as </span>u128 {
+<span data-nosnippet>65</span>            sum <span class="kw">as </span>u64 % M::MOD <span class="kw">as </span>u64
+<span data-nosnippet>66</span>        } <span class="kw">else </span>{
+<span data-nosnippet>67</span>            (sum % M::MOD <span class="kw">as </span>u128) <span class="kw">as </span>u64
+<span data-nosnippet>68</span>        };
+<span data-nosnippet>69</span>        MInt::new_unchecked(M::reduce(value))
+<span data-nosnippet>70</span>    };
+<span data-nosnippet>71</span>    <span class="comment">// SAFETY: MInt is transparent over u32; retain the Montgomery residues.
+<span data-nosnippet>72</span>    </span><span class="kw">let </span>(x, y) = <span class="kw">unsafe </span>{
+<span data-nosnippet>73</span>        (
+<span data-nosnippet>74</span>            std::slice::from_raw_parts(x.as_ptr().cast::&lt;u32&gt;(), x.len()),
+<span data-nosnippet>75</span>            std::slice::from_raw_parts(y.as_ptr().cast::&lt;u32&gt;(), y.len()),
+<span data-nosnippet>76</span>        )
+<span data-nosnippet>77</span>    };
+<span data-nosnippet>78</span>    <span class="attr">#[cfg(target_arch = <span class="string">"x86_64"</span>)]
+<span data-nosnippet>79</span>    </span><span class="kw">if </span>x.len() &gt;= <span class="number">64 </span>&amp;&amp; M::MOD &lt; <span class="number">1 </span>&lt;&lt; <span class="number">31 </span>{
+<span data-nosnippet>80</span>        <span class="kw">if </span>avx512_enabled() &amp;&amp; avx512_supported() {
+<span data-nosnippet>81</span>            <span class="kw">let </span>sum = <span class="kw">unsafe </span>{ simd::dot_product_avx512::&lt;REVERSE&gt;(x, y) };
 <span data-nosnippet>82</span>            <span class="kw">return </span>reduce(sum);
 <span data-nosnippet>83</span>        }
-<span data-nosnippet>84</span>    }
-<span data-nosnippet>85</span>    <span class="kw">let </span>sum = dot_product_scalar::&lt;M, REVERSE&gt;(x, y);
-<span data-nosnippet>86</span>    reduce(sum)
-<span data-nosnippet>87</span>}</code></pre></div></div></div></section></div></main></body></html>
+<span data-nosnippet>84</span>        <span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">"avx2"</span>) {
+<span data-nosnippet>85</span>            <span class="kw">let </span>sum = <span class="kw">unsafe </span>{ <span class="highlight focus">simd::dot_product_avx2::&lt;REVERSE&gt;</span>(x, y) };
+<span data-nosnippet>86</span>            <span class="kw">return </span>reduce(sum);
+<span data-nosnippet>87</span>        }
+<span data-nosnippet>88</span>    }
+<span data-nosnippet>89</span>    <span class="kw">let </span>sum = dot_product_scalar::&lt;M, REVERSE&gt;(x, y);
+<span data-nosnippet>90</span>    reduce(sum)
+<span data-nosnippet>91</span>}</code></pre></div></div></div></section></div></main></body></html>

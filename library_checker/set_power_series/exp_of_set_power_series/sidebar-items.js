@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["exp_of_set_power_series","test_exp_of_set_power_series"]};

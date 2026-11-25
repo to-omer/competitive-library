@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["global_minimum_cut_of_dynamic_star_augmented_graph","test_global_minimum_cut_of_dynamic_star_augmented_graph"]};

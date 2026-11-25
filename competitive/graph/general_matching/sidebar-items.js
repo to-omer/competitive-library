@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["GeneralMatching"]};
+window.SIDEBAR_ITEMS = {"enum":["Partners","Status"],"fn":["find"],"struct":["GeneralMatching","Search"]};

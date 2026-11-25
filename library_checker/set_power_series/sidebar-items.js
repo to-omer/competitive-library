@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["subset_convolution"]};
+window.SIDEBAR_ITEMS = {"mod":["exp_of_set_power_series","subset_convolution"]};

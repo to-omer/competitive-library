@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BLOCK_SIZE"],"enum":["PeelState"],"fn":["extreme_set_tree"],"struct":["ExtremeSetTreeBuilder","MinimumDegreeOrder"]};

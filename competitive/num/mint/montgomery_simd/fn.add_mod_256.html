@@ -1645,41 +1645,41 @@
 <span data-nosnippet>1873</span>                _mm256_storeu_si256(pa, _mm256_blendv_epi8(x, nx, mask));
 <span data-nosnippet>1874</span>                _mm256_storeu_si256(pb, _mm256_blendv_epi8(y, ny, mask));
 <span data-nosnippet>1875</span>            }
-<span data-nosnippet>1876</span>        }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[27,27],&#34;../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#225&#34;,&#34;line 225&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/montgomery_dot_product.rs (<a href="../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#225">line 225</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>198</span>    <span class="kw">pub unsafe fn </span>add_scaled_avx2&lt;M: MontgomeryReduction32&gt;(
-<span data-nosnippet>199</span>        x: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;],
-<span data-nosnippet>200</span>        y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;],
-<span data-nosnippet>201</span>        a: <span class="kw-2">&amp;</span>MInt&lt;M&gt;,
-<span data-nosnippet>202</span>    ) {
-<span data-nosnippet>203</span>        <span class="comment">// SAFETY: MInt is transparent over u32; preserve the Montgomery representation.
-<span data-nosnippet>204</span>        </span><span class="kw">let </span>a = <span class="kw-2">*</span>(a <span class="kw">as </span><span class="kw-2">*const </span>MInt&lt;M&gt;).cast::&lt;u32&gt;();
-<span data-nosnippet>205</span>        <span class="kw">let </span>factor = _mm256_set1_epi32(a <span class="kw">as </span>i32);
-<span data-nosnippet>206</span>        <span class="kw">let </span>factor_r = _mm256_set1_epi32(a.wrapping_mul(M::R) <span class="kw">as </span>i32);
-<span data-nosnippet>207</span>        <span class="kw">let </span>modulus = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
-<span data-nosnippet>208</span>        <span class="kw">let </span>end = x.len() / <span class="number">8 </span>* <span class="number">8</span>;
-<span data-nosnippet>209</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..end).step_by(<span class="number">8</span>) {
-<span data-nosnippet>210</span>            <span class="kw">let </span>value = _mm256_loadu_si256(y.as_ptr().add(i).cast());
-<span data-nosnippet>211</span>            <span class="kw">let </span>odd = _mm256_srli_epi64::&lt;<span class="number">32</span>&gt;(value);
-<span data-nosnippet>212</span>            <span class="kw">let </span>lo = _mm256_mul_epu32(value, factor);
-<span data-nosnippet>213</span>            <span class="kw">let </span>hi = _mm256_mul_epu32(odd, factor);
-<span data-nosnippet>214</span>            <span class="kw">let </span>lo = _mm256_add_epi64(
-<span data-nosnippet>215</span>                lo,
-<span data-nosnippet>216</span>                _mm256_mul_epu32(_mm256_mul_epu32(value, factor_r), modulus),
-<span data-nosnippet>217</span>            );
-<span data-nosnippet>218</span>            <span class="kw">let </span>hi = _mm256_add_epi64(
-<span data-nosnippet>219</span>                hi,
-<span data-nosnippet>220</span>                _mm256_mul_epu32(_mm256_mul_epu32(odd, factor_r), modulus),
+<span data-nosnippet>1876</span>        }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[27,27],&#34;../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#229&#34;,&#34;line 229&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/montgomery_dot_product.rs (<a href="../../../../src/competitive/num/mint/montgomery_dot_product.rs.html#229">line 229</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>202</span>    <span class="kw">pub unsafe fn </span>add_scaled_avx2&lt;M: MontgomeryReduction32&gt;(
+<span data-nosnippet>203</span>        x: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;],
+<span data-nosnippet>204</span>        y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;],
+<span data-nosnippet>205</span>        a: <span class="kw-2">&amp;</span>MInt&lt;M&gt;,
+<span data-nosnippet>206</span>    ) {
+<span data-nosnippet>207</span>        <span class="comment">// SAFETY: MInt is transparent over u32; preserve the Montgomery representation.
+<span data-nosnippet>208</span>        </span><span class="kw">let </span>a = <span class="kw-2">*</span>(a <span class="kw">as </span><span class="kw-2">*const </span>MInt&lt;M&gt;).cast::&lt;u32&gt;();
+<span data-nosnippet>209</span>        <span class="kw">let </span>factor = _mm256_set1_epi32(a <span class="kw">as </span>i32);
+<span data-nosnippet>210</span>        <span class="kw">let </span>factor_r = _mm256_set1_epi32(a.wrapping_mul(M::R) <span class="kw">as </span>i32);
+<span data-nosnippet>211</span>        <span class="kw">let </span>modulus = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
+<span data-nosnippet>212</span>        <span class="kw">let </span>end = x.len() / <span class="number">8 </span>* <span class="number">8</span>;
+<span data-nosnippet>213</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..end).step_by(<span class="number">8</span>) {
+<span data-nosnippet>214</span>            <span class="kw">let </span>value = _mm256_loadu_si256(y.as_ptr().add(i).cast());
+<span data-nosnippet>215</span>            <span class="kw">let </span>odd = _mm256_srli_epi64::&lt;<span class="number">32</span>&gt;(value);
+<span data-nosnippet>216</span>            <span class="kw">let </span>lo = _mm256_mul_epu32(value, factor);
+<span data-nosnippet>217</span>            <span class="kw">let </span>hi = _mm256_mul_epu32(odd, factor);
+<span data-nosnippet>218</span>            <span class="kw">let </span>lo = _mm256_add_epi64(
+<span data-nosnippet>219</span>                lo,
+<span data-nosnippet>220</span>                _mm256_mul_epu32(_mm256_mul_epu32(value, factor_r), modulus),
 <span data-nosnippet>221</span>            );
-<span data-nosnippet>222</span>            <span class="kw">let </span>product = _mm256_or_si256(_mm256_srli_epi64::&lt;<span class="number">32</span>&gt;(lo), hi);
-<span data-nosnippet>223</span>            <span class="kw">let </span>product = _mm256_min_epu32(product, _mm256_sub_epi32(product, modulus));
-<span data-nosnippet>224</span>            <span class="kw">let </span>old = _mm256_loadu_si256(x.as_ptr().add(i).cast());
-<span data-nosnippet>225</span>            <span class="kw">let </span>sum = <span class="highlight focus">add_mod_256</span>(old, product, modulus);
-<span data-nosnippet>226</span>            _mm256_storeu_si256(x.as_mut_ptr().add(i).cast(), sum);
-<span data-nosnippet>227</span>        }
-<span data-nosnippet>228</span>        <span class="kw">let </span>a = MInt::new_unchecked(a);
-<span data-nosnippet>229</span>        <span class="kw">for </span>(x, y) <span class="kw">in </span>x[end..].iter_mut().zip(<span class="kw-2">&amp;</span>y[end..]) {
-<span data-nosnippet>230</span>            <span class="kw-2">*</span>x += a * <span class="kw-2">*</span>y;
+<span data-nosnippet>222</span>            <span class="kw">let </span>hi = _mm256_add_epi64(
+<span data-nosnippet>223</span>                hi,
+<span data-nosnippet>224</span>                _mm256_mul_epu32(_mm256_mul_epu32(odd, factor_r), modulus),
+<span data-nosnippet>225</span>            );
+<span data-nosnippet>226</span>            <span class="kw">let </span>product = _mm256_or_si256(_mm256_srli_epi64::&lt;<span class="number">32</span>&gt;(lo), hi);
+<span data-nosnippet>227</span>            <span class="kw">let </span>product = _mm256_min_epu32(product, _mm256_sub_epi32(product, modulus));
+<span data-nosnippet>228</span>            <span class="kw">let </span>old = _mm256_loadu_si256(x.as_ptr().add(i).cast());
+<span data-nosnippet>229</span>            <span class="kw">let </span>sum = <span class="highlight focus">add_mod_256</span>(old, product, modulus);
+<span data-nosnippet>230</span>            _mm256_storeu_si256(x.as_mut_ptr().add(i).cast(), sum);
 <span data-nosnippet>231</span>        }
-<span data-nosnippet>232</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[72,72],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#95&#34;,&#34;line 95&#34;],[[80,80],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#103&#34;,&#34;line 103&#34;],[[89,89],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#112&#34;,&#34;line 112&#34;],[[133,133],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#156&#34;,&#34;line 156&#34;],[[135,135],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#158&#34;,&#34;line 158&#34;],[[202,202],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#225&#34;,&#34;line 225&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs (<a href="../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#95">line 95</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>23</span><span class="kw">pub unsafe fn </span>ntt_four_avx2&lt;M, <span class="kw">const </span>INVERSE: bool&gt;(a: <span class="kw-2">&amp;mut </span>[u32])
+<span data-nosnippet>232</span>        <span class="kw">let </span>a = MInt::new_unchecked(a);
+<span data-nosnippet>233</span>        <span class="kw">for </span>(x, y) <span class="kw">in </span>x[end..].iter_mut().zip(<span class="kw-2">&amp;</span>y[end..]) {
+<span data-nosnippet>234</span>            <span class="kw-2">*</span>x += a * <span class="kw-2">*</span>y;
+<span data-nosnippet>235</span>        }
+<span data-nosnippet>236</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[72,72],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#95&#34;,&#34;line 95&#34;],[[80,80],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#103&#34;,&#34;line 103&#34;],[[89,89],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#112&#34;,&#34;line 112&#34;],[[133,133],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#156&#34;,&#34;line 156&#34;],[[135,135],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#158&#34;,&#34;line 158&#34;],[[202,202],&#34;../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#225&#34;,&#34;line 225&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs (<a href="../../../../src/competitive/math/number_theoretic_transform/ntt_simd/ntt_avx2.rs.html#95">line 95</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>23</span><span class="kw">pub unsafe fn </span>ntt_four_avx2&lt;M, <span class="kw">const </span>INVERSE: bool&gt;(a: <span class="kw-2">&amp;mut </span>[u32])
 <span data-nosnippet>24</span><span class="kw">where
 <span data-nosnippet>25</span>    </span>M: Montgomery32NttModulus,
 <span data-nosnippet>26</span>{
