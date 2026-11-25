@@ -8,9 +8,12 @@ use std::{
 };
 #[cfg(verus_keep_ghost)]
 use vstd::{
-    laws_cmp::obeys_cmp,
+    laws_cmp::{obeys_cmp, obeys_cmp_concrete_eq},
     prelude::*,
-    std_specs::{btree::key_obeys_cmp_spec, iter::IteratorSpec},
+    std_specs::{
+        btree::{btree_map_wf, key_obeys_cmp_spec},
+        iter::IteratorSpec,
+    },
 };
 
 #[derive(Clone)]
@@ -163,7 +166,9 @@ impl<T> Default for BTreeCounter<T>
 where
     T: Ord,
 {
-    #[cfg_attr(verus_keep_ghost, verus_spec(result => ensures result@ == Map::<T, usize>::empty()))]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures result.well_formed(), result@ == Map::<T, usize>::empty(),
+    ))]
     fn default() -> Self {
         Self {
             map: BTreeMap::default(),
@@ -181,7 +186,7 @@ impl<T> BTreeCounter<T> {
         self.map.is_empty()
     }
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires key_obeys_cmp_spec::<T>(),
+        requires self.well_formed(), key_obeys_cmp_spec::<T>(),
         ensures result.remaining().unref().to_set() == self@.dom(),
             result.remaining().no_duplicates(), result.remaining().len() == self@.len(),
             result.decrease() is Some,
@@ -191,7 +196,7 @@ impl<T> BTreeCounter<T> {
         self.map.keys()
     }
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires key_obeys_cmp_spec::<T>(),
+        requires self.well_formed(), key_obeys_cmp_spec::<T>(),
         ensures result.remaining().unref().to_set() == self@.values(),
             result.remaining().len() == self@.len(), result.decrease() is Some,
             exists|keys: Seq<T>| vstd::std_specs::btree::increasing_seq(keys)
@@ -202,7 +207,7 @@ impl<T> BTreeCounter<T> {
         self.map.values()
     }
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires key_obeys_cmp_spec::<T>(),
+        requires self.well_formed(), key_obeys_cmp_spec::<T>(),
         ensures result.remaining().unref().to_set() == self@.kv_pairs(),
             result.remaining().no_duplicates(), result.remaining().len() == self@.len(),
             result.decrease() is Some,
@@ -226,16 +231,21 @@ impl<T> BTreeCounter<T>
 where
     T: Ord,
 {
-    #[cfg_attr(verus_keep_ghost, verus_spec(result => ensures result@ == Map::<T, usize>::empty()))]
+    #[cfg_attr(verus_keep_ghost, verus_spec(result =>
+        ensures result.well_formed(), result@ == Map::<T, usize>::empty(),
+    ))]
     pub fn new() -> Self {
         Self::default()
     }
-    #[cfg_attr(verus_keep_ghost, verus_spec(ensures final(self)@ == Map::<T, usize>::empty()))]
+    #[cfg_attr(verus_keep_ghost, verus_spec(
+        ensures final(self).well_formed(), final(self)@ == Map::<T, usize>::empty(),
+    ))]
     pub fn clear(&mut self) {
         self.map.clear();
     }
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires obeys_cmp::<T>(), ensures result == self.count(*item),
+        requires self.well_formed(), obeys_cmp::<T>(), obeys_cmp_concrete_eq::<T>(),
+        ensures result == self.count(*item),
     ))]
     pub fn get(&self, item: &T) -> usize {
         self.map.get(item).cloned().unwrap_or_default()
@@ -249,16 +259,17 @@ where
         *self.map.entry(item).or_default() += count;
     }
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires obeys_cmp::<T>(),
-        ensures result == (old(self).count(*item) > 0),
+        requires old(self).well_formed(), obeys_cmp::<T>(), obeys_cmp_concrete_eq::<T>(),
+        ensures final(self).well_formed(), result == (old(self).count(*item) > 0),
             final(self)@ == old(self).after_removal(*item, 1),
     ))]
     pub fn remove(&mut self, item: &T) -> bool {
         self.remove_count(item, 1) == 1
     }
     #[cfg_attr(verus_keep_ghost, verus_spec(result =>
-        requires obeys_cmp::<T>(),
-        ensures result == if old(self).count(*item) <= count { old(self).count(*item) } else { count as nat },
+        requires old(self).well_formed(), obeys_cmp::<T>(), obeys_cmp_concrete_eq::<T>(),
+        ensures final(self).well_formed(),
+            result == if old(self).count(*item) <= count { old(self).count(*item) } else { count as nat },
             final(self)@ == old(self).after_removal(*item, count as nat),
     ))]
     pub fn remove_count(&mut self, item: &T, count: usize) -> usize {
@@ -326,6 +337,10 @@ verus! {
     }
 
     impl<T> BTreeCounter<T> {
+        pub closed spec fn well_formed(&self) -> bool {
+            btree_map_wf(&self.map)
+        }
+
         pub open spec fn count(&self, item: T) -> nat {
             if self@.contains_key(item) { self@[item] as nat } else { 0 }
         }
@@ -342,14 +357,16 @@ mod verification {
     use super::*;
 
     verus! {
-        fn removal_conserves_counts(counter: &mut BTreeCounter<u64>, key: u64, first: usize, second: usize) {
+        fn removal_conserves_counts(counter: &mut BTreeCounter<u64>, key: u64, first: usize, second: usize)
+            requires old(counter).well_formed(),
+        {
             let ghost before = *counter;
             let initial = counter.get(&key);
             let a = counter.remove_count(&key, first);
             let b = counter.remove_count(&key, second);
             let remaining = counter.get(&key);
             proof {
-                #[verifier::proof_note("BTreeCounter::remove_count saturates at the stored count, returns exactly the removed multiplicity, removes an exhausted key including a stored zero, and preserves all other keys; any two removals conserve initial = removed + remaining without an overflow precondition. The standard lawful key-order model is required. Insertion, range, Clone, Extend, and FromIterator are not verified")]
+                #[verifier::proof_note("BTreeCounter::remove_count removes and returns the smaller of the requested and stored counts, removes an exhausted key including a stored zero, and preserves all other keys. Any two removals conserve initial = removed + remaining without an overflow precondition. These guarantees require a well-formed map and a lawful key order that agrees with structural equality. Insertion, range, Clone, Extend, and FromIterator are not verified")]
                 assert(initial as nat == a as nat + b as nat + remaining as nat);
                 assert(forall|other: u64| other != key ==> #[trigger] counter@.get(other) == before@.get(other));
             }
