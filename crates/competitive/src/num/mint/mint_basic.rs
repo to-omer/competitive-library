@@ -24,18 +24,19 @@ macro_rules! define_basic_mintbase {
                 let m = Self::get_mod();
                 $(if $const_mod && m <= <$basety>::MAX / 2 + 1 {
                     let z = x + y;
-                    return if z >= m { z - m } else { z };
+                    return z.min(z.wrapping_sub(m));
                 })?
                 let (z, borrow) = x.overflowing_sub(m - y);
-                if borrow { z.wrapping_add(m) } else { z }
+                std::hint::select_unpredictable(borrow, z.wrapping_add(m), z)
             }
             #[inline]
             fn mod_sub(x: Self::Inner, y: Self::Inner) -> Self::Inner {
-                if x < y {
-                    Self::get_mod() - (y - x)
-                } else {
-                    x - y
-                }
+                $(if $const_mod && Self::get_mod() <= <$basety>::MAX / 2 + 1 {
+                    let z = x.wrapping_sub(y);
+                    return z.min(z.wrapping_add(Self::get_mod()));
+                })?
+                let (z, borrow) = x.overflowing_sub(y);
+                std::hint::select_unpredictable(borrow, z.wrapping_add(Self::get_mod()), z)
             }
             #[inline]
             fn mod_mul(x: Self::Inner, y: Self::Inner) -> Self::Inner {
@@ -309,7 +310,7 @@ mod tests {
 
     #[test]
     #[allow(clippy::modulo_one)] // Exercise modulus one through the public macro.
-    fn test_fixed_mint_add() {
+    fn test_fixed_mint_add_sub() {
         define_basic_mint32!(
             [Modulo1, 1, MInt1],
             [Modulo2147483648, 2_147_483_648, MInt2147483648],
@@ -326,6 +327,11 @@ mod tests {
                 for y in values {
                     let sum = from(x) + from(y);
                     assert_eq!(sum.inner() as u64, (x as u64 + y as u64) % modulus as u64);
+                    let difference = from(x) - from(y);
+                    assert_eq!(
+                        difference.inner() as u64,
+                        (x as u64 + modulus as u64 - y as u64) % modulus as u64
+                    );
                 }
             }
         }

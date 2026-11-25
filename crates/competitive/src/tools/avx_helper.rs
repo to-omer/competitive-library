@@ -140,6 +140,14 @@ macro_rules! avx_helper {
             $($clauses)*
         $body
     };
+    (@versions $avx512:ident, $avx2:ident; $($signature:tt)*) => {
+        #[cfg(target_arch = "x86_64")]
+        #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
+        unsafe fn $avx512 $($signature)*
+        #[cfg(target_arch = "x86_64")]
+        #[target_feature(enable = "avx2")]
+        unsafe fn $avx2 $($signature)*
+    };
     (@$tag:ident $(#[$meta:meta])* $vis:vis fn $name:ident$(<$($T:ident),+>)?($($args:tt)*) -> $ret:ty $body:block) => {
         $crate::avx_helper!(@$tag $(#[$meta])* $vis fn $name$(<$($T)*>)?($($args)*) -> $ret where [] $body);
     };

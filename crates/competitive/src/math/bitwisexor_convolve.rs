@@ -33,21 +33,33 @@ impl<G, const EXACT_DIVISION: bool> BitwisexorConvolve<G, EXACT_DIVISION>
 where
     G: Group,
 {
+    #[inline]
     pub fn hadamard_transform(f: &mut [G::T]) {
-        let k = f.len().trailing_zeros() as usize;
-        assert!(f.len() == 1 << k);
+        Self::hadamard_transform_rows(f, 1);
+    }
+
+    /// Transforms each column of a row-major matrix with a power-of-two row count.
+    #[inline(always)]
+    pub fn hadamard_transform_rows(f: &mut [G::T], width: usize) {
+        let rows = f.len() / width;
+        assert!(rows.is_power_of_two() && f.len().is_multiple_of(width));
+        let k = rows.trailing_zeros() as usize;
         if k & 1 != 0 {
-            for [x, y] in f.as_chunks_mut::<2>().0 {
-                let t = G::operate(x, y);
-                *y = G::rinv_operate(x, y);
-                *x = t;
+            for chunk in f.chunks_exact_mut(2 * width) {
+                let (a, b) = chunk.split_at_mut(width);
+                for (x, y) in a.iter_mut().zip(b) {
+                    let t = G::operate(x, y);
+                    *y = G::rinv_operate(x, y);
+                    *x = t;
+                }
             }
         }
         for i in (k & 1..k).step_by(2) {
-            for chunk in f.chunks_exact_mut(4 << i) {
-                let (left, right) = chunk.split_at_mut(2 << i);
-                let (a, b) = left.split_at_mut(1 << i);
-                let (c, d) = right.split_at_mut(1 << i);
+            let stride = width << i;
+            for chunk in f.chunks_exact_mut(4 * stride) {
+                let (left, right) = chunk.split_at_mut(2 * stride);
+                let (a, b) = left.split_at_mut(stride);
+                let (c, d) = right.split_at_mut(stride);
                 for (((a, b), c), d) in a.iter_mut().zip(b).zip(c).zip(d) {
                     let x = G::operate(a, b);
                     let y = G::rinv_operate(a, b);

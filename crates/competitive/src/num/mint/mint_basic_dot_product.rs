@@ -1,19 +1,26 @@
-#[cfg(target_arch = "x86_64")]
-use super::avx512_enabled;
 use super::{MInt, MIntBase, MIntDotProduct, mint_basic::*};
+#[cfg(target_arch = "x86_64")]
+use super::{SimdBackend, avx512_enabled, simd_backend};
 
 #[macro_export]
 macro_rules! impl_basic_mint_dot_product {
     (u32, u64; $($name:ident),* $(,)?) => {
-        $($crate::impl_basic_mint_dot_product!(@impl #[inline(always)] simd32, $name, u32, u64);)*
+        $($crate::impl_basic_mint_dot_product!(@impl #[inline(always)] simd32, simd32, $name, u32, u64);)*
+    };
+    (u64, u128; $($name:ident),* $(,)?) => {
+        $($crate::impl_basic_mint_dot_product!(@impl #[inline] scalar, scalar64, $name, u64, u128);)*
     };
     ($basety:ty, $upperty:ty; $($name:ident),* $(,)?) => {
-        $($crate::impl_basic_mint_dot_product!(@impl #[inline] scalar, $name, $basety, $upperty);)*
+        $($crate::impl_basic_mint_dot_product!(@impl #[inline] scalar, scalar, $name, $basety, $upperty);)*
     };
-    (@impl #[$inline:meta] $kind:ident, $name:ident, $basety:ty, $upperty:ty) => {
+    (@impl #[$inline:meta] $kind:ident, $batch:ident, $name:ident, $basety:ty, $upperty:ty) => {
         impl MIntDotProduct for $name {
             fn try_matrix_product(_a: &[Vec<MInt<Self>>], _b: &[Vec<MInt<Self>>]) -> Option<Vec<Vec<MInt<Self>>>> {
                 $crate::impl_basic_mint_dot_product!(@matrix_product $kind, _a, _b)
+            }
+            fn inverse_two() -> Option<MInt<Self>> {
+                let modulus = Self::get_mod();
+                (modulus > 1 && modulus % 2 == 1).then(|| MInt::new(modulus / 2 + 1))
             }
             #[$inline]
             fn dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
@@ -23,6 +30,7 @@ macro_rules! impl_basic_mint_dot_product {
             fn dot_product_rev(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
                 $crate::impl_basic_mint_dot_product!(@dot_product $kind, $name, x, y, $basety, $upperty, true)
             }
+            $crate::impl_basic_mint_dot_product!(@batch $batch, $name);
             #[inline]
             fn add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: &MInt<Self>) {
                 assert_eq!(x.len(), y.len());
@@ -75,6 +83,74 @@ macro_rules! impl_basic_mint_dot_product {
         }
         $crate::impl_basic_mint_dot_product!(@dot_product scalar, $name, $x, $y, $basety, $upperty, $reverse)
     }};
+    (@batch scalar, $name:ident) => {};
+    (@batch simd32, $name:ident) => {
+        fn dot_product_batch<const N: usize>(
+            x: &[[MInt<Self>; N]], y: &[[MInt<Self>; N]],
+        ) -> [MInt<Self>; N] {
+            #[inline(always)]
+            fn product<const N: usize>(x: &[[MInt<$name>; N]], y: &[[MInt<$name>; N]]) -> [MInt<$name>; N] {
+                let modulus = u64::from($name::get_mod());
+                let maximum = modulus - 1;
+                let block = ((u64::MAX - maximum) / (maximum * maximum).max(1)).min(usize::MAX as u64) as usize;
+                let mut sums = [0u64; N];
+                for (x, y) in x.chunks(block).zip(y.chunks(block)) {
+                    for (x, y) in x.iter().zip(y) {
+                        for i in 0..N {
+                            sums[i] += u64::from(x[i].inner()) * u64::from(y[i].inner());
+                        }
+                    }
+                    for sum in &mut sums {
+                        *sum %= modulus;
+                    }
+                }
+                sums.map(|sum| MInt::new_unchecked(sum as u32))
+            }
+            assert_eq!(x.len(), y.len());
+            $crate::avx_helper!(@versions avx512, avx2; <const N: usize>(
+                x: &[[MInt<$name>; N]], y: &[[MInt<$name>; N]],
+            ) -> [MInt<$name>; N] { product(x, y) });
+            // SAFETY: the dispatcher checks the features used by each kernel.
+            $crate::avx_helper!(@dispatch simd_backend, SimdBackend;
+                unsafe { avx512(x, y) }, unsafe { avx2(x, y) }, product(x, y)
+            )
+        }
+    };
+    (@batch scalar64, $name:ident) => {
+        fn dot_product_batch<const N: usize>(
+            x: &[[MInt<Self>; N]], y: &[[MInt<Self>; N]],
+        ) -> [MInt<Self>; N] {
+            assert_eq!(x.len(), y.len());
+            let modulus = Self::get_mod();
+            let maximum = u128::from(modulus - 1);
+            let bound = (maximum * maximum).checked_mul(x.len() as u128);
+            // A nonempty column whose sum bound fits in u64 has residues that fit in u32.
+            if bound.is_some_and(|sum| sum <= u128::from(u64::MAX)) {
+                let mut sums = [0u64; N];
+                for (x, y) in x.iter().zip(y) {
+                    for i in 0..N {
+                        sums[i] += u64::from(x[i].inner() as u32) * u64::from(y[i].inner() as u32);
+                    }
+                }
+                return sums.map(|sum| MInt::new_unchecked(sum % modulus));
+            }
+            let modulus = u128::from(modulus);
+            let mut sums = [0u128; N];
+            for (x, y) in x.iter().zip(y) {
+                for i in 0..N {
+                    let product = u128::from(x[i].inner()) * u128::from(y[i].inner());
+                    let (sum, carry) = sums[i].overflowing_add(product);
+                    // Subtracting modulus * 2^64 from the full sum fits because each product is smaller.
+                    sums[i] = if bound.is_none() && carry {
+                        sum.wrapping_sub(modulus << 64)
+                    } else {
+                        sum
+                    };
+                }
+            }
+            sums.map(|sum| MInt::new_unchecked((sum % modulus) as u64))
+        }
+    };
     (@matrix_product scalar, $a:ident, $b:ident) => { None };
     (@matrix_product simd32, $a:ident, $b:ident) => {{
         #[cfg(target_arch = "x86_64")]
@@ -316,7 +392,11 @@ macro_rules! impl_basic_mint_dot_product {
 
 impl_basic_mint_dot_product!(u32, u64; Modulo998244353, Modulo1000000007, Modulo1000000009, DynModuloU32);
 impl_basic_mint_dot_product!(u64, u128; DynModuloU64);
-impl MIntDotProduct for Modulo2 {}
+impl MIntDotProduct for Modulo2 {
+    fn inverse_two() -> Option<MInt<Self>> {
+        None
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -466,5 +546,51 @@ mod tests {
             }
         }
         DynMIntU64::set_mod(1_000_000_007);
+    }
+
+    #[test]
+    fn batched_inner_products() {
+        use crate::num::MIntConvert;
+
+        fn check<M>(rng: &mut Xorshift)
+        where
+            M: MIntDotProduct + MIntConvert<u64>,
+        {
+            let modulus = M::mod_into();
+            let mut make_row = || -> [MInt<M>; 17] {
+                std::array::from_fn(|i| {
+                    MInt::from(match i % 3 {
+                        0 => modulus - 1,
+                        1 => 0,
+                        _ => rng.random(..modulus),
+                    })
+                })
+            };
+            let x: Vec<_> = (0..65).map(|_| make_row()).collect();
+            let y: Vec<_> = (0..65).map(|_| make_row()).collect();
+            for n in 0..=65 {
+                let actual = M::dot_product_batch(&x[..n], &y[..n]);
+                for (i, value) in actual.into_iter().enumerate() {
+                    let modulus = u128::from(modulus);
+                    let sum = x[..n].iter().zip(&y).fold(0u128, |sum, (x, y)| {
+                        let product = u128::from(u64::from(x[i])) * u128::from(u64::from(y[i]));
+                        (sum + product) % modulus
+                    });
+                    assert_eq!(u128::from(u64::from(value)), sum);
+                }
+            }
+        }
+
+        let mut rng = Xorshift::default();
+        for modulus in [1, 2, 17, 998_244_353, 1 << 31, u32::MAX] {
+            DynModuloU32::set_mod(modulus);
+            check::<DynModuloU32>(&mut rng);
+        }
+        for modulus in [1, 2, 998_244_353, 1 << 32, 1 << 48, 1 << 63, u64::MAX] {
+            DynModuloU64::set_mod(modulus);
+            check::<DynModuloU64>(&mut rng);
+        }
+        DynModuloU32::set_mod(1_000_000_007);
+        DynModuloU64::set_mod(1_000_000_007);
     }
 }

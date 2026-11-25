@@ -1,7 +1,9 @@
 //! modint
 
 #[cfg(target_arch = "x86_64")]
-use crate::tools::{advise_huge_pages, avx512_enabled, avx512_supported};
+use crate::tools::{
+    SimdBackend, advise_huge_pages, avx512_enabled, avx512_supported, simd_backend,
+};
 use crate::{
     algebra::DotProduct,
     num::{BarrettReduction, One, Zero},

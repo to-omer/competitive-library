@@ -1,4 +1,5 @@
 pub mod characteristic_polynomial;
+pub mod hafnian_of_matrix;
 pub mod inverse_matrix;
 pub mod inverse_matrix_mod_2;
 pub mod matrix_det;

@@ -42,12 +42,29 @@ pub trait SemiRing {
         None
     }
 
+    /// Returns the multiplicative inverse of two when available.
+    fn inverse_two() -> Option<Self::T> {
+        None
+    }
+
     fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
         assert_eq!(x.len(), y.len());
         x.iter().zip(y).fold(Self::zero(), |mut sum, (x, y)| {
             Self::add_assign(&mut sum, &Self::mul(x, y));
             sum
         })
+    }
+
+    /// Computes one inner product per column.
+    fn dot_product_batch<const N: usize>(x: &[[Self::T; N]], y: &[[Self::T; N]]) -> [Self::T; N] {
+        assert_eq!(x.len(), y.len());
+        let mut sums = std::array::from_fn(|_| Self::zero());
+        for (x, y) in x.iter().zip(y) {
+            for i in 0..N {
+                Self::add_assign(&mut sums[i], &Self::mul(&x[i], &y[i]));
+            }
+        }
+        sums
     }
 
     fn add_scaled_assign(x: &mut [Self::T], y: &[Self::T], a: &Self::T) {
@@ -105,6 +122,11 @@ pub trait DotProduct: Sized + Clone + Zero + Add<Output = Self> + Mul<Output = S
         None
     }
 
+    /// Returns the multiplicative inverse of two when available.
+    fn inverse_two() -> Option<Self> {
+        None
+    }
+
     fn add_scaled_assign(x: &mut [Self], y: &[Self], a: &Self) {
         assert_eq!(x.len(), y.len());
         for (x, y) in x.iter_mut().zip(y) {
@@ -117,6 +139,18 @@ pub trait DotProduct: Sized + Clone + Zero + Add<Output = Self> + Mul<Output = S
         x.iter()
             .zip(y)
             .fold(Self::zero(), |sum, (x, y)| sum + x.clone() * y.clone())
+    }
+
+    /// Computes one inner product per column.
+    fn dot_product_batch<const N: usize>(x: &[[Self; N]], y: &[[Self; N]]) -> [Self; N] {
+        assert_eq!(x.len(), y.len());
+        let mut sums = std::array::from_fn(|_| Self::zero());
+        for (x, y) in x.iter().zip(y) {
+            for i in 0..N {
+                sums[i] = sums[i].clone() + x[i].clone() * y[i].clone();
+            }
+        }
+        sums
     }
 }
 
@@ -153,8 +187,18 @@ where
     }
 
     #[inline]
+    fn inverse_two() -> Option<Self::T> {
+        T::inverse_two()
+    }
+
+    #[inline]
     fn dot_product(x: &[Self::T], y: &[Self::T]) -> Self::T {
         T::dot_product(x, y)
+    }
+
+    #[inline]
+    fn dot_product_batch<const N: usize>(x: &[[Self::T; N]], y: &[[Self::T; N]]) -> [Self::T; N] {
+        T::dot_product_batch(x, y)
     }
 
     #[inline]

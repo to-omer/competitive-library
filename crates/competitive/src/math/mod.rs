@@ -181,6 +181,8 @@ mod garner;
 mod gcd;
 #[codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))]
 mod gcd_convolve;
+#[codesnip::entry("hafnian", include("Matrix", "SubsetConvolve"))]
+mod hafnian;
 #[codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))]
 mod lagrange_interpolation;
 #[codesnip::entry("LcmConvolve", include("_zeta_transform", "PrimeList"))]
@@ -236,7 +238,10 @@ mod primitive_root;
 mod quotient_array;
 #[codesnip::entry("RelaxedConvolution", include("ConvolveSteps", "zero_one"))]
 mod relaxed_convolution;
-#[codesnip::entry("SubsetConvolve", include("BitwiseorConvolve", "_huge_pages"))]
+#[codesnip::entry(
+    "SubsetConvolve",
+    include("BitwisexorConvolve", "_huge_pages", "avx_helper")
+)]
 mod subset_convolve;
 
 #[codesnip::entry("_zeta_transform", include("algebra", "ring", "ConvolveSteps"))]

@@ -23,6 +23,10 @@ where
         }
         None
     }
+    fn inverse_two() -> Option<MInt<Self>> {
+        let modulus = Self::MOD;
+        (modulus > 1 && modulus % 2 == 1).then(|| MInt::new(modulus / 2 + 1))
+    }
     fn dot_product(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
         dot_product::<Self, false>(x, y)
     }
