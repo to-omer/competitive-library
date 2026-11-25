@@ -386,7 +386,7 @@ impl_mint_ref_op_assign!(DivAssign, div_assign, MInt<M>, Div, div);
 mod tests {
     use super::{MInt, MIntBase, MIntConvert};
     #[cfg(target_arch = "x86_64")]
-    use crate::tools::avx512_enabled;
+    use crate::tools::{SimdBackend, avx512_enabled, simd_backend};
     use crate::{
         algebra::{AddMulOperation, DotProduct},
         define_basic_mint32, define_basic_mintbase, impl_basic_mint_dot_product,
