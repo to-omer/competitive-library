@@ -7,12 +7,13 @@ use crate::{
     },
     algorithm::BitDpExt,
     data_structure::{
-        MergingUnionFind, PairingHeap, RangeMinimumQuery, SegmentTree, UnionFind, WaveletMatrix,
+        FibHashMap, MergingUnionFind, PairingHeap, RangeMinimumQuery, SegmentTree, UnionFind,
+        WaveletMatrix,
     },
     math::Matrix,
     num::{Bounded, One, Zero},
     tools::{MarkedScan, PartialIgnoredOrd, Scan, ScanSource, comparator},
-    tree::XorLinkedRootedTree,
+    tree::{Cluster, StaticTopTreeDp, XorLinkedRootedTree},
 };
 
 #[codesnip::entry("AdjacencyListGraph")]
@@ -25,8 +26,12 @@ pub use self::bipartite_matching::BipartiteMatching;
 pub use self::closure::{ClosureGraph, UsizeGraph};
 #[codesnip::entry("dulmage_mendelsohn_decomposition")]
 pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition;
+#[codesnip::entry("DynamicStarMinimumCut")]
+pub use self::dynamic_star_minimum_cut::DynamicStarMinimumCut;
 #[codesnip::entry("EdgeListGraph")]
 pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
+#[codesnip::entry("extreme_set_tree")]
+pub use self::extreme_set_tree::extreme_set_tree;
 #[codesnip::entry("GeneralMatching")]
 pub use self::general_matching::GeneralMatching;
 #[codesnip::entry("GeneralWeightedMatching")]
@@ -84,8 +89,12 @@ mod count_spanning_tree;
     include("BipartiteMatching", "StronglyConnectedComponent")
 )]
 mod dulmage_mendelsohn_decomposition;
+#[codesnip::entry("DynamicStarMinimumCut", include("StaticTopTree", "extreme_set_tree"))]
+mod dynamic_star_minimum_cut;
 #[codesnip::entry("EdgeListGraph", include("scanner"))]
 mod edge_list;
+#[codesnip::entry("extreme_set_tree", include("FibonacciHash", "UnionFind"))]
+mod extreme_set_tree;
 #[codesnip::entry("GeneralMatching")]
 mod general_matching;
 #[codesnip::entry("GeneralWeightedMatching")]

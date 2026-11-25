@@ -1,5 +1,5 @@
 use super::{Graph, Magma, Monoid, UndirectedSparseGraph, Unital};
-use std::mem::MaybeUninit;
+use std::{borrow::Cow, mem::MaybeUninit};
 
 pub trait MonoidCluster {
     type Vertex;
@@ -108,7 +108,7 @@ pub struct StaticTopTreeDp<'a, C>
 where
     C: Cluster,
 {
-    tree: &'a StaticTopTree,
+    tree: Cow<'a, StaticTopTree>,
     vertices: Vec<<C as Cluster>::Vertex>,
     edges: Vec<<C as Cluster>::Edge>,
     compressed: Vec<InnerValue<<C as Cluster>::Path>>,
@@ -274,6 +274,17 @@ impl StaticTopTree {
         C: Cluster,
     {
         StaticTopTreeDp::new(self, vertices, edges)
+    }
+
+    pub fn into_dp<C>(
+        self,
+        vertices: Vec<<C as Cluster>::Vertex>,
+        edges: Vec<<C as Cluster>::Edge>,
+    ) -> StaticTopTreeDp<'static, C>
+    where
+        C: Cluster,
+    {
+        StaticTopTreeDp::from_tree(Cow::Owned(self), vertices, edges)
     }
 
     pub fn fold_all<C>(
@@ -552,26 +563,7 @@ where
         vertices: Vec<<C as Cluster>::Vertex>,
         edges: Vec<<C as Cluster>::Edge>,
     ) -> Self {
-        assert_eq!(vertices.len(), tree.vertices_size());
-        assert_eq!(edges.len(), tree.edges_size());
-
-        let mut data: StaticTopTreeDataBuilder<C> = StaticTopTreeDataBuilder::new(tree);
-        let path = tree.init_compress(
-            &mut data,
-            &vertices,
-            &edges,
-            tree.compress_roots[tree.root].expect("root compress tree must exist"),
-        );
-        let all_point = C::add_edge(&path);
-        Self {
-            tree,
-            vertices,
-            edges,
-            compressed: unsafe { assume_init_vec(data.compressed) },
-            raked: unsafe { assume_init_vec(data.raked) },
-            light_points: data.light_points,
-            all_point,
-        }
+        Self::from_tree(Cow::Borrowed(tree), vertices, edges)
     }
 
     pub fn get_vertex(&self, vertex: usize) -> &<C as Cluster>::Vertex {
@@ -656,6 +648,33 @@ where
                 rake_parent = inner.parent;
             }
             vertex = links.heavy_parent;
+        }
+    }
+
+    fn from_tree(
+        tree: Cow<'a, StaticTopTree>,
+        vertices: Vec<<C as Cluster>::Vertex>,
+        edges: Vec<<C as Cluster>::Edge>,
+    ) -> Self {
+        assert_eq!(vertices.len(), tree.vertices_size());
+        assert_eq!(edges.len(), tree.edges_size());
+
+        let mut data: StaticTopTreeDataBuilder<C> = StaticTopTreeDataBuilder::new(&tree);
+        let path = tree.init_compress(
+            &mut data,
+            &vertices,
+            &edges,
+            tree.compress_roots[tree.root].expect("root compress tree must exist"),
+        );
+        let all_point = C::add_edge(&path);
+        Self {
+            tree,
+            vertices,
+            edges,
+            compressed: unsafe { assume_init_vec(data.compressed) },
+            raked: unsafe { assume_init_vec(data.raked) },
+            light_points: data.light_points,
+            all_point,
         }
     }
 
