@@ -190,12 +190,12 @@
 <span data-nosnippet>12</span>        matching[u] = v + l;
 <span data-nosnippet>13</span>        matching[v + l] = u;
 <span data-nosnippet>14</span>    }
-<span data-nosnippet>15</span>    <span class="kw">let </span>rmedges = medges.iter().map(|<span class="kw-2">&amp;</span>(u, v)| (v, u)).collect();
-<span data-nosnippet>16</span>
-<span data-nosnippet>17</span>    <span class="kw">let </span>g = DirectedSparseGraph::from_edges(l + r, medges);
-<span data-nosnippet>18</span>    <span class="kw">let </span>rg = DirectedSparseGraph::from_edges(l + r, rmedges);
-<span data-nosnippet>19</span>    <span class="kw">let </span>scc = StronglyConnectedComponent::new(<span class="kw-2">&amp;</span>g);
-<span data-nosnippet>20</span>    <span class="kw">let </span>csize = scc.size();
+<span data-nosnippet>15</span>    <span class="kw">let </span>(csize, ids) = {
+<span data-nosnippet>16</span>        <span class="kw">let </span>scc = StronglyConnectedComponent::from_edges(l + r, medges.iter().copied());
+<span data-nosnippet>17</span>        (scc.size(), scc.component_ids())
+<span data-nosnippet>18</span>    };
+<span data-nosnippet>19</span>    <span class="kw">let </span>g = DirectedSparseGraph::from_edges(l + r, medges);
+<span data-nosnippet>20</span>    <span class="kw">let </span>rg = g.reverse_graph();
 <span data-nosnippet>21</span>
 <span data-nosnippet>22</span>    <span class="kw">let </span><span class="kw-2">mut </span>cmap = <span class="macro">vec!</span>[!<span class="number">0usize </span>- <span class="number">1</span>; csize];
 <span data-nosnippet>23</span>    <span class="kw">let </span><span class="kw-2">mut </span>visited = <span class="macro">vec!</span>[<span class="bool-val">false</span>; l + r];
@@ -205,7 +205,7 @@
 <span data-nosnippet>27</span>            visited[u] = <span class="bool-val">true</span>;
 <span data-nosnippet>28</span>            stack.push(u);
 <span data-nosnippet>29</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = stack.pop() {
-<span data-nosnippet>30</span>                cmap[scc[u]] = !<span class="number">0</span>;
+<span data-nosnippet>30</span>                cmap[ids[u]] = !<span class="number">0</span>;
 <span data-nosnippet>31</span>                <span class="kw">for </span>a <span class="kw">in </span>g.neighbors(u) {
 <span data-nosnippet>32</span>                    <span class="kw">if </span>!visited[a.to] {
 <span data-nosnippet>33</span>                        visited[a.to] = <span class="bool-val">true</span>;
@@ -220,7 +220,7 @@
 <span data-nosnippet>42</span>            visited[u] = <span class="bool-val">true</span>;
 <span data-nosnippet>43</span>            stack.push(u);
 <span data-nosnippet>44</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = stack.pop() {
-<span data-nosnippet>45</span>                cmap[scc[u]] = <span class="number">0</span>;
+<span data-nosnippet>45</span>                cmap[ids[u]] = <span class="number">0</span>;
 <span data-nosnippet>46</span>                <span class="kw">for </span>a <span class="kw">in </span>rg.neighbors(u) {
 <span data-nosnippet>47</span>                    <span class="kw">if </span>!visited[a.to] {
 <span data-nosnippet>48</span>                        visited[a.to] = <span class="bool-val">true</span>;
@@ -248,20 +248,20 @@
 <span data-nosnippet>70</span>    <span class="kw">let </span><span class="kw-2">mut </span>groups = <span class="macro">vec!</span>[(<span class="macro">vec!</span>[], <span class="macro">vec!</span>[]); nset];
 <span data-nosnippet>71</span>    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..l {
 <span data-nosnippet>72</span>        <span class="kw">if </span>matching[u] != !<span class="number">0 </span>{
-<span data-nosnippet>73</span>            <span class="kw">let </span>c = cmap[scc[u]];
+<span data-nosnippet>73</span>            <span class="kw">let </span>c = cmap[ids[u]];
 <span data-nosnippet>74</span>            groups[c].<span class="number">0</span>.push(u);
 <span data-nosnippet>75</span>            groups[c].<span class="number">1</span>.push(matching[u] - l);
 <span data-nosnippet>76</span>        }
 <span data-nosnippet>77</span>    }
 <span data-nosnippet>78</span>    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..l {
 <span data-nosnippet>79</span>        <span class="kw">if </span>matching[u] == !<span class="number">0 </span>{
-<span data-nosnippet>80</span>            <span class="kw">let </span>c = cmap[scc[u]];
+<span data-nosnippet>80</span>            <span class="kw">let </span>c = cmap[ids[u]];
 <span data-nosnippet>81</span>            groups[c].<span class="number">0</span>.push(u);
 <span data-nosnippet>82</span>        }
 <span data-nosnippet>83</span>    }
 <span data-nosnippet>84</span>    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..r {
 <span data-nosnippet>85</span>        <span class="kw">if </span>matching[u + l] == !<span class="number">0 </span>{
-<span data-nosnippet>86</span>            <span class="kw">let </span>c = cmap[scc[u + l]];
+<span data-nosnippet>86</span>            <span class="kw">let </span>c = cmap[ids[u + l]];
 <span data-nosnippet>87</span>            groups[c].<span class="number">1</span>.push(u);
 <span data-nosnippet>88</span>        }
 <span data-nosnippet>89</span>    }
@@ -391,12 +391,12 @@
 <span data-nosnippet>12</span>        matching[u] = v + l;
 <span data-nosnippet>13</span>        matching[v + l] = u;
 <span data-nosnippet>14</span>    }
-<span data-nosnippet>15</span>    <span class="kw">let </span>rmedges = medges.iter().map(|<span class="kw-2">&amp;</span>(u, v)| (v, u)).collect();
-<span data-nosnippet>16</span>
-<span data-nosnippet>17</span>    <span class="kw">let </span>g = DirectedSparseGraph::from_edges(l + r, medges);
-<span data-nosnippet>18</span>    <span class="kw">let </span>rg = DirectedSparseGraph::from_edges(l + r, rmedges);
-<span data-nosnippet>19</span>    <span class="kw">let </span>scc = StronglyConnectedComponent::new(<span class="kw-2">&amp;</span>g);
-<span data-nosnippet>20</span>    <span class="kw">let </span>csize = scc.size();
+<span data-nosnippet>15</span>    <span class="kw">let </span>(csize, ids) = {
+<span data-nosnippet>16</span>        <span class="kw">let </span>scc = StronglyConnectedComponent::from_edges(l + r, medges.iter().copied());
+<span data-nosnippet>17</span>        (scc.size(), scc.component_ids())
+<span data-nosnippet>18</span>    };
+<span data-nosnippet>19</span>    <span class="kw">let </span>g = DirectedSparseGraph::from_edges(l + r, medges);
+<span data-nosnippet>20</span>    <span class="kw">let </span>rg = g.reverse_graph();
 <span data-nosnippet>21</span>
 <span data-nosnippet>22</span>    <span class="kw">let </span><span class="kw-2">mut </span>cmap = <span class="macro">vec!</span>[!<span class="number">0usize </span>- <span class="number">1</span>; csize];
 <span data-nosnippet>23</span>    <span class="kw">let </span><span class="kw-2">mut </span>visited = <span class="macro">vec!</span>[<span class="bool-val">false</span>; l + r];
@@ -406,7 +406,7 @@
 <span data-nosnippet>27</span>            visited[u] = <span class="bool-val">true</span>;
 <span data-nosnippet>28</span>            stack.push(u);
 <span data-nosnippet>29</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = stack.pop() {
-<span data-nosnippet>30</span>                cmap[scc[u]] = !<span class="number">0</span>;
+<span data-nosnippet>30</span>                cmap[ids[u]] = !<span class="number">0</span>;
 <span data-nosnippet>31</span>                <span class="kw">for </span>a <span class="kw">in </span>g.neighbors(u) {
 <span data-nosnippet>32</span>                    <span class="kw">if </span>!visited[a.to] {
 <span data-nosnippet>33</span>                        visited[a.to] = <span class="bool-val">true</span>;
@@ -421,7 +421,7 @@
 <span data-nosnippet>42</span>            visited[u] = <span class="bool-val">true</span>;
 <span data-nosnippet>43</span>            stack.push(u);
 <span data-nosnippet>44</span>            <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = stack.pop() {
-<span data-nosnippet>45</span>                cmap[scc[u]] = <span class="number">0</span>;
+<span data-nosnippet>45</span>                cmap[ids[u]] = <span class="number">0</span>;
 <span data-nosnippet>46</span>                <span class="kw">for </span>a <span class="kw">in </span>rg.neighbors(u) {
 <span data-nosnippet>47</span>                    <span class="kw">if </span>!visited[a.to] {
 <span data-nosnippet>48</span>                        visited[a.to] = <span class="bool-val">true</span>;
@@ -449,20 +449,20 @@
 <span data-nosnippet>70</span>    <span class="kw">let </span><span class="kw-2">mut </span>groups = <span class="macro">vec!</span>[(<span class="macro">vec!</span>[], <span class="macro">vec!</span>[]); nset];
 <span data-nosnippet>71</span>    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..l {
 <span data-nosnippet>72</span>        <span class="kw">if </span>matching[u] != !<span class="number">0 </span>{
-<span data-nosnippet>73</span>            <span class="kw">let </span>c = cmap[scc[u]];
+<span data-nosnippet>73</span>            <span class="kw">let </span>c = cmap[ids[u]];
 <span data-nosnippet>74</span>            groups[c].<span class="number">0</span>.push(u);
 <span data-nosnippet>75</span>            groups[c].<span class="number">1</span>.push(matching[u] - l);
 <span data-nosnippet>76</span>        }
 <span data-nosnippet>77</span>    }
 <span data-nosnippet>78</span>    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..l {
 <span data-nosnippet>79</span>        <span class="kw">if </span>matching[u] == !<span class="number">0 </span>{
-<span data-nosnippet>80</span>            <span class="kw">let </span>c = cmap[scc[u]];
+<span data-nosnippet>80</span>            <span class="kw">let </span>c = cmap[ids[u]];
 <span data-nosnippet>81</span>            groups[c].<span class="number">0</span>.push(u);
 <span data-nosnippet>82</span>        }
 <span data-nosnippet>83</span>    }
 <span data-nosnippet>84</span>    <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..r {
 <span data-nosnippet>85</span>        <span class="kw">if </span>matching[u + l] == !<span class="number">0 </span>{
-<span data-nosnippet>86</span>            <span class="kw">let </span>c = cmap[scc[u + l]];
+<span data-nosnippet>86</span>            <span class="kw">let </span>c = cmap[ids[u + l]];
 <span data-nosnippet>87</span>            groups[c].<span class="number">1</span>.push(u);
 <span data-nosnippet>88</span>        }
 <span data-nosnippet>89</span>    }
