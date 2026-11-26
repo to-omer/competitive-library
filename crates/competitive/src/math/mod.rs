@@ -42,8 +42,12 @@ pub use self::black_box_matrix::{BlackBoxMatrix, BlackBoxMatrixImpl, SparseMatri
 pub use self::black_box_mint_matrix::BlackBoxMIntMatrix;
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
+#[codesnip::entry("count_primes")]
+pub use self::count_primes::count_primes;
 #[codesnip::entry("discrete_logarithm")]
 pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
+#[codesnip::entry("euler_phi_sum")]
+pub use self::euler_phi_sum::euler_phi_sum;
 #[codesnip::entry("factorial")]
 pub use self::factorial::MemorizedFactorial;
 #[codesnip::entry("fast_fourier_transform")]
@@ -132,6 +136,8 @@ mod black_box_matrix;
 mod black_box_mint_matrix;
 #[codesnip::entry("ConvolveSteps")]
 mod convolve_steps;
+#[codesnip::entry("count_primes", include("PrimeList"))]
+mod count_primes;
 #[codesnip::entry(
     "discrete_logarithm",
     include(
@@ -144,6 +150,8 @@ mod convolve_steps;
     )
 )]
 mod discrete_logarithm;
+#[codesnip::entry("euler_phi_sum", include("PrimeList"))]
+mod euler_phi_sum;
 #[codesnip::entry("factorial", include("MIntBase"))]
 mod factorial;
 #[codesnip::entry(
