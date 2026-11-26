@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["FIRST_PRIME","ODD_MOBIUS","PERIOD"],"fn":["euler_phi_sum","sieved_mobius"],"static":["WHEEL"],"struct":["Wheel"]};

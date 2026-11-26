@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MASK","PATTERN","RESIDUES","SMALL_PRIMES","WHEEL_COUNTS"],"fn":["count_primes","easy_leaves","sieved_leaves_minus_semiprimes","signed_factors","tiny_phi"],"struct":["PrimeCounts","Segment"]};
