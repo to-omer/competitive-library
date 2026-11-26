@@ -76,70 +76,70 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">sieved_mobius</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>euler_<wbr>phi_<wbr>sum</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">euler_phi_sum</a></div><h1>Function <span class="fn">sieved_<wbr>mobius</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/euler_phi_sum.rs.html#86-112">Source</a> </span></div><pre class="rust item-decl"><code>fn sieved_mobius(limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>&gt;</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[7,7],&#34;../../../src/competitive/math/euler_phi_sum.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/euler_phi_sum.rs (<a href="../../../src/competitive/math/euler_phi_sum.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>18</span><span class="kw">pub fn </span>euler_phi_sum(n: u64) -&gt; u128 {
-<span data-nosnippet>19</span>    <span class="kw">if </span>n == <span class="number">0 </span>{
-<span data-nosnippet>20</span>        <span class="kw">return </span><span class="number">0</span>;
-<span data-nosnippet>21</span>    }
-<span data-nosnippet>22</span>    <span class="kw">let </span>root = n.isqrt() <span class="kw">as </span>usize;
-<span data-nosnippet>23</span>    <span class="kw">let </span>limit = ((n <span class="kw">as </span>f64).cbrt().powi(<span class="number">2</span>) * <span class="number">0.5</span>) <span class="kw">as </span>usize;
-<span data-nosnippet>24</span>    <span class="kw">let </span>limit = limit.max(root);
-<span data-nosnippet>25</span>    <span class="kw">let </span>mobius = <span class="highlight focus">sieved_mobius</span>(limit);
-<span data-nosnippet>26</span>    <span class="kw">let </span><span class="kw-2">mut </span>small = Vec::with_capacity(root + <span class="number">1</span>);
-<span data-nosnippet>27</span>    <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">0i32</span>;
-<span data-nosnippet>28</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=root {
-<span data-nosnippet>29</span>        <span class="kw">if </span>i % <span class="number">2 </span>== <span class="number">1 </span>{
-<span data-nosnippet>30</span>            sum += i32::from(mobius[i / <span class="number">2</span>]);
-<span data-nosnippet>31</span>        }
-<span data-nosnippet>32</span>        small.push((WHEEL.count(i <span class="kw">as </span>u64) <span class="kw">as </span>i32, sum));
-<span data-nosnippet>33</span>    }
-<span data-nosnippet>34</span>    <span class="kw">let </span><span class="kw-2">mut </span>large = <span class="macro">vec!</span>[(<span class="number">0i64</span>, <span class="number">0i64</span>); root + <span class="number">1</span>];
-<span data-nosnippet>35</span>    <span class="kw">let </span><span class="kw-2">mut </span>pos = root.div_ceil(<span class="number">2</span>);
-<span data-nosnippet>36</span>    <span class="kw">let </span><span class="kw-2">mut </span>sum = i64::from(sum);
-<span data-nosnippet>37</span>    <span class="kw">for </span>(i, entry) <span class="kw">in </span>large.iter_mut().enumerate().skip(<span class="number">1</span>).rev() {
-<span data-nosnippet>38</span>        <span class="kw">let </span>x = n / i <span class="kw">as </span>u64;
-<span data-nosnippet>39</span>        <span class="kw">let </span>end = (x.min(limit <span class="kw">as </span>u64) <span class="kw">as </span>usize).div_ceil(<span class="number">2</span>);
-<span data-nosnippet>40</span>        sum += mobius[pos..end].iter().map(|<span class="kw-2">&amp;</span>v| i64::from(v)).sum::&lt;i64&gt;();
-<span data-nosnippet>41</span>        pos = end;
-<span data-nosnippet>42</span>        <span class="kw-2">*</span>entry = (WHEEL.count(x) <span class="kw">as </span>i64, sum);
-<span data-nosnippet>43</span>    }
-<span data-nosnippet>44</span>
-<span data-nosnippet>45</span>    <span class="kw">let </span>rough: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">2</span>..=root)
-<span data-nosnippet>46</span>        .filter(|<span class="kw-2">&amp;</span>d| small[d].<span class="number">0 </span>!= small[d - <span class="number">1</span>].<span class="number">0</span>)
-<span data-nosnippet>47</span>        .map(|d| (d <span class="kw">as </span>u32, mobius[d / <span class="number">2</span>], u64::MAX / d <span class="kw">as </span>u64 + <span class="number">1</span>))
-<span data-nosnippet>48</span>        .collect();
-<span data-nosnippet>49</span>    <span class="comment">// On integers coprime to the wheel, mu * 1 is the unit for Dirichlet convolution.
-<span data-nosnippet>50</span>    </span><span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..=(n / (limit <span class="kw">as </span>u64 + <span class="number">1</span>)) <span class="kw">as </span>usize).rev() {
-<span data-nosnippet>51</span>        <span class="kw">let </span>x = n / i <span class="kw">as </span>u64;
-<span data-nosnippet>52</span>        <span class="kw">let </span>b = x.isqrt() <span class="kw">as </span>usize;
-<span data-nosnippet>53</span>        <span class="kw">let </span>(count, mertens) = small[b];
-<span data-nosnippet>54</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">1 </span>- large[i].<span class="number">0 </span>+ i64::from(count) * i64::from(mertens);
-<span data-nosnippet>55</span>        <span class="kw">let </span>split = small[root / i].<span class="number">0 </span><span class="kw">as </span>usize - <span class="number">1</span>;
-<span data-nosnippet>56</span>        <span class="kw">let </span>end = count <span class="kw">as </span>usize - <span class="number">1</span>;
-<span data-nosnippet>57</span>        <span class="kw">for </span><span class="kw-2">&amp;</span>(d, mu, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>rough[..split] {
-<span data-nosnippet>58</span>            <span class="kw">let </span>(count, mertens) = large[i * d <span class="kw">as </span>usize];
-<span data-nosnippet>59</span>            sum = sum.wrapping_sub(mertens + i64::from(mu) * count);
-<span data-nosnippet>60</span>        }
-<span data-nosnippet>61</span>        <span class="comment">// ceil(2^64/d) gives the exact quotient when x*d &lt; 2^64.
-<span data-nosnippet>62</span>        </span><span class="kw">let </span>use_reciprocal = x &lt;= u64::MAX / b <span class="kw">as </span>u64;
-<span data-nosnippet>63</span>        <span class="kw">for </span><span class="kw-2">&amp;</span>(d, mu, reciprocal) <span class="kw">in </span><span class="kw-2">&amp;</span>rough[split..end] {
-<span data-nosnippet>64</span>            <span class="kw">let </span>q = <span class="kw">if </span>use_reciprocal {
-<span data-nosnippet>65</span>                ((u128::from(x) * u128::from(reciprocal)) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>usize
-<span data-nosnippet>66</span>            } <span class="kw">else </span>{
-<span data-nosnippet>67</span>                (x / u64::from(d)) <span class="kw">as </span>usize
-<span data-nosnippet>68</span>            };
-<span data-nosnippet>69</span>            <span class="kw">let </span>(count, mertens) = small[q];
-<span data-nosnippet>70</span>            sum = sum.wrapping_sub(i64::from(mertens + i32::from(mu) * count));
-<span data-nosnippet>71</span>        }
-<span data-nosnippet>72</span>        large[i].<span class="number">1 </span>= sum;
-<span data-nosnippet>73</span>    }
-<span data-nosnippet>74</span>
-<span data-nosnippet>75</span>    <span class="comment">// phi = restricted mu * h, where h(e) = e * product_{p | gcd(e, PERIOD)} (1 - 1/p).
-<span data-nosnippet>76</span>    </span><span class="kw">let </span><span class="kw-2">mut </span>total = WHEEL.weight_sum(n) <span class="kw">as </span>i128;
-<span data-nosnippet>77</span>    <span class="kw">for </span>(e, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, mertens)) <span class="kw">in </span>large.iter().enumerate().skip(<span class="number">1</span>) {
-<span data-nosnippet>78</span>        total = total.wrapping_add(i128::from(WHEEL.weight(e)) * i128::from(mertens));
-<span data-nosnippet>79</span>    }
-<span data-nosnippet>80</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>(d, mu, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>rough {
-<span data-nosnippet>81</span>        total = total.wrapping_add(i128::from(mu) * WHEEL.weight_sum(n / u64::from(d)) <span class="kw">as </span>i128);
-<span data-nosnippet>82</span>    }
-<span data-nosnippet>83</span>    total.wrapping_sub(WHEEL.weight_sum(root <span class="kw">as </span>u64) <span class="kw">as </span>i128 * i128::from(small[root].<span class="number">1</span>)) <span class="kw">as </span>u128
-<span data-nosnippet>84</span>}</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">sieved_mobius</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>euler_<wbr>phi_<wbr>sum</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">euler_phi_sum</a></div><h1>Function <span class="fn">sieved_<wbr>mobius</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/euler_phi_sum.rs.html#113-139">Source</a> </span></div><pre class="rust item-decl"><code>fn sieved_mobius(limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>&gt;</code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[7,7],&#34;../../../src/competitive/math/euler_phi_sum.rs.html#52&#34;,&#34;line 52&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/euler_phi_sum.rs (<a href="../../../src/competitive/math/euler_phi_sum.rs.html#52">line 52</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>45</span><span class="kw">pub fn </span>euler_phi_sum(n: u64) -&gt; u128 {
+<span data-nosnippet>46</span>    <span class="kw">if </span>n == <span class="number">0 </span>{
+<span data-nosnippet>47</span>        <span class="kw">return </span><span class="number">0</span>;
+<span data-nosnippet>48</span>    }
+<span data-nosnippet>49</span>    <span class="kw">let </span>root = n.isqrt() <span class="kw">as </span>usize;
+<span data-nosnippet>50</span>    <span class="kw">let </span>limit = ((n <span class="kw">as </span>f64).cbrt().powi(<span class="number">2</span>) * <span class="number">0.5</span>) <span class="kw">as </span>usize;
+<span data-nosnippet>51</span>    <span class="kw">let </span>limit = limit.max(root);
+<span data-nosnippet>52</span>    <span class="kw">let </span>mobius = <span class="highlight focus">sieved_mobius</span>(limit);
+<span data-nosnippet>53</span>    <span class="kw">let </span><span class="kw-2">mut </span>small = Vec::with_capacity(root + <span class="number">1</span>);
+<span data-nosnippet>54</span>    <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">0i32</span>;
+<span data-nosnippet>55</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=root {
+<span data-nosnippet>56</span>        <span class="kw">if </span>i % <span class="number">2 </span>== <span class="number">1 </span>{
+<span data-nosnippet>57</span>            sum += i32::from(mobius[i / <span class="number">2</span>]);
+<span data-nosnippet>58</span>        }
+<span data-nosnippet>59</span>        small.push((WHEEL.count(i <span class="kw">as </span>u64) <span class="kw">as </span>i32, sum));
+<span data-nosnippet>60</span>    }
+<span data-nosnippet>61</span>    <span class="kw">let </span><span class="kw-2">mut </span>large = <span class="macro">vec!</span>[(<span class="number">0i64</span>, <span class="number">0i64</span>); root + <span class="number">1</span>];
+<span data-nosnippet>62</span>    <span class="kw">let </span><span class="kw-2">mut </span>pos = root.div_ceil(<span class="number">2</span>);
+<span data-nosnippet>63</span>    <span class="kw">let </span><span class="kw-2">mut </span>sum = i64::from(sum);
+<span data-nosnippet>64</span>    <span class="kw">for </span>(i, entry) <span class="kw">in </span>large.iter_mut().enumerate().skip(<span class="number">1</span>).rev() {
+<span data-nosnippet>65</span>        <span class="kw">let </span>x = n / i <span class="kw">as </span>u64;
+<span data-nosnippet>66</span>        <span class="kw">let </span>end = (x.min(limit <span class="kw">as </span>u64) <span class="kw">as </span>usize).div_ceil(<span class="number">2</span>);
+<span data-nosnippet>67</span>        sum += mobius[pos..end].iter().map(|<span class="kw-2">&amp;</span>v| i64::from(v)).sum::&lt;i64&gt;();
+<span data-nosnippet>68</span>        pos = end;
+<span data-nosnippet>69</span>        <span class="kw-2">*</span>entry = (WHEEL.count(x) <span class="kw">as </span>i64, sum);
+<span data-nosnippet>70</span>    }
+<span data-nosnippet>71</span>
+<span data-nosnippet>72</span>    <span class="kw">let </span>rough: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">2</span>..=root)
+<span data-nosnippet>73</span>        .filter(|<span class="kw-2">&amp;</span>d| small[d].<span class="number">0 </span>!= small[d - <span class="number">1</span>].<span class="number">0</span>)
+<span data-nosnippet>74</span>        .map(|d| (d <span class="kw">as </span>u32, mobius[d / <span class="number">2</span>], u64::MAX / d <span class="kw">as </span>u64 + <span class="number">1</span>))
+<span data-nosnippet>75</span>        .collect();
+<span data-nosnippet>76</span>    <span class="comment">// On integers coprime to the wheel, mu * 1 is the unit for Dirichlet convolution.
+<span data-nosnippet>77</span>    </span><span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..=(n / (limit <span class="kw">as </span>u64 + <span class="number">1</span>)) <span class="kw">as </span>usize).rev() {
+<span data-nosnippet>78</span>        <span class="kw">let </span>x = n / i <span class="kw">as </span>u64;
+<span data-nosnippet>79</span>        <span class="kw">let </span>b = x.isqrt() <span class="kw">as </span>usize;
+<span data-nosnippet>80</span>        <span class="kw">let </span>(count, mertens) = small[b];
+<span data-nosnippet>81</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">1 </span>- large[i].<span class="number">0 </span>+ i64::from(count) * i64::from(mertens);
+<span data-nosnippet>82</span>        <span class="kw">let </span>split = small[root / i].<span class="number">0 </span><span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>83</span>        <span class="kw">let </span>end = count <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>84</span>        <span class="kw">for </span><span class="kw-2">&amp;</span>(d, mu, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>rough[..split] {
+<span data-nosnippet>85</span>            <span class="kw">let </span>(count, mertens) = large[i * d <span class="kw">as </span>usize];
+<span data-nosnippet>86</span>            sum = sum.wrapping_sub(mertens + i64::from(mu) * count);
+<span data-nosnippet>87</span>        }
+<span data-nosnippet>88</span>        <span class="comment">// ceil(2^64/d) gives the exact quotient when x*d &lt; 2^64.
+<span data-nosnippet>89</span>        </span><span class="kw">let </span>use_reciprocal = x &lt;= u64::MAX / b <span class="kw">as </span>u64;
+<span data-nosnippet>90</span>        <span class="kw">for </span><span class="kw-2">&amp;</span>(d, mu, reciprocal) <span class="kw">in </span><span class="kw-2">&amp;</span>rough[split..end] {
+<span data-nosnippet>91</span>            <span class="kw">let </span>q = <span class="kw">if </span>use_reciprocal {
+<span data-nosnippet>92</span>                ((u128::from(x) * u128::from(reciprocal)) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>usize
+<span data-nosnippet>93</span>            } <span class="kw">else </span>{
+<span data-nosnippet>94</span>                (x / u64::from(d)) <span class="kw">as </span>usize
+<span data-nosnippet>95</span>            };
+<span data-nosnippet>96</span>            <span class="kw">let </span>(count, mertens) = small[q];
+<span data-nosnippet>97</span>            sum = sum.wrapping_sub(i64::from(mertens + i32::from(mu) * count));
+<span data-nosnippet>98</span>        }
+<span data-nosnippet>99</span>        large[i].<span class="number">1 </span>= sum;
+<span data-nosnippet>100</span>    }
+<span data-nosnippet>101</span>
+<span data-nosnippet>102</span>    <span class="comment">// phi = restricted mu * h, where h(e) = e * product_{p | gcd(e, PERIOD)} (1 - 1/p).
+<span data-nosnippet>103</span>    </span><span class="kw">let </span><span class="kw-2">mut </span>total = WHEEL.weight_sum(n) <span class="kw">as </span>i128;
+<span data-nosnippet>104</span>    <span class="kw">for </span>(e, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, mertens)) <span class="kw">in </span>large.iter().enumerate().skip(<span class="number">1</span>) {
+<span data-nosnippet>105</span>        total = total.wrapping_add(i128::from(WHEEL.weight(e)) * i128::from(mertens));
+<span data-nosnippet>106</span>    }
+<span data-nosnippet>107</span>    <span class="kw">for </span><span class="kw-2">&amp;</span>(d, mu, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>rough {
+<span data-nosnippet>108</span>        total = total.wrapping_add(i128::from(mu) * WHEEL.weight_sum(n / u64::from(d)) <span class="kw">as </span>i128);
+<span data-nosnippet>109</span>    }
+<span data-nosnippet>110</span>    total.wrapping_sub(WHEEL.weight_sum(root <span class="kw">as </span>u64) <span class="kw">as </span>i128 * i128::from(small[root].<span class="number">1</span>)) <span class="kw">as </span>u128
+<span data-nosnippet>111</span>}</code></pre></div></div></div></section></div></main></body></html>
