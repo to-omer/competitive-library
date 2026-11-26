@@ -12,12 +12,12 @@ pub fn dulmage_mendelsohn_decomposition(
         matching[u] = v + l;
         matching[v + l] = u;
     }
-    let rmedges = medges.iter().map(|&(u, v)| (v, u)).collect();
-
+    let (csize, ids) = {
+        let scc = StronglyConnectedComponent::from_edges(l + r, medges.iter().copied());
+        (scc.size(), scc.component_ids())
+    };
     let g = DirectedSparseGraph::from_edges(l + r, medges);
-    let rg = DirectedSparseGraph::from_edges(l + r, rmedges);
-    let scc = StronglyConnectedComponent::new(&g);
-    let csize = scc.size();
+    let rg = g.reverse_graph();
 
     let mut cmap = vec![!0usize - 1; csize];
     let mut visited = vec![false; l + r];
@@ -27,7 +27,7 @@ pub fn dulmage_mendelsohn_decomposition(
             visited[u] = true;
             stack.push(u);
             while let Some(u) = stack.pop() {
-                cmap[scc[u]] = !0;
+                cmap[ids[u]] = !0;
                 for a in g.neighbors(u) {
                     if !visited[a.to] {
                         visited[a.to] = true;
@@ -42,7 +42,7 @@ pub fn dulmage_mendelsohn_decomposition(
             visited[u] = true;
             stack.push(u);
             while let Some(u) = stack.pop() {
-                cmap[scc[u]] = 0;
+                cmap[ids[u]] = 0;
                 for a in rg.neighbors(u) {
                     if !visited[a.to] {
                         visited[a.to] = true;
@@ -70,20 +70,20 @@ pub fn dulmage_mendelsohn_decomposition(
     let mut groups = vec![(vec![], vec![]); nset];
     for u in 0..l {
         if matching[u] != !0 {
-            let c = cmap[scc[u]];
+            let c = cmap[ids[u]];
             groups[c].0.push(u);
             groups[c].1.push(matching[u] - l);
         }
     }
     for u in 0..l {
         if matching[u] == !0 {
-            let c = cmap[scc[u]];
+            let c = cmap[ids[u]];
             groups[c].0.push(u);
         }
     }
     for u in 0..r {
         if matching[u + l] == !0 {
-            let c = cmap[scc[u + l]];
+            let c = cmap[ids[u + l]];
             groups[c].1.push(u);
         }
     }

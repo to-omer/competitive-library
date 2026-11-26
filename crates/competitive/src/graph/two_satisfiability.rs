@@ -1,4 +1,4 @@
-use super::{DirectedSparseGraph, StronglyConnectedComponent};
+use super::StronglyConnectedComponent;
 
 #[derive(Debug, Clone)]
 pub struct TwoSatisfiability {
@@ -31,14 +31,15 @@ impl TwoSatisfiability {
         self.edges.push((2 * x, 2 * x + 1));
     }
     pub fn two_satisfiability(self) -> Option<Vec<bool>> {
-        let graph = DirectedSparseGraph::from_edges(self.vsize * 2, self.edges);
-        let scc = StronglyConnectedComponent::new(&graph);
+        let ids =
+            StronglyConnectedComponent::from_edges(self.vsize * 2, self.edges.iter().copied())
+                .component_ids();
         let mut res = vec![false; self.vsize];
         for i in 0..self.vsize {
-            if scc[i * 2] == scc[i * 2 + 1] {
+            if ids[i * 2] == ids[i * 2 + 1] {
                 return None;
             }
-            res[i] = scc[i * 2] > scc[i * 2 + 1];
+            res[i] = ids[i * 2] > ids[i * 2 + 1];
         }
         Some(res)
     }

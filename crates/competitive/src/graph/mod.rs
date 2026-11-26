@@ -65,7 +65,6 @@ pub use self::steiner_tree::{
     SteinerTreeBuilder, SteinerTreeExt, SteinerTreeOutput, SteinerTreeParent,
     SteinerTreeParentPolicy,
 };
-#[codesnip::entry("StronglyConnectedComponent")]
 pub use self::strongly_connected_component::StronglyConnectedComponent;
 #[codesnip::entry("topological_sort")]
 pub use self::topological_sort::TopologicalSortExt;
@@ -86,7 +85,7 @@ mod closure;
 mod count_spanning_tree;
 #[codesnip::entry(
     "dulmage_mendelsohn_decomposition",
-    include("BipartiteMatching", "StronglyConnectedComponent")
+    include("BipartiteMatching", "SparseGraph", "StronglyConnectedComponent")
 )]
 mod dulmage_mendelsohn_decomposition;
 #[codesnip::entry("DynamicStarMinimumCut", include("StaticTopTree", "extreme_set_tree"))]
@@ -140,7 +139,6 @@ pub mod shortest_path;
 mod sparse_graph;
 #[codesnip::entry("steiner_tree", include("shortest_path", "BitDp", "UnionFind"))]
 mod steiner_tree;
-#[codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))]
 mod strongly_connected_component;
 #[codesnip::entry("topological_sort", include("Graph"))]
 mod topological_sort;
