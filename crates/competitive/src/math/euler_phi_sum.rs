@@ -2,7 +2,34 @@ use super::PrimeList;
 
 const PERIOD: usize = 2 * 3 * 5 * 7 * 11 * 13;
 const FIRST_PRIME: usize = 17;
-static WHEEL: Wheel = Wheel::new();
+static WHEEL: Wheel = {
+    let mut weights = [PERIOD; PERIOD + 1];
+    let primes = [2, 3, 5, 7, 11, 13];
+    let mut j = 0;
+    while j < primes.len() {
+        let p = primes[j];
+        let mut i = p;
+        while i <= PERIOD {
+            weights[i] = weights[i] / p * (p - 1);
+            i += p;
+        }
+        j += 1;
+    }
+    let mut wheel = Wheel {
+        count: [0; PERIOD + 1],
+        slope: [0; PERIOD + 1],
+        sum: [0; PERIOD + 1],
+    };
+    let mut i = 1;
+    while i <= PERIOD {
+        let w = weights[i];
+        wheel.count[i] = wheel.count[i - 1] + (w == PERIOD) as u16;
+        wheel.slope[i] = wheel.slope[i - 1] + w as u32;
+        wheel.sum[i] = wheel.sum[i - 1] + (i * w / PERIOD) as u32;
+        i += 1;
+    }
+    wheel
+};
 const ODD_MOBIUS: [i8; PERIOD / 2] = {
     let mut values = [0; PERIOD / 2];
     let mut i = 0;
@@ -118,35 +145,6 @@ struct Wheel {
 }
 
 impl Wheel {
-    const fn new() -> Self {
-        let mut weights = [PERIOD; PERIOD + 1];
-        let primes = [2, 3, 5, 7, 11, 13];
-        let mut j = 0;
-        while j < primes.len() {
-            let p = primes[j];
-            let mut i = p;
-            while i <= PERIOD {
-                weights[i] = weights[i] / p * (p - 1);
-                i += p;
-            }
-            j += 1;
-        }
-        let mut wheel = Self {
-            count: [0; PERIOD + 1],
-            slope: [0; PERIOD + 1],
-            sum: [0; PERIOD + 1],
-        };
-        let mut i = 1;
-        while i <= PERIOD {
-            let w = weights[i];
-            wheel.count[i] = wheel.count[i - 1] + (w == PERIOD) as u16;
-            wheel.slope[i] = wheel.slope[i - 1] + w as u32;
-            wheel.sum[i] = wheel.sum[i - 1] + (i * w / PERIOD) as u32;
-            i += 1;
-        }
-        wheel
-    }
-
     fn count(&self, x: u64) -> u64 {
         x / PERIOD as u64 * u64::from(self.count[PERIOD])
             + u64::from(self.count[(x % PERIOD as u64) as usize])
