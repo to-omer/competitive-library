@@ -10,4 +10,6 @@ pub mod rational_approximation;
 pub mod sqrt_mod;
 pub mod stern_brocot_tree;
 pub mod sum_of_floor_of_linear;
+pub mod sum_of_multiplicative_function;
+pub mod sum_of_multiplicative_function_large;
 pub mod sum_of_totient_function;

@@ -198,9 +198,9 @@ mod tests {
             let n = n as u64;
             let phi = QuotientArray::from_fn(n, |x| {
                 let x = i128::from(x);
-                [x - 1, x * (x + 1) / 2 - 1]
+                [x, x * (x + 1) / 2]
             })
-            .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(|[c, s], p| [c, s * i128::from(p)])
+            .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(|[_, p], [c, s]| [*c, p * s])
             .map(|[c, s]| s - c)
             .min_25_sieve::<AddMulOperation<_>>(|p, e| {
                 i128::from(p - 1) * i128::from(p).pow(e - 1)

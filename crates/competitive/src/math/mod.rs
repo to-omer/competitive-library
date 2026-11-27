@@ -1,8 +1,8 @@
 //! mathematical datas
 
 use crate::algebra::{
-    AddMulOperation, Associative, DotProduct, Field, Group, Invertible, Magma, Monoid, Ring,
-    SemiRing, Unital,
+    AbelianGroup, AddMulOperation, Associative, DotProduct, Field, Group, Invertible, Magma,
+    Monoid, Ring, SemiRing, Unital,
 };
 use crate::array;
 use crate::data_structure::BitSet;
@@ -242,7 +242,7 @@ mod prime_list;
 mod prime_table;
 #[codesnip::entry("primitive_root", include("prime_factors"))]
 mod primitive_root;
-#[codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))]
+#[codesnip::entry("QuotientArray", include("ring", "PrimeList"))]
 mod quotient_array;
 #[codesnip::entry("RelaxedConvolution", include("ConvolveSteps", "zero_one"))]
 mod relaxed_convolution;
