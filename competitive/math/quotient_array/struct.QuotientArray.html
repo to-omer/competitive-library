@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="store with index ${\lfloor\frac{n}{i}\rfloor \mid i=1,2,\ldots,n}$"><title>QuotientArray in competitive::math::quotient_array - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (6c709eb42 2026-11-25)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Values at the distinct positive quotients of `n`, stored in increasing order."><title>QuotientArray in competitive::math::quotient_array - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (6c709eb42 2026-11-25)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -76,152 +76,881 @@
   });
 </script>
 
-</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">QuotientArray</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Quotient<wbr>Array</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.data" title="data">data</a></li><li><a href="#structfield.isqrtn" title="isqrtn">isqrtn</a></li><li><a href="#structfield.n" title="n">n</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.from_fn" title="from_fn">from_fn</a></li><li><a href="#method.index_iter" title="index_iter">index_iter</a></li><li><a href="#method.zeros" title="zeros">zeros</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.lucy_dp" title="lucy_dp">lucy_dp</a></li><li><a href="#method.map" title="map">map</a></li><li><a href="#method.min_25_sieve" title="min_25_sieve">min_25_sieve</a></li><li><a href="#method.quotient_index" title="quotient_index">quotient_index</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-QuotientArray%3CT%3E" title="Clone">Clone</a></li><li><a href="#impl-Debug-for-QuotientArray%3CT%3E" title="Debug">Debug</a></li><li><a href="#impl-Index%3Cu64%3E-for-QuotientArray%3CT%3E" title="Index&#60;u64&#62;">Index&#60;u64&#62;</a></li><li><a href="#impl-IndexMut%3Cu64%3E-for-QuotientArray%3CT%3E" title="IndexMut&#60;u64&#62;">IndexMut&#60;u64&#62;</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Forget-for-QuotientArray%3CT%3E" title="Forget">Forget</a></li><li><a href="#impl-Freeze-for-QuotientArray%3CT%3E" title="Freeze">Freeze</a></li><li><a href="#impl-Move-for-QuotientArray%3CT%3E" title="Move">Move</a></li><li><a href="#impl-RefUnwindSafe-for-QuotientArray%3CT%3E" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-QuotientArray%3CT%3E" title="Send">Send</a></li><li><a href="#impl-Sync-for-QuotientArray%3CT%3E" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-QuotientArray%3CT%3E" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-QuotientArray%3CT%3E" title="UnsafeUnpin">UnsafeUnpin</a></li><li><a href="#impl-UnwindSafe-for-QuotientArray%3CT%3E" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>quotient_<wbr>array</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">quotient_array</a></div><h1>Struct <span class="struct">Quotient<wbr>Array</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/quotient_array.rs.html#6-10">Source</a> </span></div><pre class="rust item-decl"><code>pub struct QuotientArray&lt;T&gt; {
+</head><body class="rustdoc struct"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">QuotientArray</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Quotient<wbr>Array</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.data" title="data">data</a></li><li><a href="#structfield.n" title="n">n</a></li><li><a href="#structfield.root" title="root">root</a></li></ul><h3><a href="#implementations">Associated Functions</a></h3><ul class="block method"><li><a href="#method.from_fn" title="from_fn">from_fn</a></li><li><a href="#method.quotients" title="quotients">quotients</a></li><li><a href="#method.zeros" title="zeros">zeros</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.as_slice" title="as_slice">as_slice</a></li><li><a href="#method.ceiling_index" title="ceiling_index">ceiling_index</a></li><li><a href="#method.cofactor_limit" title="cofactor_limit">cofactor_limit</a></li><li><a href="#method.dense_prime" title="dense_prime">dense_prime</a></li><li><a href="#method.large_primes" title="large_primes">large_primes</a></li><li><a href="#method.lucy_dp" title="lucy_dp">lucy_dp</a></li><li><a href="#method.map" title="map">map</a></li><li><a href="#method.min_25_sieve" title="min_25_sieve">min_25_sieve</a></li><li><a href="#method.multiplicative_sum" title="multiplicative_sum">multiplicative_sum</a></li><li><a href="#method.prime_band" title="prime_band">prime_band</a></li><li><a href="#method.quotient_index" title="quotient_index">quotient_index</a></li><li><a href="#method.sieve" title="sieve">sieve</a></li><li><a href="#method.smooth_sum" title="smooth_sum">smooth_sum</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Clone-for-QuotientArray%3CT%3E" title="Clone">Clone</a></li><li><a href="#impl-Debug-for-QuotientArray%3CT%3E" title="Debug">Debug</a></li><li><a href="#impl-Index%3Cu64%3E-for-QuotientArray%3CT%3E" title="Index&#60;u64&#62;">Index&#60;u64&#62;</a></li><li><a href="#impl-IndexMut%3Cu64%3E-for-QuotientArray%3CT%3E" title="IndexMut&#60;u64&#62;">IndexMut&#60;u64&#62;</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Forget-for-QuotientArray%3CT%3E" title="Forget">Forget</a></li><li><a href="#impl-Freeze-for-QuotientArray%3CT%3E" title="Freeze">Freeze</a></li><li><a href="#impl-Move-for-QuotientArray%3CT%3E" title="Move">Move</a></li><li><a href="#impl-RefUnwindSafe-for-QuotientArray%3CT%3E" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-QuotientArray%3CT%3E" title="Send">Send</a></li><li><a href="#impl-Sync-for-QuotientArray%3CT%3E" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-QuotientArray%3CT%3E" title="Unpin">Unpin</a></li><li><a href="#impl-UnsafeUnpin-for-QuotientArray%3CT%3E" title="UnsafeUnpin">UnsafeUnpin</a></li><li><a href="#impl-UnwindSafe-for-QuotientArray%3CT%3E" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-CloneToUninit-for-T" title="CloneToUninit">CloneToUninit</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-ToArrayVecScalar-for-T" title="ToArrayVecScalar">ToArrayVecScalar</a></li><li><a href="#impl-ToOwned-for-T" title="ToOwned">ToOwned</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>quotient_<wbr>array</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">quotient_array</a></div><h1>Struct <span class="struct">Quotient<wbr>Array</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/quotient_array.rs.html#6-10">Source</a> </span></div><pre class="rust item-decl"><code>pub struct QuotientArray&lt;T&gt; {
     n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
-    isqrtn: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
+    root: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     data: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;,
-}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>store with index ${\lfloor\frac{n}{i}\rfloor \mid i=1,2,\ldots,n}$</p>
-</div></details><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.n" class="structfield section-header"><a href="#structfield.n" class="anchor field">§</a><code>n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span id="structfield.isqrtn" class="structfield section-header"><a href="#structfield.isqrtn" class="anchor field">§</a><code>isqrtn: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span id="structfield.data" class="structfield section-header"><a href="#structfield.data" class="anchor field">§</a><code>data: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#12-19">Source</a><a href="#impl-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;<div class="where">where
-    T: <a class="trait" href="../../num/zero_one/trait.Zero.html" title="trait competitive::num::zero_one::Zero">Zero</a>,</div></h3></section></summary><div class="impl-items"><section id="method.zeros" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#16-18">Source</a><h4 class="code-header">pub fn <a href="#method.zeros" class="fn">zeros</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Self</h4></section></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-QuotientArray%3CT%3E-1" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#21-116">Source</a><a href="#impl-QuotientArray%3CT%3E-1" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.index_iter" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#22-26">Source</a><h4 class="code-header">pub fn <a href="#method.index_iter" class="fn">index_iter</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, isqrtn: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator">Iterator</a>&lt;Item = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/math/quotient_array.rs.html#54&#34;,&#34;line 54&#34;],[[19,19],&#34;../../../src/competitive/math/quotient_array.rs.html#71&#34;,&#34;line 71&#34;],[[43,43],&#34;../../../src/competitive/math/quotient_array.rs.html#95&#34;,&#34;line 95&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#54">line 54</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>52</span>    <span class="kw">pub fn </span>from_fn(n: u64, f: <span class="kw">impl </span>FnMut(u64) -&gt; T) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>53</span>        <span class="kw">let </span>isqrtn = (n <span class="kw">as </span>f64).sqrt().floor() <span class="kw">as </span>u64;
-<span data-nosnippet>54</span>        <span class="kw">let </span>data = <span class="highlight focus"><span class="self">Self</span>::index_iter</span>(n, isqrtn).map(f).collect();
-<span data-nosnippet>55</span>        <span class="self">Self </span>{ n, isqrtn, data }
-<span data-nosnippet>56</span>    }
-<span data-nosnippet>57</span>
-<span data-nosnippet>58</span>    <span class="doccomment">/// convert $\sum_{i\leq n} f(i)$ to $\sum_{i\leq n, i\text{ is prime}} f(i)$
-<span data-nosnippet>59</span>    ///
-<span data-nosnippet>60</span>    /// constraints: $\mathrm{mul_p}(f(x))=f(px)$
-<span data-nosnippet>61</span>    </span><span class="kw">pub fn </span>lucy_dp&lt;G&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>mul_p: <span class="kw">impl </span>FnMut(T, u64) -&gt; T) -&gt; <span class="self">Self
-<span data-nosnippet>62</span>    </span><span class="kw">where
-<span data-nosnippet>63</span>        </span>G: Group&lt;T = T&gt;,
-<span data-nosnippet>64</span>    {
-<span data-nosnippet>65</span>        <span class="kw">let </span>max_n = <span class="self">self</span>.isqrtn <span class="kw">as </span>u32;
-<span data-nosnippet>66</span>        with_prime_list(max_n, |pl| {
-<span data-nosnippet>67</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(max_n) {
-<span data-nosnippet>68</span>                <span class="kw">let </span>p = u64::from(p);
-<span data-nosnippet>69</span>                <span class="kw">let </span>k = <span class="self">self</span>.quotient_index(p - <span class="number">1</span>);
-<span data-nosnippet>70</span>                <span class="kw">let </span>p2 = p * p;
-<span data-nosnippet>71</span>                <span class="kw">for </span>(i, q) <span class="kw">in </span><span class="highlight"><span class="self">Self</span>::index_iter</span>(<span class="self">self</span>.n, <span class="self">self</span>.isqrtn).enumerate() {
-<span data-nosnippet>72</span>                    <span class="kw">if </span>q &lt; p2 {
-<span data-nosnippet>73</span>                        <span class="kw">break</span>;
-<span data-nosnippet>74</span>                    }
-<span data-nosnippet>75</span>                    <span class="kw">let </span>diff = mul_p(G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>[q / p], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k]), p);
-<span data-nosnippet>76</span>                    G::rinv_operate_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span>diff);
-<span data-nosnippet>77</span>                }
-<span data-nosnippet>78</span>            }
-<span data-nosnippet>79</span>        });
-<span data-nosnippet>80</span>        <span class="self">self
-<span data-nosnippet>81</span>    </span>}
-<span data-nosnippet>82</span>
-<span data-nosnippet>83</span>    <span class="doccomment">/// convert $\sum_{i\leq n, i\text{ is prime}} f(i)$ to $\sum_{i\leq n} f(i)$
-<span data-nosnippet>84</span>    </span><span class="kw">pub fn </span>min_25_sieve&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; <span class="self">Self
-<span data-nosnippet>85</span>    </span><span class="kw">where
-<span data-nosnippet>86</span>        </span>T: Clone + One,
-<span data-nosnippet>87</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
-<span data-nosnippet>88</span>    {
-<span data-nosnippet>89</span>        <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="self">self</span>.clone();
-<span data-nosnippet>90</span>        <span class="kw">let </span>max_n = <span class="self">self</span>.isqrtn <span class="kw">as </span>u32;
-<span data-nosnippet>91</span>        with_prime_list(max_n, |pl| {
-<span data-nosnippet>92</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(max_n).rev() {
-<span data-nosnippet>93</span>                <span class="kw">let </span>p = u64::from(p);
-<span data-nosnippet>94</span>                <span class="kw">let </span>k = <span class="self">self</span>.quotient_index(p);
-<span data-nosnippet>95</span>                <span class="kw">for </span>(i, q) <span class="kw">in </span><span class="highlight"><span class="self">Self</span>::index_iter</span>(<span class="self">self</span>.n, <span class="self">self</span>.isqrtn).enumerate() {
-<span data-nosnippet>96</span>                    <span class="kw">let </span><span class="kw-2">mut </span>pc = p;
-<span data-nosnippet>97</span>                    <span class="kw">if </span>pc * p &gt; q {
-<span data-nosnippet>98</span>                        <span class="kw">break</span>;
-<span data-nosnippet>99</span>                    }
-<span data-nosnippet>100</span>                    <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">1</span>;
-<span data-nosnippet>101</span>                    <span class="kw">while </span>q / p &gt;= pc {
-<span data-nosnippet>102</span>                        <span class="kw">let </span>x = R::mul(<span class="kw-2">&amp;</span>f(p, c), <span class="kw-2">&amp;</span>(R::sub(<span class="kw-2">&amp;</span>dp[q / pc], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k])));
-<span data-nosnippet>103</span>                        <span class="kw">let </span>x = R::add(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>f(p, c + <span class="number">1</span>));
-<span data-nosnippet>104</span>                        dp.data[i] = R::add(<span class="kw-2">&amp;</span>dp.data[i], <span class="kw-2">&amp;</span>x);
-<span data-nosnippet>105</span>                        c += <span class="number">1</span>;
-<span data-nosnippet>106</span>                        pc <span class="kw-2">*</span>= p;
-<span data-nosnippet>107</span>                    }
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Values at the distinct positive quotients of <code>n</code>, stored in increasing order.</p>
+</div></details><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.n" class="structfield section-header"><a href="#structfield.n" class="anchor field">§</a><code>n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span id="structfield.root" class="structfield section-header"><a href="#structfield.root" class="anchor field">§</a><code>root: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.data" class="structfield section-header"><a href="#structfield.data" class="anchor field">§</a><code>data: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#12-497">Source</a><a href="#impl-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.quotients" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#14-19">Source</a><h4 class="code-header">pub fn <a href="#method.quotients" class="fn">quotients</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/double_ended/trait.DoubleEndedIterator.html" title="trait core::iter::traits::double_ended::DoubleEndedIterator">DoubleEndedIterator</a>&lt;Item = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;</h4></section></summary><div class="docblock"><p>Iterates over the distinct quotients of a positive <code>n</code> in increasing order.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../../src/competitive/math/quotient_array.rs.html#25&#34;,&#34;line 25&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#25">line 25</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>21</span>    <span class="kw">pub fn </span>from_fn(n: u64, f: <span class="kw">impl </span>FnMut(u64) -&gt; T) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>22</span>        <span class="self">Self </span>{
+<span data-nosnippet>23</span>            n,
+<span data-nosnippet>24</span>            root: n.isqrt() <span class="kw">as </span>usize,
+<span data-nosnippet>25</span>            data: <span class="highlight focus"><span class="self">Self</span>::quotients</span>(n).map(f).collect(),
+<span data-nosnippet>26</span>        }
+<span data-nosnippet>27</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.from_fn" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#21-27">Source</a><h4 class="code-header">pub fn <a href="#method.from_fn" class="fn">from_fn</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; T) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../../src/competitive/math/quotient_array.rs.html#33&#34;,&#34;line 33&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#33">line 33</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>29</span>    <span class="kw">pub fn </span>zeros(n: u64) -&gt; <span class="self">Self
+<span data-nosnippet>30</span>    </span><span class="kw">where
+<span data-nosnippet>31</span>        </span>T: Zero,
+<span data-nosnippet>32</span>    {
+<span data-nosnippet>33</span>        <span class="highlight focus"><span class="self">Self</span>::from_fn</span>(n, |<span class="kw">_</span>| T::zero())
+<span data-nosnippet>34</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,8],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#15-18&#34;,&#34;lines 15-18&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#15-18">lines 15-18</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = <span class="highlight focus">QuotientArray::from_fn</span>(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .lucy_dp::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .map(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .multiplicative_sum::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[5,8],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#15-18&#34;,&#34;lines 15-18&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function_large.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#15-18">lines 15-18</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function_large(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = <span class="highlight focus">QuotientArray::from_fn</span>(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .lucy_dp::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .map(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .multiplicative_sum::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div></div></details></div></details><section id="method.zeros" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#29-34">Source</a><h4 class="code-header">pub fn <a href="#method.zeros" class="fn">zeros</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Self<div class="where">where
+    T: <a class="trait" href="../../num/zero_one/trait.Zero.html" title="trait competitive::num::zero_one::Zero">Zero</a>,</div></h4></section><section id="method.as_slice" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#36-38">Source</a><h4 class="code-header">pub fn <a href="#method.as_slice" class="fn">as_slice</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a></h4></section><details class="toggle method-toggle" open><summary><section id="method.quotient_index" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#41-50">Source</a><h4 class="code-header">pub fn <a href="#method.quotient_index" class="fn">quotient_index</a>(&amp;self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock"><p>Returns the position of a member of the quotient set in ascending order.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/math/quotient_array.rs.html#670&#34;,&#34;line 670&#34;],[[7,7],&#34;../../../src/competitive/math/quotient_array.rs.html#676&#34;,&#34;line 676&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#670">line 670</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>669</span>    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, value: u64) -&gt; <span class="kw-2">&amp;</span>T {
+<span data-nosnippet>670</span>        <span class="kw-2">&amp;</span><span class="self">self</span>.data[<span class="self">self</span>.<span class="highlight focus">quotient_index</span>(value)]
+<span data-nosnippet>671</span>    }
+<span data-nosnippet>672</span>}
+<span data-nosnippet>673</span>
+<span data-nosnippet>674</span><span class="kw">impl</span>&lt;T&gt; IndexMut&lt;u64&gt; <span class="kw">for </span>QuotientArray&lt;T&gt; {
+<span data-nosnippet>675</span>    <span class="kw">fn </span>index_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: u64) -&gt; <span class="kw-2">&amp;mut </span>T {
+<span data-nosnippet>676</span>        <span class="kw">let </span>i = <span class="self">self</span>.<span class="highlight">quotient_index</span>(value);
+<span data-nosnippet>677</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i]
+<span data-nosnippet>678</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.map" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#52-58">Source</a><h4 class="code-header">pub fn <a href="#method.map" class="fn">map</a>&lt;U&gt;(&amp;self, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; U) -&gt; <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;U&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = QuotientArray::from_fn(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .lucy_dp::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .<span class="highlight focus">map</span>(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .multiplicative_sum::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#23&#34;,&#34;line 23&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function_large.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function_large(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = QuotientArray::from_fn(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .lucy_dp::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .<span class="highlight focus">map</span>(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .multiplicative_sum::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.lucy_dp" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#62-73">Source</a><h4 class="code-header">pub fn <a href="#method.lucy_dp" class="fn">lucy_dp</a>&lt;G&gt;(self, mul: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T) -&gt; Self<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    G: <a class="trait" href="../../algebra/trait.AbelianGroup.html" title="trait competitive::algebra::AbelianGroup">AbelianGroup</a>&lt;T = T&gt;,</div></h4></section></summary><div class="docblock"><p>Converts inclusive prefix sums of a completely multiplicative function to prime sums.
+<code>mul(weight, sum)</code> multiplies a function value by a sum in the coefficient ring.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,11],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#19-21&#34;,&#34;lines 19-21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#19-21">lines 19-21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = QuotientArray::from_fn(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .<span class="highlight focus">lucy_dp</span>::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .map(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .multiplicative_sum::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[9,11],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#19-21&#34;,&#34;lines 19-21&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function_large.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#19-21">lines 19-21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function_large(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = QuotientArray::from_fn(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .<span class="highlight focus">lucy_dp</span>::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .map(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .multiplicative_sum::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.min_25_sieve" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#77-88">Source</a><h4 class="code-header">pub fn <a href="#method.min_25_sieve" class="fn">min_25_sieve</a>&lt;R&gt;(self, prime_power: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; T) -&gt; Self<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    R: <a class="trait" href="../../algebra/trait.Ring.html" title="trait competitive::algebra::Ring">Ring</a>&lt;T = T, Additive: <a class="trait" href="../../algebra/trait.Invertible.html" title="trait competitive::algebra::Invertible">Invertible</a>&gt;,</div></h4></section></summary><div class="docblock"><p>Converts prime sums to inclusive prefix sums of a multiplicative function.
+<code>prime_power(p, e)</code> supplies its value at prime powers with <code>e &gt;= 2</code>.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.multiplicative_sum" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#92-114">Source</a><h4 class="code-header">pub fn <a href="#method.multiplicative_sum" class="fn">multiplicative_sum</a>&lt;R&gt;(self, prime_power: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; T) -&gt; T<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    R: <a class="trait" href="../../algebra/trait.Ring.html" title="trait competitive::algebra::Ring">Ring</a>&lt;T = T, Additive: <a class="trait" href="../../algebra/trait.Invertible.html" title="trait competitive::algebra::Invertible">Invertible</a>&gt;,</div></h4></section></summary><div class="docblock"><p>Returns the multiplicative prefix sum at <code>n</code> from prime sums and the values
+<code>prime_power(p, e)</code> at prime powers with <code>e &gt;= 2</code>.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#24&#34;,&#34;line 24&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = QuotientArray::from_fn(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .lucy_dp::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .map(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .<span class="highlight focus">multiplicative_sum</span>::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[14,14],&#34;../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#24&#34;,&#34;line 24&#34;]]"><div class="scraped-example-title">crates/library_checker/src/number_theory/sum_of_multiplicative_function_large.rs (<a href="../../../src/library_checker/number_theory/sum_of_multiplicative_function_large.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>10</span><span class="kw">pub fn </span>sum_of_multiplicative_function_large(reader: <span class="kw">impl </span>Read, writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>11</span>    <span class="macro">prepare_io!</span>(reader, writer);
+<span data-nosnippet>12</span>    <span class="macro">sc!</span>(t, cases: [(u64, M, M); iter t]);
+<span data-nosnippet>13</span>    <span class="kw">let </span>half = M::from(<span class="number">2u32</span>).inv();
+<span data-nosnippet>14</span>    <span class="kw">for </span>(n, a, b) <span class="kw">in </span>cases {
+<span data-nosnippet>15</span>        <span class="kw">let </span>primes = QuotientArray::from_fn(n, |x| {
+<span data-nosnippet>16</span>            <span class="kw">let </span>x = M::from(x);
+<span data-nosnippet>17</span>            [x, x * (x + M::one()) * half]
+<span data-nosnippet>18</span>        })
+<span data-nosnippet>19</span>        .lucy_dp::&lt;ArrayOperation&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;, <span class="number">2</span>&gt;&gt;(|[<span class="kw">_</span>, p], [count, sum]| {
+<span data-nosnippet>20</span>            [<span class="kw-2">*</span>count, <span class="kw-2">*</span>p * <span class="kw-2">*</span>sum]
+<span data-nosnippet>21</span>        });
+<span data-nosnippet>22</span>        <span class="kw">let </span>sum = primes
+<span data-nosnippet>23</span>            .map(|[count, sum]| a * <span class="kw-2">*</span>count + b * <span class="kw-2">*</span>sum)
+<span data-nosnippet>24</span>            .<span class="highlight focus">multiplicative_sum</span>::&lt;AddMulOperation&lt;<span class="kw">_</span>&gt;&gt;(|p, e| a * M::from(e) + b * M::from(p));
+<span data-nosnippet>25</span>        <span class="macro">pp!</span>(sum);
+<span data-nosnippet>26</span>    }
+<span data-nosnippet>27</span>}</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.smooth_sum" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#116-155">Source</a><h4 class="code-header">fn <a href="#method.smooth_sum" class="fn">smooth_sum</a>&lt;R&gt;(
+    &amp;self,
+    powers: &amp;[<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, T)&gt;],
+    d: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
+    limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
+    cutoff: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    before: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>,
+) -&gt; T<div class="where">where
+    R: <a class="trait" href="../../algebra/trait.Ring.html" title="trait competitive::algebra::Ring">Ring</a>&lt;T = T, Additive: <a class="trait" href="../../algebra/trait.Invertible.html" title="trait competitive::algebra::Invertible">Invertible</a>&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[21,21],&#34;../../../src/competitive/math/quotient_array.rs.html#113&#34;,&#34;line 113&#34;],[[52,58],&#34;../../../src/competitive/math/quotient_array.rs.html#144-150&#34;,&#34;lines 144-150&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#113">line 113</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>92</span>    <span class="kw">pub fn </span>multiplicative_sum&lt;R&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>prime_power: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; T
+<span data-nosnippet>93</span>    <span class="kw">where
+<span data-nosnippet>94</span>        </span>T: Clone,
+<span data-nosnippet>95</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>96</span>    {
+<span data-nosnippet>97</span>        <span class="kw">let </span>cutoff = <span class="self">self</span>.root.isqrt().isqrt().min(<span class="number">43</span>);
+<span data-nosnippet>98</span>        <span class="kw">let </span>powers: Vec&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = PrimeList::new(cutoff <span class="kw">as </span>u32)
+<span data-nosnippet>99</span>            .primes()
+<span data-nosnippet>100</span>            .map(|p| {
+<span data-nosnippet>101</span>                <span class="kw">let </span>p = u64::from(p);
+<span data-nosnippet>102</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>103</span>                <span class="kw">let </span><span class="kw-2">mut </span>values = <span class="macro">vec!</span>[(p, R::sub(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]))];
+<span data-nosnippet>104</span>                <span class="kw">let </span><span class="kw-2">mut </span>power = p;
+<span data-nosnippet>105</span>                <span class="kw">while </span>power &lt;= <span class="self">self</span>.n / p {
+<span data-nosnippet>106</span>                    power <span class="kw-2">*</span>= p;
+<span data-nosnippet>107</span>                    values.push((power, prime_power(p, values.len() <span class="kw">as </span>u32 + <span class="number">1</span>)));
 <span data-nosnippet>108</span>                }
-<span data-nosnippet>109</span>            }
-<span data-nosnippet>110</span>        });
-<span data-nosnippet>111</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>dp.data {
-<span data-nosnippet>112</span>            <span class="kw-2">*</span>x = R::add(x, <span class="kw-2">&amp;</span>T::one());
-<span data-nosnippet>113</span>        }
-<span data-nosnippet>114</span>        dp
-<span data-nosnippet>115</span>    }</code></pre></div></div></div></details><section id="method.map" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#28-35">Source</a><h4 class="code-header">pub fn <a href="#method.map" class="fn">map</a>&lt;U&gt;(&amp;self, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; U) -&gt; <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;U&gt;</h4></section><details class="toggle method-toggle" open><summary><section id="method.quotient_index" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#37-50">Source</a><h4 class="code-header">pub fn <a href="#method.quotient_index" class="fn">quotient_index</a>(&amp;self, i: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/math/quotient_array.rs.html#69&#34;,&#34;line 69&#34;],[[33,33],&#34;../../../src/competitive/math/quotient_array.rs.html#94&#34;,&#34;line 94&#34;],[[60,60],&#34;../../../src/competitive/math/quotient_array.rs.html#121&#34;,&#34;line 121&#34;],[[66,66],&#34;../../../src/competitive/math/quotient_array.rs.html#127&#34;,&#34;line 127&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#69">line 69</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>61</span>    <span class="kw">pub fn </span>lucy_dp&lt;G&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>mul_p: <span class="kw">impl </span>FnMut(T, u64) -&gt; T) -&gt; <span class="self">Self
-<span data-nosnippet>62</span>    </span><span class="kw">where
-<span data-nosnippet>63</span>        </span>G: Group&lt;T = T&gt;,
-<span data-nosnippet>64</span>    {
-<span data-nosnippet>65</span>        <span class="kw">let </span>max_n = <span class="self">self</span>.isqrtn <span class="kw">as </span>u32;
-<span data-nosnippet>66</span>        with_prime_list(max_n, |pl| {
-<span data-nosnippet>67</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(max_n) {
-<span data-nosnippet>68</span>                <span class="kw">let </span>p = u64::from(p);
-<span data-nosnippet>69</span>                <span class="kw">let </span>k = <span class="self">self</span>.<span class="highlight focus">quotient_index</span>(p - <span class="number">1</span>);
-<span data-nosnippet>70</span>                <span class="kw">let </span>p2 = p * p;
-<span data-nosnippet>71</span>                <span class="kw">for </span>(i, q) <span class="kw">in </span><span class="self">Self</span>::index_iter(<span class="self">self</span>.n, <span class="self">self</span>.isqrtn).enumerate() {
-<span data-nosnippet>72</span>                    <span class="kw">if </span>q &lt; p2 {
-<span data-nosnippet>73</span>                        <span class="kw">break</span>;
-<span data-nosnippet>74</span>                    }
-<span data-nosnippet>75</span>                    <span class="kw">let </span>diff = mul_p(G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>[q / p], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k]), p);
-<span data-nosnippet>76</span>                    G::rinv_operate_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span>diff);
-<span data-nosnippet>77</span>                }
-<span data-nosnippet>78</span>            }
-<span data-nosnippet>79</span>        });
-<span data-nosnippet>80</span>        <span class="self">self
-<span data-nosnippet>81</span>    </span>}
-<span data-nosnippet>82</span>
-<span data-nosnippet>83</span>    <span class="doccomment">/// convert $\sum_{i\leq n, i\text{ is prime}} f(i)$ to $\sum_{i\leq n} f(i)$
-<span data-nosnippet>84</span>    </span><span class="kw">pub fn </span>min_25_sieve&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; <span class="self">Self
-<span data-nosnippet>85</span>    </span><span class="kw">where
-<span data-nosnippet>86</span>        </span>T: Clone + One,
-<span data-nosnippet>87</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
-<span data-nosnippet>88</span>    {
-<span data-nosnippet>89</span>        <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="self">self</span>.clone();
-<span data-nosnippet>90</span>        <span class="kw">let </span>max_n = <span class="self">self</span>.isqrtn <span class="kw">as </span>u32;
-<span data-nosnippet>91</span>        with_prime_list(max_n, |pl| {
-<span data-nosnippet>92</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(max_n).rev() {
-<span data-nosnippet>93</span>                <span class="kw">let </span>p = u64::from(p);
-<span data-nosnippet>94</span>                <span class="kw">let </span>k = <span class="self">self</span>.<span class="highlight">quotient_index</span>(p);
-<span data-nosnippet>95</span>                <span class="kw">for </span>(i, q) <span class="kw">in </span><span class="self">Self</span>::index_iter(<span class="self">self</span>.n, <span class="self">self</span>.isqrtn).enumerate() {
-<span data-nosnippet>96</span>                    <span class="kw">let </span><span class="kw-2">mut </span>pc = p;
-<span data-nosnippet>97</span>                    <span class="kw">if </span>pc * p &gt; q {
-<span data-nosnippet>98</span>                        <span class="kw">break</span>;
-<span data-nosnippet>99</span>                    }
-<span data-nosnippet>100</span>                    <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">1</span>;
-<span data-nosnippet>101</span>                    <span class="kw">while </span>q / p &gt;= pc {
-<span data-nosnippet>102</span>                        <span class="kw">let </span>x = R::mul(<span class="kw-2">&amp;</span>f(p, c), <span class="kw-2">&amp;</span>(R::sub(<span class="kw-2">&amp;</span>dp[q / pc], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k])));
-<span data-nosnippet>103</span>                        <span class="kw">let </span>x = R::add(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>f(p, c + <span class="number">1</span>));
-<span data-nosnippet>104</span>                        dp.data[i] = R::add(<span class="kw-2">&amp;</span>dp.data[i], <span class="kw-2">&amp;</span>x);
-<span data-nosnippet>105</span>                        c += <span class="number">1</span>;
-<span data-nosnippet>106</span>                        pc <span class="kw-2">*</span>= p;
-<span data-nosnippet>107</span>                    }
+<span data-nosnippet>109</span>                values
+<span data-nosnippet>110</span>            })
+<span data-nosnippet>111</span>            .collect();
+<span data-nosnippet>112</span>        <span class="self">self</span>.sieve::&lt;R::Additive, <span class="bool-val">false</span>&gt;(cutoff, R::mul, |p, e, <span class="kw">_</span>, <span class="kw">_</span>| prime_power(p, e));
+<span data-nosnippet>113</span>        <span class="self">self</span>.<span class="highlight focus">smooth_sum</span>::&lt;R&gt;(<span class="kw-2">&amp;</span>powers, <span class="number">1</span>, <span class="self">self</span>.n, cutoff, <span class="kw-2">&amp;</span><span class="self">self</span>.data[cutoff - <span class="number">1</span>])
+<span data-nosnippet>114</span>    }
+<span data-nosnippet>115</span>
+<span data-nosnippet>116</span>    <span class="kw">fn </span>smooth_sum&lt;R&gt;(
+<span data-nosnippet>117</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>118</span>        powers: <span class="kw-2">&amp;</span>[Vec&lt;(u64, T)&gt;],
+<span data-nosnippet>119</span>        d: u64,
+<span data-nosnippet>120</span>        limit: u64,
+<span data-nosnippet>121</span>        cutoff: usize,
+<span data-nosnippet>122</span>        before: <span class="kw-2">&amp;</span>T,
+<span data-nosnippet>123</span>    ) -&gt; T
+<span data-nosnippet>124</span>    <span class="kw">where
+<span data-nosnippet>125</span>        </span>R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>126</span>    {
+<span data-nosnippet>127</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = R::one();
+<span data-nosnippet>128</span>        <span class="kw">if </span>limit &gt; cutoff <span class="kw">as </span>u64 {
+<span data-nosnippet>129</span>            <span class="kw">let </span>i = <span class="kw">if </span>limit &lt;= <span class="self">self</span>.root <span class="kw">as </span>u64 {
+<span data-nosnippet>130</span>                limit <span class="kw">as </span>usize - <span class="number">1
+<span data-nosnippet>131</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>132</span>                <span class="self">self</span>.data.len() - d <span class="kw">as </span>usize
+<span data-nosnippet>133</span>            };
+<span data-nosnippet>134</span>            R::add_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>R::sub(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], before));
+<span data-nosnippet>135</span>        }
+<span data-nosnippet>136</span>        <span class="kw">for </span>(j, powers_of_p) <span class="kw">in </span>powers.iter().enumerate() {
+<span data-nosnippet>137</span>            <span class="kw">if </span>powers_of_p[<span class="number">0</span>].<span class="number">0 </span>&gt; limit {
+<span data-nosnippet>138</span>                <span class="kw">break</span>;
+<span data-nosnippet>139</span>            }
+<span data-nosnippet>140</span>            <span class="kw">for </span>(power, weight) <span class="kw">in </span>powers_of_p {
+<span data-nosnippet>141</span>                <span class="kw">if </span><span class="kw-2">*</span>power &gt; limit {
+<span data-nosnippet>142</span>                    <span class="kw">break</span>;
+<span data-nosnippet>143</span>                }
+<span data-nosnippet>144</span>                <span class="kw">let </span>rest = <span class="self">self</span>.<span class="highlight">smooth_sum</span>::&lt;R&gt;(
+<span data-nosnippet>145</span>                    <span class="kw-2">&amp;</span>powers[j + <span class="number">1</span>..],
+<span data-nosnippet>146</span>                    d * power,
+<span data-nosnippet>147</span>                    limit / power,
+<span data-nosnippet>148</span>                    cutoff,
+<span data-nosnippet>149</span>                    before,
+<span data-nosnippet>150</span>                );
+<span data-nosnippet>151</span>                R::add_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>R::mul(weight, <span class="kw-2">&amp;</span>rest));
+<span data-nosnippet>152</span>            }
+<span data-nosnippet>153</span>        }
+<span data-nosnippet>154</span>        sum
+<span data-nosnippet>155</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.sieve" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#157-248">Source</a><h4 class="code-header">fn <a href="#method.sieve" class="fn">sieve</a>&lt;G, const REMOVE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(
+    &amp;mut self,
+    cutoff: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    mul: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+    next: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+)<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    G: <a class="trait" href="../../algebra/trait.AbelianGroup.html" title="trait competitive::algebra::AbelianGroup">AbelianGroup</a>&lt;T = T&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-7"><a href="#scraped-examples-7">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/competitive/math/quotient_array.rs.html#71&#34;,&#34;line 71&#34;],[[20,20],&#34;../../../src/competitive/math/quotient_array.rs.html#82&#34;,&#34;line 82&#34;],[[50,50],&#34;../../../src/competitive/math/quotient_array.rs.html#112&#34;,&#34;line 112&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#71">line 71</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>62</span>    <span class="kw">pub fn </span>lucy_dp&lt;G&gt;(<span class="kw-2">mut </span><span class="self">self</span>, mul: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T) -&gt; <span class="self">Self
+<span data-nosnippet>63</span>    </span><span class="kw">where
+<span data-nosnippet>64</span>        </span>T: Clone,
+<span data-nosnippet>65</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>66</span>    {
+<span data-nosnippet>67</span>        <span class="kw">let </span>one = <span class="self">self</span>.data[<span class="number">0</span>].clone();
+<span data-nosnippet>68</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.data {
+<span data-nosnippet>69</span>            G::rinv_operate_assign(x, <span class="kw-2">&amp;</span>one);
+<span data-nosnippet>70</span>        }
+<span data-nosnippet>71</span>        <span class="self">self</span>.<span class="highlight focus">sieve</span>::&lt;G, <span class="bool-val">true</span>&gt;(<span class="number">0</span>, <span class="kw-2">&amp;</span>mul, |<span class="kw">_</span>, <span class="kw">_</span>, first, previous| mul(first, previous));
+<span data-nosnippet>72</span>        <span class="self">self
+<span data-nosnippet>73</span>    </span>}
+<span data-nosnippet>74</span>
+<span data-nosnippet>75</span>    <span class="doccomment">/// Converts prime sums to inclusive prefix sums of a multiplicative function.
+<span data-nosnippet>76</span>    /// `prime_power(p, e)` supplies its value at prime powers with `e &gt;= 2`.
+<span data-nosnippet>77</span>    </span><span class="kw">pub fn </span>min_25_sieve&lt;R&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>prime_power: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; <span class="self">Self
+<span data-nosnippet>78</span>    </span><span class="kw">where
+<span data-nosnippet>79</span>        </span>T: Clone,
+<span data-nosnippet>80</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>81</span>    {
+<span data-nosnippet>82</span>        <span class="self">self</span>.<span class="highlight">sieve</span>::&lt;R::Additive, <span class="bool-val">false</span>&gt;(<span class="number">0</span>, R::mul, |p, e, <span class="kw">_</span>, <span class="kw">_</span>| prime_power(p, e));
+<span data-nosnippet>83</span>        <span class="kw">let </span>one = R::one();
+<span data-nosnippet>84</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.data {
+<span data-nosnippet>85</span>            R::add_assign(x, <span class="kw-2">&amp;</span>one);
+<span data-nosnippet>86</span>        }
+<span data-nosnippet>87</span>        <span class="self">self
+<span data-nosnippet>88</span>    </span>}
+<span data-nosnippet>89</span>
+<span data-nosnippet>90</span>    <span class="doccomment">/// Returns the multiplicative prefix sum at `n` from prime sums and the values
+<span data-nosnippet>91</span>    /// `prime_power(p, e)` at prime powers with `e &gt;= 2`.
+<span data-nosnippet>92</span>    </span><span class="kw">pub fn </span>multiplicative_sum&lt;R&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>prime_power: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; T
+<span data-nosnippet>93</span>    <span class="kw">where
+<span data-nosnippet>94</span>        </span>T: Clone,
+<span data-nosnippet>95</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>96</span>    {
+<span data-nosnippet>97</span>        <span class="kw">let </span>cutoff = <span class="self">self</span>.root.isqrt().isqrt().min(<span class="number">43</span>);
+<span data-nosnippet>98</span>        <span class="kw">let </span>powers: Vec&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = PrimeList::new(cutoff <span class="kw">as </span>u32)
+<span data-nosnippet>99</span>            .primes()
+<span data-nosnippet>100</span>            .map(|p| {
+<span data-nosnippet>101</span>                <span class="kw">let </span>p = u64::from(p);
+<span data-nosnippet>102</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>103</span>                <span class="kw">let </span><span class="kw-2">mut </span>values = <span class="macro">vec!</span>[(p, R::sub(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]))];
+<span data-nosnippet>104</span>                <span class="kw">let </span><span class="kw-2">mut </span>power = p;
+<span data-nosnippet>105</span>                <span class="kw">while </span>power &lt;= <span class="self">self</span>.n / p {
+<span data-nosnippet>106</span>                    power <span class="kw-2">*</span>= p;
+<span data-nosnippet>107</span>                    values.push((power, prime_power(p, values.len() <span class="kw">as </span>u32 + <span class="number">1</span>)));
 <span data-nosnippet>108</span>                }
-<span data-nosnippet>109</span>            }
-<span data-nosnippet>110</span>        });
-<span data-nosnippet>111</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>dp.data {
-<span data-nosnippet>112</span>            <span class="kw-2">*</span>x = R::add(x, <span class="kw-2">&amp;</span>T::one());
-<span data-nosnippet>113</span>        }
-<span data-nosnippet>114</span>        dp
-<span data-nosnippet>115</span>    }
-<span data-nosnippet>116</span>}
-<span data-nosnippet>117</span>
-<span data-nosnippet>118</span><span class="kw">impl</span>&lt;T&gt; Index&lt;u64&gt; <span class="kw">for </span>QuotientArray&lt;T&gt; {
-<span data-nosnippet>119</span>    <span class="kw">type </span>Output = T;
-<span data-nosnippet>120</span>    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, i: u64) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-<span data-nosnippet>121</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(<span class="self">self</span>.<span class="highlight">quotient_index</span>(i)) }
-<span data-nosnippet>122</span>    }
-<span data-nosnippet>123</span>}
-<span data-nosnippet>124</span>
-<span data-nosnippet>125</span><span class="kw">impl</span>&lt;T&gt; IndexMut&lt;u64&gt; <span class="kw">for </span>QuotientArray&lt;T&gt; {
-<span data-nosnippet>126</span>    <span class="kw">fn </span>index_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: u64) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Output {
-<span data-nosnippet>127</span>        <span class="kw">let </span>i = <span class="self">self</span>.<span class="highlight">quotient_index</span>(index);
-<span data-nosnippet>128</span>        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked_mut(i) }
-<span data-nosnippet>129</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.from_fn" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#52-56">Source</a><h4 class="code-header">pub fn <a href="#method.from_fn" class="fn">from_fn</a>(n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; T) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/math/quotient_array.rs.html#17&#34;,&#34;line 17&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#17">line 17</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span>    <span class="kw">pub fn </span>zeros(n: u64) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>17</span>        <span class="highlight focus"><span class="self">Self</span>::from_fn</span>(n, |<span class="kw">_</span>| T::zero())
-<span data-nosnippet>18</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.lucy_dp" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#61-81">Source</a><h4 class="code-header">pub fn <a href="#method.lucy_dp" class="fn">lucy_dp</a>&lt;G&gt;(self, mul_p: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(T, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; T) -&gt; Self<div class="where">where
-    G: <a class="trait" href="../../algebra/trait.Group.html" title="trait competitive::algebra::Group">Group</a>&lt;T = T&gt;,</div></h4></section></summary><div class="docblock"><p>convert $\sum_{i\leq n} f(i)$ to $\sum_{i\leq n, i\text{ is prime}} f(i)$</p>
-<p>constraints: $\mathrm{mul_p}(f(x))=f(px)$</p>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.min_25_sieve" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#84-115">Source</a><h4 class="code-header">pub fn <a href="#method.min_25_sieve" class="fn">min_25_sieve</a>&lt;R&gt;(&amp;self, f: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; T) -&gt; Self<div class="where">where
-    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> + <a class="trait" href="../../num/zero_one/trait.One.html" title="trait competitive::num::zero_one::One">One</a>,
-    R: <a class="trait" href="../../algebra/trait.Ring.html" title="trait competitive::algebra::Ring">Ring</a>&lt;T = T, Additive: <a class="trait" href="../../algebra/trait.Invertible.html" title="trait competitive::algebra::Invertible">Invertible</a>&gt;,</div></h4></section></summary><div class="docblock"><p>convert $\sum_{i\leq n, i\text{ is prime}} f(i)$ to $\sum_{i\leq n} f(i)$</p>
-</div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#impl-Clone-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; Self</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0, const unstable">1.0.0 (const: <a href="https://github.com/rust-lang/rust/issues/142757" title="Tracking issue for const_clone">unstable</a>)</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#impl-Debug-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Index%3Cu64%3E-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#118-123">Source</a><a href="#impl-Index%3Cu64%3E-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html" title="trait core::ops::index::Index">Index</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Output" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#119">Source</a><a href="#associatedtype.Output" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#associatedtype.Output" class="associatedtype">Output</a> = T</h4></section></summary><div class='docblock'>The returned type after indexing.</div></details><details class="toggle method-toggle" open><summary><section id="method.index" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#120-122">Source</a><a href="#method.index" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#tymethod.index" class="fn">index</a>(&amp;self, i: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; &amp;Self::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#associatedtype.Output" title="type core::ops::index::Index::Output">Output</a></h4></section></summary><div class='docblock'>Performs the indexing (<code>container[index]</code>) operation. <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#tymethod.index">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-IndexMut%3Cu64%3E-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#125-130">Source</a><a href="#impl-IndexMut%3Cu64%3E-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html" title="trait core::ops::index::IndexMut">IndexMut</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.index_mut" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#126-129">Source</a><a href="#method.index_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html#tymethod.index_mut" class="fn">index_mut</a>(&amp;mut self, index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; &amp;mut Self::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#associatedtype.Output" title="type core::ops::index::Index::Output">Output</a></h4></section></summary><div class='docblock'>Performs the mutable indexing (<code>container[index]</code>) operation. <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html#tymethod.index_mut">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Forget-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Forget-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Forget.html" title="trait core::marker::Forget">Forget</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section><section id="impl-Freeze-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Freeze-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;<div class="where">where
+<span data-nosnippet>109</span>                values
+<span data-nosnippet>110</span>            })
+<span data-nosnippet>111</span>            .collect();
+<span data-nosnippet>112</span>        <span class="self">self</span>.<span class="highlight">sieve</span>::&lt;R::Additive, <span class="bool-val">false</span>&gt;(cutoff, R::mul, |p, e, <span class="kw">_</span>, <span class="kw">_</span>| prime_power(p, e));
+<span data-nosnippet>113</span>        <span class="self">self</span>.smooth_sum::&lt;R&gt;(<span class="kw-2">&amp;</span>powers, <span class="number">1</span>, <span class="self">self</span>.n, cutoff, <span class="kw-2">&amp;</span><span class="self">self</span>.data[cutoff - <span class="number">1</span>])
+<span data-nosnippet>114</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.dense_prime" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#250-326">Source</a><h4 class="code-header">fn <a href="#method.dense_prime" class="fn">dense_prime</a>&lt;G, const REMOVE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(
+    &amp;mut self,
+    powers: &amp;[(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, T)],
+    quotients: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>],
+    mul: &amp;impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+)<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    G: <a class="trait" href="../../algebra/trait.AbelianGroup.html" title="trait competitive::algebra::AbelianGroup">AbelianGroup</a>&lt;T = T&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-8"><a href="#scraped-examples-8">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[64,64],&#34;../../../src/competitive/math/quotient_array.rs.html#221&#34;,&#34;line 221&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#221">line 221</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>157</span>    <span class="kw">fn </span>sieve&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>158</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>159</span>        cutoff: usize,
+<span data-nosnippet>160</span>        mul: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>161</span>        <span class="kw-2">mut </span>next: <span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>162</span>    ) <span class="kw">where
+<span data-nosnippet>163</span>        </span>T: Clone,
+<span data-nosnippet>164</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>165</span>    {
+<span data-nosnippet>166</span>        <span class="kw">let </span>primes: Vec&lt;<span class="kw">_</span>&gt; = PrimeList::new(<span class="self">self</span>.root <span class="kw">as </span>u32)
+<span data-nosnippet>167</span>            .primes()
+<span data-nosnippet>168</span>            .map(|p| {
+<span data-nosnippet>169</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>170</span>                (
+<span data-nosnippet>171</span>                    u64::from(p),
+<span data-nosnippet>172</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]),
+<span data-nosnippet>173</span>                )
+<span data-nosnippet>174</span>            })
+<span data-nosnippet>175</span>            .collect();
+<span data-nosnippet>176</span>        <span class="kw">let </span>fourth = <span class="self">self</span>.root.isqrt();
+<span data-nosnippet>177</span>        <span class="kw">let </span>small_problem = <span class="self">self</span>.root &lt;= <span class="number">128</span>;
+<span data-nosnippet>178</span>        <span class="kw">let </span>dense = <span class="kw">if </span>small_problem {
+<span data-nosnippet>179</span>            <span class="self">self</span>.root
+<span data-nosnippet>180</span>        } <span class="kw">else </span>{
+<span data-nosnippet>181</span>            (fourth.isqrt() / <span class="number">2</span>).max(<span class="number">2</span>)
+<span data-nosnippet>182</span>        };
+<span data-nosnippet>183</span>        <span class="kw">let </span>end = <span class="kw">if </span>small_problem {
+<span data-nosnippet>184</span>            primes.len()
+<span data-nosnippet>185</span>        } <span class="kw">else </span>{
+<span data-nosnippet>186</span>            primes.partition_point(|x| x.<span class="number">0 </span>&lt;= fourth <span class="kw">as </span>u64)
+<span data-nosnippet>187</span>        };
+<span data-nosnippet>188</span>        <span class="kw">let </span>(small, large) = primes.split_at(end);
+<span data-nosnippet>189</span>        <span class="kw">if </span>!REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>190</span>            <span class="self">self</span>.large_primes::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.cofactor_limit(dense <span class="kw">as </span>u64 + <span class="number">1</span>);
+<span data-nosnippet>193</span>        <span class="kw">let </span><span class="kw-2">mut </span>least = Vec::new();
+<span data-nosnippet>194</span>        <span class="kw">let </span>large_len = <span class="self">self</span>.data.len() - <span class="self">self</span>.root;
+<span data-nosnippet>195</span>        <span class="kw">let </span>quotients: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">1</span>..=large_len).map(|d| <span class="self">self</span>.n / d <span class="kw">as </span>u64).collect();
+<span data-nosnippet>196</span>        <span class="kw">let </span><span class="kw-2">mut </span>powers = Vec::new();
+<span data-nosnippet>197</span>        <span class="kw">let </span>bands = small.last().map_or(<span class="number">0</span>, |x| x.<span class="number">0</span>.ilog2());
+<span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=bands {
+<span data-nosnippet>199</span>            <span class="kw">let </span>shift = <span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ bands + <span class="number">1 </span>- i };
+<span data-nosnippet>200</span>            <span class="kw">let </span>first = <span class="number">1u64 </span>&lt;&lt; shift;
+<span data-nosnippet>201</span>            <span class="kw">let </span>start = small.partition_point(|x| x.<span class="number">0 </span>&lt; first || x.<span class="number">0 </span>&lt;= cutoff <span class="kw">as </span>u64);
+<span data-nosnippet>202</span>            <span class="kw">let </span>end = small.partition_point(|x| x.<span class="number">0 </span>&lt; first * <span class="number">2</span>);
+<span data-nosnippet>203</span>            <span class="kw">if </span>start &gt;= end {
+<span data-nosnippet>204</span>                <span class="kw">continue</span>;
+<span data-nosnippet>205</span>            }
+<span data-nosnippet>206</span>            <span class="kw">let </span>band = <span class="kw-2">&amp;</span>small[start..end];
+<span data-nosnippet>207</span>            <span class="kw">if </span>first &lt;= dense <span class="kw">as </span>u64 {
+<span data-nosnippet>208</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..band.len() {
+<span data-nosnippet>209</span>                    <span class="kw">let </span>(p, weight) = <span class="kw-2">&amp;</span>band[<span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ band.len() - <span class="number">1 </span>- i }];
+<span data-nosnippet>210</span>                    powers.clear();
+<span data-nosnippet>211</span>                    powers.push((<span class="kw-2">*</span>p, weight.clone()));
+<span data-nosnippet>212</span>                    <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>213</span>                        <span class="kw">while let </span><span class="prelude-val">Some</span>((power, old)) = powers.last() {
+<span data-nosnippet>214</span>                            <span class="kw">if </span><span class="kw-2">*</span>power &gt; <span class="self">self</span>.n / p {
+<span data-nosnippet>215</span>                                <span class="kw">break</span>;
+<span data-nosnippet>216</span>                            }
+<span data-nosnippet>217</span>                            powers
+<span data-nosnippet>218</span>                                .push((power * p, next(<span class="kw-2">*</span>p, powers.len() <span class="kw">as </span>u32 + <span class="number">1</span>, weight, old)));
+<span data-nosnippet>219</span>                        }
+<span data-nosnippet>220</span>                    }
+<span data-nosnippet>221</span>                    <span class="self">self</span>.<span class="highlight focus">dense_prime</span>::&lt;G, REMOVE&gt;(<span class="kw-2">&amp;</span>powers, <span class="kw-2">&amp;</span>quotients, <span class="kw-2">&amp;</span>mul);
+<span data-nosnippet>222</span>                }
+<span data-nosnippet>223</span>            } <span class="kw">else </span>{
+<span data-nosnippet>224</span>                <span class="kw">if </span>least.is_empty() {
+<span data-nosnippet>225</span>                    <span class="comment">// A composite cofactor up to sqrt(n) has a least prime factor smaller than 2^16.
+<span data-nosnippet>226</span>                    </span>least.resize(max_k + <span class="number">1</span>, u16::MAX);
+<span data-nosnippet>227</span>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(p, <span class="kw">_</span>) <span class="kw">in </span>small.iter().rev() {
+<span data-nosnippet>228</span>                        <span class="kw">if </span>p * p &lt;= max_k <span class="kw">as </span>u64 {
+<span data-nosnippet>229</span>                            <span class="kw">for </span>k <span class="kw">in </span>(p <span class="kw">as </span>usize * p <span class="kw">as </span>usize..=max_k).step_by(p <span class="kw">as </span>usize) {
+<span data-nosnippet>230</span>                                least[k] = p <span class="kw">as </span>u16;
+<span data-nosnippet>231</span>                            }
+<span data-nosnippet>232</span>                        }
+<span data-nosnippet>233</span>                    }
+<span data-nosnippet>234</span>                }
+<span data-nosnippet>235</span>                <span class="kw">let </span><span class="kw-2">mut </span>groups = band.chunks(<span class="number">32</span>);
+<span data-nosnippet>236</span>                <span class="kw">while let </span><span class="prelude-val">Some</span>(batch) = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>237</span>                    groups.next()
+<span data-nosnippet>238</span>                } <span class="kw">else </span>{
+<span data-nosnippet>239</span>                    groups.next_back()
+<span data-nosnippet>240</span>                } {
+<span data-nosnippet>241</span>                    <span class="self">self</span>.prime_band::&lt;G, REMOVE&gt;(batch, <span class="kw-2">&amp;</span>least, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>242</span>                }
+<span data-nosnippet>243</span>            }
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="kw">if </span>REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>246</span>            <span class="self">self</span>.large_primes::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>247</span>        }
+<span data-nosnippet>248</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.cofactor_limit" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#328-330">Source</a><h4 class="code-header">fn <a href="#method.cofactor_limit" class="fn">cofactor_limit</a>(&amp;self, prime: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-9"><a href="#scraped-examples-9">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[35,35],&#34;../../../src/competitive/math/quotient_array.rs.html#192&#34;,&#34;line 192&#34;],[[191,191],&#34;../../../src/competitive/math/quotient_array.rs.html#348&#34;,&#34;line 348&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#192">line 192</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>157</span>    <span class="kw">fn </span>sieve&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>158</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>159</span>        cutoff: usize,
+<span data-nosnippet>160</span>        mul: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>161</span>        <span class="kw-2">mut </span>next: <span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>162</span>    ) <span class="kw">where
+<span data-nosnippet>163</span>        </span>T: Clone,
+<span data-nosnippet>164</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>165</span>    {
+<span data-nosnippet>166</span>        <span class="kw">let </span>primes: Vec&lt;<span class="kw">_</span>&gt; = PrimeList::new(<span class="self">self</span>.root <span class="kw">as </span>u32)
+<span data-nosnippet>167</span>            .primes()
+<span data-nosnippet>168</span>            .map(|p| {
+<span data-nosnippet>169</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>170</span>                (
+<span data-nosnippet>171</span>                    u64::from(p),
+<span data-nosnippet>172</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]),
+<span data-nosnippet>173</span>                )
+<span data-nosnippet>174</span>            })
+<span data-nosnippet>175</span>            .collect();
+<span data-nosnippet>176</span>        <span class="kw">let </span>fourth = <span class="self">self</span>.root.isqrt();
+<span data-nosnippet>177</span>        <span class="kw">let </span>small_problem = <span class="self">self</span>.root &lt;= <span class="number">128</span>;
+<span data-nosnippet>178</span>        <span class="kw">let </span>dense = <span class="kw">if </span>small_problem {
+<span data-nosnippet>179</span>            <span class="self">self</span>.root
+<span data-nosnippet>180</span>        } <span class="kw">else </span>{
+<span data-nosnippet>181</span>            (fourth.isqrt() / <span class="number">2</span>).max(<span class="number">2</span>)
+<span data-nosnippet>182</span>        };
+<span data-nosnippet>183</span>        <span class="kw">let </span>end = <span class="kw">if </span>small_problem {
+<span data-nosnippet>184</span>            primes.len()
+<span data-nosnippet>185</span>        } <span class="kw">else </span>{
+<span data-nosnippet>186</span>            primes.partition_point(|x| x.<span class="number">0 </span>&lt;= fourth <span class="kw">as </span>u64)
+<span data-nosnippet>187</span>        };
+<span data-nosnippet>188</span>        <span class="kw">let </span>(small, large) = primes.split_at(end);
+<span data-nosnippet>189</span>        <span class="kw">if </span>!REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>190</span>            <span class="self">self</span>.large_primes::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.<span class="highlight focus">cofactor_limit</span>(dense <span class="kw">as </span>u64 + <span class="number">1</span>);
+<span data-nosnippet>193</span>        <span class="kw">let </span><span class="kw-2">mut </span>least = Vec::new();
+<span data-nosnippet>194</span>        <span class="kw">let </span>large_len = <span class="self">self</span>.data.len() - <span class="self">self</span>.root;
+<span data-nosnippet>195</span>        <span class="kw">let </span>quotients: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">1</span>..=large_len).map(|d| <span class="self">self</span>.n / d <span class="kw">as </span>u64).collect();
+<span data-nosnippet>196</span>        <span class="kw">let </span><span class="kw-2">mut </span>powers = Vec::new();
+<span data-nosnippet>197</span>        <span class="kw">let </span>bands = small.last().map_or(<span class="number">0</span>, |x| x.<span class="number">0</span>.ilog2());
+<span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=bands {
+<span data-nosnippet>199</span>            <span class="kw">let </span>shift = <span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ bands + <span class="number">1 </span>- i };
+<span data-nosnippet>200</span>            <span class="kw">let </span>first = <span class="number">1u64 </span>&lt;&lt; shift;
+<span data-nosnippet>201</span>            <span class="kw">let </span>start = small.partition_point(|x| x.<span class="number">0 </span>&lt; first || x.<span class="number">0 </span>&lt;= cutoff <span class="kw">as </span>u64);
+<span data-nosnippet>202</span>            <span class="kw">let </span>end = small.partition_point(|x| x.<span class="number">0 </span>&lt; first * <span class="number">2</span>);
+<span data-nosnippet>203</span>            <span class="kw">if </span>start &gt;= end {
+<span data-nosnippet>204</span>                <span class="kw">continue</span>;
+<span data-nosnippet>205</span>            }
+<span data-nosnippet>206</span>            <span class="kw">let </span>band = <span class="kw-2">&amp;</span>small[start..end];
+<span data-nosnippet>207</span>            <span class="kw">if </span>first &lt;= dense <span class="kw">as </span>u64 {
+<span data-nosnippet>208</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..band.len() {
+<span data-nosnippet>209</span>                    <span class="kw">let </span>(p, weight) = <span class="kw-2">&amp;</span>band[<span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ band.len() - <span class="number">1 </span>- i }];
+<span data-nosnippet>210</span>                    powers.clear();
+<span data-nosnippet>211</span>                    powers.push((<span class="kw-2">*</span>p, weight.clone()));
+<span data-nosnippet>212</span>                    <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>213</span>                        <span class="kw">while let </span><span class="prelude-val">Some</span>((power, old)) = powers.last() {
+<span data-nosnippet>214</span>                            <span class="kw">if </span><span class="kw-2">*</span>power &gt; <span class="self">self</span>.n / p {
+<span data-nosnippet>215</span>                                <span class="kw">break</span>;
+<span data-nosnippet>216</span>                            }
+<span data-nosnippet>217</span>                            powers
+<span data-nosnippet>218</span>                                .push((power * p, next(<span class="kw-2">*</span>p, powers.len() <span class="kw">as </span>u32 + <span class="number">1</span>, weight, old)));
+<span data-nosnippet>219</span>                        }
+<span data-nosnippet>220</span>                    }
+<span data-nosnippet>221</span>                    <span class="self">self</span>.dense_prime::&lt;G, REMOVE&gt;(<span class="kw-2">&amp;</span>powers, <span class="kw-2">&amp;</span>quotients, <span class="kw-2">&amp;</span>mul);
+<span data-nosnippet>222</span>                }
+<span data-nosnippet>223</span>            } <span class="kw">else </span>{
+<span data-nosnippet>224</span>                <span class="kw">if </span>least.is_empty() {
+<span data-nosnippet>225</span>                    <span class="comment">// A composite cofactor up to sqrt(n) has a least prime factor smaller than 2^16.
+<span data-nosnippet>226</span>                    </span>least.resize(max_k + <span class="number">1</span>, u16::MAX);
+<span data-nosnippet>227</span>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(p, <span class="kw">_</span>) <span class="kw">in </span>small.iter().rev() {
+<span data-nosnippet>228</span>                        <span class="kw">if </span>p * p &lt;= max_k <span class="kw">as </span>u64 {
+<span data-nosnippet>229</span>                            <span class="kw">for </span>k <span class="kw">in </span>(p <span class="kw">as </span>usize * p <span class="kw">as </span>usize..=max_k).step_by(p <span class="kw">as </span>usize) {
+<span data-nosnippet>230</span>                                least[k] = p <span class="kw">as </span>u16;
+<span data-nosnippet>231</span>                            }
+<span data-nosnippet>232</span>                        }
+<span data-nosnippet>233</span>                    }
+<span data-nosnippet>234</span>                }
+<span data-nosnippet>235</span>                <span class="kw">let </span><span class="kw-2">mut </span>groups = band.chunks(<span class="number">32</span>);
+<span data-nosnippet>236</span>                <span class="kw">while let </span><span class="prelude-val">Some</span>(batch) = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>237</span>                    groups.next()
+<span data-nosnippet>238</span>                } <span class="kw">else </span>{
+<span data-nosnippet>239</span>                    groups.next_back()
+<span data-nosnippet>240</span>                } {
+<span data-nosnippet>241</span>                    <span class="self">self</span>.prime_band::&lt;G, REMOVE&gt;(batch, <span class="kw-2">&amp;</span>least, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>242</span>                }
+<span data-nosnippet>243</span>            }
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="kw">if </span>REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>246</span>            <span class="self">self</span>.large_primes::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>247</span>        }
+<span data-nosnippet>248</span>    }
+<span data-nosnippet>249</span>
+<span data-nosnippet>250</span>    <span class="kw">fn </span>dense_prime&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>251</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>252</span>        powers: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>253</span>        quotients: <span class="kw-2">&amp;</span>[u64],
+<span data-nosnippet>254</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>255</span>    ) <span class="kw">where
+<span data-nosnippet>256</span>        </span>T: Clone,
+<span data-nosnippet>257</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>258</span>    {
+<span data-nosnippet>259</span>        <span class="kw">let </span>(p, weight) = <span class="kw-2">&amp;</span>powers[<span class="number">0</span>];
+<span data-nosnippet>260</span>        <span class="kw">let </span>p = <span class="kw-2">*</span>p;
+<span data-nosnippet>261</span>        <span class="kw">let </span>before = <span class="self">self</span>.data[p <span class="kw">as </span>usize - <span class="kw">if </span>REMOVE { <span class="number">2 </span>} <span class="kw">else </span>{ <span class="number">1 </span>}].clone();
+<span data-nosnippet>262</span>        <span class="kw">let </span>len = <span class="self">self</span>.data.len();
+<span data-nosnippet>263</span>        <span class="kw">let </span>large = quotients.len();
+<span data-nosnippet>264</span>        <span class="kw">let </span>delta = |v: <span class="kw-2">&amp;</span>T, e: usize| {
+<span data-nosnippet>265</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = mul(<span class="kw-2">&amp;</span>powers[e].<span class="number">1</span>, <span class="kw-2">&amp;</span>G::rinv_operate(v, <span class="kw-2">&amp;</span>before));
+<span data-nosnippet>266</span>            <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>267</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>powers[e + <span class="number">1</span>].<span class="number">1</span>);
+<span data-nosnippet>268</span>            }
+<span data-nosnippet>269</span>            x
+<span data-nosnippet>270</span>        };
+<span data-nosnippet>271</span>        <span class="kw">let </span>last = (<span class="self">self</span>.n / (p * p)).min(large <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>272</span>        <span class="kw">let </span>split = last.min(large / p <span class="kw">as </span>usize);
+<span data-nosnippet>273</span>        <span class="kw">let </span>repeated = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>274</span>            <span class="number">0
+<span data-nosnippet>275</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>276</span>            (<span class="self">self</span>.n / (p * p) / p).min(last <span class="kw">as </span>u64) <span class="kw">as </span>usize
+<span data-nosnippet>277</span>        };
+<span data-nosnippet>278</span>        <span class="kw">for </span>d <span class="kw">in </span><span class="number">1</span>..=repeated {
+<span data-nosnippet>279</span>            <span class="kw">let </span>q = quotients[d - <span class="number">1</span>];
+<span data-nosnippet>280</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = G::unit();
+<span data-nosnippet>281</span>            <span class="kw">for </span>(e, pair) <span class="kw">in </span>powers.windows(<span class="number">2</span>).enumerate() {
+<span data-nosnippet>282</span>                <span class="kw">if </span>pair[<span class="number">1</span>].<span class="number">0 </span>&gt; q {
+<span data-nosnippet>283</span>                    <span class="kw">break</span>;
+<span data-nosnippet>284</span>                }
+<span data-nosnippet>285</span>                <span class="kw">let </span>power = pair[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>286</span>                <span class="kw">let </span>index = <span class="kw">if </span>power &lt;= (large / d) <span class="kw">as </span>u64 {
+<span data-nosnippet>287</span>                    len - d * power <span class="kw">as </span>usize
+<span data-nosnippet>288</span>                } <span class="kw">else </span>{
+<span data-nosnippet>289</span>                    (q / power) <span class="kw">as </span>usize - <span class="number">1
+<span data-nosnippet>290</span>                </span>};
+<span data-nosnippet>291</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[index], e));
+<span data-nosnippet>292</span>            }
+<span data-nosnippet>293</span>            G::operate_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>294</span>        }
+<span data-nosnippet>295</span>        <span class="kw">for </span>d <span class="kw">in </span>repeated + <span class="number">1</span>..=split {
+<span data-nosnippet>296</span>            <span class="kw">let </span>x = delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[len - d * p <span class="kw">as </span>usize], <span class="number">0</span>);
+<span data-nosnippet>297</span>            update::&lt;G, REMOVE&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>298</span>        }
+<span data-nosnippet>299</span>        <span class="kw">for </span>d <span class="kw">in </span>repeated.max(split) + <span class="number">1</span>..=last {
+<span data-nosnippet>300</span>            <span class="kw">let </span>q = quotients[d - <span class="number">1</span>];
+<span data-nosnippet>301</span>            <span class="kw">let </span>v = q / p;
+<span data-nosnippet>302</span>            <span class="kw">let </span>x = delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[v <span class="kw">as </span>usize - <span class="number">1</span>], <span class="number">0</span>);
+<span data-nosnippet>303</span>            update::&lt;G, REMOVE&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>304</span>        }
+<span data-nosnippet>305</span>        <span class="kw">for </span>v <span class="kw">in </span>(p..=<span class="self">self</span>.root <span class="kw">as </span>u64 / p).rev() {
+<span data-nosnippet>306</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = mul(
+<span data-nosnippet>307</span>                weight,
+<span data-nosnippet>308</span>                <span class="kw-2">&amp;</span>G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[v <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>before),
+<span data-nosnippet>309</span>            );
+<span data-nosnippet>310</span>            <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>311</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>powers[<span class="number">1</span>].<span class="number">1</span>);
+<span data-nosnippet>312</span>                <span class="kw">for </span>e <span class="kw">in </span><span class="number">1</span>..powers.len() - <span class="number">1 </span>{
+<span data-nosnippet>313</span>                    <span class="kw">if </span>powers[e].<span class="number">0 </span>&gt; v {
+<span data-nosnippet>314</span>                        <span class="kw">break</span>;
+<span data-nosnippet>315</span>                    }
+<span data-nosnippet>316</span>                    <span class="kw">let </span>index = (v / powers[e - <span class="number">1</span>].<span class="number">0</span>) <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>317</span>                    G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[index], e));
+<span data-nosnippet>318</span>                }
+<span data-nosnippet>319</span>            }
+<span data-nosnippet>320</span>            <span class="kw">let </span>from = (p * v) <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>321</span>            <span class="kw">let </span>end = from.saturating_add(p <span class="kw">as </span>usize).min(<span class="self">self</span>.root);
+<span data-nosnippet>322</span>            <span class="kw">for </span>cell <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.data[from..end] {
+<span data-nosnippet>323</span>                update::&lt;G, REMOVE&gt;(cell, <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>324</span>            }
+<span data-nosnippet>325</span>        }
+<span data-nosnippet>326</span>    }
+<span data-nosnippet>327</span>
+<span data-nosnippet>328</span>    <span class="kw">fn </span>cofactor_limit(<span class="kw-2">&amp;</span><span class="self">self</span>, prime: u64) -&gt; usize {
+<span data-nosnippet>329</span>        ((<span class="self">self</span>.n / prime).isqrt() * <span class="number">2</span>).min(<span class="self">self</span>.root <span class="kw">as </span>u64) <span class="kw">as </span>usize
+<span data-nosnippet>330</span>    }
+<span data-nosnippet>331</span>
+<span data-nosnippet>332</span>    <span class="kw">fn </span>prime_band&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>333</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>334</span>        primes: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>335</span>        least: <span class="kw-2">&amp;</span>[u16],
+<span data-nosnippet>336</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>337</span>        next: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>338</span>    ) <span class="kw">where
+<span data-nosnippet>339</span>        </span>T: Clone,
+<span data-nosnippet>340</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>341</span>    {
+<span data-nosnippet>342</span>        <span class="kw">let </span>first = primes[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>343</span>        <span class="kw">let </span>rough = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>344</span>            first
+<span data-nosnippet>345</span>        } <span class="kw">else </span>{
+<span data-nosnippet>346</span>            primes.last().unwrap().<span class="number">0 </span>+ <span class="number">1
+<span data-nosnippet>347</span>        </span>};
+<span data-nosnippet>348</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.<span class="highlight">cofactor_limit</span>(first);
+<span data-nosnippet>349</span>        <span class="kw">let </span>keys = (rough <span class="kw">as </span>usize..=max_k)
+<span data-nosnippet>350</span>            .filter(|<span class="kw-2">&amp;</span>k| least[k] == u16::MAX || u64::from(least[k]) &gt;= rough)
+<span data-nosnippet>351</span>            .map(|k| {
+<span data-nosnippet>352</span>                (
+<span data-nosnippet>353</span>                    k <span class="kw">as </span>u64,
+<span data-nosnippet>354</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[k - <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k - <span class="number">2</span>]),
+<span data-nosnippet>355</span>                )
+<span data-nosnippet>356</span>            })
+<span data-nosnippet>357</span>            .collect();
+<span data-nosnippet>358</span>        <span class="kw">let </span>offset = <span class="self">self</span>.ceiling_index(first * first);
+<span data-nosnippet>359</span>        <span class="kw">let </span><span class="kw-2">mut </span>band = PrimeBand {
+<span data-nosnippet>360</span>            input: <span class="self">self</span>,
+<span data-nosnippet>361</span>            rough,
+<span data-nosnippet>362</span>            max_k,
+<span data-nosnippet>363</span>            keys,
+<span data-nosnippet>364</span>            offset,
+<span data-nosnippet>365</span>            difference: <span class="macro">vec!</span>[G::unit(); <span class="self">self</span>.data.len() - offset],
+<span data-nosnippet>366</span>            high: Vec::new(),
+<span data-nosnippet>367</span>        };
+<span data-nosnippet>368</span>        <span class="comment">// Removing a block uses its squarefree Möbius weights. Inserting it uses all its prime powers.
+<span data-nosnippet>369</span>        </span>band.products::&lt;G, REMOVE&gt;(primes, <span class="number">1</span>, <span class="self">self</span>.n, <span class="prelude-val">None</span>, mul, next);
+<span data-nosnippet>370</span>        <span class="kw">let </span>PrimeBand {
+<span data-nosnippet>371</span>            difference, high, ..
+<span data-nosnippet>372</span>        } = band;
+<span data-nosnippet>373</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = G::unit();
+<span data-nosnippet>374</span>        <span class="kw">for </span>(x, change) <span class="kw">in </span><span class="self">self</span>.data[offset..].iter_mut().zip(difference) {
+<span data-nosnippet>375</span>            G::operate_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>change);
+<span data-nosnippet>376</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>sum);
+<span data-nosnippet>377</span>        }
+<span data-nosnippet>378</span>        <span class="kw">for </span>(x, change) <span class="kw">in </span><span class="self">self</span>.data.iter_mut().rev().zip(high) {
+<span data-nosnippet>379</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>change);
+<span data-nosnippet>380</span>        }
+<span data-nosnippet>381</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.prime_band" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#332-381">Source</a><h4 class="code-header">fn <a href="#method.prime_band" class="fn">prime_band</a>&lt;G, const REMOVE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(
+    &amp;mut self,
+    primes: &amp;[(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, T)],
+    least: &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>],
+    mul: &amp;impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+    next: &amp;mut impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+)<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    G: <a class="trait" href="../../algebra/trait.AbelianGroup.html" title="trait competitive::algebra::AbelianGroup">AbelianGroup</a>&lt;T = T&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-10"><a href="#scraped-examples-10">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[84,84],&#34;../../../src/competitive/math/quotient_array.rs.html#241&#34;,&#34;line 241&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#241">line 241</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>157</span>    <span class="kw">fn </span>sieve&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>158</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>159</span>        cutoff: usize,
+<span data-nosnippet>160</span>        mul: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>161</span>        <span class="kw-2">mut </span>next: <span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>162</span>    ) <span class="kw">where
+<span data-nosnippet>163</span>        </span>T: Clone,
+<span data-nosnippet>164</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>165</span>    {
+<span data-nosnippet>166</span>        <span class="kw">let </span>primes: Vec&lt;<span class="kw">_</span>&gt; = PrimeList::new(<span class="self">self</span>.root <span class="kw">as </span>u32)
+<span data-nosnippet>167</span>            .primes()
+<span data-nosnippet>168</span>            .map(|p| {
+<span data-nosnippet>169</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>170</span>                (
+<span data-nosnippet>171</span>                    u64::from(p),
+<span data-nosnippet>172</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]),
+<span data-nosnippet>173</span>                )
+<span data-nosnippet>174</span>            })
+<span data-nosnippet>175</span>            .collect();
+<span data-nosnippet>176</span>        <span class="kw">let </span>fourth = <span class="self">self</span>.root.isqrt();
+<span data-nosnippet>177</span>        <span class="kw">let </span>small_problem = <span class="self">self</span>.root &lt;= <span class="number">128</span>;
+<span data-nosnippet>178</span>        <span class="kw">let </span>dense = <span class="kw">if </span>small_problem {
+<span data-nosnippet>179</span>            <span class="self">self</span>.root
+<span data-nosnippet>180</span>        } <span class="kw">else </span>{
+<span data-nosnippet>181</span>            (fourth.isqrt() / <span class="number">2</span>).max(<span class="number">2</span>)
+<span data-nosnippet>182</span>        };
+<span data-nosnippet>183</span>        <span class="kw">let </span>end = <span class="kw">if </span>small_problem {
+<span data-nosnippet>184</span>            primes.len()
+<span data-nosnippet>185</span>        } <span class="kw">else </span>{
+<span data-nosnippet>186</span>            primes.partition_point(|x| x.<span class="number">0 </span>&lt;= fourth <span class="kw">as </span>u64)
+<span data-nosnippet>187</span>        };
+<span data-nosnippet>188</span>        <span class="kw">let </span>(small, large) = primes.split_at(end);
+<span data-nosnippet>189</span>        <span class="kw">if </span>!REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>190</span>            <span class="self">self</span>.large_primes::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.cofactor_limit(dense <span class="kw">as </span>u64 + <span class="number">1</span>);
+<span data-nosnippet>193</span>        <span class="kw">let </span><span class="kw-2">mut </span>least = Vec::new();
+<span data-nosnippet>194</span>        <span class="kw">let </span>large_len = <span class="self">self</span>.data.len() - <span class="self">self</span>.root;
+<span data-nosnippet>195</span>        <span class="kw">let </span>quotients: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">1</span>..=large_len).map(|d| <span class="self">self</span>.n / d <span class="kw">as </span>u64).collect();
+<span data-nosnippet>196</span>        <span class="kw">let </span><span class="kw-2">mut </span>powers = Vec::new();
+<span data-nosnippet>197</span>        <span class="kw">let </span>bands = small.last().map_or(<span class="number">0</span>, |x| x.<span class="number">0</span>.ilog2());
+<span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=bands {
+<span data-nosnippet>199</span>            <span class="kw">let </span>shift = <span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ bands + <span class="number">1 </span>- i };
+<span data-nosnippet>200</span>            <span class="kw">let </span>first = <span class="number">1u64 </span>&lt;&lt; shift;
+<span data-nosnippet>201</span>            <span class="kw">let </span>start = small.partition_point(|x| x.<span class="number">0 </span>&lt; first || x.<span class="number">0 </span>&lt;= cutoff <span class="kw">as </span>u64);
+<span data-nosnippet>202</span>            <span class="kw">let </span>end = small.partition_point(|x| x.<span class="number">0 </span>&lt; first * <span class="number">2</span>);
+<span data-nosnippet>203</span>            <span class="kw">if </span>start &gt;= end {
+<span data-nosnippet>204</span>                <span class="kw">continue</span>;
+<span data-nosnippet>205</span>            }
+<span data-nosnippet>206</span>            <span class="kw">let </span>band = <span class="kw-2">&amp;</span>small[start..end];
+<span data-nosnippet>207</span>            <span class="kw">if </span>first &lt;= dense <span class="kw">as </span>u64 {
+<span data-nosnippet>208</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..band.len() {
+<span data-nosnippet>209</span>                    <span class="kw">let </span>(p, weight) = <span class="kw-2">&amp;</span>band[<span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ band.len() - <span class="number">1 </span>- i }];
+<span data-nosnippet>210</span>                    powers.clear();
+<span data-nosnippet>211</span>                    powers.push((<span class="kw-2">*</span>p, weight.clone()));
+<span data-nosnippet>212</span>                    <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>213</span>                        <span class="kw">while let </span><span class="prelude-val">Some</span>((power, old)) = powers.last() {
+<span data-nosnippet>214</span>                            <span class="kw">if </span><span class="kw-2">*</span>power &gt; <span class="self">self</span>.n / p {
+<span data-nosnippet>215</span>                                <span class="kw">break</span>;
+<span data-nosnippet>216</span>                            }
+<span data-nosnippet>217</span>                            powers
+<span data-nosnippet>218</span>                                .push((power * p, next(<span class="kw-2">*</span>p, powers.len() <span class="kw">as </span>u32 + <span class="number">1</span>, weight, old)));
+<span data-nosnippet>219</span>                        }
+<span data-nosnippet>220</span>                    }
+<span data-nosnippet>221</span>                    <span class="self">self</span>.dense_prime::&lt;G, REMOVE&gt;(<span class="kw-2">&amp;</span>powers, <span class="kw-2">&amp;</span>quotients, <span class="kw-2">&amp;</span>mul);
+<span data-nosnippet>222</span>                }
+<span data-nosnippet>223</span>            } <span class="kw">else </span>{
+<span data-nosnippet>224</span>                <span class="kw">if </span>least.is_empty() {
+<span data-nosnippet>225</span>                    <span class="comment">// A composite cofactor up to sqrt(n) has a least prime factor smaller than 2^16.
+<span data-nosnippet>226</span>                    </span>least.resize(max_k + <span class="number">1</span>, u16::MAX);
+<span data-nosnippet>227</span>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(p, <span class="kw">_</span>) <span class="kw">in </span>small.iter().rev() {
+<span data-nosnippet>228</span>                        <span class="kw">if </span>p * p &lt;= max_k <span class="kw">as </span>u64 {
+<span data-nosnippet>229</span>                            <span class="kw">for </span>k <span class="kw">in </span>(p <span class="kw">as </span>usize * p <span class="kw">as </span>usize..=max_k).step_by(p <span class="kw">as </span>usize) {
+<span data-nosnippet>230</span>                                least[k] = p <span class="kw">as </span>u16;
+<span data-nosnippet>231</span>                            }
+<span data-nosnippet>232</span>                        }
+<span data-nosnippet>233</span>                    }
+<span data-nosnippet>234</span>                }
+<span data-nosnippet>235</span>                <span class="kw">let </span><span class="kw-2">mut </span>groups = band.chunks(<span class="number">32</span>);
+<span data-nosnippet>236</span>                <span class="kw">while let </span><span class="prelude-val">Some</span>(batch) = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>237</span>                    groups.next()
+<span data-nosnippet>238</span>                } <span class="kw">else </span>{
+<span data-nosnippet>239</span>                    groups.next_back()
+<span data-nosnippet>240</span>                } {
+<span data-nosnippet>241</span>                    <span class="self">self</span>.<span class="highlight focus">prime_band</span>::&lt;G, REMOVE&gt;(batch, <span class="kw-2">&amp;</span>least, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>242</span>                }
+<span data-nosnippet>243</span>            }
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="kw">if </span>REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>246</span>            <span class="self">self</span>.large_primes::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>247</span>        }
+<span data-nosnippet>248</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.ceiling_index" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#383-389">Source</a><h4 class="code-header">fn <a href="#method.ceiling_index" class="fn">ceiling_index</a>(&amp;self, x: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-11"><a href="#scraped-examples-11">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[26,26],&#34;../../../src/competitive/math/quotient_array.rs.html#358&#34;,&#34;line 358&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#358">line 358</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>332</span>    <span class="kw">fn </span>prime_band&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>333</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>334</span>        primes: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>335</span>        least: <span class="kw-2">&amp;</span>[u16],
+<span data-nosnippet>336</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>337</span>        next: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>338</span>    ) <span class="kw">where
+<span data-nosnippet>339</span>        </span>T: Clone,
+<span data-nosnippet>340</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>341</span>    {
+<span data-nosnippet>342</span>        <span class="kw">let </span>first = primes[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>343</span>        <span class="kw">let </span>rough = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>344</span>            first
+<span data-nosnippet>345</span>        } <span class="kw">else </span>{
+<span data-nosnippet>346</span>            primes.last().unwrap().<span class="number">0 </span>+ <span class="number">1
+<span data-nosnippet>347</span>        </span>};
+<span data-nosnippet>348</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.cofactor_limit(first);
+<span data-nosnippet>349</span>        <span class="kw">let </span>keys = (rough <span class="kw">as </span>usize..=max_k)
+<span data-nosnippet>350</span>            .filter(|<span class="kw-2">&amp;</span>k| least[k] == u16::MAX || u64::from(least[k]) &gt;= rough)
+<span data-nosnippet>351</span>            .map(|k| {
+<span data-nosnippet>352</span>                (
+<span data-nosnippet>353</span>                    k <span class="kw">as </span>u64,
+<span data-nosnippet>354</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[k - <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k - <span class="number">2</span>]),
+<span data-nosnippet>355</span>                )
+<span data-nosnippet>356</span>            })
+<span data-nosnippet>357</span>            .collect();
+<span data-nosnippet>358</span>        <span class="kw">let </span>offset = <span class="self">self</span>.<span class="highlight focus">ceiling_index</span>(first * first);
+<span data-nosnippet>359</span>        <span class="kw">let </span><span class="kw-2">mut </span>band = PrimeBand {
+<span data-nosnippet>360</span>            input: <span class="self">self</span>,
+<span data-nosnippet>361</span>            rough,
+<span data-nosnippet>362</span>            max_k,
+<span data-nosnippet>363</span>            keys,
+<span data-nosnippet>364</span>            offset,
+<span data-nosnippet>365</span>            difference: <span class="macro">vec!</span>[G::unit(); <span class="self">self</span>.data.len() - offset],
+<span data-nosnippet>366</span>            high: Vec::new(),
+<span data-nosnippet>367</span>        };
+<span data-nosnippet>368</span>        <span class="comment">// Removing a block uses its squarefree Möbius weights. Inserting it uses all its prime powers.
+<span data-nosnippet>369</span>        </span>band.products::&lt;G, REMOVE&gt;(primes, <span class="number">1</span>, <span class="self">self</span>.n, <span class="prelude-val">None</span>, mul, next);
+<span data-nosnippet>370</span>        <span class="kw">let </span>PrimeBand {
+<span data-nosnippet>371</span>            difference, high, ..
+<span data-nosnippet>372</span>        } = band;
+<span data-nosnippet>373</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = G::unit();
+<span data-nosnippet>374</span>        <span class="kw">for </span>(x, change) <span class="kw">in </span><span class="self">self</span>.data[offset..].iter_mut().zip(difference) {
+<span data-nosnippet>375</span>            G::operate_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>change);
+<span data-nosnippet>376</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>sum);
+<span data-nosnippet>377</span>        }
+<span data-nosnippet>378</span>        <span class="kw">for </span>(x, change) <span class="kw">in </span><span class="self">self</span>.data.iter_mut().rev().zip(high) {
+<span data-nosnippet>379</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>change);
+<span data-nosnippet>380</span>        }
+<span data-nosnippet>381</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.large_primes" class="method"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#391-496">Source</a><h4 class="code-header">fn <a href="#method.large_primes" class="fn">large_primes</a>&lt;G, const REMOVE: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(
+    &amp;mut self,
+    primes: &amp;[(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, T)],
+    mul: &amp;impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+    next_weight: &amp;mut impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; T,
+)<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,
+    G: <a class="trait" href="../../algebra/trait.AbelianGroup.html" title="trait competitive::algebra::AbelianGroup">AbelianGroup</a>&lt;T = T&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-12"><a href="#scraped-examples-12">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[33,33],&#34;../../../src/competitive/math/quotient_array.rs.html#190&#34;,&#34;line 190&#34;],[[89,89],&#34;../../../src/competitive/math/quotient_array.rs.html#246&#34;,&#34;line 246&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../../src/competitive/math/quotient_array.rs.html#190">line 190</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>157</span>    <span class="kw">fn </span>sieve&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>158</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>159</span>        cutoff: usize,
+<span data-nosnippet>160</span>        mul: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>161</span>        <span class="kw-2">mut </span>next: <span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>162</span>    ) <span class="kw">where
+<span data-nosnippet>163</span>        </span>T: Clone,
+<span data-nosnippet>164</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>165</span>    {
+<span data-nosnippet>166</span>        <span class="kw">let </span>primes: Vec&lt;<span class="kw">_</span>&gt; = PrimeList::new(<span class="self">self</span>.root <span class="kw">as </span>u32)
+<span data-nosnippet>167</span>            .primes()
+<span data-nosnippet>168</span>            .map(|p| {
+<span data-nosnippet>169</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>170</span>                (
+<span data-nosnippet>171</span>                    u64::from(p),
+<span data-nosnippet>172</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]),
+<span data-nosnippet>173</span>                )
+<span data-nosnippet>174</span>            })
+<span data-nosnippet>175</span>            .collect();
+<span data-nosnippet>176</span>        <span class="kw">let </span>fourth = <span class="self">self</span>.root.isqrt();
+<span data-nosnippet>177</span>        <span class="kw">let </span>small_problem = <span class="self">self</span>.root &lt;= <span class="number">128</span>;
+<span data-nosnippet>178</span>        <span class="kw">let </span>dense = <span class="kw">if </span>small_problem {
+<span data-nosnippet>179</span>            <span class="self">self</span>.root
+<span data-nosnippet>180</span>        } <span class="kw">else </span>{
+<span data-nosnippet>181</span>            (fourth.isqrt() / <span class="number">2</span>).max(<span class="number">2</span>)
+<span data-nosnippet>182</span>        };
+<span data-nosnippet>183</span>        <span class="kw">let </span>end = <span class="kw">if </span>small_problem {
+<span data-nosnippet>184</span>            primes.len()
+<span data-nosnippet>185</span>        } <span class="kw">else </span>{
+<span data-nosnippet>186</span>            primes.partition_point(|x| x.<span class="number">0 </span>&lt;= fourth <span class="kw">as </span>u64)
+<span data-nosnippet>187</span>        };
+<span data-nosnippet>188</span>        <span class="kw">let </span>(small, large) = primes.split_at(end);
+<span data-nosnippet>189</span>        <span class="kw">if </span>!REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>190</span>            <span class="self">self</span>.<span class="highlight focus">large_primes</span>::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>191</span>        }
+<span data-nosnippet>192</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.cofactor_limit(dense <span class="kw">as </span>u64 + <span class="number">1</span>);
+<span data-nosnippet>193</span>        <span class="kw">let </span><span class="kw-2">mut </span>least = Vec::new();
+<span data-nosnippet>194</span>        <span class="kw">let </span>large_len = <span class="self">self</span>.data.len() - <span class="self">self</span>.root;
+<span data-nosnippet>195</span>        <span class="kw">let </span>quotients: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">1</span>..=large_len).map(|d| <span class="self">self</span>.n / d <span class="kw">as </span>u64).collect();
+<span data-nosnippet>196</span>        <span class="kw">let </span><span class="kw-2">mut </span>powers = Vec::new();
+<span data-nosnippet>197</span>        <span class="kw">let </span>bands = small.last().map_or(<span class="number">0</span>, |x| x.<span class="number">0</span>.ilog2());
+<span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=bands {
+<span data-nosnippet>199</span>            <span class="kw">let </span>shift = <span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ bands + <span class="number">1 </span>- i };
+<span data-nosnippet>200</span>            <span class="kw">let </span>first = <span class="number">1u64 </span>&lt;&lt; shift;
+<span data-nosnippet>201</span>            <span class="kw">let </span>start = small.partition_point(|x| x.<span class="number">0 </span>&lt; first || x.<span class="number">0 </span>&lt;= cutoff <span class="kw">as </span>u64);
+<span data-nosnippet>202</span>            <span class="kw">let </span>end = small.partition_point(|x| x.<span class="number">0 </span>&lt; first * <span class="number">2</span>);
+<span data-nosnippet>203</span>            <span class="kw">if </span>start &gt;= end {
+<span data-nosnippet>204</span>                <span class="kw">continue</span>;
+<span data-nosnippet>205</span>            }
+<span data-nosnippet>206</span>            <span class="kw">let </span>band = <span class="kw-2">&amp;</span>small[start..end];
+<span data-nosnippet>207</span>            <span class="kw">if </span>first &lt;= dense <span class="kw">as </span>u64 {
+<span data-nosnippet>208</span>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..band.len() {
+<span data-nosnippet>209</span>                    <span class="kw">let </span>(p, weight) = <span class="kw-2">&amp;</span>band[<span class="kw">if </span>REMOVE { i } <span class="kw">else </span>{ band.len() - <span class="number">1 </span>- i }];
+<span data-nosnippet>210</span>                    powers.clear();
+<span data-nosnippet>211</span>                    powers.push((<span class="kw-2">*</span>p, weight.clone()));
+<span data-nosnippet>212</span>                    <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>213</span>                        <span class="kw">while let </span><span class="prelude-val">Some</span>((power, old)) = powers.last() {
+<span data-nosnippet>214</span>                            <span class="kw">if </span><span class="kw-2">*</span>power &gt; <span class="self">self</span>.n / p {
+<span data-nosnippet>215</span>                                <span class="kw">break</span>;
+<span data-nosnippet>216</span>                            }
+<span data-nosnippet>217</span>                            powers
+<span data-nosnippet>218</span>                                .push((power * p, next(<span class="kw-2">*</span>p, powers.len() <span class="kw">as </span>u32 + <span class="number">1</span>, weight, old)));
+<span data-nosnippet>219</span>                        }
+<span data-nosnippet>220</span>                    }
+<span data-nosnippet>221</span>                    <span class="self">self</span>.dense_prime::&lt;G, REMOVE&gt;(<span class="kw-2">&amp;</span>powers, <span class="kw-2">&amp;</span>quotients, <span class="kw-2">&amp;</span>mul);
+<span data-nosnippet>222</span>                }
+<span data-nosnippet>223</span>            } <span class="kw">else </span>{
+<span data-nosnippet>224</span>                <span class="kw">if </span>least.is_empty() {
+<span data-nosnippet>225</span>                    <span class="comment">// A composite cofactor up to sqrt(n) has a least prime factor smaller than 2^16.
+<span data-nosnippet>226</span>                    </span>least.resize(max_k + <span class="number">1</span>, u16::MAX);
+<span data-nosnippet>227</span>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(p, <span class="kw">_</span>) <span class="kw">in </span>small.iter().rev() {
+<span data-nosnippet>228</span>                        <span class="kw">if </span>p * p &lt;= max_k <span class="kw">as </span>u64 {
+<span data-nosnippet>229</span>                            <span class="kw">for </span>k <span class="kw">in </span>(p <span class="kw">as </span>usize * p <span class="kw">as </span>usize..=max_k).step_by(p <span class="kw">as </span>usize) {
+<span data-nosnippet>230</span>                                least[k] = p <span class="kw">as </span>u16;
+<span data-nosnippet>231</span>                            }
+<span data-nosnippet>232</span>                        }
+<span data-nosnippet>233</span>                    }
+<span data-nosnippet>234</span>                }
+<span data-nosnippet>235</span>                <span class="kw">let </span><span class="kw-2">mut </span>groups = band.chunks(<span class="number">32</span>);
+<span data-nosnippet>236</span>                <span class="kw">while let </span><span class="prelude-val">Some</span>(batch) = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>237</span>                    groups.next()
+<span data-nosnippet>238</span>                } <span class="kw">else </span>{
+<span data-nosnippet>239</span>                    groups.next_back()
+<span data-nosnippet>240</span>                } {
+<span data-nosnippet>241</span>                    <span class="self">self</span>.prime_band::&lt;G, REMOVE&gt;(batch, <span class="kw-2">&amp;</span>least, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>242</span>                }
+<span data-nosnippet>243</span>            }
+<span data-nosnippet>244</span>        }
+<span data-nosnippet>245</span>        <span class="kw">if </span>REMOVE &amp;&amp; !large.is_empty() {
+<span data-nosnippet>246</span>            <span class="self">self</span>.<span class="highlight">large_primes</span>::&lt;G, REMOVE&gt;(large, <span class="kw-2">&amp;</span>mul, <span class="kw-2">&amp;mut </span>next);
+<span data-nosnippet>247</span>        }
+<span data-nosnippet>248</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#impl-Clone-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; Self</h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0, const unstable">1.0.0 (const: <a href="https://github.com/rust-lang/rust/issues/142757" title="Tracking issue for const_clone">unstable</a>)</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#impl-Debug-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#5">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Index%3Cu64%3E-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#667-672">Source</a><a href="#impl-Index%3Cu64%3E-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html" title="trait core::ops::index::Index">Index</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Output" class="associatedtype trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#668">Source</a><a href="#associatedtype.Output" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#associatedtype.Output" class="associatedtype">Output</a> = T</h4></section></summary><div class='docblock'>The returned type after indexing.</div></details><details class="toggle method-toggle" open><summary><section id="method.index" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#669-671">Source</a><a href="#method.index" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#tymethod.index" class="fn">index</a>(&amp;self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Performs the indexing (<code>container[index]</code>) operation. <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#tymethod.index">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-IndexMut%3Cu64%3E-for-QuotientArray%3CT%3E" class="impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#674-679">Source</a><a href="#impl-IndexMut%3Cu64%3E-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html" title="trait core::ops::index::IndexMut">IndexMut</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.index_mut" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/math/quotient_array.rs.html#675-678">Source</a><a href="#method.index_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html#tymethod.index_mut" class="fn">index_mut</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Performs the mutable indexing (<code>container[index]</code>) operation. <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html#tymethod.index_mut">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Forget-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Forget-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Forget.html" title="trait core::marker::Forget">Forget</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section><section id="impl-Freeze-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Freeze-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;<div class="where">where
     <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a>,</div></h3></section><section id="impl-Move-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Move-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Move.html" title="trait core::marker::Move">Move</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;</h3></section><section id="impl-RefUnwindSafe-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-RefUnwindSafe-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;<div class="where">where
     <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,</div></h3></section><section id="impl-Send-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Send-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;<div class="where">where
     <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,</div></h3></section><section id="impl-Sync-for-QuotientArray%3CT%3E" class="impl"><a href="#impl-Sync-for-QuotientArray%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.QuotientArray.html" title="struct competitive::math::quotient_array::QuotientArray">QuotientArray</a>&lt;T&gt;<div class="where">where

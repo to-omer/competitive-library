@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["QuotientArray"]};
+window.SIDEBAR_ITEMS = {"fn":["update"],"struct":["PrimeBand","QuotientArray"]};

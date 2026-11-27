@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["sum_of_multiplicative_function","test_sum_of_multiplicative_function"]};

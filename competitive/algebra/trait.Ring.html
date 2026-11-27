@@ -1373,38 +1373,70 @@
 <span data-nosnippet>826</span>        R::add_assign(c, m3);
 <span data-nosnippet>827</span>        R::add_assign(c, m6);
 <span data-nosnippet>828</span>    }
-<span data-nosnippet>829</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[18,18],&#34;../../src/competitive/math/quotient_array.rs.html#102&#34;,&#34;line 102&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../src/competitive/math/quotient_array.rs.html#102">line 102</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>84</span>    <span class="kw">pub fn </span>min_25_sieve&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; <span class="self">Self
-<span data-nosnippet>85</span>    </span><span class="kw">where
-<span data-nosnippet>86</span>        </span>T: Clone + One,
-<span data-nosnippet>87</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
-<span data-nosnippet>88</span>    {
-<span data-nosnippet>89</span>        <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="self">self</span>.clone();
-<span data-nosnippet>90</span>        <span class="kw">let </span>max_n = <span class="self">self</span>.isqrtn <span class="kw">as </span>u32;
-<span data-nosnippet>91</span>        with_prime_list(max_n, |pl| {
-<span data-nosnippet>92</span>            <span class="kw">for </span>p <span class="kw">in </span>pl.primes_lte(max_n).rev() {
-<span data-nosnippet>93</span>                <span class="kw">let </span>p = u64::from(p);
-<span data-nosnippet>94</span>                <span class="kw">let </span>k = <span class="self">self</span>.quotient_index(p);
-<span data-nosnippet>95</span>                <span class="kw">for </span>(i, q) <span class="kw">in </span><span class="self">Self</span>::index_iter(<span class="self">self</span>.n, <span class="self">self</span>.isqrtn).enumerate() {
-<span data-nosnippet>96</span>                    <span class="kw">let </span><span class="kw-2">mut </span>pc = p;
-<span data-nosnippet>97</span>                    <span class="kw">if </span>pc * p &gt; q {
-<span data-nosnippet>98</span>                        <span class="kw">break</span>;
-<span data-nosnippet>99</span>                    }
-<span data-nosnippet>100</span>                    <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">1</span>;
-<span data-nosnippet>101</span>                    <span class="kw">while </span>q / p &gt;= pc {
-<span data-nosnippet>102</span>                        <span class="kw">let </span>x = R::mul(<span class="kw-2">&amp;</span>f(p, c), <span class="kw-2">&amp;</span>(<span class="highlight focus">R::sub</span>(<span class="kw-2">&amp;</span>dp[q / pc], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k])));
-<span data-nosnippet>103</span>                        <span class="kw">let </span>x = R::add(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>f(p, c + <span class="number">1</span>));
-<span data-nosnippet>104</span>                        dp.data[i] = R::add(<span class="kw-2">&amp;</span>dp.data[i], <span class="kw-2">&amp;</span>x);
-<span data-nosnippet>105</span>                        c += <span class="number">1</span>;
-<span data-nosnippet>106</span>                        pc <span class="kw-2">*</span>= p;
-<span data-nosnippet>107</span>                    }
+<span data-nosnippet>829</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[11,11],&#34;../../src/competitive/math/quotient_array.rs.html#103&#34;,&#34;line 103&#34;],[[42,42],&#34;../../src/competitive/math/quotient_array.rs.html#134&#34;,&#34;line 134&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/quotient_array.rs (<a href="../../src/competitive/math/quotient_array.rs.html#103">line 103</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>92</span>    <span class="kw">pub fn </span>multiplicative_sum&lt;R&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>prime_power: <span class="kw">impl </span>FnMut(u64, u32) -&gt; T) -&gt; T
+<span data-nosnippet>93</span>    <span class="kw">where
+<span data-nosnippet>94</span>        </span>T: Clone,
+<span data-nosnippet>95</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>96</span>    {
+<span data-nosnippet>97</span>        <span class="kw">let </span>cutoff = <span class="self">self</span>.root.isqrt().isqrt().min(<span class="number">43</span>);
+<span data-nosnippet>98</span>        <span class="kw">let </span>powers: Vec&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = PrimeList::new(cutoff <span class="kw">as </span>u32)
+<span data-nosnippet>99</span>            .primes()
+<span data-nosnippet>100</span>            .map(|p| {
+<span data-nosnippet>101</span>                <span class="kw">let </span>p = u64::from(p);
+<span data-nosnippet>102</span>                <span class="kw">let </span>i = p <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>103</span>                <span class="kw">let </span><span class="kw-2">mut </span>values = <span class="macro">vec!</span>[(p, <span class="highlight focus">R::sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], <span class="kw-2">&amp;</span><span class="self">self</span>.data[i - <span class="number">1</span>]))];
+<span data-nosnippet>104</span>                <span class="kw">let </span><span class="kw-2">mut </span>power = p;
+<span data-nosnippet>105</span>                <span class="kw">while </span>power &lt;= <span class="self">self</span>.n / p {
+<span data-nosnippet>106</span>                    power <span class="kw-2">*</span>= p;
+<span data-nosnippet>107</span>                    values.push((power, prime_power(p, values.len() <span class="kw">as </span>u32 + <span class="number">1</span>)));
 <span data-nosnippet>108</span>                }
-<span data-nosnippet>109</span>            }
-<span data-nosnippet>110</span>        });
-<span data-nosnippet>111</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>dp.data {
-<span data-nosnippet>112</span>            <span class="kw-2">*</span>x = R::add(x, <span class="kw-2">&amp;</span>T::one());
-<span data-nosnippet>113</span>        }
-<span data-nosnippet>114</span>        dp
-<span data-nosnippet>115</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/math/subset_convolve.rs.html#218&#34;,&#34;line 218&#34;],[[19,19],&#34;../../src/competitive/math/subset_convolve.rs.html#225&#34;,&#34;line 225&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/subset_convolve.rs (<a href="../../src/competitive/math/subset_convolve.rs.html#218">line 218</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>206</span>    <span class="kw">fn </span>project_ranks&lt;<span class="kw">const </span>W: usize, <span class="kw">const </span>REVERSE: bool&gt;(
+<span data-nosnippet>109</span>                values
+<span data-nosnippet>110</span>            })
+<span data-nosnippet>111</span>            .collect();
+<span data-nosnippet>112</span>        <span class="self">self</span>.sieve::&lt;R::Additive, <span class="bool-val">false</span>&gt;(cutoff, R::mul, |p, e, <span class="kw">_</span>, <span class="kw">_</span>| prime_power(p, e));
+<span data-nosnippet>113</span>        <span class="self">self</span>.smooth_sum::&lt;R&gt;(<span class="kw-2">&amp;</span>powers, <span class="number">1</span>, <span class="self">self</span>.n, cutoff, <span class="kw-2">&amp;</span><span class="self">self</span>.data[cutoff - <span class="number">1</span>])
+<span data-nosnippet>114</span>    }
+<span data-nosnippet>115</span>
+<span data-nosnippet>116</span>    <span class="kw">fn </span>smooth_sum&lt;R&gt;(
+<span data-nosnippet>117</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>118</span>        powers: <span class="kw-2">&amp;</span>[Vec&lt;(u64, T)&gt;],
+<span data-nosnippet>119</span>        d: u64,
+<span data-nosnippet>120</span>        limit: u64,
+<span data-nosnippet>121</span>        cutoff: usize,
+<span data-nosnippet>122</span>        before: <span class="kw-2">&amp;</span>T,
+<span data-nosnippet>123</span>    ) -&gt; T
+<span data-nosnippet>124</span>    <span class="kw">where
+<span data-nosnippet>125</span>        </span>R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>126</span>    {
+<span data-nosnippet>127</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = R::one();
+<span data-nosnippet>128</span>        <span class="kw">if </span>limit &gt; cutoff <span class="kw">as </span>u64 {
+<span data-nosnippet>129</span>            <span class="kw">let </span>i = <span class="kw">if </span>limit &lt;= <span class="self">self</span>.root <span class="kw">as </span>u64 {
+<span data-nosnippet>130</span>                limit <span class="kw">as </span>usize - <span class="number">1
+<span data-nosnippet>131</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>132</span>                <span class="self">self</span>.data.len() - d <span class="kw">as </span>usize
+<span data-nosnippet>133</span>            };
+<span data-nosnippet>134</span>            R::add_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span><span class="highlight">R::sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.data[i], before));
+<span data-nosnippet>135</span>        }
+<span data-nosnippet>136</span>        <span class="kw">for </span>(j, powers_of_p) <span class="kw">in </span>powers.iter().enumerate() {
+<span data-nosnippet>137</span>            <span class="kw">if </span>powers_of_p[<span class="number">0</span>].<span class="number">0 </span>&gt; limit {
+<span data-nosnippet>138</span>                <span class="kw">break</span>;
+<span data-nosnippet>139</span>            }
+<span data-nosnippet>140</span>            <span class="kw">for </span>(power, weight) <span class="kw">in </span>powers_of_p {
+<span data-nosnippet>141</span>                <span class="kw">if </span><span class="kw-2">*</span>power &gt; limit {
+<span data-nosnippet>142</span>                    <span class="kw">break</span>;
+<span data-nosnippet>143</span>                }
+<span data-nosnippet>144</span>                <span class="kw">let </span>rest = <span class="self">self</span>.smooth_sum::&lt;R&gt;(
+<span data-nosnippet>145</span>                    <span class="kw-2">&amp;</span>powers[j + <span class="number">1</span>..],
+<span data-nosnippet>146</span>                    d * power,
+<span data-nosnippet>147</span>                    limit / power,
+<span data-nosnippet>148</span>                    cutoff,
+<span data-nosnippet>149</span>                    before,
+<span data-nosnippet>150</span>                );
+<span data-nosnippet>151</span>                R::add_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>R::mul(weight, <span class="kw-2">&amp;</span>rest));
+<span data-nosnippet>152</span>            }
+<span data-nosnippet>153</span>        }
+<span data-nosnippet>154</span>        sum
+<span data-nosnippet>155</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/math/subset_convolve.rs.html#218&#34;,&#34;line 218&#34;],[[19,19],&#34;../../src/competitive/math/subset_convolve.rs.html#225&#34;,&#34;line 225&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/subset_convolve.rs (<a href="../../src/competitive/math/subset_convolve.rs.html#218">line 218</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>206</span>    <span class="kw">fn </span>project_ranks&lt;<span class="kw">const </span>W: usize, <span class="kw">const </span>REVERSE: bool&gt;(
 <span data-nosnippet>207</span>        input: <span class="kw-2">&amp;</span>[R::T],
 <span data-nosnippet>208</span>        transformed: <span class="kw-2">&amp;mut </span>[[R::T; W]],
 <span data-nosnippet>209</span>        local: <span class="kw-2">&amp;mut </span>[[R::T; W]],
