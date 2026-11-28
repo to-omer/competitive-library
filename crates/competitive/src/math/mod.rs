@@ -144,8 +144,7 @@ mod dirichlet_prefix_sums;
     "discrete_logarithm",
     include(
         "BarrettReduction",
-        "lcm",
-        "modinv",
+        "linear_congruence",
         "primitive_root",
         "PrimeList",
         "Xorshift"
