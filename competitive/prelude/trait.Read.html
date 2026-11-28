@@ -223,72 +223,72 @@ operation should be retried if there is nothing else to do.</p>
 
     <span class="macro">println!</span>(<span class="string">"The bytes: {:?}"</span>, <span class="kw-2">&amp;</span>buffer[..n]);
     <span class="prelude-val">Ok</span>(())
-}</code></pre></div></div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[23,23],&#34;../../src/competitive/tools/fastio.rs.html#818&#34;,&#34;line 818&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/fastio.rs (<a href="../../src/competitive/tools/fastio.rs.html#818">line 818</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>795</span>    <span class="kw">fn </span>refill(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
-<span data-nosnippet>796</span>        <span class="kw">if </span><span class="self">self</span>.eof {
-<span data-nosnippet>797</span>            <span class="kw">return </span><span class="bool-val">false</span>;
-<span data-nosnippet>798</span>        }
-<span data-nosnippet>799</span>        <span class="kw">let </span>position = <span class="kw">unsafe </span>{ <span class="self">self</span>.input.ptr.offset_from(<span class="self">self</span>.buffer.as_ptr()) <span class="kw">as </span>usize };
-<span data-nosnippet>800</span>        <span class="self">self</span>.buffer.copy_within(position..<span class="self">self</span>.filled, <span class="number">0</span>);
-<span data-nosnippet>801</span>        <span class="self">self</span>.filled -= position;
-<span data-nosnippet>802</span>        <span class="self">self</span>.input = FastInput {
-<span data-nosnippet>803</span>            ptr: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>804</span>            end: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>805</span>            _marker: PhantomData,
-<span data-nosnippet>806</span>        };
-<span data-nosnippet>807</span>        <span class="kw">loop </span>{
-<span data-nosnippet>808</span>            <span class="kw">if </span><span class="self">self</span>.filled == <span class="self">self</span>.buffer.len() - <span class="number">16 </span>{
-<span data-nosnippet>809</span>                <span class="self">self</span>.buffer.resize(<span class="number">2 </span>* <span class="self">self</span>.filled + <span class="number">16</span>, <span class="string">b' '</span>);
-<span data-nosnippet>810</span>                <span class="self">self</span>.input = FastInput {
-<span data-nosnippet>811</span>                    ptr: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>812</span>                    end: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>813</span>                    _marker: PhantomData,
-<span data-nosnippet>814</span>                };
-<span data-nosnippet>815</span>            }
-<span data-nosnippet>816</span>            <span class="kw">let </span>end = <span class="self">self</span>.buffer.len() - <span class="number">16</span>;
-<span data-nosnippet>817</span>            <span class="kw">let </span>start = <span class="self">self</span>.filled;
-<span data-nosnippet>818</span>            <span class="kw">match </span><span class="self">self</span>.reader.<span class="highlight focus">read</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.buffer[<span class="self">self</span>.filled..end]) {
-<span data-nosnippet>819</span>                <span class="prelude-val">Ok</span>(<span class="number">0</span>) =&gt; {
-<span data-nosnippet>820</span>                    <span class="self">self</span>.eof = <span class="bool-val">true</span>;
-<span data-nosnippet>821</span>                    <span class="kw">if </span><span class="self">self</span>.filled != <span class="number">0 </span>{
-<span data-nosnippet>822</span>                        <span class="self">self</span>.buffer[<span class="self">self</span>.filled] = <span class="string">b' '</span>;
-<span data-nosnippet>823</span>                        <span class="self">self</span>.filled += <span class="number">1</span>;
-<span data-nosnippet>824</span>                    }
-<span data-nosnippet>825</span>                }
-<span data-nosnippet>826</span>                <span class="prelude-val">Ok</span>(n) =&gt; <span class="self">self</span>.filled += n,
-<span data-nosnippet>827</span>                <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.kind() == std::io::ErrorKind::Interrupted =&gt; <span class="kw">continue</span>,
-<span data-nosnippet>828</span>                <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">panic!</span>(<span class="string">"io error: {e}"</span>),
-<span data-nosnippet>829</span>            }
-<span data-nosnippet>830</span>            <span class="kw">let </span>(prefix, chunks) = <span class="self">self</span>.buffer[start..<span class="self">self</span>.filled].as_rchunks();
-<span data-nosnippet>831</span>            <span class="kw">let </span>end = prefix.len()
-<span data-nosnippet>832</span>                + <span class="number">8 </span>* chunks
-<span data-nosnippet>833</span>                    .iter()
-<span data-nosnippet>834</span>                    .rposition(|<span class="kw-2">&amp;</span>chunk| {
-<span data-nosnippet>835</span>                        <span class="kw">let </span>x = u64::from_le_bytes(chunk);
-<span data-nosnippet>836</span>                        x.wrapping_sub(<span class="number">0x2121_2121_2121_2121</span>) &amp; !x &amp; <span class="number">0x8080_8080_8080_8080 </span>!= <span class="number">0
-<span data-nosnippet>837</span>                    </span>})
-<span data-nosnippet>838</span>                    .map_or(<span class="number">0</span>, |i| i + <span class="number">1</span>);
-<span data-nosnippet>839</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(end) = <span class="self">self</span>.buffer[start..start + end]
-<span data-nosnippet>840</span>                .iter()
-<span data-nosnippet>841</span>                .rposition(u8::is_ascii_whitespace)
-<span data-nosnippet>842</span>            {
-<span data-nosnippet>843</span>                <span class="self">self</span>.buffer[<span class="self">self</span>.filled..<span class="self">self</span>.filled + <span class="number">16</span>].fill(<span class="string">b' '</span>);
-<span data-nosnippet>844</span>                <span class="self">self</span>.input = FastInput {
-<span data-nosnippet>845</span>                    ptr: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>846</span>                    end: <span class="kw">unsafe </span>{ <span class="self">self</span>.buffer.as_ptr().add(start + end + <span class="number">1</span>) },
-<span data-nosnippet>847</span>                    _marker: PhantomData,
-<span data-nosnippet>848</span>                };
-<span data-nosnippet>849</span>                <span class="kw">return </span><span class="bool-val">true</span>;
-<span data-nosnippet>850</span>            }
-<span data-nosnippet>851</span>            <span class="kw">if </span><span class="self">self</span>.eof {
-<span data-nosnippet>852</span>                <span class="self">self</span>.input = FastInput {
-<span data-nosnippet>853</span>                    ptr: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>854</span>                    end: <span class="self">self</span>.buffer.as_ptr(),
-<span data-nosnippet>855</span>                    _marker: PhantomData,
-<span data-nosnippet>856</span>                };
-<span data-nosnippet>857</span>                <span class="kw">return </span><span class="bool-val">false</span>;
-<span data-nosnippet>858</span>            }
-<span data-nosnippet>859</span>        }
-<span data-nosnippet>860</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.read_vectored" class="method"><span class="rightside"><span class="since" title="Stable since Rust version 1.36.0">1.36.0</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/alloc/io/read.rs.html#182">Source</a></span><h4 class="code-header">fn <a href="#method.read_vectored" class="fn">read_vectored</a>(&amp;mut self, bufs: &amp;mut [<a class="struct" href="https://doc.rust-lang.org/nightly/core/io/io_slice/struct.IoSliceMut.html" title="struct core::io::io_slice::IoSliceMut">IoSliceMut</a>&lt;'_&gt;]) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/core/io/error/struct.Error.html" title="struct core::io::error::Error">Error</a>&gt;</h4></section></summary><div class="docblock"><p>Like <code>read</code>, except that it reads into a slice of buffers.</p>
+}</code></pre></div></div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[23,23],&#34;../../src/competitive/tools/fastio.rs.html#912&#34;,&#34;line 912&#34;]]"><div class="scraped-example-title">crates/competitive/src/tools/fastio.rs (<a href="../../src/competitive/tools/fastio.rs.html#912">line 912</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>889</span>    <span class="kw">fn </span>refill(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>890</span>        <span class="kw">if </span><span class="self">self</span>.eof {
+<span data-nosnippet>891</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>892</span>        }
+<span data-nosnippet>893</span>        <span class="kw">let </span>position = <span class="kw">unsafe </span>{ <span class="self">self</span>.input.ptr.offset_from(<span class="self">self</span>.buffer.as_ptr()) <span class="kw">as </span>usize };
+<span data-nosnippet>894</span>        <span class="self">self</span>.buffer.copy_within(position..<span class="self">self</span>.filled, <span class="number">0</span>);
+<span data-nosnippet>895</span>        <span class="self">self</span>.filled -= position;
+<span data-nosnippet>896</span>        <span class="self">self</span>.input = FastInput {
+<span data-nosnippet>897</span>            ptr: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>898</span>            end: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>899</span>            _marker: PhantomData,
+<span data-nosnippet>900</span>        };
+<span data-nosnippet>901</span>        <span class="kw">loop </span>{
+<span data-nosnippet>902</span>            <span class="kw">if </span><span class="self">self</span>.filled == <span class="self">self</span>.buffer.len() - <span class="number">16 </span>{
+<span data-nosnippet>903</span>                <span class="self">self</span>.buffer.resize(<span class="number">2 </span>* <span class="self">self</span>.filled + <span class="number">16</span>, <span class="string">b' '</span>);
+<span data-nosnippet>904</span>                <span class="self">self</span>.input = FastInput {
+<span data-nosnippet>905</span>                    ptr: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>906</span>                    end: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>907</span>                    _marker: PhantomData,
+<span data-nosnippet>908</span>                };
+<span data-nosnippet>909</span>            }
+<span data-nosnippet>910</span>            <span class="kw">let </span>end = <span class="self">self</span>.buffer.len() - <span class="number">16</span>;
+<span data-nosnippet>911</span>            <span class="kw">let </span>start = <span class="self">self</span>.filled;
+<span data-nosnippet>912</span>            <span class="kw">match </span><span class="self">self</span>.reader.<span class="highlight focus">read</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.buffer[<span class="self">self</span>.filled..end]) {
+<span data-nosnippet>913</span>                <span class="prelude-val">Ok</span>(<span class="number">0</span>) =&gt; {
+<span data-nosnippet>914</span>                    <span class="self">self</span>.eof = <span class="bool-val">true</span>;
+<span data-nosnippet>915</span>                    <span class="kw">if </span><span class="self">self</span>.filled != <span class="number">0 </span>{
+<span data-nosnippet>916</span>                        <span class="self">self</span>.buffer[<span class="self">self</span>.filled] = <span class="string">b' '</span>;
+<span data-nosnippet>917</span>                        <span class="self">self</span>.filled += <span class="number">1</span>;
+<span data-nosnippet>918</span>                    }
+<span data-nosnippet>919</span>                }
+<span data-nosnippet>920</span>                <span class="prelude-val">Ok</span>(n) =&gt; <span class="self">self</span>.filled += n,
+<span data-nosnippet>921</span>                <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.kind() == std::io::ErrorKind::Interrupted =&gt; <span class="kw">continue</span>,
+<span data-nosnippet>922</span>                <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">panic!</span>(<span class="string">"io error: {e}"</span>),
+<span data-nosnippet>923</span>            }
+<span data-nosnippet>924</span>            <span class="kw">let </span>(prefix, chunks) = <span class="self">self</span>.buffer[start..<span class="self">self</span>.filled].as_rchunks();
+<span data-nosnippet>925</span>            <span class="kw">let </span>end = prefix.len()
+<span data-nosnippet>926</span>                + <span class="number">8 </span>* chunks
+<span data-nosnippet>927</span>                    .iter()
+<span data-nosnippet>928</span>                    .rposition(|<span class="kw-2">&amp;</span>chunk| {
+<span data-nosnippet>929</span>                        <span class="kw">let </span>x = u64::from_le_bytes(chunk);
+<span data-nosnippet>930</span>                        x.wrapping_sub(<span class="number">0x2121_2121_2121_2121</span>) &amp; !x &amp; <span class="number">0x8080_8080_8080_8080 </span>!= <span class="number">0
+<span data-nosnippet>931</span>                    </span>})
+<span data-nosnippet>932</span>                    .map_or(<span class="number">0</span>, |i| i + <span class="number">1</span>);
+<span data-nosnippet>933</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(end) = <span class="self">self</span>.buffer[start..start + end]
+<span data-nosnippet>934</span>                .iter()
+<span data-nosnippet>935</span>                .rposition(u8::is_ascii_whitespace)
+<span data-nosnippet>936</span>            {
+<span data-nosnippet>937</span>                <span class="self">self</span>.buffer[<span class="self">self</span>.filled..<span class="self">self</span>.filled + <span class="number">16</span>].fill(<span class="string">b' '</span>);
+<span data-nosnippet>938</span>                <span class="self">self</span>.input = FastInput {
+<span data-nosnippet>939</span>                    ptr: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>940</span>                    end: <span class="kw">unsafe </span>{ <span class="self">self</span>.buffer.as_ptr().add(start + end + <span class="number">1</span>) },
+<span data-nosnippet>941</span>                    _marker: PhantomData,
+<span data-nosnippet>942</span>                };
+<span data-nosnippet>943</span>                <span class="kw">return </span><span class="bool-val">true</span>;
+<span data-nosnippet>944</span>            }
+<span data-nosnippet>945</span>            <span class="kw">if </span><span class="self">self</span>.eof {
+<span data-nosnippet>946</span>                <span class="self">self</span>.input = FastInput {
+<span data-nosnippet>947</span>                    ptr: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>948</span>                    end: <span class="self">self</span>.buffer.as_ptr(),
+<span data-nosnippet>949</span>                    _marker: PhantomData,
+<span data-nosnippet>950</span>                };
+<span data-nosnippet>951</span>                <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>952</span>            }
+<span data-nosnippet>953</span>        }
+<span data-nosnippet>954</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.read_vectored" class="method"><span class="rightside"><span class="since" title="Stable since Rust version 1.36.0">1.36.0</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/alloc/io/read.rs.html#182">Source</a></span><h4 class="code-header">fn <a href="#method.read_vectored" class="fn">read_vectored</a>(&amp;mut self, bufs: &amp;mut [<a class="struct" href="https://doc.rust-lang.org/nightly/core/io/io_slice/struct.IoSliceMut.html" title="struct core::io::io_slice::IoSliceMut">IoSliceMut</a>&lt;'_&gt;]) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/core/io/error/struct.Error.html" title="struct core::io::error::Error">Error</a>&gt;</h4></section></summary><div class="docblock"><p>Like <code>read</code>, except that it reads into a slice of buffers.</p>
 <p>Data is copied to fill each buffer in order, with the final buffer
 written to possibly being only partially filled. This method must
 behave equivalently to a single call to <code>read</code> with concatenated

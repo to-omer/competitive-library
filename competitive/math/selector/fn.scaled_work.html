@@ -76,127 +76,135 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">scaled_work</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>selector</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">selector</a></div><h1>Function <span class="fn">scaled_<wbr>work</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/min_plus_convolution/selector.rs.html#150-152">Source</a> </span></div><pre class="rust item-decl"><code>fn scaled_work(factor: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>, work: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[21,24],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#182-185&#34;,&#34;lines 182-185&#34;],[[35,42],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#196-203&#34;,&#34;lines 196-203&#34;],[[51,51],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#212&#34;,&#34;line 212&#34;],[[56,56],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#217&#34;,&#34;line 217&#34;],[[64,64],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#225&#34;,&#34;line 225&#34;],[[76,81],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#237-242&#34;,&#34;lines 237-242&#34;],[[113,113],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#274&#34;,&#34;line 274&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/selector.rs (<a href="../../../src/competitive/math/min_plus_convolution/selector.rs.html#182-185">lines 182-185</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>161</span><span class="kw">fn </span>select_algorithm&lt;T&gt;(
-<span data-nosnippet>162</span>    a_len: usize,
-<span data-nosnippet>163</span>    b_len: usize,
-<span data-nosnippet>164</span>    a_characteristics: <span class="kw-2">&amp;</span>InputCharacteristics&lt;T&gt;,
-<span data-nosnippet>165</span>    b_characteristics: <span class="kw-2">&amp;</span>InputCharacteristics&lt;T&gt;,
-<span data-nosnippet>166</span>) -&gt; Algorithm
-<span data-nosnippet>167</span><span class="kw">where
-<span data-nosnippet>168</span>    </span>T: Signed + TryFrom&lt;usize&gt;,
-<span data-nosnippet>169</span>    T::Unsigned: TryInto&lt;usize&gt;,
-<span data-nosnippet>170</span>{
-<span data-nosnippet>171</span>    <span class="kw">let </span>output = a_len.saturating_add(b_len).saturating_sub(<span class="number">1</span>) <span class="kw">as </span>u128;
-<span data-nosnippet>172</span>    <span class="kw">let </span><span class="kw-2">mut </span>selected = ((a_len <span class="kw">as </span>u128) * (b_len <span class="kw">as </span>u128), Algorithm::Naive);
-<span data-nosnippet>173</span>    <span class="kw">let </span><span class="kw-2">mut </span>consider = |work: u128, algorithm| {
-<span data-nosnippet>174</span>        <span class="kw">if </span>work &lt; selected.<span class="number">0 </span>{
-<span data-nosnippet>175</span>            selected = (work, algorithm);
-<span data-nosnippet>176</span>        }
-<span data-nosnippet>177</span>    };
-<span data-nosnippet>178</span>
-<span data-nosnippet>179</span>    consider(
-<span data-nosnippet>180</span>        <span class="comment">// min_plus/sparse: 50% finite inputs are already over 10% faster than
-<span data-nosnippet>181</span>        // the INF-skipping naive scan, while dense pair enumeration loses.
-<span data-nosnippet>182</span>        </span><span class="highlight focus">scaled_work</span>(
-<span data-nosnippet>183</span>            <span class="number">3</span>,
-<span data-nosnippet>184</span>            (a_characteristics.finite_count <span class="kw">as </span>u128) * (b_characteristics.finite_count <span class="kw">as </span>u128),
-<span data-nosnippet>185</span>        ),
-<span data-nosnippet>186</span>        Algorithm::Sparse,
-<span data-nosnippet>187</span>    );
-<span data-nosnippet>188</span>    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(a_extrema), <span class="prelude-val">Some</span>(b_extrema)) =
-<span data-nosnippet>189</span>        (a_characteristics.extrema, b_characteristics.extrema)
-<span data-nosnippet>190</span>        &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(requirements) =
-<span data-nosnippet>191</span>            bounded_requirements_from_extrema(a_len, b_len, a_extrema, b_extrema)
-<span data-nosnippet>192</span>    {
-<span data-nosnippet>193</span>        <span class="comment">// min_plus/bounded: small transforms need a wider margin for encoding
-<span data-nosnippet>194</span>        // overhead; at 2^20 and above the NTT wins from a lower work ratio.
-<span data-nosnippet>195</span>        </span>consider(
-<span data-nosnippet>196</span>            <span class="highlight">scaled_work</span>(
-<span data-nosnippet>197</span>                <span class="kw">if </span>requirements.transform_len &lt; <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
-<span data-nosnippet>198</span>                    <span class="number">8
-<span data-nosnippet>199</span>                </span>} <span class="kw">else </span>{
-<span data-nosnippet>200</span>                    <span class="number">6
-<span data-nosnippet>201</span>                </span>},
-<span data-nosnippet>202</span>                (requirements.transform_len <span class="kw">as </span>u128) * (requirements.transform_len.ilog2() <span class="kw">as </span>u128),
-<span data-nosnippet>203</span>            ),
-<span data-nosnippet>204</span>            Algorithm::BoundedNtt,
-<span data-nosnippet>205</span>        );
-<span data-nosnippet>206</span>    }
-<span data-nosnippet>207</span>
-<span data-nosnippet>208</span>    <span class="kw">if </span>a_characteristics.is_convex &amp;&amp; b_characteristics.is_convex {
-<span data-nosnippet>209</span>        consider(output, Algorithm::ConvexMerge);
-<span data-nosnippet>210</span>    } <span class="kw">else if </span>a_characteristics.is_convex {
-<span data-nosnippet>211</span>        consider(
-<span data-nosnippet>212</span>            <span class="highlight">scaled_work</span>(<span class="number">2</span>, output),
-<span data-nosnippet>213</span>            Algorithm::ConvexDivideAndConquerLeft,
-<span data-nosnippet>214</span>        );
-<span data-nosnippet>215</span>    } <span class="kw">else if </span>b_characteristics.is_convex {
-<span data-nosnippet>216</span>        consider(
-<span data-nosnippet>217</span>            <span class="highlight">scaled_work</span>(<span class="number">2</span>, output),
-<span data-nosnippet>218</span>            Algorithm::ConvexDivideAndConquerRight,
-<span data-nosnippet>219</span>        );
-<span data-nosnippet>220</span>    }
-<span data-nosnippet>221</span>    <span class="kw">if </span>a_characteristics.is_concave &amp;&amp; b_characteristics.is_concave {
-<span data-nosnippet>222</span>        consider(output, Algorithm::ConcaveBoth);
-<span data-nosnippet>223</span>    } <span class="kw">else if </span>a_characteristics.is_concave || b_characteristics.is_concave {
-<span data-nosnippet>224</span>        consider(
-<span data-nosnippet>225</span>            <span class="highlight">scaled_work</span>(<span class="number">8</span>, output.saturating_mul(output.max(<span class="number">1</span>).ilog2() <span class="kw">as </span>u128 + <span class="number">1</span>)),
-<span data-nosnippet>226</span>            <span class="kw">if </span>a_characteristics.is_concave {
-<span data-nosnippet>227</span>                Algorithm::ConcaveEnvelopeLeft
-<span data-nosnippet>228</span>            } <span class="kw">else </span>{
-<span data-nosnippet>229</span>                Algorithm::ConcaveEnvelopeRight
-<span data-nosnippet>230</span>            },
-<span data-nosnippet>231</span>        );
-<span data-nosnippet>232</span>    }
-<span data-nosnippet>233</span>    <span class="kw">let </span>increasing = a_characteristics.is_nondecreasing &amp;&amp; b_characteristics.is_nondecreasing;
-<span data-nosnippet>234</span>    <span class="kw">let </span>decreasing = a_characteristics.is_nonincreasing &amp;&amp; b_characteristics.is_nonincreasing;
-<span data-nosnippet>235</span>    <span class="kw">if </span>increasing || decreasing {
-<span data-nosnippet>236</span>        consider(
-<span data-nosnippet>237</span>            <span class="highlight">scaled_work</span>(
-<span data-nosnippet>238</span>                <span class="number">4</span>,
-<span data-nosnippet>239</span>                a_characteristics
-<span data-nosnippet>240</span>                    .run_count
-<span data-nosnippet>241</span>                    .saturating_mul(b_characteristics.run_count) <span class="kw">as </span>u128,
-<span data-nosnippet>242</span>            ) + output,
-<span data-nosnippet>243</span>            <span class="kw">if </span>decreasing {
-<span data-nosnippet>244</span>                Algorithm::MonotoneRunsDecreasing
-<span data-nosnippet>245</span>            } <span class="kw">else </span>{
-<span data-nosnippet>246</span>                Algorithm::MonotoneRunsIncreasing
-<span data-nosnippet>247</span>            },
-<span data-nosnippet>248</span>        );
-<span data-nosnippet>249</span>    }
-<span data-nosnippet>250</span>    <span class="kw">let </span>piecewise = <span class="kw">match </span>(
-<span data-nosnippet>251</span>        a_characteristics.finite_count == a_len,
-<span data-nosnippet>252</span>        b_characteristics.finite_count == b_len,
-<span data-nosnippet>253</span>    ) {
-<span data-nosnippet>254</span>        (<span class="bool-val">true</span>, <span class="bool-val">true</span>) <span class="kw">if </span>a_characteristics.piece_count &lt; b_characteristics.piece_count =&gt; {
-<span data-nosnippet>255</span>            <span class="prelude-val">Some</span>((a_characteristics.piece_count, <span class="bool-val">true</span>))
-<span data-nosnippet>256</span>        }
-<span data-nosnippet>257</span>        (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>((b_characteristics.piece_count, <span class="bool-val">false</span>)),
-<span data-nosnippet>258</span>        (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <span class="prelude-val">Some</span>((a_characteristics.piece_count, <span class="bool-val">true</span>)),
-<span data-nosnippet>259</span>        (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>((b_characteristics.piece_count, <span class="bool-val">false</span>)),
-<span data-nosnippet>260</span>        (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; <span class="prelude-val">None</span>,
-<span data-nosnippet>261</span>    };
-<span data-nosnippet>262</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>((pieces, structured_is_left)) = piecewise {
-<span data-nosnippet>263</span>        <span class="kw">if </span>pieces == <span class="number">1 </span>{
-<span data-nosnippet>264</span>            consider(
-<span data-nosnippet>265</span>                output,
-<span data-nosnippet>266</span>                <span class="kw">if </span>structured_is_left {
-<span data-nosnippet>267</span>                    Algorithm::LinearLeft
-<span data-nosnippet>268</span>                } <span class="kw">else </span>{
-<span data-nosnippet>269</span>                    Algorithm::LinearRight
-<span data-nosnippet>270</span>                },
-<span data-nosnippet>271</span>            );
-<span data-nosnippet>272</span>        } <span class="kw">else </span>{
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">scaled_work</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>selector</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">selector</a></div><h1>Function <span class="fn">scaled_<wbr>work</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/min_plus_convolution/selector.rs.html#151-153">Source</a> </span></div><pre class="rust item-decl"><code>fn scaled_work(factor: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>, work: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[21,24],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#183-186&#34;,&#34;lines 183-186&#34;],[[35,42],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#197-204&#34;,&#34;lines 197-204&#34;],[[54,54],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#216&#34;,&#34;line 216&#34;],[[62,62],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#224&#34;,&#34;line 224&#34;],[[72,72],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#234&#34;,&#34;line 234&#34;],[[84,89],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#246-251&#34;,&#34;lines 246-251&#34;],[[121,121],&#34;../../../src/competitive/math/min_plus_convolution/selector.rs.html#283&#34;,&#34;line 283&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/selector.rs (<a href="../../../src/competitive/math/min_plus_convolution/selector.rs.html#183-186">lines 183-186</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>162</span><span class="kw">fn </span>select_algorithm&lt;T&gt;(
+<span data-nosnippet>163</span>    a_len: usize,
+<span data-nosnippet>164</span>    b_len: usize,
+<span data-nosnippet>165</span>    a_characteristics: <span class="kw-2">&amp;</span>InputCharacteristics&lt;T&gt;,
+<span data-nosnippet>166</span>    b_characteristics: <span class="kw-2">&amp;</span>InputCharacteristics&lt;T&gt;,
+<span data-nosnippet>167</span>) -&gt; Algorithm
+<span data-nosnippet>168</span><span class="kw">where
+<span data-nosnippet>169</span>    </span>T: Signed + TryFrom&lt;usize&gt;,
+<span data-nosnippet>170</span>    T::Unsigned: TryInto&lt;usize&gt;,
+<span data-nosnippet>171</span>{
+<span data-nosnippet>172</span>    <span class="kw">let </span>output = a_len.saturating_add(b_len).saturating_sub(<span class="number">1</span>) <span class="kw">as </span>u128;
+<span data-nosnippet>173</span>    <span class="kw">let </span><span class="kw-2">mut </span>selected = ((a_len <span class="kw">as </span>u128) * (b_len <span class="kw">as </span>u128), Algorithm::Naive);
+<span data-nosnippet>174</span>    <span class="kw">let </span><span class="kw-2">mut </span>consider = |work: u128, algorithm| {
+<span data-nosnippet>175</span>        <span class="kw">if </span>work &lt; selected.<span class="number">0 </span>{
+<span data-nosnippet>176</span>            selected = (work, algorithm);
+<span data-nosnippet>177</span>        }
+<span data-nosnippet>178</span>    };
+<span data-nosnippet>179</span>
+<span data-nosnippet>180</span>    consider(
+<span data-nosnippet>181</span>        <span class="comment">// min_plus/sparse: 50% finite inputs are already over 10% faster than
+<span data-nosnippet>182</span>        // the INF-skipping naive scan, while dense pair enumeration loses.
+<span data-nosnippet>183</span>        </span><span class="highlight focus">scaled_work</span>(
+<span data-nosnippet>184</span>            <span class="number">3</span>,
+<span data-nosnippet>185</span>            (a_characteristics.finite_count <span class="kw">as </span>u128) * (b_characteristics.finite_count <span class="kw">as </span>u128),
+<span data-nosnippet>186</span>        ),
+<span data-nosnippet>187</span>        Algorithm::Sparse,
+<span data-nosnippet>188</span>    );
+<span data-nosnippet>189</span>    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(a_extrema), <span class="prelude-val">Some</span>(b_extrema)) =
+<span data-nosnippet>190</span>        (a_characteristics.extrema, b_characteristics.extrema)
+<span data-nosnippet>191</span>        &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(requirements) =
+<span data-nosnippet>192</span>            bounded_requirements_from_extrema(a_len, b_len, a_extrema, b_extrema)
+<span data-nosnippet>193</span>    {
+<span data-nosnippet>194</span>        <span class="comment">// min_plus/bounded: small transforms need a wider margin for encoding
+<span data-nosnippet>195</span>        // overhead; at 2^20 and above the NTT wins from a lower work ratio.
+<span data-nosnippet>196</span>        </span>consider(
+<span data-nosnippet>197</span>            <span class="highlight">scaled_work</span>(
+<span data-nosnippet>198</span>                <span class="kw">if </span>requirements.transform_len &lt; <span class="number">1 </span>&lt;&lt; <span class="number">20 </span>{
+<span data-nosnippet>199</span>                    <span class="number">8
+<span data-nosnippet>200</span>                </span>} <span class="kw">else </span>{
+<span data-nosnippet>201</span>                    <span class="number">6
+<span data-nosnippet>202</span>                </span>},
+<span data-nosnippet>203</span>                (requirements.transform_len <span class="kw">as </span>u128) * (requirements.transform_len.ilog2() <span class="kw">as </span>u128),
+<span data-nosnippet>204</span>            ),
+<span data-nosnippet>205</span>            Algorithm::BoundedNtt,
+<span data-nosnippet>206</span>        );
+<span data-nosnippet>207</span>    }
+<span data-nosnippet>208</span>
+<span data-nosnippet>209</span>    <span class="kw">if </span>a_characteristics.is_convex &amp;&amp; b_characteristics.is_convex {
+<span data-nosnippet>210</span>        consider(output, Algorithm::ConvexMerge);
+<span data-nosnippet>211</span>    } <span class="kw">else if </span>a_characteristics.is_convex
+<span data-nosnippet>212</span>        &amp;&amp; b_characteristics.finite_count == b_len
+<span data-nosnippet>213</span>        &amp;&amp; a_len &gt; CONVEX_NAIVE_CUTOFF
+<span data-nosnippet>214</span>    {
+<span data-nosnippet>215</span>        consider(
+<span data-nosnippet>216</span>            <span class="highlight">scaled_work</span>(<span class="number">2</span>, output),
+<span data-nosnippet>217</span>            Algorithm::ConvexDivideAndConquerLeft,
+<span data-nosnippet>218</span>        );
+<span data-nosnippet>219</span>    } <span class="kw">else if </span>b_characteristics.is_convex
+<span data-nosnippet>220</span>        &amp;&amp; a_characteristics.finite_count == a_len
+<span data-nosnippet>221</span>        &amp;&amp; b_len &gt; CONVEX_NAIVE_CUTOFF
+<span data-nosnippet>222</span>    {
+<span data-nosnippet>223</span>        consider(
+<span data-nosnippet>224</span>            <span class="highlight">scaled_work</span>(<span class="number">2</span>, output),
+<span data-nosnippet>225</span>            Algorithm::ConvexDivideAndConquerRight,
+<span data-nosnippet>226</span>        );
+<span data-nosnippet>227</span>    }
+<span data-nosnippet>228</span>    <span class="kw">if </span>a_characteristics.is_concave &amp;&amp; b_characteristics.is_concave {
+<span data-nosnippet>229</span>        consider(output, Algorithm::ConcaveBoth);
+<span data-nosnippet>230</span>    } <span class="kw">else if </span>(a_characteristics.is_concave &amp;&amp; a_len &gt; CONCAVE_NAIVE_CUTOFF)
+<span data-nosnippet>231</span>        || (b_characteristics.is_concave &amp;&amp; b_len &gt; CONCAVE_NAIVE_CUTOFF)
+<span data-nosnippet>232</span>    {
+<span data-nosnippet>233</span>        consider(
+<span data-nosnippet>234</span>            <span class="highlight">scaled_work</span>(<span class="number">6</span>, output),
+<span data-nosnippet>235</span>            <span class="kw">if </span>a_characteristics.is_concave {
+<span data-nosnippet>236</span>                Algorithm::ConcaveEnvelopeLeft
+<span data-nosnippet>237</span>            } <span class="kw">else </span>{
+<span data-nosnippet>238</span>                Algorithm::ConcaveEnvelopeRight
+<span data-nosnippet>239</span>            },
+<span data-nosnippet>240</span>        );
+<span data-nosnippet>241</span>    }
+<span data-nosnippet>242</span>    <span class="kw">let </span>increasing = a_characteristics.is_nondecreasing &amp;&amp; b_characteristics.is_nondecreasing;
+<span data-nosnippet>243</span>    <span class="kw">let </span>decreasing = a_characteristics.is_nonincreasing &amp;&amp; b_characteristics.is_nonincreasing;
+<span data-nosnippet>244</span>    <span class="kw">if </span>increasing || decreasing {
+<span data-nosnippet>245</span>        consider(
+<span data-nosnippet>246</span>            <span class="highlight">scaled_work</span>(
+<span data-nosnippet>247</span>                <span class="number">4</span>,
+<span data-nosnippet>248</span>                a_characteristics
+<span data-nosnippet>249</span>                    .run_count
+<span data-nosnippet>250</span>                    .saturating_mul(b_characteristics.run_count) <span class="kw">as </span>u128,
+<span data-nosnippet>251</span>            ) + output,
+<span data-nosnippet>252</span>            <span class="kw">if </span>decreasing {
+<span data-nosnippet>253</span>                Algorithm::MonotoneRunsDecreasing
+<span data-nosnippet>254</span>            } <span class="kw">else </span>{
+<span data-nosnippet>255</span>                Algorithm::MonotoneRunsIncreasing
+<span data-nosnippet>256</span>            },
+<span data-nosnippet>257</span>        );
+<span data-nosnippet>258</span>    }
+<span data-nosnippet>259</span>    <span class="kw">let </span>piecewise = <span class="kw">match </span>(
+<span data-nosnippet>260</span>        a_characteristics.finite_count == a_len,
+<span data-nosnippet>261</span>        b_characteristics.finite_count == b_len,
+<span data-nosnippet>262</span>    ) {
+<span data-nosnippet>263</span>        (<span class="bool-val">true</span>, <span class="bool-val">true</span>) <span class="kw">if </span>a_characteristics.piece_count &lt; b_characteristics.piece_count =&gt; {
+<span data-nosnippet>264</span>            <span class="prelude-val">Some</span>((a_characteristics.piece_count, <span class="bool-val">true</span>))
+<span data-nosnippet>265</span>        }
+<span data-nosnippet>266</span>        (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>((b_characteristics.piece_count, <span class="bool-val">false</span>)),
+<span data-nosnippet>267</span>        (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <span class="prelude-val">Some</span>((a_characteristics.piece_count, <span class="bool-val">true</span>)),
+<span data-nosnippet>268</span>        (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>((b_characteristics.piece_count, <span class="bool-val">false</span>)),
+<span data-nosnippet>269</span>        (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; <span class="prelude-val">None</span>,
+<span data-nosnippet>270</span>    };
+<span data-nosnippet>271</span>    <span class="kw">if let </span><span class="prelude-val">Some</span>((pieces, structured_is_left)) = piecewise {
+<span data-nosnippet>272</span>        <span class="kw">if </span>pieces == <span class="number">1 </span>{
 <span data-nosnippet>273</span>            consider(
-<span data-nosnippet>274</span>                <span class="highlight">scaled_work</span>(<span class="number">4</span>, (pieces <span class="kw">as </span>u128).saturating_mul(output)),
+<span data-nosnippet>274</span>                output,
 <span data-nosnippet>275</span>                <span class="kw">if </span>structured_is_left {
-<span data-nosnippet>276</span>                    Algorithm::PiecewiseLinearLeft
+<span data-nosnippet>276</span>                    Algorithm::LinearLeft
 <span data-nosnippet>277</span>                } <span class="kw">else </span>{
-<span data-nosnippet>278</span>                    Algorithm::PiecewiseLinearRight
+<span data-nosnippet>278</span>                    Algorithm::LinearRight
 <span data-nosnippet>279</span>                },
 <span data-nosnippet>280</span>            );
-<span data-nosnippet>281</span>        }
-<span data-nosnippet>282</span>    }
-<span data-nosnippet>283</span>    selected.<span class="number">1
-<span data-nosnippet>284</span></span>}</code></pre></div></div></div></section></div></main></body></html>
+<span data-nosnippet>281</span>        } <span class="kw">else </span>{
+<span data-nosnippet>282</span>            consider(
+<span data-nosnippet>283</span>                <span class="highlight">scaled_work</span>(<span class="number">4</span>, (pieces <span class="kw">as </span>u128).saturating_mul(output)),
+<span data-nosnippet>284</span>                <span class="kw">if </span>structured_is_left {
+<span data-nosnippet>285</span>                    Algorithm::PiecewiseLinearLeft
+<span data-nosnippet>286</span>                } <span class="kw">else </span>{
+<span data-nosnippet>287</span>                    Algorithm::PiecewiseLinearRight
+<span data-nosnippet>288</span>                },
+<span data-nosnippet>289</span>            );
+<span data-nosnippet>290</span>        }
+<span data-nosnippet>291</span>    }
+<span data-nosnippet>292</span>    selected.<span class="number">1
+<span data-nosnippet>293</span></span>}</code></pre></div></div></div></section></div></main></body></html>

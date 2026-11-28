@@ -76,72 +76,84 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">is_concave</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>concave</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">concave</a></div><h1>Function <span class="fn">is_<wbr>concave</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/min_plus_convolution/concave.rs.html#3-10">Source</a> </span></div><pre class="rust item-decl"><code>pub(super) fn is_concave&lt;T&gt;(values: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><div class="where">where
-    T: <a class="trait" href="../../num/integer/trait.Signed.html" title="trait competitive::num::integer::Signed">Signed</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#172&#34;,&#34;line 172&#34;],[[10,10],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#174&#34;,&#34;line 174&#34;],[[63,63],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#227&#34;,&#34;line 227&#34;],[[63,63],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#227&#34;,&#34;line 227&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../src/competitive/math/min_plus_convolution/concave.rs.html#172">line 172</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>164</span><span class="kw">pub fn </span>min_plus_convolution_concave_envelope&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>165</span><span class="kw">where
-<span data-nosnippet>166</span>    </span>T: Signed,
-<span data-nosnippet>167</span>{
-<span data-nosnippet>168</span>    <span class="kw">let </span>len = output_len(a.len(), b.len());
-<span data-nosnippet>169</span>    <span class="kw">if </span>len == <span class="number">0 </span>{
-<span data-nosnippet>170</span>        <span class="kw">return </span>Vec::new();
-<span data-nosnippet>171</span>    }
-<span data-nosnippet>172</span>    <span class="kw">let </span>(arbitrary, concave) = <span class="kw">if </span>!b.iter().any(T::is_maximum) &amp;&amp; <span class="highlight focus">is_concave</span>(b) {
-<span data-nosnippet>173</span>        (a, b)
-<span data-nosnippet>174</span>    } <span class="kw">else if </span>!a.iter().any(T::is_maximum) &amp;&amp; <span class="highlight">is_concave</span>(a) {
-<span data-nosnippet>175</span>        (b, a)
-<span data-nosnippet>176</span>    } <span class="kw">else </span>{
-<span data-nosnippet>177</span>        <span class="macro">panic!</span>(<span class="string">"at least one min-plus convolution input must be finite and concave"</span>)
-<span data-nosnippet>178</span>    };
-<span data-nosnippet>179</span>    concave_envelope(arbitrary, concave)
-<span data-nosnippet>180</span>}
-<span data-nosnippet>181</span>
-<span data-nosnippet>182</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>concave_envelope&lt;T&gt;(arbitrary: <span class="kw-2">&amp;</span>[T], concave: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>183</span><span class="kw">where
-<span data-nosnippet>184</span>    </span>T: Signed,
-<span data-nosnippet>185</span>{
-<span data-nosnippet>186</span>    <span class="kw">if </span>concave.len() == <span class="number">1 </span>{
-<span data-nosnippet>187</span>        <span class="kw">return </span>arbitrary
-<span data-nosnippet>188</span>            .iter()
-<span data-nosnippet>189</span>            .map(|<span class="kw-2">&amp;</span>value| {
-<span data-nosnippet>190</span>                <span class="kw">if </span>value.is_maximum() {
-<span data-nosnippet>191</span>                    T::maximum()
-<span data-nosnippet>192</span>                } <span class="kw">else </span>{
-<span data-nosnippet>193</span>                    value + concave[<span class="number">0</span>]
-<span data-nosnippet>194</span>                }
-<span data-nosnippet>195</span>            })
-<span data-nosnippet>196</span>            .collect();
-<span data-nosnippet>197</span>    }
-<span data-nosnippet>198</span>    <span class="kw">if </span>arbitrary.len() == <span class="number">1 </span>{
-<span data-nosnippet>199</span>        <span class="kw">return if </span>arbitrary[<span class="number">0</span>].is_maximum() {
-<span data-nosnippet>200</span>            <span class="macro">vec!</span>[T::maximum(); concave.len()]
-<span data-nosnippet>201</span>        } <span class="kw">else </span>{
-<span data-nosnippet>202</span>            concave.iter().map(|<span class="kw-2">&amp;</span>value| arbitrary[<span class="number">0</span>] + value).collect()
-<span data-nosnippet>203</span>        };
-<span data-nosnippet>204</span>    }
-<span data-nosnippet>205</span>
-<span data-nosnippet>206</span>    ConcaveEnvelope::new(arbitrary, concave).convolve()
-<span data-nosnippet>207</span>}
-<span data-nosnippet>208</span>
-<span data-nosnippet>209</span><span class="doccomment">/// Computes convolution of two concave inputs from antidiagonal endpoints.
-<span data-nosnippet>210</span>///
-<span data-nosnippet>211</span>/// The running time is `O(n + m)`.
-<span data-nosnippet>212</span>///
-<span data-nosnippet>213</span>/// # Panics
-<span data-nosnippet>214</span>///
-<span data-nosnippet>215</span>/// Panics unless both inputs are finite and concave.
-<span data-nosnippet>216</span></span><span class="kw">pub fn </span>min_plus_convolution_concave_both&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>217</span><span class="kw">where
-<span data-nosnippet>218</span>    </span>T: Signed,
-<span data-nosnippet>219</span>{
-<span data-nosnippet>220</span>    <span class="kw">let </span>len = output_len(a.len(), b.len());
-<span data-nosnippet>221</span>    <span class="kw">if </span>len == <span class="number">0 </span>{
-<span data-nosnippet>222</span>        <span class="kw">return </span>Vec::new();
-<span data-nosnippet>223</span>    }
-<span data-nosnippet>224</span>    assert_finite(a);
-<span data-nosnippet>225</span>    assert_finite(b);
-<span data-nosnippet>226</span>    <span class="macro">assert!</span>(
-<span data-nosnippet>227</span>        <span class="highlight">is_concave</span>(a) &amp;&amp; <span class="highlight">is_concave</span>(b),
-<span data-nosnippet>228</span>        <span class="string">"both inputs must be concave"
-<span data-nosnippet>229</span>    </span>);
-<span data-nosnippet>230</span>    concave_both(a, b)
-<span data-nosnippet>231</span>}</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">is_concave</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>concave</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">concave</a></div><h1>Function <span class="fn">is_<wbr>concave</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/min_plus_convolution/concave.rs.html#6-17">Source</a> </span></div><pre class="rust item-decl"><code>pub(super) fn is_concave&lt;T&gt;(values: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><div class="where">where
+    T: <a class="trait" href="../../num/integer/trait.Signed.html" title="trait competitive::num::integer::Signed">Signed</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#35&#34;,&#34;line 35&#34;],[[10,10],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#37&#34;,&#34;line 37&#34;],[[75,75],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#102&#34;,&#34;line 102&#34;],[[75,75],&#34;../../../src/competitive/math/min_plus_convolution/concave.rs.html#102&#34;,&#34;line 102&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/concave.rs (<a href="../../../src/competitive/math/min_plus_convolution/concave.rs.html#35">line 35</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>27</span><span class="kw">pub fn </span>min_plus_convolution_concave_envelope&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>28</span><span class="kw">where
+<span data-nosnippet>29</span>    </span>T: Signed,
+<span data-nosnippet>30</span>{
+<span data-nosnippet>31</span>    <span class="kw">let </span>len = output_len(a.len(), b.len());
+<span data-nosnippet>32</span>    <span class="kw">if </span>len == <span class="number">0 </span>{
+<span data-nosnippet>33</span>        <span class="kw">return </span>Vec::new();
+<span data-nosnippet>34</span>    }
+<span data-nosnippet>35</span>    <span class="kw">let </span>(arbitrary, concave) = <span class="kw">if </span>!b.iter().any(T::is_maximum) &amp;&amp; <span class="highlight focus">is_concave</span>(b) {
+<span data-nosnippet>36</span>        (a, b)
+<span data-nosnippet>37</span>    } <span class="kw">else if </span>!a.iter().any(T::is_maximum) &amp;&amp; <span class="highlight">is_concave</span>(a) {
+<span data-nosnippet>38</span>        (b, a)
+<span data-nosnippet>39</span>    } <span class="kw">else </span>{
+<span data-nosnippet>40</span>        <span class="macro">panic!</span>(<span class="string">"at least one min-plus convolution input must be finite and concave"</span>)
+<span data-nosnippet>41</span>    };
+<span data-nosnippet>42</span>    concave_envelope(arbitrary, concave)
+<span data-nosnippet>43</span>}
+<span data-nosnippet>44</span>
+<span data-nosnippet>45</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>concave_envelope&lt;T&gt;(arbitrary: <span class="kw-2">&amp;</span>[T], concave: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>46</span><span class="kw">where
+<span data-nosnippet>47</span>    </span>T: Signed,
+<span data-nosnippet>48</span>{
+<span data-nosnippet>49</span>    <span class="kw">if </span>concave.len() == <span class="number">1 </span>{
+<span data-nosnippet>50</span>        <span class="kw">return </span>arbitrary
+<span data-nosnippet>51</span>            .iter()
+<span data-nosnippet>52</span>            .map(|<span class="kw-2">&amp;</span>value| {
+<span data-nosnippet>53</span>                <span class="kw">if </span>value.is_maximum() {
+<span data-nosnippet>54</span>                    T::maximum()
+<span data-nosnippet>55</span>                } <span class="kw">else </span>{
+<span data-nosnippet>56</span>                    value + concave[<span class="number">0</span>]
+<span data-nosnippet>57</span>                }
+<span data-nosnippet>58</span>            })
+<span data-nosnippet>59</span>            .collect();
+<span data-nosnippet>60</span>    }
+<span data-nosnippet>61</span>    <span class="kw">if </span>arbitrary.len() == <span class="number">1 </span>{
+<span data-nosnippet>62</span>        <span class="kw">return if </span>arbitrary[<span class="number">0</span>].is_maximum() {
+<span data-nosnippet>63</span>            <span class="macro">vec!</span>[T::maximum(); concave.len()]
+<span data-nosnippet>64</span>        } <span class="kw">else </span>{
+<span data-nosnippet>65</span>            concave.iter().map(|<span class="kw-2">&amp;</span>value| arbitrary[<span class="number">0</span>] + value).collect()
+<span data-nosnippet>66</span>        };
+<span data-nosnippet>67</span>    }
+<span data-nosnippet>68</span>
+<span data-nosnippet>69</span>    <span class="kw">let </span>n = concave.len();
+<span data-nosnippet>70</span>    <span class="kw">if </span>n &lt;= CONCAVE_NAIVE_CUTOFF || arbitrary.len() == <span class="number">2 </span>{
+<span data-nosnippet>71</span>        <span class="kw">return </span>min_plus_convolution_naive(arbitrary, concave);
+<span data-nosnippet>72</span>    }
+<span data-nosnippet>73</span>    <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="macro">vec!</span>[T::maximum(); output_len(arbitrary.len(), n)];
+<span data-nosnippet>74</span>    <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::new();
+<span data-nosnippet>75</span>    <span class="kw">let </span><span class="kw-2">mut </span>ranks = <span class="prelude-val">None</span>;
+<span data-nosnippet>76</span>    <span class="kw">for </span>(block, values) <span class="kw">in </span>arbitrary.chunks(n).enumerate() {
+<span data-nosnippet>77</span>        <span class="kw">let </span>output = <span class="kw-2">&amp;mut </span>result[block * n..][..n + values.len() - <span class="number">1</span>];
+<span data-nosnippet>78</span>        sweep::&lt;<span class="bool-val">false</span>, <span class="kw">_</span>&gt;(concave, values, <span class="kw-2">&amp;mut </span>output[..n], <span class="kw-2">&amp;mut </span>stack, <span class="kw-2">&amp;mut </span>ranks);
+<span data-nosnippet>79</span>        sweep::&lt;<span class="bool-val">true</span>, <span class="kw">_</span>&gt;(concave, values, <span class="kw-2">&amp;mut </span>output[n..], <span class="kw-2">&amp;mut </span>stack, <span class="kw-2">&amp;mut </span>ranks);
+<span data-nosnippet>80</span>    }
+<span data-nosnippet>81</span>    result
+<span data-nosnippet>82</span>}
+<span data-nosnippet>83</span>
+<span data-nosnippet>84</span><span class="doccomment">/// Computes convolution of two concave inputs from antidiagonal endpoints.
+<span data-nosnippet>85</span>///
+<span data-nosnippet>86</span>/// The running time is `O(n + m)`.
+<span data-nosnippet>87</span>///
+<span data-nosnippet>88</span>/// # Panics
+<span data-nosnippet>89</span>///
+<span data-nosnippet>90</span>/// Panics unless both inputs are finite and concave.
+<span data-nosnippet>91</span></span><span class="kw">pub fn </span>min_plus_convolution_concave_both&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>92</span><span class="kw">where
+<span data-nosnippet>93</span>    </span>T: Signed,
+<span data-nosnippet>94</span>{
+<span data-nosnippet>95</span>    <span class="kw">let </span>len = output_len(a.len(), b.len());
+<span data-nosnippet>96</span>    <span class="kw">if </span>len == <span class="number">0 </span>{
+<span data-nosnippet>97</span>        <span class="kw">return </span>Vec::new();
+<span data-nosnippet>98</span>    }
+<span data-nosnippet>99</span>    assert_finite(a);
+<span data-nosnippet>100</span>    assert_finite(b);
+<span data-nosnippet>101</span>    <span class="macro">assert!</span>(
+<span data-nosnippet>102</span>        <span class="highlight">is_concave</span>(a) &amp;&amp; <span class="highlight">is_concave</span>(b),
+<span data-nosnippet>103</span>        <span class="string">"both inputs must be concave"
+<span data-nosnippet>104</span>    </span>);
+<span data-nosnippet>105</span>    concave_both(a, b)
+<span data-nosnippet>106</span>}</code></pre></div></div></div></section></div></main></body></html>

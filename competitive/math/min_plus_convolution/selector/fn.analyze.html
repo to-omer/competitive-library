@@ -76,56 +76,56 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">analyze</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>min_<wbr>plus_<wbr>convolution::<wbr>selector</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">min_plus_convolution</a>::<wbr><a href="index.html">selector</a></div><h1>Function <span class="fn">analyze</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/min_plus_convolution/selector.rs.html#41-116">Source</a> </span></div><pre class="rust item-decl"><code>fn analyze&lt;T&gt;(values: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="struct" href="../../selector/struct.InputCharacteristics.html" title="struct competitive::math::selector::InputCharacteristics">InputCharacteristics</a>&lt;T&gt;<div class="where">where
-    T: <a class="trait" href="../../../num/integer/trait.Signed.html" title="trait competitive::num::integer::Signed">Signed</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../../src/competitive/math/min_plus_convolution/selector.rs.html#301&#34;,&#34;line 301&#34;],[[9,9],&#34;../../../../src/competitive/math/min_plus_convolution/selector.rs.html#302&#34;,&#34;line 302&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/selector.rs (<a href="../../../../src/competitive/math/min_plus_convolution/selector.rs.html#301">line 301</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>293</span><span class="kw">pub fn </span>min_plus_convolution&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>294</span><span class="kw">where
-<span data-nosnippet>295</span>    </span>T: Signed + TryFrom&lt;usize&gt;,
-<span data-nosnippet>296</span>    T::Unsigned: TryInto&lt;usize&gt;,
-<span data-nosnippet>297</span>{
-<span data-nosnippet>298</span>    <span class="kw">if </span>(a.len() <span class="kw">as </span>u128) * (b.len() <span class="kw">as </span>u128) &lt;= SMALL_PAIR_COUNT {
-<span data-nosnippet>299</span>        <span class="kw">return </span>min_plus_convolution_naive(a, b);
-<span data-nosnippet>300</span>    }
-<span data-nosnippet>301</span>    <span class="kw">let </span>a_characteristics = <span class="highlight focus">analyze</span>(a);
-<span data-nosnippet>302</span>    <span class="kw">let </span>distinct_b_characteristics = (!std::ptr::eq(a, b)).then(|| <span class="highlight">analyze</span>(b));
-<span data-nosnippet>303</span>    <span class="kw">let </span>b_characteristics = distinct_b_characteristics
-<span data-nosnippet>304</span>        .as_ref()
-<span data-nosnippet>305</span>        .unwrap_or(<span class="kw-2">&amp;</span>a_characteristics);
-<span data-nosnippet>306</span>    <span class="kw">match </span>select_algorithm(a.len(), b.len(), <span class="kw-2">&amp;</span>a_characteristics, b_characteristics) {
-<span data-nosnippet>307</span>        Algorithm::Naive =&gt; min_plus_convolution_naive(a, b),
-<span data-nosnippet>308</span>        Algorithm::Sparse =&gt; {
-<span data-nosnippet>309</span>            <span class="kw">let </span>a_entries = a[..a_characteristics.finite_prefix_len]
-<span data-nosnippet>310</span>                .iter()
-<span data-nosnippet>311</span>                .copied()
-<span data-nosnippet>312</span>                .enumerate()
-<span data-nosnippet>313</span>                .chain(a_characteristics.finite_entries.iter().copied());
-<span data-nosnippet>314</span>            <span class="kw">let </span>b_entries = b[..b_characteristics.finite_prefix_len]
-<span data-nosnippet>315</span>                .iter()
-<span data-nosnippet>316</span>                .copied()
-<span data-nosnippet>317</span>                .enumerate()
-<span data-nosnippet>318</span>                .chain(b_characteristics.finite_entries.iter().copied());
-<span data-nosnippet>319</span>            sparse(a_entries, b_entries, output_len(a.len(), b.len()))
-<span data-nosnippet>320</span>        }
-<span data-nosnippet>321</span>        Algorithm::BoundedNtt =&gt; min_plus_convolution_bounded_ntt(a, b),
-<span data-nosnippet>322</span>        Algorithm::ConvexDivideAndConquerLeft =&gt; convex::convex_divide_and_conquer(b, a),
-<span data-nosnippet>323</span>        Algorithm::ConvexDivideAndConquerRight =&gt; convex::convex_divide_and_conquer(a, b),
-<span data-nosnippet>324</span>        Algorithm::ConvexMerge =&gt; convex::convex_merge(a, b),
-<span data-nosnippet>325</span>        Algorithm::ConcaveEnvelopeLeft =&gt; concave::concave_envelope(b, a),
-<span data-nosnippet>326</span>        Algorithm::ConcaveEnvelopeRight =&gt; concave::concave_envelope(a, b),
-<span data-nosnippet>327</span>        Algorithm::ConcaveBoth =&gt; concave::concave_both(a, b),
-<span data-nosnippet>328</span>        algorithm @ (Algorithm::MonotoneRunsIncreasing | Algorithm::MonotoneRunsDecreasing) =&gt; {
-<span data-nosnippet>329</span>            <span class="kw">let </span>increasing = algorithm == Algorithm::MonotoneRunsIncreasing;
-<span data-nosnippet>330</span>            <span class="kw">if let </span>(<span class="prelude-val">Some</span>(a_runs), <span class="prelude-val">Some</span>(b_runs)) = (
-<span data-nosnippet>331</span>                <span class="kw-2">&amp;</span>a_characteristics.run_entries,
-<span data-nosnippet>332</span>                <span class="kw-2">&amp;</span>b_characteristics.run_entries,
-<span data-nosnippet>333</span>            ) {
-<span data-nosnippet>334</span>                monotone::monotone_runs_from_entries(a_runs, b_runs, a.len(), b.len(), increasing)
-<span data-nosnippet>335</span>            } <span class="kw">else </span>{
-<span data-nosnippet>336</span>                monotone::monotone_runs(a, b, increasing)
-<span data-nosnippet>337</span>            }
-<span data-nosnippet>338</span>        }
-<span data-nosnippet>339</span>        Algorithm::LinearLeft =&gt; piecewise_linear::linear(b, a),
-<span data-nosnippet>340</span>        Algorithm::LinearRight =&gt; piecewise_linear::linear(a, b),
-<span data-nosnippet>341</span>        Algorithm::PiecewiseLinearLeft =&gt; piecewise_linear::piecewise_linear(b, a),
-<span data-nosnippet>342</span>        Algorithm::PiecewiseLinearRight =&gt; piecewise_linear::piecewise_linear(a, b),
-<span data-nosnippet>343</span>    }
-<span data-nosnippet>344</span>}</code></pre></div></div></div></section></div></main></body></html>
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">analyze</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>min_<wbr>plus_<wbr>convolution::<wbr>selector</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">min_plus_convolution</a>::<wbr><a href="index.html">selector</a></div><h1>Function <span class="fn">analyze</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/min_plus_convolution/selector.rs.html#42-117">Source</a> </span></div><pre class="rust item-decl"><code>fn analyze&lt;T&gt;(values: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="struct" href="../../selector/struct.InputCharacteristics.html" title="struct competitive::math::selector::InputCharacteristics">InputCharacteristics</a>&lt;T&gt;<div class="where">where
+    T: <a class="trait" href="../../../num/integer/trait.Signed.html" title="trait competitive::num::integer::Signed">Signed</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../../../src/competitive/math/min_plus_convolution/selector.rs.html#310&#34;,&#34;line 310&#34;],[[9,9],&#34;../../../../src/competitive/math/min_plus_convolution/selector.rs.html#311&#34;,&#34;line 311&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/selector.rs (<a href="../../../../src/competitive/math/min_plus_convolution/selector.rs.html#310">line 310</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>302</span><span class="kw">pub fn </span>min_plus_convolution&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>303</span><span class="kw">where
+<span data-nosnippet>304</span>    </span>T: Signed + TryFrom&lt;usize&gt;,
+<span data-nosnippet>305</span>    T::Unsigned: TryInto&lt;usize&gt;,
+<span data-nosnippet>306</span>{
+<span data-nosnippet>307</span>    <span class="kw">if </span>(a.len() <span class="kw">as </span>u128) * (b.len() <span class="kw">as </span>u128) &lt;= SMALL_PAIR_COUNT {
+<span data-nosnippet>308</span>        <span class="kw">return </span>min_plus_convolution_naive(a, b);
+<span data-nosnippet>309</span>    }
+<span data-nosnippet>310</span>    <span class="kw">let </span>a_characteristics = <span class="highlight focus">analyze</span>(a);
+<span data-nosnippet>311</span>    <span class="kw">let </span>distinct_b_characteristics = (!std::ptr::eq(a, b)).then(|| <span class="highlight">analyze</span>(b));
+<span data-nosnippet>312</span>    <span class="kw">let </span>b_characteristics = distinct_b_characteristics
+<span data-nosnippet>313</span>        .as_ref()
+<span data-nosnippet>314</span>        .unwrap_or(<span class="kw-2">&amp;</span>a_characteristics);
+<span data-nosnippet>315</span>    <span class="kw">match </span>select_algorithm(a.len(), b.len(), <span class="kw-2">&amp;</span>a_characteristics, b_characteristics) {
+<span data-nosnippet>316</span>        Algorithm::Naive =&gt; min_plus_convolution_naive(a, b),
+<span data-nosnippet>317</span>        Algorithm::Sparse =&gt; {
+<span data-nosnippet>318</span>            <span class="kw">let </span>a_entries = a[..a_characteristics.finite_prefix_len]
+<span data-nosnippet>319</span>                .iter()
+<span data-nosnippet>320</span>                .copied()
+<span data-nosnippet>321</span>                .enumerate()
+<span data-nosnippet>322</span>                .chain(a_characteristics.finite_entries.iter().copied());
+<span data-nosnippet>323</span>            <span class="kw">let </span>b_entries = b[..b_characteristics.finite_prefix_len]
+<span data-nosnippet>324</span>                .iter()
+<span data-nosnippet>325</span>                .copied()
+<span data-nosnippet>326</span>                .enumerate()
+<span data-nosnippet>327</span>                .chain(b_characteristics.finite_entries.iter().copied());
+<span data-nosnippet>328</span>            sparse(a_entries, b_entries, output_len(a.len(), b.len()))
+<span data-nosnippet>329</span>        }
+<span data-nosnippet>330</span>        Algorithm::BoundedNtt =&gt; min_plus_convolution_bounded_ntt(a, b),
+<span data-nosnippet>331</span>        Algorithm::ConvexDivideAndConquerLeft =&gt; convex::convex_divide_and_conquer(b, a),
+<span data-nosnippet>332</span>        Algorithm::ConvexDivideAndConquerRight =&gt; convex::convex_divide_and_conquer(a, b),
+<span data-nosnippet>333</span>        Algorithm::ConvexMerge =&gt; convex::convex_merge(a, b),
+<span data-nosnippet>334</span>        Algorithm::ConcaveEnvelopeLeft =&gt; concave::concave_envelope(b, a),
+<span data-nosnippet>335</span>        Algorithm::ConcaveEnvelopeRight =&gt; concave::concave_envelope(a, b),
+<span data-nosnippet>336</span>        Algorithm::ConcaveBoth =&gt; concave::concave_both(a, b),
+<span data-nosnippet>337</span>        algorithm @ (Algorithm::MonotoneRunsIncreasing | Algorithm::MonotoneRunsDecreasing) =&gt; {
+<span data-nosnippet>338</span>            <span class="kw">let </span>increasing = algorithm == Algorithm::MonotoneRunsIncreasing;
+<span data-nosnippet>339</span>            <span class="kw">if let </span>(<span class="prelude-val">Some</span>(a_runs), <span class="prelude-val">Some</span>(b_runs)) = (
+<span data-nosnippet>340</span>                <span class="kw-2">&amp;</span>a_characteristics.run_entries,
+<span data-nosnippet>341</span>                <span class="kw-2">&amp;</span>b_characteristics.run_entries,
+<span data-nosnippet>342</span>            ) {
+<span data-nosnippet>343</span>                monotone::monotone_runs_from_entries(a_runs, b_runs, a.len(), b.len(), increasing)
+<span data-nosnippet>344</span>            } <span class="kw">else </span>{
+<span data-nosnippet>345</span>                monotone::monotone_runs(a, b, increasing)
+<span data-nosnippet>346</span>            }
+<span data-nosnippet>347</span>        }
+<span data-nosnippet>348</span>        Algorithm::LinearLeft =&gt; piecewise_linear::linear(b, a),
+<span data-nosnippet>349</span>        Algorithm::LinearRight =&gt; piecewise_linear::linear(a, b),
+<span data-nosnippet>350</span>        Algorithm::PiecewiseLinearLeft =&gt; piecewise_linear::piecewise_linear(b, a),
+<span data-nosnippet>351</span>        Algorithm::PiecewiseLinearRight =&gt; piecewise_linear::piecewise_linear(a, b),
+<span data-nosnippet>352</span>    }
+<span data-nosnippet>353</span>}</code></pre></div></div></div></section></div></main></body></html>

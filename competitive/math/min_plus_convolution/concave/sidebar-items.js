@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["bit_width","concave_both","concave_envelope","is_concave","min_plus_convolution_concave_both","min_plus_convolution_concave_envelope"],"struct":["ConcaveEnvelope"]};
+window.SIDEBAR_ITEMS = {"fn":["concave_both","concave_envelope","is_concave","min_plus_convolution_concave_both","min_plus_convolution_concave_envelope","sweep"],"struct":["SlopeRanks"]};

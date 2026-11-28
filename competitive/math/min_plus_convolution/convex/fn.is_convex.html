@@ -76,40 +76,40 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">is_convex</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>min_<wbr>plus_<wbr>convolution::<wbr>convex</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">min_plus_convolution</a>::<wbr><a href="index.html">convex</a></div><h1>Function <span class="fn">is_<wbr>convex</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/min_plus_convolution/convex.rs.html#7-14">Source</a> </span></div><pre class="rust item-decl"><code>pub(super) fn is_convex&lt;T&gt;(values: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><div class="where">where
-    T: <a class="trait" href="../../../num/integer/trait.Signed.html" title="trait competitive::num::integer::Signed">Signed</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#20&#34;,&#34;line 20&#34;],[[6,6],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#22&#34;,&#34;line 22&#34;],[[30,30],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#46&#34;,&#34;line 46&#34;],[[30,30],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#46&#34;,&#34;line 46&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/convex.rs (<a href="../../../../src/competitive/math/min_plus_convolution/convex.rs.html#20">line 20</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>16</span><span class="kw">fn </span>orient_one_convex&lt;<span class="lifetime">'a</span>, T&gt;(a: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T], b: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; (<span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T], <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T])
-<span data-nosnippet>17</span><span class="kw">where
-<span data-nosnippet>18</span>    </span>T: Signed,
-<span data-nosnippet>19</span>{
-<span data-nosnippet>20</span>    <span class="kw">if </span><span class="highlight focus">is_convex</span>(b) {
-<span data-nosnippet>21</span>        (a, b)
-<span data-nosnippet>22</span>    } <span class="kw">else if </span><span class="highlight">is_convex</span>(a) {
-<span data-nosnippet>23</span>        (b, a)
-<span data-nosnippet>24</span>    } <span class="kw">else </span>{
-<span data-nosnippet>25</span>        <span class="macro">panic!</span>(<span class="string">"at least one min-plus convolution input must be convex"</span>)
-<span data-nosnippet>26</span>    }
-<span data-nosnippet>27</span>}
-<span data-nosnippet>28</span>
-<span data-nosnippet>29</span><span class="doccomment">/// Computes convolution of two convex inputs by merging their slope sequences.
-<span data-nosnippet>30</span>///
-<span data-nosnippet>31</span>/// The running time is `O(n + m)`.
-<span data-nosnippet>32</span>///
-<span data-nosnippet>33</span>/// # Panics
-<span data-nosnippet>34</span>///
-<span data-nosnippet>35</span>/// Panics unless both inputs are finite and convex.
-<span data-nosnippet>36</span></span><span class="kw">pub fn </span>min_plus_convolution_convex_merge&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
-<span data-nosnippet>37</span><span class="kw">where
-<span data-nosnippet>38</span>    </span>T: Signed,
-<span data-nosnippet>39</span>{
-<span data-nosnippet>40</span>    <span class="kw">let </span>len = output_len(a.len(), b.len());
-<span data-nosnippet>41</span>    <span class="kw">if </span>len == <span class="number">0 </span>{
-<span data-nosnippet>42</span>        <span class="kw">return </span>Vec::new();
-<span data-nosnippet>43</span>    }
-<span data-nosnippet>44</span>    assert_finite(a);
-<span data-nosnippet>45</span>    assert_finite(b);
-<span data-nosnippet>46</span>    <span class="macro">assert!</span>(<span class="highlight">is_convex</span>(a) &amp;&amp; <span class="highlight">is_convex</span>(b), <span class="string">"both inputs must be convex"</span>);
-<span data-nosnippet>47</span>    convex_merge(a, b)
-<span data-nosnippet>48</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../../src/competitive/math/min_plus_convolution/near_convex.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/near_convex.rs (<a href="../../../../src/competitive/math/min_plus_convolution/near_convex.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">fn </span>validate_witness&lt;T&gt;(values: <span class="kw-2">&amp;</span>[T], witness: <span class="kw-2">&amp;</span>[T], delta: T)
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">is_convex</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>min_<wbr>plus_<wbr>convolution::<wbr>convex</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">min_plus_convolution</a>::<wbr><a href="index.html">convex</a></div><h1>Function <span class="fn">is_<wbr>convex</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/min_plus_convolution/convex.rs.html#4-15">Source</a> </span></div><pre class="rust item-decl"><code>pub(super) fn is_convex&lt;T&gt;(values: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><div class="where">where
+    T: <a class="trait" href="../../../num/integer/trait.Signed.html" title="trait competitive::num::integer::Signed">Signed</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#21&#34;,&#34;line 21&#34;],[[6,6],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#23&#34;,&#34;line 23&#34;],[[30,30],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#47&#34;,&#34;line 47&#34;],[[30,30],&#34;../../../../src/competitive/math/min_plus_convolution/convex.rs.html#47&#34;,&#34;line 47&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/convex.rs (<a href="../../../../src/competitive/math/min_plus_convolution/convex.rs.html#21">line 21</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>17</span><span class="kw">fn </span>orient_one_convex&lt;<span class="lifetime">'a</span>, T&gt;(a: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T], b: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; (<span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T], <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T])
+<span data-nosnippet>18</span><span class="kw">where
+<span data-nosnippet>19</span>    </span>T: Signed,
+<span data-nosnippet>20</span>{
+<span data-nosnippet>21</span>    <span class="kw">if </span><span class="highlight focus">is_convex</span>(b) {
+<span data-nosnippet>22</span>        (a, b)
+<span data-nosnippet>23</span>    } <span class="kw">else if </span><span class="highlight">is_convex</span>(a) {
+<span data-nosnippet>24</span>        (b, a)
+<span data-nosnippet>25</span>    } <span class="kw">else </span>{
+<span data-nosnippet>26</span>        <span class="macro">panic!</span>(<span class="string">"at least one min-plus convolution input must be convex"</span>)
+<span data-nosnippet>27</span>    }
+<span data-nosnippet>28</span>}
+<span data-nosnippet>29</span>
+<span data-nosnippet>30</span><span class="doccomment">/// Computes convolution of two convex inputs by merging their slope sequences.
+<span data-nosnippet>31</span>///
+<span data-nosnippet>32</span>/// The running time is `O(n + m)`.
+<span data-nosnippet>33</span>///
+<span data-nosnippet>34</span>/// # Panics
+<span data-nosnippet>35</span>///
+<span data-nosnippet>36</span>/// Panics unless both inputs are finite and convex.
+<span data-nosnippet>37</span></span><span class="kw">pub fn </span>min_plus_convolution_convex_merge&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>38</span><span class="kw">where
+<span data-nosnippet>39</span>    </span>T: Signed,
+<span data-nosnippet>40</span>{
+<span data-nosnippet>41</span>    <span class="kw">let </span>len = output_len(a.len(), b.len());
+<span data-nosnippet>42</span>    <span class="kw">if </span>len == <span class="number">0 </span>{
+<span data-nosnippet>43</span>        <span class="kw">return </span>Vec::new();
+<span data-nosnippet>44</span>    }
+<span data-nosnippet>45</span>    assert_finite(a);
+<span data-nosnippet>46</span>    assert_finite(b);
+<span data-nosnippet>47</span>    <span class="macro">assert!</span>(<span class="highlight">is_convex</span>(a) &amp;&amp; <span class="highlight">is_convex</span>(b), <span class="string">"both inputs must be convex"</span>);
+<span data-nosnippet>48</span>    convex_merge(a, b)
+<span data-nosnippet>49</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../../src/competitive/math/min_plus_convolution/near_convex.rs.html#15&#34;,&#34;line 15&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/min_plus_convolution/near_convex.rs (<a href="../../../../src/competitive/math/min_plus_convolution/near_convex.rs.html#15">line 15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">fn </span>validate_witness&lt;T&gt;(values: <span class="kw-2">&amp;</span>[T], witness: <span class="kw-2">&amp;</span>[T], delta: T)
 <span data-nosnippet>4</span><span class="kw">where
 <span data-nosnippet>5</span>    </span>T: Signed,
 <span data-nosnippet>6</span>{
