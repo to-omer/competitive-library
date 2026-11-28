@@ -190,7 +190,10 @@ impl<'input> FastInput<'input> {
         unsafe {
             #[cfg(target_arch = "x86_64")]
             if count >= 544 && std::is_x86_feature_detected!("avx2") {
-                self.extend_u32_avx2(values, count);
+                let start = values.len();
+                let written =
+                    self.extend_decimal_avx2::<false>(values.as_mut_ptr().add(start), count);
+                values.set_len(start + written);
             }
             while values.len() < end {
                 values.push(self.u32());
@@ -200,13 +203,59 @@ impl<'input> FastInput<'input> {
 
     #[cfg(target_arch = "x86_64")]
     #[target_feature(enable = "avx2")]
-    unsafe fn extend_u32_avx2(&mut self, values: &mut Vec<u32>, count: usize) {
+    unsafe fn extend_decimal_avx2<const SIGNED: bool>(
+        &mut self,
+        dst: *mut u32,
+        count: usize,
+    ) -> usize {
         use std::arch::x86_64::*;
         const CHUNK: usize = 1 << 17;
         const CAPACITY: usize = CHUNK / 8 + 16;
+        const PATTERNS: [(u128, u128); 12] = const {
+            let mut patterns = [(0, 0); 12];
+            let mut s = 2;
+            while s <= 11 {
+                let mask = (1u128 << (8 * s)) - 1;
+                patterns[s] = (mask, (mask / ((1 << s) - 1)) << (s - 1));
+                s += 1;
+            }
+            patterns
+        };
         #[inline]
         #[target_feature(enable = "avx2")]
-        unsafe fn two_tokens(input: &mut *const u8) -> __m256i {
+        fn groups<const SIGNED: bool>(windows: __m256i, rows: __m256i) -> __m256i {
+            let digits = _mm256_shuffle_epi8(
+                _mm256_subs_epu8(windows, _mm256_set1_epi8(b'0' as i8)),
+                rows,
+            );
+            let groups = _mm256_madd_epi16(
+                _mm256_maddubs_epi16(digits, _mm256_set1_epi16(0x010a)),
+                _mm256_set1_epi32(0x00010064),
+            );
+            if SIGNED {
+                let first =
+                    _mm256_and_si256(_mm256_shuffle_epi32::<0>(windows), _mm256_set1_epi32(255));
+                _mm256_sign_epi32(
+                    groups,
+                    _mm256_sub_epi32(first, _mm256_set1_epi32(i32::from(b'0') - 1)),
+                )
+            } else {
+                groups
+            }
+        }
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        fn combine(g0: __m256i, g1: __m256i, g2: __m256i, g3: __m256i) -> __m256i {
+            let k = _mm256_set1_epi32(0x00012710);
+            let h01 = _mm256_castsi256_ps(_mm256_madd_epi16(_mm256_packs_epi32(g0, g1), k));
+            let h23 = _mm256_castsi256_ps(_mm256_madd_epi16(_mm256_packs_epi32(g2, g3), k));
+            let high = _mm256_castps_si256(_mm256_shuffle_ps::<0x88>(h01, h23));
+            let low = _mm256_castps_si256(_mm256_shuffle_ps::<0xdd>(h01, h23));
+            _mm256_add_epi32(_mm256_mullo_epi32(high, _mm256_set1_epi32(100000000)), low)
+        }
+        #[inline]
+        #[target_feature(enable = "avx2")]
+        unsafe fn two_tokens<const SIGNED: bool>(input: &mut *const u8) -> __m256i {
             unsafe {
                 let bytes = _mm256_loadu_si256((*input).cast());
                 let separators =
@@ -222,22 +271,54 @@ impl<'input> FastInput<'input> {
                     _mm_loadu_si128(FastInput::SHUFFLE.as_ptr().add(first).cast()),
                 );
                 *input = (*input).add(second + 1);
-                let digits = _mm256_shuffle_epi8(
-                    _mm256_subs_epu8(windows, _mm256_set1_epi8(b'0' as i8)),
-                    rows,
-                );
-                _mm256_madd_epi16(
-                    _mm256_maddubs_epi16(digits, _mm256_set1_epi16(0x010a)),
-                    _mm256_set1_epi32(0x00010064),
-                )
+                groups::<SIGNED>(windows, rows)
             }
         }
         unsafe {
-            let start = values.len();
-            let mut scratch = Vec::<u32>::with_capacity(3 * CAPACITY);
-            let scratch = scratch.as_mut_ptr();
+            let mut scratch = Vec::<u32>::new();
             let mut written = 0;
             while count - written >= 544 {
+                let width = |p: *const u8| {
+                    _mm256_movemask_epi8(_mm256_cmpgt_epi8(
+                        _mm256_set1_epi8(b'0' as i8),
+                        _mm256_loadu_si256(p.cast()),
+                    )) as u32
+                };
+                let stride = width(self.ptr).trailing_zeros() as usize + 1;
+                if (2..=11).contains(&stride) {
+                    let (mask, pattern) = PATTERNS[stride];
+                    let row = _mm256_broadcastsi128_si256(_mm_loadu_si128(
+                        Self::SHUFFLE.as_ptr().add(stride - 1).cast(),
+                    ));
+                    // 48 remaining fields cover all 96 bytes, including single-digit fields.
+                    while count - written >= 48 {
+                        let p = self.ptr;
+                        let separators = u128::from(width(p))
+                            | (u128::from(width(p.add(32))) << 32)
+                            | (u128::from(width(p.add(64))) << 64);
+                        if separators & mask != pattern {
+                            break;
+                        }
+                        let pair = |i| {
+                            groups::<false>(
+                                _mm256_set_m128i(
+                                    _mm_loadu_si128(p.add((i + 4) * stride).cast()),
+                                    _mm_loadu_si128(p.add(i * stride).cast()),
+                                ),
+                                row,
+                            )
+                        };
+                        let v = combine(pair(0), pair(1), pair(2), pair(3));
+                        _mm256_storeu_si256(dst.add(written).cast(), v);
+                        self.ptr = p.add(8 * stride);
+                        written += 8;
+                    }
+                    if count - written < 544 {
+                        break;
+                    }
+                }
+                scratch.reserve(3 * CAPACITY);
+                let scratch = scratch.as_mut_ptr();
                 // At least two bytes per token; the extra 32 tokens cover boundary alignment.
                 let chunk = CHUNK.min(2 * (count - written - 32)) & !3;
                 let mut end = [self.ptr; 4];
@@ -250,7 +331,7 @@ impl<'input> FastInput<'input> {
                 }
                 let mut input = [self.ptr, end[0], end[1], end[2]];
                 let output = [
-                    values.as_mut_ptr().add(start + written),
+                    dst.add(written),
                     scratch,
                     scratch.add(CAPACITY),
                     scratch.add(2 * CAPACITY),
@@ -261,23 +342,14 @@ impl<'input> FastInput<'input> {
                     if left < 33 {
                         break;
                     }
-                    // Each pair consumes at most 22 bytes; leave 32 bytes for its SIMD load.
-                    for _ in 0..(left - 32) / 22 + 1 {
-                        let g0 = two_tokens(&mut input[0]);
-                        let g1 = two_tokens(&mut input[1]);
-                        let g2 = two_tokens(&mut input[2]);
-                        let g3 = two_tokens(&mut input[3]);
-                        let k = _mm256_set1_epi32(0x00012710);
-                        let h01 =
-                            _mm256_castsi256_ps(_mm256_madd_epi16(_mm256_packus_epi32(g0, g1), k));
-                        let h23 =
-                            _mm256_castsi256_ps(_mm256_madd_epi16(_mm256_packus_epi32(g2, g3), k));
-                        let high = _mm256_castps_si256(_mm256_shuffle_ps::<0x88>(h01, h23));
-                        let low = _mm256_castps_si256(_mm256_shuffle_ps::<0xdd>(h01, h23));
-                        let v = _mm256_add_epi32(
-                            _mm256_mullo_epi32(high, _mm256_set1_epi32(100000000)),
-                            low,
-                        );
+                    // Leave one SIMD load after each pair of maximum-width fields.
+                    let pair = if SIGNED { 24 } else { 22 };
+                    for _ in 0..(left - 32) / pair + 1 {
+                        let g0 = two_tokens::<SIGNED>(&mut input[0]);
+                        let g1 = two_tokens::<SIGNED>(&mut input[1]);
+                        let g2 = two_tokens::<SIGNED>(&mut input[2]);
+                        let g3 = two_tokens::<SIGNED>(&mut input[3]);
+                        let v = combine(g0, g1, g2, g3);
                         let q = _mm256_permutevar8x32_epi32(
                             v,
                             _mm256_setr_epi32(0, 4, 1, 5, 2, 6, 3, 7),
@@ -305,22 +377,23 @@ impl<'input> FastInput<'input> {
                 for k in 0..4 {
                     self.ptr = input[k];
                     while self.ptr < end[k] {
-                        output[k].add(lengths[k]).write(self.u32());
+                        let v = if SIGNED {
+                            self.i32() as u32
+                        } else {
+                            self.u32()
+                        };
+                        output[k].add(lengths[k]).write(v);
                         lengths[k] += 1;
                     }
                 }
                 written += lengths[0];
                 for k in 1..4 {
-                    ptr::copy_nonoverlapping(
-                        output[k],
-                        values.as_mut_ptr().add(start + written),
-                        lengths[k],
-                    );
+                    ptr::copy_nonoverlapping(output[k], dst.add(written), lengths[k]);
                     written += lengths[k];
                 }
                 self.ptr = end[3];
             }
-            values.set_len(start + written);
+            written
         }
     }
 
@@ -636,6 +709,27 @@ impl<'input> FastInput<'input> {
                 x = x.wrapping_neg();
             }
             x
+        }
+    }
+
+    /// Appends `count` signed decimal integers to `values`.
+    ///
+    /// # Safety
+    /// The next `count` tokens must satisfy this reader's `i32` input requirements.
+    pub unsafe fn extend_i32(&mut self, values: &mut Vec<i32>, count: usize) {
+        values.reserve(count);
+        let end = values.len() + count;
+        unsafe {
+            #[cfg(target_arch = "x86_64")]
+            if count >= 544 && std::is_x86_feature_detected!("avx2") {
+                let start = values.len();
+                let written =
+                    self.extend_decimal_avx2::<true>(values.as_mut_ptr().add(start).cast(), count);
+                values.set_len(start + written);
+            }
+            while values.len() < end {
+                values.push(self.i32());
+            }
         }
     }
 
@@ -1570,6 +1664,70 @@ mod tests {
                 assert_eq!(unsafe { input.i32() }, -12345);
                 assert_eq!(unsafe { input.bytes() }, b"END");
             }
+        }
+    }
+
+    #[test]
+    fn test_extend_i32() {
+        let mut rng = Xorshift::default();
+        let boundaries = integer_boundary_values!(i32);
+        let mut text = String::new();
+        for i in 0..65569 {
+            use std::fmt::Write;
+            let value = match i % 8 {
+                0 => i32::MIN,
+                1 => i32::MAX,
+                2 => boundaries[(i / 8) % boundaries.len()],
+                3 => rng.random(-9..=9),
+                4 => 0,
+                _ => rng.random(..),
+            };
+            match i % 4 {
+                0 if value == 0 => text.push_str("-0000000000 "),
+                0 | 1 => {
+                    let width = 10 + usize::from(value < 0);
+                    write!(text, "{value:0width$} ").unwrap();
+                }
+                _ => writeln!(text, "{value}").unwrap(),
+            }
+        }
+        let expected: Vec<i32> = text
+            .split_ascii_whitespace()
+            .map(|s| s.parse().unwrap())
+            .collect();
+        text.push_str("-12345                 ");
+        for n in [0, 1, 2, 7, 8, 9, 543, 544, 545, 65567, 65568, 65569] {
+            let mut input = unsafe { FastInput::from_slice(text.as_bytes()) };
+            let mut actual = vec![42; 3];
+            unsafe { input.extend_i32(&mut actual, n) };
+            assert_eq!(&actual[..3], &[42; 3]);
+            assert_eq!(&actual[3..], &expected[..n]);
+            assert_eq!(
+                unsafe { input.i32() },
+                expected.get(n).copied().unwrap_or(-12345)
+            );
+        }
+        for width in 1..=10 {
+            use std::fmt::Write;
+            let mut text = String::new();
+            for i in 0..2048 {
+                let value = if i / 8 == 86 || i % 337 == 336 {
+                    -1
+                } else {
+                    i % 10
+                };
+                write!(text, "{value:0width$} ").unwrap();
+            }
+            let expected: Vec<i32> = text
+                .split_ascii_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect();
+            text.push_str("42                ");
+            let mut input = unsafe { FastInput::from_slice(text.as_bytes()) };
+            let mut actual = Vec::new();
+            unsafe { input.extend_i32(&mut actual, expected.len()) };
+            assert_eq!(actual, expected);
+            assert_eq!(unsafe { input.i32() }, 42);
         }
     }
 

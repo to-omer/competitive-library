@@ -1,16 +1,17 @@
-use super::{Signed, assert_finite, output_len};
-use std::{
-    cmp::Ordering,
-    ops::{Range, RangeInclusive},
-};
+use super::{CONVEX_NAIVE_CUTOFF, Signed, assert_finite, min_plus_convolution_naive, output_len};
+use std::cmp::Ordering;
 
 pub(super) fn is_convex<T>(values: &[T]) -> bool
 where
     T: Signed,
 {
-    values
-        .windows(3)
-        .all(|window| window[1] - window[0] <= window[2] - window[1])
+    let n = values.len().saturating_sub(2);
+    (0..n).step_by(128).all(|start| {
+        let end = n.min(start + 128);
+        values[start..end + 2]
+            .windows(3)
+            .fold(true, |valid, w| valid & (w[1] - w[0] <= w[2] - w[1]))
+    })
 }
 
 fn orient_one_convex<'a, T>(a: &'a [T], b: &'a [T]) -> (&'a [T], &'a [T])
@@ -53,8 +54,70 @@ where
 {
     let len = output_len(a.len(), b.len());
     let (mut i, mut j) = (0, 0);
+    const BLOCK: usize = 16;
     let mut result = Vec::with_capacity(len);
     result.push(a[i] + b[j]);
+    while a.len() - i > BLOCK && b.len() - j > BLOCK {
+        let (x, y) = (&a[i..], &b[j..]);
+        let take_a = if x[4] - x[3] <= y[1] - y[0] {
+            true
+        } else if y[4] - y[3] <= x[1] - x[0] {
+            false
+        } else {
+            let (first, second) = if x[1] - x[0] <= y[1] - y[0] {
+                (x, y)
+            } else {
+                (y, x)
+            };
+            let alternating = (1..=8).fold(true, |ok, k| {
+                let slope = second[k] - second[k - 1];
+                ok & (first[k] - first[k - 1] <= slope) & (slope <= first[k + 1] - first[k])
+            });
+            if alternating {
+                result
+                    .extend((1..=8).flat_map(|k| [first[k] + second[k - 1], first[k] + second[k]]));
+                i += 8;
+                j += 8;
+                continue;
+            }
+            for _ in 0..BLOCK {
+                if a[i + 1] - a[i] <= b[j + 1] - b[j] {
+                    i += 1;
+                } else {
+                    j += 1;
+                }
+                result.push(a[i] + b[j]);
+            }
+            continue;
+        };
+        let (run, other) = if take_a { (x, y) } else { (y, x) };
+        let slope = other[1] - other[0];
+        let mut lo = 4;
+        let mut hi = BLOCK;
+        let last = run.len() - 1;
+        while hi < last && run[hi] - run[hi - 1] <= slope {
+            lo = hi;
+            hi = hi.saturating_mul(2).min(last);
+        }
+        if run[hi] - run[hi - 1] <= slope {
+            lo = hi;
+        } else {
+            while hi - lo > 1 {
+                let mid = lo + (hi - lo) / 2;
+                if run[mid] - run[mid - 1] <= slope {
+                    lo = mid;
+                } else {
+                    hi = mid;
+                }
+            }
+        }
+        result.extend(run[1..=lo].iter().map(|&v| v + other[0]));
+        if take_a {
+            i += lo;
+        } else {
+            j += lo;
+        }
+    }
     while i + 1 < a.len() && j + 1 < b.len() {
         if a[i + 1] - a[i] <= b[j + 1] - b[j] {
             i += 1;
@@ -92,55 +155,54 @@ where
     T: Signed,
 {
     let len = output_len(arbitrary.len(), convex.len());
+    let n = convex.len();
+    let ordered = if n == 1 || (convex[n - 2] >= convex[n - 1] && arbitrary.is_sorted()) {
+        Some((convex, arbitrary))
+    } else if convex[0] <= convex[1] && arbitrary.is_sorted_by(|x, y| x >= y) {
+        Some((arbitrary, convex))
+    } else {
+        None
+    };
+    if let Some((decreasing, increasing)) = ordered {
+        let mut result = Vec::with_capacity(len);
+        result.extend(decreasing.iter().map(|&v| v + increasing[0]));
+        result.extend(
+            increasing[1..]
+                .iter()
+                .map(|&v| v + decreasing[decreasing.len() - 1]),
+        );
+        return result;
+    }
+    if n <= CONVEX_NAIVE_CUTOFF || arbitrary.len() <= 2 {
+        return min_plus_convolution_naive(arbitrary, convex);
+    }
     let mut result = vec![T::zero(); len];
 
-    fn solve<T>(
-        arbitrary: &[T],
-        convex: &[T],
-        result: &mut [T],
-        rows: Range<usize>,
-        options: RangeInclusive<usize>,
-    ) where
-        T: Signed,
-    {
-        if rows.is_empty() {
-            return;
-        }
-        let row = (rows.start + rows.end) / 2;
-        let first = (*options.start()).max(row.saturating_sub(convex.len() - 1));
-        let last = (*options.end()).min(row).min(arbitrary.len() - 1);
-        let mut best_col = first;
-        let mut best_value = arbitrary[first] + convex[row - first];
-        for col in first + 1..=last {
-            let value = arbitrary[col] + convex[row - col];
-            if value < best_value {
-                best_value = value;
-                best_col = col;
-            }
-        }
-        result[row] = best_value;
-        solve(
-            arbitrary,
-            convex,
-            result,
-            rows.start..row,
-            *options.start()..=best_col,
-        );
-        solve(
-            arbitrary,
-            convex,
-            result,
-            row + 1..rows.end,
-            best_col..=*options.end(),
-        );
-    }
-
-    solve(
+    let mut problem = ConvexSearch {
         arbitrary,
         convex,
+        lower: Vec::new(),
+        blocks: Vec::new(),
+    };
+    if len > ConvexSearch::<T>::TILE && n.min(arbitrary.len()) > 128 {
+        let mut previous = T::maximum();
+        problem.lower.extend(convex.chunks(32).map(|block| {
+            let minimum = *block.iter().min().unwrap();
+            std::mem::replace(&mut previous, minimum).min(minimum)
+        }));
+        problem.blocks.extend(
+            arbitrary
+                .chunks(32)
+                .map(|block| *block.iter().min().unwrap()),
+        );
+    }
+    problem.solve(
         &mut result,
-        0..len,
-        0..=arbitrary.len() - 1,
+        0,
+        0,
+        arbitrary.len() - 1,
+        &mut Vec::new(),
+        &mut Vec::new(),
     );
     result
 }
@@ -278,6 +340,194 @@ where
         .collect()
 }
 
+struct ConvexSearch<'a, T> {
+    arbitrary: &'a [T],
+    convex: &'a [T],
+    lower: Vec<T>,
+    blocks: Vec<T>,
+}
+
+impl<T> ConvexSearch<'_, T>
+where
+    T: Signed,
+{
+    const TILE: usize = 8192;
+
+    fn solve(
+        &self,
+        output: &mut [T],
+        row: usize,
+        left: usize,
+        right: usize,
+        columns: &mut Vec<usize>,
+        envelope: &mut Vec<(usize, usize)>,
+    ) {
+        if output.is_empty() {
+            return;
+        }
+        if left == right {
+            let bias = self.arbitrary[left];
+            for (out, &v) in output.iter_mut().zip(&self.convex[row - left..]) {
+                *out = bias + v;
+            }
+            return;
+        }
+        if output.len() <= Self::TILE {
+            self.fill_envelope(output, row, left, right, columns, envelope);
+            return;
+        }
+        let half = output.len() / 2;
+        let mid = row + half;
+        let col = self.minimum_at(
+            mid,
+            left.max(mid.saturating_sub(self.convex.len() - 1)),
+            right.min(mid),
+        );
+        let (before, after) = output.split_at_mut(half);
+        self.solve(before, row, left, col, columns, envelope);
+        self.solve(after, mid, col, right, columns, envelope);
+    }
+
+    fn fill_envelope(
+        &self,
+        output: &mut [T],
+        row: usize,
+        left: usize,
+        right: usize,
+        columns: &mut Vec<usize>,
+        envelope: &mut Vec<(usize, usize)>,
+    ) {
+        let n = self.convex.len();
+        let end = row + output.len();
+        let last = end - 1;
+        let value = |r: usize, col: usize| self.arbitrary[col] + self.convex[r - col];
+        columns.clear();
+        let mut low = None;
+        // At the last row, an older, cheaper column also dominates at every earlier common row.
+        for col in left.max(row.saturating_sub(n - 1))..=right.min(last) {
+            if last - col >= n {
+                columns.push(col);
+            } else {
+                let v = value(last, col);
+                if low.is_none_or(|best| v < best) {
+                    low = Some(v);
+                    columns.push(col);
+                }
+            }
+        }
+        columns.reverse();
+        low = None;
+        columns.retain(|&col| {
+            if col > row {
+                return true;
+            }
+            let v = value(row, col);
+            if low.is_some_and(|best| best <= v) {
+                return false;
+            }
+            low = Some(v);
+            true
+        });
+
+        envelope.clear();
+        for &col in columns.iter().rev() {
+            let first = row.max(col);
+            let mut start = first;
+            while let Some(&(previous, from)) = envelope.last() {
+                let lo = first.max(from);
+                let stop = end.min(previous + n);
+                if lo >= stop || value(lo, col) <= value(lo, previous) {
+                    if first <= from {
+                        envelope.pop();
+                        continue;
+                    }
+                } else if value(stop - 1, col) > value(stop - 1, previous) {
+                    start = stop;
+                } else {
+                    let mut hi = stop - 1;
+                    let mut lo = lo;
+                    let mut step = 4;
+                    while hi - lo > step {
+                        let probe = lo + step;
+                        if value(probe, col) <= value(probe, previous) {
+                            hi = probe;
+                            break;
+                        }
+                        lo = probe;
+                        step *= 2;
+                    }
+                    while hi - lo > 1 {
+                        let mid = lo + (hi - lo) / 2;
+                        if value(mid, col) <= value(mid, previous) {
+                            hi = mid;
+                        } else {
+                            lo = mid;
+                        }
+                    }
+                    start = hi;
+                }
+                break;
+            }
+            if start < end {
+                envelope.push((col, start));
+            }
+        }
+        let mut stop = end;
+        for &(col, start) in envelope.iter().rev() {
+            let bias = self.arbitrary[col];
+            for (v, &x) in output[start - row..stop - row]
+                .iter_mut()
+                .zip(&self.convex[start - col..])
+            {
+                *v = bias + x;
+            }
+            stop = start;
+        }
+    }
+
+    fn minimum_at(&self, row: usize, first: usize, last: usize) -> usize {
+        let scan = |start: usize, end: usize| {
+            let choices = &self.arbitrary[start..end];
+            let offsets = &self.convex[row + 1 - end..=row - start];
+            let sums = || {
+                choices
+                    .iter()
+                    .zip(offsets.iter().rev())
+                    .map(|(&x, &y)| x + y)
+            };
+            let best = sums().min().unwrap();
+            (start + sums().position(|v| v == best).unwrap(), best)
+        };
+        if last - first < 128 {
+            return scan(first, last + 1).0;
+        }
+        let head = first / 32 + 1;
+        let tail = last / 32;
+        let blocks = &self.blocks[head..tail];
+        // The reversed kernel interval for a column block spans at most two kernel blocks.
+        let lower = &self.lower[row / 32 + 1 - tail..=row / 32 - head];
+        let bounds = || blocks.iter().zip(lower.iter().rev()).map(|(&x, &y)| x + y);
+        let bound = bounds().min().unwrap();
+        let seed = head + bounds().position(|x| x == bound).unwrap();
+        let mut result = scan(seed * 32, (seed + 1) * 32);
+        for (i, bound) in bounds().enumerate() {
+            if bound < result.1 {
+                let start = (head + i) * 32;
+                let local = scan(start, start + 32);
+                if local.1 < result.1 {
+                    result = local;
+                }
+            }
+        }
+        for local in [scan(first, head * 32), scan(tail * 32, last + 1)] {
+            if local.1 < result.1 {
+                result = local;
+            }
+        }
+        result.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -304,6 +554,13 @@ mod tests {
             .collect();
         for n in sample_usize(&mut rng, 32, 0..=512, 1000) {
             lengths.push((n, rng.random(0usize..=512)));
+        }
+        for n in [0, 1, 2, 15, 16, 17, 31, 32, 33, 127, 128, 129] {
+            lengths.extend([(n, 1025), (1025, n)]);
+        }
+        for len in [8191, 8192, 8193, 16385] {
+            lengths.push((len - 128, 129));
+            lengths.push((129, len - 128));
         }
         for (n, m) in lengths {
             let arbitrary: Vec<_> = rng.random_iter(-1000..=1000).take(n).collect();
@@ -353,6 +610,23 @@ mod tests {
                     "a={a:?}, b={b:?}"
                 );
             }
+        }
+        let a = [1_000_000_000i32; 33];
+        let b = [1_000_000_000; 17];
+        assert_eq!(
+            min_plus_convolution_convex_merge(&a, &b),
+            [2_000_000_000; 49]
+        );
+        assert_eq!(
+            min_plus_convolution_convex_divide_and_conquer(&a, &b),
+            [2_000_000_000; 49]
+        );
+        for n in [15, 16, 17, 31, 32, 33, 129] {
+            let a: Vec<i64> = (0..n).map(|i| i * i).collect();
+            let b: Vec<i64> = (0..n + 2).map(|i| i * (i + 1)).collect();
+            let expected = min_plus_convolution_naive(&a, &b);
+            assert_eq!(min_plus_convolution_convex_merge(&a, &b), expected);
+            assert_eq!(min_plus_convolution_convex_merge(&b, &a), expected);
         }
     }
 }

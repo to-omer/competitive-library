@@ -1,6 +1,7 @@
 use super::{
-    Signed, bounded_requirements_from_extrema, concave, convex, min_plus_convolution_bounded_ntt,
-    min_plus_convolution_naive, monotone, output_len, piecewise_linear, sparse,
+    CONCAVE_NAIVE_CUTOFF, CONVEX_NAIVE_CUTOFF, Signed, bounded_requirements_from_extrema, concave,
+    convex, min_plus_convolution_bounded_ntt, min_plus_convolution_naive, monotone, output_len,
+    piecewise_linear, sparse,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -207,12 +208,18 @@ where
 
     if a_characteristics.is_convex && b_characteristics.is_convex {
         consider(output, Algorithm::ConvexMerge);
-    } else if a_characteristics.is_convex {
+    } else if a_characteristics.is_convex
+        && b_characteristics.finite_count == b_len
+        && a_len > CONVEX_NAIVE_CUTOFF
+    {
         consider(
             scaled_work(2, output),
             Algorithm::ConvexDivideAndConquerLeft,
         );
-    } else if b_characteristics.is_convex {
+    } else if b_characteristics.is_convex
+        && a_characteristics.finite_count == a_len
+        && b_len > CONVEX_NAIVE_CUTOFF
+    {
         consider(
             scaled_work(2, output),
             Algorithm::ConvexDivideAndConquerRight,
@@ -220,9 +227,11 @@ where
     }
     if a_characteristics.is_concave && b_characteristics.is_concave {
         consider(output, Algorithm::ConcaveBoth);
-    } else if a_characteristics.is_concave || b_characteristics.is_concave {
+    } else if (a_characteristics.is_concave && a_len > CONCAVE_NAIVE_CUTOFF)
+        || (b_characteristics.is_concave && b_len > CONCAVE_NAIVE_CUTOFF)
+    {
         consider(
-            scaled_work(8, output.saturating_mul(output.max(1).ilog2() as u128 + 1)),
+            scaled_work(6, output),
             if a_characteristics.is_concave {
                 Algorithm::ConcaveEnvelopeLeft
             } else {
@@ -380,6 +389,12 @@ mod tests {
         assert_eq!(
             selected(&convex, &arbitrary),
             Algorithm::ConvexDivideAndConquerLeft
+        );
+        let mut with_infinity = arbitrary.clone();
+        with_infinity[LEN / 2] = i64::MAX;
+        assert_eq!(
+            min_plus_convolution(&convex, &with_infinity),
+            min_plus_convolution_naive(&convex, &with_infinity)
         );
 
         let concave: Vec<_> = convex.iter().map(|&value| -value).collect();

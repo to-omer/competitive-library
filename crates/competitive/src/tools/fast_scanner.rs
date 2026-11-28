@@ -18,6 +18,13 @@ impl ScanSource for FastInput<'_> {
         values
     }
 
+    fn read_i32_vec(&mut self, size: usize, capacity: usize) -> Vec<i32> {
+        let mut values = Vec::with_capacity(capacity.max(size));
+        advise_huge_pages(&mut values);
+        unsafe { self.extend_i32(&mut values, size) };
+        values
+    }
+
     #[inline]
     fn skip_whitespace(&mut self) {
         self.skip_whitespace();

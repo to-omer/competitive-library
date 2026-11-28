@@ -92,6 +92,11 @@ pub trait ScanSource: Sized {
     fn read_i32(&mut self) -> Option<i32> {
         self.next_token()?.parse().ok()
     }
+    fn read_i32_vec(&mut self, size: usize, capacity: usize) -> Vec<i32> {
+        let mut values = Vec::with_capacity(capacity.max(size));
+        values.extend((0..size).map(|_| self.scan::<i32>()));
+        values
+    }
     #[inline]
     fn read_i64(&mut self) -> Option<i64> {
         self.next_token()?.parse().ok()
@@ -177,7 +182,7 @@ macro_rules! impl_integer_scan {
 impl_integer_scan!(
     u8 => read_u8, u16 => read_u16, u64 => read_u64,
     u128 => read_u128, usize => read_usize, i8 => read_i8, i16 => read_i16,
-    i32 => read_i32, i64 => read_i64, i128 => read_i128, isize => read_isize,
+    i64 => read_i64, i128 => read_i128, isize => read_isize,
 );
 
 impl Scan for u32 {
@@ -188,6 +193,17 @@ impl Scan for u32 {
     }
     fn scan_vec<S: ScanSource>(source: &mut S, size: usize, capacity: usize) -> Vec<Self> {
         source.read_u32_vec(size, capacity)
+    }
+}
+
+impl Scan for i32 {
+    type Output = Self;
+    #[inline]
+    fn scan<S: ScanSource>(source: &mut S) -> Option<Self> {
+        source.read_i32()
+    }
+    fn scan_vec<S: ScanSource>(source: &mut S, size: usize, capacity: usize) -> Vec<Self> {
+        source.read_i32_vec(size, capacity)
     }
 }
 

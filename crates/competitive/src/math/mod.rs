@@ -9,8 +9,8 @@ use crate::data_structure::BitSet;
 #[cfg(target_arch = "x86_64")]
 use crate::num::montgomery_simd;
 use crate::num::{
-    BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, MIntDotProduct, One,
-    RangeBoundsExt, Signed, Unsigned, Wrapping, Zero, montgomery,
+    BarrettReduction, Complex, ExtendedGcd, IntBase, MInt, MIntBase, MIntConvert, MIntDotProduct,
+    One, RangeBoundsExt, Signed, Unsigned, Wrapping, Zero, montgomery,
 };
 use crate::tools::{PartialIgnoredOrd, SerdeByteStr, Xorshift, advise_huge_pages};
 #[cfg(target_arch = "x86_64")]

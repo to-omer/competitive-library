@@ -4,7 +4,9 @@
 //! integer type that can represent every finite result and every intermediate
 //! arithmetic expression used by the selected algorithm.
 
-use super::{Convolve998244353, ConvolveSteps, Signed, montgomery::MInt998244353};
+use super::{
+    Convolve998244353, ConvolveSteps, IntBase, Signed, Unsigned, Zero, montgomery::MInt998244353,
+};
 
 pub use self::concave::{min_plus_convolution_concave_both, min_plus_convolution_concave_envelope};
 pub use self::convex::{
@@ -26,6 +28,9 @@ mod near_convex;
 mod piecewise_linear;
 mod selector;
 mod squared_distance;
+
+const CONCAVE_NAIVE_CUTOFF: usize = 32;
+const CONVEX_NAIVE_CUTOFF: usize = 64;
 
 pub(super) fn output_len(a_len: usize, b_len: usize) -> usize {
     if a_len == 0 || b_len == 0 {
