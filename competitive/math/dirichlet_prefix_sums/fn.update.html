@@ -1,0 +1,611 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `update` fn in crate `competitive`."><title>update in competitive::math::dirichlet_prefix_sums - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (c82ce1563 2026-11-27)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<style>
+  #main-content .item-table:not(.reexports):not(:has(> dd)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #main-content .item-table:not(.reexports) > dt,
+  #main-content .item-table:not(.reexports) > dd {
+    padding-block: 0.15em;
+  }
+
+  #main-content .item-table:not(.reexports) > dt {
+    padding-inline-start: 1em;
+    text-indent: -1em;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const root = document.querySelector('meta[name="rustdoc-vars"]')?.dataset.rootPath;
+    if (!root) return;
+    const script = document.createElement("script");
+    script.src = new URL(`${root}submissions.js`, document.baseURI).href;
+    document.head.appendChild(script);
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector(".settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://cp-archive-search.to-omer.com/search?q=content%3A%22${itemName}%22&sort=latest">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">update</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>dirichlet_<wbr>prefix_<wbr>sums</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">dirichlet_prefix_sums</a></div><h1>Function <span class="fn">update</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/dirichlet_prefix_sums.rs.html#840-849">Source</a> </span></div><pre class="rust item-decl"><code>fn update&lt;G, const SUB: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;(value: &amp;mut G::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>, delta: &amp;G::<a class="associatedtype" href="../../algebra/trait.Magma.html#associatedtype.T" title="type competitive::algebra::Magma::T">T</a>)<div class="where">where
+    G: <a class="trait" href="../../algebra/trait.AbelianGroup.html" title="trait competitive::algebra::AbelianGroup">AbelianGroup</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[47,47],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#353&#34;,&#34;line 353&#34;],[[53,53],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#359&#34;,&#34;line 359&#34;],[[73,73],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#379&#34;,&#34;line 379&#34;],[[244,244],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#550&#34;,&#34;line 550&#34;],[[461,461],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#767&#34;,&#34;line 767&#34;],[[485,488],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#791-794&#34;,&#34;lines 791-794&#34;],[[492,495],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#798-801&#34;,&#34;lines 798-801&#34;],[[520,523],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#826-829&#34;,&#34;lines 826-829&#34;],[[526,529],&#34;../../../src/competitive/math/dirichlet_prefix_sums.rs.html#832-835&#34;,&#34;lines 832-835&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/dirichlet_prefix_sums.rs (<a href="../../../src/competitive/math/dirichlet_prefix_sums.rs.html#353">line 353</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>306</span>    <span class="kw">fn </span>dense_prime&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>307</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>308</span>        powers: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>309</span>        quotients: <span class="kw-2">&amp;</span>[u64],
+<span data-nosnippet>310</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>311</span>    ) <span class="kw">where
+<span data-nosnippet>312</span>        </span>T: Clone,
+<span data-nosnippet>313</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>314</span>    {
+<span data-nosnippet>315</span>        <span class="kw">let </span>(p, weight) = <span class="kw-2">&amp;</span>powers[<span class="number">0</span>];
+<span data-nosnippet>316</span>        <span class="kw">let </span>p = <span class="kw-2">*</span>p;
+<span data-nosnippet>317</span>        <span class="kw">let </span>before = <span class="self">self</span>.data[p <span class="kw">as </span>usize - <span class="kw">if </span>REMOVE { <span class="number">2 </span>} <span class="kw">else </span>{ <span class="number">1 </span>}].clone();
+<span data-nosnippet>318</span>        <span class="kw">let </span>len = <span class="self">self</span>.data.len();
+<span data-nosnippet>319</span>        <span class="kw">let </span>large = quotients.len();
+<span data-nosnippet>320</span>        <span class="kw">let </span>delta = |v: <span class="kw-2">&amp;</span>T, e: usize| {
+<span data-nosnippet>321</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = mul(<span class="kw-2">&amp;</span>powers[e].<span class="number">1</span>, <span class="kw-2">&amp;</span>G::rinv_operate(v, <span class="kw-2">&amp;</span>before));
+<span data-nosnippet>322</span>            <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>323</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>powers[e + <span class="number">1</span>].<span class="number">1</span>);
+<span data-nosnippet>324</span>            }
+<span data-nosnippet>325</span>            x
+<span data-nosnippet>326</span>        };
+<span data-nosnippet>327</span>        <span class="kw">let </span>last = (<span class="self">self</span>.n / (p * p)).min(large <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>328</span>        <span class="kw">let </span>split = last.min(large / p <span class="kw">as </span>usize);
+<span data-nosnippet>329</span>        <span class="kw">let </span>repeated = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>330</span>            <span class="number">0
+<span data-nosnippet>331</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>332</span>            (<span class="self">self</span>.n / (p * p) / p).min(last <span class="kw">as </span>u64) <span class="kw">as </span>usize
+<span data-nosnippet>333</span>        };
+<span data-nosnippet>334</span>        <span class="kw">for </span>d <span class="kw">in </span><span class="number">1</span>..=repeated {
+<span data-nosnippet>335</span>            <span class="kw">let </span>q = quotients[d - <span class="number">1</span>];
+<span data-nosnippet>336</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = G::unit();
+<span data-nosnippet>337</span>            <span class="kw">for </span>(e, pair) <span class="kw">in </span>powers.windows(<span class="number">2</span>).enumerate() {
+<span data-nosnippet>338</span>                <span class="kw">if </span>pair[<span class="number">1</span>].<span class="number">0 </span>&gt; q {
+<span data-nosnippet>339</span>                    <span class="kw">break</span>;
+<span data-nosnippet>340</span>                }
+<span data-nosnippet>341</span>                <span class="kw">let </span>power = pair[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>342</span>                <span class="kw">let </span>index = <span class="kw">if </span>power &lt;= (large / d) <span class="kw">as </span>u64 {
+<span data-nosnippet>343</span>                    len - d * power <span class="kw">as </span>usize
+<span data-nosnippet>344</span>                } <span class="kw">else </span>{
+<span data-nosnippet>345</span>                    (q / power) <span class="kw">as </span>usize - <span class="number">1
+<span data-nosnippet>346</span>                </span>};
+<span data-nosnippet>347</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[index], e));
+<span data-nosnippet>348</span>            }
+<span data-nosnippet>349</span>            G::operate_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>350</span>        }
+<span data-nosnippet>351</span>        <span class="kw">for </span>d <span class="kw">in </span>repeated + <span class="number">1</span>..=split {
+<span data-nosnippet>352</span>            <span class="kw">let </span>x = delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[len - d * p <span class="kw">as </span>usize], <span class="number">0</span>);
+<span data-nosnippet>353</span>            <span class="highlight focus">update::&lt;G, REMOVE&gt;</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>354</span>        }
+<span data-nosnippet>355</span>        <span class="kw">for </span>d <span class="kw">in </span>repeated.max(split) + <span class="number">1</span>..=last {
+<span data-nosnippet>356</span>            <span class="kw">let </span>q = quotients[d - <span class="number">1</span>];
+<span data-nosnippet>357</span>            <span class="kw">let </span>v = q / p;
+<span data-nosnippet>358</span>            <span class="kw">let </span>x = delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[v <span class="kw">as </span>usize - <span class="number">1</span>], <span class="number">0</span>);
+<span data-nosnippet>359</span>            <span class="highlight">update::&lt;G, REMOVE&gt;</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>360</span>        }
+<span data-nosnippet>361</span>        <span class="kw">for </span>v <span class="kw">in </span>(p..=<span class="self">self</span>.root <span class="kw">as </span>u64 / p).rev() {
+<span data-nosnippet>362</span>            <span class="kw">let </span><span class="kw-2">mut </span>x = mul(
+<span data-nosnippet>363</span>                weight,
+<span data-nosnippet>364</span>                <span class="kw-2">&amp;</span>G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[v <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>before),
+<span data-nosnippet>365</span>            );
+<span data-nosnippet>366</span>            <span class="kw">if </span>!REMOVE {
+<span data-nosnippet>367</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>powers[<span class="number">1</span>].<span class="number">1</span>);
+<span data-nosnippet>368</span>                <span class="kw">for </span>e <span class="kw">in </span><span class="number">1</span>..powers.len() - <span class="number">1 </span>{
+<span data-nosnippet>369</span>                    <span class="kw">if </span>powers[e].<span class="number">0 </span>&gt; v {
+<span data-nosnippet>370</span>                        <span class="kw">break</span>;
+<span data-nosnippet>371</span>                    }
+<span data-nosnippet>372</span>                    <span class="kw">let </span>index = (v / powers[e - <span class="number">1</span>].<span class="number">0</span>) <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>373</span>                    G::operate_assign(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;</span>delta(<span class="kw-2">&amp;</span><span class="self">self</span>.data[index], e));
+<span data-nosnippet>374</span>                }
+<span data-nosnippet>375</span>            }
+<span data-nosnippet>376</span>            <span class="kw">let </span>from = (p * v) <span class="kw">as </span>usize - <span class="number">1</span>;
+<span data-nosnippet>377</span>            <span class="kw">let </span>end = from.saturating_add(p <span class="kw">as </span>usize).min(<span class="self">self</span>.root);
+<span data-nosnippet>378</span>            <span class="kw">for </span>cell <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.data[from..end] {
+<span data-nosnippet>379</span>                <span class="highlight">update::&lt;G, REMOVE&gt;</span>(cell, <span class="kw-2">&amp;</span>x);
+<span data-nosnippet>380</span>            }
+<span data-nosnippet>381</span>        }
+<span data-nosnippet>382</span>    }
+<span data-nosnippet>383</span>
+<span data-nosnippet>384</span>    <span class="kw">fn </span>cofactor_limit(<span class="kw-2">&amp;</span><span class="self">self</span>, prime: u64) -&gt; usize {
+<span data-nosnippet>385</span>        ((<span class="self">self</span>.n / prime).isqrt() * <span class="number">2</span>).min(<span class="self">self</span>.root <span class="kw">as </span>u64) <span class="kw">as </span>usize
+<span data-nosnippet>386</span>    }
+<span data-nosnippet>387</span>
+<span data-nosnippet>388</span>    <span class="kw">fn </span>prime_band&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>389</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>390</span>        primes: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>391</span>        least: <span class="kw-2">&amp;</span>[u16],
+<span data-nosnippet>392</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>393</span>        next: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>394</span>    ) <span class="kw">where
+<span data-nosnippet>395</span>        </span>T: Clone,
+<span data-nosnippet>396</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>397</span>    {
+<span data-nosnippet>398</span>        <span class="kw">let </span>first = primes[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>399</span>        <span class="kw">let </span>rough = <span class="kw">if </span>REMOVE {
+<span data-nosnippet>400</span>            first
+<span data-nosnippet>401</span>        } <span class="kw">else </span>{
+<span data-nosnippet>402</span>            primes.last().unwrap().<span class="number">0 </span>+ <span class="number">1
+<span data-nosnippet>403</span>        </span>};
+<span data-nosnippet>404</span>        <span class="kw">let </span>max_k = <span class="self">self</span>.cofactor_limit(first);
+<span data-nosnippet>405</span>        <span class="kw">let </span>keys = (rough <span class="kw">as </span>usize..=max_k)
+<span data-nosnippet>406</span>            .filter(|<span class="kw-2">&amp;</span>k| least[k] == u16::MAX || u64::from(least[k]) &gt;= rough)
+<span data-nosnippet>407</span>            .map(|k| {
+<span data-nosnippet>408</span>                (
+<span data-nosnippet>409</span>                    k <span class="kw">as </span>u64,
+<span data-nosnippet>410</span>                    G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[k - <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.data[k - <span class="number">2</span>]),
+<span data-nosnippet>411</span>                )
+<span data-nosnippet>412</span>            })
+<span data-nosnippet>413</span>            .collect();
+<span data-nosnippet>414</span>        <span class="kw">let </span>offset = <span class="self">self</span>.ceiling_index(first * first);
+<span data-nosnippet>415</span>        <span class="kw">let </span><span class="kw-2">mut </span>band = PrimeBand {
+<span data-nosnippet>416</span>            input: <span class="self">self</span>,
+<span data-nosnippet>417</span>            rough,
+<span data-nosnippet>418</span>            max_k,
+<span data-nosnippet>419</span>            keys,
+<span data-nosnippet>420</span>            offset,
+<span data-nosnippet>421</span>            difference: <span class="macro">vec!</span>[G::unit(); <span class="self">self</span>.data.len() - offset],
+<span data-nosnippet>422</span>            high: Vec::new(),
+<span data-nosnippet>423</span>        };
+<span data-nosnippet>424</span>        <span class="comment">// Removing a block uses its squarefree Möbius weights. Inserting it uses all its prime powers.
+<span data-nosnippet>425</span>        </span>band.products::&lt;G, REMOVE&gt;(primes, <span class="number">1</span>, <span class="self">self</span>.n, <span class="prelude-val">None</span>, mul, next);
+<span data-nosnippet>426</span>        <span class="kw">let </span>PrimeBand {
+<span data-nosnippet>427</span>            difference, high, ..
+<span data-nosnippet>428</span>        } = band;
+<span data-nosnippet>429</span>        <span class="kw">let </span><span class="kw-2">mut </span>sum = G::unit();
+<span data-nosnippet>430</span>        <span class="kw">for </span>(x, change) <span class="kw">in </span><span class="self">self</span>.data[offset..].iter_mut().zip(difference) {
+<span data-nosnippet>431</span>            G::operate_assign(<span class="kw-2">&amp;mut </span>sum, <span class="kw-2">&amp;</span>change);
+<span data-nosnippet>432</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>sum);
+<span data-nosnippet>433</span>        }
+<span data-nosnippet>434</span>        <span class="kw">for </span>(x, change) <span class="kw">in </span><span class="self">self</span>.data.iter_mut().rev().zip(high) {
+<span data-nosnippet>435</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>change);
+<span data-nosnippet>436</span>        }
+<span data-nosnippet>437</span>    }
+<span data-nosnippet>438</span>
+<span data-nosnippet>439</span>    <span class="kw">fn </span>ceiling_index(<span class="kw-2">&amp;</span><span class="self">self</span>, x: u64) -&gt; usize {
+<span data-nosnippet>440</span>        <span class="kw">if </span>x &lt;= <span class="self">self</span>.root <span class="kw">as </span>u64 {
+<span data-nosnippet>441</span>            x <span class="kw">as </span>usize - <span class="number">1
+<span data-nosnippet>442</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>443</span>            <span class="self">self</span>.data.len() - (<span class="self">self</span>.n / x) <span class="kw">as </span>usize
+<span data-nosnippet>444</span>        }
+<span data-nosnippet>445</span>    }
+<span data-nosnippet>446</span>
+<span data-nosnippet>447</span>    <span class="kw">fn </span>large_primes&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>448</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>449</span>        primes: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>450</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>451</span>        next_weight: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>452</span>    ) <span class="kw">where
+<span data-nosnippet>453</span>        </span>T: Clone,
+<span data-nosnippet>454</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>455</span>    {
+<span data-nosnippet>456</span>        <span class="kw">let </span>n = <span class="self">self</span>.n;
+<span data-nosnippet>457</span>        <span class="kw">let </span>root = <span class="self">self</span>.root;
+<span data-nosnippet>458</span>        <span class="kw">let </span>len = <span class="self">self</span>.data.len();
+<span data-nosnippet>459</span>        <span class="kw">let </span>large = len - root;
+<span data-nosnippet>460</span>        <span class="kw">let </span>lo = <span class="kw-2">&amp;</span><span class="self">self</span>.data[..root];
+<span data-nosnippet>461</span>        <span class="kw">let </span>first = primes[<span class="number">0</span>].<span class="number">0</span>;
+<span data-nosnippet>462</span>        <span class="comment">// Four primes above the fourth root exceed n, and a triple cannot contain a prime above the square root.
+<span data-nosnippet>463</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>pairs = <span class="macro">vec!</span>[G::unit(); large];
+<span data-nosnippet>464</span>        <span class="kw">let </span><span class="kw-2">mut </span>squares = Vec::with_capacity(primes.len());
+<span data-nosnippet>465</span>        <span class="kw">let </span><span class="kw-2">mut </span>explicit_end = primes.len();
+<span data-nosnippet>466</span>        <span class="kw">for </span>(i, (p, weight)) <span class="kw">in </span>primes.iter().enumerate() {
+<span data-nosnippet>467</span>            <span class="kw">let </span>p = <span class="kw-2">*</span>p;
+<span data-nosnippet>468</span>            <span class="kw">let </span>m = n / p;
+<span data-nosnippet>469</span>            <span class="kw">let </span>square = next_weight(p, <span class="number">2</span>, weight, weight);
+<span data-nosnippet>470</span>            G::operate_assign(<span class="kw-2">&amp;mut </span>pairs[(m / p) <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>square);
+<span data-nosnippet>471</span>            squares.push(square);
+<span data-nosnippet>472</span>            <span class="kw">while </span>explicit_end &gt; <span class="number">0 </span>&amp;&amp; (explicit_end <span class="kw">as </span>u64) * primes[explicit_end - <span class="number">1</span>].<span class="number">0 </span>&gt; m {
+<span data-nosnippet>473</span>                explicit_end -= <span class="number">1</span>;
+<span data-nosnippet>474</span>            }
+<span data-nosnippet>475</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(bound, <span class="kw">_</span>)) = primes.get(explicit_end.max(i + <span class="number">1</span>)) {
+<span data-nosnippet>476</span>                <span class="kw">let </span>split = (m / root <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>477</span>                <span class="kw">let </span>end = (m / bound) <span class="kw">as </span>usize;
+<span data-nosnippet>478</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>pairs[split - <span class="number">1</span>], <span class="kw-2">&amp;</span>mul(weight, <span class="kw-2">&amp;</span>lo[root - <span class="number">1</span>]));
+<span data-nosnippet>479</span>                G::rinv_operate_assign(<span class="kw-2">&amp;mut </span>pairs[end - <span class="number">1</span>], <span class="kw-2">&amp;</span>mul(weight, <span class="kw-2">&amp;</span>lo[bound <span class="kw">as </span>usize - <span class="number">2</span>]));
+<span data-nosnippet>480</span>            }
+<span data-nosnippet>481</span>            <span class="kw">for </span>(q, other_weight) <span class="kw">in </span><span class="kw-2">&amp;</span>primes[i + <span class="number">1</span>..explicit_end.max(i + <span class="number">1</span>)] {
+<span data-nosnippet>482</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>pairs[(m / q) <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>mul(weight, other_weight));
+<span data-nosnippet>483</span>            }
+<span data-nosnippet>484</span>        }
+<span data-nosnippet>485</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..pairs.len()).rev() {
+<span data-nosnippet>486</span>            pairs[i - <span class="number">1</span>] = G::operate(<span class="kw-2">&amp;</span>pairs[i - <span class="number">1</span>], <span class="kw-2">&amp;</span>pairs[i]);
+<span data-nosnippet>487</span>        }
+<span data-nosnippet>488</span>        explicit_end = primes.len();
+<span data-nosnippet>489</span>        <span class="kw">for </span>(i, (p, weight)) <span class="kw">in </span>primes.iter().enumerate() {
+<span data-nosnippet>490</span>            <span class="kw">let </span>m = n / p;
+<span data-nosnippet>491</span>            <span class="kw">while </span>explicit_end &gt; <span class="number">0 </span>&amp;&amp; (explicit_end <span class="kw">as </span>u64) * primes[explicit_end - <span class="number">1</span>].<span class="number">0 </span>&gt; m {
+<span data-nosnippet>492</span>                explicit_end -= <span class="number">1</span>;
+<span data-nosnippet>493</span>            }
+<span data-nosnippet>494</span>            <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(bound, <span class="kw">_</span>)) = primes.get(explicit_end.max(i + <span class="number">1</span>)) <span class="kw">else </span>{
+<span data-nosnippet>495</span>                <span class="kw">continue</span>;
+<span data-nosnippet>496</span>            };
+<span data-nosnippet>497</span>            <span class="kw">let </span>split = (m / root <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>498</span>            <span class="kw">for </span>d <span class="kw">in </span>split + <span class="number">1</span>..=(m / bound) <span class="kw">as </span>usize {
+<span data-nosnippet>499</span>                <span class="kw">let </span>q = (m / d <span class="kw">as </span>u64) <span class="kw">as </span>usize;
+<span data-nosnippet>500</span>                <span class="kw">let </span>x = <span class="kw-2">&amp;</span>lo[q - <span class="number">1</span>];
+<span data-nosnippet>501</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>pairs[d - <span class="number">1</span>], <span class="kw-2">&amp;</span>mul(weight, x));
+<span data-nosnippet>502</span>            }
+<span data-nosnippet>503</span>        }
+<span data-nosnippet>504</span>        <span class="kw">let </span><span class="kw-2">mut </span>triples = <span class="macro">vec!</span>[G::unit(); (n / first / first / first) <span class="kw">as </span>usize];
+<span data-nosnippet>505</span>        <span class="kw">for </span>(i, (p, weight)) <span class="kw">in </span>primes.iter().enumerate() {
+<span data-nosnippet>506</span>            <span class="kw">if </span><span class="kw-2">*</span>p &gt; n / p / p {
+<span data-nosnippet>507</span>                <span class="kw">break</span>;
+<span data-nosnippet>508</span>            }
+<span data-nosnippet>509</span>            <span class="kw">let </span>cube = next_weight(<span class="kw-2">*</span>p, <span class="number">3</span>, weight, <span class="kw-2">&amp;</span>squares[i]);
+<span data-nosnippet>510</span>            <span class="kw">let </span>m = n / p;
+<span data-nosnippet>511</span>            <span class="kw">let </span><span class="kw-2">mut </span>end = primes.partition_point(|x| x.<span class="number">0 </span>&lt;= m.isqrt());
+<span data-nosnippet>512</span>            <span class="kw">for </span>d <span class="kw">in </span><span class="number">1</span>..=(m / p / p) <span class="kw">as </span>usize {
+<span data-nosnippet>513</span>                <span class="kw">let </span>v = m / d <span class="kw">as </span>u64;
+<span data-nosnippet>514</span>                <span class="kw">while </span>primes[end - <span class="number">1</span>].<span class="number">0 </span>* primes[end - <span class="number">1</span>].<span class="number">0 </span>&gt; v {
+<span data-nosnippet>515</span>                    end -= <span class="number">1</span>;
+<span data-nosnippet>516</span>                }
+<span data-nosnippet>517</span>                <span class="kw">let </span>prefix = i + <span class="number">1 </span>&lt; end - (i + <span class="number">1</span>);
+<span data-nosnippet>518</span>                <span class="kw">let </span>partners = <span class="kw">if </span>prefix { <span class="number">0</span>..i + <span class="number">1 </span>} <span class="kw">else </span>{ i + <span class="number">1</span>..end };
+<span data-nosnippet>519</span>                <span class="kw">let </span><span class="kw-2">mut </span>sum = G::unit();
+<span data-nosnippet>520</span>                <span class="kw">for </span>j <span class="kw">in </span>partners {
+<span data-nosnippet>521</span>                    <span class="kw">let </span>(q, other_weight) = <span class="kw-2">&amp;</span>primes[j];
+<span data-nosnippet>522</span>                    <span class="kw">let </span>other = G::rinv_operate(<span class="kw-2">&amp;</span>lo[(v / q) <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>lo[<span class="kw-2">*</span>q <span class="kw">as </span>usize - <span class="number">1</span>]);
+<span data-nosnippet>523</span>                    G::operate_assign(
+<span data-nosnippet>524</span>                        <span class="kw-2">&amp;mut </span>sum,
+<span data-nosnippet>525</span>                        <span class="kw-2">&amp;</span>G::operate(<span class="kw-2">&amp;</span>mul(other_weight, <span class="kw-2">&amp;</span>other), <span class="kw-2">&amp;</span>squares[j]),
+<span data-nosnippet>526</span>                    );
+<span data-nosnippet>527</span>                }
+<span data-nosnippet>528</span>                <span class="kw">if </span>prefix {
+<span data-nosnippet>529</span>                    sum = G::rinv_operate(<span class="kw-2">&amp;</span>pairs[d * <span class="kw-2">*</span>p <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>sum);
+<span data-nosnippet>530</span>                }
+<span data-nosnippet>531</span>                <span class="kw">let </span>higher = G::rinv_operate(<span class="kw-2">&amp;</span>lo[(v / p) <span class="kw">as </span>usize - <span class="number">1</span>], <span class="kw-2">&amp;</span>lo[<span class="kw-2">*</span>p <span class="kw">as </span>usize - <span class="number">1</span>]);
+<span data-nosnippet>532</span>                <span class="kw">let </span>x = G::operate(<span class="kw-2">&amp;</span>mul(weight, <span class="kw-2">&amp;</span>sum), <span class="kw-2">&amp;</span>mul(<span class="kw-2">&amp;</span>squares[i], <span class="kw-2">&amp;</span>higher));
+<span data-nosnippet>533</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>triples[d - <span class="number">1</span>], <span class="kw-2">&amp;</span>G::operate(<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>cube));
+<span data-nosnippet>534</span>            }
+<span data-nosnippet>535</span>        }
+<span data-nosnippet>536</span>        <span class="kw">for </span>(x, t) <span class="kw">in </span>pairs.iter_mut().zip(triples) {
+<span data-nosnippet>537</span>            G::operate_assign(x, <span class="kw-2">&amp;</span>t);
+<span data-nosnippet>538</span>        }
+<span data-nosnippet>539</span>        <span class="kw">let </span>before = <span class="self">self</span>.data[root - <span class="number">1</span>].clone();
+<span data-nosnippet>540</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..large {
+<span data-nosnippet>541</span>            <span class="kw">let </span>d = <span class="kw">if </span>REMOVE { large - i } <span class="kw">else </span>{ i + <span class="number">1 </span>};
+<span data-nosnippet>542</span>            <span class="kw">let </span><span class="kw-2">mut </span>total = pairs[d - <span class="number">1</span>].clone();
+<span data-nosnippet>543</span>            <span class="kw">for </span>(p, weight) <span class="kw">in </span>primes {
+<span data-nosnippet>544</span>                <span class="kw">if </span><span class="kw-2">*</span>p &gt; (large / d) <span class="kw">as </span>u64 {
+<span data-nosnippet>545</span>                    <span class="kw">break</span>;
+<span data-nosnippet>546</span>                }
+<span data-nosnippet>547</span>                <span class="kw">let </span>other = G::rinv_operate(<span class="kw-2">&amp;</span><span class="self">self</span>.data[len - d * <span class="kw-2">*</span>p <span class="kw">as </span>usize], <span class="kw-2">&amp;</span>before);
+<span data-nosnippet>548</span>                G::operate_assign(<span class="kw-2">&amp;mut </span>total, <span class="kw-2">&amp;</span>mul(weight, <span class="kw-2">&amp;</span>other));
+<span data-nosnippet>549</span>            }
+<span data-nosnippet>550</span>            <span class="highlight">update::&lt;G, REMOVE&gt;</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data[len - d], <span class="kw-2">&amp;</span>total);
+<span data-nosnippet>551</span>        }
+<span data-nosnippet>552</span>    }
+<span data-nosnippet>553</span>
+<span data-nosnippet>554</span>    <span class="kw">fn </span>dense_coefficients&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>555</span>    <span class="kw">where
+<span data-nosnippet>556</span>        </span>T: Clone,
+<span data-nosnippet>557</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>558</span>    {
+<span data-nosnippet>559</span>        std::iter::once(<span class="self">self</span>.data[<span class="number">0</span>].clone())
+<span data-nosnippet>560</span>            .chain(
+<span data-nosnippet>561</span>                <span class="self">self</span>.data[..<span class="self">self</span>.root]
+<span data-nosnippet>562</span>                    .windows(<span class="number">2</span>)
+<span data-nosnippet>563</span>                    .map(|p| R::sub(<span class="kw-2">&amp;</span>p[<span class="number">1</span>], <span class="kw-2">&amp;</span>p[<span class="number">0</span>])),
+<span data-nosnippet>564</span>            )
+<span data-nosnippet>565</span>            .<a href="../algebra/magma.rs.html#83-86">collect</a>()
+<span data-nosnippet>566</span>    }
+<span data-nosnippet>567</span>
+<span data-nosnippet>568</span>    <span class="kw">fn </span>dirichlet_prefixes&lt;R&gt;(
+<span data-nosnippet>569</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>570</span>        operand: DirichletOperand&lt;<span class="lifetime">'_</span>, T&gt;,
+<span data-nosnippet>571</span>        f: Vec&lt;T&gt;,
+<span data-nosnippet>572</span>        g: Vec&lt;T&gt;,
+<span data-nosnippet>573</span>        <span class="kw-2">mut </span>result: Vec&lt;T&gt;,
+<span data-nosnippet>574</span>    ) -&gt; <span class="self">Self
+<span data-nosnippet>575</span>    </span><span class="kw">where
+<span data-nosnippet>576</span>        </span>T: Clone,
+<span data-nosnippet>577</span>        R: Ring&lt;T = T, Additive: Invertible&gt;,
+<span data-nosnippet>578</span>    {
+<span data-nosnippet>579</span>        <span class="kw">let </span>root = <span class="self">self</span>.root;
+<span data-nosnippet>580</span>        <span class="kw">let </span>len = <span class="self">self</span>.data.len();
+<span data-nosnippet>581</span>        <span class="kw">let </span>large = len - root;
+<span data-nosnippet>582</span>        <span class="kw">let </span>other = <span class="kw">match </span><span class="kw-2">&amp;</span>operand {
+<span data-nosnippet>583</span>            DirichletOperand::Factor(rhs) =&gt; <span class="kw-2">&amp;</span>rhs.data[..root],
+<span data-nosnippet>584</span>            DirichletOperand::Inverse(<span class="kw">_</span>) =&gt; <span class="kw-2">&amp;</span>result,
+<span data-nosnippet>585</span>        };
+<span data-nosnippet>586</span>        <span class="kw">let </span>prefixes: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.data[..root]
+<span data-nosnippet>587</span>            .iter()
+<span data-nosnippet>588</span>            .cloned()
+<span data-nosnippet>589</span>            .zip(other.iter().cloned())
+<span data-nosnippet>590</span>            .collect();
+<span data-nosnippet>591</span>        <span class="kw">let </span>weights: Vec&lt;<span class="kw">_</span>&gt; = f.into_iter().zip(g).collect();
+<span data-nosnippet>592</span>        <span class="kw">let </span>(f1, g1) = <span class="kw-2">&amp;</span>weights[<span class="number">0</span>];
+<span data-nosnippet>593</span>        <span class="kw">let </span>(pf, pg) = <span class="kw-2">&amp;</span>prefixes[root - <span class="number">1</span>];
+<span data-nosnippet>594</span>        <span class="kw">let </span>boundary = R::add(<span class="kw-2">&amp;</span>R::mul(f1, pg), <span class="kw-2">&amp;</span>R::mul(pf, g1));
+<span data-nosnippet>595</span>        <span class="kw">let </span><span class="kw-2">mut </span>running = <span class="kw">match </span>operand {
+<span data-nosnippet>596</span>            DirichletOperand::Factor(<span class="kw">_</span>) =&gt; R::sub(<span class="kw-2">&amp;</span>result[root - <span class="number">1</span>], <span class="kw-2">&amp;</span>boundary),
+<span data-nosnippet>597</span>            DirichletOperand::Inverse(<span class="kw">_</span>) =&gt; R::neg(<span class="kw-2">&amp;</span>boundary),
+<span data-nosnippet>598</span>        };
+<span data-nosnippet>599</span>        R::add_assign(<span class="kw-2">&amp;mut </span>running, <span class="kw-2">&amp;</span>R::mul(f1, g1));
+<span data-nosnippet>600</span>        result.resize(len, R::zero());
+<span data-nosnippet>601</span>        <span class="kw">let </span><span class="kw-2">mut </span>changes: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..large).map(|<span class="kw">_</span>| R::product_sum()).collect();
+<span data-nosnippet>602</span>        <span class="kw">let </span>reciprocals: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">2</span>..=root).map(|i| u64::MAX / i <span class="kw">as </span>u64 + <span class="number">1</span>).collect();
+<span data-nosnippet>603</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..=root {
+<span data-nosnippet>604</span>            <span class="kw">let </span>m = <span class="self">self</span>.n / i <span class="kw">as </span>u64;
+<span data-nosnippet>605</span>            <span class="kw">let </span>split = m.isqrt() <span class="kw">as </span>usize;
+<span data-nosnippet>606</span>            <span class="kw">if </span>i &gt; split {
+<span data-nosnippet>607</span>                <span class="kw">break</span>;
+<span data-nosnippet>608</span>            }
+<span data-nosnippet>609</span>            <span class="kw">let </span>(fi, gi) = <span class="kw-2">&amp;</span>weights[i - <span class="number">1</span>];
+<span data-nosnippet>610</span>            <span class="kw">if </span>i &gt; root / i {
+<span data-nosnippet>611</span>                changes[(m / i <span class="kw">as </span>u64) <span class="kw">as </span>usize - <span class="number">1</span>].add_products([(fi, gi)]);
+<span data-nosnippet>612</span>            }
+<span data-nosnippet>613</span>            <span class="kw">let </span>start = i.max(root / i) + <span class="number">1</span>;
+<span data-nosnippet>614</span>            <span class="kw">let </span><span class="kw-2">mut </span>scatter = |j: usize, d: usize| {
+<span data-nosnippet>615</span>                <span class="kw">let </span>(fj, gj) = <span class="kw-2">&amp;</span>weights[j - <span class="number">1</span>];
+<span data-nosnippet>616</span>                changes[d - <span class="number">1</span>].add_products([(fi, gj), (fj, gi)]);
+<span data-nosnippet>617</span>            };
+<span data-nosnippet>618</span>            <span class="kw">let </span>fast = quotient_reciprocals(m, start, split, <span class="kw-2">&amp;</span>reciprocals);
+<span data-nosnippet>619</span>            <span class="kw">for </span>(j, <span class="kw-2">&amp;</span>r) <span class="kw">in </span>(start..).zip(fast) {
+<span data-nosnippet>620</span>                scatter(j, quotient(m, r));
+<span data-nosnippet>621</span>            }
+<span data-nosnippet>622</span>            <span class="kw">for </span>j <span class="kw">in </span>start + fast.len()..=split {
+<span data-nosnippet>623</span>                scatter(j, (m / j <span class="kw">as </span>u64) <span class="kw">as </span>usize);
+<span data-nosnippet>624</span>            }
+<span data-nosnippet>625</span>            <span class="kw">let </span>row = (m / (split <span class="kw">as </span>u64 + <span class="number">1</span>)) <span class="kw">as </span>usize;
+<span data-nosnippet>626</span>            <span class="kw">let </span>(pf, pg) = <span class="kw-2">&amp;</span>prefixes[split - <span class="number">1</span>];
+<span data-nosnippet>627</span>            <span class="comment">// Rows d &lt;= row include these scattered pairs in their hyperbola sum.
+<span data-nosnippet>628</span>            </span><span class="kw">let </span>counted = R::add(
+<span data-nosnippet>629</span>                <span class="kw-2">&amp;</span>R::mul(fi, <span class="kw-2">&amp;</span>R::sub(pg, <span class="kw-2">&amp;</span>prefixes[i - <span class="number">2</span>].<span class="number">1</span>)),
+<span data-nosnippet>630</span>                <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span>R::sub(pf, <span class="kw-2">&amp;</span>prefixes[i - <span class="number">1</span>].<span class="number">0</span>), gi),
+<span data-nosnippet>631</span>            );
+<span data-nosnippet>632</span>            R::sub_assign(<span class="kw-2">&amp;mut </span>result[len - row], <span class="kw-2">&amp;</span>counted);
+<span data-nosnippet>633</span>        }
+<span data-nosnippet>634</span>        <span class="kw">for </span>(k, change) <span class="kw">in </span>changes.into_iter().enumerate().rev() {
+<span data-nosnippet>635</span>            <span class="kw">let </span>d = k + <span class="number">1</span>;
+<span data-nosnippet>636</span>            <span class="kw">let </span>q = <span class="self">self</span>.n / d <span class="kw">as </span>u64;
+<span data-nosnippet>637</span>            <span class="kw">let </span>end = q.isqrt().min(q / (d <span class="kw">as </span>u64 + <span class="number">1</span>)) <span class="kw">as </span>usize;
+<span data-nosnippet>638</span>            <span class="kw">let </span>upper = (large / d).min(end);
+<span data-nosnippet>639</span>            R::add_assign(<span class="kw-2">&amp;mut </span>running, <span class="kw-2">&amp;</span>R::add(<span class="kw-2">&amp;</span>change.finish(), <span class="kw-2">&amp;</span>result[len - d]));
+<span data-nosnippet>640</span>            <span class="kw">let </span>other = <span class="kw">match </span><span class="kw-2">&amp;</span>operand {
+<span data-nosnippet>641</span>                DirichletOperand::Factor(rhs) =&gt; <span class="kw-2">&amp;</span>rhs.data,
+<span data-nosnippet>642</span>                DirichletOperand::Inverse(<span class="kw">_</span>) =&gt; <span class="kw-2">&amp;</span>result,
+<span data-nosnippet>643</span>            };
+<span data-nosnippet>644</span>            <span class="kw">let </span><span class="kw-2">mut </span>sum = R::product_sum();
+<span data-nosnippet>645</span>            <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..=upper {
+<span data-nosnippet>646</span>                <span class="kw">let </span>(fi, gi) = <span class="kw-2">&amp;</span>weights[i - <span class="number">1</span>];
+<span data-nosnippet>647</span>                <span class="kw">let </span>j = len - d * i;
+<span data-nosnippet>648</span>                sum.add_products([(fi, <span class="kw-2">&amp;</span>other[j]), (<span class="kw-2">&amp;</span><span class="self">self</span>.data[j], gi)]);
+<span data-nosnippet>649</span>            }
+<span data-nosnippet>650</span>            <span class="kw">let </span>terms = |i: usize, j: usize| {
+<span data-nosnippet>651</span>                <span class="kw">let </span>(fi, gi) = <span class="kw-2">&amp;</span>weights[i - <span class="number">1</span>];
+<span data-nosnippet>652</span>                <span class="kw">let </span>(pf, pg) = <span class="kw-2">&amp;</span>prefixes[j - <span class="number">1</span>];
+<span data-nosnippet>653</span>                [(fi, pg), (pf, gi)]
+<span data-nosnippet>654</span>            };
+<span data-nosnippet>655</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = upper.max(<span class="number">1</span>) + <span class="number">1</span>;
+<span data-nosnippet>656</span>            <span class="kw">let </span>(pairs, <span class="kw">_</span>) = quotient_reciprocals(q, i, end, <span class="kw-2">&amp;</span>reciprocals).as_chunks::&lt;<span class="number">2</span>&gt;();
+<span data-nosnippet>657</span>            <span class="kw">for </span><span class="kw-2">&amp;</span>[r, s] <span class="kw">in </span>pairs {
+<span data-nosnippet>658</span>                <span class="kw">let </span>[a, b] = terms(i, quotient(q, r));
+<span data-nosnippet>659</span>                <span class="kw">let </span>[c, e] = terms(i + <span class="number">1</span>, quotient(q, s));
+<span data-nosnippet>660</span>                sum.add_products([a, b, c, e]);
+<span data-nosnippet>661</span>                i += <span class="number">2</span>;
+<span data-nosnippet>662</span>            }
+<span data-nosnippet>663</span>            <span class="kw">for </span>i <span class="kw">in </span>i..=end {
+<span data-nosnippet>664</span>                sum.add_products(terms(i, (q / i <span class="kw">as </span>u64) <span class="kw">as </span>usize));
+<span data-nosnippet>665</span>            }
+<span data-nosnippet>666</span>            <span class="kw">let </span>(pf, pg) = <span class="kw-2">&amp;</span>prefixes[end - <span class="number">1</span>];
+<span data-nosnippet>667</span>            <span class="kw">let </span><span class="kw-2">mut </span>value = R::sub(<span class="kw-2">&amp;</span>running, <span class="kw-2">&amp;</span>R::mul(pf, pg));
+<span data-nosnippet>668</span>            R::add_assign(<span class="kw-2">&amp;mut </span>value, <span class="kw-2">&amp;</span>sum.finish());
+<span data-nosnippet>669</span>            R::add_assign(<span class="kw-2">&amp;mut </span>value, <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.data[len - d], g1));
+<span data-nosnippet>670</span>            result[len - d] = <span class="kw">match </span><span class="kw-2">&amp;</span>operand {
+<span data-nosnippet>671</span>                DirichletOperand::Factor(rhs) =&gt; R::add(<span class="kw-2">&amp;</span>value, <span class="kw-2">&amp;</span>R::mul(f1, <span class="kw-2">&amp;</span>rhs.data[len - d])),
+<span data-nosnippet>672</span>                DirichletOperand::Inverse(inv) =&gt; R::mul(inv, <span class="kw-2">&amp;</span>R::neg(<span class="kw-2">&amp;</span>value)),
+<span data-nosnippet>673</span>            };
+<span data-nosnippet>674</span>        }
+<span data-nosnippet>675</span>        <span class="self">Self </span>{
+<span data-nosnippet>676</span>            n: <span class="self">self</span>.n,
+<span data-nosnippet>677</span>            root,
+<span data-nosnippet>678</span>            data: result,
+<span data-nosnippet>679</span>        }
+<span data-nosnippet>680</span>    }
+<span data-nosnippet>681</span>}
+<span data-nosnippet>682</span>
+<span data-nosnippet>683</span><span class="kw">struct </span>PrimeBand&lt;<span class="lifetime">'a</span>, T&gt; {
+<span data-nosnippet>684</span>    input: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>DirichletPrefixSums&lt;T&gt;,
+<span data-nosnippet>685</span>    rough: u64,
+<span data-nosnippet>686</span>    max_k: usize,
+<span data-nosnippet>687</span>    keys: Vec&lt;(u64, T)&gt;,
+<span data-nosnippet>688</span>    offset: usize,
+<span data-nosnippet>689</span>    difference: Vec&lt;T&gt;,
+<span data-nosnippet>690</span>    high: Vec&lt;T&gt;,
+<span data-nosnippet>691</span>}
+<span data-nosnippet>692</span>
+<span data-nosnippet>693</span><span class="kw">impl</span>&lt;T&gt; PrimeBand&lt;<span class="lifetime">'_</span>, T&gt; {
+<span data-nosnippet>694</span>    <span class="kw">fn </span>products&lt;G, <span class="kw">const </span>REMOVE: bool&gt;(
+<span data-nosnippet>695</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>696</span>        primes: <span class="kw-2">&amp;</span>[(u64, T)],
+<span data-nosnippet>697</span>        product: u64,
+<span data-nosnippet>698</span>        limit: u64,
+<span data-nosnippet>699</span>        parent: <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>T, bool)&gt;,
+<span data-nosnippet>700</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>701</span>        next: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(u64, u32, <span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>702</span>    ) <span class="kw">where
+<span data-nosnippet>703</span>        </span>T: Clone,
+<span data-nosnippet>704</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>705</span>    {
+<span data-nosnippet>706</span>        <span class="kw">for </span>(j, (p, w)) <span class="kw">in </span>primes.iter().enumerate() {
+<span data-nosnippet>707</span>            <span class="kw">if </span><span class="kw-2">*</span>p &gt; limit {
+<span data-nosnippet>708</span>                <span class="kw">break</span>;
+<span data-nosnippet>709</span>            }
+<span data-nosnippet>710</span>            <span class="kw">let </span><span class="kw-2">mut </span>t = product;
+<span data-nosnippet>711</span>            <span class="kw">let </span><span class="kw-2">mut </span>m = limit;
+<span data-nosnippet>712</span>            <span class="kw">let </span><span class="kw-2">mut </span>weight = w.clone();
+<span data-nosnippet>713</span>            <span class="kw">let </span><span class="kw-2">mut </span>e = <span class="number">1</span>;
+<span data-nosnippet>714</span>            <span class="kw">loop </span>{
+<span data-nosnippet>715</span>                t <span class="kw-2">*</span>= p;
+<span data-nosnippet>716</span>                m /= p;
+<span data-nosnippet>717</span>                <span class="kw">let </span>(val, subtract) = <span class="kw">match </span>parent {
+<span data-nosnippet>718</span>                    <span class="prelude-val">Some</span>((x, negative)) =&gt; (mul(x, <span class="kw-2">&amp;</span>weight), REMOVE &amp;&amp; !negative),
+<span data-nosnippet>719</span>                    <span class="prelude-val">None </span>=&gt; (weight.clone(), REMOVE),
+<span data-nosnippet>720</span>                };
+<span data-nosnippet>721</span>                <span class="kw">let </span>prime = parent.is_none() &amp;&amp; e == <span class="number">1</span>;
+<span data-nosnippet>722</span>                <span class="kw">if </span>subtract {
+<span data-nosnippet>723</span>                    <span class="self">self</span>.term::&lt;G, <span class="bool-val">true</span>&gt;(t, m, <span class="kw-2">&amp;</span>val, prime, mul);
+<span data-nosnippet>724</span>                } <span class="kw">else </span>{
+<span data-nosnippet>725</span>                    <span class="self">self</span>.term::&lt;G, <span class="bool-val">false</span>&gt;(t, m, <span class="kw-2">&amp;</span>val, prime, mul);
+<span data-nosnippet>726</span>                }
+<span data-nosnippet>727</span>                <span class="kw">if </span><span class="kw-2">*</span>p &gt; m {
+<span data-nosnippet>728</span>                    <span class="kw">break</span>;
+<span data-nosnippet>729</span>                }
+<span data-nosnippet>730</span>                <span class="self">self</span>.products::&lt;G, REMOVE&gt;(
+<span data-nosnippet>731</span>                    <span class="kw-2">&amp;</span>primes[j + <span class="number">1</span>..],
+<span data-nosnippet>732</span>                    t,
+<span data-nosnippet>733</span>                    m,
+<span data-nosnippet>734</span>                    <span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span>val, subtract)),
+<span data-nosnippet>735</span>                    mul,
+<span data-nosnippet>736</span>                    next,
+<span data-nosnippet>737</span>                );
+<span data-nosnippet>738</span>                <span class="kw">if </span>REMOVE {
+<span data-nosnippet>739</span>                    <span class="kw">break</span>;
+<span data-nosnippet>740</span>                }
+<span data-nosnippet>741</span>                e += <span class="number">1</span>;
+<span data-nosnippet>742</span>                weight = next(<span class="kw-2">*</span>p, e, w, <span class="kw-2">&amp;</span>weight);
+<span data-nosnippet>743</span>            }
+<span data-nosnippet>744</span>        }
+<span data-nosnippet>745</span>    }
+<span data-nosnippet>746</span>
+<span data-nosnippet>747</span>    <span class="kw">fn </span>term&lt;G, <span class="kw">const </span>SUB: bool&gt;(
+<span data-nosnippet>748</span>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+<span data-nosnippet>749</span>        product: u64,
+<span data-nosnippet>750</span>        limit: u64,
+<span data-nosnippet>751</span>        weight: <span class="kw-2">&amp;</span>T,
+<span data-nosnippet>752</span>        prime: bool,
+<span data-nosnippet>753</span>        mul: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; T,
+<span data-nosnippet>754</span>    ) <span class="kw">where
+<span data-nosnippet>755</span>        </span>T: Clone,
+<span data-nosnippet>756</span>        G: AbelianGroup&lt;T = T&gt;,
+<span data-nosnippet>757</span>    {
+<span data-nosnippet>758</span>        <span class="kw">let </span>input = <span class="self">self</span>.input;
+<span data-nosnippet>759</span>        <span class="kw">let </span>root = input.root <span class="kw">as </span>u64;
+<span data-nosnippet>760</span>        <span class="kw">let </span>len = input.data.len();
+<span data-nosnippet>761</span>        <span class="kw">if </span>!prime {
+<span data-nosnippet>762</span>            <span class="kw">let </span>pos = <span class="kw">if </span>product &lt;= root {
+<span data-nosnippet>763</span>                product <span class="kw">as </span>usize - <span class="number">1
+<span data-nosnippet>764</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>765</span>                len - limit <span class="kw">as </span>usize
+<span data-nosnippet>766</span>            };
+<span data-nosnippet>767</span>            <span class="highlight">update::&lt;G, SUB&gt;</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>.difference[pos - <span class="self">self</span>.offset], weight);
+<span data-nosnippet>768</span>        }
+<span data-nosnippet>769</span>        <span class="kw">if </span>limit &lt; <span class="self">self</span>.rough {
+<span data-nosnippet>770</span>            <span class="kw">return</span>;
+<span data-nosnippet>771</span>        }
+<span data-nosnippet>772</span>        <span class="comment">// Enumerate small rough cofactors once; for the tail, read their prefix sum at each remaining quotient.
+<span data-nosnippet>773</span>        </span><span class="kw">let </span>small = root / product;
+<span data-nosnippet>774</span>        <span class="kw">let </span>split = <span class="kw">if </span>small &lt; <span class="self">self</span>.rough {
+<span data-nosnippet>775</span>            <span class="number">0
+<span data-nosnippet>776</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>777</span>            <span class="self">self</span>.keys.partition_point(|x| x.<span class="number">0 </span>&lt;= small)
+<span data-nosnippet>778</span>        };
+<span data-nosnippet>779</span>        <span class="kw">let </span><span class="kw-2">mut </span>left = split;
+<span data-nosnippet>780</span>        <span class="kw">let </span>max_count = usize::try_from(limit / <span class="self">self</span>.rough).unwrap_or(usize::MAX);
+<span data-nosnippet>781</span>        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="self">self</span>.keys.len().min(max_count);
+<span data-nosnippet>782</span>        <span class="kw">while </span>left &lt; right {
+<span data-nosnippet>783</span>            <span class="kw">let </span>mid = left + (right - left) / <span class="number">2</span>;
+<span data-nosnippet>784</span>            <span class="kw">if </span>(mid <span class="kw">as </span>u64 + <span class="number">1</span>) * <span class="self">self</span>.keys[mid].<span class="number">0 </span>&lt;= limit {
+<span data-nosnippet>785</span>                left = mid + <span class="number">1</span>;
+<span data-nosnippet>786</span>            } <span class="kw">else </span>{
+<span data-nosnippet>787</span>                right = mid;
+<span data-nosnippet>788</span>            }
+<span data-nosnippet>789</span>        }
+<span data-nosnippet>790</span>        <span class="kw">for </span>(k, v) <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.keys[..split] {
+<span data-nosnippet>791</span>            <span class="highlight">update::&lt;G, SUB&gt;</span>(
+<span data-nosnippet>792</span>                <span class="kw-2">&amp;mut </span><span class="self">self</span>.difference[(product * k) <span class="kw">as </span>usize - <span class="number">1 </span>- <span class="self">self</span>.offset],
+<span data-nosnippet>793</span>                <span class="kw-2">&amp;</span>mul(weight, v),
+<span data-nosnippet>794</span>            );
+<span data-nosnippet>795</span>        }
+<span data-nosnippet>796</span>        <span class="kw">for </span>(k, v) <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.keys[split..left] {
+<span data-nosnippet>797</span>            <span class="kw">let </span>d = limit / k;
+<span data-nosnippet>798</span>            <span class="highlight">update::&lt;G, SUB&gt;</span>(
+<span data-nosnippet>799</span>                <span class="kw-2">&amp;mut </span><span class="self">self</span>.difference[len - d <span class="kw">as </span>usize - <span class="self">self</span>.offset],
+<span data-nosnippet>800</span>                <span class="kw-2">&amp;</span>mul(weight, v),
+<span data-nosnippet>801</span>            );
+<span data-nosnippet>802</span>        }
+<span data-nosnippet>803</span>        <span class="kw">let </span>cut = <span class="kw">if </span>left == <span class="self">self</span>.keys.len() {
+<span data-nosnippet>804</span>            <span class="self">self</span>.max_k <span class="kw">as </span>u64
+<span data-nosnippet>805</span>        } <span class="kw">else if </span>left == <span class="number">0 </span>{
+<span data-nosnippet>806</span>            <span class="self">self</span>.rough - <span class="number">1
+<span data-nosnippet>807</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>808</span>            <span class="self">self</span>.keys[left - <span class="number">1</span>].<span class="number">0
+<span data-nosnippet>809</span>        </span>};
+<span data-nosnippet>810</span>        <span class="kw">let </span>cut = cut.max(<span class="self">self</span>.rough - <span class="number">1</span>).max(small);
+<span data-nosnippet>811</span>        <span class="kw">let </span>end = (limit / (cut + <span class="number">1</span>)) <span class="kw">as </span>usize;
+<span data-nosnippet>812</span>        <span class="kw">if </span>end == <span class="number">0 </span>{
+<span data-nosnippet>813</span>            <span class="kw">return</span>;
+<span data-nosnippet>814</span>        }
+<span data-nosnippet>815</span>        <span class="kw">let </span>previous = mul(weight, <span class="kw-2">&amp;</span>input.data[cut <span class="kw">as </span>usize - <span class="number">1</span>]);
+<span data-nosnippet>816</span>        <span class="kw">if </span>SUB {
+<span data-nosnippet>817</span>            G::operate_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>.difference[len - end - <span class="self">self</span>.offset], <span class="kw-2">&amp;</span>previous);
+<span data-nosnippet>818</span>        } <span class="kw">else </span>{
+<span data-nosnippet>819</span>            G::rinv_operate_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>.difference[len - end - <span class="self">self</span>.offset], <span class="kw-2">&amp;</span>previous);
+<span data-nosnippet>820</span>        }
+<span data-nosnippet>821</span>        <span class="kw">if </span><span class="self">self</span>.high.len() &lt; end {
+<span data-nosnippet>822</span>            <span class="self">self</span>.high.resize(end, G::unit());
+<span data-nosnippet>823</span>        }
+<span data-nosnippet>824</span>        <span class="kw">let </span>big = (((len - input.root) <span class="kw">as </span>u64 / product).min(end <span class="kw">as </span>u64)) <span class="kw">as </span>usize;
+<span data-nosnippet>825</span>        <span class="kw">for </span>(d, x) <span class="kw">in </span><span class="self">self</span>.high[..big].iter_mut().enumerate() {
+<span data-nosnippet>826</span>            <span class="highlight">update::&lt;G, SUB&gt;</span>(
+<span data-nosnippet>827</span>                x,
+<span data-nosnippet>828</span>                <span class="kw-2">&amp;</span>mul(weight, <span class="kw-2">&amp;</span>input.data[len - (d + <span class="number">1</span>) * product <span class="kw">as </span>usize]),
+<span data-nosnippet>829</span>            );
+<span data-nosnippet>830</span>        }
+<span data-nosnippet>831</span>        <span class="kw">for </span>d <span class="kw">in </span>big + <span class="number">1</span>..=end {
+<span data-nosnippet>832</span>            <span class="highlight">update::&lt;G, SUB&gt;</span>(
+<span data-nosnippet>833</span>                <span class="kw-2">&amp;mut </span><span class="self">self</span>.high[d - <span class="number">1</span>],
+<span data-nosnippet>834</span>                <span class="kw-2">&amp;</span>mul(weight, <span class="kw-2">&amp;</span>input.data[(limit / d <span class="kw">as </span>u64) <span class="kw">as </span>usize - <span class="number">1</span>]),
+<span data-nosnippet>835</span>            );
+<span data-nosnippet>836</span>        }
+<span data-nosnippet>837</span>    }</code></pre></div></div></div></section></div></main></body></html>

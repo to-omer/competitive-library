@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/floor_sum.rs`."><title>floor_sum.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (6c709eb42 2026-11-25)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/floor_sum.rs`."><title>floor_sum.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1e18a8e7.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.102.0-nightly (c82ce1563 2026-11-27)" data-channel="nightly" data-search-js="search-085293d4.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-9b351432.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-419f3a3f.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-101b5a15.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -77,8 +77,8 @@
 </script>
 
 </head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">competitive/math/</div>floor_sum.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{
-<a href=#2 id=2 data-nosnippet>2</a>    <a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>, <a href="../algebra/magma.rs.html#21-46">Associative</a>, <a href="../num/barrett_reduction.rs.html#5-8">BarrettReduction</a>, <a href="../algebra/ring.rs.html#120-155">DotProduct</a>, <a href="../algebra/magma.rs.html#223-232">Group</a>, <a href="../algebra/magma.rs.html#181-220">Invertible</a>, <a href="../algebra/magma.rs.html#4-18">Magma</a>, <a href="../algebra/magma.rs.html#145-176">Monoid</a>,
-<a href=#3 id=3 data-nosnippet>3</a>    <a href="../num/zero_one.rs.html#15-28">One</a>, <a href="../algebra/ring.rs.html#86-99">Ring</a>, <a href="../algebra/ring.rs.html#8-84">SemiRing</a>, <a href="../algebra/magma.rs.html#54-81">Unital</a>, <a href="../num/integer.rs.html#758">Wrapping</a>, <a href="../tools/array.rs.html#2-24">array</a>,
+<a href=#2 id=2 data-nosnippet>2</a>    <a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>, <a href="../algebra/magma.rs.html#21-46">Associative</a>, <a href="../num/barrett_reduction.rs.html#5-8">BarrettReduction</a>, <a href="../algebra/ring.rs.html#128-167">DotProduct</a>, <a href="../algebra/magma.rs.html#223-232">Group</a>, <a href="../algebra/magma.rs.html#181-220">Invertible</a>, <a href="../algebra/magma.rs.html#4-18">Magma</a>, <a href="../algebra/magma.rs.html#145-176">Monoid</a>,
+<a href=#3 id=3 data-nosnippet>3</a>    <a href="../num/zero_one.rs.html#15-28">One</a>, <a href="../algebra/ring.rs.html#94-107">Ring</a>, <a href="../algebra/ring.rs.html#8-92">SemiRing</a>, <a href="../algebra/magma.rs.html#54-81">Unital</a>, <a href="../num/integer.rs.html#758">Wrapping</a>, <a href="../tools/array.rs.html#2-24">array</a>,
 <a href=#4 id=4 data-nosnippet>4</a>};
 <a href=#5 id=5 data-nosnippet>5</a><span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">marker::PhantomData</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>, <a href="../../../competitive/data_structure/dary_affine_kernel/dary_affine_arithmetic/struct.Range.html">ops::Range</a>};
 <a href=#6 id=6 data-nosnippet>6</a>
@@ -218,7 +218,7 @@
 <a href=#140 id=140 data-nosnippet>140</a>
 <a href=#141 id=141 data-nosnippet>141</a><span class="kw">struct </span><a href="../../../competitive/math/floor_sum/struct.FloorSum.html">FloorSum</a>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
 <a href=#142 id=142 data-nosnippet>142</a><span class="kw">where
-<a href=#143 id=143 data-nosnippet>143</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#143 id=143 data-nosnippet>143</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#144 id=144 data-nosnippet>144</a>{
 <a href=#145 id=145 data-nosnippet>145</a>    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; R&gt;,
 <a href=#146 id=146 data-nosnippet>146</a>}
@@ -226,7 +226,7 @@
 <a href=#148 id=148 data-nosnippet>148</a><span class="attr">#[derive(<a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>)]
 <a href=#149 id=149 data-nosnippet>149</a></span><span class="kw">struct </span><a href="../../../competitive/math/floor_sum/struct.FloorSumData.html">FloorSumData</a>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
 <a href=#150 id=150 data-nosnippet>150</a><span class="kw">where
-<a href=#151 id=151 data-nosnippet>151</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#151 id=151 data-nosnippet>151</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#152 id=152 data-nosnippet>152</a>{
 <a href=#153 id=153 data-nosnippet>153</a>    dp: [[R::T; <a href="#149">Y</a>]; <a href="#149">X</a>],
 <a href=#154 id=154 data-nosnippet>154</a>    dx: R::T,
@@ -236,7 +236,7 @@
 <a href=#158 id=158 data-nosnippet>158</a>
 <a href=#159 id=159 data-nosnippet>159</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span><a href="#149-157">FloorSumData</a>&lt;R, <a href="#159">X</a>, <a href="#159">Y</a>&gt;
 <a href=#160 id=160 data-nosnippet>160</a><span class="kw">where
-<a href=#161 id=161 data-nosnippet>161</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#161 id=161 data-nosnippet>161</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#162 id=162 data-nosnippet>162</a>{
 <a href=#163 id=163 data-nosnippet>163</a>    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 <a href=#164 id=164 data-nosnippet>164</a>        <span class="self">Self </span>{
@@ -250,7 +250,7 @@
 <a href=#172 id=172 data-nosnippet>172</a>
 <a href=#173 id=173 data-nosnippet>173</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="#141-146">FloorSum</a>&lt;R, <a href="#173">X</a>, <a href="#173">Y</a>&gt;
 <a href=#174 id=174 data-nosnippet>174</a><span class="kw">where
-<a href=#175 id=175 data-nosnippet>175</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#175 id=175 data-nosnippet>175</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#176 id=176 data-nosnippet>176</a>{
 <a href=#177 id=177 data-nosnippet>177</a>    <span class="kw">fn </span>to_x() -&gt; <a href="#149-157">FloorSumData</a>&lt;R, <a href="#173">X</a>, <a href="#173">Y</a>&gt; {
 <a href=#178 id=178 data-nosnippet>178</a>        <span class="kw">let </span><span class="kw-2">mut </span>dp = <a href="../tools/array.rs.html#2-24">array!</a>[<span class="macro">array!</span>[R::zero(); Y]; X];
@@ -274,7 +274,7 @@
 <a href=#196 id=196 data-nosnippet>196</a>
 <a href=#197 id=197 data-nosnippet>197</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="#141-146">FloorSum</a>&lt;R, <a href="#197">X</a>, <a href="#197">Y</a>&gt;
 <a href=#198 id=198 data-nosnippet>198</a><span class="kw">where
-<a href=#199 id=199 data-nosnippet>199</a>    </span>R: <a href="../algebra/ring.rs.html#86-99">Ring</a>&lt;Additive: <a href="../algebra/magma.rs.html#181-220">Invertible</a>&gt;,
+<a href=#199 id=199 data-nosnippet>199</a>    </span>R: <a href="../algebra/ring.rs.html#94-107">Ring</a>&lt;Additive: <a href="../algebra/magma.rs.html#181-220">Invertible</a>&gt;,
 <a href=#200 id=200 data-nosnippet>200</a>{
 <a href=#201 id=201 data-nosnippet>201</a>    <span class="kw">fn </span>offset(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <a href="#149-157">FloorSumData</a>&lt;R, <a href="#197">X</a>, <a href="#197">Y</a>&gt; {
 <a href=#202 id=202 data-nosnippet>202</a>        <a href="#149-157">FloorSumData</a> {
@@ -288,7 +288,7 @@
 <a href=#210 id=210 data-nosnippet>210</a>
 <a href=#211 id=211 data-nosnippet>211</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="../algebra/magma.rs.html#4-18">Magma</a> <span class="kw">for </span><a href="#141-146">FloorSum</a>&lt;R, <a href="#211">X</a>, <a href="#211">Y</a>&gt;
 <a href=#212 id=212 data-nosnippet>212</a><span class="kw">where
-<a href=#213 id=213 data-nosnippet>213</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#213 id=213 data-nosnippet>213</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#214 id=214 data-nosnippet>214</a>{
 <a href=#215 id=215 data-nosnippet>215</a>    <span class="kw">type </span>T = <a href="#149-157">FloorSumData</a>&lt;R, <a href="#211">X</a>, <a href="#211">Y</a>&gt;;
 <a href=#216 id=216 data-nosnippet>216</a>
@@ -347,15 +347,15 @@
 <a href=#269 id=269 data-nosnippet>269</a>        } <span class="kw">else </span>{
 <a href=#270 id=270 data-nosnippet>270</a>            <a href="#230-266">go!</a>(X);
 <a href=#271 id=271 data-nosnippet>271</a>        }
-<a href=#272 id=272 data-nosnippet>272</a>        R::<a href="../algebra/ring.rs.html#77-79">add_assign</a>(<span class="kw-2">&amp;mut </span><a href="#218">a</a>.dx, <span class="kw-2">&amp;</span><a href="#219">b</a>.dx);
-<a href=#273 id=273 data-nosnippet>273</a>        R::<a href="../algebra/ring.rs.html#77-79">add_assign</a>(<span class="kw-2">&amp;mut </span><a href="#218">a</a>.dy, <span class="kw-2">&amp;</span><a href="#219">b</a>.dy);
+<a href=#272 id=272 data-nosnippet>272</a>        R::<a href="../algebra/ring.rs.html#85-87">add_assign</a>(<span class="kw-2">&amp;mut </span><a href="#218">a</a>.dx, <span class="kw-2">&amp;</span><a href="#219">b</a>.dx);
+<a href=#273 id=273 data-nosnippet>273</a>        R::<a href="../algebra/ring.rs.html#85-87">add_assign</a>(<span class="kw-2">&amp;mut </span><a href="#218">a</a>.dy, <span class="kw-2">&amp;</span><a href="#219">b</a>.dy);
 <a href=#274 id=274 data-nosnippet>274</a>        <a href="#218">a</a>
 <a href=#275 id=275 data-nosnippet>275</a>    }
 <a href=#276 id=276 data-nosnippet>276</a>}
 <a href=#277 id=277 data-nosnippet>277</a>
 <a href=#278 id=278 data-nosnippet>278</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="../algebra/magma.rs.html#54-81">Unital</a> <span class="kw">for </span><a href="#141-146">FloorSum</a>&lt;R, <a href="#278">X</a>, <a href="#278">Y</a>&gt;
 <a href=#279 id=279 data-nosnippet>279</a><span class="kw">where
-<a href=#280 id=280 data-nosnippet>280</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#280 id=280 data-nosnippet>280</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#281 id=281 data-nosnippet>281</a>{
 <a href=#282 id=282 data-nosnippet>282</a>    <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
 <a href=#283 id=283 data-nosnippet>283</a>        <a href="#149-157">FloorSumData</a> {
@@ -367,7 +367,7 @@
 <a href=#289 id=289 data-nosnippet>289</a>    }
 <a href=#290 id=290 data-nosnippet>290</a>}
 <a href=#291 id=291 data-nosnippet>291</a>
-<a href=#292 id=292 data-nosnippet>292</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="../algebra/magma.rs.html#21-46">Associative</a> <span class="kw">for </span><a href="#141-146">FloorSum</a>&lt;R, <a href="#292">X</a>, <a href="#292">Y</a>&gt; <span class="kw">where </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a> {}
+<a href=#292 id=292 data-nosnippet>292</a><span class="kw">impl</span>&lt;R, <span class="kw">const </span>X: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw">const </span>Y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <a href="../algebra/magma.rs.html#21-46">Associative</a> <span class="kw">for </span><a href="#141-146">FloorSum</a>&lt;R, <a href="#292">X</a>, <a href="#292">Y</a>&gt; <span class="kw">where </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a> {}
 <a href=#293 id=293 data-nosnippet>293</a>
 <a href=#294 id=294 data-nosnippet>294</a><span class="kw">fn </span><a href="../../../competitive/math/floor_sum/fn.floor_monoid_product.html">floor_monoid_product</a>&lt;M&gt;(
 <a href=#295 id=295 data-nosnippet>295</a>    <span class="kw-2">mut </span>x: M::T,
@@ -413,12 +413,12 @@
 <a href=#335 id=335 data-nosnippet>335</a>    m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
 <a href=#336 id=336 data-nosnippet>336</a>) -&gt; [[T; <a href="#331">Y</a>]; <a href="#331">X</a>]
 <a href=#337 id=337 data-nosnippet>337</a><span class="kw">where
-<a href=#338 id=338 data-nosnippet>338</a>    </span>T: <a href="../algebra/ring.rs.html#120-155">DotProduct</a> + <a href="../num/zero_one.rs.html#15-28">One</a>,
+<a href=#338 id=338 data-nosnippet>338</a>    </span>T: <a href="../algebra/ring.rs.html#128-167">DotProduct</a> + <a href="../num/zero_one.rs.html#15-28">One</a>,
 <a href=#339 id=339 data-nosnippet>339</a>{
 <a href=#340 id=340 data-nosnippet>340</a>    <a href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(a == <span class="number">0 </span>|| n &lt; (u64::MAX - b) / a);
-<a href=#341 id=341 data-nosnippet>341</a>    <a href="#294-328">floor_monoid_product</a>::&lt;<a href="#141-146">FloorSum</a>&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#331">X</a>, <a href="#331">Y</a>&gt;&gt;(
-<a href=#342 id=342 data-nosnippet>342</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#331">X</a>, <a href="#331">Y</a>&gt;::<a href="#177-186">to_x</a>(),
-<a href=#343 id=343 data-nosnippet>343</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#331">X</a>, <a href="#331">Y</a>&gt;::<a href="#187-194">to_y</a>(),
+<a href=#341 id=341 data-nosnippet>341</a>    <a href="#294-328">floor_monoid_product</a>::&lt;<a href="#141-146">FloorSum</a>&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#331">X</a>, <a href="#331">Y</a>&gt;&gt;(
+<a href=#342 id=342 data-nosnippet>342</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#331">X</a>, <a href="#331">Y</a>&gt;::<a href="#177-186">to_x</a>(),
+<a href=#343 id=343 data-nosnippet>343</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#331">X</a>, <a href="#331">Y</a>&gt;::<a href="#187-194">to_y</a>(),
 <a href=#344 id=344 data-nosnippet>344</a>        <a href="#332">n</a>,
 <a href=#345 id=345 data-nosnippet>345</a>        <a href="#333">a</a>,
 <a href=#346 id=346 data-nosnippet>346</a>        <a href="#334">b</a>,
@@ -436,8 +436,8 @@
 <a href=#358 id=358 data-nosnippet>358</a>    m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
 <a href=#359 id=359 data-nosnippet>359</a>) -&gt; [[T; <a href="#353">Y</a>]; <a href="#353">X</a>]
 <a href=#360 id=360 data-nosnippet>360</a><span class="kw">where
-<a href=#361 id=361 data-nosnippet>361</a>    </span>T: <a href="../algebra/ring.rs.html#120-155">DotProduct</a> + <a href="../num/zero_one.rs.html#15-28">One</a>,
-<a href=#362 id=362 data-nosnippet>362</a>    <a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>&lt;T = T, Additive: <a href="../algebra/magma.rs.html#181-220">Invertible</a>&gt;,
+<a href=#361 id=361 data-nosnippet>361</a>    </span>T: <a href="../algebra/ring.rs.html#128-167">DotProduct</a> + <a href="../num/zero_one.rs.html#15-28">One</a>,
+<a href=#362 id=362 data-nosnippet>362</a>    <a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>&lt;T = T, Additive: <a href="../algebra/magma.rs.html#181-220">Invertible</a>&gt;,
 <a href=#363 id=363 data-nosnippet>363</a>{
 <a href=#364 id=364 data-nosnippet>364</a>    <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(l &lt;= r);
 <a href=#365 id=365 data-nosnippet>365</a>    <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(m &gt; <span class="number">0</span>);
@@ -460,23 +460,23 @@
 <a href=#382 id=382 data-nosnippet>382</a>    <span class="kw">let </span>b = <a href="#379">b</a>.<a href="https://doc.rust-lang.org/nightly/core/primitive.i64.html#method.rem_euclid">rem_euclid</a>(<a href="#358">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>);
 <a href=#383 id=383 data-nosnippet>383</a>    <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(a &gt;= <span class="number">0</span>);
 <a href=#384 id=384 data-nosnippet>384</a>    <a href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(b &gt;= <span class="number">0</span>);
-<a href=#385 id=385 data-nosnippet>385</a>    <span class="kw">let </span>data = <a href="#294-328">floor_monoid_product</a>::&lt;<a href="#141-146">FloorSum</a>&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;&gt;(
-<a href=#386 id=386 data-nosnippet>386</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="#177-186">to_x</a>(),
-<a href=#387 id=387 data-nosnippet>387</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="#187-194">to_y</a>(),
+<a href=#385 id=385 data-nosnippet>385</a>    <span class="kw">let </span>data = <a href="#294-328">floor_monoid_product</a>::&lt;<a href="#141-146">FloorSum</a>&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;&gt;(
+<a href=#386 id=386 data-nosnippet>386</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="#177-186">to_x</a>(),
+<a href=#387 id=387 data-nosnippet>387</a>        <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="#187-194">to_y</a>(),
 <a href=#388 id=388 data-nosnippet>388</a>        <a href="#378">n</a>,
 <a href=#389 id=389 data-nosnippet>389</a>        <a href="#356">a</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
 <a href=#390 id=390 data-nosnippet>390</a>        <a href="#382">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
 <a href=#391 id=391 data-nosnippet>391</a>        <a href="#358">m</a>,
 <a href=#392 id=392 data-nosnippet>392</a>    );
 <a href=#393 id=393 data-nosnippet>393</a>
-<a href=#394 id=394 data-nosnippet>394</a>    <span class="kw">let </span>offset = <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="#201-208">offset</a>(<a href="#377">add_x</a>, <a href="#381">add_y</a>);
-<a href=#395 id=395 data-nosnippet>395</a>    <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#170-175">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="../algebra/magma.rs.html#9">operate</a>(<span class="kw-2">&amp;</span><a href="#394">offset</a>, <span class="kw-2">&amp;</span><a href="#385">data</a>).dp
+<a href=#394 id=394 data-nosnippet>394</a>    <span class="kw">let </span>offset = <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="#201-208">offset</a>(<a href="#377">add_x</a>, <a href="#381">add_y</a>);
+<a href=#395 id=395 data-nosnippet>395</a>    <a href="#141-146">FloorSum</a>::&lt;<a href="../algebra/ring.rs.html#203-208">AddMulOperation</a>&lt;T&gt;, <a href="#353">X</a>, <a href="#353">Y</a>&gt;::<a href="../algebra/magma.rs.html#9">operate</a>(<span class="kw-2">&amp;</span><a href="#394">offset</a>, <span class="kw-2">&amp;</span><a href="#385">data</a>).dp
 <a href=#396 id=396 data-nosnippet>396</a>}
 <a href=#397 id=397 data-nosnippet>397</a>
 <a href=#398 id=398 data-nosnippet>398</a><span class="attr">#[derive(<a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>)]
 <a href=#399 id=399 data-nosnippet>399</a></span><span class="kw">struct </span><a href="../../../competitive/math/floor_sum/struct.FloorPowerSum.html">FloorPowerSum</a>&lt;R&gt;
 <a href=#400 id=400 data-nosnippet>400</a><span class="kw">where
-<a href=#401 id=401 data-nosnippet>401</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#401 id=401 data-nosnippet>401</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#402 id=402 data-nosnippet>402</a>{
 <a href=#403 id=403 data-nosnippet>403</a>    x: R::T,
 <a href=#404 id=404 data-nosnippet>404</a>    sum: R::T,
@@ -484,7 +484,7 @@
 <a href=#406 id=406 data-nosnippet>406</a>
 <a href=#407 id=407 data-nosnippet>407</a><span class="kw">impl</span>&lt;R&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span><a href="#399-405">FloorPowerSum</a>&lt;R&gt;
 <a href=#408 id=408 data-nosnippet>408</a><span class="kw">where
-<a href=#409 id=409 data-nosnippet>409</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#409 id=409 data-nosnippet>409</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#410 id=410 data-nosnippet>410</a>{
 <a href=#411 id=411 data-nosnippet>411</a>    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 <a href=#412 id=412 data-nosnippet>412</a>        <span class="self">Self </span>{
@@ -496,7 +496,7 @@
 <a href=#418 id=418 data-nosnippet>418</a>
 <a href=#419 id=419 data-nosnippet>419</a><span class="kw">impl</span>&lt;R&gt; <a href="#399-405">FloorPowerSum</a>&lt;R&gt;
 <a href=#420 id=420 data-nosnippet>420</a><span class="kw">where
-<a href=#421 id=421 data-nosnippet>421</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#421 id=421 data-nosnippet>421</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#422 id=422 data-nosnippet>422</a>{
 <a href=#423 id=423 data-nosnippet>423</a>    <span class="kw">fn </span>to_x(x: R::T) -&gt; <span class="self">Self </span>{
 <a href=#424 id=424 data-nosnippet>424</a>        <span class="self">Self </span>{ <a href="#423">x</a>, sum: R::<a href="../algebra/ring.rs.html#23-25">one</a>() }
@@ -511,7 +511,7 @@
 <a href=#433 id=433 data-nosnippet>433</a>
 <a href=#434 id=434 data-nosnippet>434</a><span class="kw">impl</span>&lt;R&gt; <a href="../algebra/magma.rs.html#4-18">Magma</a> <span class="kw">for </span><a href="#399-405">FloorPowerSum</a>&lt;R&gt;
 <a href=#435 id=435 data-nosnippet>435</a><span class="kw">where
-<a href=#436 id=436 data-nosnippet>436</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#436 id=436 data-nosnippet>436</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#437 id=437 data-nosnippet>437</a>{
 <a href=#438 id=438 data-nosnippet>438</a>    <span class="kw">type </span>T = <span class="self">Self</span>;
 <a href=#439 id=439 data-nosnippet>439</a>
@@ -525,7 +525,7 @@
 <a href=#447 id=447 data-nosnippet>447</a>
 <a href=#448 id=448 data-nosnippet>448</a><span class="kw">impl</span>&lt;R&gt; <a href="../algebra/magma.rs.html#54-81">Unital</a> <span class="kw">for </span><a href="#399-405">FloorPowerSum</a>&lt;R&gt;
 <a href=#449 id=449 data-nosnippet>449</a><span class="kw">where
-<a href=#450 id=450 data-nosnippet>450</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#450 id=450 data-nosnippet>450</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#451 id=451 data-nosnippet>451</a>{
 <a href=#452 id=452 data-nosnippet>452</a>    <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
 <a href=#453 id=453 data-nosnippet>453</a>        <span class="self">Self </span>{
@@ -535,12 +535,12 @@
 <a href=#457 id=457 data-nosnippet>457</a>    }
 <a href=#458 id=458 data-nosnippet>458</a>}
 <a href=#459 id=459 data-nosnippet>459</a>
-<a href=#460 id=460 data-nosnippet>460</a><span class="kw">impl</span>&lt;R&gt; <a href="../algebra/magma.rs.html#21-46">Associative</a> <span class="kw">for </span><a href="#399-405">FloorPowerSum</a>&lt;R&gt; <span class="kw">where </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a> {}
+<a href=#460 id=460 data-nosnippet>460</a><span class="kw">impl</span>&lt;R&gt; <a href="../algebra/magma.rs.html#21-46">Associative</a> <span class="kw">for </span><a href="#399-405">FloorPowerSum</a>&lt;R&gt; <span class="kw">where </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a> {}
 <a href=#461 id=461 data-nosnippet>461</a>
 <a href=#462 id=462 data-nosnippet>462</a><span class="doccomment">/// $$\sum_{i=0}^{n-1}x^iy^{\left\lfloor\frac{a\times i+b}{m}\right\rfloor}$$
 <a href=#463 id=463 data-nosnippet>463</a></span><span class="kw">pub fn </span><a href="../../../competitive/math/floor_sum/fn.floor_power_sum.html">floor_power_sum</a>&lt;R&gt;(x: R::T, y: R::T, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; R::T
 <a href=#464 id=464 data-nosnippet>464</a><span class="kw">where
-<a href=#465 id=465 data-nosnippet>465</a>    </span>R: <a href="../algebra/ring.rs.html#8-84">SemiRing</a>,
+<a href=#465 id=465 data-nosnippet>465</a>    </span>R: <a href="../algebra/ring.rs.html#8-92">SemiRing</a>,
 <a href=#466 id=466 data-nosnippet>466</a>{
 <a href=#467 id=467 data-nosnippet>467</a>    <a href="#294-328">floor_monoid_product</a>::&lt;<a href="#399-405">FloorPowerSum</a>&lt;R&gt;&gt;(
 <a href=#468 id=468 data-nosnippet>468</a>        <a href="#399-405">FloorPowerSum</a>::&lt;R&gt;::<a href="#423-425">to_x</a>(<a href="#463">x</a>),
