@@ -101,7 +101,249 @@
 <span data-nosnippet>155</span>    <span class="kw">pub fn </span>set_mod(m: u64) {
 <span data-nosnippet>156</span>        DYN_MODULUS_U64
 <span data-nosnippet>157</span>            .with(|cell| <span class="kw">unsafe </span>{ <span class="kw-2">*</span>cell.get() = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(m <span class="kw">as </span>u128) })
-<span data-nosnippet>158</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/math/primitive_root.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">pub fn </span>primitive_root(p: u64) -&gt; u64 {
+<span data-nosnippet>158</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#85&#34;,&#34;line 85&#34;],[[5,5],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#88&#34;,&#34;line 88&#34;],[[179,179],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#262&#34;,&#34;line 262&#34;],[[209,209],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#292&#34;,&#34;line 292&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#85">line 85</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>83</span><span class="kw">fn </span>prime_field_log(a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>84</span>    <span class="kw">if </span>p &lt;= u32::MAX.into() {
+<span data-nosnippet>85</span>        <span class="kw">let </span>br = <span class="highlight focus">BarrettReduction::&lt;u64&gt;::new</span>(p);
+<span data-nosnippet>86</span>        pohlig_hellman::&lt;<span class="number">4</span>&gt;(a, b, p, |x, y| br.rem(x * y))
+<span data-nosnippet>87</span>    } <span class="kw">else </span>{
+<span data-nosnippet>88</span>        <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(p <span class="kw">as _</span>);
+<span data-nosnippet>89</span>        pohlig_hellman::&lt;<span class="number">16</span>&gt;(a, b, p, |x, y| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64)
+<span data-nosnippet>90</span>    }
+<span data-nosnippet>91</span>}
+<span data-nosnippet>92</span>
+<span data-nosnippet>93</span><span class="kw">fn </span>pohlig_hellman&lt;<span class="kw">const </span>LANES: usize&gt;(
+<span data-nosnippet>94</span>    <span class="kw-2">mut </span>a: u64,
+<span data-nosnippet>95</span>    <span class="kw-2">mut </span>b: u64,
+<span data-nosnippet>96</span>    p: u64,
+<span data-nosnippet>97</span>    mul: <span class="kw">impl </span>Fn(u64, u64) -&gt; u64 + Copy,
+<span data-nosnippet>98</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>99</span>    <span class="kw">let </span><span class="kw-2">mut </span>order = p - <span class="number">1</span>;
+<span data-nosnippet>100</span>    <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="number">0</span>;
+<span data-nosnippet>101</span>    <span class="kw">let </span><span class="kw-2">mut </span>period = <span class="number">1</span>;
+<span data-nosnippet>102</span>    <span class="kw">for </span>(q, e) <span class="kw">in </span>prime_factors(order) {
+<span data-nosnippet>103</span>        <span class="kw">for _ in </span><span class="number">0</span>..e {
+<span data-nosnippet>104</span>            order /= q;
+<span data-nosnippet>105</span>            <span class="kw">let </span>(g, h) = <span class="kw">if </span>order == <span class="number">1 </span>{
+<span data-nosnippet>106</span>                (a, b)
+<span data-nosnippet>107</span>            } <span class="kw">else </span>{
+<span data-nosnippet>108</span>                (power(a, order, mul), power(b, order, mul))
+<span data-nosnippet>109</span>            };
+<span data-nosnippet>110</span>            <span class="kw">if </span>g == <span class="number">1 </span>{
+<span data-nosnippet>111</span>                <span class="kw">if </span>h != <span class="number">1 </span>{
+<span data-nosnippet>112</span>                    <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>113</span>                }
+<span data-nosnippet>114</span>                <span class="kw">continue</span>;
+<span data-nosnippet>115</span>            }
+<span data-nosnippet>116</span>            <span class="kw">let </span>digit = <span class="kw">if </span>h == <span class="number">1 </span>{
+<span data-nosnippet>117</span>                <span class="number">0
+<span data-nosnippet>118</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>119</span>                prime_order_log::&lt;LANES&gt;(g, h, p, q, mul)
+<span data-nosnippet>120</span>            };
+<span data-nosnippet>121</span>            x += period * digit;
+<span data-nosnippet>122</span>            period <span class="kw-2">*</span>= q;
+<span data-nosnippet>123</span>            <span class="kw">if </span>order != <span class="number">1 </span>{
+<span data-nosnippet>124</span>                <span class="kw">if </span>digit != <span class="number">0 </span>{
+<span data-nosnippet>125</span>                    b = mul(b, power(a, digit, mul).mod_inv(p));
+<span data-nosnippet>126</span>                }
+<span data-nosnippet>127</span>                a = power(a, q, mul);
+<span data-nosnippet>128</span>            }
+<span data-nosnippet>129</span>        }
+<span data-nosnippet>130</span>    }
+<span data-nosnippet>131</span>    <span class="prelude-val">Some</span>((x, period))
+<span data-nosnippet>132</span>}
+<span data-nosnippet>133</span>
+<span data-nosnippet>134</span><span class="doccomment">/// h is a nonidentity element of the subgroup of prime order generated by g.
+<span data-nosnippet>135</span></span><span class="kw">fn </span>prime_order_log&lt;<span class="kw">const </span>LANES: usize&gt;(
+<span data-nosnippet>136</span>    g: u64,
+<span data-nosnippet>137</span>    h: u64,
+<span data-nosnippet>138</span>    p: u64,
+<span data-nosnippet>139</span>    order: u64,
+<span data-nosnippet>140</span>    mul: <span class="kw">impl </span>Fn(u64, u64) -&gt; u64 + Copy,
+<span data-nosnippet>141</span>) -&gt; u64 {
+<span data-nosnippet>142</span>    <span class="kw">if </span>order &lt;= <span class="number">128 </span>{
+<span data-nosnippet>143</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>value, <span class="kw-2">mut </span>i) = (g, <span class="number">1</span>);
+<span data-nosnippet>144</span>        <span class="kw">while </span>value != h {
+<span data-nosnippet>145</span>            value = mul(value, g);
+<span data-nosnippet>146</span>            i += <span class="number">1</span>;
+<span data-nosnippet>147</span>        }
+<span data-nosnippet>148</span>        <span class="kw">return </span>i;
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>
+<span data-nosnippet>151</span>    <span class="kw">let </span>sqrt = p.isqrt();
+<span data-nosnippet>152</span>    <span class="comment">// At most one prime divisor of p-1 exceeds √p. Field logarithms modulo
+<span data-nosnippet>153</span>    // that divisor distinguish all elements of the subgroup generated by g.
+<span data-nosnippet>154</span>    </span><span class="kw">if </span>order &gt; sqrt
+<span data-nosnippet>155</span>        &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(digit) = LOGS.with_borrow_mut(|cache| {
+<span data-nosnippet>156</span>            <span class="kw">let </span>entry = cache.entry(p).or_insert_with(|| LogCache {
+<span data-nosnippet>157</span>                remaining_searches: ((sqrt &lt;&lt; <span class="number">12</span>) / order).isqrt(),
+<span data-nosnippet>158</span>                table: <span class="prelude-val">None</span>,
+<span data-nosnippet>159</span>            });
+<span data-nosnippet>160</span>            <span class="kw">if </span>entry.remaining_searches &gt; <span class="number">0 </span>{
+<span data-nosnippet>161</span>                entry.remaining_searches -= <span class="number">1</span>;
+<span data-nosnippet>162</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>163</span>            }
+<span data-nosnippet>164</span>            <span class="kw">let </span>ic = entry
+<span data-nosnippet>165</span>                .table
+<span data-nosnippet>166</span>                .get_or_insert_with(|| Box::new(IndexCalculus::new(p, order)));
+<span data-nosnippet>167</span>            <span class="prelude-val">Some</span>(ic.log(h).mod_mul(ic.log(g).mod_inv(order), order))
+<span data-nosnippet>168</span>        })
+<span data-nosnippet>169</span>    {
+<span data-nosnippet>170</span>        <span class="kw">return </span>digit;
+<span data-nosnippet>171</span>    }
+<span data-nosnippet>172</span>
+<span data-nosnippet>173</span>    <span class="kw">let </span>blocks = order.isqrt() <span class="kw">as </span>usize / LANES + <span class="number">1</span>;
+<span data-nosnippet>174</span>    <span class="kw">let </span>step = blocks * LANES;
+<span data-nosnippet>175</span>    <span class="kw">let </span>capacity = (<span class="number">4 </span>* step).next_power_of_two();
+<span data-nosnippet>176</span>    <span class="kw">let </span>mask = capacity <span class="kw">as </span>u64 - <span class="number">1</span>;
+<span data-nosnippet>177</span>    <span class="kw">let </span><span class="kw-2">mut </span>heads = <span class="macro">vec!</span>[<span class="number">0u32</span>; capacity];
+<span data-nosnippet>178</span>    <span class="kw">let </span><span class="kw-2">mut </span>entries = Vec::with_capacity(step);
+<span data-nosnippet>179</span>    <span class="kw">for </span>block <span class="kw">in </span>power_blocks::&lt;LANES&gt;(<span class="number">1</span>, g, mul).take(blocks) {
+<span data-nosnippet>180</span>        <span class="kw">for </span>value <span class="kw">in </span>block {
+<span data-nosnippet>181</span>            <span class="kw">let </span>head = <span class="kw-2">&amp;mut </span>heads[(value &amp; mask) <span class="kw">as </span>usize];
+<span data-nosnippet>182</span>            <span class="comment">// The bucket supplies the low bits of the residue. Use those bits for the chain link.
+<span data-nosnippet>183</span>            </span>entries.push((value &amp; !mask) | u64::from(<span class="kw-2">*</span>head));
+<span data-nosnippet>184</span>            <span class="kw-2">*</span>head = entries.len() <span class="kw">as </span>u32;
+<span data-nosnippet>185</span>        }
+<span data-nosnippet>186</span>    }
+<span data-nosnippet>187</span>
+<span data-nosnippet>188</span>    <span class="kw">let </span>stride = power(g, step <span class="kw">as </span>u64, mul).mod_inv(p);
+<span data-nosnippet>189</span>    <span class="kw">for </span>(i, block) <span class="kw">in </span>power_blocks::&lt;LANES&gt;(h, stride, mul).enumerate() {
+<span data-nosnippet>190</span>        <span class="kw">for </span>(k, target) <span class="kw">in </span>block.into_iter().enumerate() {
+<span data-nosnippet>191</span>            <span class="kw">let </span><span class="kw-2">mut </span>j = heads[(target &amp; mask) <span class="kw">as </span>usize];
+<span data-nosnippet>192</span>            <span class="kw">while </span>j != <span class="number">0 </span>{
+<span data-nosnippet>193</span>                <span class="kw">let </span>entry = entries[j <span class="kw">as </span>usize - <span class="number">1</span>];
+<span data-nosnippet>194</span>                <span class="kw">if </span>(entry ^ target) &amp; !mask == <span class="number">0 </span>{
+<span data-nosnippet>195</span>                    <span class="kw">return </span>(i * LANES + k) <span class="kw">as </span>u64 * step <span class="kw">as </span>u64 + u64::from(j) - <span class="number">1</span>;
+<span data-nosnippet>196</span>                }
+<span data-nosnippet>197</span>                j = (entry &amp; mask) <span class="kw">as </span>u32;
+<span data-nosnippet>198</span>            }
+<span data-nosnippet>199</span>        }
+<span data-nosnippet>200</span>    }
+<span data-nosnippet>201</span>    <span class="macro">unreachable!</span>()
+<span data-nosnippet>202</span>}
+<span data-nosnippet>203</span>
+<span data-nosnippet>204</span><span class="kw">fn </span>power_blocks&lt;<span class="kw">const </span>LANES: usize&gt;(
+<span data-nosnippet>205</span>    start: u64,
+<span data-nosnippet>206</span>    g: u64,
+<span data-nosnippet>207</span>    mul: <span class="kw">impl </span>Fn(u64, u64) -&gt; u64,
+<span data-nosnippet>208</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = [u64; LANES]&gt; {
+<span data-nosnippet>209</span>    <span class="kw">let </span><span class="kw-2">mut </span>values = [start; LANES];
+<span data-nosnippet>210</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..LANES {
+<span data-nosnippet>211</span>        values[i] = mul(values[i - <span class="number">1</span>], g);
+<span data-nosnippet>212</span>    }
+<span data-nosnippet>213</span>    <span class="kw">let </span>jump = power(g, LANES <span class="kw">as </span>u64, <span class="kw-2">&amp;</span>mul);
+<span data-nosnippet>214</span>    std::iter::from_fn(<span class="kw">move </span>|| {
+<span data-nosnippet>215</span>        <span class="kw">let </span>block = values;
+<span data-nosnippet>216</span>        <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;mut </span>values {
+<span data-nosnippet>217</span>            <span class="kw-2">*</span>v = mul(<span class="kw-2">*</span>v, jump);
+<span data-nosnippet>218</span>        }
+<span data-nosnippet>219</span>        <span class="prelude-val">Some</span>(block)
+<span data-nosnippet>220</span>    })
+<span data-nosnippet>221</span>}
+<span data-nosnippet>222</span>
+<span data-nosnippet>223</span><span class="kw">fn </span>discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>224</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>period) = prime_field_log(a % p, b % p, p)<span class="question-mark">?</span>;
+<span data-nosnippet>225</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = p;
+<span data-nosnippet>226</span>    <span class="kw">for _ in </span><span class="number">1</span>..e {
+<span data-nosnippet>227</span>        <span class="kw">let </span>next = m * p;
+<span data-nosnippet>228</span>        <span class="kw">let </span>mul = |x: u64, y| x.mod_mul(y, next);
+<span data-nosnippet>229</span>        <span class="kw">let </span>value = power(a, x, mul);
+<span data-nosnippet>230</span>        <span class="kw">let </span>step = power(a, period, mul);
+<span data-nosnippet>231</span>        <span class="comment">// (1 + k*m)^d ≡ 1 + d*k*m (mod p*m).
+<span data-nosnippet>232</span>        </span><span class="kw">let </span>delta = (b % next).mod_sub(value, next) / m;
+<span data-nosnippet>233</span>        <span class="kw">let </span>slope = (step / m).mod_mul(value, p);
+<span data-nosnippet>234</span>        <span class="kw">let </span>(digit, radix) = solve_linear_congruence(slope, delta, p)<span class="question-mark">?</span>;
+<span data-nosnippet>235</span>        x += period * digit;
+<span data-nosnippet>236</span>        period <span class="kw-2">*</span>= radix;
+<span data-nosnippet>237</span>        m = next;
+<span data-nosnippet>238</span>    }
+<span data-nosnippet>239</span>    <span class="prelude-val">Some</span>((x, period))
+<span data-nosnippet>240</span>}
+<span data-nosnippet>241</span>
+<span data-nosnippet>242</span><span class="attr">#[derive(Debug)]
+<span data-nosnippet>243</span></span><span class="kw">struct </span>FactorBasePrime {
+<span data-nosnippet>244</span>    p: u32,
+<span data-nosnippet>245</span>    inverse: u32,
+<span data-nosnippet>246</span>    limit: u32,
+<span data-nosnippet>247</span>}
+<span data-nosnippet>248</span>
+<span data-nosnippet>249</span><span class="attr">#[derive(Debug)]
+<span data-nosnippet>250</span></span><span class="kw">struct </span>IndexCalculus {
+<span data-nosnippet>251</span>    modulus: BarrettReduction&lt;u128&gt;,
+<span data-nosnippet>252</span>    q: u64,
+<span data-nosnippet>253</span>    sqrt: u64,
+<span data-nosnippet>254</span>    generator: u64,
+<span data-nosnippet>255</span>    primes: Vec&lt;FactorBasePrime&gt;,
+<span data-nosnippet>256</span>    logs: Vec&lt;u64&gt;,
+<span data-nosnippet>257</span>}
+<span data-nosnippet>258</span>
+<span data-nosnippet>259</span><span class="kw">impl </span>IndexCalculus {
+<span data-nosnippet>260</span>    <span class="kw">fn </span>new(p: u64, q: u64) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>261</span>        <span class="kw">let </span>bound = ((<span class="number">10.0 </span>* (p <span class="kw">as </span>f64).powf(<span class="number">1.0 </span>/ <span class="number">9.0</span>)) <span class="kw">as </span>u32).min(p.isqrt() <span class="kw">as </span>u32);
+<span data-nosnippet>262</span>        <span class="kw">let </span>modulus = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(p <span class="kw">as _</span>);
+<span data-nosnippet>263</span>        <span class="kw">let </span>mul = |x: u64, y: u64| modulus.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>264</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<span data-nosnippet>265</span>        <span class="kw">let </span>stride = std::iter::repeat_with(|| rng.rand(p - <span class="number">1</span>) + <span class="number">1</span>)
+<span data-nosnippet>266</span>            .find(|<span class="kw-2">&amp;</span>k| gcd(k, p - <span class="number">1</span>) == <span class="number">1</span>)
+<span data-nosnippet>267</span>            .unwrap();
+<span data-nosnippet>268</span>        <span class="kw">let </span>generator = power(primitive_root(p), stride, mul);
+<span data-nosnippet>269</span>        <span class="kw">let </span>primes = PrimeList::new(bound)
+<span data-nosnippet>270</span>            .primes()
+<span data-nosnippet>271</span>            .map(|p| FactorBasePrime {
+<span data-nosnippet>272</span>                p,
+<span data-nosnippet>273</span>                inverse: <span class="kw">if </span>p == <span class="number">2 </span>{
+<span data-nosnippet>274</span>                    <span class="number">0
+<span data-nosnippet>275</span>                </span>} <span class="kw">else </span>{
+<span data-nosnippet>276</span>                    (p <span class="kw">as </span>u64).mod_inv(<span class="number">1 </span>&lt;&lt; <span class="number">32</span>) <span class="kw">as </span>u32
+<span data-nosnippet>277</span>                },
+<span data-nosnippet>278</span>                limit: u32::MAX / p,
+<span data-nosnippet>279</span>            })
+<span data-nosnippet>280</span>            .collect();
+<span data-nosnippet>281</span>        <span class="kw">let </span><span class="kw-2">mut </span>ic = <span class="self">Self </span>{
+<span data-nosnippet>282</span>            modulus,
+<span data-nosnippet>283</span>            q,
+<span data-nosnippet>284</span>            sqrt: p.isqrt(),
+<span data-nosnippet>285</span>            generator,
+<span data-nosnippet>286</span>            primes,
+<span data-nosnippet>287</span>            logs: Vec::new(),
+<span data-nosnippet>288</span>        };
+<span data-nosnippet>289</span>        <span class="kw">let </span>count = ic.primes.len();
+<span data-nosnippet>290</span>        <span class="comment">// Eliminate larger, rarer primes first to keep early relations sparse.
+<span data-nosnippet>291</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>pivots = <span class="macro">vec!</span>[Vec::&lt;u64&gt;::new(); count];
+<span data-nosnippet>292</span>        <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(q <span class="kw">as _</span>);
+<span data-nosnippet>293</span>        <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>294</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>value, <span class="kw-2">mut </span>exponent) = (<span class="number">1</span>, <span class="number">0</span>);
+<span data-nosnippet>295</span>        <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="number">0</span>;
+<span data-nosnippet>296</span>        <span class="kw">while </span>rank &lt; count {
+<span data-nosnippet>297</span>            <span class="kw">let </span><span class="kw-2">mut </span>row = ic.relation(<span class="kw-2">&amp;mut </span>value, <span class="kw-2">&amp;mut </span>exponent);
+<span data-nosnippet>298</span>            <span class="kw">for </span>(i, pivot) <span class="kw">in </span>pivots.iter_mut().enumerate() {
+<span data-nosnippet>299</span>                <span class="kw">let </span>coefficient = row[i];
+<span data-nosnippet>300</span>                <span class="kw">if </span>coefficient == <span class="number">0 </span>{
+<span data-nosnippet>301</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>302</span>                }
+<span data-nosnippet>303</span>                <span class="kw">if </span>pivot.is_empty() {
+<span data-nosnippet>304</span>                    <span class="kw">let </span>inverse = coefficient.mod_inv(q);
+<span data-nosnippet>305</span>                    <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>row[i..] {
+<span data-nosnippet>306</span>                        <span class="kw-2">*</span>x = mul(<span class="kw-2">*</span>x, inverse);
+<span data-nosnippet>307</span>                    }
+<span data-nosnippet>308</span>                    <span class="kw-2">*</span>pivot = row;
+<span data-nosnippet>309</span>                    rank += <span class="number">1</span>;
+<span data-nosnippet>310</span>                    <span class="kw">break</span>;
+<span data-nosnippet>311</span>                }
+<span data-nosnippet>312</span>                <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>row[i + <span class="number">1</span>..].iter_mut().zip(<span class="kw-2">&amp;</span>pivot[i + <span class="number">1</span>..]) {
+<span data-nosnippet>313</span>                    <span class="kw-2">*</span>x = x.mod_sub(mul(coefficient, y), q);
+<span data-nosnippet>314</span>                }
+<span data-nosnippet>315</span>            }
+<span data-nosnippet>316</span>        }
+<span data-nosnippet>317</span>        ic.logs = <span class="macro">vec!</span>[<span class="number">0</span>; count];
+<span data-nosnippet>318</span>        <span class="kw">for </span>(i, row) <span class="kw">in </span>pivots.iter().enumerate().rev() {
+<span data-nosnippet>319</span>            ic.logs[i] = row[i + <span class="number">1</span>..count]
+<span data-nosnippet>320</span>                .iter()
+<span data-nosnippet>321</span>                .zip(<span class="kw-2">&amp;</span>ic.logs[i + <span class="number">1</span>..])
+<span data-nosnippet>322</span>                .fold(row[count], |v, (<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>y)| v.mod_sub(mul(x, y), q));
+<span data-nosnippet>323</span>        }
+<span data-nosnippet>324</span>        ic
+<span data-nosnippet>325</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/math/primitive_root.rs.html#9&#34;,&#34;line 9&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">pub fn </span>primitive_root(p: u64) -&gt; u64 {
 <span data-nosnippet>4</span>    <span class="kw">if </span>p == <span class="number">2 </span>{
 <span data-nosnippet>5</span>        <span class="kw">return </span><span class="number">1</span>;
 <span data-nosnippet>6</span>    }
@@ -120,393 +362,7 @@
 <span data-nosnippet>19</span>            <span class="kw">return </span>g;
 <span data-nosnippet>20</span>        }
 <span data-nosnippet>21</span>    }
-<span data-nosnippet>22</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#76&#34;,&#34;line 76&#34;],[[59,59],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#126&#34;,&#34;line 126&#34;],[[123,123],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#190&#34;,&#34;line 190&#34;],[[132,132],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#199&#34;,&#34;line 199&#34;],[[196,196],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#263&#34;,&#34;line 263&#34;],[[209,209],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#276&#34;,&#34;line 276&#34;],[[256,256],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#323&#34;,&#34;line 323&#34;],[[283,283],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#350&#34;,&#34;line 350&#34;],[[333,333],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#400&#34;,&#34;line 400&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#76">line 76</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>67</span>    <span class="kw">fn </span>discrete_logarithm(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
-<span data-nosnippet>68</span>        <span class="kw">let </span>lim = ((((p <span class="kw">as </span>f64).log2() * (p <span class="kw">as </span>f64).log2().log2()).sqrt() / <span class="number">2.0 </span>+ <span class="number">1.</span>).exp2() * <span class="number">0.9</span>)
-<span data-nosnippet>69</span>            <span class="kw">as </span>u32;
-<span data-nosnippet>70</span>        <span class="self">self</span>.primes.reserve(lim);
-<span data-nosnippet>71</span>        <span class="kw">let </span>prime_count = <span class="self">self</span>.primes.primes_lte(lim).count();
-<span data-nosnippet>72</span>        <span class="self">self</span>.br_primes.extend(
-<span data-nosnippet>73</span>            <span class="self">self</span>.primes
-<span data-nosnippet>74</span>                .primes_lte(lim)
-<span data-nosnippet>75</span>                .skip(<span class="self">self</span>.br_primes.len())
-<span data-nosnippet>76</span>                .map(|p| <span class="highlight focus">BarrettReduction::&lt;u64&gt;::new</span>(p.into())),
-<span data-nosnippet>77</span>        );
-<span data-nosnippet>78</span>        <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><span class="self">self</span>.br_primes[..prime_count];
-<span data-nosnippet>79</span>        <span class="self">self</span>.ic
-<span data-nosnippet>80</span>            .entry(p)
-<span data-nosnippet>81</span>            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(p, br_primes))
-<span data-nosnippet>82</span>            .discrete_logarithm(a, b, br_primes)
-<span data-nosnippet>83</span>    }
-<span data-nosnippet>84</span>}
-<span data-nosnippet>85</span>
-<span data-nosnippet>86</span><span class="kw">const </span>A: [u32; <span class="number">150</span>] = [
-<span data-nosnippet>87</span>    <span class="number">62</span>, <span class="number">61</span>, <span class="number">60</span>, <span class="number">60</span>, <span class="number">59</span>, <span class="number">58</span>, <span class="number">58</span>, <span class="number">58</span>, <span class="number">57</span>, <span class="number">56</span>, <span class="number">56</span>, <span class="number">56</span>, <span class="number">56</span>, <span class="number">55</span>, <span class="number">55</span>, <span class="number">55</span>, <span class="number">54</span>, <span class="number">54</span>, <span class="number">54</span>, <span class="number">53</span>, <span class="number">53</span>, <span class="number">53</span>, <span class="number">53</span>, <span class="number">52</span>,
-<span data-nosnippet>88</span>    <span class="number">52</span>, <span class="number">52</span>, <span class="number">52</span>, <span class="number">52</span>, <span class="number">52</span>, <span class="number">51</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">49</span>, <span class="number">49</span>, <span class="number">49</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>,
-<span data-nosnippet>89</span>    <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">45</span>, <span class="number">42</span>, <span class="number">42</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>,
-<span data-nosnippet>90</span>    <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>,
-<span data-nosnippet>91</span>    <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>,
-<span data-nosnippet>92</span>    <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>,
-<span data-nosnippet>93</span>    <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>,
-<span data-nosnippet>94</span>];
-<span data-nosnippet>95</span>
-<span data-nosnippet>96</span><span class="kw">fn </span>factorize_smooth(<span class="kw-2">mut </span>x: u64, row: <span class="kw-2">&amp;mut </span>[u64], br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; bool {
-<span data-nosnippet>97</span>    <span class="kw">for </span>(j, (<span class="kw-2">&amp;</span>br, r)) <span class="kw">in </span>br_primes.iter().zip(row).enumerate() {
-<span data-nosnippet>98</span>        <span class="kw-2">*</span>r = <span class="number">0</span>;
-<span data-nosnippet>99</span>        <span class="kw">loop </span>{
-<span data-nosnippet>100</span>            <span class="kw">let </span>(div, rem) = br.div_rem(x);
-<span data-nosnippet>101</span>            <span class="kw">if </span>rem != <span class="number">0 </span>{
-<span data-nosnippet>102</span>                <span class="kw">break</span>;
-<span data-nosnippet>103</span>            }
-<span data-nosnippet>104</span>            <span class="kw-2">*</span>r += <span class="number">1</span>;
-<span data-nosnippet>105</span>            x = div;
-<span data-nosnippet>106</span>        }
-<span data-nosnippet>107</span>        <span class="kw">if </span>j &lt; <span class="number">150 </span>&amp;&amp; x &gt;= (<span class="number">1u64 </span>&lt;&lt; A[j]) {
-<span data-nosnippet>108</span>            <span class="kw">break</span>;
-<span data-nosnippet>109</span>        }
-<span data-nosnippet>110</span>    }
-<span data-nosnippet>111</span>    x == <span class="number">1
-<span data-nosnippet>112</span></span>}
-<span data-nosnippet>113</span>
-<span data-nosnippet>114</span><span class="attr">#[derive(Debug)]
-<span data-nosnippet>115</span></span><span class="kw">struct </span>QdrtPowPrec {
-<span data-nosnippet>116</span>    br_qdrt: BarrettReduction&lt;u64&gt;,
-<span data-nosnippet>117</span>    p0: Vec&lt;u64&gt;,
-<span data-nosnippet>118</span>    p1: Vec&lt;u64&gt;,
-<span data-nosnippet>119</span>    p2: Vec&lt;u64&gt;,
-<span data-nosnippet>120</span>    p3: Vec&lt;u64&gt;,
-<span data-nosnippet>121</span>}
-<span data-nosnippet>122</span>
-<span data-nosnippet>123</span><span class="kw">impl </span>QdrtPowPrec {
-<span data-nosnippet>124</span>    <span class="kw">fn </span>new(a: u64, ord: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>125</span>        <span class="kw">let </span>qdrt = (ord <span class="kw">as </span>f64).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span>u64;
-<span data-nosnippet>126</span>        <span class="kw">let </span>br_qdrt = <span class="highlight">BarrettReduction::&lt;u64&gt;::new</span>(qdrt);
-<span data-nosnippet>127</span>        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>128</span>        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>129</span>        <span class="kw">let </span><span class="kw-2">mut </span>p2 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>130</span>        <span class="kw">let </span><span class="kw-2">mut </span>p3 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>131</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u64</span>;
-<span data-nosnippet>132</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>133</span>            p0.push(acc);
-<span data-nosnippet>134</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>135</span>        }
-<span data-nosnippet>136</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>137</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>138</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>139</span>            p1.push(acc);
-<span data-nosnippet>140</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>141</span>        }
-<span data-nosnippet>142</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>143</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>144</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>145</span>            p2.push(acc);
-<span data-nosnippet>146</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>147</span>        }
-<span data-nosnippet>148</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>149</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>150</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>151</span>            p3.push(acc);
-<span data-nosnippet>152</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>153</span>        }
-<span data-nosnippet>154</span>        <span class="self">Self </span>{
-<span data-nosnippet>155</span>            br_qdrt,
-<span data-nosnippet>156</span>            p0,
-<span data-nosnippet>157</span>            p1,
-<span data-nosnippet>158</span>            p2,
-<span data-nosnippet>159</span>            p3,
-<span data-nosnippet>160</span>        }
-<span data-nosnippet>161</span>    }
-<span data-nosnippet>162</span>    <span class="kw">fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; u64 {
-<span data-nosnippet>163</span>        <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>164</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>.p0[b <span class="kw">as </span>usize];
-<span data-nosnippet>165</span>        k = a;
-<span data-nosnippet>166</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>167</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>168</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p1[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>169</span>            k = a;
-<span data-nosnippet>170</span>        }
-<span data-nosnippet>171</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>172</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>173</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p2[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>174</span>            k = a;
-<span data-nosnippet>175</span>        }
-<span data-nosnippet>176</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>177</span>            <span class="kw">let </span>(<span class="kw">_</span>, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>178</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p3[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>179</span>        }
-<span data-nosnippet>180</span>        x
-<span data-nosnippet>181</span>    }
-<span data-nosnippet>182</span>}
-<span data-nosnippet>183</span>
-<span data-nosnippet>184</span><span class="kw">fn </span>index_calculus_for_primitive_root(
-<span data-nosnippet>185</span>    p: u64,
-<span data-nosnippet>186</span>    ord: u64,
-<span data-nosnippet>187</span>    br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;],
-<span data-nosnippet>188</span>    prec: <span class="kw-2">&amp;</span>QdrtPowPrec,
-<span data-nosnippet>189</span>) -&gt; Vec&lt;u64&gt; {
-<span data-nosnippet>190</span>    <span class="kw">let </span>br_ord = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(ord <span class="kw">as </span>u128);
-<span data-nosnippet>191</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br_ord.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>192</span>    <span class="kw">let </span>sub = |x: u64, y: u64| <span class="kw">if </span>x &lt; y { x + ord - y } <span class="kw">else </span>{ x - y };
-<span data-nosnippet>193</span>
-<span data-nosnippet>194</span>    <span class="kw">let </span>pc = br_primes.len();
-<span data-nosnippet>195</span>    <span class="kw">let </span><span class="kw-2">mut </span>mat: Vec&lt;Vec&lt;u64&gt;&gt; = <span class="macro">vec!</span>[];
-<span data-nosnippet>196</span>    <span class="kw">let </span><span class="kw-2">mut </span>rows: Vec&lt;Vec&lt;u64&gt;&gt; = <span class="macro">vec!</span>[];
-<span data-nosnippet>197</span>
-<span data-nosnippet>198</span>    <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<span data-nosnippet>199</span>    <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(p <span class="kw">as </span>u128);
-<span data-nosnippet>200</span>
-<span data-nosnippet>201</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..pc {
-<span data-nosnippet>202</span>        <span class="kw">for </span>ri <span class="kw">in </span><span class="number">0usize</span>.. {
-<span data-nosnippet>203</span>            <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0u64</span>; pc + <span class="number">1</span>];
-<span data-nosnippet>204</span>            <span class="kw">let </span><span class="kw-2">mut </span>kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>205</span>            <span class="kw">let </span><span class="kw-2">mut </span>gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>206</span>            <span class="kw">let </span><span class="kw-2">mut </span>k = kk;
-<span data-nosnippet>207</span>            <span class="kw">let </span><span class="kw-2">mut </span>gk = gkk;
-<span data-nosnippet>208</span>            <span class="kw">while </span>ri &gt;= rows.len() {
-<span data-nosnippet>209</span>                row[pc] = k;
-<span data-nosnippet>210</span>                <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
-<span data-nosnippet>211</span>                    rows.push(row);
-<span data-nosnippet>212</span>                    <span class="kw">break</span>;
-<span data-nosnippet>213</span>                }
-<span data-nosnippet>214</span>                <span class="kw">if </span>k + kk &lt; ord {
-<span data-nosnippet>215</span>                    k += kk;
-<span data-nosnippet>216</span>                    gk = br.rem(gk <span class="kw">as </span>u128 * gkk <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>217</span>                } <span class="kw">else </span>{
-<span data-nosnippet>218</span>                    kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>219</span>                    gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>220</span>                    k = kk;
-<span data-nosnippet>221</span>                    gk = gkk;
-<span data-nosnippet>222</span>                }
-<span data-nosnippet>223</span>            }
-<span data-nosnippet>224</span>            <span class="kw">let </span>row = <span class="kw-2">&amp;mut </span>rows[ri];
-<span data-nosnippet>225</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>226</span>                <span class="kw">if </span>row[j] != <span class="number">0 </span>{
-<span data-nosnippet>227</span>                    <span class="kw">let </span>b = mul(modinv(mat[j][j], ord), row[j]);
-<span data-nosnippet>228</span>                    <span class="kw">for </span>(r, a) <span class="kw">in </span>row[j..].iter_mut().zip(<span class="kw-2">&amp;</span>mat[j][j..]) {
-<span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span>r, mul(<span class="kw-2">*</span>a, b));
-<span data-nosnippet>230</span>                    }
-<span data-nosnippet>231</span>                }
-<span data-nosnippet>232</span>                <span class="macro">assert_eq!</span>(row[j], <span class="number">0</span>);
-<span data-nosnippet>233</span>            }
-<span data-nosnippet>234</span>            <span class="kw">if </span>gcd(row[i], ord) == <span class="number">1 </span>{
-<span data-nosnippet>235</span>                <span class="kw">let </span>last = rows.len() - <span class="number">1</span>;
-<span data-nosnippet>236</span>                rows.swap(ri, last);
-<span data-nosnippet>237</span>                mat.push(rows.pop().unwrap());
-<span data-nosnippet>238</span>                <span class="kw">break</span>;
-<span data-nosnippet>239</span>            }
-<span data-nosnippet>240</span>        }
-<span data-nosnippet>241</span>    }
-<span data-nosnippet>242</span>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..pc).rev() {
-<span data-nosnippet>243</span>        <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..pc {
-<span data-nosnippet>244</span>            mat[i][pc] = sub(mat[i][pc], mul(mat[i][j], mat[j][pc]));
-<span data-nosnippet>245</span>        }
-<span data-nosnippet>246</span>        mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
-<span data-nosnippet>247</span>    }
-<span data-nosnippet>248</span>    (<span class="number">0</span>..pc).map(|i| mat[i][pc]).collect()
-<span data-nosnippet>249</span>}
-<span data-nosnippet>250</span>
-<span data-nosnippet>251</span><span class="attr">#[derive(Debug)]
-<span data-nosnippet>252</span></span><span class="kw">struct </span>IndexCalculusWithPrimitiveRoot {
-<span data-nosnippet>253</span>    p: u64,
-<span data-nosnippet>254</span>    ord: u64,
-<span data-nosnippet>255</span>    prec: QdrtPowPrec,
-<span data-nosnippet>256</span>    coeff: Vec&lt;u64&gt;,
-<span data-nosnippet>257</span>}
-<span data-nosnippet>258</span>
-<span data-nosnippet>259</span><span class="kw">impl </span>IndexCalculusWithPrimitiveRoot {
-<span data-nosnippet>260</span>    <span class="kw">fn </span>new(p: u64, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>261</span>        <span class="kw">let </span>ord = p - <span class="number">1</span>;
-<span data-nosnippet>262</span>        <span class="kw">let </span>g = primitive_root(p);
-<span data-nosnippet>263</span>        <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(p <span class="kw">as </span>u128);
-<span data-nosnippet>264</span>        <span class="kw">let </span>prec = QdrtPowPrec::new(g, ord, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>265</span>        <span class="kw">let </span>coeff = index_calculus_for_primitive_root(p, ord, br_primes, <span class="kw-2">&amp;</span>prec);
-<span data-nosnippet>266</span>        <span class="self">Self </span>{
-<span data-nosnippet>267</span>            p,
-<span data-nosnippet>268</span>            ord,
-<span data-nosnippet>269</span>            prec,
-<span data-nosnippet>270</span>            coeff,
-<span data-nosnippet>271</span>        }
-<span data-nosnippet>272</span>    }
-<span data-nosnippet>273</span>    <span class="kw">fn </span>index_calculus(<span class="kw-2">&amp;</span><span class="self">self</span>, a: u64, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>274</span>        <span class="kw">let </span>p = <span class="self">self</span>.p;
-<span data-nosnippet>275</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
-<span data-nosnippet>276</span>        <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(p <span class="kw">as </span>u128);
-<span data-nosnippet>277</span>        <span class="kw">let </span>a = br.rem(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>278</span>        <span class="kw">if </span>a == <span class="number">1 </span>{
-<span data-nosnippet>279</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="number">0</span>);
-<span data-nosnippet>280</span>        }
-<span data-nosnippet>281</span>        <span class="kw">if </span>p == <span class="number">2 </span>{
-<span data-nosnippet>282</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>283</span>        }
-<span data-nosnippet>284</span>
-<span data-nosnippet>285</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::new();
-<span data-nosnippet>286</span>        <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0u64</span>; br_primes.len()];
-<span data-nosnippet>287</span>        <span class="kw">let </span><span class="kw-2">mut </span>kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>288</span>        <span class="kw">let </span><span class="kw-2">mut </span>gkk = <span class="self">self</span>.prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>289</span>        <span class="kw">let </span><span class="kw-2">mut </span>k = kk;
-<span data-nosnippet>290</span>        <span class="kw">let </span><span class="kw-2">mut </span>gk = br.rem(gkk <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>291</span>        <span class="kw">loop </span>{
-<span data-nosnippet>292</span>            <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, <a href="../../../../../algebra/trait.SemiGroup.html">br_primes</a>) {
-<span data-nosnippet>293</span>                <span class="kw">let </span><span class="kw-2">mut </span>res = ord - k;
-<span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
-<span data-nosnippet>295</span>                    <span class="kw">for _ in </span><span class="number">0</span>..r {
-<span data-nosnippet>296</span>                        res += c;
-<span data-nosnippet>297</span>                        <span class="kw">if </span>res &gt;= ord {
-<span data-nosnippet>298</span>                            res -= ord;
-<span data-nosnippet>299</span>                        }
-<span data-nosnippet>300</span>                    }
-<span data-nosnippet>301</span>                }
-<span data-nosnippet>302</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(res);
-<span data-nosnippet>303</span>            }
-<span data-nosnippet>304</span>            <span class="kw">if </span>k + kk &lt; ord {
-<span data-nosnippet>305</span>                k += kk;
-<span data-nosnippet>306</span>                gk = br.rem(gk <span class="kw">as </span>u128 * gkk <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>307</span>            } <span class="kw">else </span>{
-<span data-nosnippet>308</span>                kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>309</span>                gkk = <span class="self">self</span>.prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>310</span>                k = kk;
-<span data-nosnippet>311</span>                gk = br.rem(gkk <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>312</span>            }
-<span data-nosnippet>313</span>        }
-<span data-nosnippet>314</span>    }
-<span data-nosnippet>315</span>    <span class="kw">fn </span>discrete_logarithm(
-<span data-nosnippet>316</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>317</span>        a: u64,
-<span data-nosnippet>318</span>        b: u64,
-<span data-nosnippet>319</span>        br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;],
-<span data-nosnippet>320</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
-<span data-nosnippet>321</span>        <span class="kw">let </span>p = <span class="self">self</span>.p;
-<span data-nosnippet>322</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
-<span data-nosnippet>323</span>        <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(p <span class="kw">as </span>u128);
-<span data-nosnippet>324</span>        <span class="kw">let </span>a = br.rem(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>325</span>        <span class="kw">let </span>b = br.rem(b <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>326</span>        <span class="kw">if </span>a == <span class="number">0 </span>{
-<span data-nosnippet>327</span>            <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
-<span data-nosnippet>328</span>        }
-<span data-nosnippet>329</span>        <span class="kw">if </span>b == <span class="number">0 </span>{
-<span data-nosnippet>330</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>331</span>        }
-<span data-nosnippet>332</span>
-<span data-nosnippet>333</span>        <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
-<span data-nosnippet>334</span>        <span class="kw">let </span>y = <span class="self">self</span>.index_calculus(b, br_primes)<span class="question-mark">?</span>;
-<span data-nosnippet>335</span>        solve_linear_congruence(x, y, ord)
-<span data-nosnippet>336</span>    }
-<span data-nosnippet>337</span>}
-<span data-nosnippet>338</span>
-<span data-nosnippet>339</span><span class="macro">thread_local!</span>(
-<span data-nosnippet>340</span>    <span class="kw">static </span>IC: UnsafeCell&lt;IndexCalculus&gt; = UnsafeCell::new(IndexCalculus::new());
-<span data-nosnippet>341</span>);
-<span data-nosnippet>342</span>
-<span data-nosnippet>343</span><span class="kw">pub fn </span>discrete_logarithm_prime_mod(a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>344</span>    IC.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>ic.get() }.discrete_logarithm(a, b, p))
-<span data-nosnippet>345</span>        .map(|t| t.<span class="number">0</span>)
-<span data-nosnippet>346</span>}
-<span data-nosnippet>347</span>
-<span data-nosnippet>348</span><span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
-<span data-nosnippet>349</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>350</span>    <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;u128&gt;::new</span>(n <span class="kw">as </span>u128);
-<span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
-<span data-nosnippet>353</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;u64, u64&gt;::new();
-<span data-nosnippet>354</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
-<span data-nosnippet>356</span>    <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block_size {
-<span data-nosnippet>357</span>        baby.entry(xj).or_insert(j);
-<span data-nosnippet>358</span>        xj = mul(xj, g);
-<span data-nosnippet>359</span>    }
-<span data-nosnippet>360</span>    <span class="kw">let </span>xi = modinv(xj, n);
-<span data-nosnippet>361</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = <span class="number">0u64</span>;
-<span data-nosnippet>362</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..e {
-<span data-nosnippet>363</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = pow(mul(modinv(pow(a, t, <span class="kw-2">&amp;</span>br), n), b), p.pow(e - <span class="number">1 </span>- k), <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="bool-val">false</span>;
-<span data-nosnippet>365</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..block_size * block_size).step_by(block_size <span class="kw">as </span>usize) {
-<span data-nosnippet>366</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(j) = baby.get(<span class="kw-2">&amp;</span>h) {
-<span data-nosnippet>367</span>                t += (i + j) * p.pow(k);
-<span data-nosnippet>368</span>                ok = <span class="bool-val">true</span>;
-<span data-nosnippet>369</span>                <span class="kw">break</span>;
-<span data-nosnippet>370</span>            }
-<span data-nosnippet>371</span>            h = mul(h, xi);
-<span data-nosnippet>372</span>        }
-<span data-nosnippet>373</span>        <span class="kw">if </span>!ok {
-<span data-nosnippet>374</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>375</span>        }
-<span data-nosnippet>376</span>    }
-<span data-nosnippet>377</span>    <span class="prelude-val">Some</span>(t)
-<span data-nosnippet>378</span>}
-<span data-nosnippet>379</span>
-<span data-nosnippet>380</span><span class="doccomment">/// a^x ≡ b (mod p^e)
-<span data-nosnippet>381</span></span><span class="kw">fn </span>discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
-<span data-nosnippet>382</span>    <span class="macro">assert_ne!</span>(p, <span class="number">0</span>);
-<span data-nosnippet>383</span>    <span class="macro">assert_ne!</span>(e, <span class="number">0</span>);
-<span data-nosnippet>384</span>    <span class="kw">let </span>n = p.pow(e);
-<span data-nosnippet>385</span>    <span class="macro">assert!</span>(a &lt; n);
-<span data-nosnippet>386</span>    <span class="macro">assert!</span>(b &lt; n);
-<span data-nosnippet>387</span>    <span class="macro">assert_eq!</span>(gcd(a, p), <span class="number">1</span>);
-<span data-nosnippet>388</span>    <span class="kw">if </span>p == <span class="number">1 </span>{
-<span data-nosnippet>389</span>        <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">1</span>));
-<span data-nosnippet>390</span>    }
-<span data-nosnippet>391</span>    <span class="kw">if </span>a == <span class="number">0 </span>{
-<span data-nosnippet>392</span>        <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
-<span data-nosnippet>393</span>    }
-<span data-nosnippet>394</span>    <span class="kw">if </span>b == <span class="number">0 </span>{
-<span data-nosnippet>395</span>        <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>396</span>    }
-<span data-nosnippet>397</span>    <span class="kw">if </span>e == <span class="number">1 </span>{
-<span data-nosnippet>398</span>        <span class="kw">return </span>IC.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>ic.get() }.discrete_logarithm(a, b, p));
-<span data-nosnippet>399</span>    }
-<span data-nosnippet>400</span>    <span class="kw">let </span>br = <span class="highlight">BarrettReduction::&lt;<a href="../algebra/magma.rs.html#56">u128</a>&gt;::new</span>(n <span class="kw">as _</span>);
-<span data-nosnippet>401</span>    <span class="kw">if </span>p == <span class="number">2 </span>{
-<span data-nosnippet>402</span>        <span class="kw">if </span>e &gt;= <span class="number">3 </span>{
-<span data-nosnippet>403</span>            <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>&amp;&amp; b % <span class="number">4 </span>!= <span class="number">1 </span>{
-<span data-nosnippet>404</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>405</span>            }
-<span data-nosnippet>406</span>            <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ a } <span class="kw">else </span>{ n - a };
-<span data-nosnippet>407</span>            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ b } <span class="kw">else </span>{ n - b };
-<span data-nosnippet>408</span>            <span class="kw">let </span>g = <span class="number">5</span>;
-<span data-nosnippet>409</span>            <span class="kw">let </span>ord = n / <span class="number">4</span>;
-<span data-nosnippet>410</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(g, aa, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
-<span data-nosnippet>411</span>            <span class="kw">let </span>y = pohlig_hellman_prime_power_order(g, bb, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
-<span data-nosnippet>412</span>            <span class="kw">let </span>t = solve_linear_congruence(x, y, ord)<span class="question-mark">?</span>;
-<span data-nosnippet>413</span>            <span class="kw">match </span>(a % <span class="number">4 </span>== <span class="number">1</span>, b % <span class="number">4 </span>== <span class="number">1</span>) {
-<span data-nosnippet>414</span>                (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>(t),
-<span data-nosnippet>415</span>                (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="kw">if </span>t.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>=&gt; <span class="prelude-val">Some</span>((t.<span class="number">0</span>, lcm(t.<span class="number">1</span>, <span class="number">2</span>))),
-<span data-nosnippet>416</span>                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span>t.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">1 </span>=&gt; <span class="prelude-val">Some</span>((t.<span class="number">0</span>, lcm(t.<span class="number">1</span>, <span class="number">2</span>))),
-<span data-nosnippet>417</span>                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span>a == b =&gt; <span class="prelude-val">Some</span>((<span class="number">1</span>, lcm(t.<span class="number">1</span>, <span class="number">2</span>))),
-<span data-nosnippet>418</span>                <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-<span data-nosnippet>419</span>            }
-<span data-nosnippet>420</span>        } <span class="kw">else if </span>a == <span class="number">1 </span>{
-<span data-nosnippet>421</span>            <span class="kw">if </span>b == <span class="number">1 </span>{ <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>}
-<span data-nosnippet>422</span>        } <span class="kw">else </span>{
-<span data-nosnippet>423</span>            <span class="macro">assert_eq!</span>(a, <span class="number">3</span>);
-<span data-nosnippet>424</span>            <span class="kw">if </span>b == <span class="number">1 </span>{
-<span data-nosnippet>425</span>                <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">2</span>))
-<span data-nosnippet>426</span>            } <span class="kw">else if </span>b == <span class="number">3 </span>{
-<span data-nosnippet>427</span>                <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">2</span>))
-<span data-nosnippet>428</span>            } <span class="kw">else </span>{
-<span data-nosnippet>429</span>                <span class="prelude-val">None
-<span data-nosnippet>430</span>            </span>}
-<span data-nosnippet>431</span>        }
-<span data-nosnippet>432</span>    } <span class="kw">else </span>{
-<span data-nosnippet>433</span>        <span class="kw">let </span>ord = n - n / p;
-<span data-nosnippet>434</span>        <span class="kw">let </span>pf_ord = prime_factors(ord);
-<span data-nosnippet>435</span>        <span class="kw">let </span>g = (<span class="number">2</span>..)
-<span data-nosnippet>436</span>            .find(|<span class="kw-2">&amp;</span>g| check_primitive_root(g, ord, <span class="kw-2">&amp;</span>br, <span class="kw-2">&amp;</span>pf_ord))
-<span data-nosnippet>437</span>            .unwrap();
-<span data-nosnippet>438</span>        <span class="kw">let </span><span class="kw-2">mut </span>pf_p = prime_factors(p - <span class="number">1</span>);
-<span data-nosnippet>439</span>        pf_p.push((p, e - <span class="number">1</span>));
-<span data-nosnippet>440</span>        <span class="kw">let </span><span class="kw-2">mut </span>abm = <span class="macro">vec!</span>[];
-<span data-nosnippet>441</span>        <span class="kw">for </span>(q, c) <span class="kw">in </span>pf_p {
-<span data-nosnippet>442</span>            <span class="kw">let </span>m = q.pow(c);
-<span data-nosnippet>443</span>            <span class="kw">let </span>d = ord / m;
-<span data-nosnippet>444</span>            <span class="kw">let </span>gg = pow(g, d, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>445</span>            <span class="kw">let </span>aa = <a href="../algebra/magma.rs.html#224">pow</a>(a, d, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>446</span>            <span class="kw">let </span>bb = <a href="../algebra/magma.rs.html#228">pow</a>(b, d, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>447</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(gg, aa, n, q, c)<span class="question-mark">?</span>;
-<span data-nosnippet>448</span>            <span class="kw">let </span>y = pohlig_hellman_prime_power_order(gg, bb, n, q, c)<span class="question-mark">?</span>;
-<span data-nosnippet>449</span>            abm.push((x, y, m));
-<span data-nosnippet>450</span>        }
-<span data-nosnippet>451</span>        solve_linear_congruences(abm)
-<span data-nosnippet>452</span>    }
-<span data-nosnippet>453</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/math/floor_sum.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/floor_sum.rs (<a href="../../../src/competitive/math/floor_sum.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>18</span><span class="kw">pub fn </span>floor_sum(n: u64, a: u64, b: u64, m: u64) -&gt; u64 {
+<span data-nosnippet>22</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/math/floor_sum.rs.html#22&#34;,&#34;line 22&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/floor_sum.rs (<a href="../../../src/competitive/math/floor_sum.rs.html#22">line 22</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>18</span><span class="kw">pub fn </span>floor_sum(n: u64, a: u64, b: u64, m: u64) -&gt; u64 {
 <span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>ans = Wrapping(<span class="number">0u64</span>);
 <span data-nosnippet>20</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>n, <span class="kw-2">mut </span>m, <span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (Wrapping(n), m, a, b);
 <span data-nosnippet>21</span>    <span class="kw">loop </span>{
@@ -573,97 +429,48 @@
 <span data-nosnippet>106</span>        y0 = ((rng.rand64() <span class="kw">as </span>u128 * (n - <span class="number">2</span>) <span class="kw">as </span>u128) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>u64 + <span class="number">2</span>;
 <span data-nosnippet>107</span>        c = ((rng.rand64() <span class="kw">as </span>u128 * (n - <span class="number">1</span>) <span class="kw">as </span>u128) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>u64 + <span class="number">1</span>;
 <span data-nosnippet>108</span>    }
-<span data-nosnippet>109</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/math/arbitrary_mod_binomial.rs.html#46">crates/competitive/src/math/arbitrary_mod_binomial.rs</a></li></ul></div></div></details></div></details><section id="method.new_with_im" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#20-22">Source</a><h4 class="code-header">pub const fn <a href="#method.new_with_im" class="fn">new_with_im</a>(m: T, im: T) -&gt; Self</h4></section><section id="method.get_mod" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#23-25">Source</a><h4 class="code-header">pub const fn <a href="#method.get_mod" class="fn">get_mod</a>(&amp;self) -&gt; T</h4></section><details class="toggle method-toggle" open><summary><section id="method.div_rem" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#26-28">Source</a><h4 class="code-header">pub fn <a href="#method.div_rem" class="fn">div_rem</a>(&amp;self, a: T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(T, T)</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/num/barrett_reduction.rs.html#30&#34;,&#34;line 30&#34;],[[4,4],&#34;../../../src/competitive/num/barrett_reduction.rs.html#33&#34;,&#34;line 33&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/barrett_reduction.rs (<a href="../../../src/competitive/num/barrett_reduction.rs.html#30">line 30</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>29</span>    <span class="kw">pub fn </span>div(<span class="kw-2">&amp;</span><span class="self">self</span>, a: T) -&gt; T {
+<span data-nosnippet>109</span>}</code></pre></div></div><div class="example-links">Additional examples can be found in:<br><ul><li><a href="../../../src/competitive/math/arbitrary_mod_binomial.rs.html#46">crates/competitive/src/math/arbitrary_mod_binomial.rs</a></li></ul></div></div></details></div></details><section id="method.new_with_im" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#20-22">Source</a><h4 class="code-header">pub const fn <a href="#method.new_with_im" class="fn">new_with_im</a>(m: T, im: T) -&gt; Self</h4></section><details class="toggle method-toggle" open><summary><section id="method.get_mod" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#23-25">Source</a><h4 class="code-header">pub const fn <a href="#method.get_mod" class="fn">get_mod</a>(&amp;self) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#338&#34;,&#34;line 338&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#338">line 338</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>337</span>    <span class="kw">fn </span>relation(<span class="kw-2">&amp;</span><span class="self">self</span>, value: <span class="kw-2">&amp;mut </span>u64, exponent: <span class="kw-2">&amp;mut </span>u64) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>338</span>        <span class="kw">let </span>p = <span class="self">self</span>.modulus.<span class="highlight focus">get_mod</span>() <span class="kw">as </span>u64;
+<span data-nosnippet>339</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>num, <span class="kw-2">mut </span>den) = <span class="kw">loop </span>{
+<span data-nosnippet>340</span>            <span class="kw-2">*</span>value = <span class="self">self</span>.modulus.rem(<span class="kw-2">*</span>value <span class="kw">as </span>u128 * <span class="self">self</span>.generator <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>341</span>            <span class="kw-2">*</span>exponent = exponent.mod_add(<span class="number">1</span>, <span class="self">self</span>.q);
+<span data-nosnippet>342</span>            <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>y) = (p, <span class="kw-2">*</span>value);
+<span data-nosnippet>343</span>            <span class="kw">let </span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v) = (<span class="number">0</span>, <span class="number">1</span>);
+<span data-nosnippet>344</span>            <span class="comment">// y ≡ ±value*v (mod p). At the first y ≤ √p, both y and v fit in u32.
+<span data-nosnippet>345</span>            // The sign vanishes in logarithms modulo the odd prime q.
+<span data-nosnippet>346</span>            </span><span class="kw">while </span>y &gt; <span class="self">self</span>.sqrt {
+<span data-nosnippet>347</span>                <span class="kw">let </span>quotient = x / y;
+<span data-nosnippet>348</span>                (x, y) = (y, x - quotient * y);
+<span data-nosnippet>349</span>                (u, v) = (v, u + quotient * v);
+<span data-nosnippet>350</span>            }
+<span data-nosnippet>351</span>            <span class="kw">let </span>(num, den) = (y <span class="kw">as </span>u32, v <span class="kw">as </span>u32);
+<span data-nosnippet>352</span>            <span class="kw">if </span><span class="self">self</span>.is_smooth(num) &amp;&amp; <span class="self">self</span>.is_smooth(den) {
+<span data-nosnippet>353</span>                <span class="kw">break </span>(num, den);
+<span data-nosnippet>354</span>            }
+<span data-nosnippet>355</span>        };
+<span data-nosnippet>356</span>        <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.primes.len() + <span class="number">1</span>];
+<span data-nosnippet>357</span>        <span class="kw">for </span>(i, prime) <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.primes.len()).rev().zip(<span class="kw-2">&amp;</span><span class="self">self</span>.primes) {
+<span data-nosnippet>358</span>            <span class="kw">let </span>p = prime.p;
+<span data-nosnippet>359</span>            <span class="kw">while </span>num.is_multiple_of(p) {
+<span data-nosnippet>360</span>                num /= p;
+<span data-nosnippet>361</span>                row[i] += <span class="number">1</span>;
+<span data-nosnippet>362</span>            }
+<span data-nosnippet>363</span>            <span class="kw">while </span>den.is_multiple_of(p) {
+<span data-nosnippet>364</span>                den /= p;
+<span data-nosnippet>365</span>                row[i] = row[i].mod_sub(<span class="number">1</span>, <span class="self">self</span>.q);
+<span data-nosnippet>366</span>            }
+<span data-nosnippet>367</span>            <span class="kw">if </span>num == <span class="number">1 </span>&amp;&amp; den == <span class="number">1 </span>{
+<span data-nosnippet>368</span>                <span class="kw">break</span>;
+<span data-nosnippet>369</span>            }
+<span data-nosnippet>370</span>        }
+<span data-nosnippet>371</span>        row[<span class="self">self</span>.primes.len()] = <span class="kw-2">*</span>exponent;
+<span data-nosnippet>372</span>        row
+<span data-nosnippet>373</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.div_rem" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#26-28">Source</a><h4 class="code-header">pub fn <a href="#method.div_rem" class="fn">div_rem</a>(&amp;self, a: T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(T, T)</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/num/barrett_reduction.rs.html#30&#34;,&#34;line 30&#34;],[[4,4],&#34;../../../src/competitive/num/barrett_reduction.rs.html#33&#34;,&#34;line 33&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/barrett_reduction.rs (<a href="../../../src/competitive/num/barrett_reduction.rs.html#30">line 30</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>29</span>    <span class="kw">pub fn </span>div(<span class="kw-2">&amp;</span><span class="self">self</span>, a: T) -&gt; T {
 <span data-nosnippet>30</span>        <span class="self">self</span>.<span class="highlight focus">div_rem</span>(a).<span class="number">0
 <span data-nosnippet>31</span>    </span>}
 <span data-nosnippet>32</span>    <span class="kw">pub fn </span>rem(<span class="kw-2">&amp;</span><span class="self">self</span>, a: T) -&gt; T {
 <span data-nosnippet>33</span>        <span class="self">self</span>.<span class="highlight">div_rem</span>(a).<span class="number">1
-<span data-nosnippet>34</span>    </span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#100&#34;,&#34;line 100&#34;],[[67,67],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#163&#34;,&#34;line 163&#34;],[[71,71],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#167&#34;,&#34;line 167&#34;],[[76,76],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#172&#34;,&#34;line 172&#34;],[[81,81],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#177&#34;,&#34;line 177&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#100">line 100</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>96</span><span class="kw">fn </span>factorize_smooth(<span class="kw-2">mut </span>x: u64, row: <span class="kw-2">&amp;mut </span>[u64], br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; bool {
-<span data-nosnippet>97</span>    <span class="kw">for </span>(j, (<span class="kw-2">&amp;</span>br, r)) <span class="kw">in </span>br_primes.iter().zip(row).enumerate() {
-<span data-nosnippet>98</span>        <span class="kw-2">*</span>r = <span class="number">0</span>;
-<span data-nosnippet>99</span>        <span class="kw">loop </span>{
-<span data-nosnippet>100</span>            <span class="kw">let </span>(div, rem) = br.<span class="highlight focus">div_rem</span>(x);
-<span data-nosnippet>101</span>            <span class="kw">if </span>rem != <span class="number">0 </span>{
-<span data-nosnippet>102</span>                <span class="kw">break</span>;
-<span data-nosnippet>103</span>            }
-<span data-nosnippet>104</span>            <span class="kw-2">*</span>r += <span class="number">1</span>;
-<span data-nosnippet>105</span>            x = div;
-<span data-nosnippet>106</span>        }
-<span data-nosnippet>107</span>        <span class="kw">if </span>j &lt; <span class="number">150 </span>&amp;&amp; x &gt;= (<span class="number">1u64 </span>&lt;&lt; A[j]) {
-<span data-nosnippet>108</span>            <span class="kw">break</span>;
-<span data-nosnippet>109</span>        }
-<span data-nosnippet>110</span>    }
-<span data-nosnippet>111</span>    x == <span class="number">1
-<span data-nosnippet>112</span></span>}
-<span data-nosnippet>113</span>
-<span data-nosnippet>114</span><span class="attr">#[derive(Debug)]
-<span data-nosnippet>115</span></span><span class="kw">struct </span>QdrtPowPrec {
-<span data-nosnippet>116</span>    br_qdrt: BarrettReduction&lt;u64&gt;,
-<span data-nosnippet>117</span>    p0: Vec&lt;u64&gt;,
-<span data-nosnippet>118</span>    p1: Vec&lt;u64&gt;,
-<span data-nosnippet>119</span>    p2: Vec&lt;u64&gt;,
-<span data-nosnippet>120</span>    p3: Vec&lt;u64&gt;,
-<span data-nosnippet>121</span>}
-<span data-nosnippet>122</span>
-<span data-nosnippet>123</span><span class="kw">impl </span>QdrtPowPrec {
-<span data-nosnippet>124</span>    <span class="kw">fn </span>new(a: u64, ord: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>125</span>        <span class="kw">let </span>qdrt = (ord <span class="kw">as </span>f64).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span>u64;
-<span data-nosnippet>126</span>        <span class="kw">let </span>br_qdrt = BarrettReduction::&lt;u64&gt;::new(qdrt);
-<span data-nosnippet>127</span>        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>128</span>        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>129</span>        <span class="kw">let </span><span class="kw-2">mut </span>p2 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>130</span>        <span class="kw">let </span><span class="kw-2">mut </span>p3 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>131</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u64</span>;
-<span data-nosnippet>132</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>133</span>            p0.push(acc);
-<span data-nosnippet>134</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>135</span>        }
-<span data-nosnippet>136</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>137</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>138</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>139</span>            p1.push(acc);
-<span data-nosnippet>140</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>141</span>        }
-<span data-nosnippet>142</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>143</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>144</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>145</span>            p2.push(acc);
-<span data-nosnippet>146</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>147</span>        }
-<span data-nosnippet>148</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>149</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>150</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>151</span>            p3.push(acc);
-<span data-nosnippet>152</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>153</span>        }
-<span data-nosnippet>154</span>        <span class="self">Self </span>{
-<span data-nosnippet>155</span>            br_qdrt,
-<span data-nosnippet>156</span>            p0,
-<span data-nosnippet>157</span>            p1,
-<span data-nosnippet>158</span>            p2,
-<span data-nosnippet>159</span>            p3,
-<span data-nosnippet>160</span>        }
-<span data-nosnippet>161</span>    }
-<span data-nosnippet>162</span>    <span class="kw">fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; u64 {
-<span data-nosnippet>163</span>        <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.<span class="highlight">div_rem</span>(k);
-<span data-nosnippet>164</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>.p0[b <span class="kw">as </span>usize];
-<span data-nosnippet>165</span>        k = a;
-<span data-nosnippet>166</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>167</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.<span class="highlight">div_rem</span>(k);
-<span data-nosnippet>168</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p1[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>169</span>            k = a;
-<span data-nosnippet>170</span>        }
-<span data-nosnippet>171</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>172</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.<span class="highlight">div_rem</span>(k);
-<span data-nosnippet>173</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p2[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>174</span>            k = a;
-<span data-nosnippet>175</span>        }
-<span data-nosnippet>176</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>177</span>            <span class="kw">let </span>(<span class="kw">_</span>, b) = <span class="self">self</span>.br_qdrt.<span class="highlight">div_rem</span>(k);
-<span data-nosnippet>178</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p3[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>179</span>        }
-<span data-nosnippet>180</span>        x
-<span data-nosnippet>181</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/math/floor_sum.rs.html#24&#34;,&#34;line 24&#34;],[[11,11],&#34;../../../src/competitive/math/floor_sum.rs.html#29&#34;,&#34;line 29&#34;],[[19,19],&#34;../../../src/competitive/math/floor_sum.rs.html#37&#34;,&#34;line 37&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/floor_sum.rs (<a href="../../../src/competitive/math/floor_sum.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>18</span><span class="kw">pub fn </span>floor_sum(n: u64, a: u64, b: u64, m: u64) -&gt; u64 {
+<span data-nosnippet>34</span>    </span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/math/floor_sum.rs.html#24&#34;,&#34;line 24&#34;],[[11,11],&#34;../../../src/competitive/math/floor_sum.rs.html#29&#34;,&#34;line 29&#34;],[[19,19],&#34;../../../src/competitive/math/floor_sum.rs.html#37&#34;,&#34;line 37&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/floor_sum.rs (<a href="../../../src/competitive/math/floor_sum.rs.html#24">line 24</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>18</span><span class="kw">pub fn </span>floor_sum(n: u64, a: u64, b: u64, m: u64) -&gt; u64 {
 <span data-nosnippet>19</span>    <span class="kw">let </span><span class="kw-2">mut </span>ans = Wrapping(<span class="number">0u64</span>);
 <span data-nosnippet>20</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>n, <span class="kw-2">mut </span>m, <span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (Wrapping(n), m, a, b);
 <span data-nosnippet>21</span>    <span class="kw">loop </span>{
@@ -794,7 +601,7 @@
 <span data-nosnippet>201</span>            }
 <span data-nosnippet>202</span>            res <span class="kw">as </span>u64
 <span data-nosnippet>203</span>        }
-<span data-nosnippet>204</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.div" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#29-31">Source</a><h4 class="code-header">pub fn <a href="#method.div" class="fn">div</a>(&amp;self, a: T) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[29,29],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#131&#34;,&#34;line 131&#34;],[[30,30],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#132&#34;,&#34;line 132&#34;],[[31,31],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#133&#34;,&#34;line 133&#34;],[[82,82],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#184&#34;,&#34;line 184&#34;],[[83,83],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#185&#34;,&#34;line 185&#34;],[[84,84],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#186&#34;,&#34;line 186&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/arbitrary_mod_binomial.rs (<a href="../../../src/competitive/math/arbitrary_mod_binomial.rs.html#131">line 131</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>102</span>    <span class="kw">fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>n: u64, <span class="kw-2">mut </span>k: u64) -&gt; u64 {
+<span data-nosnippet>204</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.div" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#29-31">Source</a><h4 class="code-header">pub fn <a href="#method.div" class="fn">div</a>(&amp;self, a: T) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[29,29],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#131&#34;,&#34;line 131&#34;],[[30,30],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#132&#34;,&#34;line 132&#34;],[[31,31],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#133&#34;,&#34;line 133&#34;],[[82,82],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#184&#34;,&#34;line 184&#34;],[[83,83],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#185&#34;,&#34;line 185&#34;],[[84,84],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#186&#34;,&#34;line 186&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/arbitrary_mod_binomial.rs (<a href="../../../src/competitive/math/arbitrary_mod_binomial.rs.html#131">line 131</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>102</span>    <span class="kw">fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>n: u64, <span class="kw-2">mut </span>k: u64) -&gt; u64 {
 <span data-nosnippet>103</span>        <span class="kw">if </span>k &gt; n {
 <span data-nosnippet>104</span>            <span class="kw">return </span><span class="number">0</span>;
 <span data-nosnippet>105</span>        }
@@ -896,7 +703,7 @@
 <span data-nosnippet>201</span>            }
 <span data-nosnippet>202</span>            res <span class="kw">as </span>u64
 <span data-nosnippet>203</span>        }
-<span data-nosnippet>204</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.rem" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#32-34">Source</a><h4 class="code-header">pub fn <a href="#method.rem" class="fn">rem</a>(&amp;self, a: T) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/num/mint/mint_basic.rs.html#144&#34;,&#34;line 144&#34;],[[17,17],&#34;../../../src/competitive/num/mint/mint_basic.rs.html#160&#34;,&#34;line 160&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/mint_basic.rs (<a href="../../../src/competitive/num/mint/mint_basic.rs.html#144">line 144</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>143</span>    <span class="kw">fn </span>rem(x: u64) -&gt; u64 {
+<span data-nosnippet>204</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.rem" class="method"><a class="src rightside" href="../../../src/competitive/num/barrett_reduction.rs.html#32-34">Source</a><h4 class="code-header">pub fn <a href="#method.rem" class="fn">rem</a>(&amp;self, a: T) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../../src/competitive/num/mint/mint_basic.rs.html#144&#34;,&#34;line 144&#34;],[[17,17],&#34;../../../src/competitive/num/mint/mint_basic.rs.html#160&#34;,&#34;line 160&#34;]]"><div class="scraped-example-title">crates/competitive/src/num/mint/mint_basic.rs (<a href="../../../src/competitive/num/mint/mint_basic.rs.html#144">line 144</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>143</span>    <span class="kw">fn </span>rem(x: u64) -&gt; u64 {
 <span data-nosnippet>144</span>        DYN_MODULUS_U32.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span>cell.get()).<span class="highlight focus">rem</span>(x) })
 <span data-nosnippet>145</span>    }
 <span data-nosnippet>146</span>}
@@ -914,378 +721,7 @@
 <span data-nosnippet>158</span>    }
 <span data-nosnippet>159</span>    <span class="kw">fn </span>rem(x: u128) -&gt; u128 {
 <span data-nosnippet>160</span>        DYN_MODULUS_U64.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span>cell.get()).<span class="highlight">rem</span>(x) })
-<span data-nosnippet>161</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#12&#34;,&#34;line 12&#34;],[[7,7],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#14&#34;,&#34;line 14&#34;],[[127,127],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#134&#34;,&#34;line 134&#34;],[[133,133],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#140&#34;,&#34;line 140&#34;],[[139,139],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#146&#34;,&#34;line 146&#34;],[[145,145],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#152&#34;,&#34;line 152&#34;],[[161,161],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#168&#34;,&#34;line 168&#34;],[[166,166],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#173&#34;,&#34;line 173&#34;],[[171,171],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#178&#34;,&#34;line 178&#34;],[[184,184],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#191&#34;,&#34;line 191&#34;],[[209,209],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#216&#34;,&#34;line 216&#34;],[[270,270],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#277&#34;,&#34;line 277&#34;],[[283,283],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#290&#34;,&#34;line 290&#34;],[[299,299],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#306&#34;,&#34;line 306&#34;],[[304,304],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#311&#34;,&#34;line 311&#34;],[[317,317],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#324&#34;,&#34;line 324&#34;],[[318,318],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#325&#34;,&#34;line 325&#34;],[[344,344],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#351&#34;,&#34;line 351&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#12">line 12</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>7</span><span class="kw">fn </span>pow(x: u64, <span class="kw-2">mut </span>y: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; u64 {
-<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>x = x <span class="kw">as </span>u128;
-<span data-nosnippet>9</span>    <span class="kw">let </span><span class="kw-2">mut </span>z: u128 = <span class="number">1</span>;
-<span data-nosnippet>10</span>    <span class="kw">while </span>y &gt; <span class="number">0 </span>{
-<span data-nosnippet>11</span>        <span class="kw">if </span>y &amp; <span class="number">1 </span>== <span class="number">1 </span>{
-<span data-nosnippet>12</span>            z = br.<span class="highlight focus">rem</span>(z * x);
-<span data-nosnippet>13</span>        }
-<span data-nosnippet>14</span>        x = br.<span class="highlight">rem</span>(x * x);
-<span data-nosnippet>15</span>        y &gt;&gt;= <span class="number">1</span>;
-<span data-nosnippet>16</span>    }
-<span data-nosnippet>17</span>    z <span class="kw">as </span>u64
-<span data-nosnippet>18</span>}
-<span data-nosnippet>19</span>
-<span data-nosnippet>20</span><span class="kw">fn </span>solve_linear_congruence(a: u64, b: u64, m: u64) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
-<span data-nosnippet>21</span>    <span class="kw">let </span>g = gcd(a, m);
-<span data-nosnippet>22</span>    <span class="kw">if </span>!b.is_multiple_of(g) {
-<span data-nosnippet>23</span>        <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>24</span>    }
-<span data-nosnippet>25</span>    <span class="kw">let </span>(a, b, m) = (a / g, b / g, m / g);
-<span data-nosnippet>26</span>    <span class="prelude-val">Some</span>(((b <span class="kw">as </span>u128 * modinv(a, m) <span class="kw">as </span>u128 % m <span class="kw">as </span>u128) <span class="kw">as _</span>, m))
-<span data-nosnippet>27</span>}
-<span data-nosnippet>28</span>
-<span data-nosnippet>29</span><span class="kw">fn </span>solve_linear_congruences&lt;I&gt;(abm: I) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt;
-<span data-nosnippet>30</span><span class="kw">where
-<span data-nosnippet>31</span>    </span>I: IntoIterator&lt;Item = (u64, u64, u64)&gt;,
-<span data-nosnippet>32</span>{
-<span data-nosnippet>33</span>    <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="number">0u64</span>;
-<span data-nosnippet>34</span>    <span class="kw">let </span><span class="kw-2">mut </span>m0 = <span class="number">1u64</span>;
-<span data-nosnippet>35</span>    <span class="kw">for </span>(a, b, m) <span class="kw">in </span>abm {
-<span data-nosnippet>36</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = b + m - a * x % m;
-<span data-nosnippet>37</span>        <span class="kw">if </span>b &gt;= m {
-<span data-nosnippet>38</span>            b -= m;
-<span data-nosnippet>39</span>        }
-<span data-nosnippet>40</span>        <span class="kw">let </span>a = a * m0;
-<span data-nosnippet>41</span>        <span class="kw">let </span>g = gcd(a, m);
-<span data-nosnippet>42</span>        <span class="kw">if </span>!b.is_multiple_of(g) {
-<span data-nosnippet>43</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>44</span>        }
-<span data-nosnippet>45</span>        <span class="kw">let </span>(a, b, m) = (a / g, b / g, m / g);
-<span data-nosnippet>46</span>        x += (b <span class="kw">as </span>u128 * modinv(a, m) <span class="kw">as </span>u128 % m <span class="kw">as </span>u128 * m0 <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>47</span>        m0 <span class="kw-2">*</span>= m;
-<span data-nosnippet>48</span>    }
-<span data-nosnippet>49</span>    <span class="prelude-val">Some</span>((x, m0))
-<span data-nosnippet>50</span>}
-<span data-nosnippet>51</span>
-<span data-nosnippet>52</span><span class="attr">#[derive(Debug)]
-<span data-nosnippet>53</span></span><span class="kw">struct </span>IndexCalculus {
-<span data-nosnippet>54</span>    primes: PrimeList,
-<span data-nosnippet>55</span>    br_primes: Vec&lt;BarrettReduction&lt;u64&gt;&gt;,
-<span data-nosnippet>56</span>    ic: HashMap&lt;u64, IndexCalculusWithPrimitiveRoot&gt;,
-<span data-nosnippet>57</span>}
-<span data-nosnippet>58</span>
-<span data-nosnippet>59</span><span class="kw">impl </span>IndexCalculus {
-<span data-nosnippet>60</span>    <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
-<span data-nosnippet>61</span>        <span class="self">Self </span>{
-<span data-nosnippet>62</span>            primes: PrimeList::new(<span class="number">2</span>),
-<span data-nosnippet>63</span>            br_primes: Default::default(),
-<span data-nosnippet>64</span>            ic: Default::default(),
-<span data-nosnippet>65</span>        }
-<span data-nosnippet>66</span>    }
-<span data-nosnippet>67</span>    <span class="kw">fn </span>discrete_logarithm(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
-<span data-nosnippet>68</span>        <span class="kw">let </span>lim = ((((p <span class="kw">as </span>f64).log2() * (p <span class="kw">as </span>f64).log2().log2()).sqrt() / <span class="number">2.0 </span>+ <span class="number">1.</span>).exp2() * <span class="number">0.9</span>)
-<span data-nosnippet>69</span>            <span class="kw">as </span>u32;
-<span data-nosnippet>70</span>        <span class="self">self</span>.primes.reserve(lim);
-<span data-nosnippet>71</span>        <span class="kw">let </span>prime_count = <span class="self">self</span>.primes.primes_lte(lim).count();
-<span data-nosnippet>72</span>        <span class="self">self</span>.br_primes.extend(
-<span data-nosnippet>73</span>            <span class="self">self</span>.primes
-<span data-nosnippet>74</span>                .primes_lte(lim)
-<span data-nosnippet>75</span>                .skip(<span class="self">self</span>.br_primes.len())
-<span data-nosnippet>76</span>                .map(|p| BarrettReduction::&lt;u64&gt;::new(p.into())),
-<span data-nosnippet>77</span>        );
-<span data-nosnippet>78</span>        <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><span class="self">self</span>.br_primes[..prime_count];
-<span data-nosnippet>79</span>        <span class="self">self</span>.ic
-<span data-nosnippet>80</span>            .entry(p)
-<span data-nosnippet>81</span>            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(p, br_primes))
-<span data-nosnippet>82</span>            .discrete_logarithm(a, b, br_primes)
-<span data-nosnippet>83</span>    }
-<span data-nosnippet>84</span>}
-<span data-nosnippet>85</span>
-<span data-nosnippet>86</span><span class="kw">const </span>A: [u32; <span class="number">150</span>] = [
-<span data-nosnippet>87</span>    <span class="number">62</span>, <span class="number">61</span>, <span class="number">60</span>, <span class="number">60</span>, <span class="number">59</span>, <span class="number">58</span>, <span class="number">58</span>, <span class="number">58</span>, <span class="number">57</span>, <span class="number">56</span>, <span class="number">56</span>, <span class="number">56</span>, <span class="number">56</span>, <span class="number">55</span>, <span class="number">55</span>, <span class="number">55</span>, <span class="number">54</span>, <span class="number">54</span>, <span class="number">54</span>, <span class="number">53</span>, <span class="number">53</span>, <span class="number">53</span>, <span class="number">53</span>, <span class="number">52</span>,
-<span data-nosnippet>88</span>    <span class="number">52</span>, <span class="number">52</span>, <span class="number">52</span>, <span class="number">52</span>, <span class="number">52</span>, <span class="number">51</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>, <span class="number">49</span>, <span class="number">49</span>, <span class="number">49</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">48</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>,
-<span data-nosnippet>89</span>    <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">45</span>, <span class="number">42</span>, <span class="number">42</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">41</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>,
-<span data-nosnippet>90</span>    <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">40</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">38</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>,
-<span data-nosnippet>91</span>    <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">32</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>,
-<span data-nosnippet>92</span>    <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>,
-<span data-nosnippet>93</span>    <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>,
-<span data-nosnippet>94</span>];
-<span data-nosnippet>95</span>
-<span data-nosnippet>96</span><span class="kw">fn </span>factorize_smooth(<span class="kw-2">mut </span>x: u64, row: <span class="kw-2">&amp;mut </span>[u64], br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; bool {
-<span data-nosnippet>97</span>    <span class="kw">for </span>(j, (<span class="kw-2">&amp;</span>br, r)) <span class="kw">in </span>br_primes.iter().zip(row).enumerate() {
-<span data-nosnippet>98</span>        <span class="kw-2">*</span>r = <span class="number">0</span>;
-<span data-nosnippet>99</span>        <span class="kw">loop </span>{
-<span data-nosnippet>100</span>            <span class="kw">let </span>(div, rem) = br.div_rem(x);
-<span data-nosnippet>101</span>            <span class="kw">if </span>rem != <span class="number">0 </span>{
-<span data-nosnippet>102</span>                <span class="kw">break</span>;
-<span data-nosnippet>103</span>            }
-<span data-nosnippet>104</span>            <span class="kw-2">*</span>r += <span class="number">1</span>;
-<span data-nosnippet>105</span>            x = div;
-<span data-nosnippet>106</span>        }
-<span data-nosnippet>107</span>        <span class="kw">if </span>j &lt; <span class="number">150 </span>&amp;&amp; x &gt;= (<span class="number">1u64 </span>&lt;&lt; A[j]) {
-<span data-nosnippet>108</span>            <span class="kw">break</span>;
-<span data-nosnippet>109</span>        }
-<span data-nosnippet>110</span>    }
-<span data-nosnippet>111</span>    x == <span class="number">1
-<span data-nosnippet>112</span></span>}
-<span data-nosnippet>113</span>
-<span data-nosnippet>114</span><span class="attr">#[derive(Debug)]
-<span data-nosnippet>115</span></span><span class="kw">struct </span>QdrtPowPrec {
-<span data-nosnippet>116</span>    br_qdrt: BarrettReduction&lt;u64&gt;,
-<span data-nosnippet>117</span>    p0: Vec&lt;u64&gt;,
-<span data-nosnippet>118</span>    p1: Vec&lt;u64&gt;,
-<span data-nosnippet>119</span>    p2: Vec&lt;u64&gt;,
-<span data-nosnippet>120</span>    p3: Vec&lt;u64&gt;,
-<span data-nosnippet>121</span>}
-<span data-nosnippet>122</span>
-<span data-nosnippet>123</span><span class="kw">impl </span>QdrtPowPrec {
-<span data-nosnippet>124</span>    <span class="kw">fn </span>new(a: u64, ord: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>125</span>        <span class="kw">let </span>qdrt = (ord <span class="kw">as </span>f64).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span>u64;
-<span data-nosnippet>126</span>        <span class="kw">let </span>br_qdrt = BarrettReduction::&lt;u64&gt;::new(qdrt);
-<span data-nosnippet>127</span>        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>128</span>        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>129</span>        <span class="kw">let </span><span class="kw-2">mut </span>p2 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>130</span>        <span class="kw">let </span><span class="kw-2">mut </span>p3 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
-<span data-nosnippet>131</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u64</span>;
-<span data-nosnippet>132</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>133</span>            p0.push(acc);
-<span data-nosnippet>134</span>            acc = br.<span class="highlight">rem</span>(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>135</span>        }
-<span data-nosnippet>136</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>137</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>138</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>139</span>            p1.push(acc);
-<span data-nosnippet>140</span>            acc = br.<span class="highlight">rem</span>(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>141</span>        }
-<span data-nosnippet>142</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>143</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>144</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>145</span>            p2.push(acc);
-<span data-nosnippet>146</span>            acc = br.<span class="highlight">rem</span>(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>147</span>        }
-<span data-nosnippet>148</span>        <span class="kw">let </span>a = acc;
-<span data-nosnippet>149</span>        acc = <span class="number">1</span>;
-<span data-nosnippet>150</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
-<span data-nosnippet>151</span>            p3.push(acc);
-<span data-nosnippet>152</span>            acc = br.<span class="highlight">rem</span>(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>153</span>        }
-<span data-nosnippet>154</span>        <span class="self">Self </span>{
-<span data-nosnippet>155</span>            br_qdrt,
-<span data-nosnippet>156</span>            p0,
-<span data-nosnippet>157</span>            p1,
-<span data-nosnippet>158</span>            p2,
-<span data-nosnippet>159</span>            p3,
-<span data-nosnippet>160</span>        }
-<span data-nosnippet>161</span>    }
-<span data-nosnippet>162</span>    <span class="kw">fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; u64 {
-<span data-nosnippet>163</span>        <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>164</span>        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>.p0[b <span class="kw">as </span>usize];
-<span data-nosnippet>165</span>        k = a;
-<span data-nosnippet>166</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>167</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>168</span>            x = br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * <span class="self">self</span>.p1[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>169</span>            k = a;
-<span data-nosnippet>170</span>        }
-<span data-nosnippet>171</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>172</span>            <span class="kw">let </span>(a, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>173</span>            x = br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * <span class="self">self</span>.p2[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>174</span>            k = a;
-<span data-nosnippet>175</span>        }
-<span data-nosnippet>176</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-<span data-nosnippet>177</span>            <span class="kw">let </span>(<span class="kw">_</span>, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>178</span>            x = br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * <span class="self">self</span>.p3[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>179</span>        }
-<span data-nosnippet>180</span>        x
-<span data-nosnippet>181</span>    }
-<span data-nosnippet>182</span>}
-<span data-nosnippet>183</span>
-<span data-nosnippet>184</span><span class="kw">fn </span>index_calculus_for_primitive_root(
-<span data-nosnippet>185</span>    p: u64,
-<span data-nosnippet>186</span>    ord: u64,
-<span data-nosnippet>187</span>    br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;],
-<span data-nosnippet>188</span>    prec: <span class="kw-2">&amp;</span>QdrtPowPrec,
-<span data-nosnippet>189</span>) -&gt; Vec&lt;u64&gt; {
-<span data-nosnippet>190</span>    <span class="kw">let </span>br_ord = BarrettReduction::&lt;u128&gt;::new(ord <span class="kw">as </span>u128);
-<span data-nosnippet>191</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br_ord.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>192</span>    <span class="kw">let </span>sub = |x: u64, y: u64| <span class="kw">if </span>x &lt; y { x + ord - y } <span class="kw">else </span>{ x - y };
-<span data-nosnippet>193</span>
-<span data-nosnippet>194</span>    <span class="kw">let </span>pc = br_primes.len();
-<span data-nosnippet>195</span>    <span class="kw">let </span><span class="kw-2">mut </span>mat: Vec&lt;Vec&lt;u64&gt;&gt; = <span class="macro">vec!</span>[];
-<span data-nosnippet>196</span>    <span class="kw">let </span><span class="kw-2">mut </span>rows: Vec&lt;Vec&lt;u64&gt;&gt; = <span class="macro">vec!</span>[];
-<span data-nosnippet>197</span>
-<span data-nosnippet>198</span>    <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<span data-nosnippet>199</span>    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
-<span data-nosnippet>200</span>
-<span data-nosnippet>201</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..pc {
-<span data-nosnippet>202</span>        <span class="kw">for </span>ri <span class="kw">in </span><span class="number">0usize</span>.. {
-<span data-nosnippet>203</span>            <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0u64</span>; pc + <span class="number">1</span>];
-<span data-nosnippet>204</span>            <span class="kw">let </span><span class="kw-2">mut </span>kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>205</span>            <span class="kw">let </span><span class="kw-2">mut </span>gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>206</span>            <span class="kw">let </span><span class="kw-2">mut </span>k = kk;
-<span data-nosnippet>207</span>            <span class="kw">let </span><span class="kw-2">mut </span>gk = gkk;
-<span data-nosnippet>208</span>            <span class="kw">while </span>ri &gt;= rows.len() {
-<span data-nosnippet>209</span>                row[pc] = k;
-<span data-nosnippet>210</span>                <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
-<span data-nosnippet>211</span>                    rows.push(row);
-<span data-nosnippet>212</span>                    <span class="kw">break</span>;
-<span data-nosnippet>213</span>                }
-<span data-nosnippet>214</span>                <span class="kw">if </span>k + kk &lt; ord {
-<span data-nosnippet>215</span>                    k += kk;
-<span data-nosnippet>216</span>                    gk = br.<span class="highlight">rem</span>(gk <span class="kw">as </span>u128 * gkk <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>217</span>                } <span class="kw">else </span>{
-<span data-nosnippet>218</span>                    kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>219</span>                    gkk = prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>220</span>                    k = kk;
-<span data-nosnippet>221</span>                    gk = gkk;
-<span data-nosnippet>222</span>                }
-<span data-nosnippet>223</span>            }
-<span data-nosnippet>224</span>            <span class="kw">let </span>row = <span class="kw-2">&amp;mut </span>rows[ri];
-<span data-nosnippet>225</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..i {
-<span data-nosnippet>226</span>                <span class="kw">if </span>row[j] != <span class="number">0 </span>{
-<span data-nosnippet>227</span>                    <span class="kw">let </span>b = mul(modinv(mat[j][j], ord), row[j]);
-<span data-nosnippet>228</span>                    <span class="kw">for </span>(r, a) <span class="kw">in </span>row[j..].iter_mut().zip(<span class="kw-2">&amp;</span>mat[j][j..]) {
-<span data-nosnippet>229</span>                        <span class="kw-2">*</span>r = sub(<span class="kw-2">*</span>r, mul(<span class="kw-2">*</span>a, b));
-<span data-nosnippet>230</span>                    }
-<span data-nosnippet>231</span>                }
-<span data-nosnippet>232</span>                <span class="macro">assert_eq!</span>(row[j], <span class="number">0</span>);
-<span data-nosnippet>233</span>            }
-<span data-nosnippet>234</span>            <span class="kw">if </span>gcd(row[i], ord) == <span class="number">1 </span>{
-<span data-nosnippet>235</span>                <span class="kw">let </span>last = rows.len() - <span class="number">1</span>;
-<span data-nosnippet>236</span>                rows.swap(ri, last);
-<span data-nosnippet>237</span>                mat.push(rows.pop().unwrap());
-<span data-nosnippet>238</span>                <span class="kw">break</span>;
-<span data-nosnippet>239</span>            }
-<span data-nosnippet>240</span>        }
-<span data-nosnippet>241</span>    }
-<span data-nosnippet>242</span>    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..pc).rev() {
-<span data-nosnippet>243</span>        <span class="kw">for </span>j <span class="kw">in </span>i + <span class="number">1</span>..pc {
-<span data-nosnippet>244</span>            mat[i][pc] = sub(mat[i][pc], mul(mat[i][j], mat[j][pc]));
-<span data-nosnippet>245</span>        }
-<span data-nosnippet>246</span>        mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
-<span data-nosnippet>247</span>    }
-<span data-nosnippet>248</span>    (<span class="number">0</span>..pc).map(|i| mat[i][pc]).collect()
-<span data-nosnippet>249</span>}
-<span data-nosnippet>250</span>
-<span data-nosnippet>251</span><span class="attr">#[derive(Debug)]
-<span data-nosnippet>252</span></span><span class="kw">struct </span>IndexCalculusWithPrimitiveRoot {
-<span data-nosnippet>253</span>    p: u64,
-<span data-nosnippet>254</span>    ord: u64,
-<span data-nosnippet>255</span>    prec: QdrtPowPrec,
-<span data-nosnippet>256</span>    coeff: Vec&lt;u64&gt;,
-<span data-nosnippet>257</span>}
-<span data-nosnippet>258</span>
-<span data-nosnippet>259</span><span class="kw">impl </span>IndexCalculusWithPrimitiveRoot {
-<span data-nosnippet>260</span>    <span class="kw">fn </span>new(p: u64, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>261</span>        <span class="kw">let </span>ord = p - <span class="number">1</span>;
-<span data-nosnippet>262</span>        <span class="kw">let </span>g = primitive_root(p);
-<span data-nosnippet>263</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
-<span data-nosnippet>264</span>        <span class="kw">let </span>prec = QdrtPowPrec::new(g, ord, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>265</span>        <span class="kw">let </span>coeff = index_calculus_for_primitive_root(p, ord, br_primes, <span class="kw-2">&amp;</span>prec);
-<span data-nosnippet>266</span>        <span class="self">Self </span>{
-<span data-nosnippet>267</span>            p,
-<span data-nosnippet>268</span>            ord,
-<span data-nosnippet>269</span>            prec,
-<span data-nosnippet>270</span>            coeff,
-<span data-nosnippet>271</span>        }
-<span data-nosnippet>272</span>    }
-<span data-nosnippet>273</span>    <span class="kw">fn </span>index_calculus(<span class="kw-2">&amp;</span><span class="self">self</span>, a: u64, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>274</span>        <span class="kw">let </span>p = <span class="self">self</span>.p;
-<span data-nosnippet>275</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
-<span data-nosnippet>276</span>        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">u128</a>&gt;::new(p <span class="kw">as </span>u128);
-<span data-nosnippet>277</span>        <span class="kw">let </span>a = br.<span class="highlight">rem</span>(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>278</span>        <span class="kw">if </span>a == <span class="number">1 </span>{
-<span data-nosnippet>279</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="number">0</span>);
-<span data-nosnippet>280</span>        }
-<span data-nosnippet>281</span>        <span class="kw">if </span>p == <span class="number">2 </span>{
-<span data-nosnippet>282</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>283</span>        }
-<span data-nosnippet>284</span>
-<span data-nosnippet>285</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::new();
-<span data-nosnippet>286</span>        <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0u64</span>; br_primes.len()];
-<span data-nosnippet>287</span>        <span class="kw">let </span><span class="kw-2">mut </span>kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>288</span>        <span class="kw">let </span><span class="kw-2">mut </span>gkk = <span class="self">self</span>.prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>289</span>        <span class="kw">let </span><span class="kw-2">mut </span>k = kk;
-<span data-nosnippet>290</span>        <span class="kw">let </span><span class="kw-2">mut </span>gk = br.<span class="highlight">rem</span>(gkk <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>291</span>        <span class="kw">loop </span>{
-<span data-nosnippet>292</span>            <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
-<span data-nosnippet>293</span>                <span class="kw">let </span><span class="kw-2">mut </span>res = ord - k;
-<span data-nosnippet>294</span>                <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
-<span data-nosnippet>295</span>                    <span class="kw">for _ in </span><span class="number">0</span>..r {
-<span data-nosnippet>296</span>                        res += c;
-<span data-nosnippet>297</span>                        <span class="kw">if </span>res &gt;= ord {
-<span data-nosnippet>298</span>                            res -= ord;
-<span data-nosnippet>299</span>                        }
-<span data-nosnippet>300</span>                    }
-<span data-nosnippet>301</span>                }
-<span data-nosnippet>302</span>                <span class="kw">return </span><span class="prelude-val">Some</span>(res);
-<span data-nosnippet>303</span>            }
-<span data-nosnippet>304</span>            <span class="kw">if </span>k + kk &lt; ord {
-<span data-nosnippet>305</span>                k += kk;
-<span data-nosnippet>306</span>                gk = br.<span class="highlight">rem</span>(gk <span class="kw">as </span>u128 * gkk <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>307</span>            } <span class="kw">else </span>{
-<span data-nosnippet>308</span>                kk = rng.rand(ord - <span class="number">1</span>) + <span class="number">1</span>;
-<span data-nosnippet>309</span>                gkk = <span class="self">self</span>.prec.pow(kk, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>310</span>                k = kk;
-<span data-nosnippet>311</span>                gk = br.<span class="highlight">rem</span>(gkk <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>312</span>            }
-<span data-nosnippet>313</span>        }
-<span data-nosnippet>314</span>    }
-<span data-nosnippet>315</span>    <span class="kw">fn </span>discrete_logarithm(
-<span data-nosnippet>316</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
-<span data-nosnippet>317</span>        a: u64,
-<span data-nosnippet>318</span>        b: u64,
-<span data-nosnippet>319</span>        br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">u64</a>&gt;],
-<span data-nosnippet>320</span>    ) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
-<span data-nosnippet>321</span>        <span class="kw">let </span>p = <span class="self">self</span>.p;
-<span data-nosnippet>322</span>        <span class="kw">let </span>ord = <span class="self">self</span>.ord;
-<span data-nosnippet>323</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
-<span data-nosnippet>324</span>        <span class="kw">let </span>a = br.<span class="highlight">rem</span>(a <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>325</span>        <span class="kw">let </span>b = br.<span class="highlight">rem</span>(b <span class="kw">as _</span>) <span class="kw">as </span>u64;
-<span data-nosnippet>326</span>        <span class="kw">if </span>a == <span class="number">0 </span>{
-<span data-nosnippet>327</span>            <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
-<span data-nosnippet>328</span>        }
-<span data-nosnippet>329</span>        <span class="kw">if </span>b == <span class="number">0 </span>{
-<span data-nosnippet>330</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>331</span>        }
-<span data-nosnippet>332</span>
-<span data-nosnippet>333</span>        <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
-<span data-nosnippet>334</span>        <span class="kw">let </span>y = <span class="self">self</span>.index_calculus(b, br_primes)<span class="question-mark">?</span>;
-<span data-nosnippet>335</span>        solve_linear_congruence(x, y, ord)
-<span data-nosnippet>336</span>    }
-<span data-nosnippet>337</span>}
-<span data-nosnippet>338</span>
-<span data-nosnippet>339</span><span class="macro">thread_local!</span>(
-<span data-nosnippet>340</span>    <span class="kw">static </span>IC: UnsafeCell&lt;IndexCalculus&gt; = UnsafeCell::new(IndexCalculus::new());
-<span data-nosnippet>341</span>);
-<span data-nosnippet>342</span>
-<span data-nosnippet>343</span><span class="kw">pub fn </span>discrete_logarithm_prime_mod(a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>344</span>    IC.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>ic.get() }.discrete_logarithm(a, b, p))
-<span data-nosnippet>345</span>        .map(|t| t.<span class="number">0</span>)
-<span data-nosnippet>346</span>}
-<span data-nosnippet>347</span>
-<span data-nosnippet>348</span><span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
-<span data-nosnippet>349</span></span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-<span data-nosnippet>350</span>    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as </span>u128);
-<span data-nosnippet>351</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
-<span data-nosnippet>352</span>    <span class="kw">let </span>block_size = (p <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>u64;
-<span data-nosnippet>353</span>    <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;u64, u64&gt;::new();
-<span data-nosnippet>354</span>    <span class="kw">let </span>g = pow(a, p.pow(e - <span class="number">1</span>), <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>355</span>    <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
-<span data-nosnippet>356</span>    <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block_size {
-<span data-nosnippet>357</span>        baby.entry(xj).or_insert(j);
-<span data-nosnippet>358</span>        xj = mul(xj, g);
-<span data-nosnippet>359</span>    }
-<span data-nosnippet>360</span>    <span class="kw">let </span>xi = modinv(xj, n);
-<span data-nosnippet>361</span>    <span class="kw">let </span><span class="kw-2">mut </span>t = <span class="number">0u64</span>;
-<span data-nosnippet>362</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..e {
-<span data-nosnippet>363</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = pow(mul(modinv(pow(a, t, <span class="kw-2">&amp;</span>br), n), b), p.pow(e - <span class="number">1 </span>- k), <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>364</span>        <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="bool-val">false</span>;
-<span data-nosnippet>365</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..block_size * block_size).step_by(block_size <span class="kw">as </span>usize) {
-<span data-nosnippet>366</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(j) = baby.get(<span class="kw-2">&amp;</span>h) {
-<span data-nosnippet>367</span>                t += (i + j) * p.pow(k);
-<span data-nosnippet>368</span>                ok = <span class="bool-val">true</span>;
-<span data-nosnippet>369</span>                <span class="kw">break</span>;
-<span data-nosnippet>370</span>            }
-<span data-nosnippet>371</span>            h = mul(h, xi);
-<span data-nosnippet>372</span>        }
-<span data-nosnippet>373</span>        <span class="kw">if </span>!ok {
-<span data-nosnippet>374</span>            <span class="kw">return </span><span class="prelude-val">None</span>;
-<span data-nosnippet>375</span>        }
-<span data-nosnippet>376</span>    }
-<span data-nosnippet>377</span>    <span class="prelude-val">Some</span>(t)
-<span data-nosnippet>378</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#8&#34;,&#34;line 8&#34;],[[7,7],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#10&#34;,&#34;line 10&#34;],[[18,18],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#21&#34;,&#34;line 21&#34;],[[20,20],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#23&#34;,&#34;line 23&#34;],[[53,53],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#56&#34;,&#34;line 56&#34;],[[56,56],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#59&#34;,&#34;line 59&#34;],[[61,61],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#64&#34;,&#34;line 64&#34;],[[64,64],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#67&#34;,&#34;line 67&#34;],[[69,69],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#72&#34;,&#34;line 72&#34;],[[72,72],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#75&#34;,&#34;line 75&#34;],[[77,77],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#80&#34;,&#34;line 80&#34;],[[80,80],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#83&#34;,&#34;line 83&#34;],[[113,113],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#116&#34;,&#34;line 116&#34;],[[114,114],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#117&#34;,&#34;line 117&#34;],[[115,115],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#118&#34;,&#34;line 118&#34;],[[125,125],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#128&#34;,&#34;line 128&#34;],[[125,125],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#128&#34;,&#34;line 128&#34;],[[126,126],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#129&#34;,&#34;line 129&#34;],[[126,126],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#129&#34;,&#34;line 129&#34;],[[127,127],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#130&#34;,&#34;line 130&#34;],[[127,127],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#130&#34;,&#34;line 130&#34;],[[142,142],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#145&#34;,&#34;line 145&#34;],[[146,146],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#149&#34;,&#34;line 149&#34;],[[158,158],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#161&#34;,&#34;line 161&#34;],[[159,159],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#162&#34;,&#34;line 162&#34;],[[162,162],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#165&#34;,&#34;line 165&#34;],[[174,174],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#177&#34;,&#34;line 177&#34;],[[174,174],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#177&#34;,&#34;line 177&#34;],[[177,177],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#180&#34;,&#34;line 180&#34;],[[177,177],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#180&#34;,&#34;line 180&#34;],[[180,180],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#183&#34;,&#34;line 183&#34;],[[180,180],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#183&#34;,&#34;line 183&#34;],[[195,195],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#198&#34;,&#34;line 198&#34;],[[197,197],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#200&#34;,&#34;line 200&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/arbitrary_mod_binomial.rs (<a href="../../../src/competitive/math/arbitrary_mod_binomial.rs.html#8">line 8</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">fn </span>pow64(x: u64, <span class="kw-2">mut </span>y: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; u64 {
+<span data-nosnippet>161</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#8&#34;,&#34;line 8&#34;],[[7,7],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#10&#34;,&#34;line 10&#34;],[[18,18],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#21&#34;,&#34;line 21&#34;],[[20,20],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#23&#34;,&#34;line 23&#34;],[[53,53],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#56&#34;,&#34;line 56&#34;],[[56,56],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#59&#34;,&#34;line 59&#34;],[[61,61],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#64&#34;,&#34;line 64&#34;],[[64,64],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#67&#34;,&#34;line 67&#34;],[[69,69],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#72&#34;,&#34;line 72&#34;],[[72,72],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#75&#34;,&#34;line 75&#34;],[[77,77],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#80&#34;,&#34;line 80&#34;],[[80,80],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#83&#34;,&#34;line 83&#34;],[[113,113],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#116&#34;,&#34;line 116&#34;],[[114,114],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#117&#34;,&#34;line 117&#34;],[[115,115],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#118&#34;,&#34;line 118&#34;],[[125,125],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#128&#34;,&#34;line 128&#34;],[[125,125],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#128&#34;,&#34;line 128&#34;],[[126,126],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#129&#34;,&#34;line 129&#34;],[[126,126],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#129&#34;,&#34;line 129&#34;],[[127,127],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#130&#34;,&#34;line 130&#34;],[[127,127],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#130&#34;,&#34;line 130&#34;],[[142,142],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#145&#34;,&#34;line 145&#34;],[[146,146],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#149&#34;,&#34;line 149&#34;],[[158,158],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#161&#34;,&#34;line 161&#34;],[[159,159],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#162&#34;,&#34;line 162&#34;],[[162,162],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#165&#34;,&#34;line 165&#34;],[[174,174],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#177&#34;,&#34;line 177&#34;],[[174,174],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#177&#34;,&#34;line 177&#34;],[[177,177],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#180&#34;,&#34;line 180&#34;],[[177,177],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#180&#34;,&#34;line 180&#34;],[[180,180],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#183&#34;,&#34;line 183&#34;],[[180,180],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#183&#34;,&#34;line 183&#34;],[[195,195],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#198&#34;,&#34;line 198&#34;],[[197,197],&#34;../../../src/competitive/math/arbitrary_mod_binomial.rs.html#200&#34;,&#34;line 200&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/arbitrary_mod_binomial.rs (<a href="../../../src/competitive/math/arbitrary_mod_binomial.rs.html#8">line 8</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>3</span><span class="kw">fn </span>pow64(x: u64, <span class="kw-2">mut </span>y: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; u64 {
 <span data-nosnippet>4</span>    <span class="kw">let </span><span class="kw-2">mut </span>x = x <span class="kw">as </span>u128;
 <span data-nosnippet>5</span>    <span class="kw">let </span><span class="kw-2">mut </span>z: u128 = <span class="number">1</span>;
 <span data-nosnippet>6</span>    <span class="kw">while </span>y &gt; <span class="number">0 </span>{
@@ -1486,7 +922,297 @@
 <span data-nosnippet>201</span>            }
 <span data-nosnippet>202</span>            res <span class="kw">as </span>u64
 <span data-nosnippet>203</span>        }
-<span data-nosnippet>204</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/competitive/math/primitive_root.rs.html#36&#34;,&#34;line 36&#34;],[[14,14],&#34;../../../src/competitive/math/primitive_root.rs.html#38&#34;,&#34;line 38&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#36">line 36</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>24</span><span class="kw">pub fn </span>check_primitive_root(
+<span data-nosnippet>204</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#86&#34;,&#34;line 86&#34;],[[6,6],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#89&#34;,&#34;line 89&#34;],[[180,180],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#263&#34;,&#34;line 263&#34;],[[210,210],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#293&#34;,&#34;line 293&#34;],[[257,257],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#340&#34;,&#34;line 340&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#86">line 86</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>83</span><span class="kw">fn </span>prime_field_log(a: u64, b: u64, p: u64) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>84</span>    <span class="kw">if </span>p &lt;= u32::MAX.into() {
+<span data-nosnippet>85</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u64&gt;::new(p);
+<span data-nosnippet>86</span>        pohlig_hellman::&lt;<span class="number">4</span>&gt;(a, b, p, |x, y| br.<span class="highlight focus">rem</span>(x * y))
+<span data-nosnippet>87</span>    } <span class="kw">else </span>{
+<span data-nosnippet>88</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as _</span>);
+<span data-nosnippet>89</span>        pohlig_hellman::&lt;<span class="number">16</span>&gt;(a, b, p, |x, y| br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64)
+<span data-nosnippet>90</span>    }
+<span data-nosnippet>91</span>}
+<span data-nosnippet>92</span>
+<span data-nosnippet>93</span><span class="kw">fn </span>pohlig_hellman&lt;<span class="kw">const </span>LANES: usize&gt;(
+<span data-nosnippet>94</span>    <span class="kw-2">mut </span>a: u64,
+<span data-nosnippet>95</span>    <span class="kw-2">mut </span>b: u64,
+<span data-nosnippet>96</span>    p: u64,
+<span data-nosnippet>97</span>    mul: <span class="kw">impl </span>Fn(u64, u64) -&gt; u64 + Copy,
+<span data-nosnippet>98</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>99</span>    <span class="kw">let </span><span class="kw-2">mut </span>order = p - <span class="number">1</span>;
+<span data-nosnippet>100</span>    <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="number">0</span>;
+<span data-nosnippet>101</span>    <span class="kw">let </span><span class="kw-2">mut </span>period = <span class="number">1</span>;
+<span data-nosnippet>102</span>    <span class="kw">for </span>(q, e) <span class="kw">in </span>prime_factors(order) {
+<span data-nosnippet>103</span>        <span class="kw">for _ in </span><span class="number">0</span>..e {
+<span data-nosnippet>104</span>            order /= q;
+<span data-nosnippet>105</span>            <span class="kw">let </span>(g, h) = <span class="kw">if </span>order == <span class="number">1 </span>{
+<span data-nosnippet>106</span>                (a, b)
+<span data-nosnippet>107</span>            } <span class="kw">else </span>{
+<span data-nosnippet>108</span>                (power(a, order, mul), power(b, order, mul))
+<span data-nosnippet>109</span>            };
+<span data-nosnippet>110</span>            <span class="kw">if </span>g == <span class="number">1 </span>{
+<span data-nosnippet>111</span>                <span class="kw">if </span>h != <span class="number">1 </span>{
+<span data-nosnippet>112</span>                    <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>113</span>                }
+<span data-nosnippet>114</span>                <span class="kw">continue</span>;
+<span data-nosnippet>115</span>            }
+<span data-nosnippet>116</span>            <span class="kw">let </span>digit = <span class="kw">if </span>h == <span class="number">1 </span>{
+<span data-nosnippet>117</span>                <span class="number">0
+<span data-nosnippet>118</span>            </span>} <span class="kw">else </span>{
+<span data-nosnippet>119</span>                prime_order_log::&lt;LANES&gt;(g, h, p, q, mul)
+<span data-nosnippet>120</span>            };
+<span data-nosnippet>121</span>            x += period * digit;
+<span data-nosnippet>122</span>            period <span class="kw-2">*</span>= q;
+<span data-nosnippet>123</span>            <span class="kw">if </span>order != <span class="number">1 </span>{
+<span data-nosnippet>124</span>                <span class="kw">if </span>digit != <span class="number">0 </span>{
+<span data-nosnippet>125</span>                    b = mul(b, power(a, digit, mul).mod_inv(p));
+<span data-nosnippet>126</span>                }
+<span data-nosnippet>127</span>                a = power(a, q, mul);
+<span data-nosnippet>128</span>            }
+<span data-nosnippet>129</span>        }
+<span data-nosnippet>130</span>    }
+<span data-nosnippet>131</span>    <span class="prelude-val">Some</span>((x, period))
+<span data-nosnippet>132</span>}
+<span data-nosnippet>133</span>
+<span data-nosnippet>134</span><span class="doccomment">/// h is a nonidentity element of the subgroup of prime order generated by g.
+<span data-nosnippet>135</span></span><span class="kw">fn </span>prime_order_log&lt;<span class="kw">const </span>LANES: usize&gt;(
+<span data-nosnippet>136</span>    g: u64,
+<span data-nosnippet>137</span>    h: u64,
+<span data-nosnippet>138</span>    p: u64,
+<span data-nosnippet>139</span>    order: u64,
+<span data-nosnippet>140</span>    mul: <span class="kw">impl </span>Fn(u64, u64) -&gt; u64 + Copy,
+<span data-nosnippet>141</span>) -&gt; u64 {
+<span data-nosnippet>142</span>    <span class="kw">if </span>order &lt;= <span class="number">128 </span>{
+<span data-nosnippet>143</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>value, <span class="kw-2">mut </span>i) = (g, <span class="number">1</span>);
+<span data-nosnippet>144</span>        <span class="kw">while </span>value != h {
+<span data-nosnippet>145</span>            value = mul(value, g);
+<span data-nosnippet>146</span>            i += <span class="number">1</span>;
+<span data-nosnippet>147</span>        }
+<span data-nosnippet>148</span>        <span class="kw">return </span>i;
+<span data-nosnippet>149</span>    }
+<span data-nosnippet>150</span>
+<span data-nosnippet>151</span>    <span class="kw">let </span>sqrt = p.isqrt();
+<span data-nosnippet>152</span>    <span class="comment">// At most one prime divisor of p-1 exceeds √p. Field logarithms modulo
+<span data-nosnippet>153</span>    // that divisor distinguish all elements of the subgroup generated by g.
+<span data-nosnippet>154</span>    </span><span class="kw">if </span>order &gt; sqrt
+<span data-nosnippet>155</span>        &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(digit) = LOGS.with_borrow_mut(|cache| {
+<span data-nosnippet>156</span>            <span class="kw">let </span>entry = cache.entry(p).or_insert_with(|| LogCache {
+<span data-nosnippet>157</span>                remaining_searches: ((sqrt &lt;&lt; <span class="number">12</span>) / order).isqrt(),
+<span data-nosnippet>158</span>                table: <span class="prelude-val">None</span>,
+<span data-nosnippet>159</span>            });
+<span data-nosnippet>160</span>            <span class="kw">if </span>entry.remaining_searches &gt; <span class="number">0 </span>{
+<span data-nosnippet>161</span>                entry.remaining_searches -= <span class="number">1</span>;
+<span data-nosnippet>162</span>                <span class="kw">return </span><span class="prelude-val">None</span>;
+<span data-nosnippet>163</span>            }
+<span data-nosnippet>164</span>            <span class="kw">let </span>ic = entry
+<span data-nosnippet>165</span>                .table
+<span data-nosnippet>166</span>                .get_or_insert_with(|| Box::new(IndexCalculus::new(p, order)));
+<span data-nosnippet>167</span>            <span class="prelude-val">Some</span>(ic.log(h).mod_mul(ic.log(g).mod_inv(order), order))
+<span data-nosnippet>168</span>        })
+<span data-nosnippet>169</span>    {
+<span data-nosnippet>170</span>        <span class="kw">return </span>digit;
+<span data-nosnippet>171</span>    }
+<span data-nosnippet>172</span>
+<span data-nosnippet>173</span>    <span class="kw">let </span>blocks = order.isqrt() <span class="kw">as </span>usize / LANES + <span class="number">1</span>;
+<span data-nosnippet>174</span>    <span class="kw">let </span>step = blocks * LANES;
+<span data-nosnippet>175</span>    <span class="kw">let </span>capacity = (<span class="number">4 </span>* step).next_power_of_two();
+<span data-nosnippet>176</span>    <span class="kw">let </span>mask = capacity <span class="kw">as </span>u64 - <span class="number">1</span>;
+<span data-nosnippet>177</span>    <span class="kw">let </span><span class="kw-2">mut </span>heads = <span class="macro">vec!</span>[<span class="number">0u32</span>; capacity];
+<span data-nosnippet>178</span>    <span class="kw">let </span><span class="kw-2">mut </span>entries = Vec::with_capacity(step);
+<span data-nosnippet>179</span>    <span class="kw">for </span>block <span class="kw">in </span>power_blocks::&lt;LANES&gt;(<span class="number">1</span>, g, mul).take(blocks) {
+<span data-nosnippet>180</span>        <span class="kw">for </span>value <span class="kw">in </span>block {
+<span data-nosnippet>181</span>            <span class="kw">let </span>head = <span class="kw-2">&amp;mut </span>heads[(value &amp; mask) <span class="kw">as </span>usize];
+<span data-nosnippet>182</span>            <span class="comment">// The bucket supplies the low bits of the residue. Use those bits for the chain link.
+<span data-nosnippet>183</span>            </span>entries.push((value &amp; !mask) | u64::from(<span class="kw-2">*</span>head));
+<span data-nosnippet>184</span>            <span class="kw-2">*</span>head = entries.len() <span class="kw">as </span>u32;
+<span data-nosnippet>185</span>        }
+<span data-nosnippet>186</span>    }
+<span data-nosnippet>187</span>
+<span data-nosnippet>188</span>    <span class="kw">let </span>stride = power(g, step <span class="kw">as </span>u64, mul).mod_inv(p);
+<span data-nosnippet>189</span>    <span class="kw">for </span>(i, block) <span class="kw">in </span>power_blocks::&lt;LANES&gt;(h, stride, mul).enumerate() {
+<span data-nosnippet>190</span>        <span class="kw">for </span>(k, target) <span class="kw">in </span>block.into_iter().enumerate() {
+<span data-nosnippet>191</span>            <span class="kw">let </span><span class="kw-2">mut </span>j = heads[(target &amp; mask) <span class="kw">as </span>usize];
+<span data-nosnippet>192</span>            <span class="kw">while </span>j != <span class="number">0 </span>{
+<span data-nosnippet>193</span>                <span class="kw">let </span>entry = entries[j <span class="kw">as </span>usize - <span class="number">1</span>];
+<span data-nosnippet>194</span>                <span class="kw">if </span>(entry ^ target) &amp; !mask == <span class="number">0 </span>{
+<span data-nosnippet>195</span>                    <span class="kw">return </span>(i * LANES + k) <span class="kw">as </span>u64 * step <span class="kw">as </span>u64 + u64::from(j) - <span class="number">1</span>;
+<span data-nosnippet>196</span>                }
+<span data-nosnippet>197</span>                j = (entry &amp; mask) <span class="kw">as </span>u32;
+<span data-nosnippet>198</span>            }
+<span data-nosnippet>199</span>        }
+<span data-nosnippet>200</span>    }
+<span data-nosnippet>201</span>    <span class="macro">unreachable!</span>()
+<span data-nosnippet>202</span>}
+<span data-nosnippet>203</span>
+<span data-nosnippet>204</span><span class="kw">fn </span>power_blocks&lt;<span class="kw">const </span>LANES: usize&gt;(
+<span data-nosnippet>205</span>    start: u64,
+<span data-nosnippet>206</span>    g: u64,
+<span data-nosnippet>207</span>    mul: <span class="kw">impl </span>Fn(u64, u64) -&gt; u64,
+<span data-nosnippet>208</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = [u64; LANES]&gt; {
+<span data-nosnippet>209</span>    <span class="kw">let </span><span class="kw-2">mut </span>values = [start; LANES];
+<span data-nosnippet>210</span>    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..LANES {
+<span data-nosnippet>211</span>        values[i] = mul(values[i - <span class="number">1</span>], g);
+<span data-nosnippet>212</span>    }
+<span data-nosnippet>213</span>    <span class="kw">let </span>jump = power(g, LANES <span class="kw">as </span>u64, <span class="kw-2">&amp;</span>mul);
+<span data-nosnippet>214</span>    std::iter::from_fn(<span class="kw">move </span>|| {
+<span data-nosnippet>215</span>        <span class="kw">let </span>block = values;
+<span data-nosnippet>216</span>        <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;mut </span>values {
+<span data-nosnippet>217</span>            <span class="kw-2">*</span>v = mul(<span class="kw-2">*</span>v, jump);
+<span data-nosnippet>218</span>        }
+<span data-nosnippet>219</span>        <span class="prelude-val">Some</span>(block)
+<span data-nosnippet>220</span>    })
+<span data-nosnippet>221</span>}
+<span data-nosnippet>222</span>
+<span data-nosnippet>223</span><span class="kw">fn </span>discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -&gt; <span class="prelude-ty">Option</span>&lt;(u64, u64)&gt; {
+<span data-nosnippet>224</span>    <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>period) = prime_field_log(a % p, b % p, p)<span class="question-mark">?</span>;
+<span data-nosnippet>225</span>    <span class="kw">let </span><span class="kw-2">mut </span>m = p;
+<span data-nosnippet>226</span>    <span class="kw">for _ in </span><span class="number">1</span>..e {
+<span data-nosnippet>227</span>        <span class="kw">let </span>next = m * p;
+<span data-nosnippet>228</span>        <span class="kw">let </span>mul = |x: u64, y| x.mod_mul(y, next);
+<span data-nosnippet>229</span>        <span class="kw">let </span>value = power(a, x, mul);
+<span data-nosnippet>230</span>        <span class="kw">let </span>step = power(a, period, mul);
+<span data-nosnippet>231</span>        <span class="comment">// (1 + k*m)^d ≡ 1 + d*k*m (mod p*m).
+<span data-nosnippet>232</span>        </span><span class="kw">let </span>delta = (b % next).mod_sub(value, next) / m;
+<span data-nosnippet>233</span>        <span class="kw">let </span>slope = (step / m).mod_mul(value, p);
+<span data-nosnippet>234</span>        <span class="kw">let </span>(digit, radix) = solve_linear_congruence(slope, delta, p)<span class="question-mark">?</span>;
+<span data-nosnippet>235</span>        x += period * digit;
+<span data-nosnippet>236</span>        period <span class="kw-2">*</span>= radix;
+<span data-nosnippet>237</span>        m = next;
+<span data-nosnippet>238</span>    }
+<span data-nosnippet>239</span>    <span class="prelude-val">Some</span>((x, period))
+<span data-nosnippet>240</span>}
+<span data-nosnippet>241</span>
+<span data-nosnippet>242</span><span class="attr">#[derive(Debug)]
+<span data-nosnippet>243</span></span><span class="kw">struct </span>FactorBasePrime {
+<span data-nosnippet>244</span>    p: u32,
+<span data-nosnippet>245</span>    inverse: u32,
+<span data-nosnippet>246</span>    limit: u32,
+<span data-nosnippet>247</span>}
+<span data-nosnippet>248</span>
+<span data-nosnippet>249</span><span class="attr">#[derive(Debug)]
+<span data-nosnippet>250</span></span><span class="kw">struct </span>IndexCalculus {
+<span data-nosnippet>251</span>    modulus: BarrettReduction&lt;u128&gt;,
+<span data-nosnippet>252</span>    q: u64,
+<span data-nosnippet>253</span>    sqrt: u64,
+<span data-nosnippet>254</span>    generator: u64,
+<span data-nosnippet>255</span>    primes: Vec&lt;FactorBasePrime&gt;,
+<span data-nosnippet>256</span>    logs: Vec&lt;u64&gt;,
+<span data-nosnippet>257</span>}
+<span data-nosnippet>258</span>
+<span data-nosnippet>259</span><span class="kw">impl </span>IndexCalculus {
+<span data-nosnippet>260</span>    <span class="kw">fn </span>new(p: u64, q: u64) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>261</span>        <span class="kw">let </span>bound = ((<span class="number">10.0 </span>* (p <span class="kw">as </span>f64).powf(<span class="number">1.0 </span>/ <span class="number">9.0</span>)) <span class="kw">as </span>u32).min(p.isqrt() <span class="kw">as </span>u32);
+<span data-nosnippet>262</span>        <span class="kw">let </span>modulus = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as _</span>);
+<span data-nosnippet>263</span>        <span class="kw">let </span>mul = |x: u64, y: u64| modulus.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>264</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<span data-nosnippet>265</span>        <span class="kw">let </span>stride = std::iter::repeat_with(|| rng.rand(p - <span class="number">1</span>) + <span class="number">1</span>)
+<span data-nosnippet>266</span>            .find(|<span class="kw-2">&amp;</span>k| gcd(k, p - <span class="number">1</span>) == <span class="number">1</span>)
+<span data-nosnippet>267</span>            .unwrap();
+<span data-nosnippet>268</span>        <span class="kw">let </span>generator = power(primitive_root(p), stride, mul);
+<span data-nosnippet>269</span>        <span class="kw">let </span>primes = PrimeList::new(bound)
+<span data-nosnippet>270</span>            .primes()
+<span data-nosnippet>271</span>            .map(|p| FactorBasePrime {
+<span data-nosnippet>272</span>                p,
+<span data-nosnippet>273</span>                inverse: <span class="kw">if </span>p == <span class="number">2 </span>{
+<span data-nosnippet>274</span>                    <span class="number">0
+<span data-nosnippet>275</span>                </span>} <span class="kw">else </span>{
+<span data-nosnippet>276</span>                    (p <span class="kw">as </span>u64).mod_inv(<span class="number">1 </span>&lt;&lt; <span class="number">32</span>) <span class="kw">as </span>u32
+<span data-nosnippet>277</span>                },
+<span data-nosnippet>278</span>                limit: u32::MAX / p,
+<span data-nosnippet>279</span>            })
+<span data-nosnippet>280</span>            .collect();
+<span data-nosnippet>281</span>        <span class="kw">let </span><span class="kw-2">mut </span>ic = <span class="self">Self </span>{
+<span data-nosnippet>282</span>            modulus,
+<span data-nosnippet>283</span>            q,
+<span data-nosnippet>284</span>            sqrt: p.isqrt(),
+<span data-nosnippet>285</span>            generator,
+<span data-nosnippet>286</span>            primes,
+<span data-nosnippet>287</span>            logs: Vec::new(),
+<span data-nosnippet>288</span>        };
+<span data-nosnippet>289</span>        <span class="kw">let </span>count = ic.primes.len();
+<span data-nosnippet>290</span>        <span class="comment">// Eliminate larger, rarer primes first to keep early relations sparse.
+<span data-nosnippet>291</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>pivots = <span class="macro">vec!</span>[Vec::&lt;u64&gt;::new(); count];
+<span data-nosnippet>292</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(q <span class="kw">as _</span>);
+<span data-nosnippet>293</span>        <span class="kw">let </span>mul = |x: u64, y: u64| br.<span class="highlight">rem</span>(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>294</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>value, <span class="kw-2">mut </span>exponent) = (<span class="number">1</span>, <span class="number">0</span>);
+<span data-nosnippet>295</span>        <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="number">0</span>;
+<span data-nosnippet>296</span>        <span class="kw">while </span>rank &lt; count {
+<span data-nosnippet>297</span>            <span class="kw">let </span><span class="kw-2">mut </span>row = ic.relation(<span class="kw-2">&amp;mut </span>value, <span class="kw-2">&amp;mut </span>exponent);
+<span data-nosnippet>298</span>            <span class="kw">for </span>(i, pivot) <span class="kw">in </span>pivots.iter_mut().enumerate() {
+<span data-nosnippet>299</span>                <span class="kw">let </span>coefficient = row[i];
+<span data-nosnippet>300</span>                <span class="kw">if </span>coefficient == <span class="number">0 </span>{
+<span data-nosnippet>301</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>302</span>                }
+<span data-nosnippet>303</span>                <span class="kw">if </span>pivot.is_empty() {
+<span data-nosnippet>304</span>                    <span class="kw">let </span>inverse = coefficient.mod_inv(q);
+<span data-nosnippet>305</span>                    <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>row[i..] {
+<span data-nosnippet>306</span>                        <span class="kw-2">*</span>x = mul(<span class="kw-2">*</span>x, inverse);
+<span data-nosnippet>307</span>                    }
+<span data-nosnippet>308</span>                    <span class="kw-2">*</span>pivot = row;
+<span data-nosnippet>309</span>                    rank += <span class="number">1</span>;
+<span data-nosnippet>310</span>                    <span class="kw">break</span>;
+<span data-nosnippet>311</span>                }
+<span data-nosnippet>312</span>                <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>row[i + <span class="number">1</span>..].iter_mut().zip(<span class="kw-2">&amp;</span>pivot[i + <span class="number">1</span>..]) {
+<span data-nosnippet>313</span>                    <span class="kw-2">*</span>x = x.mod_sub(mul(coefficient, y), q);
+<span data-nosnippet>314</span>                }
+<span data-nosnippet>315</span>            }
+<span data-nosnippet>316</span>        }
+<span data-nosnippet>317</span>        ic.logs = <span class="macro">vec!</span>[<span class="number">0</span>; count];
+<span data-nosnippet>318</span>        <span class="kw">for </span>(i, row) <span class="kw">in </span>pivots.iter().enumerate().rev() {
+<span data-nosnippet>319</span>            ic.logs[i] = row[i + <span class="number">1</span>..count]
+<span data-nosnippet>320</span>                .iter()
+<span data-nosnippet>321</span>                .zip(<span class="kw-2">&amp;</span>ic.logs[i + <span class="number">1</span>..])
+<span data-nosnippet>322</span>                .fold(row[count], |v, (<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>y)| v.mod_sub(mul(x, y), q));
+<span data-nosnippet>323</span>        }
+<span data-nosnippet>324</span>        ic
+<span data-nosnippet>325</span>    }
+<span data-nosnippet>326</span>
+<span data-nosnippet>327</span>    <span class="kw">fn </span>log(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>value: u64) -&gt; u64 {
+<span data-nosnippet>328</span>        <span class="kw">let </span><span class="kw-2">mut </span>exponent = <span class="number">0</span>;
+<span data-nosnippet>329</span>        <span class="kw">let </span>row = <span class="self">self</span>.relation(<span class="kw-2">&amp;mut </span>value, <span class="kw-2">&amp;mut </span>exponent);
+<span data-nosnippet>330</span>        row.iter()
+<span data-nosnippet>331</span>            .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.logs)
+<span data-nosnippet>332</span>            .fold(exponent.mod_neg(<span class="self">self</span>.q), |sum, (<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b)| {
+<span data-nosnippet>333</span>                sum.mod_add(a.mod_mul(b, <span class="self">self</span>.q), <span class="self">self</span>.q)
+<span data-nosnippet>334</span>            })
+<span data-nosnippet>335</span>    }
+<span data-nosnippet>336</span>
+<span data-nosnippet>337</span>    <span class="kw">fn </span>relation(<span class="kw-2">&amp;</span><span class="self">self</span>, value: <span class="kw-2">&amp;mut </span>u64, exponent: <span class="kw-2">&amp;mut </span>u64) -&gt; Vec&lt;u64&gt; {
+<span data-nosnippet>338</span>        <span class="kw">let </span>p = <span class="self">self</span>.modulus.get_mod() <span class="kw">as </span>u64;
+<span data-nosnippet>339</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>num, <span class="kw-2">mut </span>den) = <span class="kw">loop </span>{
+<span data-nosnippet>340</span>            <span class="kw-2">*</span>value = <a class="self" href="../../../../../algebra/struct.Bits.html">self</a>.modulus.<span class="highlight">rem</span>(<span class="kw-2">*</span>value <span class="kw">as </span>u128 * <span class="self">self</span>.generator <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>341</span>            <span class="kw-2">*</span>exponent = exponent.mod_add(<span class="number">1</span>, <span class="self">self</span>.q);
+<span data-nosnippet>342</span>            <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>y) = (p, <span class="kw-2">*</span>value);
+<span data-nosnippet>343</span>            <span class="kw">let </span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v) = (<span class="number">0</span>, <span class="number">1</span>);
+<span data-nosnippet>344</span>            <span class="comment">// y ≡ ±value*v (mod p). At the first y ≤ √p, both y and v fit in u32.
+<span data-nosnippet>345</span>            // The sign vanishes in logarithms modulo the odd prime q.
+<span data-nosnippet>346</span>            </span><span class="kw">while </span>y &gt; <span class="self">self</span>.sqrt {
+<span data-nosnippet>347</span>                <span class="kw">let </span>quotient = x / y;
+<span data-nosnippet>348</span>                (x, y) = (y, x - quotient * y);
+<span data-nosnippet>349</span>                (u, v) = (v, u + quotient * v);
+<span data-nosnippet>350</span>            }
+<span data-nosnippet>351</span>            <span class="kw">let </span>(num, den) = (y <span class="kw">as </span>u32, v <span class="kw">as </span>u32);
+<span data-nosnippet>352</span>            <span class="kw">if </span><span class="self">self</span>.is_smooth(num) &amp;&amp; <span class="self">self</span>.is_smooth(den) {
+<span data-nosnippet>353</span>                <span class="kw">break </span>(num, den);
+<span data-nosnippet>354</span>            }
+<span data-nosnippet>355</span>        };
+<span data-nosnippet>356</span>        <span class="kw">let </span><span class="kw-2">mut </span>row = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.primes.len() + <span class="number">1</span>];
+<span data-nosnippet>357</span>        <span class="kw">for </span>(i, prime) <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.primes.len()).rev().zip(<span class="kw-2">&amp;</span><span class="self">self</span>.primes) {
+<span data-nosnippet>358</span>            <span class="kw">let </span>p = prime.p;
+<span data-nosnippet>359</span>            <span class="kw">while </span>num.is_multiple_of(p) {
+<span data-nosnippet>360</span>                num /= p;
+<span data-nosnippet>361</span>                row[i] += <span class="number">1</span>;
+<span data-nosnippet>362</span>            }
+<span data-nosnippet>363</span>            <span class="kw">while </span>den.is_multiple_of(p) {
+<span data-nosnippet>364</span>                den /= p;
+<span data-nosnippet>365</span>                row[i] = row[i].mod_sub(<span class="number">1</span>, <span class="self">self</span>.q);
+<span data-nosnippet>366</span>            }
+<span data-nosnippet>367</span>            <span class="kw">if </span>num == <span class="number">1 </span>&amp;&amp; den == <span class="number">1 </span>{
+<span data-nosnippet>368</span>                <span class="kw">break</span>;
+<span data-nosnippet>369</span>            }
+<span data-nosnippet>370</span>        }
+<span data-nosnippet>371</span>        row[<span class="self">self</span>.primes.len()] = <span class="kw-2">*</span>exponent;
+<span data-nosnippet>372</span>        row
+<span data-nosnippet>373</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../../src/competitive/math/primitive_root.rs.html#36&#34;,&#34;line 36&#34;],[[14,14],&#34;../../../src/competitive/math/primitive_root.rs.html#38&#34;,&#34;line 38&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/primitive_root.rs (<a href="../../../src/competitive/math/primitive_root.rs.html#36">line 36</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>24</span><span class="kw">pub fn </span>check_primitive_root(
 <span data-nosnippet>25</span>    g: u64,
 <span data-nosnippet>26</span>    phi: u64,
 <span data-nosnippet>27</span>    br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;,

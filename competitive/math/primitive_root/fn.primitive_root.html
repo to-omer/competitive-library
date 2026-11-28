@@ -82,19 +82,7 @@
 <span data-nosnippet>8</span>    <span class="kw">for </span>p <span class="kw">in </span>p {
 <span data-nosnippet>9</span>        <span class="macro">pp!</span>(<span class="highlight focus">primitive_root_library</span>(p));
 <span data-nosnippet>10</span>    }
-<span data-nosnippet>11</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#262&#34;,&#34;line 262&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#262">line 262</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>260</span>    <span class="kw">fn </span>new(p: u64, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;u64&gt;]) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>261</span>        <span class="kw">let </span>ord = p - <span class="number">1</span>;
-<span data-nosnippet>262</span>        <span class="kw">let </span>g = <span class="highlight focus">primitive_root</span>(p);
-<span data-nosnippet>263</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as </span>u128);
-<span data-nosnippet>264</span>        <span class="kw">let </span>prec = QdrtPowPrec::new(g, ord, <span class="kw-2">&amp;</span>br);
-<span data-nosnippet>265</span>        <span class="kw">let </span>coeff = index_calculus_for_primitive_root(p, ord, br_primes, <span class="kw-2">&amp;</span>prec);
-<span data-nosnippet>266</span>        <span class="self">Self </span>{
-<span data-nosnippet>267</span>            p,
-<span data-nosnippet>268</span>            ord,
-<span data-nosnippet>269</span>            prec,
-<span data-nosnippet>270</span>            coeff,
-<span data-nosnippet>271</span>        }
-<span data-nosnippet>272</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[15,15],&#34;../../../src/competitive/math/fast_prime_mod.rs.html#60&#34;,&#34;line 60&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_prime_mod.rs (<a href="../../../src/competitive/math/fast_prime_mod.rs.html#60">line 60</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+<span data-nosnippet>11</span>}</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[15,15],&#34;../../../src/competitive/math/fast_prime_mod.rs.html#60&#34;,&#34;line 60&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_prime_mod.rs (<a href="../../../src/competitive/math/fast_prime_mod.rs.html#60">line 60</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>45</span>    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
 <span data-nosnippet>46</span>        <span class="macro">assert!</span>(
 <span data-nosnippet>47</span>            BUILD_INV || BUILD_POW,
 <span data-nosnippet>48</span>            <span class="string">"at least one of BUILD_INV or BUILD_POW must be true"
@@ -140,4 +128,69 @@
 <span data-nosnippet>88</span>            log,
 <span data-nosnippet>89</span>            inv,
 <span data-nosnippet>90</span>        }
-<span data-nosnippet>91</span>    }</code></pre></div></div></div></details></div></section></div></main></body></html>
+<span data-nosnippet>91</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[8,8],&#34;../../../src/competitive/math/discrete_logarithm.rs.html#268&#34;,&#34;line 268&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/discrete_logarithm.rs (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#268">line 268</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>260</span>    <span class="kw">fn </span>new(p: u64, q: u64) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>261</span>        <span class="kw">let </span>bound = ((<span class="number">10.0 </span>* (p <span class="kw">as </span>f64).powf(<span class="number">1.0 </span>/ <span class="number">9.0</span>)) <span class="kw">as </span>u32).min(p.isqrt() <span class="kw">as </span>u32);
+<span data-nosnippet>262</span>        <span class="kw">let </span>modulus = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as _</span>);
+<span data-nosnippet>263</span>        <span class="kw">let </span>mul = |x: u64, y: u64| modulus.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>264</span>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<span data-nosnippet>265</span>        <span class="kw">let </span>stride = std::iter::repeat_with(|| rng.rand(p - <span class="number">1</span>) + <span class="number">1</span>)
+<span data-nosnippet>266</span>            .find(|<span class="kw-2">&amp;</span>k| gcd(k, p - <span class="number">1</span>) == <span class="number">1</span>)
+<span data-nosnippet>267</span>            .unwrap();
+<span data-nosnippet>268</span>        <span class="kw">let </span>generator = power(<span class="highlight focus">primitive_root</span>(p), stride, mul);
+<span data-nosnippet>269</span>        <span class="kw">let </span>primes = PrimeList::new(bound)
+<span data-nosnippet>270</span>            .primes()
+<span data-nosnippet>271</span>            .map(|p| FactorBasePrime {
+<span data-nosnippet>272</span>                p,
+<span data-nosnippet>273</span>                inverse: <span class="kw">if </span>p == <span class="number">2 </span>{
+<span data-nosnippet>274</span>                    <span class="number">0
+<span data-nosnippet>275</span>                </span>} <span class="kw">else </span>{
+<span data-nosnippet>276</span>                    (p <span class="kw">as </span>u64).mod_inv(<span class="number">1 </span>&lt;&lt; <span class="number">32</span>) <span class="kw">as </span>u32
+<span data-nosnippet>277</span>                },
+<span data-nosnippet>278</span>                limit: u32::MAX / p,
+<span data-nosnippet>279</span>            })
+<span data-nosnippet>280</span>            .collect();
+<span data-nosnippet>281</span>        <span class="kw">let </span><span class="kw-2">mut </span>ic = <span class="self">Self </span>{
+<span data-nosnippet>282</span>            modulus,
+<span data-nosnippet>283</span>            q,
+<span data-nosnippet>284</span>            sqrt: p.isqrt(),
+<span data-nosnippet>285</span>            generator,
+<span data-nosnippet>286</span>            primes,
+<span data-nosnippet>287</span>            logs: Vec::new(),
+<span data-nosnippet>288</span>        };
+<span data-nosnippet>289</span>        <span class="kw">let </span>count = ic.primes.len();
+<span data-nosnippet>290</span>        <span class="comment">// Eliminate larger, rarer primes first to keep early relations sparse.
+<span data-nosnippet>291</span>        </span><span class="kw">let </span><span class="kw-2">mut </span>pivots = <span class="macro">vec!</span>[Vec::&lt;u64&gt;::new(); count];
+<span data-nosnippet>292</span>        <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(q <span class="kw">as _</span>);
+<span data-nosnippet>293</span>        <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>294</span>        <span class="kw">let </span>(<span class="kw-2">mut </span>value, <span class="kw-2">mut </span>exponent) = (<span class="number">1</span>, <span class="number">0</span>);
+<span data-nosnippet>295</span>        <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="number">0</span>;
+<span data-nosnippet>296</span>        <span class="kw">while </span>rank &lt; count {
+<span data-nosnippet>297</span>            <span class="kw">let </span><span class="kw-2">mut </span>row = ic.relation(<span class="kw-2">&amp;mut </span>value, <span class="kw-2">&amp;mut </span>exponent);
+<span data-nosnippet>298</span>            <span class="kw">for </span>(i, pivot) <span class="kw">in </span>pivots.iter_mut().enumerate() {
+<span data-nosnippet>299</span>                <span class="kw">let </span>coefficient = row[i];
+<span data-nosnippet>300</span>                <span class="kw">if </span>coefficient == <span class="number">0 </span>{
+<span data-nosnippet>301</span>                    <span class="kw">continue</span>;
+<span data-nosnippet>302</span>                }
+<span data-nosnippet>303</span>                <span class="kw">if </span>pivot.is_empty() {
+<span data-nosnippet>304</span>                    <span class="kw">let </span>inverse = coefficient.mod_inv(q);
+<span data-nosnippet>305</span>                    <span class="kw">for </span>x <span class="kw">in </span><span class="kw-2">&amp;mut </span>row[i..] {
+<span data-nosnippet>306</span>                        <span class="kw-2">*</span>x = mul(<span class="kw-2">*</span>x, inverse);
+<span data-nosnippet>307</span>                    }
+<span data-nosnippet>308</span>                    <span class="kw-2">*</span>pivot = row;
+<span data-nosnippet>309</span>                    rank += <span class="number">1</span>;
+<span data-nosnippet>310</span>                    <span class="kw">break</span>;
+<span data-nosnippet>311</span>                }
+<span data-nosnippet>312</span>                <span class="kw">for </span>(x, <span class="kw-2">&amp;</span>y) <span class="kw">in </span>row[i + <span class="number">1</span>..].iter_mut().zip(<span class="kw-2">&amp;</span>pivot[i + <span class="number">1</span>..]) {
+<span data-nosnippet>313</span>                    <span class="kw-2">*</span>x = x.mod_sub(mul(coefficient, y), q);
+<span data-nosnippet>314</span>                }
+<span data-nosnippet>315</span>            }
+<span data-nosnippet>316</span>        }
+<span data-nosnippet>317</span>        ic.logs = <span class="macro">vec!</span>[<span class="number">0</span>; count];
+<span data-nosnippet>318</span>        <span class="kw">for </span>(i, row) <span class="kw">in </span>pivots.iter().enumerate().rev() {
+<span data-nosnippet>319</span>            ic.logs[i] = row[i + <span class="number">1</span>..count]
+<span data-nosnippet>320</span>                .iter()
+<span data-nosnippet>321</span>                .zip(<span class="kw-2">&amp;</span>ic.logs[i + <span class="number">1</span>..])
+<span data-nosnippet>322</span>                .fold(row[count], |v, (<span class="kw-2">&amp;</span>x, <span class="kw-2">&amp;</span>y)| v.mod_sub(mul(x, y), q));
+<span data-nosnippet>323</span>        }
+<span data-nosnippet>324</span>        ic
+<span data-nosnippet>325</span>    }</code></pre></div></div></div></details></div></section></div></main></body></html>
