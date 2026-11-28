@@ -87,6 +87,11 @@ where
     pub fn inner(self) -> M::Inner {
         M::mod_inner(self.x)
     }
+    /// Returns the stored representation accepted by `new_unchecked`.
+    #[inline]
+    pub fn into_raw(self) -> M::Inner {
+        self.x
+    }
 }
 
 impl<M> Clone for MInt<M>

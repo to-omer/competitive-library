@@ -308,7 +308,7 @@ impl Segment {
 #[cfg(test)]
 mod tests {
     use super::count_primes;
-    use crate::{algebra::AdditiveOperation, math::QuotientArray, tools::Xorshift};
+    use crate::{algebra::AdditiveOperation, math::DirichletPrefixSums, tools::Xorshift};
 
     #[test]
     fn prime_counts() {
@@ -342,8 +342,8 @@ mod tests {
             .flat_map(|n| n - 1..=n + 1)
             .chain(rng.random_iter(1u64 << 16..=1 << 29).take(28))
         {
-            let counts =
-                QuotientArray::from_fn(n, |i| i as i64).lucy_dp::<AdditiveOperation<_>>(|_, x| *x);
+            let counts = DirichletPrefixSums::from_fn(n, |i| i as i64)
+                .prime_prefix_sums::<AdditiveOperation<_>>(|_, x| *x);
             assert_eq!(count_primes(n), counts[n] as u64, "n = {n}");
         }
 

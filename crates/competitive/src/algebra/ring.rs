@@ -67,6 +67,14 @@ pub trait SemiRing {
         sums
     }
 
+    /// Starts an empty sum of products.
+    fn product_sum() -> impl ProductSum<Self::T>
+    where
+        Self: Sized,
+    {
+        RingProductSum::<Self>(Self::zero())
+    }
+
     fn add_scaled_assign(x: &mut [Self::T], y: &[Self::T], a: &Self::T) {
         assert_eq!(x.len(), y.len());
         for (x, y) in x.iter_mut().zip(y) {
@@ -152,6 +160,10 @@ pub trait DotProduct: Sized + Clone + Zero + Add<Output = Self> + Mul<Output = S
         }
         sums
     }
+
+    fn product_sum() -> impl ProductSum<Self> {
+        Self::zero()
+    }
 }
 
 macro_rules! impl_dot_product {
@@ -164,6 +176,27 @@ impl_dot_product!(u8 u16 u32 u64 usize u128 i8 i16 i32 i64 isize i128 f32 f64);
 impl<T> DotProduct for Wrapping<T> where
     Wrapping<T>: Clone + Zero + Add<Output = Wrapping<T>> + Mul<Output = Wrapping<T>>
 {
+}
+
+/// A sum of products whose reduction can be deferred until the sum is read.
+pub trait ProductSum<T> {
+    /// Adds each left factor times its corresponding right factor.
+    fn add_products<const N: usize>(&mut self, terms: [(&T, &T); N]);
+    fn finish(self) -> T;
+}
+
+impl<T> ProductSum<T> for T
+where
+    T: DotProduct,
+{
+    fn add_products<const N: usize>(&mut self, terms: [(&T, &T); N]) {
+        for (x, y) in terms {
+            *self = self.clone() + x.clone() * y.clone();
+        }
+    }
+    fn finish(self) -> T {
+        self
+    }
 }
 
 /// $+,\times$
@@ -202,7 +235,30 @@ where
     }
 
     #[inline]
+    fn product_sum() -> impl ProductSum<T> {
+        T::product_sum()
+    }
+
+    #[inline]
     fn add_scaled_assign(x: &mut [Self::T], y: &[Self::T], a: &Self::T) {
         T::add_scaled_assign(x, y, a);
+    }
+}
+
+struct RingProductSum<R>(R::T)
+where
+    R: SemiRing;
+
+impl<R> ProductSum<R::T> for RingProductSum<R>
+where
+    R: SemiRing,
+{
+    fn add_products<const N: usize>(&mut self, terms: [(&R::T, &R::T); N]) {
+        for (x, y) in terms {
+            R::add_assign(&mut self.0, &R::mul(x, y));
+        }
+    }
+    fn finish(self) -> R::T {
+        self.0
     }
 }

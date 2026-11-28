@@ -1,4 +1,4 @@
-use super::{DotProduct, MInt, MIntBase};
+use super::{DotProduct, MInt, MIntBase, ProductSum};
 
 pub trait MIntDotProduct: MIntBase + Sized {
     fn try_matrix_product(
@@ -61,6 +61,10 @@ pub trait MIntDotProduct: MIntBase + Sized {
         sums
     }
 
+    fn product_sum() -> impl ProductSum<MInt<Self>> {
+        MInt::new_unchecked(Self::mod_zero())
+    }
+
     fn add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: &MInt<Self>) {
         assert_eq!(x.len(), y.len());
         for (x, y) in x.iter_mut().zip(y) {
@@ -92,6 +96,11 @@ where
     #[inline]
     fn dot_product_batch<const N: usize>(x: &[[Self; N]], y: &[[Self; N]]) -> [Self; N] {
         M::dot_product_batch(x, y)
+    }
+
+    #[inline]
+    fn product_sum() -> impl ProductSum<Self> {
+        M::product_sum()
     }
 
     #[inline]

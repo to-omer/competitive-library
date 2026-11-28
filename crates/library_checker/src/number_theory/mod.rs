@@ -1,4 +1,6 @@
 pub mod counting_primes;
+pub mod dirichlet_convolution_and_prefix_sums;
+pub mod dirichlet_inverse_and_prefix_sums;
 pub mod discrete_logarithm_mod;
 pub mod enumerate_primes;
 pub mod enumerate_quotients;

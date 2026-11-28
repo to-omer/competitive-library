@@ -1,15 +1,16 @@
-use super::{AbelianGroup, Invertible, PrimeList, Ring, Zero};
+use super::{AbelianGroup, Invertible, PrimeList, ProductSum, Ring, Zero};
 use std::ops::{Index, IndexMut};
 
-/// Values at the distinct positive quotients of `n`, stored in increasing order.
+/// Inclusive prefix sums of an arithmetic function at the distinct quotients `n / i`,
+/// stored in increasing order of the quotient.
 #[derive(Debug, Clone)]
-pub struct QuotientArray<T> {
+pub struct DirichletPrefixSums<T> {
     n: u64,
     root: usize,
     data: Vec<T>,
 }
 
-impl<T> QuotientArray<T> {
+impl<T> DirichletPrefixSums<T> {
     /// Iterates over the distinct quotients of a positive `n` in increasing order.
     pub fn quotients(n: u64) -> impl DoubleEndedIterator<Item = u64> {
         assert!(n > 0);
@@ -49,8 +50,8 @@ impl<T> QuotientArray<T> {
         }
     }
 
-    pub fn map<U>(&self, f: impl FnMut(&T) -> U) -> QuotientArray<U> {
-        QuotientArray {
+    pub fn map<U>(&self, f: impl FnMut(&T) -> U) -> DirichletPrefixSums<U> {
+        DirichletPrefixSums {
             n: self.n,
             root: self.root,
             data: self.data.iter().map(f).collect(),
@@ -59,7 +60,7 @@ impl<T> QuotientArray<T> {
 
     /// Converts inclusive prefix sums of a completely multiplicative function to prime sums.
     /// `mul(weight, sum)` multiplies a function value by a sum in the coefficient ring.
-    pub fn lucy_dp<G>(mut self, mul: impl Fn(&T, &T) -> T) -> Self
+    pub fn prime_prefix_sums<G>(mut self, mul: impl Fn(&T, &T) -> T) -> Self
     where
         T: Clone,
         G: AbelianGroup<T = T>,
@@ -74,7 +75,10 @@ impl<T> QuotientArray<T> {
 
     /// Converts prime sums to inclusive prefix sums of a multiplicative function.
     /// `prime_power(p, e)` supplies its value at prime powers with `e >= 2`.
-    pub fn min_25_sieve<R>(mut self, mut prime_power: impl FnMut(u64, u32) -> T) -> Self
+    pub fn multiplicative_prefix_sums<R>(
+        mut self,
+        mut prime_power: impl FnMut(u64, u32) -> T,
+    ) -> Self
     where
         T: Clone,
         R: Ring<T = T, Additive: Invertible>,
@@ -111,6 +115,58 @@ impl<T> QuotientArray<T> {
             .collect();
         self.sieve::<R::Additive, false>(cutoff, R::mul, |p, e, _, _| prime_power(p, e));
         self.smooth_sum::<R>(&powers, 1, self.n, cutoff, &self.data[cutoff - 1])
+    }
+
+    /// Converts inclusive prefix sums of `f` (`self`) and `g` (`rhs`) for the same `n`
+    /// to those of `f * g`, multiplying coefficients of `f` from the left.
+    /// Uses $O(n^{2/3})$ ring operations.
+    pub fn dirichlet_convolve<R>(&self, rhs: &Self) -> Self
+    where
+        T: Clone,
+        R: Ring<T = T, Additive: Invertible>,
+    {
+        assert_eq!(self.n, rhs.n);
+        let f = self.dense_coefficients::<R>();
+        let g = rhs.dense_coefficients::<R>();
+        let mut result = vec![R::zero(); self.root];
+        for (i, weight) in g.iter().enumerate() {
+            let cells = result[i..].iter_mut().step_by(i + 1);
+            for (cell, left) in cells.zip(&f) {
+                R::add_assign(cell, &R::mul(left, weight));
+            }
+        }
+        for i in 1..self.root {
+            result[i] = R::add(&result[i - 1], &result[i]);
+        }
+        self.dirichlet_prefixes::<R>(DirichletOperand::Factor(rhs), f, g, result)
+    }
+
+    /// Converts inclusive prefix sums of `f` to those of its Dirichlet inverse
+    /// in $O(n^{2/3})$ ring operations.
+    /// `first_inverse` must be the two-sided multiplicative inverse of `self[1]`.
+    pub fn dirichlet_inverse<R>(&self, first_inverse: T) -> Self
+    where
+        T: Clone,
+        R: Ring<T = T, Additive: Invertible>,
+    {
+        let f = self.dense_coefficients::<R>();
+        let mut g = vec![R::zero(); self.root];
+        g[0] = first_inverse.clone();
+        let mut result = Vec::with_capacity(self.data.len());
+        let mut sum = R::zero();
+        for i in 1..=self.root {
+            let (weight, rest) = g[i - 1..].split_first_mut().unwrap();
+            if i > 1 {
+                *weight = R::mul(&first_inverse, &R::neg(weight));
+            }
+            let cells = rest.iter_mut().skip(i - 1).step_by(i);
+            for (cell, left) in cells.zip(&f[1..]) {
+                R::add_assign(cell, &R::mul(left, weight));
+            }
+            R::add_assign(&mut sum, weight);
+            result.push(sum.clone());
+        }
+        self.dirichlet_prefixes::<R>(DirichletOperand::Inverse(first_inverse), f, g, result)
     }
 
     fn smooth_sum<R>(
@@ -494,10 +550,138 @@ impl<T> QuotientArray<T> {
             update::<G, REMOVE>(&mut self.data[len - d], &total);
         }
     }
+
+    fn dense_coefficients<R>(&self) -> Vec<T>
+    where
+        T: Clone,
+        R: Ring<T = T, Additive: Invertible>,
+    {
+        std::iter::once(self.data[0].clone())
+            .chain(
+                self.data[..self.root]
+                    .windows(2)
+                    .map(|p| R::sub(&p[1], &p[0])),
+            )
+            .collect()
+    }
+
+    fn dirichlet_prefixes<R>(
+        &self,
+        operand: DirichletOperand<'_, T>,
+        f: Vec<T>,
+        g: Vec<T>,
+        mut result: Vec<T>,
+    ) -> Self
+    where
+        T: Clone,
+        R: Ring<T = T, Additive: Invertible>,
+    {
+        let root = self.root;
+        let len = self.data.len();
+        let large = len - root;
+        let other = match &operand {
+            DirichletOperand::Factor(rhs) => &rhs.data[..root],
+            DirichletOperand::Inverse(_) => &result,
+        };
+        let prefixes: Vec<_> = self.data[..root]
+            .iter()
+            .cloned()
+            .zip(other.iter().cloned())
+            .collect();
+        let weights: Vec<_> = f.into_iter().zip(g).collect();
+        let (f1, g1) = &weights[0];
+        let (pf, pg) = &prefixes[root - 1];
+        let boundary = R::add(&R::mul(f1, pg), &R::mul(pf, g1));
+        let mut running = match operand {
+            DirichletOperand::Factor(_) => R::sub(&result[root - 1], &boundary),
+            DirichletOperand::Inverse(_) => R::neg(&boundary),
+        };
+        R::add_assign(&mut running, &R::mul(f1, g1));
+        result.resize(len, R::zero());
+        let mut changes: Vec<_> = (0..large).map(|_| R::product_sum()).collect();
+        let reciprocals: Vec<_> = (2..=root).map(|i| u64::MAX / i as u64 + 1).collect();
+        for i in 2..=root {
+            let m = self.n / i as u64;
+            let split = m.isqrt() as usize;
+            if i > split {
+                break;
+            }
+            let (fi, gi) = &weights[i - 1];
+            if i > root / i {
+                changes[(m / i as u64) as usize - 1].add_products([(fi, gi)]);
+            }
+            let start = i.max(root / i) + 1;
+            let mut scatter = |j: usize, d: usize| {
+                let (fj, gj) = &weights[j - 1];
+                changes[d - 1].add_products([(fi, gj), (fj, gi)]);
+            };
+            let fast = quotient_reciprocals(m, start, split, &reciprocals);
+            for (j, &r) in (start..).zip(fast) {
+                scatter(j, quotient(m, r));
+            }
+            for j in start + fast.len()..=split {
+                scatter(j, (m / j as u64) as usize);
+            }
+            let row = (m / (split as u64 + 1)) as usize;
+            let (pf, pg) = &prefixes[split - 1];
+            // Rows d <= row include these scattered pairs in their hyperbola sum.
+            let counted = R::add(
+                &R::mul(fi, &R::sub(pg, &prefixes[i - 2].1)),
+                &R::mul(&R::sub(pf, &prefixes[i - 1].0), gi),
+            );
+            R::sub_assign(&mut result[len - row], &counted);
+        }
+        for (k, change) in changes.into_iter().enumerate().rev() {
+            let d = k + 1;
+            let q = self.n / d as u64;
+            let end = q.isqrt().min(q / (d as u64 + 1)) as usize;
+            let upper = (large / d).min(end);
+            R::add_assign(&mut running, &R::add(&change.finish(), &result[len - d]));
+            let other = match &operand {
+                DirichletOperand::Factor(rhs) => &rhs.data,
+                DirichletOperand::Inverse(_) => &result,
+            };
+            let mut sum = R::product_sum();
+            for i in 2..=upper {
+                let (fi, gi) = &weights[i - 1];
+                let j = len - d * i;
+                sum.add_products([(fi, &other[j]), (&self.data[j], gi)]);
+            }
+            let terms = |i: usize, j: usize| {
+                let (fi, gi) = &weights[i - 1];
+                let (pf, pg) = &prefixes[j - 1];
+                [(fi, pg), (pf, gi)]
+            };
+            let mut i = upper.max(1) + 1;
+            let (pairs, _) = quotient_reciprocals(q, i, end, &reciprocals).as_chunks::<2>();
+            for &[r, s] in pairs {
+                let [a, b] = terms(i, quotient(q, r));
+                let [c, e] = terms(i + 1, quotient(q, s));
+                sum.add_products([a, b, c, e]);
+                i += 2;
+            }
+            for i in i..=end {
+                sum.add_products(terms(i, (q / i as u64) as usize));
+            }
+            let (pf, pg) = &prefixes[end - 1];
+            let mut value = R::sub(&running, &R::mul(pf, pg));
+            R::add_assign(&mut value, &sum.finish());
+            R::add_assign(&mut value, &R::mul(&self.data[len - d], g1));
+            result[len - d] = match &operand {
+                DirichletOperand::Factor(rhs) => R::add(&value, &R::mul(f1, &rhs.data[len - d])),
+                DirichletOperand::Inverse(inv) => R::mul(inv, &R::neg(&value)),
+            };
+        }
+        Self {
+            n: self.n,
+            root,
+            data: result,
+        }
+    }
 }
 
 struct PrimeBand<'a, T> {
-    input: &'a QuotientArray<T>,
+    input: &'a DirichletPrefixSums<T>,
     rough: u64,
     max_k: usize,
     keys: Vec<(u64, T)>,
@@ -664,14 +848,32 @@ where
     }
 }
 
-impl<T> Index<u64> for QuotientArray<T> {
+enum DirichletOperand<'a, T> {
+    Factor(&'a DirichletPrefixSums<T>),
+    Inverse(T),
+}
+
+fn quotient_reciprocals(x: u64, first: usize, end: usize, reciprocals: &[u64]) -> &[u64] {
+    // ceil(2^64/i) gives the exact quotient when x*i < 2^64.
+    if first <= end && x <= u64::MAX / end as u64 {
+        &reciprocals[first - 2..end - 1]
+    } else {
+        &[]
+    }
+}
+
+fn quotient(x: u64, reciprocal: u64) -> usize {
+    ((u128::from(x) * u128::from(reciprocal)) >> 64) as usize
+}
+
+impl<T> Index<u64> for DirichletPrefixSums<T> {
     type Output = T;
     fn index(&self, value: u64) -> &T {
         &self.data[self.quotient_index(value)]
     }
 }
 
-impl<T> IndexMut<u64> for QuotientArray<T> {
+impl<T> IndexMut<u64> for DirichletPrefixSums<T> {
     fn index_mut(&mut self, value: u64) -> &mut T {
         let i = self.quotient_index(value);
         &mut self.data[i]
@@ -682,9 +884,12 @@ impl<T> IndexMut<u64> for QuotientArray<T> {
 mod tests {
     use super::*;
     use crate::{
-        algebra::{AddMulOperation, AdditiveOperation, ArrayOperation},
+        algebra::{
+            AddMulOperation, AdditiveOperation, ArrayOperation, Associative, Magma, SemiRing,
+            Unital,
+        },
         math::PrimeTable,
-        num::montgomery::MInt469762049 as M,
+        num::{One, montgomery::MInt469762049 as M},
         tools::{Xorshift, testutil::sample_usize},
     };
 
@@ -705,9 +910,9 @@ mod tests {
         for n in 1..=1024 {
             let mut quotients: Vec<_> = (1..=n).rev().map(|i| n / i).collect();
             quotients.dedup();
-            let array = QuotientArray::from_fn(n, |q| q);
+            let array = DirichletPrefixSums::from_fn(n, |q| q);
             assert_eq!(array.as_slice(), quotients);
-            let mut indices = QuotientArray::zeros(n);
+            let mut indices = DirichletPrefixSums::zeros(n);
             for (i, &q) in quotients.iter().enumerate() {
                 assert_eq!(array.quotient_index(q), i);
                 indices[q] = i;
@@ -730,9 +935,10 @@ mod tests {
         }
         let mul = |a: &[i64; 2], b: &[i64; 2]| [a[0] * b[0], a[1] * b[1]];
         for n in inputs(MAX, 600) {
-            let sums = QuotientArray::from_fn(n as u64, |q| [q as i64, i64::from(q % 3 == 1)])
-                .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(mul);
-            let expected = QuotientArray::from_fn(n as u64, |q| expected[q as usize]);
+            let sums =
+                DirichletPrefixSums::from_fn(n as u64, |q| [q as i64, i64::from(q % 3 == 1)])
+                    .prime_prefix_sums::<ArrayOperation<AdditiveOperation<_>, 2>>(mul);
+            let expected = DirichletPrefixSums::from_fn(n as u64, |q| expected[q as usize]);
             assert_eq!(sums.as_slice(), expected.as_slice(), "n = {n}");
         }
     }
@@ -757,9 +963,11 @@ mod tests {
         }
         let prime_power = |p, e| M::from((0..e).fold(1u64, |sum, _| sum * p + 1));
         for n in inputs(MAX, 500) {
-            let sums = QuotientArray::from_fn(n as u64, |q| M::from(primes[q as usize]));
-            let all = sums.clone().min_25_sieve::<AddMulOperation<_>>(prime_power);
-            let expected = QuotientArray::from_fn(n as u64, |q| M::from(sigma[q as usize]));
+            let sums = DirichletPrefixSums::from_fn(n as u64, |q| M::from(primes[q as usize]));
+            let all = sums
+                .clone()
+                .multiplicative_prefix_sums::<AddMulOperation<_>>(prime_power);
+            let expected = DirichletPrefixSums::from_fn(n as u64, |q| M::from(sigma[q as usize]));
             assert_eq!(all.as_slice(), expected.as_slice(), "n = {n}");
             let top = sums.multiplicative_sum::<AddMulOperation<_>>(prime_power);
             assert_eq!(top, expected[n as u64], "n = {n}");
@@ -775,12 +983,121 @@ mod tests {
             .map(|n| n as u64)
             .chain(boundary - 1..=boundary + 1);
         for n in cases {
-            let sums = QuotientArray::<i64>::zeros(n);
-            let all = sums.clone().min_25_sieve::<AddMulOperation<_>>(prime_power);
-            let expected = QuotientArray::from_fn(n, |q| q.isqrt() as i64);
+            let sums = DirichletPrefixSums::<i64>::zeros(n);
+            let all = sums
+                .clone()
+                .multiplicative_prefix_sums::<AddMulOperation<_>>(prime_power);
+            let expected = DirichletPrefixSums::from_fn(n, |q| q.isqrt() as i64);
             assert_eq!(all.as_slice(), expected.as_slice(), "n = {n}");
             let top = sums.multiplicative_sum::<AddMulOperation<_>>(prime_power);
             assert_eq!(top, expected[n], "n = {n}");
+        }
+    }
+
+    crate::define_monoid!(
+        Triangular,
+        [M; 3],
+        |a, b| [a[0] * b[0], a[0] * b[1] + a[1] * b[2], a[2] * b[2]],
+        [M::one(), M::zero(), M::one()]
+    );
+    impl SemiRing for Triangular {
+        type T = [M; 3];
+        type Additive = ArrayOperation<AdditiveOperation<M>, 3>;
+        type Multiplicative = Self;
+    }
+
+    fn prefix_sums<R>(values: &mut [R::T])
+    where
+        R: SemiRing,
+    {
+        let mut sum = R::zero();
+        for value in values {
+            R::add_assign(&mut sum, value);
+            *value = sum.clone();
+        }
+    }
+
+    #[test]
+    fn dirichlet_convolve() {
+        fn check<R>(mut coefficient: impl FnMut() -> R::T)
+        where
+            R: Ring<Additive: Invertible>,
+            R::T: std::fmt::Debug + PartialEq,
+        {
+            const MAX: usize = 131072;
+            let mut f: Vec<_> = (0..=MAX).map(|_| coefficient()).collect();
+            let mut g: Vec<_> = (0..=MAX).map(|_| coefficient()).collect();
+            let mut h = vec![R::zero(); MAX + 1];
+            for i in 1..=MAX {
+                for j in 1..=MAX / i {
+                    R::add_assign(&mut h[i * j], &R::mul(&f[i], &g[j]));
+                }
+            }
+            for values in [&mut f, &mut g, &mut h] {
+                prefix_sums::<R>(&mut values[1..]);
+            }
+            for n in inputs(MAX, 750) {
+                let table =
+                    |v: &[R::T]| DirichletPrefixSums::from_fn(n as u64, |q| v[q as usize].clone());
+                let actual = table(&f).dirichlet_convolve::<R>(&table(&g));
+                assert_eq!(actual.as_slice(), table(&h).as_slice(), "n = {n}");
+            }
+        }
+        let mut rng = Xorshift::default();
+        check::<AddMulOperation<i64>>(|| rng.random(-40..=40));
+        check::<Triangular>(|| std::array::from_fn(|_| M::from(rng.random(..1000u32))));
+    }
+
+    #[test]
+    fn dirichlet_inverse() {
+        fn check<R>(first: R::T, inv: R::T, mut coefficient: impl FnMut() -> R::T)
+        where
+            R: Ring<Additive: Invertible>,
+            R::T: std::fmt::Debug + PartialEq,
+        {
+            const MAX: usize = 131072;
+            let mut f: Vec<_> = (0..=MAX).map(|_| coefficient()).collect();
+            f[1] = first;
+            let mut g = vec![R::zero(); MAX + 1];
+            g[1] = R::one();
+            for i in 1..=MAX {
+                let value = R::mul(&g[i], &inv);
+                g[i] = value.clone();
+                for j in 2..=MAX / i {
+                    R::sub_assign(&mut g[i * j], &R::mul(&value, &f[j]));
+                }
+            }
+            for values in [&mut f, &mut g] {
+                prefix_sums::<R>(&mut values[1..]);
+            }
+            for n in inputs(MAX, 750) {
+                let table =
+                    |v: &[R::T]| DirichletPrefixSums::from_fn(n as u64, |q| v[q as usize].clone());
+                let actual = table(&f).dirichlet_inverse::<R>(inv.clone());
+                assert_eq!(actual.as_slice(), table(&g).as_slice(), "n = {n}");
+            }
+        }
+        let mut rng = Xorshift::default();
+        let a = M::from(3u32);
+        check::<AddMulOperation<M>>(a, a.inv(), || M::from(rng.random(..1000u32)));
+        check::<Triangular>([a, a, M::one()], [a.inv(), -M::one(), M::one()], || {
+            std::array::from_fn(|_| M::from(rng.random(..1000u32)))
+        });
+    }
+
+    #[test]
+    fn reciprocal_boundary() {
+        let reciprocals: Vec<_> = (2..=512).map(|d| u64::MAX / d + 1).collect();
+        for end in 2..=512 {
+            let limit = u64::MAX / end as u64;
+            for x in [limit - 1, limit, limit + 1, u64::MAX - 1, u64::MAX] {
+                let fast = quotient_reciprocals(x, 2, end, &reciprocals);
+                let indices = fast
+                    .iter()
+                    .map(|&r| quotient(x, r))
+                    .chain((2 + fast.len()..=end).map(|i| (x / i as u64) as usize));
+                assert!(indices.eq((2..=end).map(|i| (x / i as u64) as usize)));
+            }
         }
     }
 }

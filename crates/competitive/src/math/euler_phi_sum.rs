@@ -169,7 +169,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{AddMulOperation, AdditiveOperation, ArrayOperation},
-        math::{QuotientArray, euler_phi},
+        math::{DirichletPrefixSums, euler_phi},
         tools::{Xorshift, testutil::sample_usize},
     };
 
@@ -196,13 +196,15 @@ mod tests {
         cases.extend(PERIOD - 1..=PERIOD + 1);
         for n in cases {
             let n = n as u64;
-            let phi = QuotientArray::from_fn(n, |x| {
+            let phi = DirichletPrefixSums::from_fn(n, |x| {
                 let x = i128::from(x);
                 [x, x * (x + 1) / 2]
             })
-            .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(|[_, p], [c, s]| [*c, p * s])
+            .prime_prefix_sums::<ArrayOperation<AdditiveOperation<_>, 2>>(|[_, p], [c, s]| {
+                [*c, p * s]
+            })
             .map(|[c, s]| s - c)
-            .min_25_sieve::<AddMulOperation<_>>(|p, e| {
+            .multiplicative_prefix_sums::<AddMulOperation<_>>(|p, e| {
                 i128::from(p - 1) * i128::from(p).pow(e - 1)
             });
             assert_eq!(euler_phi_sum(n), phi[n] as u128, "n={n}");

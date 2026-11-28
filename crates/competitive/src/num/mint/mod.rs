@@ -5,7 +5,7 @@ use crate::tools::{
     SimdBackend, advise_huge_pages, avx512_enabled, avx512_supported, simd_backend,
 };
 use crate::{
-    algebra::DotProduct,
+    algebra::{DotProduct, ProductSum},
     num::{BarrettReduction, One, Zero},
     tools::{FastOutput, FastPrint, RandomSpec, Scan, ScanSource, SerdeByteStr, Xorshift},
 };

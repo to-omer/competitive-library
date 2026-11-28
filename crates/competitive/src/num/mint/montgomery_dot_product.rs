@@ -1,4 +1,4 @@
-use super::{MInt, MIntDotProduct, montgomery::MontgomeryReduction32};
+use super::{MInt, MIntDotProduct, ProductSum, montgomery::MontgomeryReduction32};
 #[cfg(target_arch = "x86_64")]
 use super::{avx512_enabled, avx512_supported};
 
@@ -33,6 +33,9 @@ where
     fn dot_product_rev(x: &[MInt<Self>], y: &[MInt<Self>]) -> MInt<Self> {
         dot_product::<Self, true>(x, y)
     }
+    fn product_sum() -> impl ProductSum<MInt<Self>> {
+        MontgomeryProductSum(0)
+    }
     fn add_scaled_assign(x: &mut [MInt<Self>], y: &[MInt<Self>], a: &MInt<Self>) {
         assert_eq!(x.len(), y.len());
         #[cfg(target_arch = "x86_64")]
@@ -57,17 +60,6 @@ where
     M: MontgomeryReduction32,
 {
     assert_eq!(x.len(), y.len());
-    let reduce = |sum: u128| {
-        // Montgomery reduction accepts values below modulus * 2^32.
-        let value = if sum < (M::MOD as u128) << 32 {
-            sum as u64
-        } else if sum <= u64::MAX as u128 {
-            sum as u64 % M::MOD as u64
-        } else {
-            (sum % M::MOD as u128) as u64
-        };
-        MInt::new_unchecked(M::reduce(value))
-    };
     // SAFETY: MInt is transparent over u32; retain the Montgomery residues.
     let (x, y) = unsafe {
         (
@@ -79,15 +71,15 @@ where
     if x.len() >= 64 && M::MOD < 1 << 31 {
         if avx512_enabled() && avx512_supported() {
             let sum = unsafe { simd::dot_product_avx512::<REVERSE>(x, y) };
-            return reduce(sum);
+            return reduce_sum(sum);
         }
         if is_x86_feature_detected!("avx2") {
             let sum = unsafe { simd::dot_product_avx2::<REVERSE>(x, y) };
-            return reduce(sum);
+            return reduce_sum(sum);
         }
     }
     let sum = dot_product_scalar::<M, REVERSE>(x, y);
-    reduce(sum)
+    reduce_sum(sum)
 }
 
 fn dot_product_scalar<M, const REVERSE: bool>(x: &[u32], y: &[u32]) -> u128
@@ -113,6 +105,47 @@ where
         sum += part as u128;
     }
     sum
+}
+
+struct MontgomeryProductSum(u128);
+
+impl<M> ProductSum<MInt<M>> for MontgomeryProductSum
+where
+    M: MontgomeryReduction32,
+{
+    fn add_products<const N: usize>(&mut self, terms: [(&MInt<M>, &MInt<M>); N]) {
+        let product =
+            |(x, y): (&MInt<M>, &MInt<M>)| u64::from(x.into_raw()) * u64::from(y.into_raw());
+        let max_product = u128::from(M::MOD - 1).pow(2);
+        let add = if N as u128 * max_product <= u128::from(u64::MAX) {
+            u128::from(terms.into_iter().map(product).sum::<u64>())
+        } else {
+            terms.into_iter().map(|p| u128::from(product(p))).sum()
+        };
+        self.0 = self.0.checked_add(add).unwrap_or_else(|| {
+            let modulus = u128::from(M::MOD);
+            self.0 % modulus + add % modulus
+        });
+    }
+
+    fn finish(self) -> MInt<M> {
+        reduce_sum(self.0)
+    }
+}
+
+fn reduce_sum<M>(sum: u128) -> MInt<M>
+where
+    M: MontgomeryReduction32,
+{
+    // Montgomery reduction accepts values below modulus * 2^32.
+    let value = if sum < (M::MOD as u128) << 32 {
+        sum as u64
+    } else if sum <= u64::MAX as u128 {
+        sum as u64 % M::MOD as u64
+    } else {
+        (sum % M::MOD as u128) as u64
+    };
+    MInt::new_unchecked(M::reduce(value))
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -279,7 +312,7 @@ mod simd {
 mod tests {
     use super::*;
     use crate::{
-        num::montgomery::{Modulo167772161, Modulo998244353},
+        num::montgomery::{MInt998244353, Modulo167772161, Modulo998244353},
         tools::Xorshift,
     };
 
@@ -380,5 +413,20 @@ mod tests {
         check::<Modulo167772161>();
         check::<Modulo998244353>();
         check::<Modulo2147483647>();
+    }
+
+    #[test]
+    fn product_sum() {
+        let x = MInt998244353::new_unchecked(Modulo998244353::MOD - 1);
+        let modulus = u128::from(Modulo998244353::MOD);
+        for start in [0, u128::from(u64::MAX), u128::MAX - 1, u128::MAX] {
+            let mut sum = MontgomeryProductSum(start);
+            sum.add_products([(&x, &x); 2]);
+            sum.add_products([(&x, &x); 32]);
+            let expected =
+                MInt998244353::new_unchecked(Modulo998244353::reduce((start % modulus) as u64))
+                    + MInt998244353::from(34u32) * x * x;
+            assert_eq!(ProductSum::<MInt998244353>::finish(sum), expected);
+        }
     }
 }

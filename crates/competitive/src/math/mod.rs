@@ -2,7 +2,7 @@
 
 use crate::algebra::{
     AbelianGroup, AddMulOperation, Associative, DotProduct, Field, Group, Invertible, Magma,
-    Monoid, Ring, SemiRing, Unital,
+    Monoid, ProductSum, Ring, SemiRing, Unital,
 };
 use crate::array;
 use crate::data_structure::BitSet;
@@ -44,6 +44,8 @@ pub use self::black_box_mint_matrix::BlackBoxMIntMatrix;
 pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("count_primes")]
 pub use self::count_primes::count_primes;
+#[codesnip::entry("DirichletPrefixSums")]
+pub use self::dirichlet_prefix_sums::DirichletPrefixSums;
 #[codesnip::entry("discrete_logarithm")]
 pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
 #[codesnip::entry("euler_phi_sum")]
@@ -101,8 +103,6 @@ pub use self::prime_list::{PrimeList, with_prime_list};
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]
 pub use self::primitive_root::{check_primitive_root, primitive_root};
-#[codesnip::entry("QuotientArray")]
-pub use self::quotient_array::QuotientArray;
 #[codesnip::entry("RelaxedConvolution")]
 pub use self::relaxed_convolution::RelaxedConvolution;
 #[codesnip::entry("SubsetConvolve")]
@@ -138,6 +138,8 @@ mod black_box_mint_matrix;
 mod convolve_steps;
 #[codesnip::entry("count_primes", include("PrimeList"))]
 mod count_primes;
+#[codesnip::entry("DirichletPrefixSums", include("ring", "PrimeList"))]
+mod dirichlet_prefix_sums;
 #[codesnip::entry(
     "discrete_logarithm",
     include(
@@ -242,8 +244,6 @@ mod prime_list;
 mod prime_table;
 #[codesnip::entry("primitive_root", include("prime_factors"))]
 mod primitive_root;
-#[codesnip::entry("QuotientArray", include("ring", "PrimeList"))]
-mod quotient_array;
 #[codesnip::entry("RelaxedConvolution", include("ConvolveSteps", "zero_one"))]
 mod relaxed_convolution;
 #[codesnip::entry(
